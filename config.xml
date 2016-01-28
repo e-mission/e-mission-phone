@@ -1,0 +1,12 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget id="edu.berkeley.eecs.emission" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>emission</name>
+    <description>
+        A commute pattern tracker and carbon footprint estimator.
+    </description>
+    <author email="shankari@eecs.berkeley.edu" href="https://e-mission.eecs.berkeley.edu">
+        E-Mission Team
+    </author>
+    <content src="index.html" />
+    <access origin="*" />
+</widget>
