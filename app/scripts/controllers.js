@@ -1,6 +1,10 @@
 angular.module('emission.controllers', [])
 
-.controller('WizardCtrl', function($scope, $ionicSlideBoxDelegate) {
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate) {
+  $scope.startApp = function() {
+    $state.go('main.dash');
+  };
+
   $scope.next = function() {
     $ionicSlideBoxDelegate.next();
   };

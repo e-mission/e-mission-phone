@@ -31,6 +31,13 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
   // Each state's controller can be found in controllers.js
   $stateProvider
 
+  // setup an abstract state for the intro directive
+    .state('intro', {
+    url: '/intro',
+    templateUrl: 'templates/intro.html',
+    controller: 'IntroCtrl'
+  })
+
   // setup an abstract state for the tabs directive
     .state('main', {
     url: '/main',
@@ -78,6 +85,6 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/main/dash');
+  $urlRouterProvider.otherwise('/intro');
 
 });
