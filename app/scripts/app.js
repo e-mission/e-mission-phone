@@ -34,7 +34,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
   // setup an abstract state for the intro directive
     .state('intro', {
     url: '/intro',
-    templateUrl: 'templates/intro.html',
+    templateUrl: 'templates/intro/intro.html',
     controller: 'IntroCtrl'
   })
 
