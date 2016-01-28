@@ -5,8 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'emission.services' is found in services.js
 // 'emission.controllers' is found in controllers.js
-angular.module('emission', ['ionic', 'emission.controllers','emission.services',
-                            'mgo-angular-wizard'])
+angular.module('emission', ['ionic', 'emission.controllers','emission.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -45,7 +44,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     views: {
       'tab-wizard': {
         templateUrl: 'templates/startup-wizard.html',
-        controller: 'DashCtrl'
+        controller: 'WizardCtrl'
       }
     }
   })

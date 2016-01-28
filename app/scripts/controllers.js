@@ -1,6 +1,21 @@
 angular.module('emission.controllers', [])
 
+.controller('WizardCtrl', function($scope, $ionicSlideBoxDelegate) {
+  $scope.next = function() {
+    $ionicSlideBoxDelegate.next();
+  };
+  $scope.previous = function() {
+    $ionicSlideBoxDelegate.previous();
+  };
+
+  // Called each time the slide changes
+  $scope.slideChanged = function(index) {
+    $scope.slideIndex = index;
+  };
+})
+
 .controller('DashCtrl', function($scope) {})
+
 
 .controller('ChatsCtrl', function($scope, Chats) {
   // With the new view caching in Ionic, Controllers are only called
