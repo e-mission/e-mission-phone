@@ -32,63 +32,52 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
   $stateProvider
 
   // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: '/tab',
+    .state('main', {
+    url: '/main',
     abstract: true,
-    templateUrl: 'templates/tabs.html'
+    templateUrl: 'templates/main.html'
   })
 
-  // Each tab has its own nav history stack:
-  .state('tab.wizard', {
-    url: '/wizard',
-    views: {
-      'tab-wizard': {
-        templateUrl: 'templates/startup-wizard.html',
-        controller: 'WizardCtrl'
-      }
-    }
-  })
-
-  .state('tab.dash', {
+  .state('main.dash', {
     url: '/dash',
     views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
+      'main-dash': {
+        templateUrl: 'templates/main-dash.html',
         controller: 'DashCtrl'
       }
     }
   })
 
-  .state('tab.chats', {
+  .state('main.chats', {
       url: '/chats',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
+        'main-chats': {
+          templateUrl: 'templates/main-chats.html',
           controller: 'ChatsCtrl'
         }
       }
     })
-    .state('tab.chat-detail', {
+    .state('main.chat-detail', {
       url: '/chats/:chatId',
       views: {
-        'tab-chats': {
+        'main-chats': {
           templateUrl: 'templates/chat-detail.html',
           controller: 'ChatDetailCtrl'
         }
       }
     })
 
-  .state('tab.account', {
+  .state('main.account', {
     url: '/account',
     views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
+      'main-account': {
+        templateUrl: 'templates/main-account.html',
         controller: 'AccountCtrl'
       }
     }
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/wizard');
+  $urlRouterProvider.otherwise('/main/dash');
 
 });
