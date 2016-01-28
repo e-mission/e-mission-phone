@@ -5,7 +5,8 @@
 // the 2nd parameter is an array of 'requires'
 // 'emission.services' is found in services.js
 // 'emission.controllers' is found in controllers.js
-angular.module('emission', ['ionic', 'emission.controllers', 'emission.services'])
+angular.module('emission', ['ionic', 'emission.controllers','emission.services',
+                            'mgo-angular-wizard'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -39,6 +40,15 @@ angular.module('emission', ['ionic', 'emission.controllers', 'emission.services'
   })
 
   // Each tab has its own nav history stack:
+  .state('tab.wizard', {
+    url: '/wizard',
+    views: {
+      'tab-wizard': {
+        templateUrl: 'templates/startup-wizard.html',
+        controller: 'DashCtrl'
+      }
+    }
+  })
 
   .state('tab.dash', {
     url: '/dash',
@@ -80,6 +90,6 @@ angular.module('emission', ['ionic', 'emission.controllers', 'emission.services'
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/wizard');
 
 });

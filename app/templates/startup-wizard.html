@@ -1,0 +1,20 @@
+<ion-view view-title="Chats">
+  <ion-content>
+    <wizard on-finish="finishedWizard()"> 
+        <wz-step title="Starting">
+            <h1>This is the first step</h1>
+            <p>Here you can use whatever you want. You can use other directives, binding, etc.</p>
+            <button class="button" wz-next> Next </button>
+        </wz-step>
+        <wz-step title="Continuing">
+            <h1>Continuing</h1>
+            <p>You have continued here!</p>
+            <button class="button" wz-next> Next </button>
+        </wz-step>
+        <wz-step title="More steps">
+            <p>Even more steps!!</p>
+            <button class="button" wz-finish> Next </button>
+        </wz-step>
+    </wizard>
+  </ion-content>
+</ion-view>
