@@ -7,7 +7,7 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic', 'emission.controllers','emission.services'])
+angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emission.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -37,7 +37,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
           deferred.resolve();
       });
       return deferred.promise;
-  }
+  };
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

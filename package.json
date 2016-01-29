@@ -53,6 +53,8 @@
     "org.apache.cordova.device",
     "org.apache.cordova.console",
     "com.ionic.keyboard",
-    "/Users/shankari/e-mission/cordova-unified-logger/"
+    "/Users/shankari/e-mission/cordova-unified-logger/",
+    "/Users/shankari/e-mission/cordova-connection-settings/",
+    "/Users/shankari/e-mission/cordova-jwt-auth/"
   ]
 }

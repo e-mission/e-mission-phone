@@ -2,7 +2,7 @@
 
 angular.module('emission.controllers', [])
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup) {
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup, ionicToast, $timeout) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -18,7 +18,7 @@ angular.module('emission.controllers', [])
     });
  
     alertPopup.then(function(res) {
-      console.log('User confirmed that they understood to delete the application '+res);
+      window.Logger.log(window.Logger.LEVEL_INFO, 'User confirmed that they understood that consent is required'+res);
     });
   };
 
@@ -29,8 +29,30 @@ angular.module('emission.controllers', [])
   $scope.next = function() {
     $scope.getIntroBox().next();
   };
+
   $scope.previous = function() {
     $scope.getIntroBox().previous();
+  };
+
+  $scope.login = function() {
+    window.cordova.plugins.BEMJWTAuth.signIn(function(userEmail) {
+      // ionicToast.show(message, position, stick, time);
+      // $scope.next();
+      ionicToast.show(userEmail, 'middle', false, 2500);
+      $timeout($scope.next, 2500, true, null).then(function() {
+        console.log('finished moving to the next screen');
+      }); 
+    }, function(error) {
+      var errorMsg = JSON.stringify(error);
+      var alertPopup = $ionicPopup.alert({
+        title: 'Sign-in error',
+        template: errorMsg
+      });
+   
+      alertPopup.then(function(res) {
+        window.Logger.log(window.Logger.LEVEL_INFO, errorMsg + ' ' + res);
+      });
+    });
   };
 
   // Called each time the slide changes
