@@ -44,3 +44,10 @@
   font-size:large;
   line-height: 1.5;
 }
+
+.consent-slide {
+  padding-right: 5%;
+  padding-left: 5%;
+  text-align: left;
+  line-height: normal;
+}
