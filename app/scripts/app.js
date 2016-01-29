@@ -26,7 +26,6 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
-  /*
   var waitFn = function($q) {
       var deferred = $q.defer();
       ionic.Platform.ready(function() {
@@ -39,7 +38,6 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
       });
       return deferred.promise;
   }
-  */
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -51,11 +49,9 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
     .state('intro', {
     url: '/intro',
     templateUrl: 'templates/intro/intro.html',
-    /*
     resolve: {
         cordova: waitFn
     },
-    */
     controller: 'IntroCtrl'
   })
 
@@ -64,11 +60,9 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
     url: '/main',
     abstract: true,
     templateUrl: 'templates/main.html',
-    /*
     resolve: {
         cordova: waitFn
     },
-    */
   })
 
   .state('main.dash', {

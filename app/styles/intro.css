@@ -12,22 +12,6 @@
   font-weight: 300;
 }
 
-#list {
-  width: 170px;
-  margin: 30px auto;
-  font-size: 20px;
-}
-
-#list ol {
-  margin-top: 30px;
-}
-
-#list ol li {
-  text-align: left;
-  list-style: decimal;
-  margin: 10px 0px;
-}
-
 .scroll { 
   min-width: 100%;
 }
@@ -41,7 +25,7 @@
   padding-right: 5%;
   padding-left: 5%;
   text-align: left;
-  font-size:large;
+  font-size: x-large;
   line-height: 1.5;
 }
 

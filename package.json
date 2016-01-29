@@ -52,6 +52,7 @@
   "cordovaPlugins": [
     "org.apache.cordova.device",
     "org.apache.cordova.console",
-    "com.ionic.keyboard"
+    "com.ionic.keyboard",
+    "/Users/shankari/e-mission/cordova-unified-logger/"
   ]
 }
