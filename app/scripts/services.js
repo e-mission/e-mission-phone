@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('emission.services', [])
 
 .factory('Chats', function() {

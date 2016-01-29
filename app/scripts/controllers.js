@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('emission.controllers', [])
 
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup) {
@@ -16,7 +18,7 @@ angular.module('emission.controllers', [])
     });
  
     alertPopup.then(function(res) {
-      console.log('User confirmed');
+      console.log('User confirmed that they understood to delete the application '+res);
     });
   };
 
