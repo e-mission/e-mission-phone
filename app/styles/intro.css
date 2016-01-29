@@ -27,3 +27,11 @@
   margin: 10px 0px;
 }
 
+.scroll { 
+  min-width: 100%;
+}
+
+.wide-as-needed {
+  overflow-y: scroll;
+  white-space: nowrap;
+}

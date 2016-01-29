@@ -1,12 +1,23 @@
 angular.module('emission.controllers', [])
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate) {
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
 
   $scope.stopSliding = function() {
     $scope.getIntroBox().enableSlide(false);
+  };
+
+  $scope.popupUninstall = function() {
+    var alertPopup = $ionicPopup.alert({
+      title: 'Conditions refused',
+      template: 'Please close and uninstall this application. You must accept the terms to use E-Mission'
+    });
+ 
+    alertPopup.then(function(res) {
+      console.log('User confirmed');
+    });
   };
 
   $scope.startApp = function() {
