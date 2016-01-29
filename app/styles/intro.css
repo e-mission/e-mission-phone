@@ -1,6 +1,7 @@
 .slider {
   height: 100%;
 }
+
 .slider-slide {
   padding-top: 80px;
   color: #000;
@@ -34,4 +35,12 @@
 .wide-as-needed {
   overflow-y: scroll;
   white-space: nowrap;
+}
+
+.summary-slide {
+  padding-right: 5%;
+  padding-left: 5%;
+  text-align: left;
+  font-size:large;
+  line-height: 1.5;
 }
