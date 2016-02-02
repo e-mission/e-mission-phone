@@ -2,13 +2,29 @@
 
 angular.module('emission.controllers', [])
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup, ionicToast, $timeout) {
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup, ionicToast, $timeout, CommHelper) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
 
   $scope.stopSliding = function() {
     $scope.getIntroBox().enableSlide(false);
+  };
+
+  $scope.showSettings = function() {
+    window.cordova.plugins.BEMConnectionSettings.getSettings(function(settings) {
+      var errorMsg = JSON.stringify(settings);
+      var alertPopup = $ionicPopup.alert({
+        title: 'settings',
+        template: errorMsg
+      });
+   
+      alertPopup.then(function(res) {
+        $scope.next();
+      });
+    }, function(error) {
+        $scope.alertError('getting settings', error);
+    });
   };
 
   $scope.popupUninstall = function() {
@@ -33,25 +49,31 @@ angular.module('emission.controllers', [])
   $scope.previous = function() {
     $scope.getIntroBox().previous();
   };
-
-  $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.signIn(function(userEmail) {
-      // ionicToast.show(message, position, stick, time);
-      // $scope.next();
-      ionicToast.show(userEmail, 'middle', false, 2500);
-      $timeout($scope.next, 2500, true, null).then(function() {
-        console.log('finished moving to the next screen');
-      }); 
-    }, function(error) {
-      var errorMsg = JSON.stringify(error);
+  
+  $scope.alertError = function(title, errorResult) {
+      var errorMsg = JSON.stringify(errorResult);
       var alertPopup = $ionicPopup.alert({
-        title: 'Sign-in error',
+        title: title,
         template: errorMsg
       });
    
       alertPopup.then(function(res) {
         window.Logger.log(window.Logger.LEVEL_INFO, errorMsg + ' ' + res);
       });
+  }
+
+  $scope.login = function() {
+    window.cordova.plugins.BEMJWTAuth.signIn(function(userEmail) {
+      // ionicToast.show(message, position, stick, time);
+      // $scope.next();
+      ionicToast.show(userEmail, 'middle', false, 2500);
+      CommHelper.registerUser(function(successResult) {
+        $scope.next();
+      }, function(errorResult) {
+        $scope.alertError('User registration error', errorResult);
+      });
+    }, function(error) {
+        $scope.alertError('Sign in error', error);
     });
   };
 
