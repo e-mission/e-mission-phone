@@ -2,6 +2,14 @@
 
 angular.module('emission.services', [])
 
+.factory('CommHelper', function() {
+    return {
+        registerUser: function(successCallback, errorCallback) {
+            window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
+        }
+    };
+})
+
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 
