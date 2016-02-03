@@ -40,6 +40,10 @@
     {
       "locator": "/Users/shankari/e-mission/cordova-server-communication",
       "id": "edu.berkeley.eecs.emission.cordova.comm"
+    },
+    {
+      "locator": "/Users/shankari/e-mission/cordova-stats",
+      "id": "edu.berkeley.eecs.emission.cordova.clientstats"
     }
   ],
   "cordovaPlatforms": [
