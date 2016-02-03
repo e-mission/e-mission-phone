@@ -30,30 +30,30 @@
       "id": "edu.berkeley.eecs.emission.cordova.auth"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-server-communication",
-      "id": "edu.berkeley.eecs.emission.cordova.comm"
+      "locator": "/Users/shankari/e-mission/cordova-connection-settings",
+      "id": "edu.berkeley.eecs.emission.cordova.settings"
     },
     {
       "locator": "/Users/shankari/e-mission/cordova-unified-logger",
       "id": "edu.berkeley.eecs.emission.cordova.unifiedlogger"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-connection-settings",
-      "id": "edu.berkeley.eecs.emission.cordova.settings"
+      "locator": "/Users/shankari/e-mission/cordova-server-communication",
+      "id": "edu.berkeley.eecs.emission.cordova.comm"
     }
   ],
   "cordovaPlatforms": [
     "ios",
+    {
+      "platform": "ios",
+      "version": "",
+      "locator": "ios"
+    },
     "android",
     {
       "platform": "android",
       "version": "",
       "locator": "android"
-    },
-    {
-      "platform": "ios",
-      "version": "",
-      "locator": "ios"
     }
   ]
 }
