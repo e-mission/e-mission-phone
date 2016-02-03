@@ -1,0 +1,37 @@
+.slider {
+  height: 100%;
+}
+
+.slider-slide {
+  padding-top: 80px;
+  color: #000;
+  background-color: #fff;
+  text-align: center;
+
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-weight: 300;
+}
+
+.scroll { 
+  min-width: 100%;
+}
+
+.wide-as-needed {
+  overflow-y: scroll;
+  white-space: nowrap;
+}
+
+.summary-slide {
+  padding-right: 5%;
+  padding-left: 5%;
+  text-align: left;
+  font-size: x-large;
+  line-height: 1.5;
+}
+
+.consent-slide {
+  padding-right: 5%;
+  padding-left: 5%;
+  text-align: left;
+  line-height: normal;
+}
