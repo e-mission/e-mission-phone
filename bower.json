@@ -1,7 +1,9 @@
 {
-  "name": "HelloIonic",
+  "name": "emission",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.2.4"
+    "ionic": "driftyco/ionic-bower#1.2.4",
+    "ionic-toast": "^0.2.0",
+    "ngCordova": "^0.1.24-alpha"
   }
 }
