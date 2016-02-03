@@ -26,10 +26,6 @@
       "id": "cordova-sqlite-storage"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-connection-settings",
-      "id": "edu.berkeley.eecs.emission.cordova.settings"
-    },
-    {
       "locator": "/Users/shankari/e-mission/cordova-jwt-auth",
       "id": "edu.berkeley.eecs.emission.cordova.auth"
     },
@@ -40,6 +36,10 @@
     {
       "locator": "/Users/shankari/e-mission/cordova-unified-logger",
       "id": "edu.berkeley.eecs.emission.cordova.unifiedlogger"
+    },
+    {
+      "locator": "/Users/shankari/e-mission/cordova-connection-settings",
+      "id": "edu.berkeley.eecs.emission.cordova.settings"
     }
   ],
   "cordovaPlatforms": [
