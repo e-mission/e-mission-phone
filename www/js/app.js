@@ -1,11 +1,13 @@
-// Ionic Starter App
+// Ionic E-Mission App
 
 // angular.module is a global place for creating, registering and retrieving Angular modules
-// 'starter' is the name of this angular module example (also set in a <body> attribute in index.html)
+// 'emission' is the name of this angular module example (also set in a <body> attribute in index.html)
 // the 2nd parameter is an array of 'requires'
-// 'starter.services' is found in services.js
-// 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+// 'emission.services' is found in services.js
+// 'emission.controllers' is found in controllers.js
+'use strict';
+
+angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emission.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -24,6 +26,18 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+  var waitFn = function($q) {
+      var deferred = $q.defer();
+      ionic.Platform.ready(function() {
+          window.Logger.init();
+          window.Logger.log(window.Logger.LEVEL_INFO, 'ionic.Platform.ready');
+          // We don't actually resolve with anything, because we don't need to return
+          // anything. We just need to wait until the platform is
+          // ready and at that point, we can use our usual window.sqlitePlugin stuff
+          deferred.resolve();
+      });
+      return deferred.promise;
+  };
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -31,55 +45,66 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   // Each state's controller can be found in controllers.js
   $stateProvider
 
-  // setup an abstract state for the tabs directive
-    .state('tab', {
-    url: '/tab',
-    abstract: true,
-    templateUrl: 'templates/tabs.html'
+  // setup an abstract state for the intro directive
+    .state('intro', {
+    url: '/intro',
+    templateUrl: 'templates/intro/intro.html',
+    resolve: {
+        cordova: waitFn
+    },
+    controller: 'IntroCtrl'
   })
 
-  // Each tab has its own nav history stack:
+  // setup an abstract state for the tabs directive
+    .state('main', {
+    url: '/main',
+    abstract: true,
+    templateUrl: 'templates/main.html',
+    resolve: {
+        cordova: waitFn
+    },
+  })
 
-  .state('tab.dash', {
+  .state('main.dash', {
     url: '/dash',
     views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
+      'main-dash': {
+        templateUrl: 'templates/main-dash.html',
         controller: 'DashCtrl'
       }
     }
   })
 
-  .state('tab.chats', {
+  .state('main.chats', {
       url: '/chats',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
+        'main-chats': {
+          templateUrl: 'templates/main-chats.html',
           controller: 'ChatsCtrl'
         }
       }
     })
-    .state('tab.chat-detail', {
+    .state('main.chat-detail', {
       url: '/chats/:chatId',
       views: {
-        'tab-chats': {
+        'main-chats': {
           templateUrl: 'templates/chat-detail.html',
           controller: 'ChatDetailCtrl'
         }
       }
     })
 
-  .state('tab.account', {
+  .state('main.account', {
     url: '/account',
     views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
+      'main-account': {
+        templateUrl: 'templates/main-account.html',
         controller: 'AccountCtrl'
       }
     }
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/intro');
 
 });

@@ -1,4 +1,14 @@
-angular.module('starter.services', [])
+'use strict';
+
+angular.module('emission.services', [])
+
+.factory('CommHelper', function() {
+    return {
+        registerUser: function(successCallback, errorCallback) {
+            window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
+        }
+    };
+})
 
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
@@ -28,6 +38,31 @@ angular.module('starter.services', [])
     id: 4,
     name: 'Mike Harrington',
     lastText: 'This is wicked good ice cream.',
+    face: 'img/mike.png'
+  }, {
+    id: 5,
+    name: 'Ben Sparrow',
+    lastText: 'You on your way again?',
+    face: 'img/ben.png'
+  }, {
+    id: 6,
+    name: 'Max Lynx',
+    lastText: 'Hey, it\'s me again',
+    face: 'img/max.png'
+  }, {
+    id: 7,
+    name: 'Adam Bradleyson',
+    lastText: 'I should buy a boat again',
+    face: 'img/adam.jpg'
+  }, {
+    id: 8,
+    name: 'Perry Governor',
+    lastText: 'Look at my mukluks again!',
+    face: 'img/perry.png'
+  }, {
+    id: 9,
+    name: 'Mike Harrington',
+    lastText: 'This is wicked good ice cream again.',
     face: 'img/mike.png'
   }];
 
