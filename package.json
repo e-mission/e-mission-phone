@@ -57,6 +57,10 @@
     "/Users/shankari/e-mission/cordova-connection-settings/",
     "/Users/shankari/e-mission/cordova-jwt-auth/",
     "/Users/shankari/e-mission/cordova-server-communication",
-    "/Users/shankari/e-mission/cordova-server-communication/"
+    "/Users/shankari/e-mission/cordova-server-communication/",
+    "/Users/shankari/e-mission/cordova-server-sync/",
+    "/Users/shankari/e-mission/cordova-stats",
+    "/Users/shankari/e-mission/cordova-usercache/",
+    "/Users/shankari/e-mission/e-mission-data-collection"
   ]
 }
