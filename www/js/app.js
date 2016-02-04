@@ -31,6 +31,15 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
       ionic.Platform.ready(function() {
           window.Logger.init();
           window.Logger.log(window.Logger.LEVEL_INFO, 'ionic.Platform.ready');
+
+          // Init the stats
+          window.cordova.plugins.BEMClientStats.init();
+          // Init the sync on iOS, due to restrictions on background
+          // operation, the sync code will be invoked from the data collection
+          // when a remote push arrives. But on android a service is involved
+          // so the sync and the data collection can appear in parallel.
+          window.cordova.plugins.BEMClientStats.init();
+          window.cordova.plugins.BEMDataCollection.startupInit();
           // We don't actually resolve with anything, because we don't need to return
           // anything. We just need to wait until the platform is
           // ready and at that point, we can use our usual window.sqlitePlugin stuff
