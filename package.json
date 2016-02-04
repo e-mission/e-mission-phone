@@ -44,6 +44,18 @@
     {
       "locator": "/Users/shankari/e-mission/cordova-stats",
       "id": "edu.berkeley.eecs.emission.cordova.clientstats"
+    },
+    {
+      "locator": "/Users/shankari/e-mission/cordova-server-sync",
+      "id": "edu.berkeley.eecs.emission.cordova.serversync"
+    },
+    {
+      "locator": "/Users/shankari/e-mission/cordova-usercache",
+      "id": "edu.berkeley.eecs.emission.cordova.usercache"
+    },
+    {
+      "locator": "/Users/shankari/e-mission/e-mission-data-collection",
+      "id": "edu.berkeley.eecs.emission.cordova.datacollection"
     }
   ],
   "cordovaPlatforms": [
