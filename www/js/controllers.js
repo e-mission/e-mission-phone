@@ -75,6 +75,7 @@ angular.module('emission.controllers', [])
       });
     }, function(error) {
         $scope.alertError('Sign in error', error);
+        $scope.finish();
     });
   };
 
@@ -97,10 +98,11 @@ angular.module('emission.controllers', [])
 
   $scope.finish = function() {
     var prefs = window.plugins.appPreferences;
-    prefs.fetch('setup_complete').then(function(value) {
-        alert("setup_complete -> "+value);
+    prefs.store('setup_complete', true).then(function(value) {
+        $scope.alertError("setup_complete", "success -> "+value);
+        $state.go('main.dash');
     }, function(error) {
-        alert("setup_complete -> "+error);
+        $scope.alertError("setup_complete", "error -> "+error);
     });
   }
 })
