@@ -26,41 +26,42 @@
       "id": "cordova-sqlite-storage"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-connection-settings",
+      "locator": "https://github.com/e-mission/cordova-connection-settings.git",
       "id": "edu.berkeley.eecs.emission.cordova.settings"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-unified-logger",
+      "locator": "https://github.com/e-mission/cordova-unified-logger.git",
       "id": "edu.berkeley.eecs.emission.cordova.unifiedlogger"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-server-communication",
+      "locator": "https://github.com/e-mission/cordova-server-communication.git",
       "id": "edu.berkeley.eecs.emission.cordova.comm"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-server-sync",
+      "locator": "https://github.com/e-mission/cordova-server-sync.git",
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-usercache",
+      "locator": "https://github.com/e-mission/cordova-usercache.git",
       "id": "edu.berkeley.eecs.emission.cordova.usercache"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-jwt-auth",
+      "locator": "https://github.com/e-mission/cordova-jwt-auth.git",
       "id": "edu.berkeley.eecs.emission.cordova.auth"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-stats",
+      "locator": "https://github.com/e-mission/cordova-stats.git",
       "id": "edu.berkeley.eecs.emission.cordova.clientstats"
     },
     {
-      "locator": "/Users/shankari/e-mission/e-mission-data-collection",
-      "id": "edu.berkeley.eecs.emission.cordova.datacollection"
+      "locator": "https://github.com/shankari/me.apla.cordova.app-preferences.git",
+      "id": "cordova-plugin-app-preferences"
     },
     {
-      "locator": "/Users/shankari/OSS/me.apla.cordova.app-preferences",
-      "id": "cordova-plugin-app-preferences"
-    }
+      "locator": "https://github.com/e-mission/e-mission-data-collection.git",
+      "id": "edu.berkeley.eecs.emission.cordova.datacollection"
+    },
+    "cordova-plugin-app-version"
   ],
   "cordovaPlatforms": [
     "ios",
