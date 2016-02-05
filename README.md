@@ -11,18 +11,25 @@ http://ionicframework.com/getting-started/
 
 Then, get the current version of our code
 
-1. Fork this repo using the github UI
-1. Clone your fork
+Fork this repo using the github UI
 
-    $ git clone <your repo URL>
+Clone your fork
 
-1. Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
+``
+$ git clone <your repo URL>
+``
 
-    $ ionic state restore
+Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
 
-1. Install all javascript components using bower
+``
+      $ ionic state restore
+``
 
-    $ bower update
+Install all javascript components using bower
+
+``
+      $ bower update
+``
 
 Installation is now complete. You can view the current state of the application in the emulator
 
@@ -44,8 +51,12 @@ Push the changes to your local fork
     $ git push origin mybranch
 
 Generate a pull request from the UI
+
 Address my review comments
+
 Once I merge the pull request, pull the changes and delete the branch
-    $ git checkout master
-    $ git pull upstream master
-    $ git branch -d mybranch
+```
+$ git checkout master
+$ git pull upstream master
+$ git branch -d mybranch
+```
