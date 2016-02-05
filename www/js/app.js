@@ -38,7 +38,8 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
           // operation, the sync code will be invoked from the data collection
           // when a remote push arrives. But on android a service is involved
           // so the sync and the data collection can appear in parallel.
-          window.cordova.plugins.BEMClientStats.init();
+          window.cordova.plugins.BEMUserCache.init();
+          window.cordova.plugins.BEMServerSync.init();
           window.cordova.plugins.BEMDataCollection.startupInit();
           // We don't actually resolve with anything, because we don't need to return
           // anything. We just need to wait until the platform is
