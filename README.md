@@ -39,7 +39,7 @@ Note that sometimes the IOS emulator doesn't work when called from command line,
 the project from Xcode, by opening
 
 ``
-e-mission-phone/platforms/ios/emission.xcodeproj
+/e-mission-phone/platforms/ios/emission.xcodeproj
 ``
 
 and then run the project with IOS emulator.
