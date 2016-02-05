@@ -26,10 +26,6 @@
       "id": "cordova-sqlite-storage"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-jwt-auth",
-      "id": "edu.berkeley.eecs.emission.cordova.auth"
-    },
-    {
       "locator": "/Users/shankari/e-mission/cordova-connection-settings",
       "id": "edu.berkeley.eecs.emission.cordova.settings"
     },
@@ -42,10 +38,6 @@
       "id": "edu.berkeley.eecs.emission.cordova.comm"
     },
     {
-      "locator": "/Users/shankari/e-mission/cordova-stats",
-      "id": "edu.berkeley.eecs.emission.cordova.clientstats"
-    },
-    {
       "locator": "/Users/shankari/e-mission/cordova-server-sync",
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
     },
@@ -54,22 +46,34 @@
       "id": "edu.berkeley.eecs.emission.cordova.usercache"
     },
     {
+      "locator": "/Users/shankari/e-mission/cordova-jwt-auth",
+      "id": "edu.berkeley.eecs.emission.cordova.auth"
+    },
+    {
+      "locator": "/Users/shankari/e-mission/cordova-stats",
+      "id": "edu.berkeley.eecs.emission.cordova.clientstats"
+    },
+    {
       "locator": "/Users/shankari/e-mission/e-mission-data-collection",
       "id": "edu.berkeley.eecs.emission.cordova.datacollection"
+    },
+    {
+      "locator": "/Users/shankari/OSS/me.apla.cordova.app-preferences",
+      "id": "cordova-plugin-app-preferences"
     }
   ],
   "cordovaPlatforms": [
     "ios",
-    {
-      "platform": "ios",
-      "version": "",
-      "locator": "ios"
-    },
     "android",
     {
       "platform": "android",
       "version": "",
       "locator": "android"
+    },
+    {
+      "platform": "ios",
+      "version": "",
+      "locator": "ios"
     }
   ]
 }
