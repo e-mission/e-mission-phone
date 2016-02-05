@@ -68,9 +68,10 @@ angular.module('emission.controllers', [])
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
-        $scope.next();
+        $scope.finish();
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
+        $scope.finish();
       });
     }, function(error) {
         $scope.alertError('Sign in error', error);
@@ -93,6 +94,15 @@ angular.module('emission.controllers', [])
         $scope.getIntroBox().enableSlide(false);
     }
   };
+
+  $scope.finish = function() {
+    var prefs = window.plugins.appPreferences;
+    prefs.fetch('setup_complete').then(function(value) {
+        alert("setup_complete -> "+value);
+    }, function(error) {
+        alert("setup_complete -> "+error);
+    });
+  }
 })
 
 .controller('DashCtrl', function($scope) {})
