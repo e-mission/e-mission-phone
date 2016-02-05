@@ -35,6 +35,14 @@ Installation is now complete. You can view the current state of the application 
 
     $ ionic emulate ios --target="iPhone-6"
 
+Note that sometimes the IOS emulator doesn't work when called from command line, then you can simply load 
+the project from Xcode, by opening
+
+``
+/e-mission-phone/platforms/ios/emission.xcodeproj
+``
+
+and then run the project with IOS emulator.
 Contributing
 ---
 
