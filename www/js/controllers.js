@@ -2,6 +2,39 @@
 
 angular.module('emission.controllers', [])
 
+.controller('RootCtrl', function($scope, $state, $ionicPopup) {
+  $scope.alertError = function(title, errorResult) {
+      var errorMsg = JSON.stringify(errorResult);
+      var alertPopup = $ionicPopup.alert({
+        title: title,
+        template: errorMsg
+      });
+   
+      alertPopup.then(function(res) {
+        window.Logger.log(window.Logger.LEVEL_INFO, errorMsg + ' ' + res);
+      });
+  }
+
+  $scope.startApp = function() {
+    $state.go('root.intro');
+  };
+
+  var prefs = window.plugins.appPreferences;
+  prefs.fetch('setup_complete').then(function(value) {
+      $scope.alertError("setup_complete", "success -> "+value);
+      $scope.$apply(function() {
+        if (value == true) {
+            $state.go('root.main.dash');
+        } else {
+            $state.go('root.intro');
+        }
+      });
+  }, function(error) {
+      $scope.alertError("setup_complete", "error -> "+error);
+      $state.go('root.intro');
+  });
+})
+
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, $ionicPopup, ionicToast, $timeout, CommHelper) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
@@ -100,7 +133,7 @@ angular.module('emission.controllers', [])
     var prefs = window.plugins.appPreferences;
     prefs.store('setup_complete', true).then(function(value) {
         $scope.alertError("setup_complete", "success -> "+value);
-        $state.go('main.dash');
+        $state.go('root.main.dash');
     }, function(error) {
         $scope.alertError("setup_complete", "error -> "+error);
     });

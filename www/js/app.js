@@ -55,27 +55,33 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
   // Each state's controller can be found in controllers.js
   $stateProvider
 
-  // setup an abstract state for the intro directive
-    .state('intro', {
-    url: '/intro',
-    templateUrl: 'templates/intro/intro.html',
+  // setup an abstract state for the root
+    .state('root', {
+    url: '/root',
+    abstract: true,
+    template: '<ui-view/>',
     resolve: {
         cordova: waitFn
     },
+    controller: 'RootCtrl'
+  })
+
+  // setup an abstract state for the intro directive
+    .state('root.intro', {
+    url: '/intro',
+    templateUrl: 'templates/intro/intro.html',
     controller: 'IntroCtrl'
   })
 
   // setup an abstract state for the tabs directive
-    .state('main', {
+    .state('root.main', {
     url: '/main',
     abstract: true,
     templateUrl: 'templates/main.html',
-    resolve: {
-        cordova: waitFn
-    },
+    controller: 'DashCtrl'
   })
 
-  .state('main.dash', {
+  .state('root.main.dash', {
     url: '/dash',
     views: {
       'main-dash': {
@@ -85,7 +91,7 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
     }
   })
 
-  .state('main.chats', {
+  .state('root.main.chats', {
       url: '/chats',
       views: {
         'main-chats': {
@@ -94,7 +100,7 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
         }
       }
     })
-    .state('main.chat-detail', {
+    .state('root.main.chat-detail', {
       url: '/chats/:chatId',
       views: {
         'main-chats': {
@@ -104,7 +110,7 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
       }
     })
 
-  .state('main.account', {
+  .state('root.main.account', {
     url: '/account',
     views: {
       'main-account': {
@@ -115,6 +121,6 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/intro');
+  $urlRouterProvider.otherwise('/root/intro');
 
 });
