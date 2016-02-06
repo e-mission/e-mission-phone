@@ -2,7 +2,7 @@
 
 angular.module('emission.main', [])
 
-.config(function($stateProvider) {
+.config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
   // setup an abstract state for the tabs directive
     .state('root.main', {
@@ -40,6 +40,9 @@ angular.module('emission.main', [])
       }
     }
   });
+
+  $ionicConfigProvider.tabs.style('standard')
+  $ionicConfigProvider.tabs.position('bottom');
 })
 
 .controller('MainCtrl', function($scope, $state) {
