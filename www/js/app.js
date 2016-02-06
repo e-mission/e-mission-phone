@@ -7,7 +7,7 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic', 'emission.controllers','emission.services'])
+angular.module('emission', ['ionic', 'emission.intro', 'emission.controllers','emission.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -51,7 +51,8 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
+  // Set a few states which the app can be in.
+  // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
   $stateProvider
 
@@ -64,13 +65,6 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services']
         cordova: waitFn
     },
     controller: 'RootCtrl'
-  })
-
-  // setup an abstract state for the intro directive
-    .state('root.intro', {
-    url: '/intro',
-    templateUrl: 'templates/intro/intro.html',
-    controller: 'IntroCtrl'
   })
 
   // setup an abstract state for the tabs directive
