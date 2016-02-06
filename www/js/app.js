@@ -61,7 +61,8 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     .state('root', {
     url: '/root',
     abstract: true,
-    template: '<ui-view/>',
+    // templateUrl: 'templates/main.html',
+    template: '<ion-nav-view/>',
     resolve: {
         cordova: waitFn
     },
