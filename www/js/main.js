@@ -26,7 +26,7 @@ angular.module('emission.main', [])
       url: '/recent',
       views: {
         'main-recent': {
-          templateUrl: 'templates/main-chats.html',
+          templateUrl: 'templates/main-recent.html',
           controller: 'MainCtrl'
         }
       }
