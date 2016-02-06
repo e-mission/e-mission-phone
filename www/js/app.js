@@ -7,7 +7,8 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic', 'emission.intro', 'emission.controllers','emission.services'])
+angular.module('emission', ['ionic', 'emission.controllers','emission.services',
+    'emission.intro', 'emission.main'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -65,53 +66,6 @@ angular.module('emission', ['ionic', 'emission.intro', 'emission.controllers','e
         cordova: waitFn
     },
     controller: 'RootCtrl'
-  })
-
-  // setup an abstract state for the tabs directive
-    .state('root.main', {
-    url: '/main',
-    abstract: true,
-    templateUrl: 'templates/main.html',
-    controller: 'DashCtrl'
-  })
-
-  .state('root.main.dash', {
-    url: '/dash',
-    views: {
-      'main-dash': {
-        templateUrl: 'templates/main-dash.html',
-        controller: 'DashCtrl'
-      }
-    }
-  })
-
-  .state('root.main.chats', {
-      url: '/chats',
-      views: {
-        'main-chats': {
-          templateUrl: 'templates/main-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('root.main.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'main-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
-
-  .state('root.main.account', {
-    url: '/account',
-    views: {
-      'main-account': {
-        templateUrl: 'templates/main-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
   });
 
   // if none of the above states are matched, use this as the fallback

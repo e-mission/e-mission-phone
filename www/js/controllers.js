@@ -7,7 +7,7 @@ angular.module('emission.controllers', [])
   prefs.fetch('setup_complete').then(function(value) {
       $scope.$apply(function() {
         if (value == true) {
-            $state.go('root.main.dash');
+            $state.go('root.main.diary');
         } else {
             $state.go('root.intro');
         }

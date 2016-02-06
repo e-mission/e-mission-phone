@@ -107,7 +107,7 @@ angular.module('emission.intro', ['ionic-toast'])
     var prefs = window.plugins.appPreferences;
     prefs.store('setup_complete', true).then(function(value) {
         $scope.alertError("setup_complete", "success -> "+value);
-        $state.go('root.main.dash');
+        $state.go('root.main.diary');
     }, function(error) {
         $scope.alertError("setup_complete", "error -> "+error);
     });
