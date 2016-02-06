@@ -7,7 +7,7 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emission.services'])
+angular.module('emission', ['ionic', 'emission.controllers','emission.services'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {

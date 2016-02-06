@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.controllers', [])
+angular.module('emission.controllers', ['ionic-toast'])
 
 .controller('RootCtrl', function($scope, $state, $ionicPopup) {
   $scope.alertError = function(title, errorResult) {
