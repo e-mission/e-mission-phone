@@ -62,7 +62,12 @@
       "locator": "/Users/shankari/e-mission/cordova-server-sync",
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
     },
-    "cordova-plugin-crosswalk-webview"
+    "cordova-plugin-crosswalk-webview",
+    "cordova-plugin-file",
+    {
+      "locator": "https://github.com/shankari/cordova-plugin-email-composer.git",
+      "id": "de.appplant.cordova.plugin.email-composer"
+    }
   ],
   "cordovaPlatforms": [
     "ios",
