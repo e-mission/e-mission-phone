@@ -37,7 +37,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
     views: {
       'main-control': {
         templateUrl: 'templates/main-control.html',
-        controller: 'MainCtrl'
+        controller: 'ControlCtrl'
       }
     }
   });
@@ -50,4 +50,32 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
+})
+
+.controller('ControlCtrl', function($scope, $state) {
+    $scope.getConnectURL = function() {
+        window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
+            $scope.$apply(function() {
+                $scope.settings.connect.url = result.connectURL;
+            });
+        });
+    };
+
+    $scope.getConnectionSettings = function() {
+        window.cordova.plugins.BEMDataCollection.getConfig(function(result) {
+            $scope.$apply(function() {
+                $scope.settings.collect = {};
+                var retVal = [];
+                for (var prop in result) {
+                    retVal.push({'key': prop, 'val': result[prop]});
+                }
+                $scope.settings.collect= retVal;
+            });
+        });
+    };
+
+    $scope.settings = {};
+    $scope.settings.connect = {};
+    $scope.getConnectURL();
+    $scope.getConnectionSettings();
 });
