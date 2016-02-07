@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main', [])
+angular.module('emission.main', ['emission.main.recent'])
 
 .config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
@@ -24,6 +24,7 @@ angular.module('emission.main', [])
 
   .state('root.main.recent', {
       url: '/recent',
+      abstract: true,
       views: {
         'main-recent': {
           templateUrl: 'templates/main-recent.html',
