@@ -1,25 +1,22 @@
 <ion-view title="Trip Diary">
-  <ion-nav-bar align-title="center" class="bar-positive bg-color">
-       <div class="buttons" style="text-align:left">
-          <ion-nav-back-button></ion-nav-back-button>
-          <ion-nav-buttons side="left">
-            <button class="button button-icon icon ion-ios-arrow-thin-left" ng-click="prevDay()">
-            </button>
-             <div width=100% style="text-align:center">
-                {{data.currDay.calendar(null, {
-                    sameDay: '[Today]',
-                    nextDay: '[Tomorrow]',
-                    nextWeek: 'dddd',
-                    lastDay: '[Yesterday]',
-                    lastWeek: '[Last] dddd'
-                })}}
-             </div>
-            <button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
-            </button>
-          </ion-nav-buttons>
-  </ion-nav-bar> 
-  <ion-nav-view name="dayTimeline">
-  <ion-content>
+  <div align-title="center" class="bar bar-positive bar-subheader bg-color">
+     <div class="buttons" style="text-align:center">
+        <button class="button button-icon icon ion-ios-arrow-thin-left" ng-click="prevDay()">
+        </button>
+        <button class="button">
+        {{data.currDay.calendar(null, {
+            sameDay: '[Today]',
+            nextDay: '[Tomorrow]',
+            nextWeek: 'dddd',
+            lastDay: '[Yesterday]',
+            lastWeek: '[Last] dddd'
+        })}}
+        </button>
+        <button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
+        </button>
+    </div>
+   </div> 
+  <ion-content class="has-subheader">
       <div class="col bg-color">
           <div class="row">
               <nvd3-pie-chart
@@ -30,7 +27,6 @@
                   width="200"
                   height="150"
                   showlabels="true">
-                  <!-- <svg height="300"></svg> -->
               </nvd3-pie-chart>
               <div class="col">
                   <ion-list>
@@ -104,6 +100,5 @@
           item-width="100%" item-height="300">
           <img src="img/nileredsea_126b5740_small.png" width=300 height=200>
       </div>
-      </ion-content>
-  </ion-nav-view name="dayTimeline">
+  </ion-content>
 </ion-view>
