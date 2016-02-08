@@ -66,9 +66,10 @@ Generate a pull request from the UI
 
 Address my review comments
 
-Once I merge the pull request, pull the changes and delete the branch
+Once I merge the pull request, pull the changes to your fork and delete the branch
 ```
 $ git checkout master
 $ git pull upstream master
+$ git push origin master
 $ git branch -d mybranch
 ```
