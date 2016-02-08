@@ -1,4 +1,5 @@
-angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives'])
+angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
+                                      'ionic-datepicker'])
 
 .controller("TripsCtrl", function($scope, $http, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
@@ -37,7 +38,37 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives'])
     }
 });
 
+    $scope.setCurrDay = function(val) {
+        if (typeof(val) === 'undefined') {
+          window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
+        } else {
+          window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :', val);
+          $scope.datepickerObject.inputDate = val;
+          readAndUpdateForDay(moment(val));
+        }
+    }
+
+    $scope.datepickerObject = {
+      titleLabel: 'Title',  //Optional
+      todayLabel: 'Today',  //Optional
+      closeLabel: 'Close',  //Optional
+      setLabel: 'Set',  //Optional
+      setButtonType : 'button-assertive',  //Optional
+      todayButtonType : 'button-assertive',  //Optional
+      closeButtonType : 'button-assertive',  //Optional
+      inputDate: new Date(),  //Optional
+      mondayFirst: true,  //Optional
+      templateType: 'popup', //Optional
+      showTodayButton: 'true', //Optional
+      modalHeaderColor: 'bar-positive', //Optional
+      modalFooterColor: 'bar-positive', //Optional
+      callback: $scope.setCurrDay, //Mandatory
+      dateFormat: 'MM-dd-yyyy', //Optional
+      closeOnSelect: true, //Optional
+    };
+
       $scope.data = {};
+
       $scope.data.currDay = moment("2015-09-16").startOf('day');
       // $scope.data.currDay = moment().startOf('day');
 

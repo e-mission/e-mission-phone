@@ -1,20 +1,15 @@
 <ion-view title="Trip Diary">
   <div align-title="center" class="bar bar-positive bar-subheader bg-color">
-     <div class="buttons" style="text-align:center">
+      <div class="buttons" style="text-align:center">
         <button class="button button-icon icon ion-ios-arrow-thin-left" ng-click="prevDay()">
         </button>
-        <button class="button">
-        {{data.currDay.calendar(null, {
-            sameDay: '[Today]',
-            nextDay: '[Tomorrow]',
-            nextWeek: 'dddd',
-            lastDay: '[Yesterday]',
-            lastWeek: '[Last] dddd'
-        })}}
+        <ionic-datepicker input-obj="datepickerObject">
+            <button class="button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}}</button>
+        </ionic-datepicker>
         </button>
         <button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
         </button>
-    </div>
+     </div>
    </div> 
   <ion-content class="has-subheader">
       <div class="col bg-color">

@@ -10,7 +10,8 @@
     "leaflet": "^0.7.7",
     "ui-leaflet": "^1.0.0",
     "nvd3": "^1.8.2",
-    "Leaflet.awesome-markers": "^2.0.2"
+    "Leaflet.awesome-markers": "^2.0.2",
+    "ionic-datepicker": "^0.9.0"
   },
   "resolutions": {
     "nvd3": "^1.8.2",
