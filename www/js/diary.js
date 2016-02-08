@@ -4,7 +4,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
 .controller("TripsCtrl", function($scope, $http, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicActionSheet,
-                                    leafletData) {
+                                    leafletData, CommHelper) {
   console.log("controller TripsCtrl called");
 
 
@@ -17,6 +17,12 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
           scrollWheelZoom: false,
           doubleClickZoom: false,
           boxZoom: false,
+          tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          tileLayerOptions: {
+              opacity: 0.9,
+              detectRetina: true,
+              reuseTiles: true,
+          }
       }
   });
 
@@ -240,13 +246,16 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         };
 
         var readAndUpdateFromServer = function(day, foundFn, notFoundFn) {
-            $http.get("results/"+getKeyForDate(day)).then(function(response) {
-               console.log("while reading data for "+day+" from server, status = "+response.status);
-               tripList = response.data;
-               processResultFunction(day, tripList);
-            }, function(response) {
-               console.log("while reading data for "+day+" from server, status = "+response.status);
-               notFoundFn(day, response);
+            CommHelper.getTimelineForDay(day, function(response) {
+               tripList = response.timeline;
+               window.Logger.log(window.Logger.LEVEL_DEBUG,
+                    "while reading data for "+day+" from server, got nTrips = "+tripList.length);
+               foundFn(day, tripList);
+            }, function(error) {
+               window.Logger.log(window.Logger.LEVEL_INFO,
+                    "while reading data for "+day
+                    +" from server, error = "+JSON.stringify(error));
+               notFoundFn(day, error);
             });
         };
 
@@ -271,6 +280,8 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
     var readAndUpdateForDay = function(day) {
         // First, we try the local cache
         // And if we don't find anything there, we fallback to the real server
+        // processTripsForDay is the foundFn
+        // the other function (that reads from the server) is the notFoundFn
         localCacheReadFn(day, processTripsForDay, function(day, error) {
             readAndUpdateFromServer(day, processTripsForDay, function(day, error) {
                 console.log("No trips found for day "+error);

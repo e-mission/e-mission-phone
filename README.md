@@ -22,13 +22,19 @@ $ git clone <your repo URL>
 Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
 
 ``
-      $ ionic state restore
+$ ionic state restore
+``
+
+Enable platform hooks, including http on iOS9
+
+``
+$ git clone https://github.com/driftyco/ionic-package-hooks.git ./package-hooks
 ``
 
 Install all javascript components using bower
 
 ``
-      $ bower update
+$ bower update
 ``
 
 Installation is now complete. You can view the current state of the application in the emulator
@@ -66,9 +72,10 @@ Generate a pull request from the UI
 
 Address my review comments
 
-Once I merge the pull request, pull the changes and delete the branch
+Once I merge the pull request, pull the changes to your fork and delete the branch
 ```
 $ git checkout master
 $ git pull upstream master
+$ git push origin master
 $ git branch -d mybranch
 ```
