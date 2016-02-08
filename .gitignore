@@ -5,3 +5,5 @@ node_modules/
 platforms/
 plugins/
 www/lib/
+package-hooks/
+.DS_Store
