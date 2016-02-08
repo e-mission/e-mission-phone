@@ -3691,6 +3691,10 @@ angular.module('ui-leaflet')
                     }
 
                     lObject.addTo(map);
+                    var autobounds = L.featureGroup([lObject]).getBounds()
+                    map.fitBounds(autobounds,
+                         {"paddingTopLeft": [30, 30], "paddingBottomRight": [50, 50]}
+                    );
 
                     if(!_hasSetLeafletData){//only do this once and play with the same ref forever
                         _hasSetLeafletData = true;
