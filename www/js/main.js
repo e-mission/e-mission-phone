@@ -74,8 +74,13 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
         });
     };
 
+    $scope.returnToIntro = function() {
+        $state.go("root.intro");
+    };
+
     $scope.settings = {};
     $scope.settings.connect = {};
     $scope.getConnectURL();
     $scope.getConnectionSettings();
+
 });
