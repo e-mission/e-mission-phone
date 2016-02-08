@@ -1,0 +1,41 @@
+.no-margin {
+  margin:0px !important;
+  padding:0px !important;
+}
+
+.item {
+  border:0px !important;
+}
+
+.main {
+    padding-top:50px;
+    padding-bottom:50px !important;
+}
+
+.row {
+    padding:0px;
+}
+
+.col {
+   padding:0px !important;
+}
+
+.small {
+  font-size:7px;
+}
+.bg-color{
+  background:#71bc98!important;
+  color:whitesmoke !important;
+}
+.summary-color{
+  background:#1b9e77!important;
+  color:whitesmoke !important;
+}
+.place-color{
+  background:#7570b3!important;
+  color:whitesmoke !important;
+}
+.angular-leaflet-map {
+    width: 400px;
+    height: 300px;
+}

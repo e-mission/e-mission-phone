@@ -7,7 +7,8 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emission.services'])
+angular.module('emission', ['ionic', 'emission.controllers','emission.services',
+    'emission.intro', 'emission.main'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -51,70 +52,24 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
+  // Set a few states which the app can be in.
+  // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
   $stateProvider
 
-  // setup an abstract state for the intro directive
-    .state('intro', {
-    url: '/intro',
-    templateUrl: 'templates/intro/intro.html',
-    resolve: {
-        cordova: waitFn
-    },
-    controller: 'IntroCtrl'
-  })
-
-  // setup an abstract state for the tabs directive
-    .state('main', {
-    url: '/main',
+  // setup an abstract state for the root
+    .state('root', {
+    url: '/root',
     abstract: true,
-    templateUrl: 'templates/main.html',
+    // templateUrl: 'templates/main.html',
+    template: '<ion-nav-view/>',
     resolve: {
         cordova: waitFn
     },
-  })
-
-  .state('main.dash', {
-    url: '/dash',
-    views: {
-      'main-dash': {
-        templateUrl: 'templates/main-dash.html',
-        controller: 'DashCtrl'
-      }
-    }
-  })
-
-  .state('main.chats', {
-      url: '/chats',
-      views: {
-        'main-chats': {
-          templateUrl: 'templates/main-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('main.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'main-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
-
-  .state('main.account', {
-    url: '/account',
-    views: {
-      'main-account': {
-        templateUrl: 'templates/main-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
+    controller: 'RootCtrl'
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/intro');
+  $urlRouterProvider.otherwise('/root/intro');
 
 });

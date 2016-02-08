@@ -6,6 +6,19 @@
     "ionic-toast": "^0.2.0",
     "ngCordova": "^0.1.24-alpha",
     "moment": "^2.11.2",
-    "moment-timezone": "^0.5.0"
+    "moment-timezone": "^0.5.0",
+    "leaflet": "^0.7.7",
+    "ui-leaflet": "^1.0.0",
+    "nvd3": "^1.8.2",
+    "Leaflet.awesome-markers": "^2.0.2",
+    "ionic-datepicker": "^0.9.0"
+  },
+  "resolutions": {
+    "nvd3": "^1.8.2",
+    "d3": "^3.4.4",
+    "angular": "1.4.3"
+  },
+  "dependencies": {
+    "angularjs-nvd3-directives": "^0.0.7"
   }
 }

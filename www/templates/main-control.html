@@ -1,0 +1,23 @@
+<ion-view view-title="Account">
+  <ion-content>
+    <div class="card">
+      <div class="item item-divider">
+        Connection
+      </div>
+      <div class="item">
+        {{settings.connect.url}}
+      </div>
+    </div>
+    <div class="card">
+      <div class="item item-divider">
+        Collection
+      </div>
+      <ion-list>
+          <ion-item class="row" ng-repeat="entry in settings.collect">
+                <div class="col timestamp item-text-wrap">{{entry.key}}</div>
+                <div class="col detail item-text-wrap"> {{entry.val}}</div>
+          </ion-item>
+      </ion-list>
+    </div>
+  </ion-content>
+</ion-view>
