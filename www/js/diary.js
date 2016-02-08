@@ -17,6 +17,12 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
           scrollWheelZoom: false,
           doubleClickZoom: false,
           boxZoom: false,
+          tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          tileLayerOptions: {
+              opacity: 0.9,
+              detectRetina: true,
+              reuseTiles: true,
+          }
       }
   });
 
