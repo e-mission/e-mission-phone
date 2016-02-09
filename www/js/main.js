@@ -52,7 +52,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
     // controller for all the screens because none of them do anything for now.
 })
 
-.controller('ControlCtrl', function($scope, $state) {
+.controller('ControlCtrl', function($scope, $state, $ionicPopup) {
     $scope.getConnectURL = function() {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
             $scope.$apply(function() {
@@ -74,13 +74,49 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
         });
     };
 
-    $scope.returnToIntro = function() {
-        $state.go("root.intro");
-    };
-
     $scope.settings = {};
     $scope.settings.connect = {};
     $scope.getConnectURL();
     $scope.getConnectionSettings();
+
+    $scope.returnToIntro = function() {
+        $state.go("root.intro");
+    };
+
+    $scope.forceTripStart = function() {
+        window.cordova.plugins.BEMDataCollection.forceTripStart(function(result) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'success -> '+result});
+            });
+        }, function(error) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'error -> '+error});
+            });
+        });
+    };
+
+    $scope.forceTripEnd = function() {
+        window.cordova.plugins.BEMDataCollection.forceTripEnd(function(result) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'success -> '+result});
+            });
+        }, function(error) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'error -> '+error});
+            });
+        });
+    };
+
+    $scope.forceRemotePush = function() {
+        window.cordova.plugins.BEMDataCollection.forceRemotePush(function(result) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'success -> '+result});
+            });
+        }, function(error) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'error -> '+error});
+            });
+        });
+    };
 
 });
