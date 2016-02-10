@@ -52,7 +52,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
     // controller for all the screens because none of them do anything for now.
 })
 
-.controller('ControlCtrl', function($scope, $state, $ionicPopup) {
+.controller('ControlCtrl', function($scope, $state, $ionicPopup, $ionicActionSheet) {
     $scope.getConnectURL = function() {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
             $scope.$apply(function() {
@@ -64,7 +64,6 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
     $scope.getConnectionSettings = function() {
         window.cordova.plugins.BEMDataCollection.getConfig(function(result) {
             $scope.$apply(function() {
-                $scope.settings.collect = {};
                 var retVal = [];
                 for (var prop in result) {
                     retVal.push({'key': prop, 'val': result[prop]});
@@ -74,10 +73,60 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
         });
     };
 
-    $scope.settings = {};
-    $scope.settings.connect = {};
-    $scope.getConnectURL();
-    $scope.getConnectionSettings();
+    $scope.getEmail = function() {
+        /*
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMJWTAuth.getJWT(function(result) {
+                resolve(result);
+            }, function(error) {
+                resolve(error);
+            });
+        });
+        */
+        window.cordova.plugins.BEMJWTAuth.getUserEmail(function(result) {
+            console.log("user email = "+result);
+            $scope.$apply(function() {
+                if (result == null) {
+                  $scope.settings.auth.email = "Not logged in";
+                } else {
+                  $scope.settings.auth.email = result;
+                }
+            });
+        }, function(error) {
+            $ionicPopup.alert("while getting email, "+error);
+        });
+    };
+
+    $scope.getState = function() {
+        /*
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMJWTAuth.getJWT(function(result) {
+                resolve(result);
+            }, function(error) {
+                resolve(error);
+            });
+        });
+        */
+        window.cordova.plugins.BEMDataCollection.getState(function(result) {
+            $scope.$apply(function() {
+                $scope.settings.collect.state = result;
+            });
+        }, function(error) {
+            $ionicPopup.alert("while getting email, "+error);
+        });
+    };
+
+    $scope.refreshScreen = function() {
+        $scope.settings = {};
+        $scope.settings.collect = {};
+        $scope.settings.auth = {};
+        $scope.settings.connect = {};
+
+        $scope.getConnectURL();
+        $scope.getConnectionSettings();
+        $scope.getEmail();
+        $scope.getState();
+    };
 
     $scope.returnToIntro = function() {
         $state.go("root.intro");
@@ -119,4 +168,35 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
         });
     };
 
+    $scope.forceSync = function() {
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMServerSync.forceSync(function(result) {
+                // the alert is thenable, so I can resolve with it, I think
+                resolve($ionicPopup.alert({template: 'success -> '+result}));
+            }, function(error) {
+                // the alert is thenable, so I can resolve with it, I think
+                resolve($ionicPopup.alert({template: 'error -> '+error}));
+            });
+        });
+    };
+
+    $scope.forceState = function() {
+        var forceStateActions = [{text: 'Start trip', 
+                                  action: $scope.forceTripStart},
+                                 {text: 'End trip',
+                                  action: $scope.forceTripEnd},
+                                 {text: 'Remote push', 
+                                  action: $scope.remotePush}];
+        $ionicActionSheet.show({
+            buttons: forceStateActions,
+            titleText: "Force state",
+            cancelText: "Cancel",
+            buttonClicked: function(index, button) {
+                button.action();
+                return true;
+            }
+        });
+    };
+
+    $scope.refreshScreen();
 });
