@@ -5,3 +5,6 @@ node_modules/
 platforms/
 plugins/
 www/lib/
+.DS_Store
+app-settings.json
+app/.DS_Store
