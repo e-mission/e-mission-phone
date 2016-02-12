@@ -1,10 +1,29 @@
 <ion-view view-title="Account">
-  <div align-title="center" class="bar bar-positive bar-subheader bg-color">
+  <div align-title="center" class="bar bar-positive bar-subheader">
       <div class="buttons" style="text-align:center">
-        <button class="button" ng-click="returnToIntro()"> Intro </button>
+        <button class="button icon-right ion-refresh" ng-click="refreshScreen()"> Refresh </button>
+        <button class="button icon-right ion-cloud" ng-click="forceSync()"> Force Sync </button>
       </div>
   </div>
-  <ion-content>
+  <ion-content class="has-subheader">
+    <div class="card">
+      <div class="item item-divider">
+        Persona
+      </div>
+      <div class="item row">
+        <div class="col"> {{settings.auth.email}} </div>
+        <button class="col col-25 button button-positive" ng-click="returnToIntro()"> Login </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="item item-divider">
+        State
+      </div>
+      <div class="item row">
+        <div class="col"> {{settings.collect.state}} </div>
+        <button class="col col-25 button button-positive" ng-click="forceState()"> Force state </button>
+      </div>
+    </div>
     <div class="card">
       <div class="item item-divider">
         Connection

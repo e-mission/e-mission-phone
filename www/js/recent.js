@@ -27,7 +27,7 @@ angular.module('emission.main.recent', ['ngCordova'])
       views: {
         'menuContent': {
           templateUrl: "templates/recent/map.html",
-          // controller: 'mapCtrl'
+          controller: 'mapCtrl'
         }
       }
     });
@@ -269,7 +269,39 @@ angular.module('emission.main.recent', ['ngCordova'])
 })
    
 .controller('mapCtrl', function($scope) {
+    /* Let's keep a reference to the database for convenience */
+    var db = window.cordova.plugins.BEMUserCache;
+    $scope.mapCtrl = {};
+    $scope.mapCtrl.selKey = "background/location";
 
+    angular.extend($scope.mapCtrl, {
+        defaults : {
+          tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          tileLayerOptions: {
+              opacity: 0.9,
+              detectRetina: true,
+              reuseTiles: true,
+          }
+        }
+    });
+
+    $scope.refreshMap = function() {
+        db.getSensorData($scope.mapCtrl.selKey, function(entryList) {
+            var coordinates = entryList.map(function(locWrapper, index, locList) {
+                var parsedData = JSON.parse(locWrapper.data);
+                return [parsedData.longitude, parsedData.latitude];
+            });
+            $scope.$apply(function() {
+                $scope.mapCtrl.geojson = {};
+                $scope.mapCtrl.geojson.data = {
+                  "type": "LineString",
+                  "coordinates": coordinates
+                }
+            });
+        });
+    };
+
+    $scope.refreshMap();
 });
  
 
