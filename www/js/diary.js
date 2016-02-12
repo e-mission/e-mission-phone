@@ -44,6 +44,12 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
     }
 });
 
+    /*
+     * While working with dates, note that the datepicker needs a javascript date because it uses
+     * setHours here, while the currDay is a moment, since we use it to perform
+     * +date and -date operations.
+     */
+
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
           window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
@@ -110,7 +116,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
       });
 
       $scope.data.currDay = day;
-      $scope.datepickerObject.inputDate = day;
+      $scope.datepickerObject.inputDate = day.toDate();
       $scope.data.currDayTrips = directiveTripListForDay;
 
       $scope.data.currDayTrips.forEach(function(dt, index, array) {
@@ -291,7 +297,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
                    });
                 alertPopup.then(function(res) {
                     console.log("Alerted user");
-                    $scope.datepickerObject.inputDate = day;
+                    $scope.datepickerObject.inputDate = day.toDate();
                     $scope.data.currDay = day;
                     $scope.data.currDayTrips = []
                     $scope.data.currDaySummary = {}
