@@ -1,0 +1,47 @@
+<ion-view view-title="Account">
+  <div align-title="center" class="bar bar-positive bar-subheader">
+      <div class="buttons" style="text-align:center">
+        <button class="button icon-right ion-refresh" ng-click="refreshScreen()"> Refresh </button>
+        <button class="button icon-right ion-cloud" ng-click="forceSync()"> Force Sync </button>
+      </div>
+  </div>
+  <ion-content class="has-subheader">
+    <div class="card">
+      <div class="item item-divider">
+        Persona
+      </div>
+      <div class="item row">
+        <div class="col"> {{settings.auth.email}} </div>
+        <button class="col col-25 button button-positive" ng-click="returnToIntro()"> Login </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="item item-divider">
+        State
+      </div>
+      <div class="item row">
+        <div class="col"> {{settings.collect.state}} </div>
+        <button class="col col-25 button button-positive" ng-click="forceState()"> Force state </button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="item item-divider">
+        Connection
+      </div>
+      <div class="item">
+        {{settings.connect.url}}
+      </div>
+    </div>
+    <div class="card">
+      <div class="item item-divider">
+        Collection
+      </div>
+      <ion-list>
+          <ion-item class="row" ng-repeat="entry in settings.collect">
+                <div class="col timestamp item-text-wrap">{{entry.key}}</div>
+                <div class="col detail item-text-wrap"> {{entry.val}}</div>
+          </ion-item>
+      </ion-list>
+    </div>
+  </ion-content>
+</ion-view>

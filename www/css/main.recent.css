@@ -1,0 +1,12 @@
+/* Empty. Add your own CSS if you like */
+
+.timestamp {
+    background: whitesmoke;
+    font-size: small;
+    font-family: monospace;
+}
+
+.detail {
+    font-size: x-small;
+    font-family: monospace;
+}

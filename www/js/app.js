@@ -7,7 +7,8 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emission.services'])
+angular.module('emission', ['ionic', 'emission.controllers','emission.services',
+    'emission.intro', 'emission.main'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -29,92 +30,63 @@ angular.module('emission', ['ionic', 'ionic-toast', 'emission.controllers','emis
   var waitFn = function($q) {
       var deferred = $q.defer();
       ionic.Platform.ready(function() {
-          window.Logger.init();
-          window.Logger.log(window.Logger.LEVEL_INFO, 'ionic.Platform.ready');
+          console.log("About to start initializing plugins");
+          var promises = [];
+          // Note that the usercache currently does not support writing from
+          // javascript, so we don't need to initialize the database. If we do
+          // change that, we need to add plugin init functions similar to the
+          // other DB tables, and make this plugin start onload as well
 
-          // Init the stats
-          window.cordova.plugins.BEMClientStats.init();
-          // Init the sync on iOS, due to restrictions on background
+          // Init the sync on android, due to restrictions on background
           // operation, the sync code will be invoked from the data collection
           // when a remote push arrives. But on android a service is involved
           // so the sync and the data collection can appear in parallel.
-          window.cordova.plugins.BEMUserCache.init();
-          window.cordova.plugins.BEMServerSync.init();
-          window.cordova.plugins.BEMDataCollection.startupInit();
+          promises.push($q(function(resolve, reject) {
+            window.cordova.plugins.BEMServerSync.init();
+            resolve();
+          }));
+
+          promises.push($q(function(resolve, reject) {
+            window.cordova.plugins.BEMDataCollection.startupInit();
+            resolve();
+          }));
+
           // We don't actually resolve with anything, because we don't need to return
           // anything. We just need to wait until the platform is
           // ready and at that point, we can use our usual window.sqlitePlugin stuff
-          deferred.resolve();
+          console.log("Promised all plugin inits of length "+promises.length);
+          $q.all(promises).then(function(results) {
+              console.log("All promises resolved, resolving deferred");
+              deferred.resolve();
+          }, function(error) {
+              console.log("Some promise rejected"+error+", rejecting deferred");
+              alert("Some promise rejected, rejecting deferred");
+              deferred.reject();
+          });
       });
       return deferred.promise;
   };
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
-  // Set up the various states which the app can be in.
+  // Set a few states which the app can be in.
+  // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
   $stateProvider
 
-  // setup an abstract state for the intro directive
-    .state('intro', {
-    url: '/intro',
-    templateUrl: 'templates/intro/intro.html',
-    resolve: {
-        cordova: waitFn
-    },
-    controller: 'IntroCtrl'
-  })
-
-  // setup an abstract state for the tabs directive
-    .state('main', {
-    url: '/main',
+  // setup an abstract state for the root
+    .state('root', {
+    url: '/root',
     abstract: true,
-    templateUrl: 'templates/main.html',
+    // templateUrl: 'templates/main.html',
+    template: '<ion-nav-view/>',
     resolve: {
         cordova: waitFn
     },
-  })
-
-  .state('main.dash', {
-    url: '/dash',
-    views: {
-      'main-dash': {
-        templateUrl: 'templates/main-dash.html',
-        controller: 'DashCtrl'
-      }
-    }
-  })
-
-  .state('main.chats', {
-      url: '/chats',
-      views: {
-        'main-chats': {
-          templateUrl: 'templates/main-chats.html',
-          controller: 'ChatsCtrl'
-        }
-      }
-    })
-    .state('main.chat-detail', {
-      url: '/chats/:chatId',
-      views: {
-        'main-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
-        }
-      }
-    })
-
-  .state('main.account', {
-    url: '/account',
-    views: {
-      'main-account': {
-        templateUrl: 'templates/main-account.html',
-        controller: 'AccountCtrl'
-      }
-    }
+    controller: 'RootCtrl'
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/intro');
+  $urlRouterProvider.otherwise('/root/intro');
 
 });
