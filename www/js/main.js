@@ -186,7 +186,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
                                  {text: 'End trip',
                                   action: $scope.forceTripEnd},
                                  {text: 'Remote push', 
-                                  action: $scope.remotePush}];
+                                  action: $scope.forceRemotePush}];
         $ionicActionSheet.show({
             buttons: forceStateActions,
             titleText: "Force state",
