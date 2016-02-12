@@ -88,6 +88,19 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
           return "diary/trips-"+dateString;
       };
 
+    var showNoTripsAlert = function() {
+        var buttons = [
+            {text: 'Pending', type: 'button-balanced', onTap: function(e) { $state.go('root.main.recent.log'); }},
+            {text: 'Force', type: 'button-balanced', onTap: function(e) { $state.go('root.main.control'); }},
+        ];
+        console.log("No trips found for day ");
+        var alertPopup = $ionicPopup.show({
+             title: 'No trips found!',
+             template: "This is probably because you didn't go anywhere. Other things to check are",
+             buttons: buttons
+        });
+        return alertPopup;
+    }
 
         /*
          Let us assume that we have recieved a list of trips for that date from somewhere
@@ -168,6 +181,10 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         ]
       }
       $scope.data.currDaySummary.distance = dayDistance;
+
+      if (tripListForDay.length == 0) {
+        showNoTripsAlert();
+      }
 
       console.log("currIndex = "+$scope.data.currDay+" currDayTrips = "+ $scope.data.currDayTrips.length);
 
@@ -290,12 +307,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         // the other function (that reads from the server) is the notFoundFn
         localCacheReadFn(day, processTripsForDay, function(day, error) {
             readAndUpdateFromServer(day, processTripsForDay, function(day, error) {
-                console.log("No trips found for day "+error);
-                var alertPopup = $ionicPopup.alert({
-                     title: 'No trips found!',
-                     template: "This is probably because you didn't go anywhere, but it because we messed up tracking, please let us know!"
-                   });
-                alertPopup.then(function(res) {
+                showNoTripsAlert().then(function(res) {
                     console.log("Alerted user");
                     $scope.datepickerObject.inputDate = day.toDate();
                     $scope.data.currDay = day;
@@ -306,19 +318,9 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         });
     }
 
-    // Initial read for the current day. We expect this to be in the cache.
-    localCacheReadFn($scope.data.currDay, processTripsForDay, function() {
-                console.log("No trips found for day "+$scope.data.currDay.format('YYYY-MM-DD'));
-                var alertPopup = $ionicPopup.alert({
-                    title: "You don't have any trips for today. Yet.",
-                    template: "This is probably because you didn't go anywhere yet, but if it is because we messed up tracking, please let us know!"
-                });
-                alertPopup.then(function(res) {
-                    console.log("Alerted user");
-                    $scope.data.currDayTrips = []
-                    $scope.data.currDaySummary = {}
-                });
-    });
+    // Initial read for the current day. Go to the server as usual if it is not
+    // in the cache.
+    readAndUpdateForDay($scope.data.currDay);
 
         /*
     $scope.to_directive = function(trip) {
