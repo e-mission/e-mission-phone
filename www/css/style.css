@@ -1,1 +1,7 @@
 /* Empty. Add your own CSS if you like */
+.bar.bar-header.no-bgColor, .bar.bar-footer.no-bgColor{
+border: 0px !important;
+border-color: transparent !important;
+border-top: transparent !important;
+border-bottom: transparent !important;
+background-image: none !important; }
