@@ -90,13 +90,14 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
 
     var showNoTripsAlert = function() {
         var buttons = [
-            {text: 'Pending', type: 'button-balanced', onTap: function(e) { $state.go('root.main.recent.log'); }},
+            {text: 'New', type: 'button-balanced', onTap: function(e) { $state.go('root.main.recent.log'); }},
             {text: 'Force', type: 'button-balanced', onTap: function(e) { $state.go('root.main.control'); }},
+            {text: 'OK', type: 'button-balanced', onTap: function(e) { return; }},
         ];
         console.log("No trips found for day ");
         var alertPopup = $ionicPopup.show({
              title: 'No trips found!',
-             template: "This is probably because you didn't go anywhere. Other things to check are",
+             template: "This is probably because you didn't go anywhere. You can also check",
              buttons: buttons
         });
         return alertPopup;
