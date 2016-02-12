@@ -30,22 +30,52 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
   var waitFn = function($q) {
       var deferred = $q.defer();
       ionic.Platform.ready(function() {
-          window.Logger.init();
-          window.Logger.log(window.Logger.LEVEL_INFO, 'ionic.Platform.ready');
+          console.log("About to start initializing plugins");
+          var promises = [];
+          promises.push($q(function(resolve, reject) {
+            window.Logger.init();
+            resolve();
+          }));
+          promises.push($q(function(resolve, reject) {
+              // Init the stats
+              window.cordova.plugins.BEMClientStats.init();
+              resolve();
+          }));
+          // Note that the usercache currently does not support writing from
+          // javascript, so we don't need to initialize the database. If we do
+          // change that, we need to add plugin init functions similar to the
+          // other DB tables, and make this plugin start onload as well
+          promises.push($q(function(resolve, reject) {
+            window.cordova.plugins.BEMUserCache.init();
+            resolve();
+          }));
 
-          // Init the stats
-          window.cordova.plugins.BEMClientStats.init();
           // Init the sync on iOS, due to restrictions on background
           // operation, the sync code will be invoked from the data collection
           // when a remote push arrives. But on android a service is involved
           // so the sync and the data collection can appear in parallel.
-          window.cordova.plugins.BEMUserCache.init();
-          window.cordova.plugins.BEMServerSync.init();
-          window.cordova.plugins.BEMDataCollection.startupInit();
+          promises.push($q(function(resolve, reject) {
+            window.cordova.plugins.BEMServerSync.init();
+            resolve();
+          }));
+
+          promises.push($q(function(resolve, reject) {
+            window.cordova.plugins.BEMDataCollection.startupInit();
+            resolve();
+          }));
+
           // We don't actually resolve with anything, because we don't need to return
           // anything. We just need to wait until the platform is
           // ready and at that point, we can use our usual window.sqlitePlugin stuff
-          deferred.resolve();
+          console.log("Promised all plugin inits");
+          $q.all(promises).then(function(results) {
+              console.log("All promises resolved, resolving deferred");
+              deferred.resolve();
+          }, function(error) {
+              console.log("Some promise rejected"+error+", rejecting deferred");
+              alert("Some promise rejected, rejecting deferred");
+              deferred.reject();
+          });
       });
       return deferred.promise;
   };
