@@ -48,8 +48,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         if (typeof(val) === 'undefined') {
           window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
         } else {
-          window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :', val);
-          $scope.datepickerObject.inputDate = val;
+          window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
           readAndUpdateForDay(moment(val));
         }
     }
@@ -69,14 +68,14 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
       modalHeaderColor: 'bar-positive', //Optional
       modalFooterColor: 'bar-positive', //Optional
       callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'MM-dd-yyyy', //Optional
+      dateFormat: 'dd-MMMM-yyyy', //Optional
       closeOnSelect: true, //Optional
     };
 
       $scope.data = {};
 
-      $scope.data.currDay = moment("2015-09-16").startOf('day');
-      // $scope.data.currDay = moment().startOf('day');
+      // $scope.data.currDay = moment("2015-09-16").startOf('day');
+      $scope.data.currDay = moment().startOf('day');
 
       var getKeyForDate = function(date) {
         dateString = date.startOf('day').format('YYYY-MM-DD');
@@ -111,6 +110,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
       });
 
       $scope.data.currDay = day;
+      $scope.datepickerObject.inputDate = day;
       $scope.data.currDayTrips = directiveTripListForDay;
 
       $scope.data.currDayTrips.forEach(function(dt, index, array) {
@@ -291,6 +291,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
                    });
                 alertPopup.then(function(res) {
                     console.log("Alerted user");
+                    $scope.datepickerObject.inputDate = day;
                     $scope.data.currDay = day;
                     $scope.data.currDayTrips = []
                     $scope.data.currDaySummary = {}
