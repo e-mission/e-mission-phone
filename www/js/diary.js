@@ -287,14 +287,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
    BEGIN DEVICE VERSION
         */
 
-          // Read cached trips for the current day
-  var db = window.sqlitePlugin.openDatabase({
-    name: "userCacheDB",
-    location: 0,
-    createFromLocation: 1
-  });
-
-        var localCacheReadFn = readAndUpdateFromDatabase;
+    var localCacheReadFn = readAndUpdateFromDatabase;
 
         /*
    BEGIN BROWSER VERSION
