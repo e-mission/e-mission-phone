@@ -3,8 +3,10 @@
 angular.module('emission.controllers', [])
 
 .controller('RootCtrl', function($scope, $state, $ionicPopup) {
+  console.log('RootCtrl invoked');
   var prefs = window.plugins.appPreferences;
   prefs.fetch('setup_complete').then(function(value) {
+      console.log('setup_complete result '+value);
       $scope.$apply(function() {
         if (value == true) {
             $state.go('root.main.diary');
@@ -16,6 +18,7 @@ angular.module('emission.controllers', [])
       $scope.alertError("setup_complete", "error -> "+error);
       $state.go('root.intro');
   });
+  console.log('RootCtrl invoke finished');
 })
 
 .controller('DashCtrl', function($scope) {})

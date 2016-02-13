@@ -43,11 +43,13 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
           // so the sync and the data collection can appear in parallel.
           promises.push($q(function(resolve, reject) {
             window.cordova.plugins.BEMServerSync.init();
+            console.log("serversync init done, resolving promise...");
             resolve();
           }));
 
           promises.push($q(function(resolve, reject) {
             window.cordova.plugins.BEMDataCollection.startupInit();
+            console.log("data collection init done, resolving promise...");
             resolve();
           }));
 
