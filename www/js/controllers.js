@@ -4,6 +4,7 @@ angular.module('emission.controllers', [])
 
 .controller('RootCtrl', function($scope, $state, $ionicPopup) {
   console.log('RootCtrl invoked');
+  alert("Time to add breakpoints");
   var prefs = window.plugins.appPreferences;
   prefs.fetch('setup_complete').then(function(value) {
       console.log('setup_complete result '+value);
@@ -15,8 +16,10 @@ angular.module('emission.controllers', [])
         }
       });
   }, function(error) {
-      $scope.alertError("setup_complete", "error -> "+error);
-      $state.go('root.intro');
+      $scope.$apply(function() {
+          $scope.alertError("setup_complete", "error -> "+error);
+          $state.go('root.intro');
+      });
   });
   console.log('RootCtrl invoke finished');
 })

@@ -50,14 +50,18 @@
     <script src="js/main.js"></script>
     <script src="js/recent.js"></script>
     <script src="js/diary.js"></script>
+
     <script type="text/javascript">
       console.log("About to bootstrap angular");
       // BEGIN DEVICE VERSION
       document.addEventListener('deviceready', function onDeviceReady() {
         console.log("bootstrapping angular");
+        alert('Time to connect to javascript');
         angular.bootstrap(document.getElementsByTagName('body')[0], ['emission']);
+            alert('Device is ready, time to bootstrap');
       }, false);
     </script>
+
   </head>
   
   <body>

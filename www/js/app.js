@@ -88,9 +88,6 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     abstract: true,
     // templateUrl: 'templates/main.html',
     template: '<ion-nav-view/>',
-    resolve: {
-        cordova: waitFn
-    },
     controller: 'RootCtrl'
   });
 
