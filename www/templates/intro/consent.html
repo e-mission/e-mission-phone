@@ -98,12 +98,17 @@ If you agree to take part in the research, please click "I agree" below to
 proceed. If you do not wish to take part in the research, please click "I
 disagree" below to exit the app. This notice is also available <a
 href="consent">online</a> in case you need to read it again in the future.
-</div>
-<div class="consent-space"></div>
-<div class="bar bar-footer no-bgColor" id="consent-footer">
-  <div class="button-bar">
-    <button class="button button-block button-assertive button-outline" ng-click="popupUninstall()">I Refuse</button>
-    <button class="button button-block button-balanced button-outline" ng-click="next()">I Agree</button>
+
+<div class="row" style="margin-top: 20px;">
+  <div class="col" style="margin-right: 5px">
+    <button class="button button-block button-assertive button-outline" ng-click="popupUninstall()" id="consent-button">I Refuse</button>
+  </div>
+  <div class="col" style="margin-left: 5px">
+    <button class="button button-block button-balanced button-outline" ng-click="next()" id="consent-button">I Agree</button>
   </div>
 </div>
+</div>
+<div class="consent-space"></div>
+
+
 </ion-content>

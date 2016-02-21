@@ -66,4 +66,23 @@
 #consent-footer {
   padding: 15px;
   height: 90px;
+  position: absolute;
 }
+#consent-button {
+  height: 35px;
+}
+.refuse-popup {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+}
+.refuse-popup .popup-buttons {
+    margin-left: 15%;
+    width: 70% !important;
+}
+.refuse-popup .popup-body {
+  padding-left: 8%;
+  padding-right: 8%;
+}
+
