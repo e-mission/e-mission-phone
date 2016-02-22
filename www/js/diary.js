@@ -3,6 +3,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
 
 .controller("TripsCtrl", function($scope, $http, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
+                                    $ionicLoading,
                                     $ionicActionSheet,
                                     leafletData, CommHelper) {
   console.log("controller TripsCtrl called");
@@ -108,6 +109,10 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
          (either local usercache or the internet). Now, what do we need to process them?
          */
   var processTripsForDay = function(day, tripListForDay) {
+      console.log("About to show 'Processing trips'");
+      $ionicLoading.show({
+            template: 'Processing trips...'
+      });
       tripListForDay.forEach(function(item, index, array) {
         console.log(index + ":" + item.properties.start_fmt_time+", "+item.properties.duration);
       });
@@ -191,6 +196,8 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
 
         // Return to the top of the page. If we don't do this, then we will be stuck at the 
       $ionicScrollDelegate.scrollTop(true);
+      console.log("About to hide 'Processing trips'");
+      $ionicLoading.hide();
   };
 
         var getTripComponents = function(trip) {
@@ -233,6 +240,10 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
 
 
         var readAndUpdateFromDatabase = function(day, foundFn, notFoundFn) {
+            console.log("About to show 'Reading from cache'");
+            $ionicLoading.show({
+                  template: 'Reading from cache...'
+            });
             window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day),
                 function (tripListArray) {
                     $scope.$apply(function () {
@@ -242,13 +253,19 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
                         if (tripListArray.length > 0) {
                             tripListStr = tripListArray[0];
                             tripList = JSON.parse(tripListStr);
+                            console.log("About to hide 'Reading from cache'");
+                            $ionicLoading.hide();
                             foundFn(day, tripList);
                         } else {
                             console.log("while reading data for "+day+" from database, no records found");
+                            console.log("About to hide 'Reading from cache'");
+                            $ionicLoading.hide();
                             notFoundFn(day, "no matching record for key "+getKeyForDate(day));
                         }
                     });
             }, function(error) {
+              console.log("About to hide 'Reading from cache'");
+              $ionicLoading.hide();
               $ionicPopup.alert({template: JSON.stringify(error)})
                   .then(function(res) {console.log("finished showing alert");});
             });
@@ -270,15 +287,23 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         };
 
         var readAndUpdateFromServer = function(day, foundFn, notFoundFn) {
+            console.log("About to show 'Reading from server'");
+            $ionicLoading.show({
+                  template: 'Reading from server...'
+            });
             CommHelper.getTimelineForDay(day, function(response) {
                tripList = response.timeline;
                window.Logger.log(window.Logger.LEVEL_DEBUG,
                     "while reading data for "+day+" from server, got nTrips = "+tripList.length);
+               console.log("About to hide 'Reading from server'");
+               $ionicLoading.hide();
                foundFn(day, tripList);
             }, function(error) {
                window.Logger.log(window.Logger.LEVEL_INFO,
                     "while reading data for "+day
                     +" from server, error = "+JSON.stringify(error));
+               console.log("About to hide 'Reading from server'");
+               $ionicLoading.hide();
                notFoundFn(day, error);
             });
         };
