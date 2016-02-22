@@ -122,7 +122,7 @@ angular.module('emission.main.recent', ['ngCordova'])
         } 
         if (ionic.Platform.isIOS()) {
             alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
-            parentDir = cordova.file.documentsDirectory;
+            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
         }
         
         /*
@@ -147,57 +147,9 @@ angular.module('emission.main.recent', ['ngCordova'])
         function () {
            // user cancelled email. in this case too, we want to remove the file
            // so that the file creation earlier does not fail.
-           alert("User cancelled email");
+           window.Logger.log(window.Logger.LEVEL_INFO,
+               "Email cancel reported, seems to be an error on android");
         });
-    }
-
-    $scope.removeFile = function(FILE_NAME) {
-        $cordovaFile.removeFile(cordova.file.cacheDirectory, FILE_NAME)
-            .then(function (fd) {
-                alert("Successfully removed file"+JSON.stringify(fd, null, 2));
-            }, function (error) {
-                alert("Failed to remove file"+JSON.stringify(error, null, 2));
-            });
-    }
-
-    $scope.exportToFile = function(fd) {
-        var q = $q.defer();
-
-        var done = false;
-        var RETRIEVE_COUNT = 1000;
-        window.Logger.log(window.Logger.LEVEL_DEBUG,
-            "About to export to file "+ cordova.file.cacheDirectory + fd.name);
-        window.Logger.getMaxIndex(function(maxIndex) {
-            var currIndex = maxIndex;
-            while(!done) {
-                window.Logger.getMessagesFromIndex(currIndex, RETRIEVE_COUNT,
-                function(entryList) {
-                    $cordovaFile.writeExistingFile(cordova.file.cacheDirectory, fd.name, entryList)
-                        .then(function(result) {
-                            if (entryList.length == 0) {
-                                console.log("Reached the end of the export");
-                                done = true;
-                                q.resolve();
-                            } else {
-                                currIndex  = entryList[entryList.length-1].ID
-                                console.log("while exporting, new start index = "+currIndex);
-                            }
-                        }, function(reject) {
-                        });
-                }, function(e) {
-                    var errStr = "While exporting messages to file, got error "+JSON.stringify(e, null, 2);
-                    console.log(errStr);
-                    alert(errStr);
-                    q.reject();
-                });
-            }
-        }, function(e) {
-            var errStr = "While getting max index for exporting"+JSON.stringify(e, null, 2);
-            console.log(errStr);
-            alert(errStr);
-            q.reject();
-        });
-        return q.promise;
     }
 
     $scope.refreshEntries();
