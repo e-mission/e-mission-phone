@@ -30,41 +30,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
   var waitFn = function($q) {
       var deferred = $q.defer();
       ionic.Platform.ready(function() {
-          console.log("About to start initializing plugins");
-          var promises = [];
-          // Note that the usercache currently does not support writing from
-          // javascript, so we don't need to initialize the database. If we do
-          // change that, we need to add plugin init functions similar to the
-          // other DB tables, and make this plugin start onload as well
-
-          // Init the sync on android, due to restrictions on background
-          // operation, the sync code will be invoked from the data collection
-          // when a remote push arrives. But on android a service is involved
-          // so the sync and the data collection can appear in parallel.
-          promises.push($q(function(resolve, reject) {
-            window.cordova.plugins.BEMServerSync.init();
-            console.log("serversync init done, resolving promise...");
-            resolve();
-          }));
-
-          promises.push($q(function(resolve, reject) {
-            window.cordova.plugins.BEMDataCollection.startupInit();
-            console.log("data collection init done, resolving promise...");
-            resolve();
-          }));
-
-          // We don't actually resolve with anything, because we don't need to return
-          // anything. We just need to wait until the platform is
-          // ready and at that point, we can use our usual window.sqlitePlugin stuff
-          console.log("Promised all plugin inits of length "+promises.length);
-          $q.all(promises).then(function(results) {
-              console.log("All promises resolved, resolving deferred");
-              deferred.resolve();
-          }, function(error) {
-              console.log("Some promise rejected"+error+", rejecting deferred");
-              alert("Some promise rejected, rejecting deferred");
-              deferred.reject();
-          });
+         deferred.resolve();
       });
       return deferred.promise;
   };
@@ -80,11 +46,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     .state('root', {
     url: '/root',
     abstract: true,
-    // templateUrl: 'templates/main.html',
     template: '<ion-nav-view/>',
-    resolve: {
-        cordova: waitFn
-    },
     controller: 'RootCtrl'
   });
 
