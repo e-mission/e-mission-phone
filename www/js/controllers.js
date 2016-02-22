@@ -2,23 +2,29 @@
 
 angular.module('emission.controllers', [])
 
-.controller('RootCtrl', function($scope, $state, $ionicPopup) {
+.controller('RootCtrl', function($scope, $state, $ionicPopup, $ionicLoading) {
   console.log('RootCtrl invoked');
-  alert("Time to add breakpoints");
+  alert("Welcome to e-mission! This will be removed post-alpha");
+  $ionicLoading.show({
+      template: 'Checking startup state...'
+  });
   var prefs = window.plugins.appPreferences;
   prefs.fetch('setup_complete').then(function(value) {
       console.log('setup_complete result '+value);
       $scope.$apply(function() {
         if (value == true) {
             $state.go('root.main.diary');
+            $ionicLoading.hide();
         } else {
             $state.go('root.intro');
+            $ionicLoading.hide();
         }
       });
   }, function(error) {
       $scope.$apply(function() {
-          $scope.alertError("setup_complete", "error -> "+error);
+          $ionicPopup.alert({template: "setup_complete, error -> "+error});
           $state.go('root.intro');
+          $ionicLoading.hide();
       });
   });
   console.log('RootCtrl invoke finished');
