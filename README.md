@@ -53,6 +53,21 @@ the project:
 
 and then run the project with IOS emulator.
 
+End to end testing
+---
+A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
+
+1. installing a local server,
+2. running it, 
+3. loading it with test data, and
+4. running analysis on it
+
+are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
+
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
+
+So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+
 Contributing
 ---
 
