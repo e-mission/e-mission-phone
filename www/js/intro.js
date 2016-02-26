@@ -39,9 +39,13 @@ angular.module('emission.intro', ['ionic-toast'])
   };
 
   $scope.popupUninstall = function() {
-    var alertPopup = $ionicPopup.alert({
-      title: 'Conditions refused',
-      template: 'Please close and uninstall this application. You must accept the terms to use E-Mission'
+    var alertPopup = $ionicPopup.show({
+      template: 'Please close and uninstall this application. You must accept the terms to use E-Mission',
+      cssClass: 'refuse-popup',
+      buttons: [
+          { text: 'Cancel',
+            type: 'button button-block button-outline button-positive' }
+       ]
     });
  
     alertPopup.then(function(res) {
