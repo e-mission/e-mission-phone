@@ -204,8 +204,8 @@ angular.module('emission.main.recent', ['ngCordova'])
             // $scope.entries.push({metadata: {write_ts: 1, write_fmt_time: "1"}, data: "1"})
             var currEntry = entryList[i];
             currEntry.data = JSON.stringify(JSON.parse(currEntry.data), null, 2);
-            window.Logger.log(window.Logger.LEVEL_DEBUG,
-                "currEntry.data = "+currEntry.data);
+            // window.Logger.log(window.Logger.LEVEL_DEBUG,
+            //     "currEntry.data = "+currEntry.data);
             $scope.entries.push(currEntry);
             // This should really be within a try/catch/finally block
             $scope.$broadcast('scroll.refreshComplete');
