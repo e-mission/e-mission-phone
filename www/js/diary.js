@@ -9,6 +9,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
   console.log("controller TripsCtrl called");
 
 
+
   angular.extend($scope, {
       defaults: {
           zoomControl: false,
@@ -351,6 +352,44 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         return retVal;
     };
     */
+
+    /* For UI control */
+    $scope.groups = [];
+    for (var i=0; i<10; i++) {
+      $scope.groups[i] = {
+        name: i,
+        items: ["good1", "good2", "good3"]
+      };
+      for (var j=0; j<3; j++) {
+        $scope.groups[i].items.push(i + '-' + j);
+      }
+    }
+    $scope.toggleGroup = function(group) {
+      if ($scope.isGroupShown(group)) {
+        $scope.shownGroup = null;
+      } else {
+        $scope.shownGroup = group;
+      }
+    };
+    $scope.isGroupShown = function(group) {
+      return $scope.shownGroup === group;
+    };
+    $scope.allModes = function(trip) {
+      var rtn = [];
+      var icons = {"BICYCLING":"ion-android-bicycle",
+                    "WALKING":" ion-android-walk",
+                    "RUNNING":" ion-android-walk",
+                    "IN_VEHICLE":"ion-android-bus",}
+      for (var i=0; i<trip.sections.length; i++) {
+        if (rtn.indexOf(trip.sections[i].properties.sensed_mode.split('.')[1]) == -1) {
+          rtn.push(trip.sections[i].properties.sensed_mode.split('.')[1]);
+        }
+      }
+      for (var i=0; i<rtn.length; i++) {
+        rtn[i] = "icon " + icons[rtn[i]];
+      }
+      return rtn;
+    }
 
 
     $scope.userModes = [

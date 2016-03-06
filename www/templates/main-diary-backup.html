@@ -1,0 +1,97 @@
+<ion-view title="Trip Diary">
+  <div align-title="center" class="bar bar-positive bar-subheader bg-color">
+      <div class="buttons" style="text-align:center">
+        <button class="button button-icon icon ion-ios-arrow-thin-left" ng-click="prevDay()">
+        </button>
+        <ionic-datepicker input-obj="datepickerObject">
+            <button class="button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}}</button>
+        </ionic-datepicker>
+        </button>
+        <button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
+        </button>
+     </div>
+   </div> 
+  <ion-content class="has-subheader" style="background-color: #eeeeee;">
+<!--       <div class="col bg-color">
+          <div class="row">
+              <nvd3-pie-chart
+                  class="col"
+                  id="move_wait_stop_summary"
+                  data="data.currDaySummary.breakdown"
+                  margin="{left:0,top:0,bottom:0,right:0}"
+                  width="200"
+                  height="150"
+                  showlabels="true">
+              </nvd3-pie-chart>
+              <div class="col">
+                  <ion-list>
+                      <ion-item class="bg-color">
+                          <span class="circle" style="font-size:xx-large">{{data.currDayTrips.length}}</span> trips
+                      </ion-item>
+                      <ion-item class="bg-color">
+                          <span class="circle" style="font-size:xx-large">{{getFormattedDistance(data.currDaySummary.distance)}}</span> km
+                      </ion-item>
+              </div>
+          </div>
+      </div> -->
+      <ion-list>
+      
+          <ion-item collection-repeat="trip in data.currDayTrips"
+              item-width=100% 
+              class="no-margin bg-color item-stable">
+              <!--
+            <div class="buttons summary-color">
+              <button class="button button-icon icon ion-ios-minus-outline"
+                  ng-click="deleteTrip(trip)"></button>
+              {{getTripDetails(trip)}}
+              <button class="button button-icon icon ion-ios-checkmark-outline"
+                  ng-click="confirmTrip(trip)">
+              <button class="button button-icon icon ion-ios-more-outline"
+                  ng-click="showCorrections(trip)()">
+              </button>
+            </div>
+              -->
+             <div class="summary-color col">
+              <div class="row"> to {{trip.end_place.properties.displayName}} </div>
+              <div class="row item-text-wrap"> {{getFormattedTime(trip.data.properties.start_ts)}} to 
+                  {{getFormattedTime(trip.data.properties.end_ts)}} 
+                  ({{getFormattedTimeRange(trip.data.properties.start_ts,
+                                          trip.data.properties.end_ts)}},
+                  {{getFormattedDistance(trip.data.properties.distance)}} km)
+              </div>
+              <div class="row"> {{trip.sections.length}} segment(s), stopped for {{getFormattedDuration(trip.tripSummary.stoppedTime)}} ({{trip.tripSummary.stoppedPct.toFixed(2)}}%)} </div>
+              </div>
+             </div>
+             <div class="col button-small">
+                  <div class="row">
+                      <div class="col">start </div>
+                      <div class="col">end </div>
+                      <i class="col icon ion-ios-time-outline"></i>
+                      <div class="col">km </div>
+                      <div class="col">kmph </div>
+                      <div class="col">mode </div>
+                  </div>
+                  <div class="row" ng-repeat="section in trip.sections">
+                      <div class="col">{{getFormattedTime(section.properties.start_ts)}}</div>
+                      <div class="col">{{getFormattedTime(section.properties.end_ts)}}</div>
+                      <div class="col">{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</div>
+                      <div class="col">{{getFormattedDistance(section.properties.distance)}}</div>
+                      <div class="col">{{getKmph(section)}}</div>
+                      <div class="col">{{getHumanReadable(section.properties.sensed_mode)}}</div>
+                  </div>
+              </div>
+             <leaflet geojson="trip" id="$index" defaults="defaults"></leaflet>
+              <div class="col place-color">
+                  <div class="row">at {{trip.end_place.properties.displayName}}</div>
+                  <div class="row">
+                      {{getFormattedTime(trip.end_place.properties.enter_ts)}} 
+                      to {{getFormattedTime(trip.end_place.properties.exit_ts)}}
+                      ({{getFormattedTimeRange(trip.end_place.properties.enter_ts,
+                                              trip.end_place.properties.exit_ts)}})
+                  </div>
+              </div>
+          </ion-item>
+          
+        </ion-list>
+  </ion-content>
+</ion-view>
