@@ -36,9 +36,9 @@
                            trip.data.properties.end_ts)}}</p>
                     <div style="height: 10px;"></div>
                     
-                    <i class="{{mode}}" ng-repeat="mode in allModes(trip)" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
+                    <i class="{{mode}}" ng-repeat="mode in allModes(trip) track by $index" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
                     <!-- 	<i class="{{mode}}" style="font-size: 24px;"></i> -->
-					</i>
+                    </i>
                     
 
 				  </div>
