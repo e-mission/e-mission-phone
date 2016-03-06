@@ -1,7 +1,7 @@
 angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
                                       'ionic-datepicker'])
 
-.controller("TripsCtrl", function($scope, $http, $ionicPlatform, $state,
+.controller("TripsCtrl", function($window, $scope, $http, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
@@ -105,6 +105,14 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         return alertPopup;
     }
 
+    window.broadcaster.addEventListener( "edu.berkeley.eecs.emission.sync.NEW_DATA", function( e ) {
+        window.Logger.log(window.Logger.LEVEL_INFO,
+            "new data received! reload data for the current day"+$scope.data.currDay);
+        // TODO: Should we reload for the most recent day instead?
+        $window.location.reload();
+        // readAndUpdateForDay($scope.data.currDay);
+    });
+
         /*
          Let us assume that we have recieved a list of trips for that date from somewhere
          (either local usercache or the internet). Now, what do we need to process them?
@@ -190,7 +198,19 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
       $scope.data.currDaySummary.distance = dayDistance;
 
       if (tripListForDay.length == 0) {
-        showNoTripsAlert();
+        // showNoTripsAlert();
+        $scope.datepickerObject.inputDate = day.toDate();
+        $scope.data.currDay = day;
+        $scope.data.currDayTrips = []
+        $scope.data.currDaySummary = {}
+        $scope.data.currDaySummary = {
+            breakdown: [
+                ["moving", 0],
+                ["waiting", 0],
+                ["in place", dayInSecs],
+            ]
+        }
+        $scope.data.currDaySummary.distance = 0;
       }
 
       console.log("currIndex = "+$scope.data.currDay+" currDayTrips = "+ $scope.data.currDayTrips.length);
@@ -327,13 +347,13 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         // the other function (that reads from the server) is the notFoundFn
         localCacheReadFn(day, processTripsForDay, function(day, error) {
             readAndUpdateFromServer(day, processTripsForDay, function(day, error) {
-                showNoTripsAlert().then(function(res) {
+                // showNoTripsAlert().then(function(res) {
                     console.log("Alerted user");
                     $scope.datepickerObject.inputDate = day.toDate();
                     $scope.data.currDay = day;
                     $scope.data.currDayTrips = []
                     $scope.data.currDaySummary = {}
-                });
+               // });
             });
         });
     }
@@ -374,6 +394,16 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.isGroupShown = function(group) {
       return $scope.shownGroup === group;
     };
+
+   $scope.getHumanReadable = function(sensed_mode) {
+        ret_string = sensed_mode.split('.')[1];
+        if(ret_string == 'ON_FOOT') {
+            return 'WALKING';
+        } else {
+            return ret_string;
+        }
+      };
+
     $scope.allModes = function(trip) {
       var rtn = [];
       var icons = {"BICYCLING":"ion-android-bicycle",
@@ -381,8 +411,8 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
                     "RUNNING":" ion-android-walk",
                     "IN_VEHICLE":"ion-disc",}
       for (var i=0; i<trip.sections.length; i++) {
-        if (rtn.indexOf(trip.sections[i].properties.sensed_mode.split('.')[1]) == -1) {
-          rtn.push(trip.sections[i].properties.sensed_mode.split('.')[1]);
+        if (rtn.indexOf($scope.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
+          rtn.push($scope.getHumanReadable(trip.sections[i].properties.sensed_mode));
         }
       }
       for (var i=0; i<rtn.length; i++) {
@@ -523,15 +553,6 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
             case "section": layer.setText($scope.getHumanReadable(feature.properties.sensed_mode), {offset: 20});
                 layer.on('click', $scope.showModes(feature)); break;
             // case "location": layer.bindPopup(JSON.stringify(feature.properties)); break
-        }
-      };
-
-   $scope.getHumanReadable = function(sensed_mode) {
-        ret_string = sensed_mode.split('.')[1];
-        if(ret_string == 'ON_FOOT') {
-            return 'WALKING';
-        } else {
-            return ret_string;
         }
       };
 

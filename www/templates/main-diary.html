@@ -15,7 +15,17 @@
 
 
 		<ion-list>
-		<div ng-repeat="trip in data.currDayTrips">
+        <!-- 
+        This needs to be collection-repeat instead of ng-repeat on android.
+        Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
+        I have no clue why this happens, but it is not worth it to understand
+        this deeply. It is not purely a leaflet issue, but it also clearly something to
+        do with leaflet because scrolling on the details part does work.
+
+        If you want to change this from collection-repeat to ng-repeat, you
+        MUST test on android first to make sure that the scrolling works.
+        -->
+		<div collection-repeat="trip in data.currDayTrips">
 			<div class="list card" style="margin-top: 20px; margin-bottom: 20px;">
 			 <ion-item
              style="padding: 10px;">
@@ -36,9 +46,9 @@
                            trip.data.properties.end_ts)}}</p>
                     <div style="height: 10px;"></div>
                     
-                    <i class="{{mode}}" ng-repeat="mode in allModes(trip)" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
+                    <i class="{{mode}}" ng-repeat="mode in allModes(trip) track by $index" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
                     <!-- 	<i class="{{mode}}" style="font-size: 24px;"></i> -->
-					</i>
+                    </i>
                     
 
 				  </div>
