@@ -7,3 +7,4 @@ plugins/
 www/lib/
 package-hooks/
 .DS_Store
+app-settings.json
