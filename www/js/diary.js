@@ -379,7 +379,7 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
       var icons = {"BICYCLING":"ion-android-bicycle",
                     "WALKING":" ion-android-walk",
                     "RUNNING":" ion-android-walk",
-                    "IN_VEHICLE":"ion-android-bus",}
+                    "IN_VEHICLE":"ion-disc",}
       for (var i=0; i<trip.sections.length; i++) {
         if (rtn.indexOf(trip.sections[i].properties.sensed_mode.split('.')[1]) == -1) {
           rtn.push(trip.sections[i].properties.sensed_mode.split('.')[1]);
