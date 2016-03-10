@@ -67,10 +67,6 @@
     {
       "locator": "https://github.com/e-mission/cordova-server-sync.git",
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
-    },
-    {
-      "locator": "https://github.com/shankari/cordova-broadcaster.git",
-      "id": "cordova-plugin-broadcaster"
     }
   ],
   "cordovaPlatforms": [

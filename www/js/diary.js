@@ -105,13 +105,21 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         return alertPopup;
     }
 
+    /*
+     * Disabling the reload of the page on background sync because it doesn't
+     * work correctly.  on iOS, plugins are not loaded if backgroundFetch or
+     * remote push are invoked, since they don't initialize the app. On
+     * android, it looks like the thread ends before the maps are fully loaded,
+     * so we have half displayed, frozen maps. We should really check the
+     * status, reload here if active and reload everything on resume.
+     * For now, we just add a refresh button to avoid maintaining state.
     window.broadcaster.addEventListener( "edu.berkeley.eecs.emission.sync.NEW_DATA", function( e ) {
         window.Logger.log(window.Logger.LEVEL_INFO,
             "new data received! reload data for the current day"+$scope.data.currDay);
-        // TODO: Should we reload for the most recent day instead?
         $window.location.reload();
         // readAndUpdateForDay($scope.data.currDay);
     });
+    */
 
         /*
          Let us assume that we have recieved a list of trips for that date from somewhere
@@ -361,6 +369,10 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
     // Initial read for the current day. Go to the server as usual if it is not
     // in the cache.
     readAndUpdateForDay($scope.data.currDay);
+
+    $scope.refresh = function() {
+        readAndUpdateForDay($scope.data.currDay);
+    }
 
         /*
     $scope.to_directive = function(trip) {
