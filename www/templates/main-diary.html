@@ -5,10 +5,9 @@
 			</button>
 			<ionic-datepicker input-obj="datepickerObject">
 			<button class="button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}}</button>
-		</ionic-datepicker>
-
-		<button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
-		</button>
+			</ionic-datepicker>
+			<button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
+			</button>
 		</div>
 	</div> 	
 	<ion-content class="has-subheader" style="background-color: #eeeeee;">
@@ -19,10 +18,26 @@
 			<div class="list card" style="margin-top: 20px; margin-bottom: 20px;">
 			 <ion-item
              style="padding: 10px;">
-             	<div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px; padding-left: 25px;">
+             	<div class="row">
+             		<div class="col-30">
+             			<div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(trip.data.properties.start_ts)}}</div><div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(trip.data.properties.end_ts)}}</div>
+             		</div>
+
+             		<div class="col-70">
+             			<div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
     					<i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #cccccc;"></i>
-				    	{{trip.start_place.properties.displayName}}
-				</div>
+				    	{{trip.start_place.properties.displayName.split(',')[0]}}
+						</div>
+						<div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
+    					<i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #cccccc;"></i>
+				    	{{trip.end_place.properties.displayName.split(',')[0]}}
+						</div>
+<!--              		<div class="col-0">
+             			<button class="button button-icon icon ion-android-more-horizontal" ng-click="details()">
+             		</div> -->
+             		</div>
+             	</div>
+             	<div style="height: 10px;"></div>
             	<div class="row">
 				  <div class="col-70">
 				    <leaflet geojson="trip" id="$index" defaults="defaults"></leaflet>

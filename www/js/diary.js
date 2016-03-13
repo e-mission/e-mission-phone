@@ -1,6 +1,5 @@
 angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
                                       'ionic-datepicker'])
-
 .controller("TripsCtrl", function($scope, $http, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
@@ -45,6 +44,10 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
         yy: "%d years"
     }
 });
+
+    $scope.details = function() {
+      $state.go('root.main.diarydetail');
+    }
 
     /*
      * While working with dates, note that the datepicker needs a javascript date because it uses
