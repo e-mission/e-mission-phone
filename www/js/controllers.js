@@ -39,8 +39,7 @@ angular.module('emission.controllers', [])
   var currPromise = $interval(loadPreferredScreen, 1000);
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
-        + " to "+JSON.stringify(toState)
-        + " with event" + JSON.stringify(event));
+        + " to "+JSON.stringify(toState));
   });
   console.log('SplashCtrl invoke finished');
 })
