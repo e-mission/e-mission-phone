@@ -642,3 +642,4 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
             });
     };
 });
+
