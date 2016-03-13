@@ -22,17 +22,6 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
     }
   })
 
-  .state('root.main.diarydetail', {
-    url: '/diarydetail',
-    parent: 'root.main.diary',
-    views: {
-        'main-diarydetail': {
-            templateUrl: 'templates/main-diarydetail.html',
-            controller: 'TripsCtrl'
-        }
-    }
-  })
-
   .state('root.main.recent', {
       url: '/recent',
       abstract: true,
