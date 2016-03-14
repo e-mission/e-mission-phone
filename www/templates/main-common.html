@@ -1,0 +1,13 @@
+<ion-view style="" title="Common Patterns">
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
+        <div style="" class="button-bar">
+            <button class="button button-stable button-block icon ion-refresh"
+                ng-click="refreshMap()">Refresh</button>
+            <!--
+            <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
+            -->
+        </div>
+        <leaflet geojson="mapCtrl.geojson" id="common" defaults="mapCtrl.defaults" event-broadcast="mapCtrl.events" height="80%" width="100%">
+        </leaflet>
+    </ion-content>
+</ion-view>
