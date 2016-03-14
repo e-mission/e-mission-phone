@@ -4,16 +4,10 @@
             pulling-text="Pull to refresh..."
             on-refresh="updateEntries()">
         </ion-refresher>
-        <form style="" class="list">
-            <label style="" name="sel-key" class="item item-select">
-                <span class="input-label">Sensor</span>
-                <select ng-model="selected.key" ng-change="setSelected()">
-                    <option>Locations</option>
-                    <option>Motion Activity</option>
-                    <option selected>Transitions</option>
-                </select>
-            </label>
-        </form>
+        <div class="button-bar">
+            <button style="" class="button button-stable button-block  icon ion-email" ng-click="emailCache()"></button>
+            <button class="button button-stable button-block" ng-click="changeSelection()">{{selected.key}}</button>
+        </div>
         <ion-list>
             <ion-item class="row responsive-sm" ng-repeat="entry in entries track by entry.metadata.write_ts">
                 <div class="col timestamp item-text-wrap">{{entry.metadata.write_fmt_time}}</div>

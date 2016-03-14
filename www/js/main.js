@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
+angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 'emission.main.recent'])
 
 .config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
@@ -18,6 +18,16 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.recent'])
       'main-diary': {
         templateUrl: 'templates/main-diary.html',
         controller: 'TripsCtrl'
+      }
+    }
+  })
+
+  .state('root.main.common', {
+    url: '/common',
+    views: {
+      'main-common': {
+        templateUrl: 'templates/main-common.html',
+        controller: 'CommonCtrl'
       }
     }
   })
