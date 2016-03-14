@@ -1,10 +1,7 @@
 angular.module('emission.main.common',['ui-leaflet', 'nvd3ChartDirectives',
                                       'ionic-datepicker'])
 
-.controller("CommonCtrl", function($window, $scope, $http, $ionicPlatform, $state,
-                                    $ionicScrollDelegate, $ionicPopup,
-                                    $ionicLoading,
-                                    $ionicActionSheet,
+.controller("CommonCtrl", function($scope, $http, $ionicPopup,
                                     leafletData, CommHelper) {
   console.log("controller CommonCtrl called");
 
@@ -20,38 +17,116 @@ angular.module('emission.main.common',['ui-leaflet', 'nvd3ChartDirectives',
           detectRetina: true,
           reuseTiles: true,
       }
+    }, 
+    events: {
+      map: {
+        enable: ['zoomstart', 'drag', 'click', 'mousemove', 'contextmenu'],
+        logic: 'emit'
+      }
     }
   });
+
+  $scope.$on('leafletDirectiveMap.click', function(event){
+     alert('click '+JSON.stringify(event)+' detected');
+  });
+
+  $scope.$on('leafletDirectiveMap.contextmenu', function(event){
+     alert('conextmenu '+JSON.stringify(event)+' detected');
+  });
+
+  var onEachFeature = function(feature, layer) {
+    console.log("onEachFeature called with "+JSON.stringify(feature));
+    console.log("type is "+feature.geometry.type);
+    var popupContent = "<p>I started out as a GeoJSON " +
+                    feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
+    layer.on('click', function(e) { console.log("layer clicked"); alert(feature.geometry.type) } );
+    // layer.bindPopup(popupContent);
+    /*
+    switch(feature.geometry.type) {
+      case "Point": layer.bindPopup(popupContent); break;
+      case "LineString": layer.bindPopup(popupContent); break;
+    }
+    */
+  }
 
   $scope.refreshMap = function() {
       db.getDocument($scope.mapCtrl.selKey, function(entryList) {
         cmGraph = JSON.parse(entryList);
         var places = cmGraph.common_places.map(function(place) {
-            return place.location;
+            return {
+                "type": "Feature",
+                "id": place._id,
+                "geometry": place.location,
+                "properties": {
+                    "successors": place.successors
+                }
+            };
         });
+        // places.map($scope.getDisplayName);
         var trips = cmGraph.common_trips.map(function(trip) {
-            return {"type": "LineString",
+            return {
+                "type": "Feature",
+                "id": trip._id,
+                "geometry": {
+                    "type": "LineString",
                     "coordinates": [trip.start_loc.coordinates, trip.end_loc.coordinates]
+                },
+                "properties": {
+                    "probabilities": trip.probabilites
+                }
             };
         });
         $scope.$apply(function() {
             $scope.mapCtrl.geojson = {}
             $scope.mapCtrl.geojson.data = {
-              "type": "GeometryCollection",
-              "geometries": places.concat(trips)
+              "type": "FeatureCollection",
+              "features": places.concat(trips)
             };
-            /*
-            $scope.mapCtrl.geojson.data = {
-              "type": "GeometryCollection",
-              "geometries": [{"type": "Point", "coordinates": [-122.0928609, 37.3646179]},
-                {"type": "Point", "coordinates": [-122.084232225, 37.40347188333333]},
-                {"type": "Point", "coordinates": [-122.08689705, 37.38997087]},
-                {"type": "Point", "coordinates": [-122.08470205, 37.391537025]}]
-            };
-            */
+            $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
         });
       });
   };
 
   $scope.refreshMap();
+
+  // TODO: Refactor into common code - maybe a service?
+  // Or maybe pre-populate from the server
+
+  /*
+  $scope.getDisplayName = function(place_feature) {
+    var responseListener = function(data) {
+      var address = data["address"];
+      var name = "";
+      if (address["road"]) {
+        name = address["road"];
+      } else if (address["neighbourhood"]) {
+        name = address["neighbourhood"];
+      }
+        if (address["city"]) {
+          name = name + ", " + address["city"];
+        } else if (address["town"]) {
+          name = name + ", " + address["town"];
+        } else if (address["county"]) {
+            name = name + ", " + address["county"];
+        }
+  
+       console.log("got response, setting display name to "+name);
+       place_feature.properties.displayName = name;
+    };
+  
+  
+    var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + place_feature.geometry.coordinates[1]
+        + "&lon=" + place_feature.geometry.coordinates[0];
+      console.log("About to make call "+url);
+      $http.get(url).then(function(response) {
+             console.log("while reading data from nominatim, status = "+response.status
+                 +" data = "+JSON.stringify(response.data));
+             responseListener(response.data);
+          }, function(response) {
+             console.log("while reading data from nominatim, status = "+response.status);
+             notFoundFn(day, response);
+          });
+  };
+  */
+
 });
