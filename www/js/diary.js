@@ -517,6 +517,10 @@ angular.module('emission.main.diary',['ui-leaflet', 'nvd3ChartDirectives',
             readAndUpdateForDay(nextDay);
         };
 
+        $scope.toDetail = function() {
+          $state.go('root.main.detail');
+        };
+
     /*
      * BEGIN: Functions for customizing our geojson display
      */
