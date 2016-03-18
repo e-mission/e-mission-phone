@@ -11,6 +11,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     'emission.intro', 'emission.main'])
 
 .run(function($ionicPlatform) {
+  console.log("Starting run");
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -24,9 +25,11 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
       StatusBar.styleDefault();
     }
   });
+  console.log("Ending run");
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
+  console.log("Starting config");
   var waitFn = function($q) {
       var deferred = $q.defer();
       ionic.Platform.ready(function() {
@@ -41,16 +44,27 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
   // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
   $stateProvider
+  // set up a state for the splash screen. This has no parents and no children
+  // because it is basically just used to load the user's preferred screen.
+  // This cannot directly use plugins - has to check for them first.
+  .state('splash', {
+        url: '/splash',
+        templateUrl: 'templates/splash/splash.html',
+        controller: 'SplashCtrl'
+  })
 
-  // setup an abstract state for the root
-    .state('root', {
+  // setup an abstract state for the root. Only children of this can be loaded
+  // as preferred screens, and all children of this can assume that the device
+  // is ready.
+  .state('root', {
     url: '/root',
     abstract: true,
     template: '<ion-nav-view/>',
     controller: 'RootCtrl'
   });
 
+  // alert("about to fall back to otherwise");
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/root/intro');
-
+  $urlRouterProvider.otherwise('/splash');
+  console.log("Ending config");
 });
