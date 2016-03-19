@@ -14,16 +14,13 @@ angular.module('emission.main.diary',['emission.main.diary.list',
     }
   })
 
-  .state('root.main.diary.detail', {
-    url: '/detail/:tripId',
+  .state('root.main.diary-detail', {
+    url: '/diary/:tripId',
     views: {
-        'main-detail': {
+        'main-diary': {
             templateUrl: 'templates/diary/detail.html',
             controller: 'DiaryDetailCtrl'
         }
      }
   });
-
-  $ionicConfigProvider.tabs.style('standard')
-  $ionicConfigProvider.tabs.position('bottom');
 })

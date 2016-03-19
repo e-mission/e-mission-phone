@@ -14,8 +14,6 @@
 		</div>
 	</div> 	
 	<ion-content class="has-subheader" style="background-color: #eeeeee;">
-
-
 		<ion-list>
         <!-- 
         This needs to be collection-repeat instead of ng-repeat on android.
@@ -27,14 +25,10 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-		<div collection-repeat="tripgj in data.currDayTripWrappers" href="#/root/main/diary/detail/{{tripgj.data.id}}">
+		<div collection-repeat="tripgj in data.currDayTripWrappers">
 			<div class="list card" style="margin-top: 20px; margin-bottom: 20px;">
 			 <ion-item
-             style="padding: 10px;">
-                <!--
-                <button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="toDetail()">
-                </button>
-                -->
+             style="padding: 10px;" href="#/root/main/diary/{{tripgj.data.id}}">
                 <div class="row">
                     <div class="col-30">
                         <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div><div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
