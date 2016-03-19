@@ -27,15 +27,17 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-		<div collection-repeat="trip in data.currDayTripWrappers">
+		<div collection-repeat="tripgj in data.currDayTripWrappers" href="#/root/main/diary/detail/{{tripgj.data.id}}">
 			<div class="list card" style="margin-top: 20px; margin-bottom: 20px;">
 			 <ion-item
              style="padding: 10px;">
+                <!--
                 <button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="toDetail()">
                 </button>
+                -->
                 <div class="row">
                     <div class="col-30">
-                        <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(trip.data.properties.start_ts)}}</div><div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(trip.data.properties.end_ts)}}
+                        <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div><div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
                         </div>
                     </div>
 
@@ -43,11 +45,11 @@
 
                         <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #72b026;"></i>
-                    {{trip.start_place.properties.displayName.split(',')[0]}}
+                    {{tripgj.start_place.properties.displayName.split(',')[0]}}
                         </div>
                         <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #d63e2a;"></i>
-                    {{trip.end_place.properties.displayName.split(',')[0]}}
+                    {{tripgj.end_place.properties.displayName.split(',')[0]}}
                         </div>
                     </div>
                 </div>
@@ -56,18 +58,18 @@
 
             	<div class="row">
 				  <div class="col-70">
-				    <leaflet geojson="trip" id="$index" defaults="defaults"></leaflet>
+				    <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
 				  </div>
 				  <div class="col-30" style="padding: 10px;">
 				  	<p style="font-size: 15px; color: #cccccc">Distance</p>
-				    <p style="font-size: 20px;">{{getFormattedDistance(trip.data.properties.distance)}} km</p>
+				    <p style="font-size: 20px;">{{getFormattedDistance(tripgj.data.properties.distance)}} km</p>
 				    <div style="height: 10px;"></div>
 				    <p style="font-size: 15px; color: #cccccc">Time</p>
-				    <p style="font-size: 20px;">{{getFormattedTimeRange(trip.data.properties.start_ts,
-                           trip.data.properties.end_ts)}}</p>
+				    <p style="font-size: 20px;">{{getFormattedTimeRange(tripgj.data.properties.start_ts,
+                           tripgj.data.properties.end_ts)}}</p>
                     <div style="height: 10px;"></div>
                     
-                    <i class="{{mode}}" ng-repeat="mode in allModes(trip) track by $index" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
+                    <i class="{{mode}}" ng-repeat="mode in allModes(tripgj) track by $index" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
                     <!-- 	<i class="{{mode}}" style="font-size: 24px;"></i> -->
                     </i>
                     
@@ -77,27 +79,27 @@
             	
             		<!-- <div class="item item-icon-left" href="#" style="font-size: 13px; padding-left: 44px; padding-top: 15px; padding-bottom: 6px;">
     					<i class="icon ion-ios-location" style="font-size: 16px; padding-top: 15px; padding-bottom: 6px; color: #cccccc;"></i>
-				    	{{trip.start_place.properties.displayName}}
+				    	{{tripgj.start_place.properties.displayName}}
 				  	</div>
             		<div class="item item-icon-left" href="#" style="font-size: 13px; padding-left: 44px; padding-top: 6px; padding-bottom: 6px;">
     					<i class="icon ion-ios-arrow-thin-down" style="font-size: 16px; color: #aaaaaa; padding-top: 6px; padding-bottom: 6px;"></i>
-    					Travelled {{getFormattedDistance(trip.data.properties.distance)}} km in 
-				    	{{getFormattedTimeRange(trip.data.properties.start_ts,
-                           trip.data.properties.end_ts)}}
+    					Travelled {{getFormattedDistance(tripgj.data.properties.distance)}} km in 
+				    	{{getFormattedTimeRange(tripgj.data.properties.start_ts,
+                           tripgj.data.properties.end_ts)}}
 				  	</div>
              		<div class="item item-icon-left" href="#" style="font-size: 13px; padding-left: 44px; padding-top: 6px; padding-bottom: 10px;">
     					<i class="icon ion-ios-location" style="font-size: 16px; padding-top: 6px; padding-bottom: 10px; color: #cccccc;"></i>
-				    	{{trip.end_place.properties.displayName}}
+				    	{{tripgj.end_place.properties.displayName}}
 				  	</div>    
-             		<div class="item item-icon-left item-stable" href="#" ng-click="toggleGroup(trip)"
-                    ng-class="{active: isGroupShown(trip)}" style="font-size: 10px; padding-left: 44px; padding-top: 1px; padding-bottom: 1px; background-color: #ffffff;">
-    					<i class="icon" ng-class="isGroupShown(trip) ? 'ion-arrow-up-b' : 'ion-arrow-down-b'" style="font-size: 13px; padding-top: 1px; padding-bottom: 1px; color: #cccccc;"></i>
-				    	{{isGroupShown(trip) ? 'Hide the map' : 'Show the map'}}
+             		<div class="item item-icon-left item-stable" href="#" ng-click="toggleGroup(tripgj)"
+                    ng-class="{active: isGroupShown(tripgj)}" style="font-size: 10px; padding-left: 44px; padding-top: 1px; padding-bottom: 1px; background-color: #ffffff;">
+    					<i class="icon" ng-class="isGroupShown(tripgj) ? 'ion-arrow-up-b' : 'ion-arrow-down-b'" style="font-size: 13px; padding-top: 1px; padding-bottom: 1px; color: #cccccc;"></i>
+				    	{{isGroupShown(tripgj) ? 'Hide the map' : 'Show the map'}}
 				  	</div>   -->
             </ion-item>
-<!-- 	        <ion-item class="item-accordion" ng-show="isGroupShown(trip)">
+<!-- 	        <ion-item class="item-accordion" ng-show="isGroupShown(tripgj)">
 			    
-			    <div class="row" ng-repeat="section in trip.sections">
+			    <div class="row" ng-repeat="section in tripgj.sections">
                       <div class="col">{{getFormattedTime(section.properties.start_ts)}}</div>
                       <div class="col">{{getFormattedTime(section.properties.end_ts)}}</div>
                       <div class="col">{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</div>
