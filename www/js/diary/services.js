@@ -23,8 +23,8 @@ angular.module('emission.main.diary.services', ['emission.services'])
         window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day),
           function (tripListArray) {
              if (tripListArray.length > 0) {
-               tripListStr = tripListArray[0];
-               tripList = JSON.parse(tripListStr);
+               var tripListStr = tripListArray[0];
+               var tripList = JSON.parse(tripListStr);
                console.log("About to hide 'Reading from cache'");
                $ionicLoading.hide();
                foundFn(day, tripList);
@@ -285,9 +285,8 @@ angular.module('emission.main.diary.services', ['emission.services'])
           console.log("while reading data from nominatim, status = "+response.status
             +" data = "+JSON.stringify(response.data));
           responseListener(response.data);
-        }, function(response) {
-          console.log("while reading data from nominatim, status = "+response.status);
-          notFoundFn(day, response);
+        }, function(error) {
+          console.log("while reading data from nominatim, error = "+error);
         });
     };
 
