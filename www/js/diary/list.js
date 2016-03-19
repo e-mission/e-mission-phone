@@ -16,7 +16,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     Timeline.updateForDay(day);
   };
 
-  // readAndUpdateForDay(moment().startOf('day'));
+  readAndUpdateForDay(moment().startOf('day'));
 
   angular.extend($scope, {
       defaults: {
