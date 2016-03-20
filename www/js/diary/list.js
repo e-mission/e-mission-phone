@@ -1,11 +1,12 @@
 angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
-                                      'ionic-datepicker'])
+                                      'ionic-datepicker',
+                                      'emission.main.common.services'])
 
 .controller("DiaryListCtrl", function($window, $scope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
-                                    leafletData, Timeline) {
+                                    leafletData, Timeline, CommonGraph) {
   console.log("controller DiaryListCtrl called");
 
   var readAndUpdateForDay = function(day) {
@@ -14,6 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
     Timeline.updateForDay(day);
+    CommonGraph.updateCurrent();
   };
 
   readAndUpdateForDay(moment().startOf('day'));
@@ -99,6 +101,28 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       });
     });
 
+    $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
+      console.log("Got event with args "+JSON.stringify(args));
+      $scope.$apply(function() {
+          // If we don't have the trip wrappers yet, then we can just bail because
+          // the counts will be filled in when that is done. If the currDayTripWrappers
+          // is already defined, that may have won the race, and not been able to update
+          // the counts, so let us do it here.
+          if (!angular.isUndefined($scope.data.currDayTripWrappers)) {
+             $scope.data.currDayTripWrappers.forEach(function(tripWrapper, index, array) {
+                fillCommonTripCount(tripWrapper);
+             });
+          };
+      });
+    });
+
+    var fillCommonTripCount = function(tripWrapper) {
+        var cTrip = CommonGraph.findCommon(tripWrapper.data.id);
+        if (!angular.isUndefined(cTrip)) {
+            tripWrapper.common_count = cTrip.trips.length;
+        }
+    };
+
     var directiveForTrip = function(trip) { 
       var retVal = {};
       retVal.data = trip;
@@ -110,6 +134,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       retVal.stops = trip.stops;
       retVal.sections = trip.sections;
       retVal.tripSummary = trip.tripSummary;
+      fillCommonTripCount(retVal);
       // Hardcoding to avoid repeated nominatim calls
       // retVal.start_place.properties.displayName = "Start";
       // retVal.start_place.properties.displayName = "End";

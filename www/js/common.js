@@ -1,13 +1,13 @@
 angular.module('emission.main.common',['ui-leaflet', 'nvd3ChartDirectives',
-                                      'ionic-datepicker'])
+                                      'ionic-datepicker',
+                                      'emission.main.common.services'])
 
 .controller("CommonCtrl", function($scope, $http, $ionicPopup,
-                                    leafletData, CommHelper) {
+                                    leafletData, CommonGraph) {
   console.log("controller CommonCtrl called");
 
   var db = window.cordova.plugins.BEMUserCache;
   $scope.mapCtrl = {};
-  $scope.mapCtrl.selKey = "common-trips";
 
   angular.extend($scope.mapCtrl, {
     defaults : {
@@ -50,42 +50,16 @@ angular.module('emission.main.common',['ui-leaflet', 'nvd3ChartDirectives',
   }
 
   $scope.refreshMap = function() {
-      db.getDocument($scope.mapCtrl.selKey, function(entryList) {
-        cmGraph = JSON.parse(entryList);
-        var places = cmGraph.common_places.map(function(place) {
-            return {
-                "type": "Feature",
-                "id": place._id,
-                "geometry": place.location,
-                "properties": {
-                    "successors": place.successors
-                }
-            };
-        });
-        // places.map($scope.getDisplayName);
-        var trips = cmGraph.common_trips.map(function(trip) {
-            return {
-                "type": "Feature",
-                "id": trip._id,
-                "geometry": {
-                    "type": "LineString",
-                    "coordinates": [trip.start_loc.coordinates, trip.end_loc.coordinates]
-                },
-                "properties": {
-                    "probabilities": trip.probabilites
-                }
-            };
-        });
-        $scope.$apply(function() {
-            $scope.mapCtrl.geojson = {}
-            $scope.mapCtrl.geojson.data = {
-              "type": "FeatureCollection",
-              "features": places.concat(trips)
-            };
-            $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
-        });
-      });
+      CommonGraph.updateCurrent();
   };
+
+  $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
+    $scope.$apply(function() {
+        $scope.mapCtrl.geojson = {}
+        $scope.mapCtrl.geojson.data = CommonGraph.data.geojson;
+        $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
+    });
+  });
 
   $scope.refreshMap();
 
