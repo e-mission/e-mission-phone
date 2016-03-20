@@ -7,7 +7,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
     timeline.data = {};
-    timeline.UPDATE_DONE = "UPDATE_DONE";
+    timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
     // Internal function, not publicly exposed
     var getKeyForDate = function(date) {
