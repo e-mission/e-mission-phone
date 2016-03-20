@@ -12,16 +12,6 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     controller: 'MainCtrl'
   })
 
-  .state('root.main.diary', {
-    url: '/diary',
-    views: {
-      'main-diary': {
-        templateUrl: 'templates/main-diary.html',
-        controller: 'TripsCtrl'
-      }
-    }
-  })
-
   .state('root.main.common', {
     url: '/common',
     views: {
