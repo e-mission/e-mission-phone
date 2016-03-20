@@ -12,7 +12,21 @@ angular.module('emission.main.common.services', [])
    
     commonGraph.updateCurrent = function() {
       db.getDocument(selKey, function(entryList) {
-        var cmGraph = JSON.parse(entryList);
+        try{
+            var cmGraph = JSON.parse(entryList);
+        } catch(err) {
+            window.Logger.log("Error "+err+" while parsing common trip data");
+            // If there was an error in parsing the current common trips, and
+            // there is no existing cached common trips, we create a blank
+            // version so that other things don't crash
+            if (angular.isUndefined(cmGraph)) {
+                cmGraph = {
+                    'user_id': 'unknown',
+                    'common_trips': [],
+                    'common_places': []
+                }
+            }
+        }
         commonGraph.data.graph = cmGraph;
         postProcessData();
         toGeojson();
