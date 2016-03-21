@@ -305,6 +305,13 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
         $scope.toDetail = function() {
           $state.go('root.main.detail');
         };
+      $scope.starColor = function(num) {
+      if (num >= 3) {
+        return 'yellow';
+      } else {
+        return 'transparent';
+      }
+    }
 
     /*
      * BEGIN: Functions for customizing our geojson display
