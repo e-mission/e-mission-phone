@@ -7,7 +7,6 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
-                                 'ngCordova',
                                  'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {

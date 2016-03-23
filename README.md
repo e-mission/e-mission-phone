@@ -174,7 +174,7 @@ Walk through to clone the required files from habitrpg to emission
 	
 6. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines those point to th common folder that was copied from habitrpg to e-mission-phone
 
-7. To add the avatar herobox css copy the all the herobox class from habitrpg/website/build/app.css to one of the css folders in e-mission-phone 
+7. To add the avatar herobox css copy all the herobox class from habitrpg/website/build/app.css to one of the css folders in e-mission-phone 
 
 
 Alternative way is to get the avatar PNG directly through the API. E-mission-phone has Content-Security-Policy that blocks unknown contents, to allow E-mission-phone to recognize the URL add the Habitrpg server URL and the s3 URL to “Content-Secutiry-Policy” in the head of www/templates/index.html   

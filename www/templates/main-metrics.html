@@ -1,35 +1,43 @@
 <ion-view view-title="Metrics" class="ion-view-background">
   <ion-nav-bar class="bar-stable">
     <ion-nav-back-button></ion-nav-back-button>
-    <ion-nav-buttons side="right">
+    <!--ion-nav-buttons side="right">
       <div ng-class="getButtonClass()" ng-click="getMetricsHelper()">Get</div>
-    </ion-nav-buttons>
+    </ion-nav-buttons-->
   </ion-nav-bar>
-  <ion-content class="has-header padding">
-  <div style="height: 40px; width: 100%; margin-bottom: 5px;"> <!-- query control -->
+  <ion-content class="has-header">
+  <!--div style="height: 40px; width: 100%; margin-bottom: 5px;"> <!-- query control >
     <div class="metric-basic">
       <div class="metric-current-title hvcenter">{{ uictrl.current }}</div>
       <div ng-class="rangeButtonClass()" ng-click="showRange()">Range</div>
       <div ng-class="filterButtonClass()" ng-click="showFilter()">Filter</div>
     </div>
-  </div>
-  <div style="height: 40px; width: 100%;" ng-show="uictrl.showVis"> <!-- visualization control -->
+  </div-->
+  <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control -->
     <div class="metric-half">
-      <div ng-class="chartButtonClass()" ng-click="showChart()">Chart</div>
       <div ng-class="summaryButtonClass()" ng-click="showSummary()">Summary</div>
-    </div>
-    <div class="metric-second-half">
-      <i class="icon ion-ios-person metric-icon"></i>
-      <label ng-click="toggle()" class="toggle metric-me-toggle">
-        <input type="checkbox" ng-checked="!uictrl.showMe"> <!-- me on left, off -->
-        <div class="track toggle-color">
-          <div class="handle"></div>
-        </div>
-      </label>
-      <i class="icon ion-ios-people metric-icon"></i>
+      <div ng-class="chartButtonClass()" ng-click="showChart()">Chart</div>
     </div>
   </div>
-  <div ng-show="uictrl.showRange"> <!-- range -->
+  <div ng-if="uictrl.showChart" style="width:50%; float:right; padding-top: 10px;">
+    <div class="metric-change-data-button hvcenter" ng-click="openModal()">Change Data</div>
+  </div>
+    <div ng-if="uictrl.showSummary" style="width:100%; float:right; padding-top: 10px;">
+    <div class="metric-change-data-button hvcenter" ng-click="openModal()">Change Data</div>
+  </div>
+  <div ng-if="uictrl.showChart" style="width:50%;float:right; padding-top: 10px">
+    <div class="metric-second-half">
+        <i class="icon ion-ios-person metric-icon"></i>
+        <label ng-click="toggle()" class="toggle metric-me-toggle">
+          <input type="checkbox" ng-checked="!uictrl.showMe"> <!-- me on left, off -->
+          <div class="track toggle-color">
+            <div class="handle"></div>
+          </div>
+        </label>
+        <i class="icon ion-ios-people metric-icon"></i>
+      </div>
+    </div>
+  <!--div ng-if="uictrl.showRange"> <!-- range >
     <div style="height: 40px; width: 100%;">
       <div class="metric-datepicker-container-upper">
           <div class="metric-datepicker-left">
@@ -40,12 +48,11 @@
             <div class="metric-datepicker">{{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </ionic-datepicker>
           </div>
-      </div>
-      
-    </div>
+      </div>    
+    </div-->
     
     
-    <div style="height: 40px; width: 100%;">
+    <!--div style="height: 40px; width: 100%;">
       <div class="metric-datepicker-container-lower">
           <div class="metric-datepicker-left">
             <div class="metric-datepicker-title">To:</div>
@@ -55,16 +62,16 @@
             <div class="metric-datepicker">{{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </ionic-datepicker>
           </div>
-      </div>
-      
     </div>
-    <div style="height: 40px; width: 100%;">
+      
+    </div-->
+    <!--div style="height: 40px; width: 100%;">
       <div class="metric-metric-button hvcenter" ng-click="changeMetric()">{{selectCtrl.metricString}}</div>
       <div class="metric-freq-button hvcenter" ng-click="changePandaFreq()">{{selectCtrl.pandaFreqString}}</div>
     </div>
-  </div>  
+  </div-->  
 
-  <div ng-show="uictrl.showFilter">
+  <!--div ng-if="uictrl.showFilter">
   <div style="height: 40px; width: 100%;">
     <div class="metric-filter-title">From:</div>
     <input class="metric-filter-year hvcenter" placeholder="yyyy" ng-model="selectCtrl.fromDateLocalDate.year"></input>
@@ -83,19 +90,19 @@
     <div class="metric-metric-button hvcenter" ng-click="changeMetric()">{{selectCtrl.metricString}}</div>
     <div class="metric-freq-button hvcenter" ng-click="changeFreq()">{{selectCtrl.freqString}}</div>
   </div>
-  </div>
+  </div-->
 
-    <div ng-show="uictrl.showResult">
-      <nvd3 options="options" data="data" ng-show="uictrl.showChart"></nvd3>
-      <div ng-show="uictrl.showSummary" style="padding: 10px;">
-
+    <div ng-if="uictrl.showResult">
+      <nvd3 options="options" data="data" ng-if="uictrl.showChart" style="padding: 10px;"></nvd3>
+      <!--Summary Starts here-->
+      <!--div ng-if="uictrl.showSummary" style="padding: 10px;">
         <div class="metric-summary-separator">Modes {{modeTitle}}</div>
-        <div ng-show="summaryData.defaultSummary.length == 0" style="margin-bottom: 20px; color: #aaa;">No summary data</div>
+        <div ng-if="summaryData.defaultSummary.length == 0" style="margin-bottom: 20px; color: #aaa;">No summary data</div>
         <div class="row" ng-repeat="d in summaryData.defaultSummary" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.length" class="col-50" style="margin-bottom: 10px;">
             
             <div class="metric-summary-left">
-              <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+              <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary[dIndex + i].key)" style="font-size: 30px !important; color: #01D0A7;"></i>
             </div>
             <div class="metric-summary-right">
               <div class="metric-summary-title">
@@ -108,13 +115,13 @@
           </div>
         </div>
 
-        <div class="metric-summary-separator">Calories {{caloriesTitle}}<div ng-show="!userDataSaved() && caloriesData.defaultCalories.length != 0"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div> </div>
-        <div ng-show="caloriesData.defaultCalories.length == 0" style="margin-bottom: 20px; color: #aaa;">No calories data</div>
+        <div class="metric-summary-separator">Calories {{caloriesTitle}}<div ng-if="!userDataSaved() && caloriesData.defaultCalories.length != 0"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div> </div>
+        <div ng-if="caloriesData.defaultCalories.length == 0" style="margin-bottom: 20px; color: #aaa;">No calories data</div>
         <div class="row" ng-repeat="d in caloriesData.defaultCalories" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<caloriesData.defaultCalories.length" class="col-50" style="margin-bottom: 10px;">
             
             <div class="metric-summary-left">
-              <i ng-class="'icon ' + modeIcon(caloriesData.defaultCalories[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+              <i ng-class="'icon ' + modeIcon(caloriesData.defaultCalories[dIndex + i].key)" style="font-size: 30px !important; color: #01D0A7;"></i>
             </div>
             <div class="metric-summary-right">
               <div class="metric-summary-title">
@@ -128,12 +135,12 @@
         </div>  
 
         <div class="metric-summary-separator">Footprint {{footprintTitle}}</div>
-        <div ng-show="carbonData.defaultCarbon.length == 0" style="margin-bottom: 20px; color: #aaa;">No carbon footprint data</div>
+        <div ng-if="carbonData.defaultCarbon.length == 0" style="margin-bottom: 20px; color: #aaa;">No carbon footprint data</div>
         <div class="row" ng-repeat="d in carbonData.defaultCarbon" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<carbonData.defaultCarbon.length" class="col-50" style="margin-bottom: 10px;">
             
             <div class="metric-summary-left">
-              <i ng-class="'icon ' + modeIcon(caloriesData.defaultCalories[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+              <i ng-class="'icon ' + modeIcon(caloriesData.defaultCalories[dIndex + i].key)" style="font-size: 30px !important; color: #01D0A7;"></i>
             </div>
             <div class="metric-summary-right">
               <div class="metric-summary-title">
@@ -146,27 +153,179 @@
           </div>
         </div>  
         <div style="height: 30px;"></div>
-        <div class="carbon-goal-chart" ng-show="carbonData.defaultCarbon.length != 0">
+        <div class="carbon-goal-chart" ng-if="carbonData.defaultCarbon.length != 0">
         </div>
-        <div class="carbon-goal-legend" ng-show="carbonData.defaultCarbon.length != 0">
+        <div class="carbon-goal-legend" ng-if="carbonData.defaultCarbon.length != 0">
           <i class="ion-arrow-up-b" style="position: absolute; color: #aaa; left: {{carbonGoalChartData.min[0]}}%;"></i>
           <div style="position: absolute; color: #aaa; margin-top: 20px; left: {{carbonGoalChartData.min[0]}}%;">All train</div>
           <i class="ion-arrow-up-b" style="position: absolute; color: #aaa; right: {{carbonGoalChartData.max[0]}}%;"></i>
           <div style="position: absolute; color: #aaa; margin-top: 20px; right: {{carbonGoalChartData.max[0]}}%;">All drive</div>
 
-          <i class="ion-arrow-up-b" ng-show="shouldshowca2020()" style="position: absolute; color: #2bb096; left: {{carbonGoalChartData.ca2020[0]}}%;"></i>
+          <i class="ion-arrow-up-b" ng-if="shouldshowca2020()" style="position: absolute; color: #01D0A7; left: {{carbonGoalChartData.ca2020[0]}}%;"></i>
           
-           <i class="ion-arrow-up-b" ng-show="shouldshowca2035()" style="position: absolute; color: #2bb096; left: {{carbonGoalChartData.ca2035[0]}}%;"></i>
+           <i class="ion-arrow-up-b" ng-if="shouldshowca2035()" style="position: absolute; color: #01D0A7; left: {{carbonGoalChartData.ca2035[0]}}%;"></i>
           
         </div>
-        <div class="full-toggle-container" style="margin-top: 40px;" ng-show="carbonData.defaultCarbon.length != 0">
+        <div class="full-toggle-container" style="margin-top: 40px;" ng-if="carbonData.defaultCarbon.length != 0">
           <div ng-class="fullToggleLeftClass1()" ng-click="toggleca2020()">CA2020</div>
           <div ng-class="fullToggleRightClass1()" ng-click="toggleca2035()">CA2035</div>
         </div>
       </div>
 
+    </div-->
+  <div ng-if="uictrl.showSummary" overflow-scroll="true">
+    <div id="dashboard-footprint" class="card">
+      <div>
+        <div class="circle">
+          <div id="green-leaf" class="icon ion-leaf">
+          </div>
+        </div>
+          <h4 class="dashboard-headers">Footprint</h4>
+          <div ng-if="uictrl.showContent">
+          <div class="user-carbon">{{carbonData.userCarbon}}</div>
+          <div id="arrow-color" ng-if="up" class="icon ion-arrow-up-a"></div>
+          <div id="arrow-color" ng-if="down" class="icon ion-arrow-down-a"></div>
+          <div class="carbon-change">{{carbonData.changeInPercentage}}{{carbonData.change}}</div>
+          <div class="card dashboard-list"><b>Optimal:</b> {{carbonData.optimalCarbon}}</div>
+          <div class="card dashboard-list"><b>Average:</b> {{carbonData.aggrCarbon}}</div>
+          <div class="card dashboard-list"><b>Worst:</b> {{carbonData.worstCarbon}}</div>
+          <div class="card dashboard-list"><b>Last Week:</b> {{carbonData.lastWeekUserCarbon}}</div>
+          <div class="card dashboard-list"><b>CA 2035:</b> {{carbonData.ca2035}}</div>
+          <div class="card dashboard-list"><b>CA 2050:</b> {{carbonData.ca2050}}</div>
+        </div>
+      </div>
+      <div ng-click="extendFootprintCard()" class="arrow-position">
+        <i ng-class="checkFootprintCardExpanded()"></i>
+      </div>
     </div>
-
-    
+    <div id="dashboard-calorie" class="card">
+      <div>
+        <div class="circle" ng-if="cookie">
+          <img src="img/cookie.png" id="food"> 
+        </div>
+        <div class="circle" ng-if="iceCream">
+          <img src="img/icecream.png" id="food"> 
+        </div>
+        <div class="circle" ng-if="banana">
+          <img src="img/banana.png" id="foodB"> 
+        </div>
+        <h4 class="dashboard-headers">Calories</h4>
+      </div>
+      <div ng-show="!userDataSaved()"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div>
+      <div ng-if="uictrl.showContent">
+        <div class="user-calorie">{{caloriesData.userCalories}}</div>
+        <div class="calorie-change" ng-if="cookie">Equals {{numberOfCookies}} homemade chocolate chip cookies</div>
+        <div class="calorie-change" ng-if="iceCream">Equals {{numberOfIceCreams}} half cup vanilla ice cream</div>
+        <div class="calorie-change" ng-if="banana">Equals {{numberOfBananas}} bananas</div>
+        <div class="card dashboard-list"><b>Average:</b> {{caloriesData.aggrCalories}}</div>
+        <div class="card dashboard-list"><b>Last Week:</b> {{caloriesData.lastWeekUserCalories}}</div>
+        <div style="align:center;">
+           <div class="circle" id="circle-food" ng-click="setCookie()">
+            <img src="img/cookie.png" id="food"> 
+          </div>
+          <div class="circle" id="circle-food" ng-click="setIceCream()">
+            <img src="img/icecream.png" id="food"> 
+          </div>
+          <div class="circle" id="circle-food" ng-click="setBanana()">
+            <img src="img/banana.png" id="foodB"> 
+          </div>
+        </div>
+      </div>
+      <div ng-click="extendCalorieCard()" class="arrow-position">
+        <i ng-class="checkCalorieCardExpanded()"></i>
+      </div>
+    </div>
+    <ion-slide-box show-pager="false" id="modes">
+      <ion-slide id="modes">
+        <div id="dashboard-bottom" class="card">
+          <h4 class="dashboard-headers">Distance</h4>
+            <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;">No summary data</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title">
+                    {{ summaryData.defaultSummary.distance[dIndex + i].key }}
+                  </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.distance[dIndex + i].values }}
+                  </div>
+                </div>
+              </div> 
+            </div>
+        </div>
+      </ion-slide>
+      <ion-slide id="modes">
+        <div id="dashboard-bottom" class="card">
+          <h4 class="dashboard-headers">Trips</h4>
+            <div ng-if="summaryData.defaultSummary.count.length == 0" style="margin-bottom: 20px; color: #54DCC1;">No summary data</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.count" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.count.length" class="col-50" style="margin-bottom: 10px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.count[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title">
+                    {{ summaryData.defaultSummary.count[dIndex + i].key }}
+                  </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.count[dIndex + i].values }}
+                  </div>
+                </div>
+              </div> 
+            </div>
+        </div>
+      </ion-slide>
+      <ion-slide id="modes">
+        <div id="dashboard-bottom" class="card">
+          <h4 class="dashboard-headers">Duration</h4>
+            <div ng-if="summaryData.defaultSummary.duration.length == 0" style="margin-bottom: 20px; color: #54DCC1;">No summary data</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.duration" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.duration.length" class="col-50" style="margin-bottom: 10px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.duration[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title">
+                    {{ summaryData.defaultSummary.duration[dIndex + i].key }}
+                  </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.duration[dIndex + i].values }}
+                  </div>
+                </div>
+              </div> 
+            </div>
+        </div>
+      </ion-slide>
+      <ion-slide id="modes">
+        <div id="dashboard-bottom" class="card">
+          <h4 class="dashboard-headers">Median Speed</h4>
+            <div ng-if="summaryData.userSummary.median_speed.length == 0" style="margin-bottom: 20px; color: #54DCC1;">No summary data</div>
+            <div class="row" ng-repeat="d in summaryData.userSummary.median_speed" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.userSummary.median_speed.length" class="col-50" style="margin-bottom: 10px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.userSummary.median_speed[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title">
+                    {{ summaryData.defaultSummary.median_speed[dIndex + i].key }}
+                  </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.median_speed[dIndex + i].values }}
+                  </div>
+                </div>
+              </div> 
+            </div>
+        </div>
+      </ion-slide>
+    </ion-slide-box> 
+    </div>
+  </div> 
   </ion-content>
 </ion-view>
