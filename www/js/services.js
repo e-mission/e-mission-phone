@@ -2,21 +2,21 @@
 
 angular.module('emission.services', [])
 
-.factory('CommHelper', function($http) {
+.service('CommHelper', function($http) {
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
                 successCallback(settings.connectURL);
             }, errorCallback);
     };
-    return {
-        registerUser: function(successCallback, errorCallback) {
+
+    this.registerUser = function(successCallback, errorCallback) {
             window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
-        },
-        getTimelineForDay: function(date, successCallback, errorCallback) {
-            dateString = date.startOf('day').format('YYYY-MM-DD');
-            window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, successCallback, errorCallback);
-        }
+    };
+
+    this.getTimelineForDay = function(date, successCallback, errorCallback) {
+        var dateString = date.startOf('day').format('YYYY-MM-DD');
+        window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, successCallback, errorCallback);
     };
 })
 
