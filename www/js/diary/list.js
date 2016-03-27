@@ -108,7 +108,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
           // the counts will be filled in when that is done. If the currDayTripWrappers
           // is already defined, that may have won the race, and not been able to update
           // the counts, so let us do it here.
-          if (!angular.isUndefined($scope.data.currDayTripWrappers)) {
+          if (!angular.isUndefined($scope.data) && !angular.isUndefined($scope.data.currDayTripWrappers)) {
              $scope.data.currDayTripWrappers.forEach(function(tripWrapper, index, array) {
                 fillCommonTripCount(tripWrapper);
              });
