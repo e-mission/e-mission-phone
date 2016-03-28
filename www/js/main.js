@@ -148,32 +148,8 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         $state.go("root.intro");
     };
 
-    $scope.forceTripStart = function() {
-        window.cordova.plugins.BEMDataCollection.forceTripStart(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
-        });
-    };
-
-    $scope.forceTripEnd = function() {
-        window.cordova.plugins.BEMDataCollection.forceTripEnd(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
-        });
-    };
-
-    $scope.forceRemotePush = function() {
-        window.cordova.plugins.BEMDataCollection.forceRemotePush(function(result) {
+    $scope.forceTransition = function(transition) {
+        window.cordova.plugins.BEMDataCollection.forceTransition(transition).then(function(result) {
             $scope.$apply(function() {
                 $ionicPopup.alert({template: 'success -> '+result});
             });
@@ -197,18 +173,24 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     };
 
     $scope.forceState = function() {
-        var forceStateActions = [{text: 'Start trip', 
-                                  action: $scope.forceTripStart},
+        var forceStateActions = [{text: "Initialize",
+                                  transition: "INITIALIZE"},
+                                 {text: 'Start trip', 
+                                  transition: "EXITED_GEOFENCE"},
                                  {text: 'End trip',
-                                  action: $scope.forceTripEnd},
+                                  transition: "STOPPED_MOVING"},
+                                 {text: 'Visit ended',
+                                  transition: "VISIT_ENDED"},
+                                 {text: 'Visit started',
+                                  transition: "VISIT_STARTED"},
                                  {text: 'Remote push', 
-                                  action: $scope.forceRemotePush}];
+                                  transition: "RECEIVED_SILENT_PUSH"}];
         $ionicActionSheet.show({
             buttons: forceStateActions,
             titleText: "Force state",
             cancelText: "Cancel",
             buttonClicked: function(index, button) {
-                button.action();
+                $scope.forceTransition(button.transition);
                 return true;
             }
         });

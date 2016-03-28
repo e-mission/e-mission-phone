@@ -1,8 +1,12 @@
 <ion-view view-title="Account">
   <div align-title="center" class="bar bar-positive bar-subheader">
       <div class="buttons" style="text-align:center">
+        <button class="button button-assertive icon-right ion-stop" 
+            ng-click="forceTransition('STOP_TRACKING')"> Stop Tracking </button>
         <button class="button icon-right ion-refresh" ng-click="refreshScreen()"> Refresh </button>
         <button class="button icon-right ion-cloud" ng-click="forceSync()"> Force Sync </button>
+        <button class="button button-balanced icon-right ion-play" 
+            ng-click="forceTransition('START_TRACKING')"> Start Tracking </button>
       </div>
   </div>
   <ion-content class="has-subheader">
