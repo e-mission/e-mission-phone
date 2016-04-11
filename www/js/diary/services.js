@@ -132,9 +132,23 @@ angular.module('emission.main.diary.services', ['emission.services'])
     } else {
       return '';
     }
-
-
   }
+   dh.parseEarlierOrLater = function(val) {
+      if (val[0] == '-') {
+        if (parseInt(val.substring(1)) == 1) {
+          return 'Started ' + val.substring(1) + ' hour earlier than usual'
+        } else {
+          return 'Started ' + val.substring(1) + ' hours earlier than usual'
+        }
+      } else {
+        if (parseInt(val.substring(1)) == 1) {
+          return 'Started ' + val.substring(1) + ' hour later than usual'
+        } else {
+          return 'Started ' + val.substring(1) + ' hours later than usual'
+        }        
+      }
+    }
+  
   dh.fillCommonTripCount = function(tripWrapper) {
       var cTrip = CommonGraph.findCommon(tripWrapper.data.id);
       if (!angular.isUndefined(cTrip)) {

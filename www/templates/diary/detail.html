@@ -1,12 +1,26 @@
 <ion-view style="" title="Detail View">
     <ion-content class="has-header" overflow-scroll="true" padding="true">
-        <div class="item item-icon-left" href="#" style="font-size: 15px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-        <i class="icon ion-ios-location" style="font-size: 24px; left: 0; color: #72b026;"></i>
-    {{trip.start_place.properties.displayName.split(',')[0]}}
-        </div>
-        <div class="item item-icon-left" href="#" style="font-size: 15px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-        <i class="icon ion-ios-location" style="font-size: 24px; left: 0; color: #d63e2a;"></i>
-    {{trip.end_place.properties.displayName.split(',')[0]}}
+        <div class="row" style="">
+
+            <div class="col-30">
+                <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
+                <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/.plus.gif';  }}" style="width: 15px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
+                <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
+                </div>
+            </div>
+
+            <div class="col-70">
+
+                <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #72b026;"></i>
+            {{tripgj.start_place.properties.displayName.split(',')[0]}}
+
+                </div>
+                <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
+                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #d63e2a;"></i>
+            {{tripgj.end_place.properties.displayName.split(',')[0]}}
+                </div>
+            </div>
         </div>
         <div style="height: 10px;"></div>
         <leaflet geojson="tripgj" id="detail" defaults="mapCtrl.defaults" 
@@ -29,7 +43,7 @@
 
               <div class="row" ng-repeat="section in trip.sections" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
                   <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getFormattedTime(section.properties.start_ts)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p>
-                  
+
                   </div>
 
 
