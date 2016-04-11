@@ -6,7 +6,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
-                                    leafletData, Timeline, CommonGraph) {
+                                    leafletData, Timeline, CommonGraph, DiaryHelper) {
   console.log("controller DiaryListCtrl called");
 
   var readAndUpdateForDay = function(day) {
@@ -96,7 +96,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-            directiveForTrip);
+            DiaryHelper.directiveForTrip);
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -110,36 +110,20 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
           // the counts, so let us do it here.
           if (!angular.isUndefined($scope.data.currDayTripWrappers)) {
              $scope.data.currDayTripWrappers.forEach(function(tripWrapper, index, array) {
-                fillCommonTripCount(tripWrapper);
+                DiaryHelper.fillCommonTripCount(tripWrapper);
              });
           };
       });
     });
 
-    var fillCommonTripCount = function(tripWrapper) {
-        var cTrip = CommonGraph.findCommon(tripWrapper.data.id);
-        if (!angular.isUndefined(cTrip)) {
-            tripWrapper.common_count = cTrip.trips.length;
-        }
-    };
 
-    var directiveForTrip = function(trip) { 
-      var retVal = {};
-      retVal.data = trip;
-      retVal.style = style_feature;
-      retVal.onEachFeature = onEachFeature;
-      retVal.pointToLayer = pointFormat;
-      retVal.start_place = trip.start_place;
-      retVal.end_place = trip.end_place;
-      retVal.stops = trip.stops;
-      retVal.sections = trip.sections;
-      retVal.tripSummary = trip.tripSummary;
-      fillCommonTripCount(retVal);
-      // Hardcoding to avoid repeated nominatim calls
-      // retVal.start_place.properties.displayName = "Start";
-      // retVal.start_place.properties.displayName = "End";
-      return retVal;
-    };
+    $scope.setColor = function(mode) {
+      var colors = {"icon ion-android-bicycle":'green',
+    "icon ion-android-walk":'brown',
+    "icon ion-disc":'red',};
+      return { color: colors[mode] };
+    }
+
 
     var showNoTripsAlert = function() {
         var buttons = [
@@ -197,221 +181,53 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.isGroupShown = function(group) {
       return $scope.shownGroup === group;
     };
-
-   $scope.getHumanReadable = function(sensed_mode) {
-        ret_string = sensed_mode.split('.')[1];
-        if(ret_string == 'ON_FOOT') {
-            return 'WALKING';
-        } else {
-            return ret_string;
-        }
-      };
-
-    $scope.allModes = function(trip) {
-      var rtn = [];
-      var icons = {"BICYCLING":"ion-android-bicycle",
-                    "WALKING":" ion-android-walk",
-                    "RUNNING":" ion-android-walk",
-                    "IN_VEHICLE":"ion-disc",}
-      for (var i=0; i<trip.sections.length; i++) {
-        if (rtn.indexOf($scope.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
-          rtn.push($scope.getHumanReadable(trip.sections[i].properties.sensed_mode));
-        }
-      }
-      for (var i=0; i<rtn.length; i++) {
-        rtn[i] = "icon " + icons[rtn[i]];
-      }
-      return rtn;
-    }
-
-
+    $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
+    $scope.getHumanReadable = DiaryHelper.getHumanReadable;
+    $scope.allModes = DiaryHelper.allModes;
+    $scope.getKmph = DiaryHelper.getKmph;
+    $scope.getPercentages = DiaryHelper.getPercentages;
+    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
+    $scope.getSectionDetails = DiaryHelper.getSectionDetails;
+    $scope.getFormattedTime = DiaryHelper.getFormattedTime;
+    $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
+    $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
+    $scope.getTripDetails = DiaryHelper.getTripDetails;
+    $scope.starColor = DiaryHelper.starColor;
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];
+    $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
-        $scope.getKmph = function(section) {
-            metersPerSec = section.properties.distance / section.properties.duration;
-            return (metersPerSec * 3.6).toFixed(2);
-        };
+    $scope.getTimeSplit = function(tripList) {
+        var retVal = {};
+        var tripTimes = tripList.map(function(dt) {
+            return dt.data.properties.duration;
+        });
 
-        $scope.getFormattedDistance = function(dist_in_meters) {
-            if (dist_in_meters > 1000) {
-                return (dist_in_meters/1000).toFixed(0);
-            } else {
-                return (dist_in_meters/1000).toFixed(3);
-            }
-        }
-
-        $scope.getSectionDetails = function(section) {
-            startMoment = moment(section.properties.start_ts * 1000);
-            endMoment = moment(section.properties.end_ts * 1000);
-            retVal = [startMoment.format('LT'),
-                    endMoment.format('LT'),
-                    endMoment.to(startMoment, true),
-                    formatDistance(section.properties.distance),
-                    tokmph(section.properties.distance, section.properties.duration).toFixed(2),
-                    $scope.getHumanReadable(section.properties.sensed_mode)];
-            return retVal;
-        };
-
-        $scope.getFormattedTime = function(ts_in_secs) {
-            if (angular.isDefined(ts_in_secs)) {
-                return moment(ts_in_secs * 1000).format('LT');
-            } else {
-                return "---";
-            }
-        };
-
-        $scope.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
-            startMoment = moment(start_ts_in_secs * 1000);
-            endMoment = moment(end_ts_in_secs * 1000);
-            return endMoment.to(startMoment, true);
-        };
-
-        $scope.getFormattedDuration = function(duration_in_secs) {
-            return moment.duration(duration_in_secs * 1000).humanize()
-        };
-
-        $scope.getTripDetails = function(trip) {
-            return (trip.sections.length) + " sections";
-        };
-
-        $scope.getTimeSplit = function(tripList) {
-            var retVal = {};
-            var tripTimes = tripList.map(function(dt) {
-                return dt.data.properties.duration;
-            });
-
-        };
-
-        $scope.getTripHeightPixels = function(trip) {
-            return trip.sections.length * 20 + 300+"px";
-        };
-
-        $scope.prevDay = function() {
-            console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-            var prevDay = moment(Timeline.data.currDay).subtract(1, 'days');
-            console.log("prevDay = "+prevDay.format('YYYY-MM-DD'));
-            readAndUpdateForDay(prevDay);
-        };
-
-        $scope.nextDay = function() {
-            console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-            var nextDay = moment(Timeline.data.currDay).add(1, 'days');
-            console.log("nextDay = "+nextDay);
-            readAndUpdateForDay(nextDay);
-        };
-
-        $scope.toDetail = function() {
-          $state.go('root.main.detail');
-        };
-      $scope.starColor = function(num) {
-      if (num >= 3) {
-        return 'yellow';
-      } else {
-        return 'transparent';
-      }
-    }
-
-    /*
-     * BEGIN: Functions for customizing our geojson display
-     */
-
-    $scope.showModes = function(section) {
-        return function() {
-            currMode = $scope.getHumanReadable(section.properties.sensed_mode);
-            currButtons = [{ text: "<b>"+currMode+"</b>"}];
-            $scope.userModes.forEach(function(item, index, array) {
-                if (item != currMode) {
-                    currButtons.push({text: item});
-                }
-            });
-
-           // Show the action sheet
-           var modeSheet = $ionicActionSheet.show({
-             buttons: currButtons,
-             titleText: 'Trip Mode?',
-               destructiveText: 'Delete',
-             buttonClicked: function(index) {
-                console.log("button "+index+" clicked for section "+JSON.stringify(section.properties));
-                return true;
-             },
-               destructiveButtonClicked: function(index) {
-                   console.log("delete clicked for section "+JSON.stringify(section.properties));
-                   return true;
-               }
-           });
-        }
     };
 
-    var style_feature = function(feature) {
-        switch(feature.properties.feature_type) {
-            case "section": return style_section(feature);
-            case "stop": return style_stop(feature);
-            default: return {}
-        }
+    $scope.getTripHeightPixels = function(trip) {
+        return trip.sections.length * 20 + 300+"px";
     };
 
-    var onEachFeature = function(feature, layer) {
-        // console.log("onEachFeature called with "+JSON.stringify(feature));
-        switch(feature.properties.feature_type) {
-            case "stop": layer.bindPopup(""+feature.properties.duration); break;
-            case "start_place": layer.on('click', layer.bindPopup(""+feature.properties.displayName)); break;
-            case "end_place": layer.on('click', layer.bindPopup(""+feature.properties.displayName)); break;
-            case "section": layer.setText($scope.getHumanReadable(feature.properties.sensed_mode), {offset: 20});
-                layer.on('click', $scope.showModes(feature)); break;
-            // case "location": layer.bindPopup(JSON.stringify(feature.properties)); break
-        }
-      };
+    $scope.prevDay = function() {
+        console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
+        var prevDay = moment(Timeline.data.currDay).subtract(1, 'days');
+        console.log("prevDay = "+prevDay.format('YYYY-MM-DD'));
+        readAndUpdateForDay(prevDay);
+    };
 
-   var getColoredStyle = function(baseDict, color) {
-        baseDict.color = color;
-        return baseDict
-      };
+    $scope.nextDay = function() {
+        console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
+        var nextDay = moment(Timeline.data.currDay).add(1, 'days');
+        console.log("nextDay = "+nextDay);
+        readAndUpdateForDay(nextDay);
+    };
 
-   var style_section = function(feature) {
-        var baseDict = {
-                weight: 5,
-                opacity: 1,
-        };
-        mode_string = $scope.getHumanReadable(feature.properties.sensed_mode);
-        switch(mode_string) {
-            case "WALKING": return getColoredStyle(baseDict, 'brown');
-            case "BICYCLING": return getColoredStyle(baseDict, 'green');
-            case "TRANSPORT": return getColoredStyle(baseDict, 'red');
-            default: return getColoredStyle(baseDict, 'black');
-        }
-      };
+    $scope.toDetail = function() {
+      $state.go('root.main.detail');
+    };
 
-   var style_stop = function(feature) {
-        return {fillColor: 'yellow', fillOpacity: 0.8};
-      };
+    $scope.showModes = DiaryHelper.showModes;
 
-      var pointIcon = L.divIcon({className: 'leaflet-div-icon', iconSize: [5, 5]});
-
-      var startMarker = L.AwesomeMarkers.icon({
-        icon: 'play',
-        prefix: 'ion',
-        markerColor: 'green'
-      });
-
-      var stopMarker = L.AwesomeMarkers.icon({
-        icon: 'stop',
-        prefix: 'ion',
-        markerColor: 'red'
-      });
-
-    var pointFormat = function(feature, latlng) {
-        switch(feature.properties.feature_type) {
-            case "start_place": return L.marker(latlng, {icon: startMarker});
-            case "end_place": return L.marker(latlng, {icon: stopMarker});
-            case "stop": return L.circleMarker(latlng);
-            case "location": return L.marker(latlng, {icon: pointIcon});
-            default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
-        }
-      };
-
-    /*
-     * END: Functions for customizing our geojson display
-     */
 });

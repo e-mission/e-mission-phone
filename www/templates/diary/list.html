@@ -28,18 +28,20 @@
 		<div collection-repeat="tripgj in data.currDayTripWrappers">
 			<div class="list card" style="margin-top: 20px; margin-bottom: 20px;">
 			 <ion-item style="padding: 10px;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
-                {{ if}}
+                
                 <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i>
                 <div class="row" style="">
 
                     <div class="col-30">
-                        <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div><div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
+                        <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
+                        <div style="font-size: 15px; width: 0; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/.plus.gif';  }}" style="width: 15px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
+                        <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
                         </div>
                     </div>
 
                     <div class="col-70">
 
-                        <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
+                        <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #72b026;"></i>
                     {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
@@ -58,7 +60,7 @@
 				  <div class="col-70">
 				    <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
 				  </div>
-				  <div class="col-30" style="padding: 10px;">
+				  <div class="col-30" style="padding: 0 10px;">
 				  	<p style="font-size: 15px; color: #cccccc">Distance</p>
 				    <p style="font-size: 20px;">{{getFormattedDistance(tripgj.data.properties.distance)}} km</p>
 				    <div style="height: 10px;"></div>
@@ -69,10 +71,11 @@
                     
                 
                     
-                    <i class="{{mode}}" ng-repeat="mode in allModes(tripgj) track by $index" style="margin-left: 5px; margin-right: 5px; font-size: 20px;">
-                    <!-- 	<i class="{{mode}}" style="font-size: 24px;"></i> -->
-                    </i>
-                    
+
+                <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="margin-left: 10px; margin-right: 10px; font-size: 15px;" ng-style="setColor(mode)"></i>
+                <br>
+                <a ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 10px; margin-left: 5px; margin-right: 5px;">{{percentage}}%</a>
+                        
 
 				  </div>
 				</div>

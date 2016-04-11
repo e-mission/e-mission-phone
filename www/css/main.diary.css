@@ -55,3 +55,28 @@
 a.item-content {
   padding: 0 !important;
 }
+.leaflet-div-icon {
+  background-color: white;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+  border-color: white;  
+}
+.leaflet-div-icon-start {
+  background-color: #72b026;
+  border-radius: 6px;
+}
+.leaflet-div-icon-stop {
+  background-color: #d63e2a;
+  border-radius: 6px;
+}
+.inner-icon {
+  background-color: white;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+}
