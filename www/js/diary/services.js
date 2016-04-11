@@ -122,7 +122,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
       // assume probabilities array is Monday-indexed + 1-indexed
       var mostFrequestHours = CommonGraph.probabilitiesToMostFrequentHours(ctrip.probabilites);
       var weekOfDay = moment(ts * 1000).day();
-      var mostFrequestHour = mostFrequestHours[weekOfDay];
+      var mostFrequestHour = mostFrequestHours[weekOfDay - 1]; // 1indexed vs 0indexed
       var thisHour = parseInt(dh.getFormattedTime(ts).split(':')[0]);
       if (thisHour == mostFrequestHour) {
         return '';
