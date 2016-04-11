@@ -1,0 +1,43 @@
+<ion-popover-view>
+<ion-content class="has-header">
+<ion-button-bar>
+    <button class="button button-active button-block" ng-click="saveAndReloadSettingsPopover()">Save</button>
+</ion-button-bar> 
+<ion-list>
+  <ion-toggle ng-model="settings.collect.new_config.is_duty_cycling">Duty Cycling</ion-toggle>
+  <ion-toggle ng-model="settings.collect.new_config.simulate_user_interaction">Simulate User</ion-toggle>
+  <ion-item class="row item-input">
+    <div class="col">Accuracy</div>
+    <button class="col col-25" ng-click="setAccuracy()">
+        {{settings.collect.new_config.accuracy}}
+    </button>
+  </ion-item>
+    <label class="item item-input">
+        <span class="input-label">Accuracy Threshold</span>
+        <input ng-model="settings.collect.new_config.accuracy_threshold"
+             ng-disabled="true" type="number">
+    </label>
+    <label style="" class="item item-input">
+        <span class="input-label">Filter distance</span>
+        <input ng-model="settings.collect.new_config.filter_distance"
+           ng-disabled="isAndroid()" type="number">
+    </label>
+    <label style="" class="item item-input">
+        <span class="input-label">Filter Interval</span>
+        <input ng-model="settings.collect.new_config.filter_time"
+            ng-disabled="isIOS()" type="number">
+    </label>
+    <label style="" class="item item-input">
+        <span class="input-label">Geofence radius</span>
+        <input ng-model="settings.collect.new_config.geofence_radius" type="number">
+    </label>
+    <ion-toggle ng-disabled="isAndroid()" ng-model="settings.collect.new_config.ios_use_visit_notifications_for_detection">Use Visit Notifications</ion-toggle>
+    <ion-toggle ng-disabled="isAndroid()" ng-model="ios_use_remote_push_for_sync">Sync on remote push</ion-toggle>
+    <label style="" class="item item-input">
+        <span class="input-label">Geofence responsiveness</span>
+        <input ng-model="settings.collect.new_config.android_geofence_responsiveness"
+            ng-disabled="isIOS()" type="number">
+    </label>
+</ion-list>
+</ion-content>
+</ion-popover-view>

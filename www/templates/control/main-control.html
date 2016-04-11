@@ -1,8 +1,12 @@
 <ion-view view-title="Account">
   <div align-title="center" class="bar bar-positive bar-subheader">
       <div class="buttons" style="text-align:center">
-        <button class="button icon-right ion-refresh" ng-click="refreshScreen()"> Refresh </button>
-        <button class="button icon-right ion-cloud" ng-click="forceSync()"> Force Sync </button>
+        <button class="button button-assertive icon-right ion-stop" 
+            ng-click="forceTransition('STOP_TRACKING')"> Stop Tracking </button>
+        <button class="button icon-right ion-refresh" ng-click="refreshScreen()"/> </button>
+        <button class="button icon-right ion-cloud" ng-click="forceSync()"> Sync </button>
+        <button class="button button-balanced icon-right ion-play" 
+            ng-click="forceTransition('START_TRACKING')"> Start Tracking </button>
       </div>
   </div>
   <ion-content class="has-subheader">
@@ -33,11 +37,14 @@
       </div>
     </div>
     <div class="card">
-      <div class="item item-divider">
-        Collection
+      <div class="row item item-divider">
+        <div class="col">
+            Collection
+        </div>
+        <button class="col col-25 button button-positive" ng-click="editConfig($event)"> Edit </button>
       </div>
       <ion-list>
-          <ion-item class="row" ng-repeat="entry in settings.collect">
+          <ion-item class="row" ng-repeat="entry in settings.collect.show_config">
                 <div class="col timestamp item-text-wrap">{{entry.key}}</div>
                 <div class="col detail item-text-wrap"> {{entry.val}}</div>
           </ion-item>

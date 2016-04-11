@@ -8,6 +8,7 @@ angular.module('emission.controllers', [])
 
 .controller('SplashCtrl', function($scope, $ionicPlatform, $state, $interval, $rootScope) {
   console.log('SplashCtrl invoked');
+  // alert("attach debugger!");
   // Currently loads main or intro based on whether onboarding is complete.
   // But easily extensible to storing the last screen that the user was on, 
   // or the users' preferred screen

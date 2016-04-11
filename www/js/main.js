@@ -36,7 +36,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     url: '/control',
     views: {
       'main-control': {
-        templateUrl: 'templates/main-control.html',
+        templateUrl: 'templates/control/main-control.html',
         controller: 'ControlCtrl'
       }
     }
@@ -52,7 +52,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     // controller for all the screens because none of them do anything for now.
 })
 
-.controller('ControlCtrl', function($scope, $state, $ionicPopup, $ionicActionSheet) {
+.controller('ControlCtrl', function($scope, $state, $ionicPopup, $ionicActionSheet, $ionicPopover) {
     $scope.getConnectURL = function() {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
             $scope.$apply(function() {
@@ -61,14 +61,30 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         });
     };
 
-    $scope.getConnectionSettings = function() {
-        window.cordova.plugins.BEMDataCollection.getConfig(function(result) {
-            $scope.$apply(function() {
-                var retVal = [];
-                for (var prop in result) {
-                    retVal.push({'key': prop, 'val': result[prop]});
+    $scope.getCollectionSettings = function() {
+        var promiseList = []
+        promiseList.push(window.cordova.plugins.BEMDataCollection.getConfig());
+        promiseList.push(window.cordova.plugins.BEMDataCollection.getAccuracyOptions());
+
+        Promise.all(promiseList).then(function(resultList) {
+            var config = resultList[0];
+            var accuracyOptions = resultList[1];
+            $scope.settings.collect.config = config;
+            $scope.settings.collect.accuracyOptions = accuracyOptions;
+            var retVal = [];
+            for (var prop in config) {
+                if (prop == "accuracy") {
+                    for (var name in accuracyOptions) {
+                        if (accuracyOptions[name] == config[prop]) {
+                            retVal.push({'key': prop, 'val': name});
+                        }
+                    }
+                } else {
+                    retVal.push({'key': prop, 'val': config[prop]});
                 }
-                $scope.settings.collect= retVal;
+            }
+            $scope.$apply(function() {
+                $scope.settings.collect.show_config = retVal;
             });
         });
     };
@@ -123,7 +139,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         $scope.settings.connect = {};
 
         $scope.getConnectURL();
-        $scope.getConnectionSettings();
+        $scope.getCollectionSettings();
         $scope.getEmail();
         $scope.getState();
     };
@@ -132,32 +148,8 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         $state.go("root.intro");
     };
 
-    $scope.forceTripStart = function() {
-        window.cordova.plugins.BEMDataCollection.forceTripStart(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
-        });
-    };
-
-    $scope.forceTripEnd = function() {
-        window.cordova.plugins.BEMDataCollection.forceTripEnd(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
-        });
-    };
-
-    $scope.forceRemotePush = function() {
-        window.cordova.plugins.BEMDataCollection.forceRemotePush(function(result) {
+    $scope.forceTransition = function(transition) {
+        window.cordova.plugins.BEMDataCollection.forceTransition(transition).then(function(result) {
             $scope.$apply(function() {
                 $ionicPopup.alert({template: 'success -> '+result});
             });
@@ -181,22 +173,92 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     };
 
     $scope.forceState = function() {
-        var forceStateActions = [{text: 'Start trip', 
-                                  action: $scope.forceTripStart},
+        var forceStateActions = [{text: "Initialize",
+                                  transition: "INITIALIZE"},
+                                 {text: 'Start trip', 
+                                  transition: "EXITED_GEOFENCE"},
                                  {text: 'End trip',
-                                  action: $scope.forceTripEnd},
+                                  transition: "STOPPED_MOVING"},
+                                 {text: 'Visit ended',
+                                  transition: "VISIT_ENDED"},
+                                 {text: 'Visit started',
+                                  transition: "VISIT_STARTED"},
                                  {text: 'Remote push', 
-                                  action: $scope.forceRemotePush}];
+                                  transition: "RECEIVED_SILENT_PUSH"}];
         $ionicActionSheet.show({
             buttons: forceStateActions,
             titleText: "Force state",
             cancelText: "Cancel",
             buttonClicked: function(index, button) {
-                button.action();
+                $scope.forceTransition(button.transition);
                 return true;
             }
         });
     };
 
+    $scope.editConfig = function($event) {
+        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
+        console.log("settings popup = "+$scope.settingsPopup);
+        $scope.settingsPopup.show($event);
+        /*
+        var editPopup = $ionicPopup.confirm({
+            templateUrl: 'templates/control/main-collect-settings.html',
+            scope: $scope
+        });
+        editPopup.then($scope.saveAndReloadSettingsPopup);
+        });
+        */
+    }
+    
+    $scope.saveAndReloadSettingsPopup = function(result) {
+        console.log("new config = "+$scope.settings.collect.new_config);
+        if (result == true) {
+            window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
+            .then($scope.getCollectionSettings);
+        }
+    };
+
+    $scope.saveAndReloadSettingsPopover = function() {
+        console.log("new config = "+$scope.settings.collect.new_config);
+        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
+            .then($scope.getCollectionSettings);
+        $scope.settingsPopup.hide();
+    };
+
+    // Execute action on hide popover
+    $scope.$on('$destroy', function() {
+      $scope.settingsPopup.remove();
+    });
+
+    $scope.setAccuracy= function() {
+        var accuracyActions = [];
+        for (name in $scope.settings.collect.accuracyOptions) {
+            accuracyActions.push({text: name, value: $scope.settings.collect.accuracyOptions[name]});
+        }
+        $ionicActionSheet.show({
+            buttons: accuracyActions,
+            titleText: "Select accuracy",
+            cancelText: "Cancel",
+            buttonClicked: function(index, button) {
+                $scope.settings.collect.new_config.accuracy = button.value;
+                return true;
+            }
+        });
+    };
+
+
+    $scope.isAndroid = function() {
+        return ionic.Platform.isAndroid();
+    }
+
+    $scope.isIOS = function() {
+        return ionic.Platform.isIOS();
+    }
+
     $scope.refreshScreen();
+    $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
+        scope: $scope
+    }).then(function(popover) {
+        $scope.settingsPopup = popover;
+    });
 });
