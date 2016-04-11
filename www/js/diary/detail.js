@@ -18,6 +18,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'nvd3ChartDirectives'
       }
     } 
   });
+  
   $scope.getIcon = DiaryHelper.getIcon;
   $scope.getHumanReadable = DiaryHelper.getHumanReadable;
   $scope.getPercentages = DiaryHelper.getPercentages;

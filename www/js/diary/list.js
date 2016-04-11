@@ -117,7 +117,12 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     });
 
 
-
+    $scope.setColor = function(mode) {
+      var colors = {"icon ion-android-bicycle":'green',
+    "icon ion-android-walk":'brown',
+    "icon ion-disc":'red',};
+      return { color: colors[mode] };
+    }
 
 
     var showNoTripsAlert = function() {
@@ -176,10 +181,11 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.isGroupShown = function(group) {
       return $scope.shownGroup === group;
     };
-
+    $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
     $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
+    $scope.getPercentages = DiaryHelper.getPercentages;
     $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
     $scope.getSectionDetails = DiaryHelper.getSectionDetails;
     $scope.getFormattedTime = DiaryHelper.getFormattedTime;
@@ -190,6 +196,21 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];
+    $scope.parseEarlierOrLater = function(val) {
+      if (val[0] == '-') {
+        if (parseInt(val.substring(1)) == 1) {
+          return 'Started ' + val.substring(1) + ' hour earlier than usual'
+        } else {
+          return 'Started ' + val.substring(1) + ' hours earlier than usual'
+        }
+      } else {
+        if (parseInt(val.substring(1)) == 1) {
+          return 'Started ' + val.substring(1) + ' hour later than usual'
+        } else {
+          return 'Started ' + val.substring(1) + ' hours later than usual'
+        }        
+      }
+    }
 
     $scope.getTimeSplit = function(tripList) {
         var retVal = {};

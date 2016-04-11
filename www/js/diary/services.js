@@ -29,8 +29,9 @@ angular.module('emission.main.diary.services', ['emission.services'])
   dh.getPercentages = function(trip) {
     var rtn0 = []; // icons
     var rtn1 = []; //percentages
+    
     var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":" ion-android-walk",
+    "WALKING":"ion-android-walk",
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-disc",}
@@ -61,8 +62,8 @@ angular.module('emission.main.diary.services', ['emission.services'])
   dh.allModes = function(trip) {
     var rtn = [];
     var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":" ion-android-walk",
-    "RUNNING":" ion-android-walk",
+    "WALKING":"ion-android-walk",
+    "RUNNING":"ion-android-walk",
     "IN_VEHICLE":"ion-disc",}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
@@ -115,6 +116,25 @@ angular.module('emission.main.diary.services', ['emission.services'])
   dh.getTripDetails = function(trip) {
     return (trip.sections.length) + " sections";
   }; 
+  dh.getEarlierOrLater = function(ts, id) {
+    var ctrip = CommonGraph.findCommon(id);
+    if (!angular.isUndefined(ctrip)) {
+      // assume probabilities array is Monday-indexed + 1-indexed
+      var mostFrequestHours = CommonGraph.probabilitiesToMostFrequentHours(ctrip.probabilites);
+      var weekOfDay = moment(ts * 1000).day();
+      var mostFrequestHour = mostFrequestHours[weekOfDay];
+      var thisHour = parseInt(dh.getFormattedTime(ts).split(':')[0]);
+      if (thisHour == mostFrequestHour) {
+        return '';
+      } else {
+        return (mostFrequestHour - thisHour).toString();
+      }
+    } else {
+      return '';
+    }
+
+
+  }
   dh.fillCommonTripCount = function(tripWrapper) {
       var cTrip = CommonGraph.findCommon(tripWrapper.data.id);
       if (!angular.isUndefined(cTrip)) {
@@ -215,6 +235,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
         var mode_string = dh.getHumanReadable(feature.properties.sensed_mode);
         switch(mode_string) {
             case "WALKING": return getColoredStyle(baseDict, 'brown');
+            case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
             case "TRANSPORT": return getColoredStyle(baseDict, 'red');
             default: return getColoredStyle(baseDict, 'black');

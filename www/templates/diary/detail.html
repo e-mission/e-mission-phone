@@ -28,7 +28,11 @@
          <div class="col button-small">
 
               <div class="row" ng-repeat="section in trip.sections" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
-                  <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getFormattedTime(section.properties.start_ts)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p></div>
+                  <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getFormattedTime(section.properties.start_ts)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p>
+                  
+                  </div>
+
+
                   <div class="col" style="font-size: 25px;">{{getFormattedDistance(section.properties.distance)}} km</div>
                   <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
 
