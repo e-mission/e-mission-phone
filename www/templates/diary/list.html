@@ -34,7 +34,7 @@
 
                     <div class="col-30">
                         <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
-                        <div style="font-size: 15px; width: 0; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/.plus.gif';  }}" style="width: 15px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
+                        <div style="font-size: 15px; width: 0; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
                         <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
                         </div>
                     </div>
