@@ -4,9 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org 'unsafe-inline';
+        content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu 'unsafe-inline';
             style-src 'self' 'unsafe-inline';
-            img-src 'self' data: http://*.tile.openstreetmap.org">
+            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -38,6 +38,7 @@
     <script src="manual_lib/angularjs-nvd3-directives/dist/angularjs-nvd3-directives.js"></script>
     <script src="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
     <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
+    <script src="non-bower-lib/simple-leaflet-plugins/leaflet-heat.js"></script>
 
 
     <!-- Manually installed javascript for libraries that are not published through bower -->
@@ -59,6 +60,7 @@
     <script src="js/diary/services.js"></script>
     <script src="js/common.js"></script>
     <script src="js/common/services.js"></script>
+    <script src="js/heatmap.js"></script>
   </head>
   
   <body ng-app="emission">

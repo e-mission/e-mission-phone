@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 'emission.main.recent'])
+angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 'emission.main.recent', 'emission.main.heatmap'])
 
 .config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
@@ -18,6 +18,16 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
       'main-common': {
         templateUrl: 'templates/main-common.html',
         controller: 'CommonCtrl'
+      }
+    }
+  })
+
+  .state('root.main.heatmap', {
+    url: '/heatmap',
+    views: {
+      'main-heatmap': {
+        templateUrl: 'templates/main-heatmap.html',
+        controller: 'HeatmapCtrl'
       }
     }
   })
