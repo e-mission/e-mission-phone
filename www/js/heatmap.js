@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('emission.main.heatmap',['ui-leaflet'])
 
 .controller('HeatmapCtrl', function($scope, $ionicActionSheet, $http, leafletData) {
@@ -86,17 +88,22 @@ angular.module('emission.main.heatmap',['ui-leaflet'])
   };
 
   $scope.changeFromWeekday = function() {
-    return $scope.changeWeekday($scope.selectCtrl.fromDateWeekdayString,
+    return $scope.changeWeekday(function(newVal) {
+                                  $scope.selectCtrl.fromDateWeekdayString = newVal;
+                                },
                                 $scope.selectCtrl.fromDate);
   }
 
   $scope.changeToWeekday = function() {
-    return $scope.changeWeekday($scope.selectCtrl.toDateWeekdayString,
+    return $scope.changeWeekday(function(newVal) {
+                                  $scope.selectCtrl.toDateWeekdayString = newVal;
+                                },
                                 $scope.selectCtrl.toDate);
   }
 
-  $scope.changeWeekday = function(localDateString, localDateObj) {
+  $scope.changeWeekday = function(stringSetFunction, localDateObj) {
     var weekdayOptions = [
+      {text: "All", value: null},
       {text: "Monday", value: 0},
       {text: "Tuesday", value: 1},
       {text: "Wednesday", value: 2},
@@ -110,7 +117,7 @@ angular.module('emission.main.heatmap',['ui-leaflet'])
       titleText: "Select day of the week",
       cancelText: "Cancel",
       buttonClicked: function(index, button) {
-        localDateString = button.text;
+        stringSetFunction(button.text);
         localDateObj.weekday = button.value;
         return true;
       }
@@ -150,8 +157,8 @@ angular.module('emission.main.heatmap',['ui-leaflet'])
     $scope.selectCtrl.modeString = "ALL";
     $scope.selectCtrl.fromDate = moment2Localdate(dayago)
     $scope.selectCtrl.toDate = moment2Localdate(now);
-    $scope.selectCtrl.fromDateWeekdayString = "Mon..."
-    $scope.selectCtrl.toDateWeekdayString = "Mon..."
+    $scope.selectCtrl.fromDateWeekdayString = "All"
+    $scope.selectCtrl.toDateWeekdayString = "All"
     $scope.selectCtrl.region = null;
   };
 
@@ -159,7 +166,7 @@ angular.module('emission.main.heatmap',['ui-leaflet'])
     return {
       year: momentObj.year(),
       month: momentObj.month() + 1,
-      day: momentObj.date(),
+      day: momentObj.date() - 1,
       hour: momentObj.hour()
     };
   }
