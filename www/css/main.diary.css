@@ -5,6 +5,7 @@
 
 .item {
   border:0px !important;
+
 }
 
 .main {
@@ -54,6 +55,7 @@
 }
 a.item-content {
   padding: 0 !important;
+  background-color: #eeeeee !important;
 }
 .leaflet-div-icon {
   background-color: white;

@@ -120,9 +120,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
     var ctrip = CommonGraph.findCommon(id);
     if (!angular.isUndefined(ctrip)) {
       // assume probabilities array is Monday-indexed + 1-indexed
-      var mostFrequestHours = CommonGraph.probabilitiesToMostFrequentHours(ctrip.probabilites);
-      var weekOfDay = moment(ts * 1000).day();
-      var mostFrequestHour = mostFrequestHours[weekOfDay - 1]; // 1indexed vs 0indexed
+      var mostFrequestHour = ctrip.start_times[0].hour;    
       var thisHour = parseInt(dh.getFormattedTime(ts).split(':')[0]);
       if (thisHour == mostFrequestHour) {
         return '';
@@ -133,6 +131,45 @@ angular.module('emission.main.diary.services', ['emission.services'])
       return '';
     }
   }
+  dh.getArrowClass = function(i) {
+    if (i == -1) {
+      return 'icon ion-arrow-down-c';
+    } else if (i == 0) {
+      return '';
+    } else {
+      return 'icon ion-arrow-up-c';
+    }
+
+  }
+  dh.getLongerOrShorter = function(trip, id) {
+    var ctrip = CommonGraph.findCommon(id);
+    if (!angular.isUndefined(ctrip)) {
+      var cDuration = ctrip.durations[0];
+      var thisDuration = trip.properties.end_ts - trip.properties.start_ts;
+      var diff = thisDuration - cDuration;
+      if (diff < 60 && diff > -60) {
+        return [0, ''];
+      } else {
+        if (diff > 0) {
+          return [1, dh.getFormattedDuration(diff)]; 
+        } else {
+          return [-1, dh.getFormattedDuration(diff)]; 
+        }
+        
+      }
+    } else {
+      return [0, ''];
+    }
+  }
+  dh.arrowColor = function(pn) {
+    if (pn == 0) {
+      return 'transparent';
+    } else if (pn == -1) {
+      return '#72b026';
+    } else {
+      return '#d63e2a';
+    }
+  }
    dh.parseEarlierOrLater = function(val) {
       if (val[0] == '-') {
         if (parseInt(val.substring(1)) == 1) {
@@ -141,10 +178,10 @@ angular.module('emission.main.diary.services', ['emission.services'])
           return 'Started ' + val.substring(1) + ' hours earlier than usual'
         }
       } else {
-        if (parseInt(val.substring(1)) == 1) {
-          return 'Started ' + val.substring(1) + ' hour later than usual'
+        if (parseInt(val) == 1) {
+          return 'Started ' + val + ' hour later than usual'
         } else {
-          return 'Started ' + val.substring(1) + ' hours later than usual'
+          return 'Started ' + val + ' hours later than usual'
         }        
       }
     }

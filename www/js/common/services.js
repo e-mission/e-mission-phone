@@ -50,28 +50,6 @@ angular.module('emission.main.common.services', [])
         return commonGraph.data.cTripCountMap[cTripId];
     };
 
-    var findLargestIndex = function(array) {
-        // assume array.length > 0
-        // assume all non-negative elements
-        var maxIndex = 0;
-        var maxElement = 0;
-        for (var i=0; i<array.length; i++) {
-            if (array[i] > maxElement) {
-                maxElement = array[i];
-                maxIndex = i;
-            }
-        }
-        return maxIndex;
-    }
-    commonGraph.probabilitiesToMostFrequentHours = function(twodarray) {
-        var rtn = [];
-        for (var i=0; i<twodarray.length; i++) {
-            var onedarray = twodarray[i];
-            rtn.push(findLargestIndex(onedarray));
-        }
-        return rtn;
-    }
-
     var postProcessData = function() {
         // Count the number of trips in each common trip. Also, create a map
         // from the trip list to the trip for efficient lookup
