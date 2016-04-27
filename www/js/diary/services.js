@@ -142,13 +142,17 @@ angular.module('emission.main.diary.services', ['emission.services'])
 
   }
   dh.getLongerOrShorter = function(trip, id) {
+    var noChangeReturn = [0, ''];
     var ctrip = CommonGraph.findCommon(id);
     if (!angular.isUndefined(ctrip)) {
-      var cDuration = ctrip.durations[0];
+      var cDuration = dh.average(ctrip.durations);
+      if (cDuration == null) {
+         return noChangeReturn;
+      }
       var thisDuration = trip.properties.end_ts - trip.properties.start_ts;
       var diff = thisDuration - cDuration;
       if (diff < 60 && diff > -60) {
-        return [0, ''];
+        return noChangeReturn;
       } else {
         if (diff > 0) {
           return [1, dh.getFormattedDuration(diff)]; 
@@ -158,8 +162,22 @@ angular.module('emission.main.diary.services', ['emission.services'])
         
       }
     } else {
-      return [0, ''];
+      return noChangeReturn;
     }
+  }
+  dh.average = function(array) {
+     if (array.length == 0) {
+       // We want to special case the handling of the array length because
+       // otherwise we will get a divide by zero error and the dreaded nan
+       return null;
+     }
+    // check out cool use of reduce and arrow functions!
+    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
+    // Hm, arrow functions don't work, but reduce does!
+     var sum = array.reduce(function(previousValue, currentValue, currentIndex, array) {
+          return previousValue + currentValue;
+     });
+     return sum/array.length
   }
   dh.arrowColor = function(pn) {
     if (pn == 0) {
