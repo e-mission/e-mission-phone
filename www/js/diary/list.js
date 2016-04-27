@@ -182,6 +182,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       return $scope.shownGroup === group;
     };
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
+    $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
     $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
@@ -193,6 +194,8 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
     $scope.getTripDetails = DiaryHelper.getTripDetails;
     $scope.starColor = DiaryHelper.starColor;
+    $scope.arrowColor = DiaryHelper.arrowColor;
+    $scope.getArrowClass = DiaryHelper.getArrowClass;
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];
@@ -207,7 +210,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     };
 
     $scope.getTripHeightPixels = function(trip) {
-        return trip.sections.length * 20 + 300+"px";
+        return "400px";
     };
 
     $scope.prevDay = function() {

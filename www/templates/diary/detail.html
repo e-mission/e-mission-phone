@@ -4,7 +4,7 @@
 
             <div class="col-30">
                 <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
-                <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/.plus.gif';  }}" style="width: 15px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
+                <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
                 <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
                 </div>
             </div>
@@ -27,7 +27,7 @@
             height="50%" width="100%">
         </leaflet>
         <div style="height: 15px;"></div>
-        <div class="row" style="background-color: #eeeeee; padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
+        <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
           <div class="col" style="width: 30%; margin-top: 0; font-size: 18px; font-weight: thin;">
           <p style="font-size: 15px; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} km</div>
           <div class="col" style="width: 30%; margin-top: 0; font-size: 18px; font-weight: thin;"><p style="font-size: 15px; color: #cccccc; margin-bottom: 0;">Time</p>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
