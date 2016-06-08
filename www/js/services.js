@@ -20,6 +20,27 @@ angular.module('emission.services', [])
     };
 })
 
+// common configuration methods across all screens
+// e.g. maps
+// for consistent L&F
+
+.factory('Config', function() {
+    var config = {};
+
+    config.getMapTiles = function() {
+      return {
+          tileLayer: 'http://tile.stamen.com/toner/{z}/{x}/{y}.png',
+          tileLayerOptions: {
+              attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+              opacity: 0.9,
+              detectRetina: true,
+              reuseTiles: true,
+          }
+      };
+    };
+    return config;
+})
+
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 

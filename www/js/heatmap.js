@@ -1,19 +1,12 @@
 'use strict';
 
-angular.module('emission.main.heatmap',['ui-leaflet'])
+angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
 
-.controller('HeatmapCtrl', function($scope, $ionicActionSheet, $http, leafletData) {
+.controller('HeatmapCtrl', function($scope, $ionicActionSheet, $http, leafletData, Config) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
     defaults : {
-      tileLayer: 'http://tile.stamen.com/toner/{z}/{x}/{y}.png',
-      tileLayerOptions: {
-        attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
-        opacity: 0.9,
-        detectRetina: true,
-        reuseTiles: true,
-      },
       center: {
         lat: 37.87269,
         lng: -122.25921,
@@ -21,6 +14,8 @@ angular.module('emission.main.heatmap',['ui-leaflet'])
       }
     }
   });
+
+  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
   $scope.getPopRoute = function() {
     var data = {
