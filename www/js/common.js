@@ -1,23 +1,17 @@
 angular.module('emission.main.common',['ui-leaflet', 'nvd3ChartDirectives',
                                       'ionic-datepicker',
-                                      'emission.main.common.services'])
+                                      'emission.main.common.services',
+                                      'emission.services'])
 
 .controller("CommonCtrl", function($scope, $http, $ionicPopup,
-                                    leafletData, CommonGraph) {
+                                    leafletData, CommonGraph,Config) {
   console.log("controller CommonCtrl called");
 
   var db = window.cordova.plugins.BEMUserCache;
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
-    defaults : {
-      tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-      tileLayerOptions: {
-          opacity: 0.9,
-          detectRetina: true,
-          reuseTiles: true,
-      }
-    }, 
+    defaults : Config.getMapTiles(),
     events: {
       map: {
         enable: ['zoomstart', 'drag', 'click', 'mousemove', 'contextmenu'],

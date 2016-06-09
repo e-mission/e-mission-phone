@@ -1,12 +1,14 @@
 angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
                                       'ionic-datepicker',
-                                      'emission.main.common.services'])
+                                      'emission.main.common.services',
+                                      'emission.services'])
 
 .controller("DiaryListCtrl", function($window, $scope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
-                                    leafletData, Timeline, CommonGraph, DiaryHelper) {
+                                    leafletData, Timeline, CommonGraph, DiaryHelper,
+                                    Config) {
   console.log("controller DiaryListCtrl called");
 
   var readAndUpdateForDay = function(day) {
@@ -29,14 +31,10 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
           scrollWheelZoom: false,
           doubleClickZoom: false,
           boxZoom: false,
-          tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          tileLayerOptions: {
-              opacity: 0.9,
-              detectRetina: true,
-              reuseTiles: true,
-          }
       }
   });
+
+  angular.extend($scope.defaults, Config.getMapTiles())
 
   moment.locale('en', {
     relativeTime : {

@@ -1,4 +1,4 @@
-angular.module('emission.main.recent', ['ngCordova'])
+angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
 .config(function($stateProvider, $urlRouterProvider) {
   $stateProvider
@@ -280,21 +280,14 @@ angular.module('emission.main.recent', ['ngCordova'])
   $scope.updateEntries();
 })
    
-.controller('mapCtrl', function($scope) {
+.controller('mapCtrl', function($scope, Config) {
     /* Let's keep a reference to the database for convenience */
     var db = window.cordova.plugins.BEMUserCache;
     $scope.mapCtrl = {};
     $scope.mapCtrl.selKey = "background/location";
 
     angular.extend($scope.mapCtrl, {
-        defaults : {
-          tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          tileLayerOptions: {
-              opacity: 0.9,
-              detectRetina: true,
-              reuseTiles: true,
-          }
-        }
+        defaults : Config.getMapTiles()
     });
 
     $scope.refreshMap = function() {
