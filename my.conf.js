@@ -18,7 +18,6 @@ module.exports = function(config) {
       'www/lib/ionic/js/angular/angular.js',
       'www/lib/ionic/js/ionic.bundle.js',
       'www/lib/ui-leaflet/dist/ui-leaflet.js',
-      'www/lib/angular-simple-logger/dist/angular-simple-logger.js',
       'node_modules/angular-mocks/angular-mocks.js',
       'www/js/*.js',
       'www/js/test/*.js'//,
