@@ -41,6 +41,17 @@ Installation is now complete. You can view the current state of the application 
 
     $ ionic emulate ios --target="iPhone-6"
 
+JS Testing
+---
+From the root directory run
+    $ npm install karma --save-dev
+    $ npm install angular-mocks
+    $ npm install karma-jasmine karma-chrome-launcher --save-dev
+
+Write tests in www/js/test
+To run tests, run 
+    $ karma start my.conf.js in the root directory
+
 Troubleshooting
 ---
 
