@@ -3,20 +3,20 @@
         <div class="row" style="">
 
             <div class="col-30">
-                <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
                 <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
-                <div style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
                 </div>
             </div>
 
             <div class="col-70">
 
-                <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+                <div class="item item-icon-left" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #72b026;"></i>
             {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
                 </div>
-                <div class="item item-icon-left" href="#" style="font-size: 13px; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
+                <div class="item item-icon-left" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #d63e2a;"></i>
             {{tripgj.end_place.properties.displayName.split(',')[0]}}
                 </div>
@@ -28,9 +28,9 @@
         </leaflet>
         <div style="height: 15px;"></div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
-          <div class="col" style="width: 30%; margin-top: 0; font-size: 18px; font-weight: thin;">
-          <p style="font-size: 15px; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} km</div>
-          <div class="col" style="width: 30%; margin-top: 0; font-size: 18px; font-weight: thin;"><p style="font-size: 15px; color: #cccccc; margin-bottom: 0;">Time</p>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
+          <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
+          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} km</div>
+          <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Time</p>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
           <div class="col">
             <i class="{{mode}}" ng-repeat="mode in getPercentages(trip)[0]" style="margin-left: 15px; margin-right: 15px; font-size: 15px;"></i>
             <br>

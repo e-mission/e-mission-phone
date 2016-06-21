@@ -155,7 +155,9 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     */
 
     $scope.refresh = function() {
+      if ($ionicScrollDelegate.getScrollPosition().top < 5) {
        readAndUpdateForDay(Timeline.data.currDay);
+      }
     }
 
     /* For UI control */
@@ -207,9 +209,6 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
 
     };
 
-    $scope.getTripHeightPixels = function(trip) {
-        return "400px";
-    };
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
