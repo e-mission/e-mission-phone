@@ -37,8 +37,8 @@
   color:whitesmoke !important;
 }
 .angular-leaflet-map {
-  height: 100%;
-  width: 100%;
+  height: 150px;
+  width: 200px;
 }
 
 
