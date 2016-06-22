@@ -41,10 +41,24 @@
         <div class="col">
             Collection
         </div>
-        <button class="col col-25 button button-positive" ng-click="editConfig($event)"> Edit </button>
+        <button class="col col-25 button button-positive" ng-click="editCollectionConfig($event)"> Edit </button>
       </div>
       <ion-list>
           <ion-item class="row" ng-repeat="entry in settings.collect.show_config">
+                <div class="col timestamp item-text-wrap">{{entry.key}}</div>
+                <div class="col detail item-text-wrap"> {{entry.val}}</div>
+          </ion-item>
+      </ion-list>
+    </div>
+    <div class="card">
+      <div class="row item item-divider">
+        <div class="col">
+            Sync
+        </div>
+        <button class="col col-25 button button-positive" ng-click="editSyncConfig($event)"> Edit </button>
+      </div>
+      <ion-list>
+          <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
                 <div class="col timestamp item-text-wrap">{{entry.key}}</div>
                 <div class="col detail item-text-wrap"> {{entry.val}}</div>
           </ion-item>

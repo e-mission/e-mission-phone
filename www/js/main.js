@@ -99,6 +99,24 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         });
     };
 
+    $scope.getSyncSettings = function() {
+        var promiseList = []
+        promiseList.push(window.cordova.plugins.BEMServerSync.getConfig());
+
+        Promise.all(promiseList).then(function(resultList) {
+            var config = resultList[0];
+            var accuracyOptions = resultList[1];
+            $scope.settings.sync.config = config;
+            var retVal = [];
+            for (var prop in config) {
+                retVal.push({'key': prop, 'val': config[prop]});
+            }
+            $scope.$apply(function() {
+                $scope.settings.sync.show_config = retVal;
+            });
+        });
+    };
+
     $scope.getEmail = function() {
         /*
         return new Promise(function(resolve, reject) {
@@ -145,11 +163,13 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
+        $scope.settings.sync = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
 
         $scope.getConnectURL();
         $scope.getCollectionSettings();
+        $scope.getSyncSettings();
         $scope.getEmail();
         $scope.getState();
     };
@@ -206,10 +226,10 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         });
     };
 
-    $scope.editConfig = function($event) {
+    $scope.editCollectionConfig = function($event) {
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        console.log("settings popup = "+$scope.settingsPopup);
-        $scope.settingsPopup.show($event);
+        console.log("settings popup = "+$scope.collectSettingsPopup);
+        $scope.collectSettingsPopup.show($event);
         /*
         var editPopup = $ionicPopup.confirm({
             templateUrl: 'templates/control/main-collect-settings.html',
@@ -218,6 +238,12 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         editPopup.then($scope.saveAndReloadSettingsPopup);
         });
         */
+    }
+
+    $scope.editSyncConfig = function($event) {
+        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
+        console.log("settings popup = "+$scope.syncSettingsPopup);
+        $scope.syncSettingsPopup.show($event);
     }
     
     $scope.saveAndReloadSettingsPopup = function(result) {
@@ -228,16 +254,16 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         }
     };
 
-    $scope.saveAndReloadSettingsPopover = function() {
-        console.log("new config = "+$scope.settings.collect.new_config);
-        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
-            .then($scope.getCollectionSettings);
-        $scope.settingsPopup.hide();
+    $scope.saveAndReloadSyncSettingsPopover = function() {
+        console.log("new config = "+$scope.settings.sync.new_config);
+        window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)
+            .then($scope.getSyncSettings);
+        $scope.syncSettingsPopup.hide();
     };
 
     // Execute action on hide popover
     $scope.$on('$destroy', function() {
-      $scope.settingsPopup.remove();
+      $scope.collectSettingsPopup.remove();
     });
 
     $scope.setAccuracy= function() {
@@ -269,6 +295,12 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
         scope: $scope
     }).then(function(popover) {
-        $scope.settingsPopup = popover;
+        $scope.collectSettingsPopup = popover;
+    });
+
+    $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
+        scope: $scope
+    }).then(function(popover) {
+        $scope.syncSettingsPopup = popover;
     });
 });
