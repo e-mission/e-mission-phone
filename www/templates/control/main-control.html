@@ -14,6 +14,7 @@
 <!--     <div style="text-align: center;">
       <img src="img/avatar_1.png" ng-style="getAvatarStyle()">
     </div> -->
+    
     <div style="background-color: white; height: 50px;">
       <div style="padding: 15px 15px; float: left;">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" ng-style="getIconButtonStyle('E0A1A1')"><i class="icon ion-log-out" ng-style="getIconStyle()"></i></div>
@@ -30,7 +31,18 @@
         <div style="padding: 15px 15px; float: left;">{{parseState(settings.collect.state)}}</div>
         <div ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
       </div>
-      
+      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
+        <div style="padding: 15px 15px; float: left;">Check log</div>
+        <div ng-click="showLog()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+      </div>      
+      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
+        <div style="padding: 15px 15px; float: left;">Check sensed data</div>
+        <div ng-click="showSensed()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+      </div>   
+      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
+        <div style="padding: 15px 15px; float: left;">Check map</div>
+        <div ng-click="showMap()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+      </div>   
       <div style="background-color: white; height: 50px; margin-top: 0.5px;">
         <div style="padding: 15px 15px; float: left;">Collection</div>
         <div ng-click="editConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
