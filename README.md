@@ -41,7 +41,6 @@ Installation is now complete. You can view the current state of the application 
 
     $ ionic emulate ios --target="iPhone-6"
 
-
 #### Temporary workaround *for android only* ####
 Unfortunately, `ionic state` does not store plugin version numbers, and
 versions of crosswalk > 16 are so large that the generated APK is too big
@@ -68,6 +67,25 @@ $ cordova plugin add cordova-plugin-crosswalk-webview@1.5.0
 ```
 
 This does NOT affect iOS.
+
+JS Testing
+---
+From the root directory run
+
+    $ npm install karma --save-dev
+    $ npm install karma-jasmine karma-chrome-launcher --save-dev
+
+Write tests in www/js/test
+To run tests if you have karma globally set, run 
+
+    $ karma start my.conf.js 
+    
+in the root directory. If you didn't run the -g command, you can run
+tests with 
+
+    $ ./node_modules/karma/bin/karma start
+    
+in the root directory
 
 Troubleshooting
 ---
