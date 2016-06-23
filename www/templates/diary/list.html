@@ -35,7 +35,7 @@
 			 <ion-item style="height: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '275px':'300px' }} ;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
                 <div class="list card" style="padding: 10px;">
                 <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i>
-                <div class="row" style="">
+                <div class="row" style="padding-top: 1em;">
 
                     <div class="col-30">
                         <div style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>

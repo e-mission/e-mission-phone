@@ -62,7 +62,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     // controller for all the screens because none of them do anything for now.
 })
 
-.controller('ControlCtrl', function($scope, $state, $ionicPopup, $ionicActionSheet, $ionicPopover) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover) {
     $scope.getConnectURL = function() {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
             $scope.$apply(function() {
@@ -271,4 +271,67 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     }).then(function(popover) {
         $scope.settingsPopup = popover;
     });
+
+    $scope.getAvatarStyle = function() {
+        return {
+            'width': ($window.screen.width * 0.30).toString() + 'px', 
+            'height': ($window.screen.width * 0.30).toString() + 'px',
+            'border-radius': ($window.screen.width * 0.15).toString() + 'px',
+            'margin-top': ($window.screen.width * 0.1).toString() + 'px',
+            'margin-bottom': ($window.screen.width * 0.1).toString() + 'px',
+            'border-style': 'solid',
+            'border-width': '7px',
+            'border-color': '#fff'
+        }
+    }
+    $scope.getButtonStyle = function(color) {
+        return {
+            'text-align': 'center',
+            'float': 'right',
+            'height': '100%', 
+            'background-color': '#' + color,
+            'color': '#fff',
+            'padding': '15px 15px',
+            'width': + ($window.screen.width * 0.25).toString() + 'px'
+        }
+    }
+    $scope.getIconButtonStyle = function(color) {
+        return {
+            'text-align': 'center',
+            'float': 'right',
+            'height': '100%', 
+            'background-color': '#' + color,
+            'color': '#fff',
+            'padding': '15px 15px',
+            'width': '50px'
+        }
+    }
+    $scope.getIconStyle = function() {
+        return {
+            'font-size': '20px'
+        }
+    }
+    $scope.getExpandButtonClass = function() {
+        return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
+    }
+    $scope.parseState = function(state) {
+        return state.substring(6);
+    }
+    $scope.toggleCollection = function() {
+        if ($scope.collectionExpanded()) {
+            $scope.expanded = false;
+            document.querySelector('#displayRow').setAttribute('style', 'display: none;');
+            $ionicScrollDelegate.scrollTo(0, 0, true);
+            document.querySelector('#expandButton').class('icon ion-ios-arrow-down');
+        } else {
+            $scope.expanded = true;
+            document.querySelector('#displayRow').setAttribute('style', 'display: block;');
+            $ionicScrollDelegate.scrollTo(0, 1000, true);
+            document.querySelector('#expandButton').class('icon ion-ios-arrow-up');
+            
+        }
+    }
+    $scope.collectionExpanded = function() {
+        return $scope.expanded;
+    }
 });
