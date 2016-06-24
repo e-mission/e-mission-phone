@@ -183,9 +183,9 @@ angular.module('emission.main.diary.services', ['emission.services'])
     if (pn == 0) {
       return 'transparent';
     } else if (pn == -1) {
-      return '#72b026';
+      return '#33e0bb';
     } else {
-      return '#d63e2a';
+      return '#ff5251';
     }
   }
    dh.parseEarlierOrLater = function(val) {

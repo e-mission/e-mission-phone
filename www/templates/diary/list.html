@@ -1,20 +1,20 @@
-<ion-view title="Trip Diary">
-	<div align-title="center" class="bar bar-positive bar-subheader ">
-		<div class="buttons" style="text-align:center">
-			<button class="button button-icon icon ion-ios-arrow-thin-left" ng-click="prevDay()">
+<ion-view nav-title="Trip Diary" style="background-color: #303030;">
+	<ion-nav-title class="dark-color">
+		<div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
+			<button class="button button-icon icon ion-arrow-left-b" style="color: #fff; margin-top: 4px; background-color: transparent !important; border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;" ng-click="prevDay()">
 			</button>
-			<ionic-datepicker input-obj="datepickerObject">
-			<button class="button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}}</button>
-		</ionic-datepicker>
+			<ionic-datepicker input-obj="datepickerObject" style="color: white;">
+			  <button class="button" style="color: #212121; background-color: #fff !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+                 border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
+              "> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+		    </ionic-datepicker>
 
-		<button class="button button-icon icon ion-ios-arrow-thin-right" ng-click="nextDay()">
-		</button>
-        <!-- Refresh button removed. Pull to refresh -->
-<!--         <button class="button button-icon icon ion-refresh" ng-click="refresh()">
-        </button> -->
+    		<button class="button button-icon icon ion-arrow-right-b" style="color: #fff; margin-top: 4px; background-color: transparent !important; border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;" ng-click="nextDay()">
+    		</button>
 		</div>
-	</div> 	
-	<ion-content class="has-subheader" style="background-color: #eeeeee;">
+	</ion-nav-title> 	
+    <div style="background-color: transparent; border-left-style: solid; border-left-width: 1px; border-left-color: #212121; margin-left: 8%; position: absolute; float: left; height: 100%;"></div>
+	<ion-content class="" style=" padding-left: 12%;">
         <ion-refresher 
         pulling-text="Pull to refresh" 
         on-refresh="refresh()">
@@ -30,43 +30,33 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-		<div collection-repeat="tripgj in data.currDayTripWrappers">
-			
-			 <ion-item style="height: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '275px':'300px' }} ;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
-                <div class="list card" style="padding: 10px;">
-                <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i>
-                <div class="row" style="padding-top: 1em;">
 
-                    <div class="col-30">
-                        <div style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
-                        <div style="font-size: 15px; width: 0; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
-                        <div style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
-                        </div>
+		<div collection-repeat="tripgj in data.currDayTripWrappers">
+	       <div style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); text-align: center; background-color: #33e0bb; color: black; width: 5.5em; height: 1.8em; border-radius: 0.9em; font-size: 0.6em; position: absolute; left: -11%; top: 15px; line-height: 1.9em;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>		
+			 <ion-item style="background-color: transparent;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
+                <div class="list card" style="margin: 16px; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">
+                <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i> -->
+    
+                <div class="row">
+                    <div class="col-50" style="text-align: center; padding: 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;">
+                        <p style="color: white; font-size: 0.8em;">{{getFormattedDistance(tripgj.data.properties.distance)}} km in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
+                           tripgj.data.properties.end_ts)}}</p>
                     </div>
 
-                    <div class="col-70">
+                    <div class="col-50" style="text-align: center; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid; padding-top: 5px;">
 
-                        <div class="item item-icon-left" href="#" style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
-                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #72b026;"></i>
-                    {{tripgj.start_place.properties.displayName.split(',')[0]}}
-
-                        </div>
-                        <div class="item item-icon-left" href="#" style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #d63e2a;"></i>
-                    {{tripgj.end_place.properties.displayName.split(',')[0]}}
-                        </div>
+                        <div>
+                            <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="setColor(mode)"></i>
+                        </div> 
+                        <div style="margin-top: -5px;">
+                            <a ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em; color: white;">{{percentage}}%</a>
+                        </div>   
                     </div>
                 </div>
 
-                <div style="height: 10px;"></div>
+                <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>    
 
-
-            	<div class="row" style="">
-				  <div class="col-70" style="">
-				    <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
-				  </div>
-				  <div class="col-30" style="padding: 0 10px;">
-				  	<div>
+<!-- 				  	<div>
                     <p style="color: #ccc; font-size: 0.8em">Distance</p>
 				    <p style="font-size: 0.8em">{{getFormattedDistance(tripgj.data.properties.distance)}} km</p>
 				    <div style="height: 10px;"></div>
@@ -85,16 +75,41 @@
                 
                     
 
-                <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.8em; margin-left: 0.3em; margin-right: 1em;" ng-style="setColor(mode)"></i>
-                <br>
-                <a ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
-                        
+                    <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.8em; margin-left: 0.3em; margin-right: 1em;" ng-style="setColor(mode)"></i>
+                    <br>
+                    <a ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
+                            
+ -->
 
-				  </div>
-				</div>
+
+                
+
+                    <!-- <div class="col-30">
+                        <div style="color: white; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
+                        <div style="color: white; font-size: 15px; width: 0; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
+                        <div style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
+                        </div>
+                    </div> -->
+
+
+                <div style="padding: 0.5em;">
+                    <div class="item item-icon-left" href="#" style="background-color: transparent; color: white; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+                    <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+                            {{tripgj.start_place.properties.displayName.split(',')[0]}}
+
+                    </div>
+                    <div class="item item-icon-left" href="#" style="background-color: transparent; color: white; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                    <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+                            {{tripgj.end_place.properties.displayName.split(',')[0]}}
+                    </div>
+                </div>
+                    
+
+
+
             </div>
             </ion-item>
-
+            <div style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); text-align: center; background-color: #ff5251; color: white; width: 5.5em; height: 1.8em; border-radius: 0.9em; font-size: 0.6em; position: absolute; left: -11%; top: 275px; line-height: 1.9em;">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
             
         </div>
 		</ion-list>

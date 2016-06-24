@@ -11,6 +11,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
                                     Config) {
   console.log("controller DiaryListCtrl called");
 
+  StatusBar.styleBlackOpaque()
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
     // based on the time when the database finishes reading.

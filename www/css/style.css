@@ -25,3 +25,86 @@ background-image: none !important; }
 .list {
 	padding-top: 0.5px !important;
 }
+.card {
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  height: 275px;
+  margin: 1rem;
+  position: relative;
+  width: 300px;
+}
+.tab-nav{
+  background-color: #212121 !important; background-size: 0 !important;
+}
+ion-header-bar {
+  background-color: #212121 !important;
+}
+
+.tab-item .icon {
+  margin: 3px auto 1px auto;
+  font-size: 25px;
+  height: 25px;
+  
+}
+.tabs-custom > .tabs,
+.tabs.tabs-custom {
+  border-color: #5D3A23;
+  background-color: #5D3A23;
+  background-image: linear-gradient(0deg, #0c60ee, #0c60ee 50%, transparent 30%);
+  color: #33e0bb; }
+  .tabs-custom > .tabs .tab-item .badge,
+  .tabs.tabs-custom .tab-item .badge {
+    background-color: #33e0bb;
+    color: #387ef5; }
+
+.tabs-striped.tabs-custom .tabs {
+  background-color: #5D3A23; }
+
+.tabs-striped.tabs-custom .tab-item {
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 1; }
+  .tabs-striped.tabs-custom .tab-item .badge {
+    opacity: 0.3; }
+  .tabs-striped.tabs-custom .tab-item.tab-item-active, .tabs-striped.tabs-custom .tab-item.active, .tabs-striped.tabs-positive .tab-item.activated {
+    margin-top: -2px;
+    color: #fff;
+    border-style: solid;
+    border-width: 2px 0 0 0;
+    border-color: #fff; }
+.card-1 {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.card-1:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-2 {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.card-3 {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.card-4 {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-5 {
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+.title.title-center.header-item {
+  color: white;
+}
+button.button.ng-binding {
+  font-size: 15px;
+}
+button.button.ng-binding i.icon.ion-edit {
+  font-size: 12px;
+}
+button.button.back-button.buttons.button-clear.header-item {
+  color: #fff;
+}
