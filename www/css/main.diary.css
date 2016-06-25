@@ -37,8 +37,8 @@
   color:whitesmoke !important;
 }
 .angular-leaflet-map {
-    width: 200px;
-    height: 150px;
+  width: 300px;
+  height: 150px;
 }
 
 
@@ -55,7 +55,7 @@
 }
 a.item-content {
   padding: 0 !important;
-  background-color: #eeeeee !important;
+  background-color: transparent !important;
 }
 .leaflet-div-icon {
   background-color: white;
@@ -67,11 +67,11 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #72b026;
+  background-color: #33e0bb;
   border-radius: 6px;
 }
 .leaflet-div-icon-stop {
-  background-color: #d63e2a;
+  background-color: #ff5251;
   border-radius: 6px;
 }
 .inner-icon {

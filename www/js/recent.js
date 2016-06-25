@@ -1,37 +1,5 @@
 angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
-.config(function($stateProvider, $urlRouterProvider) {
-  $stateProvider
-    // The root (root/main/recent) is configured in the main module
-  .state('root.main.recent.log', {
-    url: "/log", // /root/main/recent/log
-    views: {
-      'menuContent': {
-        templateUrl: "templates/recent/log.html",
-        controller: 'logCtrl'
-      }
-    }
-  })
-
-  .state('root.main.recent.sensedData', {
-    url: "/sensedData",
-    views: {
-      'menuContent': {
-        templateUrl: "templates/recent/sensedData.html",
-        controller: 'sensedDataCtrl'
-      }
-    }
-  })
-    .state('root.main.recent.map', {
-      url: "/map",
-      views: {
-        'menuContent': {
-          templateUrl: "templates/recent/map.html",
-          controller: 'mapCtrl'
-        }
-      }
-    });
-})
 
 .controller('appCtrl', function($scope, $ionicModal, $timeout) {
     $scope.openNativeSettings = function() {
