@@ -254,6 +254,13 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         }
     };
 
+    $scope.saveAndReloadCollectSettingsPopover = function() {
+        console.log("new config = "+$scope.settings.collect.new_config);
+        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
+            .then($scope.getCollectionSettings);
+        $scope.collectSettingsPopup.hide();
+    };
+
     $scope.saveAndReloadSyncSettingsPopover = function() {
         console.log("new config = "+$scope.settings.sync.new_config);
         window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)
@@ -264,6 +271,7 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     // Execute action on hide popover
     $scope.$on('$destroy', function() {
       $scope.collectSettingsPopup.remove();
+      $scope.syncSettingsPopup.remove();
     });
 
     $scope.setAccuracy= function() {
