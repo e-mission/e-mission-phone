@@ -1,0 +1,16 @@
+<ion-popover-view>
+<ion-content class="has-header">
+<ion-button-bar>
+    <button class="button button-active button-block" ng-click="saveAndReloadSyncSettingsPopover()">Save</button>
+</ion-button-bar> 
+<ion-list>
+  <ion-item class="row item-input">
+    <div class="col">Sync Interval (secs)</div>
+    <button class="col col-25" ng-click="setSyncInterval()">
+        {{settings.sync.new_config.sync_interval}}
+    </button>
+  </ion-item>
+  <ion-toggle ng-disabled="isAndroid()" ng-model="settings.sync.new_config.ios_use_remote_push">Use Remote Push</ion-toggle>
+</ion-list>
+</ion-content>
+</ion-popover-view>
