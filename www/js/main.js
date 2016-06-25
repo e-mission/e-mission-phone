@@ -86,13 +86,46 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     }
 })
 
-.controller('MainCtrl', function($scope, $state) {
+.controller('MainCtrl', function($scope, $state, $rootScope) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
+    $scope.dark_theme = $rootScope.dark_theme;
+    $scope.tabsCustomClass = function() {
+        return ($scope.dark_theme)? "tabs-icon-top tabs-custom-dark" : "tabs-icon-top tabs-custom";
+    }
 })
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope) {
+    $scope.dark_theme = $rootScope.dark_theme;
+    $scope.ionViewBackgroundClass = function() {
+        return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
+    }
+    $scope.toggleDarkTheme = function() {
+        return $scope.dark_theme;
+    }
+    $scope.willUseDarkTheme = function() {
+        if ($scope.dark_theme) {
+            $rootScope.dark_theme = false;
+            $scope.dark_theme = false;
+            if (window.plugins && window.plugins.appPreferences) {
+                var prefs = plugins.appPreferences;
+                prefs.store('dark_theme', false);
+            } 
+            // StatusBar.styleDefault();
+            
+        } else {
+            $rootScope.dark_theme = true;
+            $scope.dark_theme = true;
+            if (window.plugins && window.plugins.appPreferences) {
+                var prefs = plugins.appPreferences;
+                prefs.store('dark_theme', true);                
+            }
+            // StatusBar.style(2);
+        }
+        $ionicPopup.alert({template: 'Restart the app to see all changes!'})
+    }
+
     $scope.getConnectURL = function() {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
             $scope.$apply(function() {
@@ -261,7 +294,6 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             }
         });
     };
-
     $scope.editCollectionConfig = function($event) {
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
         console.log("settings popup = "+$scope.collectSettingsPopup);
@@ -275,12 +307,14 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         });
         */
     }
-    $scope.editSyncConfig = function($event) {                  
-        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));              
-        console.log("settings popup = "+$scope.syncSettingsPopup);              
-        $scope.syncSettingsPopup.show($event);              
+
+    $scope.editSyncConfig = function($event) {
+        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
+        console.log("settings popup = "+$scope.syncSettingsPopup);
+        $scope.syncSettingsPopup.show($event);
     }
-    $scope.saveAndReloadCollectSettingsPopover = function(result) {
+    
+    $scope.saveAndReloadSettingsPopup = function(result) {
         console.log("new config = "+$scope.settings.collect.new_config);
         if (result == true) {
             window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
@@ -288,18 +322,19 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         }
     };
 
-    $scope.saveAndReloadSettingsPopover = function() {
+    $scope.saveAndReloadCollectSettingsPopover = function() {
         console.log("new config = "+$scope.settings.collect.new_config);
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
             .then($scope.getCollectionSettings);
-        $scope.settingsPopup.hide();
+        $scope.collectSettingsPopup.hide();
     };
-    $scope.saveAndReloadSyncSettingsPopover = function() { 
-        console.log("new config = "+$scope.settings.collect.new_config);
-         window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)            
-            .then($scope.getSyncSettings);   
-            $scope.syncSettingsPopup.hide();
-    }
+
+    $scope.saveAndReloadSyncSettingsPopover = function() {
+        console.log("new config = "+$scope.settings.sync.new_config);
+        window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)
+            .then($scope.getSyncSettings);
+        $scope.syncSettingsPopup.hide();
+    };
     // Execute action on hide popover
     $scope.$on('$destroy', function() {
       $scope.collectSettingsPopup.remove();
@@ -350,13 +385,26 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
         scope: $scope
     }).then(function(popover) {
-        $scope.settingsPopup = popover;
+        $scope.collectSettingsPopup = popover;
     });
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {        
         scope: $scope       
     }).then(function(popover) {     
         $scope.syncSettingsPopup = popover;     
     });
+    $scope.trackingOn = function() {
+        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+    }
+    $scope.userStartStopTracking = function() {
+        if ($scope.startStopBtnToggle){
+            $scope.forceTransition('STOP_TRACKING');
+            $scope.startStopBtnToggle = false;
+        } else {
+            $scope.forceTransition('START_TRACKING');
+            $scope.startStopBtnToggle = true;
+        }
+    }
+    $scope.startStopBtnToggle = $scope.trackingOn(); 
     $scope.getAvatarStyle = function() {
         return {
             'width': ($window.screen.width * 0.30).toString() + 'px', 
@@ -407,12 +455,12 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     $scope.toggleCollection = function() {
         if ($scope.collectionExpanded()) {
             $scope.expanded = false;
-            document.querySelector('#displayRow').setAttribute('style', 'display: none;');
+            $ionicScrollDelegate.resize();
             $ionicScrollDelegate.scrollTo(0, 0, true);
             
         } else {
             $scope.expanded = true;
-            document.querySelector('#displayRow').setAttribute('style', 'display: block;');
+            $ionicScrollDelegate.resize();
             $ionicScrollDelegate.scrollTo(0, 1000, true);
             
             

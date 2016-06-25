@@ -22,6 +22,13 @@ angular.module('emission.controllers', [])
     console.log("Checking to see whether we are ready to load the screen");
     if (window.plugins && window.plugins.appPreferences) {
       var prefs = plugins.appPreferences;
+        prefs.fetch('dark_theme').then(function(value) {
+          if (value == true) {
+            $rootScope.dark_theme = true;
+          } else {
+            $rootScope.dark_theme = false;
+          }
+        });
         prefs.fetch('setup_complete').then(function(value) {
           console.log('setup_complete result '+value);
           if (value == true) {

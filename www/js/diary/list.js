@@ -3,15 +3,17 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
                                       'emission.main.common.services',
                                       'emission.services'])
 
-.controller("DiaryListCtrl", function($window, $scope, $ionicPlatform, $state,
+.controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     Config) {
   console.log("controller DiaryListCtrl called");
-
-  StatusBar.styleBlackOpaque()
+  // Add option
+  // StatusBar.styleBlackOpaque()
+  $scope.dark_theme = $rootScope.dark_theme;
+  StatusBar.styleDefault();
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
     // based on the time when the database finishes reading.
@@ -60,6 +62,25 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
      * setHours here, while the currDay is a moment, since we use it to perform
      * +date and -date operations.
      */
+     $scope.listExpandClass = function () {
+      return ($scope.dark_theme)? "earlier-later-expand-dark" : "earlier-later-expand"; 
+     }
+     $scope.listLocationClass = function() {
+        return ($scope.dark_theme)? "item item-icon-left list-location-dark" : "item item-icon-left list-location"; 
+      
+     }
+     $scope.listTextClass = function() {
+        return ($scope.dark_theme)? "list-text-dark" : "list-text"; 
+     }
+    $scope.ionViewBackgroundClass = function() {
+      return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background"; 
+    }
+    $scope.datePickerClass = function() {
+
+    }
+    $scope.listCardClass = function() {
+      return ($scope.dark_theme)? "list card list-card-dark" : "list card list-card"; 
+    }
 
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
