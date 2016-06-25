@@ -282,6 +282,26 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         });
     };
 
+    $scope.setSyncInterval = function() {
+        var syncIntervalActions = [];
+        syncIntervalActions.push({text: "1 min", value: 60});
+        syncIntervalActions.push({text: "10 min", value: 10 * 60});
+        syncIntervalActions.push({text: "30 min", value: 30 * 60});
+        syncIntervalActions.push({text: "1 hr", value: 60 * 60});
+        syncIntervalActions.push({text: "2 hr", value: 2* 60 * 60});
+        syncIntervalActions.push({text: "6 hr", value: 6 * 60 * 60});
+
+        $ionicActionSheet.show({
+            buttons: syncIntervalActions,
+            titleText: "Select sync interval",
+            cancelText: "Cancel",
+            buttonClicked: function(index, button) {
+                $scope.settings.sync.new_config.sync_interval = button.value;
+                return true;
+            }
+        });
+    };
+
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
