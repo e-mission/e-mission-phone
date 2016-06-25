@@ -1,15 +1,15 @@
 <ion-view nav-title="Trip Diary" style="background-color: #303030;">
 	<ion-nav-title class="dark-color">
 		<div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
-			<button class="button button-icon icon ion-arrow-left-b" style="color: #fff; margin-top: 4px; background-color: transparent !important; border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;" ng-click="prevDay()">
+			<button class="button button-icon icon ion-arrow-left-b" style="color: rgba(51,224,187, 0.7); margin-top: 4px; background-color: transparent !important;" ng-click="prevDay()">
 			</button>
 			<ionic-datepicker input-obj="datepickerObject" style="color: white;">
-			  <button class="button" style="color: #212121; background-color: #fff !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+			  <button class="button" style="color: #33e0bb; background-color: rgba(48,48,48, 1) !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
                  border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
               "> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
 		    </ionic-datepicker>
 
-    		<button class="button button-icon icon ion-arrow-right-b" style="color: #fff; margin-top: 4px; background-color: transparent !important; border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;" ng-click="nextDay()">
+    		<button class="button button-icon icon ion-arrow-right-b" style="color: rgba(51,224,187, 0.7); margin-top: 4px; background-color: transparent !important;" ng-click="nextDay()">
     		</button>
 		</div>
 	</ion-nav-title> 	
@@ -31,9 +31,18 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers">
-	       <div style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); text-align: center; background-color: #33e0bb; color: black; width: 5.5em; height: 1.8em; border-radius: 0.9em; font-size: 0.6em; position: absolute; left: -11%; top: 15px; line-height: 1.9em;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>		
+		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="isCommon(tripgj.data.id)? '348px':'308px'">
+	       <div ng-style="getStartTimeTagStyle(tripgj.data.id)">{{getFormattedTime(tripgj.data.properties.start_ts)}}
+                <div ng-if="isCommon(tripgj.data.id)">
+                    <i class="ion-arrow-right-b" style="color: black; font-size: 1.3em;"></i>
+                </div>
+           </div>		
 			 <ion-item style="background-color: transparent;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
+                <div class="earlier-later-expand" ng-if="isCommon(tripgj.data.id)" id="hidden-{{tripgj.data.id}}">
+                    {{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}
+                </div>
+
+
                 <div class="list card" style="margin: 16px; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i> -->
     
@@ -109,7 +118,7 @@
 
             </div>
             </ion-item>
-            <div style="box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); text-align: center; background-color: #ff5251; color: white; width: 5.5em; height: 1.8em; border-radius: 0.9em; font-size: 0.6em; position: absolute; left: -11%; top: 275px; line-height: 1.9em;">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
+            <div ng-style="getStopTimeTagStyle(tripgj.data.id)">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
             
         </div>
 		</ion-list>

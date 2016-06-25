@@ -41,8 +41,18 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
       }
     }
   })
-  .state('root.main.sensed', {
-    url: "/sensed",
+   .state('root.main.log', {
+    url: "/log", // /root/main/recent/log
+    views: {
+      'main-control': {
+        templateUrl: "templates/recent/log.html",
+        controller: 'logCtrl'
+      }
+    }
+  })
+
+  .state('root.main.sensedData', {
+    url: "/sensedData",
     views: {
       'main-control': {
         templateUrl: "templates/recent/sensedData.html",
@@ -50,25 +60,15 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
       }
     }
   })
-  .state('root.main.map', {
+    .state('root.main.map', {
       url: "/map",
       views: {
         'main-control': {
           templateUrl: "templates/recent/map.html",
           controller: 'mapCtrl'
         }
-      }    
-  })
-  .state('root.main.log', {
-    url: '/log',
-    views: {
-        'main-control': {
-          templateUrl: 'templates/recent/log.html',
-          controller: 'logCtrl'
-        }
-    }
-
-  });
+      }
+    });
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
@@ -152,11 +152,12 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             $ionicPopup.alert("while getting email, "+error);
         });
     };
+
     $scope.showLog = function() {
         $state.go("root.main.log");
     }
     $scope.showSensed = function() {
-        $state.go("root.main.sensed");
+        $state.go("root.main.sensedData");
     }
     $scope.showMap = function() {
         $state.go("root.main.map");
@@ -310,6 +311,19 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         $scope.settingsPopup = popover;
     });
 
+    $scope.trackingOn = function() {
+        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+    }
+    $scope.userStartStopTracking = function() {
+        if ($scope.startStopBtnToggle){
+            $scope.forceTransition('STOP_TRACKING');
+            $scope.startStopBtnToggle = false;
+        } else {
+            $scope.forceTransition('START_TRACKING');
+            $scope.startStopBtnToggle = true;
+        }
+    }
+    $scope.startStopBtnToggle = $scope.trackingOn(); 
     $scope.getAvatarStyle = function() {
         return {
             'width': ($window.screen.width * 0.30).toString() + 'px', 
@@ -322,17 +336,6 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'border-color': '#fff'
         }
     }
-    $scope.getButtonStyle = function(color) {
-        return {
-            'text-align': 'center',
-            'float': 'right',
-            'height': '100%', 
-            'background-color': '#' + color,
-            'color': '#fff',
-            'padding': '15px 15px',
-            'width': + ($window.screen.width * 0.25).toString() + 'px'
-        }
-    }
     $scope.getIconButtonStyle = function(color) {
         return {
             'text-align': 'center',
@@ -340,8 +343,9 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'height': '100%', 
             'background-color': '#' + color,
             'color': '#fff',
-            'padding': '15px 15px',
-            'width': '50px'
+            'padding': '1.2em',
+            'width': '5em',
+            'font-size': '1.2em'
         }
     }
     $scope.getIconStyle = function() {

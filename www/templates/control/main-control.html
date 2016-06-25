@@ -10,41 +10,60 @@
       </div>
   </div> -->
 
-  <ion-content style="background-color: #262A30;">
+  <ion-content style="background-color: #303030;">
 <!--     <div style="text-align: center;">
       <img src="img/avatar_1.png" ng-style="getAvatarStyle()">
     </div> -->
     
-    <div style="background-color: white; height: 50px;">
-      <div style="padding: 15px 15px; float: left;">{{settings.auth.email}}</div>
+ 
+
+
+    <div class="control-list-item">
+      <div class="control-list-text">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" ng-style="getIconButtonStyle('E0A1A1')"><i class="icon ion-log-out" ng-style="getIconStyle()"></i></div>
     </div>
-    
-    <div style="background-color: white; height: 50px; margin-top: 0.5px;">
-      <div style="padding: 15px 15px; float: left;">Developer zone</div>
+    <div class="control-list-item">
+      <div class="control-list-text">TRACKING</div>
+      <label ng-click="userStartStopTracking()" class="toggle" style="float: right; margin-top: 0.6em; margin-right: 0.6em;">
+        <input type="checkbox" ng-checked="trackingOn()">
+        <div class="track">
+          <div class="handle"></div>
+        </div>
+      </label>
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text">FORCE SYNC</div>
+      <div ng-click="forceSync()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-sync" ng-style="getIconStyle()"></i></div>
+    </div>   
+    <div class="control-list-item">
+      <div class="control-list-text">DEVELOPER ZONE</div>
       <div ng-click="toggleCollection()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getExpandButtonClass()" ng-style="getIconStyle()" id="expandButton"></i></div>
     </div>
     
     
     <div class="item-accordion" ng-show="collectionExpanded()">
-      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
-        <div style="padding: 15px 15px; float: left;">{{parseState(settings.collect.state)}}</div>
+      <div class="control-list-item">
+        <div class="control-list-text">Refresh</div>
+        <div ng-click="refreshScreen()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-loop" ng-style="getIconStyle()"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
         <div ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
       </div>
-      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
-        <div style="padding: 15px 15px; float: left;">Check log</div>
+      <div class="control-list-item">
+        <div class="control-list-text">Check log</div>
         <div ng-click="showLog()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
       </div>      
-      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
-        <div style="padding: 15px 15px; float: left;">Check sensed data</div>
+      <div class="control-list-item">
+        <div class="control-list-text">Check sensed data</div>
         <div ng-click="showSensed()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
       </div>   
-      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
-        <div style="padding: 15px 15px; float: left;">Check map</div>
+      <div class="control-list-item">
+        <div class="control-list-text">Check map</div>
         <div ng-click="showMap()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
       </div>   
-      <div style="background-color: white; height: 50px; margin-top: 0.5px;">
-        <div style="padding: 15px 15px; float: left;">Collection</div>
+      <div class="control-list-item">
+        <div class="control-list-text">Collection</div>
         <div ng-click="editConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
       </div>
       

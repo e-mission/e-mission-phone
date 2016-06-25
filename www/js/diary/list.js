@@ -197,6 +197,13 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.starColor = DiaryHelper.starColor;
     $scope.arrowColor = DiaryHelper.arrowColor;
     $scope.getArrowClass = DiaryHelper.getArrowClass;
+    $scope.getStartTimeTagStyle = DiaryHelper.getStartTimeTagStyle;
+    $scope.getStopTimeTagStyle = DiaryHelper.getStopTimeTagStyle;
+    $scope.isCommon = DiaryHelper.isCommon;
+    // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
+    // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
+    
+
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];

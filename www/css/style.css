@@ -108,3 +108,19 @@ button.button.ng-binding i.icon.ion-edit {
 button.button.back-button.buttons.button-clear.header-item {
   color: #fff;
 }
+
+/* Profile tab */
+.control-list-item {
+  background-color: white; height: 4em; margin-top: 0.5px;
+}
+.control-list-text {
+  padding: 1.2em 1.2em; float: left;
+}
+
+/* Diary list tab */
+.earlier-later-expand {
+  margin: 16px 16px 0 16px;
+  color:white;
+  font-size: 0.8em;
+  opacity: 0.7;
+}

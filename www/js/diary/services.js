@@ -3,6 +3,99 @@
 angular.module('emission.main.diary.services', ['emission.services'])
 .factory('DiaryHelper', function(Timeline, CommonGraph){
   var dh = {};
+  // dh.expandEarlierOrLater = function(id) {
+  //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
+  //   dh.increaseRestElementsTranslate3d(id);
+  // }
+  // dh.increaseRestElementsTranslate3d = function(id) {
+  //   var handle = document.querySelector('#hidden-' + id.toString());
+  //   var arr = handle.parentElement.parentElement.parentElement.style.transform.split(',');
+  //   var oldVal = parseInt(arr[1].substring(1, arr[1].length - 2));
+  //   var newVal = oldVal + 40;
+
+  //   var oldVal1 = parseInt(handle.parentElement.parentElement.parentElement.style.height);
+  //   var oldVal2 = parseInt(handle.parentElement.parentElement.parentElement.style.width);
+  //   arr[1] = newVal.toString();
+  //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
+  //   .setAttribute('style', 'transform: '+arr.join(','));
+  //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
+  //   .setAttribute('style', 'height: '+oldVal1);
+  //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
+  //   .setAttribute('style', 'width: '+oldVal2);
+  // }
+  dh.isCommon = function(id) {
+    var ctrip = CommonGraph.findCommon(id);
+    return !angular.isUndefined(ctrip);
+  }
+  dh.getStartTimeTagStyle = function(id) {
+    var ctrip = CommonGraph.findCommon(id);
+    if (angular.isUndefined(ctrip)) {
+      return {
+        'box-shadow': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+        'text-align': 'center',
+        'background-color': '#33e0bb',
+        'color': 'black',
+        'width': '48px',
+        'height': '16px',
+        'border-radius': '8px',
+        'font-size': '9px',
+        'position': 'absolute',
+        'left': '-11%',
+        'top': '15px',
+        'line-height': '16px'
+      }
+    } else {
+      return {
+        'box-shadow': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+        'text-align': 'center',
+        'background-color': '#33e0bb',
+        'color': 'black',
+        'width': '48px',
+        'height': '30px',
+        'border-radius': '8px',
+        'font-size': '9px',
+        'position': 'absolute',
+        'left': '-11%',
+        'top': '15px',
+        'line-height': '9px',
+        'padding-top': '7px'
+      }
+    }
+  }
+  dh.getStopTimeTagStyle = function(id) {
+     var ctrip = CommonGraph.findCommon(id);
+    if (angular.isUndefined(ctrip)) {
+      return {
+        'box-shadow': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+        'text-align': 'center',
+        'background-color': '#ff5251',
+        'color': 'black',
+        'width': '48px',
+        'height': '16px',
+        'border-radius': '8px',
+        'font-size': '9px',
+        'position': 'absolute',
+        'left': '-11%',
+        'top': '275px',
+        'line-height': '16px'
+      }
+    } else {
+      return {
+        'box-shadow': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
+        'text-align': 'center',
+        'background-color': '#ff5251',
+        'color': 'black',
+        'width': '48px',
+        'height': '16px',
+        'border-radius': '8px',
+        'font-size': '9px',
+        'position': 'absolute',
+        'left': '-11%',
+        'top': '310px',
+        'line-height': '16px'
+      }
+    }   
+  }
   dh.getIcon = function(section) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
