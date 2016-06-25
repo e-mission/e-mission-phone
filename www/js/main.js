@@ -292,8 +292,6 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
 
     $scope.setSyncInterval = function() {
         var syncIntervalActions = [];
-        syncIntervalActions.push({text: "10 sec", value: 10});
-        syncIntervalActions.push({text: "30 sec", value: 30});
         syncIntervalActions.push({text: "1 min", value: 60});
         syncIntervalActions.push({text: "10 min", value: 10 * 60});
         syncIntervalActions.push({text: "30 min", value: 30 * 60});
