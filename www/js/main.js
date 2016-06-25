@@ -41,18 +41,8 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
       }
     }
   })
-   .state('root.main.log', {
-    url: "/log", // /root/main/recent/log
-    views: {
-      'main-control': {
-        templateUrl: "templates/recent/log.html",
-        controller: 'logCtrl'
-      }
-    }
-  })
-
-  .state('root.main.sensedData', {
-    url: "/sensedData",
+  .state('root.main.sensed', {
+    url: "/sensed",
     views: {
       'main-control': {
         templateUrl: "templates/recent/sensedData.html",
@@ -60,15 +50,25 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
       }
     }
   })
-    .state('root.main.map', {
+  .state('root.main.map', {
       url: "/map",
       views: {
         'main-control': {
           templateUrl: "templates/recent/map.html",
           controller: 'mapCtrl'
         }
-      }
-    });
+      }    
+  })
+  .state('root.main.log', {
+    url: '/log',
+    views: {
+        'main-control': {
+          templateUrl: 'templates/recent/log.html',
+          controller: 'logCtrl'
+        }
+    }
+
+  });
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
@@ -129,6 +129,22 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         });
     };
 
+    $scope.getSyncSettings = function() {               
+        var promiseList = []                
+        promiseList.push(window.cordova.plugins.BEMServerSync.getConfig());             
+        Promise.all(promiseList).then(function(resultList) {                
+            var config = resultList[0];             
+            var accuracyOptions = resultList[1];                
+            $scope.settings.sync.config = config;               
+            var retVal = [];                
+            for (var prop in config) {              
+                retVal.push({'key': prop, 'val': config[prop]});                
+            }               
+            $scope.$apply(function() {              
+                $scope.settings.sync.show_config = retVal;              
+            });             
+        });             
+    };
     $scope.getEmail = function() {
         /*
         return new Promise(function(resolve, reject) {
@@ -152,12 +168,11 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             $ionicPopup.alert("while getting email, "+error);
         });
     };
-
     $scope.showLog = function() {
         $state.go("root.main.log");
     }
     $scope.showSensed = function() {
-        $state.go("root.main.sensedData");
+        $state.go("root.main.sensed");
     }
     $scope.showMap = function() {
         $state.go("root.main.map");
@@ -184,11 +199,13 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
+        $scope.settings.sync = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
 
         $scope.getConnectURL();
         $scope.getCollectionSettings();
+        $scope.getSyncSettings();  
         $scope.getEmail();
         $scope.getState();
     };
@@ -245,10 +262,10 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         });
     };
 
-    $scope.editConfig = function($event) {
+    $scope.editCollectionConfig = function($event) {
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        console.log("settings popup = "+$scope.settingsPopup);
-        $scope.settingsPopup.show($event);
+        console.log("settings popup = "+$scope.collectSettingsPopup);
+        $scope.collectSettingsPopup.show($event);
         /*
         var editPopup = $ionicPopup.confirm({
             templateUrl: 'templates/control/main-collect-settings.html',
@@ -258,8 +275,12 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         });
         */
     }
-    
-    $scope.saveAndReloadSettingsPopup = function(result) {
+    $scope.editSyncConfig = function($event) {                  
+        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));              
+        console.log("settings popup = "+$scope.syncSettingsPopup);              
+        $scope.syncSettingsPopup.show($event);              
+    }
+    $scope.saveAndReloadCollectSettingsPopover = function(result) {
         console.log("new config = "+$scope.settings.collect.new_config);
         if (result == true) {
             window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
@@ -273,10 +294,16 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             .then($scope.getCollectionSettings);
         $scope.settingsPopup.hide();
     };
-
+    $scope.saveAndReloadSyncSettingsPopover = function() { 
+        console.log("new config = "+$scope.settings.collect.new_config);
+         window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)            
+            .then($scope.getSyncSettings);   
+            $scope.syncSettingsPopup.hide();
+    }
     // Execute action on hide popover
     $scope.$on('$destroy', function() {
-      $scope.settingsPopup.remove();
+      $scope.collectSettingsPopup.remove();
+      $scope.syncSettingsPopup.remove();  
     });
 
     $scope.setAccuracy= function() {
@@ -294,7 +321,22 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             }
         });
     };
-
+    $scope.setSyncInterval = function() {               
+        var syncIntervalActions = [];               
+        syncIntervalActions.push({text: "1 min", value: 60});               
+        syncIntervalActions.push({text: "10 min", value: 10 * 60});             
+        syncIntervalActions.push({text: "30 min", value: 30 * 60});             
+        syncIntervalActions.push({text: "1 hr", value: 60 * 60});               
+        $ionicActionSheet.show({                
+            buttons: syncIntervalActions,               
+            titleText: "Select sync interval",              
+            cancelText: "Cancel",               
+            buttonClicked: function(index, button) {                
+                $scope.settings.sync.new_config.sync_interval = button.value;               
+                return true;                
+            }               
+        });             
+    };
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
@@ -310,20 +352,11 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     }).then(function(popover) {
         $scope.settingsPopup = popover;
     });
-
-    $scope.trackingOn = function() {
-        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-    }
-    $scope.userStartStopTracking = function() {
-        if ($scope.startStopBtnToggle){
-            $scope.forceTransition('STOP_TRACKING');
-            $scope.startStopBtnToggle = false;
-        } else {
-            $scope.forceTransition('START_TRACKING');
-            $scope.startStopBtnToggle = true;
-        }
-    }
-    $scope.startStopBtnToggle = $scope.trackingOn(); 
+    $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {        
+        scope: $scope       
+    }).then(function(popover) {     
+        $scope.syncSettingsPopup = popover;     
+    });
     $scope.getAvatarStyle = function() {
         return {
             'width': ($window.screen.width * 0.30).toString() + 'px', 
@@ -336,6 +369,17 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'border-color': '#fff'
         }
     }
+    $scope.getButtonStyle = function(color) {
+        return {
+            'text-align': 'center',
+            'float': 'right',
+            'height': '100%', 
+            'background-color': '#' + color,
+            'color': '#fff',
+            'padding': '15px 15px',
+            'width': + ($window.screen.width * 0.25).toString() + 'px'
+        }
+    }
     $scope.getIconButtonStyle = function(color) {
         return {
             'text-align': 'center',
@@ -343,9 +387,8 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'height': '100%', 
             'background-color': '#' + color,
             'color': '#fff',
-            'padding': '1.2em',
-            'width': '5em',
-            'font-size': '1.2em'
+            'padding': '15px 15px',
+            'width': '50px'
         }
     }
     $scope.getIconStyle = function() {

@@ -41,33 +41,24 @@ Installation is now complete. You can view the current state of the application 
 
     $ ionic emulate ios --target="iPhone-6"
 
+JS Testing
+---
+From the root directory run
 
-#### Temporary workaround *for android only* ####
-Unfortunately, `ionic state` does not store plugin version numbers, and
-versions of crosswalk > 16 are so large that the generated APK is too big
-and needs `multi-dex` support.
-https://developer.android.com/studio/build/multidex.html#mdex-gradle
+    $ npm install karma --save-dev
+    $ npm install karma-jasmine karma-chrome-launcher --save-dev
 
-It looks like multi-dex is a pain, and is complicated to use with cordova since
-it requires a modification to the AndroidManifest.xml to use a different
-activity.
+Write tests in www/js/test
+To run tests if you have karma globally set, run 
 
-```
-In your manifest add the MultiDexApplication class from the multidex support library to the application element.
-```
+    $ karma start my.conf.js 
+    
+in the root directory. If you didn't run the -g command, you can run
+tests with 
 
-It seems like it would be a Good Thing to trim down the app anyway instead of
-using multi-dex, since that will also help with memory usage and with load
-times. But for now, the workaround is to force the use of the older and smaller
-crosswalk version.
-
-So before we build the android version, we need to do
-```
-$ cordova plugin remove cordova-plugin-crosswalk-webview
-$ cordova plugin add cordova-plugin-crosswalk-webview@1.5.0
-```
-
-This does NOT affect iOS.
+    $ ./node_modules/karma/bin/karma start
+    
+in the root directory
 
 Troubleshooting
 ---
