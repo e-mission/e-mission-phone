@@ -296,8 +296,6 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         syncIntervalActions.push({text: "10 min", value: 10 * 60});
         syncIntervalActions.push({text: "30 min", value: 30 * 60});
         syncIntervalActions.push({text: "1 hr", value: 60 * 60});
-        syncIntervalActions.push({text: "2 hr", value: 2* 60 * 60});
-        syncIntervalActions.push({text: "6 hr", value: 6 * 60 * 60});
 
         $ionicActionSheet.show({
             buttons: syncIntervalActions,
