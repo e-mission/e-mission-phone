@@ -1,4 +1,4 @@
-angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
+angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.services'])
