@@ -322,7 +322,7 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         }
     };
 
-    $scope.saveAndReloadCollectSettingsPopover = function() {
+    $scope.saveAndReloadCollectionSettingsPopover = function() {
         console.log("new config = "+$scope.settings.collect.new_config);
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
             .then($scope.getCollectionSettings);
