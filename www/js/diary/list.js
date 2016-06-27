@@ -87,7 +87,12 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       }
       
     }
-
+    $scope.listColLeftClass = function() {
+      return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left"; 
+    }
+    $scope.listColRightClass = function() {
+      return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right"; 
+    }
 
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
