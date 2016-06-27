@@ -11,8 +11,8 @@
     		</button>
 		</div>
 	</ion-nav-title> 	
-    <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 8%; position: absolute; float: left; height: 100%;"></div>
-	<ion-content class="" style=" padding-left: 12%;">
+    <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
+	<ion-content class="" style=" padding-left: 18%;">
         <ion-refresher 
         pulling-text="Pull to refresh" 
         on-refresh="refresh()">
@@ -61,7 +61,7 @@
                     </div>
                 </div>
 
-                <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>    
+                <leaflet geojson="tripgj" id="$index" defaults="defaults" ng-class="leafletClass()"></leaflet>    
 
 <!-- 				  	<div>
                     <p style="color: #ccc; font-size: 0.8em">Distance</p>
@@ -100,7 +100,7 @@
 
 
                 <div style="padding: 0.5em;">
-                    <div ng-class="listLocationClass()" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+                    <div ng-class="listLocationClass()" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
                     <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
                             {{tripgj.start_place.properties.displayName.split(',')[0]}}
 

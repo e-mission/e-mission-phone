@@ -76,11 +76,18 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background"; 
     }
     $scope.datePickerClass = function() {
-
     }
     $scope.listCardClass = function() {
-      return ($scope.dark_theme)? "list card list-card-dark" : "list card list-card"; 
+      if ($window.screen.width <= 320) {
+        return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm"; 
+      } else if ($window.screen.width <= 375) {
+        return ($scope.dark_theme)? "list card list-card-dark list-card-md" : "list card list-card list-card-md"; 
+      } else {
+        return ($scope.dark_theme)? "list card list-card-dark list-card-lg" : "list card list-card list-card-lg"; 
+      }
+      
     }
+
 
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
