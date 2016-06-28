@@ -1,0 +1,11 @@
+<ion-view view-title="Goals">
+<ion-content class="has-header" overflow-scroll="true" padding="true">
+<h3 style="align:center;">
+    My goal is {{goal}}
+    </h3>
+    <label class="item item-input">
+    <input  ng-model="data.userGoal" type="text" placeholder="Goal">
+    </label>
+    <button ng-click="saveGoal()" class="button button-assertive button-block" ng-click="getPopRoute()">Submit</button>
+</ion-content>
+</ion-view>

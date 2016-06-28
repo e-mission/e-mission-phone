@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 'emission.main.common', 'emission.main.heatmap', 'ngCordova', 'emission.services'])
+angular.module('emission.main', ['emission.main.recent', 'emission.main.goals', 'emission.main.diary', 'emission.main.common', 'emission.main.heatmap', 'ngCordova', 'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -38,6 +38,15 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
       'main-control': {
         templateUrl: 'templates/control/main-control.html',
         controller: 'ControlCtrl'
+      }
+    }
+  })
+  .state('root.main.goals', {
+    url: '/goals',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/main-goals.html',
+        controller: 'GoalsCtrl'
       }
     }
   })
