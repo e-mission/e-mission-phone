@@ -20,6 +20,10 @@ angular.module('emission.services', [])
     };
 })
 
+.service('ControlHelper', function() {
+  
+})
+
 // common configuration methods across all screens
 // e.g. maps
 // for consistent L&F

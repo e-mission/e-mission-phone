@@ -118,7 +118,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       modalHeaderColor: 'bar-positive', //Optional
       modalFooterColor: 'bar-positive', //Optional
       callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'dd-MMMM-yyyy', //Optional
+      dateFormat: 'dd MMMM yyyy', //Optional
       closeOnSelect: true, //Optional
     };
 

@@ -9,7 +9,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'nvd3ChartDirectives'
     JSON.stringify($stateParams));
 
   $scope.mapCtrl = {};
-
+  $scope.getFormattedDate = function(ts) {
+    var d = moment(ts * 1000).format("DD MMMM YYYY");
+    return d;
+  }
   angular.extend($scope.mapCtrl, {
     defaults : Config.getMapTiles()
   });

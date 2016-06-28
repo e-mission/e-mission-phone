@@ -209,9 +209,11 @@ button.button.ng-binding i.icon.ion-edit {
   font-size: 12px;
 }
 button.button.back-button.buttons.button-clear.header-item {
-  color: #fff;
+  color: #303030; opacity: 0.7;
 }
-
+.nav-bar-title {
+  color: #303030; opacity: 0.7;
+}
 /* Profile tab */
 .control-list-item {
   background-color: white! important; height: 50px; margin-top: 0.5px;
@@ -228,7 +230,7 @@ button.button.back-button.buttons.button-clear.header-item {
   padding: 7px 0; font-size: 16px; line-height: 22px; height: 36px;
 }
 .dev-zone-title {
-  padding: 18px 22px;
+  padding: 18px 16px;
 }
 .dev-zone-button {
   position: absolute;
