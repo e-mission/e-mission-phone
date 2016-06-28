@@ -252,11 +252,17 @@ button.button.back-button.buttons.button-clear.header-item {
 .list-card-lg {
   width : 330px;
 }
+.list-col-left-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left-dark-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
 .list-col-left {
-  text-align: center; padding: 0.8em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
 .list-col-left-dark {
-  text-align: center; padding: 0.8em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
 .list-col-right {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;

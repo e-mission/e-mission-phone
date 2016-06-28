@@ -87,8 +87,12 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       }
       
     }
-    $scope.listColLeftClass = function() {
-      return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left"; 
+    $scope.listColLeftClass = function(margin) {
+      if (margin == 0) {
+        return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left";   
+      } else {
+        return ($scope.dark_theme)? "col-50 list-col-left-margin-dark" : "col-50 list-col-left-margin"; 
+      }
     }
     $scope.listColRightClass = function() {
       return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right"; 

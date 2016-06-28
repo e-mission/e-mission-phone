@@ -29,6 +29,17 @@
       </label>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text">Low accuracy</div>
+      <label ng-click="willUseLowAccuracy()" class="toggle control-list-toggle">
+        <input type="checkbox" ng-checked="toggleLowAccuracy()">
+        <div class="track">
+          <div class="handle"></div>
+        </div>
+      </label>
+    </div>
+
+
+    <div class="control-list-item">
       <div class="control-list-text">Dark theme</div>
       <label ng-click="willUseDarkTheme()" class="toggle control-list-toggle">
         <input type="checkbox" ng-checked="toggleDarkTheme()">

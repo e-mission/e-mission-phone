@@ -99,6 +99,26 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope, ControlHelper) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
+
+    
+    $scope.toggleLowAccuracy = function() {
+        if ($scope.settings.collect.config == null) {
+            return false; // config not loaded when loading ui, set default as false
+        } else {
+            var accuracy = $scope.settings.collect.config.accuracy; 
+            return accuracy >= 100;
+        }
+    }
+    $scope.willUseLowAccuracy = function() {
+        var accuracy = $scope.settings.collect.config.accuracy;
+        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
+        if (accuracy < 100) {
+            $scope.settings.collect.new_config.accuracy = 100;
+        } else {
+            $scope.settings.collect.new_config.accuracy = -1;
+        }
+        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
+    }
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
@@ -436,8 +456,8 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'height': '100%', 
             'background-color': '#' + color,
             'color': '#fff',
-            'padding': ($window.screen.width * 0.03).toString() + 'px ' + ($window.screen.width * 0.03).toString() + 'px' ,
-            'width': ($window.screen.width * 0.18).toString() + 'px'
+            'padding-top': '16px',
+            'width': '64px'
         }
     }
     $scope.getIconStyle = function() {
