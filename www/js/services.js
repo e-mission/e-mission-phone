@@ -20,8 +20,51 @@ angular.module('emission.services', [])
     };
 })
 
-.service('ControlHelper', function() {
-  
+.service('ControlHelper', function($cordovaEmailComposer) {
+  this.emailLog = function() {
+        var parentDir = "unknown";
+
+         $cordovaEmailComposer.isAvailable().then(function() {
+           // is available
+         }, function () {
+            alert("Email account is not configured, cannot send email");
+            return;
+         });
+
+        if (ionic.Platform.isAndroid()) {
+            parentDir = "app://databases";
+        } 
+        if (ionic.Platform.isIOS()) {
+            alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
+            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
+        }
+        
+        /*
+        window.Logger.log(window.Logger.LEVEL_INFO,
+            "Going to export logs to "+parentDir);
+         */
+        alert("Going to email database from "+parentDir+"/loggerDB");
+
+        var email = {
+            to: ['shankari@eecs.berkeley.edu'],
+            attachments: [
+                parentDir+"/loggerDB"
+            ],
+            subject: 'emission logs',
+            body: 'please fill in what went wrong'
+        }
+
+        $cordovaEmailComposer.open(email).then(function() {
+           window.Logger.log(window.Logger.LEVEL_DEBUG,
+               "Email queued successfully");
+        },
+        function () {
+           // user cancelled email. in this case too, we want to remove the file
+           // so that the file creation earlier does not fail.
+           window.Logger.log(window.Logger.LEVEL_INFO,
+               "Email cancel reported, seems to be an error on android");
+        });
+    }
 })
 
 // common configuration methods across all screens

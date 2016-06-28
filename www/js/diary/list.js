@@ -112,6 +112,8 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       todayButtonType : 'button-assertive',  //Optional
       closeButtonType : 'button-assertive',  //Optional
       inputDate: new Date(),  //Optional
+      from: new Date(2015, 1, 1),
+      to: new Date(),
       mondayFirst: true,  //Optional
       templateType: 'popup', //Optional
       showTodayButton: 'true', //Optional
@@ -119,7 +121,7 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
       modalFooterColor: 'bar-positive', //Optional
       callback: $scope.setCurrDay, //Mandatory
       dateFormat: 'dd MMMM yyyy', //Optional
-      closeOnSelect: true, //Optional
+      closeOnSelect: true //Optional
     };
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {

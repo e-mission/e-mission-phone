@@ -96,7 +96,8 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     }
 })
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope, ControlHelper) {
+    $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
@@ -435,8 +436,8 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'height': '100%', 
             'background-color': '#' + color,
             'color': '#fff',
-            'padding': '15px 15px',
-            'width': '50px'
+            'padding': ($window.screen.width * 0.03).toString() + 'px ' + ($window.screen.width * 0.03).toString() + 'px' ,
+            'width': ($window.screen.width * 0.18).toString() + 'px'
         }
     }
     $scope.getIconStyle = function() {
