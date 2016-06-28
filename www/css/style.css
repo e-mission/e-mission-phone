@@ -5,3 +5,240 @@ border-color: transparent !important;
 border-top: transparent !important;
 border-bottom: transparent !important;
 background-image: none !important; }
+
+.list .item.item-accordion {
+  line-height: 38px;
+  padding-top: 0;
+  padding-bottom: 0;
+  transition: 0.09s all linear;
+}
+.list .item.item-accordion.ng-hide {
+  line-height: 0px;
+}
+.list .item.item-accordion.ng-hide-add,
+.list .item.item-accordion.ng-hide-remove {
+  display: block !important;
+}
+.input-label {
+	font-size: 16px;
+}
+.list {
+	padding-top: 0.5px !important;
+}
+.card {
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  height: 275px;
+  margin: 1rem;
+  position: relative;
+  width: 300px;
+}
+/* Dark theme */
+/*
+.tab-nav{
+  background-color: #212121 !important; background-size: 0 !important;
+}
+ion-header-bar {
+  background-color: #212121 !important;
+}
+.ion-view-background{
+  background-color: #303030 !important;
+}
+.tabs-custom-dark > .tabs,
+.tabs.tabs-custom-dark {
+  border-color: #5D3A23;
+  background-color: #5D3A23;
+  background-image: linear-gradient(0deg, #0c60ee, #0c60ee 50%, transparent 30%);
+  color: #33e0bb; }
+  .tabs-custom-dark > .tabs .tab-item .badge,
+  .tabs.tabs-custom-dark .tab-item .badge {
+    background-color: #33e0bb;
+    color: #387ef5; }
+
+.tabs-striped.tabs-custom-dark .tabs {
+  background-color: #5D3A23; }
+
+.tabs-striped.tabs-custom-dark .tab-item {
+  color: rgba(255, 255, 255, 0.3);
+  opacity: 1; }
+  .tabs-striped.tabs-custom-dark .tab-item .badge {
+    opacity: 0.3; }
+  .tabs-striped.tabs-custom-dark .tab-item.tab-item-active, .tabs-striped.tabs-custom-dark .tab-item.active, .tabs-striped.tabs-positive .tab-item.activated {
+    margin-top: -2px;
+    color: #fff;
+    border-style: solid;
+    border-width: 2px 0 0 0;
+    border-color: #fff; }
+
+.title.title-center.header-item {
+  color: white;
+}
+.date-picker-button-dark {
+  color: #33e0bb !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
+                 border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
+}
+.date-picker-arrow-dark {
+  color: rgba(51,224,187, 0.7) !important; margin-top: 4px; background-color: transparent !important;
+}
+
+*/
+/* Dark theme ends */
+/* Light theme */
+.tab-nav{
+  background-color: #f5f5f5 !important; background-size: 0 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
+    color: #2bb096;
+}
+
+ion-header-bar {
+  background-color: #f5f5f5 !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.ion-view-background{
+  background-color: #FAFAFA !important;
+}
+.ion-view-background-dark {
+  background-color: #303030 !important;
+}
+.tabs-custom > .tabs,
+.tabs.tabs-custom {
+  border-color: #5D3A23;
+  background-color: #5D3A23;
+  background-image: linear-gradient(0deg, #0c60ee, #0c60ee 70%, transparent 70%);
+  color: #999; }
+  .tabs-custom > .tabs .tab-item .badge,
+  .tabs.tabs-custom .tab-item .badge {
+    background-color: #999;
+    color: #387ef5; }
+
+.tabs-striped.tabs-custom .tabs {
+  background-color: #5D3A23; }
+
+.tabs-striped.tabs-custom .tab-item {
+  color: rgba(255, 255, 255, 0.7);
+  opacity: 1; }
+  .tabs-striped.tabs-custom .tab-item .badge {
+    opacity: 0.7; }
+  .tabs-striped.tabs-custom .tab-item.tab-item-active, .tabs-striped.tabs-custom .tab-item.active, .tabs-striped.tabs-positive .tab-item.activated {
+    margin-top: -2px;
+    color: #fff;
+    border-style: solid;
+    border-width: 2px 0 0 0;
+    border-color: #fff; }
+.title.title-center.header-item {
+  color: #303030;
+}
+.date-picker-button {
+  color: #303030 !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
+                 border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
+}
+.date-picker-arrow {
+  color: #303030 !important; margin-top: 4px; background-color: transparent !important;
+}
+/* Light theme ends */
+
+
+.earlier-later-expand-dark {
+  color: white;
+  margin: 16px 16px 0 16px;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+.earlier-later-expand {
+  color: #303030;
+  margin: 16px 16px 0 16px;
+  font-size: 0.8em;
+  opacity: 0.7;
+}
+.list-location {
+  color: #303030;
+}
+.list-location-dark {
+  color: white;
+}
+p.list-text-dark {
+  color: white;
+}
+p.list-text {
+  color: #303030;
+}
+a.list-text-dark {
+  color: white;
+}
+a.list-text {
+  color: #303030;
+}
+.tab-item .icon {
+  margin: 3px auto 1px auto;
+  font-size: 25px;
+  height: 25px;
+  
+}
+
+.card-1 {
+  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+  transition: all 0.3s cubic-bezier(.25,.8,.25,1);
+}
+
+.card-1:hover {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-2 {
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.card-3 {
+  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.card-4 {
+  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.card-5 {
+  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+button.button.ng-binding {
+  font-size: 15px;
+}
+button.button.ng-binding i.icon.ion-edit {
+  font-size: 12px;
+}
+button.button.back-button.buttons.button-clear.header-item {
+  color: #fff;
+}
+
+/* Profile tab */
+.control-list-item {
+  background-color: white! important; height: 50px; margin-top: 0.5px;
+}
+.control-list-text {
+  background-color: white! important; padding: 15px; float: left;
+}
+.control-list-toggle {
+  float: right; margin-top: 5px; margin-right: 2px;
+}
+/* Diary list tab */
+
+.dev-zone-input {
+  padding: 7px 0; font-size: 16px; line-height: 22px; height: 36px;
+}
+.dev-zone-title {
+  padding: 18px 22px;
+}
+.dev-zone-button {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+}
+.list-card-dark {
+  margin: 16px; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.list-card {
+  margin: 16px; background-color: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}

@@ -12,6 +12,10 @@
   "devDependencies": {
     "bower": "^1.3.3",
     "gulp-util": "^2.2.14",
+    "jasmine-core": "^2.4.1",
+    "karma": "^0.13.22",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-jasmine": "^1.0.2",
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
@@ -58,7 +62,6 @@
       "id": "edu.berkeley.eecs.emission.cordova.datacollection"
     },
     "cordova-plugin-app-version",
-    "cordova-plugin-crosswalk-webview",
     "cordova-plugin-file",
     {
       "locator": "https://github.com/shankari/cordova-plugin-email-composer.git",
@@ -67,6 +70,13 @@
     {
       "locator": "https://github.com/e-mission/cordova-server-sync.git",
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
+    },
+    {
+      "variables": {
+        "XWALK_MODE": "lite"
+      },
+      "locator": "cordova-plugin-crosswalk-webview",
+      "id": "cordova-plugin-crosswalk-webview"
     }
   ],
   "cordovaPlatforms": [

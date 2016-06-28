@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 'emission.main.recent', 'emission.main.heatmap'])
+angular.module('emission.main', ['emission.main.recent', 'emission.main.goals', 'emission.main.diary', 'emission.main.common', 'emission.main.heatmap', 'ngCordova', 'emission.services'])
 
-.config(function($stateProvider, $ionicConfigProvider) {
+.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
   // setup an abstract state for the tabs directive
     .state('root.main', {
@@ -32,16 +32,6 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     }
   })
 
-  .state('root.main.recent', {
-      url: '/recent',
-      abstract: true,
-      views: {
-        'main-recent': {
-          templateUrl: 'templates/main-recent.html',
-          controller: 'MainCtrl'
-        }
-      }
-    })
   .state('root.main.control', {
     url: '/control',
     views: {
@@ -50,19 +40,101 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         controller: 'ControlCtrl'
       }
     }
+  })
+  .state('root.main.goals', {
+    url: '/goals',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/main-goals.html',
+        controller: 'GoalsCtrl'
+      }
+    }
+  })
+  .state('root.main.sensed', {
+    url: "/sensed",
+    views: {
+      'main-control': {
+        templateUrl: "templates/recent/sensedData.html",
+        controller: 'sensedDataCtrl'
+      }
+    }
+  })
+  .state('root.main.map', {
+      url: "/map",
+      views: {
+        'main-control': {
+          templateUrl: "templates/recent/map.html",
+          controller: 'mapCtrl'
+        }
+      }    
+  })
+  .state('root.main.log', {
+    url: '/log',
+    views: {
+        'main-control': {
+          templateUrl: 'templates/recent/log.html',
+          controller: 'logCtrl'
+        }
+    }
+
   });
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
 })
+.controller('appCtrl', function($scope, $ionicModal, $timeout) {
+    $scope.openNativeSettings = function() {
+        window.Logger.log(window.Logger.LEVEL_DEBUG, "about to open native settings");
+        window.cordova.plugins.BEMLaunchNative.launch("NativeSettings", function(result) {
+            window.Logger.log(window.Logger.LEVEL_DEBUG,
+                "Successfully opened screen NativeSettings, result is "+result);
+        }, function(err) {
+            window.Logger.log(window.Logger.LEVEL_ERROR,
+                "Unable to open screen NativeSettings because of err "+err);
+        });
+    }
+})
 
-.controller('MainCtrl', function($scope, $state) {
+.controller('MainCtrl', function($scope, $state, $rootScope) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
+    $scope.dark_theme = $rootScope.dark_theme;
+    $scope.tabsCustomClass = function() {
+        return ($scope.dark_theme)? "tabs-icon-top tabs-custom-dark" : "tabs-icon-top tabs-custom";
+    }
 })
 
-.controller('ControlCtrl', function($scope, $state, $ionicPopup, $ionicActionSheet, $ionicPopover) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope) {
+    $scope.dark_theme = $rootScope.dark_theme;
+    $scope.ionViewBackgroundClass = function() {
+        return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
+    }
+    $scope.toggleDarkTheme = function() {
+        return $scope.dark_theme;
+    }
+    $scope.willUseDarkTheme = function() {
+        if ($scope.dark_theme) {
+            $rootScope.dark_theme = false;
+            $scope.dark_theme = false;
+            if (window.plugins && window.plugins.appPreferences) {
+                var prefs = plugins.appPreferences;
+                prefs.store('dark_theme', false);
+            } 
+            // StatusBar.styleDefault();
+            
+        } else {
+            $rootScope.dark_theme = true;
+            $scope.dark_theme = true;
+            if (window.plugins && window.plugins.appPreferences) {
+                var prefs = plugins.appPreferences;
+                prefs.store('dark_theme', true);                
+            }
+            // StatusBar.style(2);
+        }
+        $ionicPopup.alert({template: 'Restart the app to see all changes!'})
+    }
+
     $scope.getConnectURL = function() {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
             $scope.$apply(function() {
@@ -99,6 +171,22 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         });
     };
 
+    $scope.getSyncSettings = function() {               
+        var promiseList = []                
+        promiseList.push(window.cordova.plugins.BEMServerSync.getConfig());             
+        Promise.all(promiseList).then(function(resultList) {                
+            var config = resultList[0];             
+            var accuracyOptions = resultList[1];                
+            $scope.settings.sync.config = config;               
+            var retVal = [];                
+            for (var prop in config) {              
+                retVal.push({'key': prop, 'val': config[prop]});                
+            }               
+            $scope.$apply(function() {              
+                $scope.settings.sync.show_config = retVal;              
+            });             
+        });             
+    };
     $scope.getEmail = function() {
         /*
         return new Promise(function(resolve, reject) {
@@ -122,7 +210,15 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
             $ionicPopup.alert("while getting email, "+error);
         });
     };
-
+    $scope.showLog = function() {
+        $state.go("root.main.log");
+    }
+    $scope.showSensed = function() {
+        $state.go("root.main.sensed");
+    }
+    $scope.showMap = function() {
+        $state.go("root.main.map");
+    }
     $scope.getState = function() {
         /*
         return new Promise(function(resolve, reject) {
@@ -145,11 +241,13 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
+        $scope.settings.sync = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
 
         $scope.getConnectURL();
         $scope.getCollectionSettings();
+        $scope.getSyncSettings();  
         $scope.getEmail();
         $scope.getState();
     };
@@ -205,11 +303,10 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
             }
         });
     };
-
-    $scope.editConfig = function($event) {
+    $scope.editCollectionConfig = function($event) {
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        console.log("settings popup = "+$scope.settingsPopup);
-        $scope.settingsPopup.show($event);
+        console.log("settings popup = "+$scope.collectSettingsPopup);
+        $scope.collectSettingsPopup.show($event);
         /*
         var editPopup = $ionicPopup.confirm({
             templateUrl: 'templates/control/main-collect-settings.html',
@@ -218,6 +315,12 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         editPopup.then($scope.saveAndReloadSettingsPopup);
         });
         */
+    }
+
+    $scope.editSyncConfig = function($event) {
+        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
+        console.log("settings popup = "+$scope.syncSettingsPopup);
+        $scope.syncSettingsPopup.show($event);
     }
     
     $scope.saveAndReloadSettingsPopup = function(result) {
@@ -228,16 +331,23 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
         }
     };
 
-    $scope.saveAndReloadSettingsPopover = function() {
+    $scope.saveAndReloadCollectionSettingsPopover = function() {
         console.log("new config = "+$scope.settings.collect.new_config);
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
             .then($scope.getCollectionSettings);
-        $scope.settingsPopup.hide();
+        $scope.collectSettingsPopup.hide();
     };
 
+    $scope.saveAndReloadSyncSettingsPopover = function() {
+        console.log("new config = "+$scope.settings.sync.new_config);
+        window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)
+            .then($scope.getSyncSettings);
+        $scope.syncSettingsPopup.hide();
+    };
     // Execute action on hide popover
     $scope.$on('$destroy', function() {
-      $scope.settingsPopup.remove();
+      $scope.collectSettingsPopup.remove();
+      $scope.syncSettingsPopup.remove();  
     });
 
     $scope.setAccuracy= function() {
@@ -255,7 +365,22 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
             }
         });
     };
-
+    $scope.setSyncInterval = function() {               
+        var syncIntervalActions = [];               
+        syncIntervalActions.push({text: "1 min", value: 60});               
+        syncIntervalActions.push({text: "10 min", value: 10 * 60});             
+        syncIntervalActions.push({text: "30 min", value: 30 * 60});             
+        syncIntervalActions.push({text: "1 hr", value: 60 * 60});               
+        $ionicActionSheet.show({                
+            buttons: syncIntervalActions,               
+            titleText: "Select sync interval",              
+            cancelText: "Cancel",               
+            buttonClicked: function(index, button) {                
+                $scope.settings.sync.new_config.sync_interval = button.value;               
+                return true;                
+            }               
+        });             
+    };
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
@@ -269,6 +394,88 @@ angular.module('emission.main', ['emission.main.diary', 'emission.main.common', 
     $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
         scope: $scope
     }).then(function(popover) {
-        $scope.settingsPopup = popover;
+        $scope.collectSettingsPopup = popover;
     });
+    $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {        
+        scope: $scope       
+    }).then(function(popover) {     
+        $scope.syncSettingsPopup = popover;     
+    });
+    $scope.trackingOn = function() {
+        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+    }
+    $scope.userStartStopTracking = function() {
+        if ($scope.startStopBtnToggle){
+            $scope.forceTransition('STOP_TRACKING');
+            $scope.startStopBtnToggle = false;
+        } else {
+            $scope.forceTransition('START_TRACKING');
+            $scope.startStopBtnToggle = true;
+        }
+    }
+    $scope.startStopBtnToggle = $scope.trackingOn(); 
+    $scope.getAvatarStyle = function() {
+        return {
+            'width': ($window.screen.width * 0.30).toString() + 'px', 
+            'height': ($window.screen.width * 0.30).toString() + 'px',
+            'border-radius': ($window.screen.width * 0.15).toString() + 'px',
+            'margin-top': ($window.screen.width * 0.1).toString() + 'px',
+            'margin-bottom': ($window.screen.width * 0.1).toString() + 'px',
+            'border-style': 'solid',
+            'border-width': '7px',
+            'border-color': '#fff'
+        }
+    }
+    $scope.getButtonStyle = function(color) {
+        return {
+            'text-align': 'center',
+            'float': 'right',
+            'height': '100%', 
+            'background-color': '#' + color,
+            'color': '#fff',
+            'padding': '15px 15px',
+            'width': + ($window.screen.width * 0.25).toString() + 'px'
+        }
+    }
+    $scope.getIconButtonStyle = function(color) {
+        return {
+            'text-align': 'center',
+            'float': 'right',
+            'height': '100%', 
+            'background-color': '#' + color,
+            'color': '#fff',
+            'padding': '15px 15px',
+            'width': '50px'
+        }
+    }
+    $scope.getIconStyle = function() {
+        return {
+            'font-size': '20px'
+        }
+    }
+    $scope.getExpandButtonClass = function() {
+        return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
+    }
+    $scope.parseState = function(state) {
+        if (state) {
+            return state.substring(6);
+        }
+    }
+    $scope.toggleCollection = function() {
+        if ($scope.collectionExpanded()) {
+            $scope.expanded = false;
+            $ionicScrollDelegate.resize();
+            $ionicScrollDelegate.scrollTo(0, 0, true);
+            
+        } else {
+            $scope.expanded = true;
+            $ionicScrollDelegate.resize();
+            $ionicScrollDelegate.scrollTo(0, 1000, true);
+            
+            
+        }
+    }
+    $scope.collectionExpanded = function() {
+        return $scope.expanded;
+    }
 });

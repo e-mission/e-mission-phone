@@ -1,5 +1,5 @@
 'use strict';
-angular.module('emission.main.diary.detail',['ui-leaflet', 'nvd3ChartDirectives',
+angular.module('emission.main.diary.detail',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.services'])
 

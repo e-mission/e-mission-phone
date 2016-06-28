@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="edu.berkeley.eecs.emission" 
-        version="0.0.9" 
-        android-versionCode="9"
-        ios-CFBundleVersion="9"
+        version="0.0.10" 
+        android-versionCode="10"
+        ios-CFBundleVersion="10"
         xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>emission</name>
   <description>
@@ -21,10 +21,10 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="3000"/>
-  <preference name="xwalkVersion" value="16+"/>
-  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect"/>
-  <preference name="xwalkMode" value="embedded"/>
-  <preference name="xwalkMultipleApk" value="true"/>
+  <preference name="xwalkVersion" value="xwalk_core_library_canary:17+" />
+  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
+  <preference name="xwalkMode" value="lite" />
+  <preference name="xwalkMultipleApk" value="true" />
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>
