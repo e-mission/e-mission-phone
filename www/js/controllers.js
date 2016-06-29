@@ -20,24 +20,30 @@ angular.module('emission.controllers', [])
 
   var loadPreferredScreen = function() {
     console.log("Checking to see whether we are ready to load the screen");
-    if (window.plugins && window.plugins.appPreferences) {
+    if (window.plugins && window.plugins.appPreferences && window.Logger) {
       var prefs = plugins.appPreferences;
+        window.Logger.log(window.Logger.LEVEL_INFO, "About to set theme from preference")
         prefs.fetch('dark_theme').then(function(value) {
+          window.Logger.log(window.Logger.LEVEL_INFO, "preferred dark_theme = "+value)
           if (value == true) {
             $rootScope.dark_theme = true;
           } else {
             $rootScope.dark_theme = false;
           }
+          window.Logger.log(window.Logger.LEVEL_INFO, "set dark_theme = "+$rootScope.dark_theme)
         });
+        window.Logger.log(window.Logger.LEVEL_INFO, "About to navigate to preferred tab")
         prefs.fetch('setup_complete').then(function(value) {
-          console.log('setup_complete result '+value);
+          window.Logger.log(window.Logger.LEVEL_DEBUG, 'setup_complete result '+value);
           if (value == true) {
+              window.Logger.log(window.Logger.LEVEL_INFO, 'changing state to root.main.diary');
               changeState('root.main.diary');
           } else {
+              window.Logger.log(window.Logger.LEVEL_INFO, 'changing state to root.intro');
               changeState('root.intro');
           }
         }, function(error) {
-          console.log("error "+error+" loading root.intro");
+          window.Logger.log(window.Logger.LEVEL_ERROR, "error "+error+" loading root.intro");
           changeState('root.intro');
         });
     } else {
