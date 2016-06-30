@@ -62,51 +62,14 @@
                     </div>
                 </div>
 
-                <leaflet geojson="tripgj" id="$index" defaults="defaults" ng-class="leafletClass()"></leaflet>    
-
-<!-- 				  	<div>
-                    <p style="color: #ccc; font-size: 0.8em">Distance</p>
-				    <p style="font-size: 0.8em">{{getFormattedDistance(tripgj.data.properties.distance)}} km</p>
-				    <div style="height: 10px;"></div>
-				    </div>
-                    <div>
-                    <p style="color: #ccc; font-size: 0.8em;">Duration</p>
-				    <p style="font-size: 0.8em; float: left; margin-right: 10px;">{{getFormattedTimeRange(tripgj.data.properties.start_ts,
-                           tripgj.data.properties.end_ts)}}</p>
-                    <div style="float: right;">
-                     <i class="{{ getArrowClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0]) }}" style="font-size: 14px; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"></i>
-                        <a style="font-size: 14px; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};">{{ getLongerOrShorter(tripgj.data, tripgj.data.id)[1] }}</a>
-                     </div>
-                    </div>
-                    <div style="height: 30px;"></div>
-                    
-                
-                    
-
-                    <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.8em; margin-left: 0.3em; margin-right: 1em;" ng-style="setColor(mode)"></i>
-                    <br>
-                    <a ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
-                            
- -->
-
-
-                
-
-                    <!-- <div class="col-30">
-                        <div style="color: white; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
-                        <div style="color: white; font-size: 15px; width: 0; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
-                        <div style="font-size: 0.8em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
-                        </div>
-                    </div> -->
-
-
+                <leaflet geojson="tripgj" id="$index" defaults="defaults" ng-class="leafletClass()"></leaflet>   
                 <div style="padding: 0.5em;">
                     <div ng-class="listLocationClass()" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
                     <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
                             {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
                     </div>
-                    <div ng-class="listLocationClass()" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                    <div ng-class="listLocationClass()" href="#">
                     <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
                             {{tripgj.end_place.properties.displayName.split(',')[0]}}
                     </div>

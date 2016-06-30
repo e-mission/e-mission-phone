@@ -102,20 +102,34 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
 
     
     $scope.toggleLowAccuracy = function() {
+        //  return true: toggle on; return false: toggle off.
         if ($scope.settings.collect.config == null) {
             return false; // config not loaded when loading ui, set default as false
         } else {
-            var accuracy = $scope.settings.collect.config.accuracy; 
-            return accuracy >= 100;
+            if ($scope.isIOS()) {
+                var accuracy = $scope.settings.collect.config.accuracy; 
+                return accuracy >= 100;
+            } else if ($scope.isAndroid()) {
+                return accuracy != "PRIORITY_HIGH_ACCURACY";
+            }
+
         }
     }
     $scope.willUseLowAccuracy = function() {
         var accuracy = $scope.settings.collect.config.accuracy;
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        if (accuracy < 100) {
-            $scope.settings.collect.new_config.accuracy = 100;
-        } else {
-            $scope.settings.collect.new_config.accuracy = -1;
+        if ($scope.isIOS()) {
+            if (accuracy < 100) {
+                $scope.settings.collect.new_config.accuracy = 100;
+            } else {
+                $scope.settings.collect.new_config.accuracy = -1;
+            }
+        } else if ($scope.isAndroid()) {
+            if (accuracy != "PRIORITY_HIGH_ACCURACY") {
+                $scope.settings.collect.new_config.accuracy = "PRIORITY_HIGH_ACCURACY";
+            } else {
+                $scope.settings.collect.new_config.accuracy = "PRIORITY_BALANCED_POWER_ACCURACY";
+            }
         }
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
     }
@@ -140,7 +154,7 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             $scope.dark_theme = true;
             if (window.plugins && window.plugins.appPreferences) {
                 var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', true);                
+                prefs.store('dark_theme', true);   
             }
             // StatusBar.style(2);
         }
@@ -343,7 +357,7 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
         }
     };
 
-    $scope.saveAndReloadCollectSettingsPopover = function() {
+    $scope.saveAndReloadCollectionSettingsPopover = function() {
         console.log("new config = "+$scope.settings.collect.new_config);
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
             .then($scope.getCollectionSettings);

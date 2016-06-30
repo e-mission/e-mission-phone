@@ -23,6 +23,10 @@ angular.module('emission.main.diary.services', ['emission.services'])
   //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
   //   .setAttribute('style', 'width: '+oldVal2);
   // }
+  dh.getFormattedDate = function(ts) {
+    var d = moment(ts * 1000).format("DD MMMM YYYY");
+    return d;
+  }
   dh.isCommon = function(id) {
     var ctrip = CommonGraph.findCommon(id);
     return !angular.isUndefined(ctrip);

@@ -154,9 +154,23 @@ ion-header-bar {
 }
 .list-location {
   color: #303030;
+  background-color: transparent;
+  font-size: 0.8em;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .list-location-dark {
   color: white;
+  background-color: transparent; 
+  font-size: 0.8em; 
+  padding-top: 5px; 
+  padding-bottom: 5px; 
+  padding-left: 30px; 
+  margin-top: 0; 
+  margin-bottom: 0;
 }
 p.list-text-dark {
   color: white;

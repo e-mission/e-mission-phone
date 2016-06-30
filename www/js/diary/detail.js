@@ -8,14 +8,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'nvd3ChartDirectives'
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
-  $scope.mapCtrl = {};
-  $scope.getFormattedDate = function(ts) {
-    var d = moment(ts * 1000).format("DD MMMM YYYY");
-    return d;
-  }
+  $scope.mapCtrl = {};  
   angular.extend($scope.mapCtrl, {
     defaults : Config.getMapTiles()
   });
+  $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.arrowColor = DiaryHelper.arrowColor;
   $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
   $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
