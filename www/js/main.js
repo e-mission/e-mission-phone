@@ -100,35 +100,49 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
 
-    
-    $scope.toggleLowAccuracy = function() {
+
+    $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         if ($scope.settings.collect.config == null) {
             return false; // config not loaded when loading ui, set default as false
         } else {
+            var accuracy = $scope.settings.collect.config.accuracy; 
+            var v;
+            for (var k in $scope.settings.collect.accuracyOptions) {
+                if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
+                    v = k;
+                    break;
+                } 
+            }
             if ($scope.isIOS()) {
-                var accuracy = $scope.settings.collect.config.accuracy; 
-                return accuracy >= 100;
+                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest";
             } else if ($scope.isAndroid()) {
-                return accuracy != "PRIORITY_HIGH_ACCURACY";
+                return v != "PRIORITY_HIGH_ACCURACY";
             }
 
         }
     }
-    $scope.willUseLowAccuracy = function() {
+    $scope.setLowAccuracy = function() {
         var accuracy = $scope.settings.collect.config.accuracy;
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
+        var v;
+        for (var k in $scope.settings.collect.accuracyOptions) {
+            if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
+                v = k;
+                break;
+            } 
+        }
         if ($scope.isIOS()) {
-            if (accuracy < 100) {
-                $scope.settings.collect.new_config.accuracy = 100;
+            if (v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest") {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyBest"];
             } else {
-                $scope.settings.collect.new_config.accuracy = -1;
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
             }
         } else if ($scope.isAndroid()) {
-            if (accuracy != "PRIORITY_HIGH_ACCURACY") {
-                $scope.settings.collect.new_config.accuracy = "PRIORITY_HIGH_ACCURACY";
+            if (v != "PRIORITY_HIGH_ACCURACY") {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
             } else {
-                $scope.settings.collect.new_config.accuracy = "PRIORITY_BALANCED_POWER_ACCURACY";
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
             }
         }
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
@@ -136,10 +150,10 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
-    $scope.toggleDarkTheme = function() {
+    $scope.getDarkTheme = function() {
         return $scope.dark_theme;
     }
-    $scope.willUseDarkTheme = function() {
+    $scope.setDarkTheme = function() {
         if ($scope.dark_theme) {
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
