@@ -63,7 +63,7 @@ angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     controller: 'RootCtrl'
   });
 
-  alert("about to fall back to otherwise");
+  // alert("about to fall back to otherwise");
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/splash');
   console.log("Ending config");
