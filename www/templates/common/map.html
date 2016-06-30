@@ -1,0 +1,21 @@
+<ion-view style="" title="Common Patterns">
+      <ion-content class="has-header" overflow-scroll="true" padding="true">
+      <!--
+      <ion-refresher
+        pulling-text="Pull to refresh..."
+        on-refresh="refreshMap()">
+      </ion-refresher>
+      -->
+      <div style="" class="button-bar">
+        <button class="button button-stable button-block icon ion-refresh"
+          ng-click="refreshMap()">Refresh</button>
+      </div>
+
+      <leaflet geojson="mapCtrl.geojson"
+               id="common"
+               defaults="mapCtrl.defaults"
+               event-broadcast="mapCtrl.events"
+               height="100%" width="100%">
+      </leaflet>
+    </ion-content>
+</ion-view>

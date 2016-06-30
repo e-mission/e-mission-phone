@@ -94,14 +94,14 @@ angular.module('emission.main.diary.services', ['emission.services'])
         'top': '310px',
         'line-height': '16px'
       }
-    }   
+    }
   }
   dh.getIcon = function(section) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-disc",}
-    return icons[dh.getHumanReadable(section.properties.sensed_mode)]; 
+    return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
   dh.getHumanReadable = function(sensed_mode) {
     var ret_string = sensed_mode.split('.')[1];
@@ -122,7 +122,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
   dh.getPercentages = function(trip) {
     var rtn0 = []; // icons
     var rtn1 = []; //percentages
-    
+
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
     // "RUNNING":" ion-android-walk",
@@ -197,7 +197,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
     } else {
       return "---";
     }
-  };  
+  };
   dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
     var startMoment = moment(start_ts_in_secs * 1000);
     var endMoment = moment(end_ts_in_secs * 1000);
@@ -208,12 +208,15 @@ angular.module('emission.main.diary.services', ['emission.services'])
   };
   dh.getTripDetails = function(trip) {
     return (trip.sections.length) + " sections";
-  }; 
+  };
   dh.getEarlierOrLater = function(ts, id) {
+    if (!angular.isDefined(id)) {
+      return '';
+    }
     var ctrip = CommonGraph.findCommon(id);
     if (!angular.isUndefined(ctrip)) {
       // assume probabilities array is Monday-indexed + 1-indexed
-      var mostFrequestHour = ctrip.start_times[0].hour;    
+      var mostFrequestHour = ctrip.start_times[0].hour;
       var thisHour = parseInt(dh.getFormattedTime(ts).split(':')[0]);
       if (thisHour == mostFrequestHour) {
         return '';
@@ -248,11 +251,11 @@ angular.module('emission.main.diary.services', ['emission.services'])
         return noChangeReturn;
       } else {
         if (diff > 0) {
-          return [1, dh.getFormattedDuration(diff)]; 
+          return [1, dh.getFormattedDuration(diff)];
         } else {
-          return [-1, dh.getFormattedDuration(diff)]; 
+          return [-1, dh.getFormattedDuration(diff)];
         }
-        
+
       }
     } else {
       return noChangeReturn;
@@ -293,17 +296,17 @@ angular.module('emission.main.diary.services', ['emission.services'])
           return 'Started ' + val + ' hour later than usual'
         } else {
           return 'Started ' + val + ' hours later than usual'
-        }        
+        }
       }
     }
-  
+
   dh.fillCommonTripCount = function(tripWrapper) {
       var cTrip = CommonGraph.findCommon(tripWrapper.data.id);
       if (!angular.isUndefined(cTrip)) {
           tripWrapper.common_count = cTrip.trips.length;
       }
   };
-  dh.directiveForTrip = function(trip) { 
+  dh.directiveForTrip = function(trip) {
     var retVal = {};
     retVal.data = trip;
     retVal.style = style_feature;
@@ -565,7 +568,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
 
         console.log("currIndex = "+timeline.data.currDay+" currDayTrips = "+ timeline.data.currDayTrips.length);
 
-            // Return to the top of the page. If we don't do this, then we will be stuck at the 
+            // Return to the top of the page. If we don't do this, then we will be stuck at the
             $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'success'});
             $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'success'});
             console.log("About to hide 'Processing trips'");
