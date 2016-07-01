@@ -2,14 +2,14 @@
 
 angular.module('emission.main.common.services', [])
 
-.factory('CommonGraph', function($rootScope) {
+.factory('CommonGraph', function($rootScope, $http) {
     var commonGraph = {};
     commonGraph.data = {};
     commonGraph.UPDATE_DONE = "COMMON_GRAPH_UPDATE_DONE";
 
     var db = window.cordova.plugins.BEMUserCache;
     var selKey = "common-trips";
-   
+
     commonGraph.updateCurrent = function() {
       db.getDocument(selKey, function(entryList) {
         try{
@@ -54,12 +54,36 @@ angular.module('emission.main.common.services', [])
         // Count the number of trips in each common trip. Also, create a map
         // from the trip list to the trip for efficient lookup
         commonGraph.data.cTripCountMap = {};
-        commonGraph.data.tripMap = {};
+        commonGraph.data.trip2CommonMap = {};
+        commonGraph.data.cTripId2ObjMap = {};
         commonGraph.data.graph.common_trips.forEach(function(cTrip, index, array) {
-            commonGraph.data.cTripCountMap[cTrip.id] = cTrip.trips.length;
+            commonGraph.data.cTripCountMap[cTrip._id.$oid] = cTrip.trips.length;
+            commonGraph.data.cTripId2ObjMap[cTrip._id.$oid] = cTrip;
             cTrip.trips.forEach(function(tripId,index,array) {
-                commonGraph.data.tripMap[tripId.$oid] = cTrip;
+                commonGraph.data.trip2CommonMap[tripId.$oid] = cTrip;
             });
+        });
+        commonGraph.data.cPlaceCountMap = {};
+        commonGraph.data.place2CommonMap = {};
+        commonGraph.data.cPlaceId2ObjMap = {};
+        commonGraph.data.graph.common_places.forEach(function(cPlace, index, array) {
+            commonGraph.data.cPlaceCountMap[cPlace._id.$oid] = cPlace.places.length;
+            commonGraph.data.cPlaceId2ObjMap[cPlace._id.$oid] = cPlace;
+            if (angular.isDefined(cPlace.displayName)) {
+              console.log("For place "+cPlace.id+", already have displayName "+cPlace.displayName);
+            } else {
+              console.log("Don't have display name for end place, going to query nominatim");
+              getDisplayName(cPlace);
+            }
+            cPlace.places.forEach(function(placeId,index,array) {
+                commonGraph.data.place2CommonMap[placeId.$oid] = cPlace;
+            });
+        });
+        commonGraph.data.graph.common_places.forEach(function(cPlace, index, array) {
+          cPlace.succ_places = cPlace.successors.map(function(succId, index, array) {
+            // succId is currently an object
+            return commonGraph.data.cPlaceId2ObjMap[succId._id.$oid];
+          });
         });
     };
 
@@ -92,6 +116,39 @@ angular.module('emission.main.common.services', [])
           "type": "FeatureCollection",
           "features": places.concat(trips)
         };
+    };
+
+    var getDisplayName = function(common_place) {
+      var responseListener = function(data) {
+        var address = data["address"];
+        var name = "";
+        if (address["road"]) {
+          name = address["road"];
+        } else if (address["neighbourhood"]) {
+          name = address["neighbourhood"];
+        }
+        if (address["city"]) {
+          name = name + ", " + address["city"];
+        } else if (address["town"]) {
+          name = name + ", " + address["town"];
+        } else if (address["county"]) {
+          name = name + ", " + address["county"];
+        }
+
+        console.log("got response, setting display name to "+name);
+        common_place.displayName = name;
+      };
+
+      var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + common_place.location.coordinates[1]
+      + "&lon=" + common_place.location.coordinates[0];
+      console.log("About to make call "+url);
+      $http.get(url).then(function(response) {
+        console.log("while reading data from nominatim, status = "+response.status
+          +" data = "+JSON.stringify(response.data));
+        responseListener(response.data);
+      }, function(error) {
+        console.log("while reading data from nominatim, error = "+error);
+      });
     };
 
     return commonGraph;
