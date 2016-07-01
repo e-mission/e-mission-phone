@@ -14,7 +14,6 @@ angular.module('emission.main.common.detail',['ui-leaflet',
       console.log("Found common trip "+cTrip);
       var retDict = {
         trip: cTrip,
-        trip_count: cTrip.trips.length,
         place: sp
       };
       return retDict;

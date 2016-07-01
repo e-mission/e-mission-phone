@@ -12,7 +12,9 @@
         <div collection-repeat="succ_tp in succ_trips_places">
           <ion-item href="#/root/main/common/places/{{succ_tp.place._id.$oid}}">
             <div class="col item-text-wrap">
-              {{succ_tp.trip_count}} trips to
+              <div class="row"> {{succ_tp.trip.trips.length}} trips </div>
+              <div class="row"> starting at {{succ_tp.trip.common_hour}}:00 </div>
+              <div class="row"> taking {{succ_tp.trip.common_duration}} seconds </div>
             </div>
             <div class="col">
               <div class="row">{{succ_tp.place.displayName}}</div>
