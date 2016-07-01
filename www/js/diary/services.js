@@ -28,7 +28,6 @@ angular.module('emission.main.diary.services', ['emission.services'])
     return d;
   }
   dh.isCommon = function(id) {
-    return true;
     var ctrip = CommonGraph.findCommon(id);
     return !angular.isUndefined(ctrip);
   }
@@ -146,7 +145,6 @@ angular.module('emission.main.diary.services', ['emission.services'])
     return (trip.sections.length) + " sections";
   }; 
   dh.getEarlierOrLater = function(ts, id) {
-    return "5min";
     var ctrip = CommonGraph.findCommon(id);
     if (!angular.isUndefined(ctrip)) {
       // assume probabilities array is Monday-indexed + 1-indexed
