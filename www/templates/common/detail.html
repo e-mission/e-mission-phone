@@ -1,5 +1,22 @@
 <ion-view style="" title="Common Patterns">
     <ion-content>
-        This is the detail view for {{placeId}}
+      <div class="row">
+        <div class="col" style="background-color: #C0C0C0">
+          <div class="row">{{place.displayName}}</div>
+          <div class="row">{{place.location.coordinates}}</div>
+          <div class="row">visited: {{place.places.length}}</div>
+          <div class="row">successors: {{place.successors.length}}</div>
+        </div>
+      </div>
+      <ion-list>
+        <div collection-repeat="succ_place in place.succ_places">
+          <ion-item href="#/root/main/common/places/{{succ_place._id.$oid}}">
+            <div class="row">{{succ_place.displayName}}</div>
+            <div class="row">{{succ_place.location.coordinates}}</div>
+            <div class="row">visited: {{succ_place.places.length}}</div>
+            <div class="row">successors: {{succ_place.successors.length}}</div>
+          </ion-item>
+        </div>
+        </ion-list>
     </ion-content>
 </ion-view>

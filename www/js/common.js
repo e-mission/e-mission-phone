@@ -19,7 +19,7 @@ angular.module('emission.main.common',['ui-leaflet',
   })
 
   .state('root.main.common.list', {
-    url: '/list',
+    url: '/places',
     views: {
       'menuContent': {
         templateUrl: 'templates/common/list.html',
@@ -29,7 +29,7 @@ angular.module('emission.main.common',['ui-leaflet',
   })
 
   .state('root.main.common.place-detail', {
-    url: '/place/:placeId',
+    url: '/places/:placeId',
     views: {
         'menuContent': {
             templateUrl: 'templates/common/detail.html',

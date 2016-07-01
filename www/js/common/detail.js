@@ -4,6 +4,7 @@ angular.module('emission.main.common.detail',['ui-leaflet',
                                       'emission.services'])
 
 .controller("CommonDetailCtrl", function($scope, $stateParams,
-                                        Timeline, DiaryHelper,Config) {
+                                        CommonGraph) {
     $scope.placeId = $stateParams.placeId;
+    $scope.place = CommonGraph.data.cPlaceId2ObjMap[$scope.placeId];
 });
