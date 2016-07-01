@@ -115,35 +115,27 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
                 } 
             }
             if ($scope.isIOS()) {
-                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest";
+                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
             } else if ($scope.isAndroid()) {
                 return v != "PRIORITY_HIGH_ACCURACY";
             }
 
         }
     }
-    $scope.setLowAccuracy = function() {
-        var accuracy = $scope.settings.collect.config.accuracy;
+    $scope.toggleLowAccuracy = function() {
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        var v;
-        for (var k in $scope.settings.collect.accuracyOptions) {
-            if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
-                v = k;
-                break;
-            } 
-        }
-        if ($scope.isIOS()) {
-            if (v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest") {
+        if ($scope.getLowAccuracy()) {
+            if ($scope.isIOS()) {
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyBest"];
-            } else {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
-            }
-        } else if ($scope.isAndroid()) {
-            if (v != "PRIORITY_HIGH_ACCURACY") {
+            } else if ($scope.isAndroid()) {
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
-            } else {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
             }
+        } else {
+            if ($scope.isIOS()) {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
+            } else if ($scope.isAndroid()) {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
+            }            
         }
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
     }
@@ -153,7 +145,7 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     $scope.getDarkTheme = function() {
         return $scope.dark_theme;
     }
-    $scope.setDarkTheme = function() {
+    $scope.toggleDarkTheme = function() {
         if ($scope.dark_theme) {
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
