@@ -12,7 +12,7 @@
 		</div>
 	</ion-nav-title> 	
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
-	<ion-content class="" style=" padding-left: 18%;">
+	<ion-content class="">
         <ion-refresher 
         pulling-text="Pull to refresh" 
         on-refresh="refresh()">
@@ -29,11 +29,12 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="isCommon(tripgj.data.id)? '348px':'308px'">
-	       <div class="start-time-tag">{{getFormattedTime(tripgj.data.properties.start_ts)}}
-           </div>		
+		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
+           <div class="start-time-tag">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>      
+            <div  style="padding-left: 19%;">
+	      
 			 <ion-item style="background-color: transparent;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
-                <div ng-class="listExpandClass()" ng-if="isCommon(tripgj.data.id)" id="hidden-{{tripgj.data.id}}">
+                <div ng-class="listExpandClass()" ng-if="differentCommon(tripgj)" id="hidden-{{tripgj.data.id}}">
                     {{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}
                 </div>
 
@@ -77,8 +78,9 @@
 
             </div>
             </ion-item>
-            <div ng-class="stopTimeTagClass(tripgj.data.id)">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
-            
+           
+            </div>
+            <div ng-class="stopTimeTagClass(tripgj)">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
         </div>
 		</ion-list>
 	</ion-content>

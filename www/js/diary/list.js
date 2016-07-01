@@ -97,9 +97,11 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.listColRightClass = function() {
       return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right"; 
     }
-    $scope.stopTimeTagClass = function(id) {
-      var ctrip = CommonGraph.findCommon(id);
-      return (angular.isUndefined(ctrip))? "stop-time-tag" : "stop-time-tag-lower";
+    $scope.differentCommon = function(tripgj) {
+        return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
+    }
+    $scope.stopTimeTagClass = function(tripgj) {
+      return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
     }
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
