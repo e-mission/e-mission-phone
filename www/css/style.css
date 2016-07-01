@@ -32,7 +32,6 @@ background-image: none !important; }
   height: 275px;
   margin: 1rem;
   position: relative;
-  width: 300px;
 }
 /* Dark theme */
 /*
@@ -143,21 +142,35 @@ ion-header-bar {
 
 .earlier-later-expand-dark {
   color: white;
-  margin: 16px 16px 0 16px;
+  margin: 16px 16px 0 6px;
   font-size: 0.8em;
   opacity: 0.7;
 }
 .earlier-later-expand {
   color: #303030;
-  margin: 16px 16px 0 16px;
+  margin: 16px 16px 0 6px;
   font-size: 0.8em;
   opacity: 0.7;
 }
 .list-location {
   color: #303030;
+  background-color: transparent;
+  font-size: 0.8em;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .list-location-dark {
   color: white;
+  background-color: transparent; 
+  font-size: 0.8em; 
+  padding-top: 5px; 
+  padding-bottom: 5px; 
+  padding-left: 30px; 
+  margin-top: 0; 
+  margin-bottom: 0;
 }
 p.list-text-dark {
   color: white;
@@ -210,9 +223,11 @@ button.button.ng-binding i.icon.ion-edit {
   font-size: 12px;
 }
 button.button.back-button.buttons.button-clear.header-item {
-  color: #fff;
+  color: #303030; opacity: 0.7;
 }
-
+.nav-bar-title {
+  color: #303030; opacity: 0.7;
+}
 /* Profile tab */
 .control-list-item {
   background-color: white! important; height: 50px; margin-top: 0.5px;
@@ -229,7 +244,7 @@ button.button.back-button.buttons.button-clear.header-item {
   padding: 7px 0; font-size: 16px; line-height: 22px; height: 36px;
 }
 .dev-zone-title {
-  padding: 18px 22px;
+  padding: 18px 16px;
 }
 .dev-zone-button {
   position: absolute;
@@ -237,8 +252,77 @@ button.button.back-button.buttons.button-clear.header-item {
   top: 16px;
 }
 .list-card-dark {
-  margin: 16px; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  margin: 16px 0; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .list-card {
-  margin: 16px; background-color: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  margin: 16px 0; background-color: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.list-card-sm {
+  width: 95%;
+}
+.list-card-md {
+  width: 95%;
+}
+.list-card-lg {
+ width: 95%;
+}
+.list-col-left-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left-dark-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left {
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left-dark {
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-right {
+  text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-right-dark {
+  text-align: center; padding: 0.25em 0.8em; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.start-time-tag {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #33e0bb;
+        color: black;
+        width: 16%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: 1%;
+        top: 15px;
+        line-height: 16px;
+}
+.stop-time-tag {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 16%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: 1%;
+        top: 275px;
+        line-height: 16px;
+}
+.stop-time-tag-lower {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 16%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: 1%;
+        top: 310px;
+        line-height: 16px;
 }

@@ -36,9 +36,37 @@
   background:#7570b3!important;
   color:whitesmoke !important;
 }
-.angular-leaflet-map {
-  width: 300px;
-  height: 150px;
+
+
+/* leaflet */
+/* ----------- iPhone 5 and 5S ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+    .angular-leaflet-map { height: 150px; width: 245px; }
+}
+
+/* ----------- iPhone 6 ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2) { 
+    .angular-leaflet-map { height: 150px; width: 295px; }
+}
+
+/* ----------- iPhone 6+ ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3) { 
+    .angular-leaflet-map { height: 150px; width: 330px; }
 }
 
 

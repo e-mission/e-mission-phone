@@ -8,11 +8,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
-  $scope.mapCtrl = {};
-
+  $scope.mapCtrl = {};  
   angular.extend($scope.mapCtrl, {
     defaults : Config.getMapTiles()
   });
+  $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.arrowColor = DiaryHelper.arrowColor;
   $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
   $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;

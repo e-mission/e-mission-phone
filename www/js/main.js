@@ -96,15 +96,56 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
     }
 })
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope, ControlHelper) {
+    $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
+
+
+    $scope.getLowAccuracy = function() {
+        //  return true: toggle on; return false: toggle off.
+        if ($scope.settings.collect.config == null) {
+            return false; // config not loaded when loading ui, set default as false
+        } else {
+            var accuracy = $scope.settings.collect.config.accuracy; 
+            var v;
+            for (var k in $scope.settings.collect.accuracyOptions) {
+                if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
+                    v = k;
+                    break;
+                } 
+            }
+            if ($scope.isIOS()) {
+                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
+            } else if ($scope.isAndroid()) {
+                return v != "PRIORITY_HIGH_ACCURACY";
+            }
+
+        }
+    }
+    $scope.toggleLowAccuracy = function() {
+        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
+        if ($scope.getLowAccuracy()) {
+            if ($scope.isIOS()) {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyBest"];
+            } else if ($scope.isAndroid()) {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
+            }
+        } else {
+            if ($scope.isIOS()) {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
+            } else if ($scope.isAndroid()) {
+                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
+            }            
+        }
+        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
+    }
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
-    $scope.toggleDarkTheme = function() {
+    $scope.getDarkTheme = function() {
         return $scope.dark_theme;
     }
-    $scope.willUseDarkTheme = function() {
+    $scope.toggleDarkTheme = function() {
         if ($scope.dark_theme) {
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
@@ -119,7 +160,7 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             $scope.dark_theme = true;
             if (window.plugins && window.plugins.appPreferences) {
                 var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', true);                
+                prefs.store('dark_theme', true);   
             }
             // StatusBar.style(2);
         }
@@ -435,8 +476,8 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.diary', 
             'height': '100%', 
             'background-color': '#' + color,
             'color': '#fff',
-            'padding': '15px 15px',
-            'width': '50px'
+            'padding-top': '16px',
+            'width': '64px'
         }
     }
     $scope.getIconStyle = function() {
