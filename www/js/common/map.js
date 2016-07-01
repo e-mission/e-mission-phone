@@ -10,37 +10,36 @@ angular.module('emission.main.common.map',['ionic-datepicker',
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
-    defaults : Config.getMapTiles(),
-    events: {
-      map: {
-        enable: ['zoomstart', 'drag', 'click', 'mousemove', 'contextmenu'],
-        logic: 'emit'
-      }
-    }
+    defaults : Config.getMapTiles()
   });
 
-  $scope.$on('leafletDirectiveMap.click', function(event){
-     alert('click '+JSON.stringify(event)+' detected');
-  });
-
-  $scope.$on('leafletDirectiveMap.contextmenu', function(event){
-     alert('conextmenu '+JSON.stringify(event)+' detected');
-  });
+  var styleFeature = function(feature) {
+    switch(feature.geometry.type) {
+      case "Point":
+        var place = CommonGraph.data.cPlaceId2ObjMap[feature.id];
+        var popularity = place.places.length;
+        var toReturn = {opacity: 0.3};
+        return toReturn;
+    };
+  };
 
   var onEachFeature = function(feature, layer) {
     console.log("onEachFeature called with "+JSON.stringify(feature));
     console.log("type is "+feature.geometry.type);
     var popupContent = "<p>I started out as a GeoJSON " +
                     feature.geometry.type + ", but now I'm a Leaflet vector!</p>";
-    layer.on('click', function(e) { console.log("layer clicked"); alert(feature.geometry.type) } );
-    // layer.bindPopup(popupContent);
-    /*
+    console.log(popupContent);
+    layer.on('click', layer.bindPopup("layer clicked"));
+    console.log("Finished registering for onClick for feature "+feature.id)
+  };
+
+  var pointFormat = function(feature, latlng) {
     switch(feature.geometry.type) {
-      case "Point": layer.bindPopup(popupContent); break;
-      case "LineString": layer.bindPopup(popupContent); break;
+      case "Point": return L.marker(latlng, {opacity: 0.3});
+      default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
     }
-    */
-  }
+  };
+
 
   $scope.refreshMap = function() {
       CommonGraph.updateCurrent();
@@ -50,7 +49,9 @@ angular.module('emission.main.common.map',['ionic-datepicker',
     $scope.$apply(function() {
         $scope.mapCtrl.geojson = {}
         $scope.mapCtrl.geojson.data = CommonGraph.data.geojson;
+        $scope.mapCtrl.geojson.style = styleFeature;
         $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
+        // $scope.mapCtrl.geojson.pointToLayer = pointFormat;
     });
   });
 
