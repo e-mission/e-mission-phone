@@ -30,10 +30,7 @@
         -->
 
 		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="isCommon(tripgj.data.id)? '348px':'308px'">
-	       <div ng-style="getStartTimeTagStyle(tripgj.data.id)">{{getFormattedTime(tripgj.data.properties.start_ts)}}
-                <div ng-if="isCommon(tripgj.data.id)">
-                    <i class="ion-arrow-right-b" style="color: black; font-size: 1.3em;"></i>
-                </div>
+	       <div class="start-time-tag">{{getFormattedTime(tripgj.data.properties.start_ts)}}
            </div>		
 			 <ion-item style="background-color: transparent;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
                 <div ng-class="listExpandClass()" ng-if="isCommon(tripgj.data.id)" id="hidden-{{tripgj.data.id}}">
@@ -80,7 +77,7 @@
 
             </div>
             </ion-item>
-            <div ng-style="getStopTimeTagStyle(tripgj.data.id)">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
+            <div ng-class="stopTimeTagClass(tripgj.data.id)">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
             
         </div>
 		</ion-list>

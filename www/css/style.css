@@ -284,3 +284,45 @@ button.button.back-button.buttons.button-clear.header-item {
 .list-col-right-dark {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
+.start-time-tag {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #33e0bb;
+        color: black;
+        width: 18%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: -20%;
+        top: 15px;
+        line-height: 16px;
+}
+.stop-time-tag {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 18%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: -20%;
+        top: 275px;
+        line-height: 16px;
+}
+.stop-time-tag-lower {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 18%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: -20%;
+        top: 310px;
+        line-height: 16px;
+}

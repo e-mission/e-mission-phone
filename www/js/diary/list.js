@@ -97,7 +97,10 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.listColRightClass = function() {
       return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right"; 
     }
-
+    $scope.stopTimeTagClass = function(id) {
+      var ctrip = CommonGraph.findCommon(id);
+      return (angular.isUndefined(ctrip))? "stop-time-tag" : "stop-time-tag-lower";
+    }
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
           window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
@@ -236,8 +239,6 @@ angular.module('emission.main.diary.list',['ui-leaflet', 'nvd3ChartDirectives',
     $scope.starColor = DiaryHelper.starColor;
     $scope.arrowColor = DiaryHelper.arrowColor;
     $scope.getArrowClass = DiaryHelper.getArrowClass;
-    $scope.getStartTimeTagStyle = DiaryHelper.getStartTimeTagStyle;
-    $scope.getStopTimeTagStyle = DiaryHelper.getStopTimeTagStyle;
     $scope.isCommon = DiaryHelper.isCommon;
     // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
     // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
