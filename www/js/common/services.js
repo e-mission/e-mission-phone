@@ -39,9 +39,64 @@ angular.module('emission.main.common.services', [])
     /*
      * Returns the common trip corresponding to the specified tripId
      */
-    commonGraph.findCommon = function(tripId) {
+    commonGraph.trip2Common = function(tripId) {
         return commonGraph.data.trip2CommonMap[tripId];
     };
+
+    commonGraph.place2Common = function(placeId) {
+        return commonGraph.data.place2CommonMap[placeId];
+    };
+
+    commonGraph.time_fns = {};
+
+    commonGraph.time_fns.getMostFrequentHour = function(timeArray) {
+      var binFn = function(localTime) {
+        return localTime.hour;
+      }
+      var hourMap = binEntries(timeArray, binFn);
+      var maxEntry = getKeyWithMaxVal(hourMap);
+      if (angular.isDefined(maxEntry)) {
+        return maxEntry[0];
+      } else {
+        return maxEntry;
+      }
+    };
+
+    commonGraph.time_fns.getMostFrequentDuration = function(durationArray) {
+      if (durationArray.length == 0) {
+        return 0;
+      };
+      var minDur = durationArray.reduce(function(a, b) { return Math.min(a, b); });
+      var maxDur = durationArray.reduce(function(a, b) { return Math.max(a, b); });
+      var scale = 60;
+      if (minDur > 60 * 60 || maxDur > 60 * 60) {
+        scale = 60 * 60;
+      }
+      var binFn = function(duration) {
+        return duration/scale;
+      }
+      var durationMap = binEntries(durationArray, binFn);
+      var maxEntry = getKeyWithMaxVal(durationMap);
+      if (angular.isDefined(maxEntry)) {
+        return maxEntry[0] * scale;
+      } else {
+        return maxEntry;
+      }
+    };
+
+    var binEntries = function(toBinArray, binFn) {
+      var binnedMap = new Map();
+      toBinArray.forEach(function(entry, index, array) {
+        var key = binFn(entry);
+        var currValue = binnedMap.get(key);
+        if (angular.isDefined(currValue)) {
+          binnedMap.set(key, currValue + 1);
+        } else {
+          binnedMap.set(key, 1);
+        }
+      });
+      return binnedMap;
+    }
 
     /*
      * Returns the number of trips mapped to the specified commonTripId
@@ -53,24 +108,39 @@ angular.module('emission.main.common.services', [])
     /*
      * Returns the common trip for a (start, end) pair
      */
-     commonGraph.getCommonTripForStartEnd = function(commonStartPlaceId, commonEndPlaceId) {
-        var retArray = [];
+    commonGraph.getCommonTripForStartEnd = function(commonStartPlaceId, commonEndPlaceId) {
+        var retMap = new Map();
         commonGraph.data.graph.common_trips.forEach(function(cTrip, index, array) {
           if (cTrip.start_place.$oid == commonStartPlaceId &&
               cTrip.end_place.$oid == commonEndPlaceId) {
-              retArray.push(cTrip);
+              retMap.set(cTrip, cTrip.trips.length);
           }
         });
-        var retVal = null;
-        var maxCount = 0;
-        retArray.forEach(function(cTrip, index, array) {
-          if (cTrip.trips.length > maxCount) {
-            maxCount = cTrip.trips.length;
-            retVal = cTrip;
-          }
-        });
-        return retVal;
-     };
+        var maxEntry = getKeyWithMaxVal(retMap);
+        return maxEntry[0];
+    };
+
+    var getKeyWithMaxVal = function(kv_map) {
+      var kv_array = mapEntries(kv_map);
+      if (kv_array.length == 0) {
+        return null;
+      }
+      var maxEntry = kv_array[0];
+      kv_array.forEach(function(entry, index, array) {
+        if (entry[1] > maxEntry[1]) {
+          maxEntry = entry;
+        }
+      });
+      return maxEntry;
+    };
+
+    var mapEntries = function(input_map) {
+      var arr = [];
+      for (var [key, value] of input_map.entries()) {
+        arr.push([key, value]);
+      };
+      return arr;
+    };
 
     var postProcessData = function() {
         // Count the number of trips in each common trip. Also, create a map
@@ -84,6 +154,8 @@ angular.module('emission.main.common.services', [])
             cTrip.trips.forEach(function(tripId,index,array) {
                 commonGraph.data.trip2CommonMap[tripId.$oid] = cTrip;
             });
+            cTrip.common_hour = commonGraph.time_fns.getMostFrequentHour(cTrip.start_times);
+            cTrip.common_duration = commonGraph.time_fns.getMostFrequentDuration(cTrip.durations);
         });
         commonGraph.data.cPlaceCountMap = {};
         commonGraph.data.place2CommonMap = {};

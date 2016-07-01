@@ -24,11 +24,11 @@ angular.module('emission.main.diary.services', ['emission.services'])
   //   .setAttribute('style', 'width: '+oldVal2);
   // }
   dh.isCommon = function(id) {
-    var ctrip = CommonGraph.findCommon(id);
+    var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
   }
   dh.getStartTimeTagStyle = function(id) {
-    var ctrip = CommonGraph.findCommon(id);
+    var ctrip = CommonGraph.trip2Common(id);
     if (angular.isUndefined(ctrip)) {
       return {
         'box-shadow': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
@@ -63,7 +63,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
     }
   }
   dh.getStopTimeTagStyle = function(id) {
-     var ctrip = CommonGraph.findCommon(id);
+     var ctrip = CommonGraph.trip2Common(id);
     if (angular.isUndefined(ctrip)) {
       return {
         'box-shadow': '0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23)',
@@ -213,7 +213,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
     if (!angular.isDefined(id)) {
       return '';
     }
-    var ctrip = CommonGraph.findCommon(id);
+    var ctrip = CommonGraph.trip2Common(id);
     if (!angular.isUndefined(ctrip)) {
       // assume probabilities array is Monday-indexed + 1-indexed
       var mostFrequestHour = ctrip.start_times[0].hour;
@@ -239,7 +239,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
   }
   dh.getLongerOrShorter = function(trip, id) {
     var noChangeReturn = [0, ''];
-    var ctrip = CommonGraph.findCommon(id);
+    var ctrip = CommonGraph.trip2Common(id);
     if (!angular.isUndefined(ctrip)) {
       var cDuration = dh.average(ctrip.durations);
       if (cDuration == null) {
@@ -301,7 +301,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
     }
 
   dh.fillCommonTripCount = function(tripWrapper) {
-      var cTrip = CommonGraph.findCommon(tripWrapper.data.id);
+      var cTrip = CommonGraph.trip2Common(tripWrapper.data.id);
       if (!angular.isUndefined(cTrip)) {
           tripWrapper.common_count = cTrip.trips.length;
       }
