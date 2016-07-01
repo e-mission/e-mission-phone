@@ -40,7 +40,7 @@ angular.module('emission.main.common.services', [])
      * Returns the common trip corresponding to the specified tripId
      */
     commonGraph.findCommon = function(tripId) {
-        return commonGraph.data.tripMap[tripId];
+        return commonGraph.data.trip2CommonMap[tripId];
     };
 
     /*
@@ -49,6 +49,28 @@ angular.module('emission.main.common.services', [])
     commonGraph.getCount = function(cTripId) {
         return commonGraph.data.cTripCountMap[cTripId];
     };
+
+    /*
+     * Returns the common trip for a (start, end) pair
+     */
+     commonGraph.getCommonTripForStartEnd = function(commonStartPlaceId, commonEndPlaceId) {
+        var retArray = [];
+        commonGraph.data.graph.common_trips.forEach(function(cTrip, index, array) {
+          if (cTrip.start_place.$oid == commonStartPlaceId &&
+              cTrip.end_place.$oid == commonEndPlaceId) {
+              retArray.push(cTrip);
+          }
+        });
+        var retVal = null;
+        var maxCount = 0;
+        retArray.forEach(function(cTrip, index, array) {
+          if (cTrip.trips.length > maxCount) {
+            maxCount = cTrip.trips.length;
+            retVal = cTrip;
+          }
+        });
+        return retVal;
+     };
 
     var postProcessData = function() {
         // Count the number of trips in each common trip. Also, create a map
@@ -91,10 +113,10 @@ angular.module('emission.main.common.services', [])
         var places = commonGraph.data.graph.common_places.map(function(place) {
             return {
                 "type": "Feature",
-                "id": place._id,
+                "id": place._id.$oid,
                 "geometry": place.location,
                 "properties": {
-                    "successors": place.successors
+                    "displayName": place.displayName
                 }
             };
         });
@@ -102,13 +124,10 @@ angular.module('emission.main.common.services', [])
         var trips = commonGraph.data.graph.common_trips.map(function(trip) {
             return {
                 "type": "Feature",
-                "id": trip._id,
+                "id": trip._id.$oid,
                 "geometry": {
                     "type": "LineString",
                     "coordinates": [trip.start_loc.coordinates, trip.end_loc.coordinates]
-                },
-                "properties": {
-                    "probabilities": trip.probabilites
                 }
             };
         });
