@@ -1,11 +1,70 @@
 <ion-view view-title="Goals">
+	<ion-nav-buttons side="right">
+    	<button class="button button-icon" ng-click="openModal()">
+        	<i class="icon ion-compose"></i>
+   	 	</button>
+   	 </ion-nav-buttons>
+     <!--ion-nav-buttons side="left">
+      <button class="button button-icon icon ion-ios-minus-outline" ng-click="showDelete = !showDelete"></button>
+     </ion-nav-buttons-->
 <ion-content class="has-header" overflow-scroll="true" padding="true">
-<h3 style="align:center;">
-    My goal is {{goal}}
-    </h3>
-    <label class="item item-input">
-    <input  ng-model="data.userGoal" type="text" placeholder="Goal">
-    </label>
-    <button ng-click="saveGoal()" class="button button-assertive button-block" ng-click="getPopRoute()">Submit</button>
+	 </div>
+      <!--div>
+        <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
+      </div-->
+      <div>
+        <a class="item item-thumbnail-left">
+          <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
+          <div id="stats-wrapper">
+            <i id="habitica-heart-icon" class="icon ion-heart"></i>
+            <progress value="100" max="100"></progress>
+            <div class="stats-value-wrapper">
+              <p class="stats-value">50/50</p>
+              <p class="stats-name">Health</p>
+            </div>
+          </div>
+          <div>
+            <i id="habitica-star-icon" class="icon ion-android-star"></i>
+            <progress class="golden" value="70" max="100"></progress>
+            <div class="stats-value-wrapper">
+              <p class="stats-value">70/100</p>
+              <p class="stats-name" style="margin-top: 1.5px;">Exprerience</p>
+            </div>
+          </div>
+        </a>
+      </div>
+      <div class="item-content">
+        <a class="item item-avatar" style="background-color:#f2f3f4;">
+          <img src="img/avatar_1.png">
+          <h2 style="font-size:12px">Username</h2>
+          <p style="font-size:10px">Healer</p>
+        </a>
+      </div>
+      <ion-list can-swipe="true">
+        <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">
+          <div class="row">
+          <lable class="checkbox">
+              <input type="checkbox" ng-click="completeGoal()">
+          </lable>
+          <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
+          <button class="button button-clear" style="font-size:2rem !important">
+            <i icon="ion-checkmark-circled"></i>
+          </button>
+          </div-->
+          <div class="col col-80">
+          <h2>{{goal.name}}</h2>
+          <p style="font-size: 10px">{{goal.note}}</p>
+          </div>
+          <ion-option-button class="button-assertive" ng-click="removeGoal(goal)">Delete
+          </ion-option-button>
+        </ion-item>
+      </ion-list>
+      <!--ion-list>
+      <ion-list ng-click="removeGoal(goal)">
+      <ion-delete-button class="ion-minus-circled"></ion-delete-button>
+        <ion-checkbox ng-repeat="goal in goals" show-delete="showDelete">
+          {{goal.name}}
+        </ion-checkbox>
+      </ion-list-->
 </ion-content>
 </ion-view>
