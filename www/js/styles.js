@@ -2,9 +2,9 @@
 
 angular.module('emission.styles', [])
 
-.service('StylesHelper', function($window, $rootScope, $scope) {
+.service('StylesHelper', function($window, $scope, $rootScope) {
 	$scope.dark_theme = $rootScope.dark_theme;
-	this.listCardClass = function() {
+    this.listCardClass = function() {
       if ($window.screen.width <= 320) {
         return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm"; 
       } else if ($window.screen.width <= 375) {

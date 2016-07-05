@@ -3,7 +3,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.services',
                                       'emission.styles'])
-
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
