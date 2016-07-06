@@ -1,14 +1,14 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.services'])
-
+                                      'emission.services',
+                                      'emission.styles'])
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config) {
+                                    Config, StylesHelper) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -77,16 +77,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
     $scope.datePickerClass = function() {
     }
-    $scope.listCardClass = function() {
-      if ($window.screen.width <= 320) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm"; 
-      } else if ($window.screen.width <= 375) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-md" : "list card list-card list-card-md"; 
-      } else {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-lg" : "list card list-card list-card-lg"; 
-      }
-      
-    }
+    $scope.listCardClass = StylesHelper.listCardClass;
     $scope.listColLeftClass = function(margin) {
       if (margin == 0) {
         return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left";   
