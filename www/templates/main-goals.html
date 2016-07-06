@@ -14,10 +14,10 @@
       </div-->
       <div>
         <a class="item item-thumbnail-left">
-          <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
+          <img ng-src="https://www.habitica.com/export/avatar-{{user.data._id}}.png">
           <div id="stats-wrapper">
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
-            <progress value="100" max="100"></progress>
+            <progress value="50" max="50"></progress>
             <div class="stats-value-wrapper">
               <p class="stats-value">50/50</p>
               <p class="stats-name">Health</p>
@@ -25,33 +25,31 @@
           </div>
           <div>
             <i id="habitica-star-icon" class="icon ion-android-star"></i>
-            <progress class="golden" value="70" max="100"></progress>
+            <progress class="golden" value="{{user.data.stats.exp}}" max="2060"></progress>
             <div class="stats-value-wrapper">
-              <p class="stats-value">70/100</p>
+              <p class="stats-value">{{user.data.stats.exp}}/2060</p>
               <p class="stats-name" style="margin-top: 1.5px;">Exprerience</p>
             </div>
           </div>
         </a>
       </div>
-      <div class="item-content">
-        <a class="item item-avatar" style="background-color:#f2f3f4;">
-          <img src="img/avatar_1.png">
-          <h2 style="font-size:12px">Username</h2>
-          <p style="font-size:10px">Healer</p>
-        </a>
-      </div>
+        <div class="center" style="margin-top:-5px;">
+          <img src="img/ic_header_healer.png" style="height:40px; width:40px;" class="center">
+          <h2 style="font-size:12px; text-align:center; margin:0px">{{user.data.profile.name}}</h2>
+          <p style="font-size:10px; text-align:center;">{{user.data.stats.class}}</p>
+        </div>
       <ion-list can-swipe="true">
         <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">
           <div class="row">
           <lable class="checkbox">
-              <input type="checkbox" ng-click="completeGoal()">
+              <input type="checkbox" ng-click="completeGoal(goal)">
           </lable>
           <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
           <button class="button button-clear" style="font-size:2rem !important">
             <i icon="ion-checkmark-circled"></i>
           </button>
           </div-->
-          <div class="col col-80">
+          <div class="col col-80" style="padding-left: 5% !important;">
           <h2>{{goal.name}}</h2>
           <p style="font-size: 10px">{{goal.note}}</p>
           </div>
