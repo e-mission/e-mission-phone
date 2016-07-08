@@ -400,7 +400,7 @@ angular.module('emission.main.diary.services', ['emission.services'])
      }, function(error) {
        window.Logger.log(window.Logger.LEVEL_INFO,
         "while reading data for "+day
-        +" from server, error = "+getTimelineForDay);
+        +" from server, error = "+JSON.stringify(error));
        console.log("About to hide 'Reading from server'");
        $ionicLoading.hide();
        notFoundFn(day, error);
