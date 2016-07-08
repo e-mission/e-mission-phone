@@ -2,11 +2,25 @@
 
 angular.module('emission.main.goals',[])
 
+/*.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
+  $stateProvider
+
+  .state('root.main.goals.party', {
+    url: '/party',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/goals/party.html',
+        controller: 'PartyCtrl'
+      }
+    }
+  });
+  })*/
+
 .controller('GoalsCtrl', function($scope, $ionicModal, $http){
 	$scope.goals = [];
 	$scope.goal = {};
 
-	$ionicModal.fromTemplateUrl('templates/goal-modal.html', {
+	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
 		animation: 'slide-in-up'
 	}).then(function(modal) {
@@ -20,7 +34,6 @@ angular.module('emission.main.goals',[])
   		$scope.goal = {};
     	$scope.modal.hide();
   	};
-
 	$scope.createGoal = function () {
 		$scope.goals.push($scope.goal);
 		$scope.goal = {};
@@ -32,9 +45,7 @@ angular.module('emission.main.goals',[])
 	};
 
 	$scope.completeGoal = function(goal) {
-		if(index > -1){
-			goal.completed = true;
-		}
+		goal.completed = true;
 	};
 
 	var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.recent', 'emission.main.goals', 'emission.main.diary', 'emission.main.common', 'emission.main.heatmap', 'ngCordova', 'emission.services'])
+angular.module('emission.main', ['emission.main.recent', 'emission.main.goals', 'emission.main.goals.party', 'emission.main.diary', 'emission.main.common', 'emission.main.heatmap', 'ngCordova', 'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -31,7 +31,6 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.goals', 
       }
     }
   })
-
   .state('root.main.control', {
     url: '/control',
     views: {
@@ -50,6 +49,15 @@ angular.module('emission.main', ['emission.main.recent', 'emission.main.goals', 
       }
     }
   })
+  /*.state('root.main.goals.party', {
+    url: '/party',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/goals/party.html',
+        controller: 'PartyCtrl'
+      }
+    }
+  })*/
   .state('root.main.sensed', {
     url: "/sensed",
     views: {

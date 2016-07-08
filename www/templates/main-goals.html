@@ -12,8 +12,8 @@
       <!--div>
         <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
       </div-->
-      <div>
-        <a class="item item-thumbnail-left">
+      <div style="height:91px">
+        <a class="item item-thumbnail-left" style="background-color:transparent; height:91px">
           <img ng-src="https://www.habitica.com/export/avatar-{{user.data._id}}.png">
           <div id="stats-wrapper">
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
@@ -33,17 +33,29 @@
           </div>
         </a>
       </div>
-        <div class="center" style="margin-top:-5px;">
+      <div class="row">
+        <div class="col">
+            <img src="img/ic_header_gold.png" style="height:15px; width:15px;">
+            <img src="img/ic_header_silver.png" style="height:15px; width:15px;">
+            <img src="img/ic_header_gem.png" style="height:15px; width:15px;">
+        </div>
+        <div class="col col-50" style="margin-top:-5px;">
           <img src="img/ic_header_healer.png" style="height:40px; width:40px;" class="center">
           <h2 style="font-size:12px; text-align:center; margin:0px">{{user.data.profile.name}}</h2>
           <p style="font-size:10px; text-align:center;">{{user.data.stats.class}}</p>
         </div>
-      <ion-list can-swipe="true">
+        <div class="col">
+          <button class="button button-icon">
+          <i class="icon ion-ios-people"></i>
+          </button>
+        </div>
+      </div>
+      <ion-list>
         <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">
           <div class="row">
-          <lable class="checkbox">
+          <label class="checkbox">
               <input type="checkbox" ng-click="completeGoal(goal)">
-          </lable>
+          </label>
           <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
           <button class="button button-clear" style="font-size:2rem !important">
             <i icon="ion-checkmark-circled"></i>
