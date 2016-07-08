@@ -18,6 +18,15 @@ angular.module('emission.services', [])
         var dateString = date.startOf('day').format('YYYY-MM-DD');
         window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, successCallback, errorCallback);
     };
+
+    /*
+     * var regConfig = {'username': ....}
+     * Other fields can be added easily and the server can be modified at the same time.
+     */
+    this.habiticaRegister = function(regConfig, successCallback, errorCallback) {
+        var dateString = date.startOf('day').format('YYYY-MM-DD');
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, successCallback, errorCallback);
+    };
 })
 
 .service('ControlHelper', function($cordovaEmailComposer) {
