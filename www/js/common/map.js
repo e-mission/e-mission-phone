@@ -1,9 +1,10 @@
 angular.module('emission.main.common.map',['ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.services'])
+                                      'emission.services',
+                                      'emission.main.diary.services'])
 
 .controller("CommonMapCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    CommonGraph, Config) {
+                                    CommonGraph, Config, DiaryHelper) {
   console.log("controller CommonMapCtrl called");
 
   var db = window.cordova.plugins.BEMUserCache;
@@ -22,6 +23,8 @@ angular.module('emission.main.common.map',['ionic-datepicker',
         return toReturn;
     };
   };
+
+  
 
   var onEachFeature = function(feature, layer) {
     console.log("onEachFeature called with "+JSON.stringify(feature));
@@ -44,16 +47,29 @@ angular.module('emission.main.common.map',['ionic-datepicker',
   $scope.refreshMap = function() {
       CommonGraph.updateCurrent();
   };
-
+  $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
     $scope.$apply(function() {
         $scope.mapCtrl.geojson = {}
         $scope.mapCtrl.geojson.data = CommonGraph.data.geojson;
         $scope.mapCtrl.geojson.style = styleFeature;
         $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
+        $scope.mapCtrl.trips = CommonGraph.data.graph.common_trips;
         // $scope.mapCtrl.geojson.pointToLayer = pointFormat;
     });
   });
+
+
+  /*
+   * if given group is the selected group, deselect it
+   * else, select the given group
+   */
+  $scope.toggleGroup = function(group) {
+    group.show = !group.show;
+  };
+  $scope.isGroupShown = function(group) {
+    return group.show;
+  };
 
   $scope.refreshMap();
 

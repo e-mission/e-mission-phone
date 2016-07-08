@@ -326,3 +326,27 @@ button.button.back-button.buttons.button-clear.header-item {
         top: 310px;
         line-height: 16px;
 }
+.side-menu-item {
+  padding: 5% 10%;
+}
+.common-list-item {
+  padding: 5% 10% 3% 10%;
+}
+.common-list-item-location {
+  font-size: 1em;
+  font-weight: 300;
+  color: #000;
+}
+.common-list-item-times {
+  font-size: 0.8em;
+  font-weight: 300;
+  color: #303030;
+}
+.common-map-item {
+  padding: 0 !important;
+}
+.common-map-item-location {
+   font-size: 0.8em;
+  font-weight: 300;
+  color: #000; 
+}
