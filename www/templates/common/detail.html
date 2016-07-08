@@ -1,0 +1,29 @@
+<ion-view style="" title="Common Patterns">
+    <ion-content>
+      <div class="row">
+        <div class="col" style="background-color: #C0C0C0">
+          <div class="row">{{place.displayName}}</div>
+          <div class="row">{{place.location.coordinates}}</div>
+          <div class="row">visited: {{place.places.length}}</div>
+          <div class="row">successors: {{place.successors.length}}</div>
+        </div>
+      </div>
+      <ion-list>
+        <div collection-repeat="succ_tp in succ_trips_places">
+          <ion-item href="#/root/main/common/places/{{succ_tp.place._id.$oid}}">
+            <div class="col item-text-wrap">
+              <div class="row"> {{succ_tp.trip.trips.length}} trips </div>
+              <div class="row"> starting at {{succ_tp.trip.common_hour}}:00 </div>
+              <div class="row"> taking {{succ_tp.trip.common_duration}} seconds </div>
+            </div>
+            <div class="col">
+              <div class="row">{{succ_tp.place.displayName}}</div>
+              <div class="row">{{succ_tp.place.location.coordinates}}</div>
+              <div class="row">visited: {{succ_tp.place.places.length}}</div>
+              <div class="row">successors: {{succ_tp.place.successors.length}}</div>
+            </div>
+          </ion-item>
+        </div>
+        </ion-list>
+    </ion-content>
+</ion-view>

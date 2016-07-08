@@ -19,7 +19,7 @@
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
             <progress value="50" max="50"></progress>
             <div class="stats-value-wrapper">
-              <p class="stats-value">50/50</p>
+              <p class="stats-value">{{user.data.stats.hp}}/{{user.data.stats.maxHealth}}</p>
               <p class="stats-name">Health</p>
             </div>
           </div>
@@ -27,7 +27,7 @@
             <i id="habitica-star-icon" class="icon ion-android-star"></i>
             <progress class="golden" value="{{user.data.stats.exp}}" max="2060"></progress>
             <div class="stats-value-wrapper">
-              <p class="stats-value">{{user.data.stats.exp}}/2060</p>
+              <p class="stats-value">{{user.data.stats.exp}}/{{user.data.stats.toNextLevel}}</p>
               <p class="stats-name" style="margin-top: 1.5px;">Exprerience</p>
             </div>
           </div>
