@@ -50,15 +50,19 @@ angular.module('emission.main', ['emission.main.recent',
   })
   .state('root.main.goals', {
     url: '/goals',
-    templateUrl: 'templates/main-goals.html',
-    controller: 'GoalsCtrl'
-    })
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/main-goals.html',
+        controller: 'GoalsCtrl'
+      }
+    }
+  })
   .state('root.main.signup', {
     url: '/signup',
     views: {
       'main-signup': {
         templateUrl: 'templates/goals/habitica-signup.html',
-        controller: 'SignupCtrl',
+        controller: 'SignupCtrl'
       }
     }
   })

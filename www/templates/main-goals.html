@@ -14,7 +14,7 @@
       </div-->
       <div style="height:91px">
         <a class="item item-thumbnail-left" style="background-color:transparent; height:91px">
-          <img ng-src="https://www.habitica.com/export/avatar-{{user.data._id}}.png">
+          <img ng-src="http://54.159.38.241:3000/export/avatar-{{user._id}}.png">
           <div id="stats-wrapper">
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
             <progress value="50" max="50"></progress>
@@ -33,22 +33,24 @@
           </div>
         </a>
       </div>
+      <div>
       <div class="row">
-        <div class="col">
-            <img src="img/ic_header_gold.png" style="height:15px; width:15px;">
-            <img src="img/ic_header_silver.png" style="height:15px; width:15px;">
-            <img src="img/ic_header_gem.png" style="height:15px; width:15px;">
+        <div class="col" style="margin:auto; margin-top:5px; margin-left:2.5%">
+            <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 10% 0 2%;">0</p>
+            <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 10% 0 2%;">0</p>
+            <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2%;">0</p>
         </div>
-        <div class="col col-50" style="margin-top:-5px;">
-          <img src="img/ic_header_healer.png" style="height:40px; width:40px;" class="center">
-          <h2 style="font-size:12px; text-align:center; margin:0px">{{user.data.profile.name}}</h2>
-          <p style="font-size:10px; text-align:center;">{{user.data.stats.class}}</p>
+        <div class="col col-40" style="margin-top:-5px;">
+          <img src="img/ic_header_healer.png" style="height:30px; width:30px;" class="center">
+          <h2 style="font-size:10px; text-align:center; margin:0px">{{user.data.profile.name}}</h2>
+          <p style="font-size:8px; text-align:center;">{{user.data.stats.class}}</p>
         </div>
-        <div class="col">
+        <div class="col" style="margin:auto; text-align:center">
           <button class="button button-icon">
           <i class="icon ion-ios-people"></i>
           </button>
         </div>
+      </div>
       </div>
       <ion-list>
         <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.goals',[])
+angular.module('emission.main.goals',['emission.services'])
 
 /*.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -16,7 +16,7 @@ angular.module('emission.main.goals',[])
   });
   })*/
 
-.controller('GoalsCtrl', function($scope, $ionicModal, $http){
+.controller('GoalsCtrl', function(CommHelper, $scope, $ionicModal, $http, $window, $log){
 	$scope.goals = [];
 	$scope.goal = {};
 
@@ -45,10 +45,26 @@ angular.module('emission.main.goals',[])
 	};
 
 	$scope.completeGoal = function(goal) {
-		goal.completed = true;
+		$scope.goal.completed = true;
 	};
 
-	var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
+	var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
+                    'method_args': null};
+    //callOpts = {'method': 'GET', 'method_url': "/export/avatar-",
+    				//'method_args': };
+
+    
+	CommHelper.habiticaProxy(callOpts, function(response){
+		 $scope.user = response.data;
+		 console.log(error);
+		}, function(error){
+			$scope.err = error.data;
+			console.log(error);
+		});
+
+   
+
+	/*var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
 
 	$http.get('https://habitica.com/api/v3/members/'+ UUID)
 	.then(function(response){
@@ -60,7 +76,7 @@ angular.module('emission.main.goals',[])
 	});
 	//function firstUpperCase(string) {
 	//	return string[0].toUpperCase() + string.slice(1);
-	//}
+	//}*/
 });
 
 
