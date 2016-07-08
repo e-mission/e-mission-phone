@@ -27,6 +27,27 @@ angular.module('emission.services', [])
         var dateString = date.startOf('day').format('YYYY-MM-DD');
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, successCallback, errorCallback);
     };
+
+    /*
+     * Example usage:
+     * Get profile:
+     * callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
+                    'method_args': null}
+     * Go to sleep:
+     * callOpts = {'method': 'POST', 'method_url': "/api/v3/user/sleep",
+                   'method_args': {'data': True}}
+     * Stop sleeping:
+     * callOpts = {'method': 'POST', 'method_url': "/api/v3/user/sleep",
+                   'method_args': {'data': False}}
+     * Get challenges for a user:
+     * callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/user",
+                    'method_args': null}
+     * ....
+     */
+    this.habiticaProxy = function(callOpts, successCallback, errorCallback) {
+        var dateString = date.startOf('day').format('YYYY-MM-DD');
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, successCallback, errorCallback);
+    };
 })
 
 .service('ControlHelper', function($cordovaEmailComposer) {
