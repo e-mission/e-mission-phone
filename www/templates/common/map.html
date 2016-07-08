@@ -31,12 +31,13 @@
               <div style="font-size: 0.7em;">{{getFormattedDuration(trip.common_duration)}}</div>
             </div>
             </div>
-            <div ng-show="isGroupShown(trip)">
-                
+            <div ng-show="isGroupShown(trip)" style="height: 200px;">
+                        <nvd3 options="options" data="data" config="{refreshDataOnly: false}"></nvd3>
             </div>
             </div>
           </ion-item>
         </div>
     </ion-list>
+
     </ion-content>
 </ion-view>
