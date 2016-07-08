@@ -1,9 +1,10 @@
 angular.module('emission.main.common.map',['ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.services'])
+                                      'emission.services',
+                                      'emission.main.diary.services', 'nvd3'])
 
 .controller("CommonMapCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    CommonGraph, Config) {
+                                    CommonGraph, Config, DiaryHelper) {
   console.log("controller CommonMapCtrl called");
 
   var db = window.cordova.plugins.BEMUserCache;
@@ -22,6 +23,8 @@ angular.module('emission.main.common.map',['ionic-datepicker',
         return toReturn;
     };
   };
+
+  
 
   var onEachFeature = function(feature, layer) {
     console.log("onEachFeature called with "+JSON.stringify(feature));
@@ -44,16 +47,78 @@ angular.module('emission.main.common.map',['ionic-datepicker',
   $scope.refreshMap = function() {
       CommonGraph.updateCurrent();
   };
-
+  $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
     $scope.$apply(function() {
         $scope.mapCtrl.geojson = {}
         $scope.mapCtrl.geojson.data = CommonGraph.data.geojson;
         $scope.mapCtrl.geojson.style = styleFeature;
         $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
+        $scope.mapCtrl.trips = CommonGraph.data.graph.common_trips;
         // $scope.mapCtrl.geojson.pointToLayer = pointFormat;
     });
   });
+
+
+  /*
+   * if given group is the selected group, deselect it
+   * else, select the given group
+   */
+  $scope.toggleGroup = function(group) {
+    group.show = !group.show;
+    if (group.show) {
+      var vals = [];
+      var probs = group.probabilites[group.start_times[0].weekday];
+      for (var i = 0; i < 24; i++) {
+        vals.push([i, probs[i]]);
+      }
+      $scope.data =  [
+            {
+                "key" : "Quantity" ,
+                "bar": true,
+                "values" : vals
+            }];
+    }
+  };
+  $scope.isGroupShown = function(group) {
+    return group.show;
+  };
+        $scope.options = {
+            chart: {
+                type: 'historicalBarChart',
+                height: 150,
+                width: 300,
+                margin : {
+                    top: 10,
+                    right: 20,
+                    bottom: 65,
+                    left: 20
+                },
+                x: function(d){return d[0];},
+                y: function(d){return d[1];},
+                showValues: true,
+                valueFormat: function(d){
+                    return d3.format(',.1f')(d);
+                },
+                duration: 100,
+                xAxis: {
+                    axisLabel: 'Distribution of start hours on this weekday',
+                    tickFormat: function(d) {
+                        return d;
+                    },
+                    
+                    showMaxMin: false
+                },
+                yAxis: {
+                    axisLabel: 'Trips Count',
+                    tickFormat: function(d){
+                        return d;
+                    }
+                }
+            }
+        };
+
+        $scope.data = []
 
   $scope.refreshMap();
 

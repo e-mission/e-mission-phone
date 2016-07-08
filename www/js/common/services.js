@@ -151,6 +151,7 @@ angular.module('emission.main.common.services', [])
         commonGraph.data.graph.common_trips.forEach(function(cTrip, index, array) {
             commonGraph.data.cTripCountMap[cTrip._id.$oid] = cTrip.trips.length;
             commonGraph.data.cTripId2ObjMap[cTrip._id.$oid] = cTrip;
+            getDisplayNameForTrip(cTrip);
             cTrip.trips.forEach(function(tripId,index,array) {
                 commonGraph.data.trip2CommonMap[tripId.$oid] = cTrip;
             });
@@ -208,7 +209,66 @@ angular.module('emission.main.common.services', [])
           "features": places.concat(trips)
         };
     };
+    var getDisplayNameForTrip = function(common_trip) {
+      var responseListener0 = function(data) {
+        var address = data["address"];
+        var name = "";
+        if (address["road"]) {
+          name = address["road"];
+        } else if (address["neighbourhood"]) {
+          name = address["neighbourhood"];
+        }
+        if (address["city"]) {
+          name = name + ", " + address["city"];
+        } else if (address["town"]) {
+          name = name + ", " + address["town"];
+        } else if (address["county"]) {
+          name = name + ", " + address["county"];
+        }
 
+        console.log("got response, setting display name to "+name);
+        common_trip.start_displayName = name;
+      };
+      var responseListener1 = function(data) {
+        var address = data["address"];
+        var name = "";
+        if (address["road"]) {
+          name = address["road"];
+        } else if (address["neighbourhood"]) {
+          name = address["neighbourhood"];
+        }
+        if (address["city"]) {
+          name = name + ", " + address["city"];
+        } else if (address["town"]) {
+          name = name + ", " + address["town"];
+        } else if (address["county"]) {
+          name = name + ", " + address["county"];
+        }
+
+        console.log("got response, setting display name to "+name);
+        common_trip.end_displayName = name;
+      };
+      var url0 = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + common_trip.start_loc.coordinates[1]
+      + "&lon=" + common_trip.start_loc.coordinates[0];
+      console.log("About to make call "+url0);
+      $http.get(url0).then(function(response) {
+        console.log("while reading data from nominatim, status = "+response.status
+          +" data = "+JSON.stringify(response.data));
+        responseListener0(response.data);
+      }, function(error) {
+        console.log("while reading data from nominatim, error = "+error);
+      });
+      var url1 = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + common_trip.end_loc.coordinates[1]
+      + "&lon=" + common_trip.end_loc.coordinates[0];
+      console.log("About to make call "+url1);
+      $http.get(url1).then(function(response) {
+        console.log("while reading data from nominatim, status = "+response.status
+          +" data = "+JSON.stringify(response.data));
+        responseListener1(response.data);
+      }, function(error) {
+        console.log("while reading data from nominatim, error = "+error);
+      });
+    };
     var getDisplayName = function(common_place) {
       var responseListener = function(data) {
         var address = data["address"];
