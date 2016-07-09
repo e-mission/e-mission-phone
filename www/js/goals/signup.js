@@ -3,10 +3,16 @@
 angular.module('emission.main.signup', ['emission.services'])
 
 .controller('SignupCtrl', function($scope, CommHelper, $ionicLoading, $state, $rootScope, $ionicPopup) {
-	var theUser = $scope.username;
-	var regConfig = {'username': theUser};
+	$scope.user = {}
+	var theUser = "Test";
+	$scope.submitForm = function(){
+		theUser = $scope.user.username;
+		console.log($scope.user.username);
+		console.log(theUser);
+	}
 
 	$scope.signup = function(){
+		var regConfig = {'username': theUser};
 		console.log(regConfig);
 		$ionicLoading.show({
 			template: 'Loading...'
