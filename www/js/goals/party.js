@@ -1,18 +1,21 @@
 /*'use strict';
 
-angular.module('emission.main.goals.party',[])
+angular.module('emission.main.goals.party',['emission.services'])
 
-.controller('PartyCtrl', function($scope, $ionicModal, $http){
+.controller('PartyCtrl', function(CommHelper, $scope, $ionicModal, $http){
 
-	var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
+	var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
+                    'method_args': null};
+    //callOpts = {'method': 'GET', 'method_url': "/export/avatar-",
+    				//'method_args': };
 
-	$http.get('https://habitica.com/api/v3/members/'+ UUID)
-	.then(function(response){
-		$scope.user = response.data;
-		//console.log(response.data);
-	},function(err){
-		$scope.error = err.data;
-		console.log($scope.error);
-	});
-});
-*/
+    
+	CommHelper.habiticaProxy(callOpts, function(response){
+		 $scope.user = response.data;
+		 console.log(response.data);
+		}, function(error){
+			$scope.err = error.data;
+			console.log(error);
+		});
+
+});*/

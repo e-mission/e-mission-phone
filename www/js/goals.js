@@ -16,7 +16,9 @@ angular.module('emission.main.goals',['emission.services'])
   });
   })*/
 
-.controller('GoalsCtrl', function(CommHelper, $scope, $ionicModal, $http, $window, $log){
+
+.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, 
+								$window, $ionicPopup){
 	$scope.goals = [];
 	$scope.goal = {};
 
@@ -48,20 +50,49 @@ angular.module('emission.main.goals',['emission.services'])
 		$scope.goal.completed = true;
 	};
 
+	$scope.theUser = {}
+
+	$scope.signup = function(){
+		console.log($scope.theUser.username);
+		var regConfig = {'username': $scope.theUser.username};
+		console.log(regConfig);
+		$ionicLoading.show({
+			template: 'Loading...'
+		});
+		CommHelper.habiticaRegister(regConfig, function(response) {
+			console.log("Success!")
+			$scope.screen = response.success;
+			console.log(response);
+			$window.location.path().reload();
+		}, function(error) {
+			$ionicLoading.hide();
+			$ionicPopup.alert({title: "<h4 class='center-align'>Username is Required</h4>",
+								okText: "Try Again",
+								okType: "button-assertive"});
+			console.log(JSON.stringify(error));
+		});
+	};
+ 
+    $ionicLoading.show({
+			template: 'Loading...'
+		});
+
 	var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
                     'method_args': null};
     //callOpts = {'method': 'GET', 'method_url': "/export/avatar-",
     				//'method_args': };
-
     
 	CommHelper.habiticaProxy(callOpts, function(response){
-		 $scope.user = response.data;
-		 console.log(error);
+		$scope.screen = response.success;
+		$scope.user = response.data;
+		console.log(response.data);
+		console.log("Proxy Sucess");
+		$ionicLoading.hide();
 		}, function(error){
-			$scope.err = error.data;
+			$ionicLoading.hide();
 			console.log(error);
+			console.log("error");
 		});
-
    
 
 	/*var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';

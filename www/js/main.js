@@ -3,7 +3,6 @@
 angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
                                  'emission.main.goals',
-                                 'emission.main.signup',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'ngCordova',
@@ -57,15 +56,15 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
-  .state('root.main.signup', {
+  /*.state('root.main.signup', {
     url: '/signup',
     views: {
-      'main-signup': {
+      'main-goals': {
         templateUrl: 'templates/goals/habitica-signup.html',
         controller: 'SignupCtrl'
       }
     }
-  })
+  })*/
   /*.state('root.main.goals.party', {
     url: '/party',
     views: {

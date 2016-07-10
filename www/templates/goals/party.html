@@ -4,15 +4,15 @@
         	<a class="icon icon-left ion-chevron-left">Goals</a>
    	 	</button>
   </ion-nav-buttons>
-  <ion-content class="has-header" overflow-scroll="true" padding="true">
+ <ion-content class="has-header" overflow-scroll="true" padding="true">
       <div style="height:91px">
         <a class="item item-thumbnail-left" style="background-color:transparent; height:91px">
-          <img ng-src="https://www.habitica.com/export/avatar-{{user.data._id}}.png">
+          <img ng-src="http://54.159.38.241:3000/export/avatar-{{user._id}}.png">
           <div id="stats-wrapper">
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
             <progress value="50" max="50"></progress>
             <div class="stats-value-wrapper">
-              <p class="stats-value">50/50</p>
+              <p class="stats-value">{{user.stats.hp}}/{{user.stats.maxHealth}}</p>
               <p class="stats-name">Health</p>
             </div>
           </div>
@@ -20,11 +20,11 @@
             <i id="habitica-star-icon" class="icon ion-android-star"></i>
             <progress class="golden" value="{{user.data.stats.exp}}" max="2060"></progress>
             <div class="stats-value-wrapper">
-              <p class="stats-value">{{user.data.stats.exp}}/2060</p>
+              <p class="stats-value">{{user.stats.exp}}/{{user.stats.toNextLevel}}</p>
               <p class="stats-name" style="margin-top: 1.5px;">Exprerience</p>
             </div>
           </div>
         </a>
       </div>
     </ion-content>
-</ion-view--s>
+</ion-views-->
