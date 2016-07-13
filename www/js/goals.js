@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.goals',['emission.services'])
+angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 
 /*.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -18,7 +18,7 @@ angular.module('emission.main.goals',['emission.services'])
 
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, 
-								$window, $ionicPopup){
+								$window, $http, $sce, $ionicPopup){
 	$scope.goals = [];
 	$scope.goal = {};
 
@@ -57,13 +57,13 @@ angular.module('emission.main.goals',['emission.services'])
 		var regConfig = {'username': $scope.theUser.username};
 		console.log(regConfig);
 		$ionicLoading.show({
-			template: 'Loading...'
+			template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
 		});
 		CommHelper.habiticaRegister(regConfig, function(response) {
 			console.log("Success!")
 			$scope.screen = response.success;
 			console.log(response);
-			$window.location.path().reload();
+			$window.location.reload();
 		}, function(error) {
 			$ionicLoading.hide();
 			$ionicPopup.alert({title: "<h4 class='center-align'>Username is Required</h4>",
@@ -74,26 +74,35 @@ angular.module('emission.main.goals',['emission.services'])
 	};
  
     $ionicLoading.show({
-			template: 'Loading...'
+			template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
 		});
 
 	var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
                     'method_args': null};
     //callOpts = {'method': 'GET', 'method_url': "/export/avatar-",
     				//'method_args': };
-    
 	CommHelper.habiticaProxy(callOpts, function(response){
 		$scope.screen = response.success;
-		$scope.user = response.data;
+		$scope.profile = response.data;
 		console.log(response.data);
 		console.log("Proxy Sucess");
 		$ionicLoading.hide();
 		}, function(error){
 			$ionicLoading.hide();
-			console.log(error);
+			console.log(error.data);
 			console.log("error");
 		});
-   
+
+	/*$http.get('http://54.159.38.241:3000/export/avatar-'+userId+'.html')
+    .then(function(response) {
+          var html = response.data;
+          console.log(html)
+          $scope.rawHtml = $sce.trustAsHtml(html);
+	}), function(error) {
+    	console.log(JSON.stringify(error));
+    	console.log(error.data);
+	}*/
+   	
 
 	/*var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
 
