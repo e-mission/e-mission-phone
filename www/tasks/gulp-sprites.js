@@ -1,3 +1,5 @@
+//habitica spritesmith code that make the avatar CSS
+//Added all these dependencies 
 import gulp from 'gulp';
 import imagemin from 'gulp-imagemin';
 import spritesmith from 'gulp.spritesmith';

@@ -11,6 +11,7 @@
       <!--div>
         <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
       </div-->
+    <!--Habitica jade to html code starts here-->
     <div ng-if="screen">
       <div style="height:157px">
         <a class="item item-thumbnail-left-avatar">
@@ -54,6 +55,7 @@
               <span ng-show="profile.items.currentPet" class="current-pet Pet-{{profile.items.currentPet}}"></span>
             </div>
           </figure>
+          <!--Habitica jade to html code ends here-->
           <div id="stats-wrapper">
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
             <progress value="{{profile.stats.hp}}" max="{{profile.stats.maxHealth}}"></progress>
