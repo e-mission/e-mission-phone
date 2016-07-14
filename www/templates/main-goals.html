@@ -1,0 +1,131 @@
+<ion-view view-title="Goals">
+	<ion-nav-buttons side="right">
+    	<button class="button button-icon" ng-click="openModal()">
+        	<i class="icon ion-compose"></i>
+   	 	</button>
+   	 </ion-nav-buttons>
+     <!--ion-nav-buttons side="left">
+      <button class="button button-icon icon ion-ios-minus-outline" ng-click="showDelete = !showDelete"></button>
+     </ion-nav-buttons-->
+<ion-content class="has-header" overflow-scroll="true" padding="true">
+      <!--div>
+        <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
+      </div-->
+    <!--Habitica jade to html code starts here-->
+    <div ng-if="screen">
+      <div style="height:157px">
+        <a class="item item-thumbnail-left-avatar">
+          <figure class="herobox background_{{profile.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; profile.items.currentPet), hasMount: (true &amp;&amp; profile.items.currentMount), noBackgroundImage: !profile.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==profile._id}">
+            <div class="character-sprites">
+              <!-- Mount Body-->
+              <span ng-if="profile.items.currentMount" class="Mount_Body_{{profile.items.currentMount}}"></span>
+              <!-- Buffs that cause visual changes to avatar: Snowman, Ghost, Flower, etc-->
+              <span ng-if="profile.stats.buffs.snowball" class="snowman"></span>
+              <span ng-if="profile.stats.buffs.spookySparkles" class="ghost"></span>
+              <span ng-if="profile.stats.buffs.shinySeed" class="avatar_floral_{{profile.stats.class}}"></span>
+              <span ng-if="profile.stats.buffs.seafoam" class="seafoam_star"></span>
+              <!-- Show flower ALL THE TIME!!!--><!-- See https://github.com/HabitRPG/habitrpg/issues/7133-->
+              <span class="hair_flower_{{profile.preferences.hair.flower}}"></span>
+              <!-- Show avatar only if not currently affected by visual buff-->
+              <span ng-if="!profile.stats.buffs.snowball &amp;&amp; !profile.stats.buffs.spookySparkles &amp;&amp; !profile.stats.buffs.shinySeed &amp;&amp; !profile.stats.buffs.seafoam">
+                <span class="chair_{{profile.preferences.chair}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.back : profile.items.gear.equipped.back"></span>
+                <span ng-class="profile.preferences.sleep ? 'skin_' + profile.preferences.skin + '_sleep' : 'skin_' + profile.preferences.skin"></span>
+                <span class="{{profile.preferences.size}}_shirt_{{profile.preferences.shirt}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.preferences.size + '_' + profile.items.gear.costume.armor : profile.preferences.size + '_' + profile.items.gear.equipped.armor"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.back + '_collar' : profile.items.gear.equipped.back + '_collar'"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.body : profile.items.gear.equipped.body"></span>
+                <span class="head_0"></span>
+                <span class="hair_base_{{profile.preferences.hair.base}}_{{profile.preferences.hair.color}}"></span>
+                <span class="hair_bangs_{{profile.preferences.hair.bangs}}_{{profile.preferences.hair.color}}"></span>
+                <span class="hair_mustache_{{profile.preferences.hair.mustache}}_{{profile.preferences.hair.color}}"></span>
+                <span class="hair_beard_{{profile.preferences.hair.beard}}_{{profile.preferences.hair.color}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.eyewear : profile.items.gear.equipped.eyewear"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.head : profile.items.gear.equipped.head"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.headAccessory : profile.items.gear.equipped.headAccessory"></span>
+                <span class="hair_flower_{{profile.preferences.hair.flower}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.shield : profile.items.gear.equipped.shield"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.weapon : profile.items.gear.equipped.weapon"></span>
+              </span>
+              <!-- Mount Head-->
+              <span ng-if="profile.items.currentMount" class="current-mount Mount_Head_{{profile.items.currentMount}}"></span>
+              <!-- Resting-->
+              <span ng-class="{zzz:profile.preferences.sleep}"></span>
+              <!-- Pet-->
+              <span ng-show="profile.items.currentPet" class="current-pet Pet-{{profile.items.currentPet}}"></span>
+            </div>
+          </figure>
+          <!--Habitica jade to html code ends here-->
+          <div id="stats-wrapper">
+            <i id="habitica-heart-icon" class="icon ion-heart"></i>
+            <progress value="{{profile.stats.hp}}" max="{{profile.stats.maxHealth}}"></progress>
+            <div class="stats-value-wrapper">
+              <p class="stats-value">{{profile.stats.hp}}/{{profile.stats.maxHealth}}</p>
+              <p class="stats-name">Health</p>
+            </div>
+          </div>
+          <div>
+            <i id="habitica-star-icon" class="icon ion-android-star"></i>
+            <progress class="golden" value="{{profile.stats.exp}}" max="{{profile.stats.toNextLevel}}"></progress>
+            <div class="stats-value-wrapper">
+              <p class="stats-value">{{profile.stats.exp}}/{{profile.stats.toNextLevel}}</p>
+              <p class="stats-name" style="margin-top: 1.5px;">Exprerience</p>
+            </div>
+          </div>
+          <div class="col" style="margin: auto; margin-top: 5px;margin-left: 10%;">
+            <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">0</p>
+            <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">0</p>
+            <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2px;">{{profile.balance}}</p>
+          </div>
+          <div class="col" style="margin-left: 10%; float:left;">
+            <div style="text-align:center; padding-top:6px">
+              <img src="img/ic_header_healer.png" style="height:20px; width:20px; float:left;">
+              <p style="font-size:12px; float:left;padding-left:5px ">{{profile.profile.name}}</p>
+            </div>
+              <p style="font-size:10px; margin:0px; position:fixed; padding-top:25px">Level: {{profile.stats.lvl}}</p>
+            <button class="button button-icon" ui-sref="root.main.goals.party" style="float:right;">
+            <i class="icon ion-ios-people"></i>
+            </button>
+          </div>
+        </a>
+      </div>
+      <ion-list>
+        <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">
+          <div class="row">
+          <label class="checkbox">
+              <input type="checkbox" ng-click="completeGoal(goal)">
+          </label>
+          <div>
+          <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
+          <button class="button button-clear" style="font-size:2rem !important">
+            <i icon="ion-checkmark-circled"></i>
+          </button>
+          </div-->
+            <div class="col col-80" style="padding-left: 5% !important;">
+            <h2>{{goal.name}}</h2>
+            <p style="font-size: 10px">{{goal.note}}</p>
+            </div>
+            <ion-option-button class="button-assertive" ng-click="removeGoal(goal)">Delete
+            </ion-option-button>
+            </div>
+          </div>
+        </ion-item>
+      </ion-list>
+    </div>
+      <!--ion-list>
+      <ion-list ng-click="removeGoal(goal)">
+      <ion-delete-button class="ion-minus-circled"></ion-delete-button>
+        <ion-checkbox ng-repeat="goal in goals" show-delete="showDelete">
+          {{goal.name}}
+        </ion-checkbox>
+      </ion-list-->
+      <div ng-if="!screen">
+      <h1 class="signup-title" style="text-align:center">Signup</h1>
+        <label class="item item-input">
+          <input type="text" placeholder="Username" ng-model="theUser.username">
+        </label>
+
+      <button class="button button-positive button-full" ng-click="signup()">Submit</button>
+    </div>
+</ion-content>
+</ion-view>
