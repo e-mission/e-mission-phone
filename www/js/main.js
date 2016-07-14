@@ -4,6 +4,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
                                  'emission.main.common',
                                  'emission.main.heatmap',
+                                 'emission.main.metrics',
                                  'ngCordova',
                                  'emission.services'])
 
@@ -34,6 +35,16 @@ angular.module('emission.main', ['emission.main.recent',
       'main-heatmap': {
         templateUrl: 'templates/main-heatmap.html',
         controller: 'HeatmapCtrl'
+      }
+    }
+  })
+
+  .state('root.main.metrics', {
+    url: '/metrics',
+    views: {
+      'main-metrics': {
+        templateUrl: 'templates/main-metrics.html',
+        controller: 'MetricsCtrl'
       }
     }
   })

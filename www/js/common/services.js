@@ -136,8 +136,8 @@ angular.module('emission.main.common.services', [])
 
     var mapEntries = function(input_map) {
       var arr = [];
-      for (var [key, value] of input_map.entries()) {
-        arr.push([key, value]);
+      for (var entry of input_map.entries()) {
+        arr.push(entry);
       };
       return arr;
     };
