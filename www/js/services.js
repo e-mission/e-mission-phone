@@ -24,7 +24,7 @@ angular.module('emission.services', [])
      * Other fields can be added easily and the server can be modified at the same time.
      */
     this.habiticaRegister = function(regConfig, successCallback, errorCallback) {
-        var dateString = date.startOf('day').format('YYYY-MM-DD');
+        //var dateString = date.startOf('day').format('YYYY-MM-DD');
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, successCallback, errorCallback);
     };
 
@@ -45,7 +45,7 @@ angular.module('emission.services', [])
      * ....
      */
     this.habiticaProxy = function(callOpts, successCallback, errorCallback) {
-        var dateString = date.startOf('day').format('YYYY-MM-DD');
+        //var dateString = date.startOf('day').format('YYYY-MM-DD');
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, successCallback, errorCallback);
     };
 

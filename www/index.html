@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu 'unsafe-inline';
+        content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://habitica-assets.s3.amazonaws.com http://54.159.38.241:3000/;
             style-src 'self' 'unsafe-inline';
-            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com">
+            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://habitica-assets.s3.amazonaws.com http://54.159.38.241:3000/
+            'unsafe-inline'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -17,6 +18,8 @@
     <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
     <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
+    <link href="build/app.css" rel="stylesheet">
+    <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -43,7 +46,6 @@
 
     <!-- Manually installed javascript for libraries that are not published through bower -->
     <script src="manual_lib/leaflet-plugins/leaflet.textpath.js"></script>
-
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
@@ -65,6 +67,9 @@
     <script src="js/common/services.js"></script>
     <script src="js/heatmap.js"></script>
     <script src="js/metrics.js"></script>
+    <script src="js/goals.js"></script>
+    <!--script src="js/goals/party.js"></script-->
+    <script src="js/goals/signup.js"></script>
   </head>
   
   <body ng-app="emission">

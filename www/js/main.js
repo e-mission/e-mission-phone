@@ -2,6 +2,7 @@
 
 angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
+                                 'emission.main.goals',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
@@ -58,6 +59,34 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
+
+  .state('root.main.goals', {
+    url: '/goals',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/main-goals.html',
+        controller: 'GoalsCtrl'
+      }
+    }
+  })
+  /*.state('root.main.signup', {
+    url: '/signup',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/goals/habitica-signup.html',
+        controller: 'SignupCtrl'
+      }
+    }
+  })*/
+  /*.state('root.main.goals.party', {
+    url: '/party',
+    views: {
+      'main-goals': {
+        templateUrl: 'templates/goals/party.html',
+        controller: 'PartyCtrl'
+      }
+    }
+  })*/
   .state('root.main.sensed', {
     url: "/sensed",
     views: {
