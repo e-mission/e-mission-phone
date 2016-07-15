@@ -11,10 +11,10 @@
       <!--div>
         <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
       </div-->
-    <!--Habitica jade to html code starts here-->
     <div ng-if="screen">
       <div style="height:157px">
         <a class="item item-thumbnail-left-avatar">
+        <!--Habitica jade to html code starts here-->
           <figure class="herobox background_{{profile.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; profile.items.currentPet), hasMount: (true &amp;&amp; profile.items.currentMount), noBackgroundImage: !profile.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==profile._id}">
             <div class="character-sprites">
               <!-- Mount Body-->
@@ -73,13 +73,16 @@
             </div>
           </div>
           <div class="col" style="margin: auto; margin-top: 5px;margin-left: 10%;">
-            <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">0</p>
+            <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{gold}}</p>
             <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">0</p>
             <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2px;">{{profile.balance}}</p>
           </div>
           <div class="col" style="margin-left: 10%; float:left;">
             <div style="text-align:center; padding-top:6px">
-              <img src="img/ic_header_healer.png" style="height:20px; width:20px; float:left;">
+              <img in-if="profile.stats.class == &quot;warrior&quot;" src="img/ic_header_warrior.png" style="height:20px; width:20px; float:left;">
+              <img in-if="profile.stats.class == &quot;healer&quot;" src="img/ic_header_healer.png" style="height:20px; width:20px; float:left;">
+              <img in-if="profile.stats.class == &quot;mage&quot;" src="img/ic_header_mage.png" style="height:20px; width:20px; float:left;">
+              <img in-if="profile.stats.class == &quot;rogue&quot;" src="img/ic_header_rogue.png" style="height:20px; width:20px; float:left;">
               <p style="font-size:12px; float:left;padding-left:5px ">{{profile.profile.name}}</p>
             </div>
               <p style="font-size:10px; margin:0px; position:fixed; padding-top:25px">Level: {{profile.stats.lvl}}</p>
@@ -89,6 +92,7 @@
           </div>
         </a>
       </div>
+    </div>
       <ion-list>
         <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">
           <div class="row">
@@ -102,7 +106,7 @@
           </button>
           </div-->
             <div class="col col-80" style="padding-left: 5% !important;">
-            <h2>{{goal.name}}</h2>
+            <h2 style="font-size: 12px">{{goal.name}}</h2>
             <p style="font-size: 10px">{{goal.note}}</p>
             </div>
             <ion-option-button class="button-assertive" ng-click="removeGoal(goal)">Delete

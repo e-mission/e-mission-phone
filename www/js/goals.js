@@ -62,7 +62,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		CommHelper.habiticaRegister(regConfig, function(response) {
 			console.log("Success!")
 			$scope.screen = response.success;
-			console.log(response);
+			//console.log(response);
 			$window.location.reload();
 		}, function(error) {
 			$ionicLoading.hide();
@@ -73,23 +73,40 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		});
 	};
  
+
     $ionicLoading.show({
 			template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
 		});
-
 	var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
                     'method_args': null};
     //callOpts = {'method': 'GET', 'method_url': "/export/avatar-",
     				//'method_args': };
 	CommHelper.habiticaProxy(callOpts, function(response){
 		$scope.screen = response.success;
-		$scope.profile = response.data;
-		console.log(response.data);
+		$scope.$apply(function() {
+			$scope.profile = response.data;
+		})
 		console.log("Proxy Sucess");
+		console.log($scope.profile);
 		$ionicLoading.hide();
 		}, function(error){
 			$ionicLoading.hide();
 			console.log(error.data);
+			console.log("error");
+		});
+
+	var callOpts = {'method': 'GET', 'method_url': "/api/v3/tasks/user",
+                    'method_args': null};
+
+    CommHelper.habiticaProxy(callOpts, function(response){
+		$scope.$apply(function() {
+			$scope.task = response.data;
+		})
+		console.log($scope.task[0]);
+		$scope.goal.name = $scope.task[0].text;
+		$scope.createGoal();
+		}, function(error){
+			console.log(JSON.stringify(error));
 			console.log("error");
 		});
 
