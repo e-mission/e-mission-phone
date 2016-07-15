@@ -213,19 +213,20 @@ angular.module('emission.main.common.services', [])
       var responseListener0 = function(data) {
         var address = data["address"];
         var name = "";
-        if (address["road"]) {
-          name = address["road"];
-        } else if (address["neighbourhood"]) {
-          name = address["neighbourhood"];
+        if (angular.isDefined(address)) {
+            if (address["road"]) {
+              name = address["road"];
+            } else if (address["neighbourhood"]) {
+              name = address["neighbourhood"];
+            }
+            if (address["city"]) {
+              name = name + ", " + address["city"];
+            } else if (address["town"]) {
+              name = name + ", " + address["town"];
+            } else if (address["county"]) {
+              name = name + ", " + address["county"];
+            }
         }
-        if (address["city"]) {
-          name = name + ", " + address["city"];
-        } else if (address["town"]) {
-          name = name + ", " + address["town"];
-        } else if (address["county"]) {
-          name = name + ", " + address["county"];
-        }
-
         console.log("got response, setting display name to "+name);
         common_trip.start_displayName = name;
       };
@@ -273,17 +274,19 @@ angular.module('emission.main.common.services', [])
       var responseListener = function(data) {
         var address = data["address"];
         var name = "";
-        if (address["road"]) {
-          name = address["road"];
-        } else if (address["neighbourhood"]) {
-          name = address["neighbourhood"];
-        }
-        if (address["city"]) {
-          name = name + ", " + address["city"];
-        } else if (address["town"]) {
-          name = name + ", " + address["town"];
-        } else if (address["county"]) {
-          name = name + ", " + address["county"];
+        if (angular.isDefined(address)) {
+            if (address["road"]) {
+              name = address["road"];
+            } else if (address["neighbourhood"]) {
+              name = address["neighbourhood"];
+            }
+            if (address["city"]) {
+              name = name + ", " + address["city"];
+            } else if (address["town"]) {
+              name = name + ", " + address["town"];
+            } else if (address["county"]) {
+              name = name + ", " + address["county"];
+            }
         }
 
         console.log("got response, setting display name to "+name);
