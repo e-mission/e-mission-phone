@@ -173,6 +173,9 @@ angular.module('emission.main.diary.services', ['emission.services'])
 
   }
   dh.getLongerOrShorter = function(trip, id) {
+    if (!angular.isDefined(id)) {
+      return false;
+    }
     var noChangeReturn = [0, ''];
     var ctrip = CommonGraph.trip2Common(id);
     if (!angular.isUndefined(ctrip)) {
