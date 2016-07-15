@@ -77,7 +77,8 @@
       },
       "locator": "cordova-plugin-crosswalk-webview",
       "id": "cordova-plugin-crosswalk-webview"
-    }
+    },
+    "ionic-plugin-deploy"
   ],
   "cordovaPlatforms": [
     {

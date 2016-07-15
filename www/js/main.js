@@ -5,7 +5,8 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'ngCordova',
-                                 'emission.services'])
+                                 'emission.services',
+                                 'emission.splash.updatecheck'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -20,12 +21,12 @@ angular.module('emission.main', ['emission.main.recent',
   .state('root.main.common', {
     url: '/common',
     abstract: true,
-    views: { 
-      'main-common': { 
+    views: {
+      'main-common': {
         templateUrl: 'templates/main-common.html',
         controller: 'CommonCtrl'
-      } 
-    } 
+      }
+    }
   })
 
   .state('root.main.heatmap', {
@@ -103,7 +104,9 @@ angular.module('emission.main', ['emission.main.recent',
     }
 })
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope, ControlHelper) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
+               $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope,
+               ControlHelper, UpdateCheck) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
 
@@ -113,13 +116,13 @@ angular.module('emission.main', ['emission.main.recent',
         if ($scope.settings.collect.config == null) {
             return false; // config not loaded when loading ui, set default as false
         } else {
-            var accuracy = $scope.settings.collect.config.accuracy; 
+            var accuracy = $scope.settings.collect.config.accuracy;
             var v;
             for (var k in $scope.settings.collect.accuracyOptions) {
                 if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
                     v = k;
                     break;
-                } 
+                }
             }
             if ($scope.isIOS()) {
                 return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
@@ -142,7 +145,7 @@ angular.module('emission.main', ['emission.main.recent',
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
             } else if ($scope.isAndroid()) {
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
-            }            
+            }
         }
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
     }
@@ -167,7 +170,7 @@ angular.module('emission.main', ['emission.main.recent',
             $scope.dark_theme = true;
             if (window.plugins && window.plugins.appPreferences) {
                 var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', true);   
+                prefs.store('dark_theme', true);
             }
             // StatusBar.style(2);
         }
@@ -516,5 +519,8 @@ angular.module('emission.main', ['emission.main.recent',
     }
     $scope.collectionExpanded = function() {
         return $scope.expanded;
+    }
+    $scope.checkUpdates = function() {
+      UpdateCheck.checkForUpdates();
     }
 });
