@@ -1,4 +1,10 @@
 <ion-view view-title="Goals">
+  <ion-nav-buttons side="left">
+        <button class="button button-icon"
+          ng-click="data.showDelete = !data.showDelete;">
+            <i class="icon ion-ios-minus-outline"></i>
+          </button>
+   </ion-nav-buttons>
 	<ion-nav-buttons side="right">
     	<button class="button button-icon" ng-click="openModal()">
         	<i class="icon ion-compose"></i>
@@ -13,7 +19,7 @@
       </div-->
     <div ng-if="screen">
       <div style="height:157px">
-        <a class="item item-thumbnail-left-avatar">
+        <a class="item item-thumbnail-left-avatar" id="avatar">
         <!--Habitica jade to html code starts here-->
           <figure class="herobox background_{{profile.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; profile.items.currentPet), hasMount: (true &amp;&amp; profile.items.currentMount), noBackgroundImage: !profile.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==profile._id}">
             <div class="character-sprites">
@@ -74,47 +80,49 @@
           </div>
           <div class="col" style="margin: auto; margin-top: 5px;margin-left: 10%;">
             <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{gold}}</p>
-            <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">0</p>
-            <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2px;">{{profile.balance}}</p>
+            <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{silver}}</p>
+            <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2px;">{{gem}}</p>
           </div>
           <div class="col" style="margin-left: 10%; float:left;">
             <div style="text-align:center; padding-top:6px">
-              <img in-if="profile.stats.class == &quot;warrior&quot;" src="img/ic_header_warrior.png" style="height:20px; width:20px; float:left;">
-              <img in-if="profile.stats.class == &quot;healer&quot;" src="img/ic_header_healer.png" style="height:20px; width:20px; float:left;">
-              <img in-if="profile.stats.class == &quot;mage&quot;" src="img/ic_header_mage.png" style="height:20px; width:20px; float:left;">
-              <img in-if="profile.stats.class == &quot;rogue&quot;" src="img/ic_header_rogue.png" style="height:20px; width:20px; float:left;">
+                <img in-if="profile.stats.class == 'warrior'" src="img/ic_header_warrior.png" style="height:20px; width:20px; float:left;">
+                <!--img in-if="profile.stats.class == 'healer'" src="img/ic_header_healer.png" style="height:20px; width:20px; float:left;">
+                <img in-if="profile.stats.class == 'mage'" src="img/ic_header_mage.png" style="height:20px; width:20px; float:left;">
+                <img in-if="profile.stats.class == 'rogue'" src="img/ic_header_rogue.png" style="height:20px; width:20px; float:left;"-->
               <p style="font-size:12px; float:left;padding-left:5px ">{{profile.profile.name}}</p>
             </div>
               <p style="font-size:10px; margin:0px; position:fixed; padding-top:25px">Level: {{profile.stats.lvl}}</p>
-            <button class="button button-icon" ui-sref="root.main.goals.party" style="float:right;">
+            <button class="button button-icon" style="float:right;" ng-click="joinParty()">
             <i class="icon ion-ios-people"></i>
             </button>
           </div>
         </a>
       </div>
     </div>
-      <ion-list>
-        <ion-item class="item" ng-repeat="goal in goals" style="border:1px;">
-          <div class="row">
-          <label class="checkbox">
-              <input type="checkbox" ng-click="completeGoal(goal)">
-          </label>
-          <div>
-          <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
-          <button class="button button-clear" style="font-size:2rem !important">
-            <i icon="ion-checkmark-circled"></i>
-          </button>
-          </div-->
-            <div class="col col-80" style="padding-left: 5% !important;">
-            <h2 style="font-size: 12px">{{goal.name}}</h2>
-            <p style="font-size: 10px">{{goal.note}}</p>
-            </div>
-            <ion-option-button class="button-assertive" ng-click="removeGoal(goal)">Delete
-            </ion-option-button>
-            </div>
-          </div>
-        </ion-item>
-      </ion-list>
+      <ion-list show-delete="data.showDelete">
+        <ion-item ng-repeat="goal in goals" style="border:1px;">
+          <!--div class="row">
+           <lable class="checkbox">
+               <input type="checkbox" ng-click="completeGoal()">
+           </lable-->
+           <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
+           <button class="button button-clear" style="font-size:2rem !important">
+             <i icon="ion-checkmark-circled"></i>
+           </button>
+           </div-->
+           <!--div>
+           <i class="icon ion-plus" style="float:left; padding-right:3%; font-size:large;" ng-click="scoreUp(goal._id)"></i>
+           <i class="icon ion-minus" style="float:left; padding-right:3%; font-size:large;" ng-click="scoreDown(goal._id)"></i>
+           </div-->
+           <div class="col col-80" style="float:left;" on-double-tap="scoreUp(goal._id)">
+           <h2>{{goal.name}}</h2>
+           <p style="font-size: 10px">{{goal.note}}</p>
+           </div>
+           <ion-delete-button class="ion-minus-circled" 
+                             ng-click="deleteGoal(goal._id, goal)">
+          </ion-delete-button>
+         </ion-item>
+       </ion-list>
     </div>
       <!--ion-list>
       <ion-list ng-click="removeGoal(goal)">
