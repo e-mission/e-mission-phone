@@ -14,30 +14,7 @@
       <leaflet geojson="mapCtrl.geojson"
                id="common"
                defaults="mapCtrl.defaults"
-               height="200px" width="100%">
+               height="100%" width="100%">
       </leaflet>
-
-      <ion-list>
-        <div collection-repeat="trip in mapCtrl.trips">
-          <ion-item class="common-map-item">
-            <div class="common-map-card" ng-click="toggleGroup(trip)">
-            <div class="row">
-            <div class="col-80" style="padding: 5% 0 3% 5%;">
-            <div class="common-map-item-location"><i class="icon ion-ios-location" style="font-size: 1em; left: 0; color: #33e0bb; margin-right: 8px;"></i>{{trip.start_displayName}}</div>
-            <div class="common-map-item-location"><i class="icon ion-ios-location" style="font-size: 1em; left: 0; color: #ff5251;margin-right: 8px;"></i>{{trip.end_displayName}}</div>
-            </div>
-            <div class="col-20" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-              <i class="icon ion-ios-stopwatch-outline" style="font-size: 0.8em; margin-top: 3px; left: 0; color: #aaa; margin-left: 2px; line-height: 1em;"></i>
-              <div style="font-size: 0.7em;">{{getFormattedDuration(trip.common_duration)}}</div>
-            </div>
-            </div>
-            <div ng-show="isGroupShown(trip)" style="height: 200px;">
-                        <nvd3 options="options" data="data" config="{refreshDataOnly: false}"></nvd3>
-            </div>
-            </div>
-          </ion-item>
-        </div>
-    </ion-list>
-
     </ion-content>
 </ion-view>
