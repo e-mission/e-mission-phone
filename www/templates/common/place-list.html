@@ -1,4 +1,4 @@
-<ion-view title="Common Places">
+<ion-view nav-title="Places list">
   <ion-nav-title class="dark-color">
     <!--
     <div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
@@ -15,16 +15,15 @@
   <ion-content>
     <ion-list>
       <div collection-repeat="place in places">
-        <!-- <ion-item class="common-list-item" href="#/root/main/common/places/{{place._id.$oid}}"> -->
-        <ion-item class="common-list-item">
+        <ion-item  class="common-list-item" href="#/root/main/common/places/{{place._id.$oid}}">
           <div class="common-list-card">
+          
           <div class="common-list-item-location">{{place.displayName}}</div>
-          <!-- <div class="row">{{place.location.coordinates}}</div> -->
-          <div class="common-list-item-times">{{place.places.length}} {{ place.places.length > 1? 'visits' : 'visit' }}</div>
-          <!-- <div class="row">successors: {{place.successors.length}}</div> -->
           
+          <div class="common-list-item-times">{{place.places.length}} {{ place.places.length > 1? 'visits' : 'visit' }}, 
+          {{place.successors.length}} {{ place.successors.length > 1? 'successors' : 'successor' }}</div>
           
-          </div>
+           </div>
         </ion-item>
       </div>
     </ion-list>
