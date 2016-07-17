@@ -71,6 +71,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
           console.log("did not find aggregate result in response data "+JSON.stringify(response));
         }
       }, function(error) {
+        $ionicLoading.hide();
         console.log("Got error %s while trying to read metric data" +
         JSON.stringify(error));
       });
