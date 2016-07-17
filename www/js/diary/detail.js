@@ -47,7 +47,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
       color: '#7777ff',
     }
   var chart = nv.models.lineChart()
-                .margin({left: 10, right: 10})  //Adjust chart margins to give the x-axis some breathing room.
+                .margin({left: 65, right: 10})  //Adjust chart margins to give the x-axis some breathing room.
                 .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
                 .x(function(d) {return d.x / 1000})
                 .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
@@ -58,7 +58,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
     .axisLabel('Distance (km)');
 
   chart.yAxis     //Chart y-axis settings
-      
+      .axisLabel('Speed (m/s)')
       .tickFormat(d3.format('.1f'));  
 
   d3.select('#chart svg')    //Select the <svg> element you want to render the chart in.   
