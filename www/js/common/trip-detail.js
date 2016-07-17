@@ -13,25 +13,25 @@ angular.module('emission.main.common.trip-detail',['ui-leaflet',
     var distributionStartHour = $scope.trip.common_hour_distribution;
     var valsStartHour = []; 
     var state = 1; // state machine
-    var firstNonZero = 0
-    var firstZero = 0;
+    var firstNonZero = 0 // head 0s to remove
+    var firstZero = 0; // tail 0s to remove
     for (var i = 0; i < 24; i++) {
       if (distributionStartHour.get(i)) {
-        state ^= state;
-        firstZero = 0;
-        valsStartHour.push({'label': i + ':00', 'value': distributionStartHour.get(i) });
+        state ^= state; // if 1 then 0, if 0 then still 0
+        firstZero = 0; // tail reset when see non-zero item
+        valsStartHour.push({'label': i + ':00', 'value': distributionStartHour.get(i) }); // non-zero
       } else {
-        if (state == 0) {
-            if (firstZero == 0) {
-                firstZero = i;
+        if (state == 0) { // zero but not at the beginning
+            if (firstZero == 0) { // if tail has been reset
+                firstZero = i; // mark current i as tail
             }
-            valsStartHour.push({'label': i + ':00', 'value': 0 });
-        } else {
-            firstNonZero++;
+            valsStartHour.push({'label': i + ':00', 'value': 0 }); // zero in the middle or tail
+        } else { // zero at the beginning
+            firstNonZero++; // update head
         }
       }
     }
-    if (firstZero > 0) { 
+    if (firstZero > 0) { // there are 0s at tail
         valsStartHour.splice(firstZero - firstNonZero); // remove 0s at tail
     }
     var data1 = {
