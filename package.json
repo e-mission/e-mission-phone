@@ -79,10 +79,6 @@
       },
       "locator": "cordova-plugin-crosswalk-webview",
       "id": "cordova-plugin-crosswalk-webview"
-    },
-    {
-      "locator": "../me.apla.cordova.app-preferences",
-      "id": "cordova-plugin-app-preferences"
     }
   ],
   "cordovaPlatforms": [

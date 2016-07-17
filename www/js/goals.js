@@ -67,15 +67,15 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		});
 		CommHelper.habiticaRegister(regConfig, function(response) {
 			console.log("Success!")
-			$scope.screen = response.success;
+			userInfo();
 			//console.log(response);
-			$window.location.reload();
+			//$window.location.reload();
 		}, function(error) {
 			$ionicLoading.hide();
 			$ionicPopup.alert({title: "<h4 class='center-align'>Username is Required</h4>",
 								okText: "Try Again",
 								okType: "button-assertive"});
-			console.log(JSON.stringify(error));
+			console.log("Not signed up");
 		});
 	};
  
@@ -95,6 +95,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		})
 		console.log("Proxy Sucess");
 		$scope.gold = Math.round($scope.profile.stats.gp);
+		$scope.hp = Math.round($scope.profile.stats.hp);
 		$scope.gem = Math.round($scope.profile.balance);
 		$scope.silver = Math.round(($scope.profile.stats.gp - 
 			Math.floor($scope.profile.stats.gp))*100);
@@ -102,8 +103,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		$ionicLoading.hide();
 		}, function(error){
 			$ionicLoading.hide();
-			console.log(error.data);
-			console.log("error");
+			console.log("User profile error");
 		});
 	};
 
@@ -126,8 +126,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 				}
 			}
 		}, function(error){
-			console.log(JSON.stringify(error));
-			console.log("error");
+			console.log("User task error");
 		});
 
     $scope.createGoalPhone = function() {
@@ -146,8 +145,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 				console.log("error");
 			});
 	};
-
-	console.log("Outside createGoal phone");
 
 
 	$scope.deleteGoal = function(taskId,  goal) {
@@ -197,7 +194,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 				console.log("Sucessfully joing the party");
 				//console.log(response);
 			}, function(error){
-				console.log(error);
 				console.log("error");
 			});
 	};

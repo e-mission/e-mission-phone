@@ -64,7 +64,7 @@
           <!--Habitica jade to html code ends here-->
           <div id="stats-wrapper">
             <i id="habitica-heart-icon" class="icon ion-heart"></i>
-            <progress value="{{profile.stats.hp}}" max="{{profile.stats.maxHealth}}"></progress>
+            <progress value="{{hp}}" max="{{profile.stats.maxHealth}}"></progress>
             <div class="stats-value-wrapper">
               <p class="stats-value">{{profile.stats.hp}}/{{profile.stats.maxHealth}}</p>
               <p class="stats-name">Health</p>
@@ -114,7 +114,7 @@
            <i class="icon ion-plus" style="float:left; padding-right:3%; font-size:large;" ng-click="scoreUp(goal._id)"></i>
            <i class="icon ion-minus" style="float:left; padding-right:3%; font-size:large;" ng-click="scoreDown(goal._id)"></i>
            </div-->
-           <div class="col col-80" style="float:left;" on-double-tap="scoreUp(goal._id)">
+           <div class="col col-80" style="float:left;" on-double-tap="scoreUp(goal._id)" on-swipe-right="scoreDown(goal._id)">
            <h2>{{goal.name}}</h2>
            <p style="font-size: 10px">{{goal.note}}</p>
            </div>

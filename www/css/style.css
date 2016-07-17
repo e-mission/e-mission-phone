@@ -43,6 +43,11 @@
   color: #fff; 
 }
 
+.item.active, .item.activated, .item-complex.active .item-content, .item-complex.activated .item-content {
+border-color: #D9D9D9;
+background-color: #D9D9D9;
+}
+
 .signup-title{
   font-size: 2em;
   padding: 30px 0 10px 0;
