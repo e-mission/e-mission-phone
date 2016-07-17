@@ -19,7 +19,7 @@
     "angular-sanitize": "1.5.3"
   },
   "dependencies": {
-    "angular-nvd3": "^1.0.7"
+    "angular-nvd3": "^1.0.7",
     "string.startsWith": "*"
   }
 }
