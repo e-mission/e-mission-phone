@@ -47,6 +47,9 @@ angular.module('emission.main.common.map',['ionic-datepicker',
   $scope.refreshMap = function() {
       CommonGraph.updateCurrent();
   };
+  $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
+  };
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
     $scope.$apply(function() {

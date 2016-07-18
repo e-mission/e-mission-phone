@@ -2,7 +2,8 @@
 
 angular.module('emission.main.metrics',['nvd3', 'emission.services'])
 
-.controller('MetricsCtrl', function($scope, $ionicActionSheet, CommHelper) {
+.controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
+                                    CommHelper) {
     $scope.options = {
         chart: {
             type: 'multiBarChart',
@@ -50,13 +51,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
 
     $scope.getMetrics = function() {
       var data = {
-        freq: 'DAILY',
+        freq: $scope.selectCtrl.freq,
         start_time: $scope.selectCtrl.fromDate,
         end_time: $scope.selectCtrl.toDate,
         metric: $scope.selectCtrl.metric
       };
       console.log("Sending data "+JSON.stringify(data));
+      $ionicLoading.show({
+        template: 'Loading...'
+      });
       CommHelper.getMetrics("local_date", data, function(response) {
+        $ionicLoading.hide();
         if (angular.isDefined(response.user_metrics)) {
           console.log("Got aggregate result "+response.user_metrics.length);
           $scope.$apply(function() {
@@ -66,6 +71,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
           console.log("did not find aggregate result in response data "+JSON.stringify(response));
         }
       }, function(error) {
+        $ionicLoading.hide();
         console.log("Got error %s while trying to read metric data" +
         JSON.stringify(error));
       });
@@ -107,6 +113,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
       {text: "DISTANCE", value: 'distance'},
       {text: "DURATION", value: 'duration'},
       {text: "MEDIAN_SPEED", value: 'median_speed'}
+    ];
+
+    $scope.freqOptions = [
+      {text: "DAILY", value:'DAILY'},
+      {text: "MONTHLY", value: 'MONTHLY'},
+      {text: "YEARLY", value: 'YEARLY'}
     ];
 
     $scope.changeFromWeekday = function() {
@@ -159,11 +171,26 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
         });
     };
 
+    $scope.changeFreq = function() {
+        $ionicActionSheet.show({
+          buttons: $scope.freqOptions,
+          titleText: "Select summary freq",
+          cancelText: "Cancel",
+          buttonClicked: function(index, button) {
+            $scope.selectCtrl.freqString = button.text;
+            $scope.selectCtrl.freq = button.value;
+            return true;
+          }
+        });
+    };
+
     var initSelect = function() {
       var now = moment();
       var monthago = moment().subtract(7, 'd');
       $scope.selectCtrl.metric = 'count';
       $scope.selectCtrl.metricString = "COUNT";
+      $scope.selectCtrl.freq = 'DAILY';
+      $scope.selectCtrl.freqString = "DAILY";
       $scope.selectCtrl.fromDate = moment2Localdate(monthago)
       $scope.selectCtrl.toDate = moment2Localdate(now);
       $scope.selectCtrl.fromDateWeekdayString = "All"
