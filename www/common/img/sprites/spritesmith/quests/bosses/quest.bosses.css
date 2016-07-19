@@ -1,0 +1,467 @@
+
+#boss_atom1 {
+	width: 100px;
+	height: 107px;
+	background: url(quest_atom1.png);
+	background-repeat: no-repeat;
+}
+#boss_atom2 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(quest_atom2.png);
+}
+#boss_axolotl {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(quest_axolotl.png);
+}
+#boss_basilist {
+	position: absolute;
+	top: 25px;
+	left: 5px;
+	width: 160px;
+	height: 140px;
+	background: url(quest_basilist.png) 0 0;
+	background-repeat: no-repeat;
+}
+#boss_bewilder {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background-image: url(quest_TEMPLATE_FOR_MISSING_IMAGE.png);
+}
+.boss_bunny {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background-image: url(quest_bunny.png);
+}
+.boss_burnout {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_TEMPLATE_FOR_MISSING_IMAGE.png);
+}
+.boss_cheetah {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_cheetah.png);
+}
+.boss_dilatory {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_dilatory.png);
+}
+.boss_dilatory_derby {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_dilatory_derby.png);
+}
+.boss_dilatoryDistress1 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/dilatory_Distress1.png);
+}
+.boss_dilatoryDistress2 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/dilatory_Distress2.png);
+}
+.boss_dilatoryDistress3 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_dilatory_Distress3.png);
+}
+.boss_egg {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_egg.png);
+}
+.boss_evilsanta {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_evilsanta.png);
+}
+.boss_evilsanta2 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_evilsanta2.png);
+}
+.boss_falcon {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_falcon.png);
+}
+.boss_frog {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_frog.png);
+}
+.boss_ghost_stag {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_ghost_stag.png);
+}
+.boss_goldenknight1 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_goldenknight1.png);
+}
+.boss_goldenknight2 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_goldenknight2.png);
+}
+.boss_goldenknight3 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_goldenknight3.png);
+}
+.boss_gryphon {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_gryphon.png);
+}
+.boss_harpy {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_harpy.png);
+}
+.boss_hedgehog {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_hedgehog.png);
+}
+.boss_horse {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_horse.png);
+}
+.boss_kraken {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_kraken.png);
+}
+.boss_monkey {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_monkey.png);
+}
+.boss_moonstone1 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_moonstone1.png);
+}
+.boss_moonstone2 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_moonstone2.png);
+}
+.boss_moonstone3 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_moonstone3.png);
+}
+.boss_octopus {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_octopus.png);
+}
+.boss_owl {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_owl.png);
+}
+.boss_penguin {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_penguin.png);
+}
+.boss_rat {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_rat.png);
+}
+.boss_rock {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_rock.png);
+}
+.boss_rooster {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_rooster.png);
+}
+.boss_sabretooth {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_sabretooth.png);
+}
+.boss_sheep {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_sheep.png);
+}
+.boss_slime {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_slime.png);
+}
+.boss_snail {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_snail.png);
+}
+.boss_snake {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_snake.png);
+}
+.boss_spider {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_spider.png);
+}
+.boss_stressbeast {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_stressbeast.png);
+}
+
+.boss_treeling {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_treeling.png);
+}
+.boss_trex {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_trex.png);
+}
+.boss_trex_undead {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_trex_undead.png);
+}
+.boss_unicorn {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_unicorn.png);
+}
+.boss_vice1 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_vice1.png);
+}
+.boss_vice2 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_vice2.png);
+}
+.boss_vice3 {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_vice3.png);
+}
+.boss_whale {
+	position: absolute;
+	left: 1px;
+	max-width: 140px;
+	max-height: 147px;
+	width: 100%;
+	height: 100%;
+	background: url(www/common/img/sprites/spritesmith/quests/bosses/quest_whale.png);
+}

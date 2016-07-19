@@ -6060,11 +6060,11 @@ form {
   position: relative;
   z-index: 50;
 }
-[class$="-options"] {
+/*[class$="-options"] {
   padding: 1em 1em 0;
   color: #333;
   position: relative;
-}
+}*/
 [class$="-options"] .option-group {
   padding: 0 0 1em;
   margin-bottom: 1em;

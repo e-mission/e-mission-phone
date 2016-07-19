@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
+angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnimate'])
 
 /*.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -29,6 +29,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		$scope.modal = modal;
 	});
 
+	$ionicModal.fromTemplateUrl('templates/goals/party-members.html', {
+		scope: $scope,
+		animation: 'slide-in-up'
+	}).then(function(modal) {
+		$scope.partyModal = modal;
+	});
+
 	/*$scope.onGesture = function(gesture) {
     	console.log(gesture);
   	}*/
@@ -37,6 +44,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 
 	$scope.data = {
     	showDelete: false
+  	};
+  	$scope.openPartyModal = function() {
+    	$scope.partyModal.show();
+  	};
+  	$scope.closePartyModal = function() {
+  		$scope.goal = {};
+    	$scope.partyModal.hide();
   	};  
 
 	$scope.openModal = function() {
@@ -83,7 +97,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
     $ionicLoading.show({
 			template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
 		});
-
     var userInfo = function(){
 	var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
                     'method_args': null};
@@ -92,14 +105,34 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 		$scope.screen = response.success;
 		$scope.$apply(function() {
 			$scope.profile = response.data;
-		})
+		});
 		console.log("Proxy Sucess");
 		$scope.gold = Math.round($scope.profile.stats.gp);
 		$scope.hp = Math.round($scope.profile.stats.hp);
 		$scope.gem = Math.round($scope.profile.balance);
 		$scope.silver = Math.round(($scope.profile.stats.gp - 
 			Math.floor($scope.profile.stats.gp))*100);
+		if(!('_id' in $scope.profile.party)){
+			$scope.hasParty = false;
+		} else{
+			$scope.hasParty = true;
+		}
+		if($scope.profile.party.quest.RSVPNeeded==true){
+			$scope.hasQuestRequest = true;
+		} else{
+			$scope.hasQuestRequest = false;
+		}
+		if('key' in $scope.profile.party.quest){
+			$scope.$apply(function(){
+				$scope.monster = $scope.profile.party.quest.key;
+			});
+			$scope.inQuest = true;
+		} else{
+			$scope.inQuest = false;
+		}
+
 		console.log($scope.profile);
+		console.log($scope.profile.stats.class);
 		$ionicLoading.hide();
 		}, function(error){
 			$ionicLoading.hide();
@@ -187,17 +220,99 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize'])
 	};
 
 	$scope.joinParty = function() {
-	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/dfb01232-1d59-4f12-9c74-94b595dc1984/join",
+	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/4b44340d-a5a8-42ce-8a7f-3f82775dd515/join",
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts, function(response){
 				console.log("Sucessfully joing the party");
-				//console.log(response);
+				$scope.$apply(function(){
+					$scope.hasParty = true;
+				});
+				console.log(response);
 			}, function(error){
-				console.log("error");
+				console.log("Error when joining the party");
 			});
 	};
 
+	$scope.joinQuest = function() {
+	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/4b44340d-a5a8-42ce-8a7f-3f82775dd515/quests/accept",
+	                    'method_args': null};
+
+	    CommHelper.habiticaProxy(callOpts, function(response){
+				console.log("Sucessfully joing the quest");
+				$scope.$apply(function(){
+					$scope.hasQuestRequest = false;
+				});
+				console.log(response);
+			}, function(error){
+				console.log("Error when joining the quest");
+			});
+	};
+
+	var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/party",
+                    'method_args': null};
+    	CommHelper.habiticaProxy(callOpts, function(response){
+			console.log("Sucessfully got the party");
+			var partyObj = response.data
+			if($scope.inQuest){
+				$scope.bossHp = Math.round(partyObj.quest.progress.hp);
+			}
+			$scope.partyName = partyObj.name;
+
+			console.log(response);
+		}, function(error){
+			console.log("Error when getting the party");
+		});
+
+	var callOpts = {'method': 'GET', 'method_url': "/api/v3/content",
+                    'method_args': null};
+    	CommHelper.habiticaProxy(callOpts, function(response){
+			console.log("Sucessfully got the content");
+				var content = response.data;
+				console.log(content);
+			if($scope.inQuest){
+				console.log($scope.monster);
+				$scope.bossMaxHealth = content.quests[$scope.monster].boss.hp;
+				$scope.bossName = content.quests[$scope.monster].boss.name;
+				$scope.lootExp = content.quests[$scope.monster].drop.exp;
+				$scope.lootExp = content.quests[$scope.monster].drop.gp;
+				$scope.questNote = content.quests[$scope.monster].notes;
+			}
+		}, function(error){
+			console.log("Error when getting the content");
+		});
+
+   var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/4b44340d-a5a8-42ce-8a7f-3f82775dd515/members",
+   					'method_args': null};
+
+	    	CommHelper.habiticaProxy(callOpts, function(response){
+	    		$scope.membersName=[];
+				console.log("Sucessfully got the members");
+				var members = response.data;
+				console.log(response.data);
+				members.forEach(function(user){
+					$scope.membersName.push(user.profile.name);
+				});
+			}, function(error){
+				console.log("Error when fetching members");
+			});
+
+	//Tab switch
+	$scope.isActive = false;
+  	$scope.activeButton = function() {
+  		if($scope.isActiveP == true){
+  			$scope.partyBotton();
+  		}
+    	$scope.isActive = !$scope.isActive;
+  	};
+
+  	$scope.isActiveP = false;
+  	$scope.partyBotton = function() {
+  		if($scope.isActive == true){
+  			$scope.activeButton();
+  		}
+    	$scope.isActiveP = !$scope.isActiveP;
+  	};
 
 	/*$http.get('http://54.159.38.241:3000/export/avatar-'+userId+'.html')
     .then(function(response) {

@@ -1,5 +1,8 @@
 /* Empty. Add your own CSS if you like */
 
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
 .customButtomIconSize:before {
     font-size: 25px !important;
 }
@@ -7,13 +10,17 @@
 #habitica-heart-icon {
    font-size: 15px;
    color: red;
-   padding-left: 10%
+   padding-left: 10%;
+   position: relative;
+   bottom: 1.5px;
 }
 
 #habitica-star-icon {
    font-size: 15px;
    color: gold;
-   padding-left: 10%
+   padding-left: 10%;
+   position: relative;
+   bottom: 3px;
 }
 
 #stats-wrapper {
@@ -43,11 +50,6 @@
   color: #fff; 
 }
 
-.item.active, .item.activated, .item-complex.active .item-content, .item-complex.activated .item-content {
-border-color: #D9D9D9;
-background-color: #D9D9D9;
-}
-
 .signup-title{
   font-size: 2em;
   padding: 30px 0 10px 0;
@@ -61,6 +63,11 @@ progress{
   height: 12px;
   border-radius: 10px;
   padding-top: 1%;
+}
+
+progress.quest-boss-bar{
+  height: 20px !important;
+  width: 100% !important;;
 }
 
 progress::-webkit-progress-value{
@@ -89,6 +96,10 @@ progress::-webkit-progress-bar{
   background: #ffd700;
 }
 
+.purple::-webkit-progress-value{
+  background: #3D3240;
+}
+
 img.center {
     display: block;
     margin: 0 auto;
@@ -101,10 +112,11 @@ img.center {
 
 .item-thumbnail-left-avatar,
 .item-thumbnail-left-avatar .item-content-avatar {
-  background-color: transparent; 
+  background-color: transparent !important; 
   padding-top: 8px;
   padding-left: 135px;
-  height: 157px; }
+  height: 157px;
+  border: 0px; }
   .item-thumbnail-left-avatar > figure:first-child,
   .item-thumbnail-left-avatar .item-figure,
   .item-thumbnail-left-avatar .item-content-avatar > figure:first-child,
@@ -123,6 +135,49 @@ img.center {
   .item-figure img:first-child, .item-figure .list-figure {
     width: 100%;
     vertical-align: middle; }
+
+/* ngAnimate */
+/* The starting CSS styles for the enter animation */
+#habit-list ion-item.ng-enter {
+  transition:0.5s linear all;
+  opacity:0;
+  transform: translateY(100%);
+}
+/* The finishing CSS styles for the enter animation */
+#habit-list ion-item.ng-enter.ng-enter-active {
+  opacity:1;
+  transform: translateY(0);
+}
+
+#habit-list ion-item.ng-leave {
+  transition:0.25s linear all;
+  opacity:1;
+  transform: translateX(0);
+}
+#habit-list ion-item.ng-leave.ng-leave-active {
+  opacity:0;
+  transform: translateX(-100%);
+}
+/* ngAnimate ends here */
+
+#costume-tab .button {
+  border: none !important;
+  color: #6e6e6e !important;
+  background: #f5f5f5 !important;
+  font-weight: 700 !important;
+  width: 50%;
+  float:left;
+}
+#challenge.active {
+  color: #2bb096 !important;
+}
+#party.active {
+  color: #2bb096 !important;
+}
+
+#goal-content .item-content {
+    padding: 0px 49px 0px 0px !important;
+}
 
 
 .bar.bar-header.no-bgColor, .bar.bar-footer.no-bgColor{
