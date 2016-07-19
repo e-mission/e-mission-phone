@@ -72,6 +72,12 @@
         <div ng-click="refreshScreen()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-refresh" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
+        <div class="control-list-text">Set UI channel</div>
+        <input type="text" name="userName"
+          ng-model="settings.channel"
+          ng-model-options="{ getterSetter: true }" />
+      </div>
+      <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
         <div ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
       </div>

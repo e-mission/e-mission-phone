@@ -326,6 +326,9 @@ angular.module('emission.main', ['emission.main.recent',
         $scope.settings.sync = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
+        $scope.settings.channel = function(newName) {
+          return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
+        };
 
         $scope.getConnectURL();
         $scope.getCollectionSettings();

@@ -1,10 +1,35 @@
 'use strict';
 
-angular.module('emission.splash.updatecheck', [])
+angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
 
-.service('UpdateCheck', function($ionicPopup, $rootScope) {
+.factory('UpdateCheck', function($ionicPopup, $rootScope, storage) {
+  var uc = {};
+  var CHANNEL_KEY = 'deploy_channel';
+
+  /*
+   * Returns a promise that resolves to the name of the channel
+   * to load UI updates from.
+   */
+  uc.getChannel = function() {
+    return storage.get(CHANNEL_KEY);
+  };
+
+  uc.setChannel = function(channelName) {
+    storage.set(CHANNEL_KEY, channelName);
+  };
+
+  // Default to dev
+  var getChannelToUse = function() {
+      var channel = uc.getChannel();
+      if (channel == null || channel == "") {
+        console.log("No saved channel found, using dev")
+        channel = 'dev';
+      };
+      console.log("Returning channel "+channel)
+      return channel;
+  }
+
   var deploy = new Ionic.Deploy();
-  deploy.setChannel('dev');
 
   var applyUpdate = function() {
     deploy.update().then(function(res) {
@@ -25,8 +50,9 @@ angular.module('emission.splash.updatecheck', [])
 
 
     // Check Ionic Deploy for new code
-  this.checkForUpdates = function() {
+  uc.checkForUpdates = function() {
     console.log('Ionic Deploy: Checking for updates');
+    deploy.setChannel(getChannelToUse());
     deploy.check().then(function(hasUpdate) {
       window.Logger.log(window.Logger.LEVEL_DEBUG, 'Ionic Deploy: Update available: ' + hasUpdate);
       if (hasUpdate) {
@@ -77,5 +103,7 @@ angular.module('emission.splash.updatecheck', [])
       console.error('Ionic Deploy: Unable to check for updates',err)
     });
   }
+
+  return uc;
 });
 
