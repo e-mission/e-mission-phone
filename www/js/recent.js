@@ -13,7 +13,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
         });
     }
 })
-     
+
 .controller('logCtrl', function(ControlHelper, $scope, $cordovaFile, $cordovaEmailComposer, $ionicPopup) {
     console.log("Launching logCtr");
     var RETRIEVE_COUNT = 100;
@@ -79,7 +79,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
     $scope.refreshEntries();
 })
-   
+
 .controller('sensedDataCtrl', function($scope, $cordovaEmailComposer, $ionicActionSheet) {
     var currentStart = 0;
 
@@ -114,12 +114,12 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
         if (ionic.Platform.isAndroid()) {
             parentDir = "app://databases";
-        } 
+        }
         if (ionic.Platform.isIOS()) {
             alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
             parentDir = cordova.file.dataDirectory+"../LocalDatabase";
         }
-        
+
         /*
         window.Logger.log(window.Logger.LEVEL_INFO,
             "Going to export logs to "+parentDir);
@@ -172,7 +172,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     $scope.setSelected = function(newVal) {
       $scope.selected.key = newVal;
       $scope.updateEntries();
-    } 
+    }
 
   $scope.updateEntries = function() {
     if (angular.isUndefined($scope.selected.key)) {
@@ -204,7 +204,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
   $scope.updateEntries();
 })
-   
+
 .controller('mapCtrl', function($scope, Config) {
     /* Let's keep a reference to the database for convenience */
     var db = window.cordova.plugins.BEMUserCache;
@@ -213,6 +213,11 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
     angular.extend($scope.mapCtrl, {
         defaults : Config.getMapTiles()
+    });
+
+    $scope.$on('leafletDirectiveMap.resize', function(event, data) {
+          console.log("recent/map received resize event, invalidating map size");
+          data.leafletObject.invalidateSize();
     });
 
     $scope.refreshMap = function() {
@@ -233,6 +238,6 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
     $scope.refreshMap();
 });
- 
+
 
 

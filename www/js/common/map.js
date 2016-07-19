@@ -4,6 +4,7 @@ angular.module('emission.main.common.map',['ionic-datepicker',
                                       'emission.main.diary.services', 'nvd3'])
 
 .controller("CommonMapCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
+                                    leafletMapEvents,
                                     CommonGraph, Config, DiaryHelper) {
   console.log("controller CommonMapCtrl called");
 
@@ -24,7 +25,7 @@ angular.module('emission.main.common.map',['ionic-datepicker',
     };
   };
 
-  
+
 
   var onEachFeature = function(feature, layer) {
     console.log("onEachFeature called with "+JSON.stringify(feature));
@@ -50,6 +51,37 @@ angular.module('emission.main.common.map',['ionic-datepicker',
   $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
   };
+
+  /*
+   * Debug code to log ALL events. Note that this is overkill and should be
+   * commented out most of the time. However, for now, we enable it so that
+   * we can see which events are generated on android.
+   */
+  var mapEvents = leafletMapEvents.getAvailableMapEvents();
+  for (var k in mapEvents) {
+    var eventName = 'leafletDirectiveMap.common.' + mapEvents[k];
+    $scope.$on(eventName, function(event, data){
+        console.log("in mapEvents, event = "+JSON.stringify(event.name)+
+              " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+              " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+        $scope.eventDetected = event.name;
+    });
+  }
+
+  // According to the leaflet documentation, a 'load' event is supposed to
+  // to be generated when the map is loaded. However, at least on iOS, that event
+  // is never triggered, and instead, a resize event is the only one that
+  // is generated. Through empirical investigation, we have determined that
+  // it is generated only when the tab is loaded and is not generated after that
+  // So let's over
+
+  $scope.$on('leafletDirectiveMap.common.resize', function(event, data) {
+      console.log("$scope.resize event = "+JSON.stringify(event.name)+
+          " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+          " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+      data.leafletObject.invalidateSize();
+  });
+
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
     $scope.$apply(function() {
@@ -109,7 +141,7 @@ angular.module('emission.main.common.map',['ionic-datepicker',
                     tickFormat: function(d) {
                         return d;
                     },
-                    
+
                     showMaxMin: false
                 },
                 yAxis: {

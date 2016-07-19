@@ -8,9 +8,14 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
-  $scope.mapCtrl = {};  
+  $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
     defaults : Config.getMapTiles()
+  });
+
+  $scope.$on('leafletDirectiveMap.detail.resize', function(event, data) {
+      console.log("diary/detail received resize event, invalidating map size");
+      data.leafletObject.invalidateSize();
   });
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.arrowColor = DiaryHelper.arrowColor;
@@ -30,7 +35,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
-  
+
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
   var data  = [];
@@ -59,9 +64,9 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
 
   chart.yAxis     //Chart y-axis settings
       .axisLabel('Speed (m/s)')
-      .tickFormat(d3.format('.1f'));  
+      .tickFormat(d3.format('.1f'));
 
-  d3.select('#chart svg')    //Select the <svg> element you want to render the chart in.   
+  d3.select('#chart svg')    //Select the <svg> element you want to render the chart in.
       .datum([dataset,])         //Populate the <svg> element with chart data...
       .call(chart);          //Finally, render the chart!
 
