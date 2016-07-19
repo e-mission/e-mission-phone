@@ -48,7 +48,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
     }
   var chart = nv.models.lineChart()
                 .margin({left: 65, right: 10})  //Adjust chart margins to give the x-axis some breathing room.
-                .useInteractiveGuideline(true)  //We want nice looking tooltips and a guideline!
+                .useInteractiveGuideline(false)  //We want nice looking tooltips and a guideline!
                 .x(function(d) {return d.x / 1000})
                 .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
                 .showYAxis(true)        //Show the y-axis

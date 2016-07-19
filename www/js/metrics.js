@@ -7,6 +7,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
     $scope.options = {
         chart: {
             type: 'multiBarChart',
+            width: 350,
             height: 450,
             margin : {
                 top: 20,
