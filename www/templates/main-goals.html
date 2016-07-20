@@ -106,49 +106,64 @@
       </div>
       <div>
         <div ng-if="isActive" ng-cloak>
-          <div style="background:#F8E1C2;color: black; font-weight: 700;height:200px; text-align:center;">
+          <ion-scroll style="background:#F8E1C2;color: black; font-weight: 700;height:200px; text-align:center;">
+
             <ion-list>
-              <div ng-repeat="challenge in challenges">
-                <p>{{challenge.name}} </p>
-                 <!--p>{{challenge.description}} </p>
-                 <p> Prize: {{challenge.prize}} gems</p-->
+              <div style="height: 200px;padding: 25px 10px 10px 10px;" ng-repeat="challenge in challenges">
+                <p style="font-size:18px">{{challenge.name}}</p>
+                <p>{{challenge.description}} </p>
+                <p> Prize: {{challenge.prize}} gems</p>
                 <button class="button" ng-click="joinChallenge(challenge._id)" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
             Join Challenge
-            </button-->
+            </button>
             </div>
             </ion-list>
-          </div>
+          </ion-scroll>
         </div>
         <div ng-if="isActiveP" ng-cloak>
-          <div ng-if="!hasParty" style="background:#FF735C;color:white; font-weight: 700;height:200px;padding-top:10px; text-align:center;">
-            Join a party and battle monsters with E-mission members!
-            <button class="button" ng-click="joinParty()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+          <div ng-if="!hasParty" style="background:#FF735C;color:white; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 15px;">
+            Join the party and battle monsters with E-mission members!
+            <button class="button" ng-click="joinParty()" style="background:#3D899F;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
             Join Party
             </button>
           </div>
           <ion-scroll ng-if="hasParty" style="background:#FF735C;color:white; font-weight: 700;height:200px;padding-top: 10px; text-align:center;" ng-cloak>
-            <div ng-if="hasQuestRequest " ng-cloak>
+            <div ng-if="hasQuestRequest " ng-cloak style="font-size: 15px; padding-top:50px">
               Your group leader has requested you to join a quest.
-              <button class="button" ng-click="joinQuest()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+              <br>
+              <button class="button" ng-click="joinQuest()" style="background:#44BD69;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
               Join Quest
               </button>
-              <button class="button" ng-click="rejectQuest()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+              <button class="button" ng-click="rejectQuest()" style="background:#C02D16;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
               Reject Quest
               </button>
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; !inQuest">
-              Please wait for the next quest to start...
-              <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
-                Members
-              </button>
+              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshUserInfo()">
+            <i class="icon ion-refresh"></i>
+            </button>
+              <div style="padding-top:50px;font-size:15px;">
+                Please wait for the next quest to start...
+                <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                  Members
+                </button>
+              </div>
             </div>
               <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; !questActive">
-              Please wait for your members to accept the quest.
-              <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
-                Members
+              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshUserInfo()">
+              <i class="icon ion-refresh"></i>
               </button>
+              <div style="font-size: 15px; padding-top:50px">
+                Please wait for your members to accept the quest.
+                <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                  Members
+                </button>
+              </div>
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; questActive" style="position:relative;" ng-cloak>
+              <button class="button button-icon" style="position: absolute;right:10px;" ng-click="refreshUserInfo()">
+              <i class="icon ion-refresh"></i>
+              </button>
               <h4 style="text-align: center; color:white;margin-top: 0px;font-weight:700;">{{partyName}}</h4>
               <div class="col col-50">
                 <img id="boss_{{monster}}" class="boss_png" src="common/img/sprites/spritesmith/quests/bosses/quest_TEMPLATE_FOR_MISSING_IMAGE.png"></img>
@@ -167,6 +182,11 @@
             </div>
           </ion-scroll>
         </div>
+      <div>
+      <ion-refresher pulling-text="Pull to refresh"
+         refreshing-text="Refreshing..."
+         on-refresh="refreshState()">
+      </ion-refresher>
       <ion-list id="habit-list">
         <ion-item id="goal-content" ng-repeat="goal in goals">
           <!--div class="row">
@@ -198,6 +218,7 @@
           <ion-option-button class="button-assertive" ng-click="deleteGoal(goal._id, goal)">Delete</ion-option-button>
          </ion-item>
        </ion-list>
+       </div>
     </div>
   </div>
       <!--ion-list>
