@@ -14,6 +14,10 @@
       <button class="button button-icon icon ion-ios-minus-outline" ng-click="showDelete = !showDelete"></button>
      </ion-nav-buttons-->
 <ion-content class="has-header" overflow-scroll="true" padding="true">
+    <ion-refresher pulling-text="Pull to refresh"
+      refreshing-text="Refreshing..."
+      on-refresh="refreshPage()">
+    </ion-refresher>
       <!--div>
         <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
       </div-->
@@ -101,7 +105,7 @@
       <div class="row" id="costume-tab">
         <div class="col">
           <button id="challenge" class="button" ng-class="{'active': isActive}" ng-click="activeButton()" type="button">Challenges</button>
-          <button id="party" class="button" ng-class="{'active': isActiveP}" ng-click="partyBotton()" type="button">Party</button> 
+          <button id="party" class="button" ng-class="{'active': isActiveP}" ng-click="partyButton()" type="button">Party</button> 
         </div>
       </div>
       <div>
@@ -139,7 +143,7 @@
               </button>
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; !inQuest">
-              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshUserInfo()">
+              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshPage()">
             <i class="icon ion-refresh"></i>
             </button>
               <div style="padding-top:50px;font-size:15px;">
@@ -150,7 +154,7 @@
               </div>
             </div>
               <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; !questActive">
-              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshUserInfo()">
+              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshPage()">
               <i class="icon ion-refresh"></i>
               </button>
               <div style="font-size: 15px; padding-top:50px">
@@ -161,7 +165,7 @@
               </div>
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; questActive" style="position:relative;" ng-cloak>
-              <button class="button button-icon" style="position: absolute;right:10px;" ng-click="refreshUserInfo()">
+              <button class="button button-icon" style="position: absolute;right:10px;" ng-click="refreshPage()">
               <i class="icon ion-refresh"></i>
               </button>
               <h4 style="text-align: center; color:white;margin-top: 0px;font-weight:700;">{{partyName}}</h4>
@@ -183,10 +187,6 @@
           </ion-scroll>
         </div>
       <div>
-      <ion-refresher pulling-text="Pull to refresh"
-         refreshing-text="Refreshing..."
-         on-refresh="refreshState()">
-      </ion-refresher>
       <ion-list id="habit-list">
         <ion-item id="goal-content" ng-repeat="goal in goals">
           <!--div class="row">

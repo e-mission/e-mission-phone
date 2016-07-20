@@ -81,9 +81,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		});
 		CommHelper.habiticaRegister(regConfig, function(response) {
 			console.log("Success!")
-			userInfo();
-			//console.log(response);
-			//$window.location.reload();
+			getUserInfo();
 		}, function(error) {
 			$ionicLoading.hide();
 			$ionicPopup.alert({title: "<h4 class='center-align'>Username is Required</h4>",
@@ -96,15 +94,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
     $ionicLoading.show({
 			template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
-		});
+	});
 
-
-	$scope.refreshUserInfo = function(){
-		console.log("Refreshing user information");
-		userInfo();
-	};
-
-    var userInfo = function(){
+	var getUserInfo = function(){
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
 	                    'method_args': null};
 
@@ -140,11 +132,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 					questContent();
 				}
 			}
-			if($scope.challenges.length == 0){
-				bikeChallenge();
-				carpoolChallenge();
-				publicTransChallenge();
-			}
 			getParty();
 			console.log($scope.profile);
 			$ionicLoading.hide();
@@ -154,16 +141,15 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			});
 	};
 
-	userInfo();
-
-	var userTask = function(){
+	var getUserTask = function(){
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/tasks/user",
                     'method_args': null};
 	    var tasks;
 	    CommHelper.habiticaProxy(callOpts, function(response){
 			$scope.$apply(function() {
 				tasks = response.data;
-			})
+			});
+			$scope.goals = [];
 			console.log(tasks);
 				for(var habit in tasks){
 					if(tasks[habit].type == "habit"){
@@ -177,8 +163,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				console.log("User task error");
 		});
 	};
-
-	userTask();
 
     $scope.createGoalPhone = function() {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/user",
@@ -216,7 +200,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts, function(response){
-				userInfo();
+				getUserInfo();
 				console.log("Score up");
 			}, function(error){
 				console.log(JSON.stringify(error));
@@ -229,7 +213,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts, function(response){
-				userInfo();
+				getUserInfo();
 				console.log("Score down");
 			}, function(error){
 				console.log(JSON.stringify(error));
@@ -337,7 +321,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			console.log("Error when fetching members");
 		});
 	};
-    getMembers();
 
 	var bikeChallenge = function() {
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/8a8134d6-066d-424d-8f3d-0b559c2c1e78",
@@ -346,7 +329,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully got bike challenge");
 					console.log(response);
-					$scope.challenges.push(response.data);
+					if($scope.challenges.length==0){
+						$scope.challenges.push(response.data);
+					} else {
+						if(!($scope.challenges.includes(response.data))){
+							$scope.challenges.push(response.data);
+							console.log($scope.challenges);
+						}
+					}
 				}, function(error){
 					console.log("Error when getting bike challenge");
 				});
@@ -359,7 +349,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully got carpool challenge");
 					console.log(response);
-					$scope.challenges.push(response.data);
+					if($scope.challenges.length==0){
+						$scope.challenges.push(response.data);
+					} else {
+						if(!($scope.challenges.includes(response.data))){
+							$scope.challenges.push(response.data);
+							console.log($scope.challenges);
+						}
+					}
 				}, function(error){
 					console.log("Error when getting carpool challenge");
 				});
@@ -372,12 +369,24 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully got public transport challenge");
 					console.log(response);
-					$scope.challenges.push(response.data);
+					if($scope.challenges.length==0){
+						$scope.challenges.push(response.data);
+					} else {
+						if(!($scope.challenges.includes(response.data))){
+							$scope.challenges.push(response.data);
+							console.log($scope.challenges);
+						}
+					}
 				}, function(error){
 					console.log("Error when getting public transport challenge");
 				});
 	};
 
+	var getChallenges = function(){
+  		bikeChallenge();
+		carpoolChallenge();
+		publicTransChallenge();
+  	};
 
 	$scope.joinChallenge = function(challengeId) {
 		var callOpts = {'method': 'POST', 'method_url': "/api/v3/challenges/"+challengeId+"/join",
@@ -385,8 +394,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully joined the challenge");
-					$scope.goals = [];
-					userTask();
+					getUserTask();
 					console.log(response);
 				}, function(error){
 					console.log("Error when joining the challenge");
@@ -397,18 +405,36 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.isActive = false;
   	$scope.activeButton = function() {
   		if($scope.isActiveP == true){
-  			$scope.partyBotton();
+  			$scope.partyButton();
   		}
     	$scope.isActive = !$scope.isActive;
   	};
 
   	$scope.isActiveP = false;
-  	$scope.partyBotton = function() {
+  	$scope.partyButton = function() {
   		if($scope.isActive == true){
   			$scope.activeButton();
   		}
     	$scope.isActiveP = !$scope.isActiveP;
   	};
+
+  	var refreshInfo = function(){
+		console.log("Refreshing information");
+		$scope.challenges=[];
+		getUserInfo();
+		getMembers();
+		getUserTask();
+		getChallenges();
+	};
+
+	refreshInfo();
+
+	$scope.refreshPage = function() {
+		console.log("Refreshing page");
+		refreshInfo();
+		$scope.$broadcast('scroll.refreshComplete');
+    };
+
 
 	/*$http.get('http://54.159.38.241:3000/export/avatar-'+userId+'.html')
     .then(function(response) {
