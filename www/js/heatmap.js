@@ -2,7 +2,7 @@
 
 angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
 
-.controller('HeatmapCtrl', function($scope, $ionicActionSheet, $http, leafletData, Config) {
+.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http, leafletData, Config) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
@@ -18,6 +18,9 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
   $scope.getPopRoute = function() {
+    $ionicLoading.show({
+        template: 'Loading...'
+      });
     var data = {
       modes: $scope.selectCtrl.modes,
       from_local_date: $scope.selectCtrl.fromDate,
@@ -27,6 +30,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
     console.log("Sending data "+JSON.stringify(data));
     $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/pop.route", data)
     .then(function(response) {
+      $ionicLoading.hide();
       if (angular.isDefined(response.data.lnglat)) {
         console.log("Got points in heatmap "+response.data.lnglat.length);
         $scope.showHeatmap(response.data.lnglat);
@@ -34,6 +38,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
         console.log("did not find latlng in response data "+JSON.stringify(response.data));
       }
     }, function(error) {
+      $ionicLoading.hide();
       console.log("Got error %s while trying to read heatmap data" +
         JSON.stringify(error));
     });

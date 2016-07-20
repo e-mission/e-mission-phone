@@ -29,20 +29,33 @@
       </label>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Force sync</div>
-      <div ng-click="forceSync()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-sync" ng-style="getIconStyle()"></i></div>
-    </div>   
-    <div class="control-list-item">
-      <div class="control-list-text">Dark theme</div>
-
-      <label ng-click="willUseDarkTheme()" class="toggle control-list-toggle">
-        <input type="checkbox" ng-checked="toggleDarkTheme()">
+      <div class="control-list-text">Medium accuracy</div>
+      <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle">
+        <input type="checkbox" ng-checked="getLowAccuracy()">
         <div class="track">
           <div class="handle"></div>
         </div>
       </label>
+    </div>
 
-    </div>    
+
+    <div class="control-list-item">
+      <div class="control-list-text">Dark theme</div>
+      <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle">
+        <input type="checkbox" ng-checked="getDarkTheme()">
+        <div class="track">
+          <div class="handle"></div>
+        </div>
+      </label>
+    </div> 
+    <div class="control-list-item">
+      <div class="control-list-text">Force sync</div>
+      <div ng-click="forceSync()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-sync" ng-style="getIconStyle()"></i></div>
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text">Email log</div>
+      <div ng-click="emailLog()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-mail" ng-style="getIconStyle()"></i></div>
+    </div>   
     <div class="control-list-item">
       <div class="control-list-text">Developer zone</div>
       <div ng-click="toggleCollection()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getExpandButtonClass()" ng-style="getIconStyle()" id="expandButton"></i></div>
@@ -50,6 +63,10 @@
     
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
+      <div class="control-list-item">
+        <div class="control-list-text">Refresh</div>
+        <div ng-click="refreshScreen()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-refresh" ng-style="getIconStyle()"></i></div>
+      </div> 
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
         <div ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
@@ -77,10 +94,6 @@
                 <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">{{entry.key}}</div>
                 <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.val}}</div>
           </ion-item>
-          <ion-item class="row">
-                <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">host</div>
-                <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{settings.connect.url}}</div>
-          </ion-item>
       </ion-list>      
     
       <div class="control-list-item">
@@ -89,7 +102,11 @@
           <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
                 <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">{{entry.key}}</div>
                 <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.val}}</div>
-          </ion-item>       
+          </ion-item>
+          <ion-item class="row">
+                <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">host</div>
+                <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{settings.connect.url}}</div>
+          </ion-item>  
       </div>
     </div>
 

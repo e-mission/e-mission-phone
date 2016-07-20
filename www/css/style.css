@@ -1,5 +1,8 @@
 /* Empty. Add your own CSS if you like */
 
+[ng\:cloak], [ng-cloak], .ng-cloak {
+  display: none !important;
+}
 .customButtomIconSize:before {
     font-size: 25px !important;
 }
@@ -7,13 +10,17 @@
 #habitica-heart-icon {
    font-size: 15px;
    color: red;
-   padding-left: 10%
+   padding-left: 10%;
+   position: relative;
+   bottom: 1.5px;
 }
 
 #habitica-star-icon {
    font-size: 15px;
    color: gold;
-   padding-left: 10%
+   padding-left: 10%;
+   position: relative;
+   bottom: 3px;
 }
 
 #stats-wrapper {
@@ -37,7 +44,16 @@
   display: inline;
 }
 
+.item-thumbnail-left-avatar.activated {
+  background-color: transparent;
+  box-shadow: none;
+  color: #fff; 
+}
 
+.signup-title{
+  font-size: 2em;
+  padding: 30px 0 10px 0;
+}
 
 progress{
   margin: 0px;
@@ -47,6 +63,11 @@ progress{
   height: 12px;
   border-radius: 10px;
   padding-top: 1%;
+}
+
+progress.quest-boss-bar{
+  height: 20px !important;
+  width: 100% !important;;
 }
 
 progress::-webkit-progress-value{
@@ -61,7 +82,7 @@ progress::-webkit-progress-bar{
   /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
 
-.item-content {
+/*.item-content {
     padding-top: 8px;
     padding-bottom: 12px;
     padding-left: 1px;
@@ -69,11 +90,95 @@ progress::-webkit-progress-bar{
     margin-top: -12px;
     margin-bottom: -4px;
     height: 70px;
-}
+}*/
 
 .golden::-webkit-progress-value{
   background: #ffd700;
 }
+
+.purple::-webkit-progress-value{
+  background: #3D3240;
+}
+
+img.center {
+    display: block;
+    margin: 0 auto;
+}
+
+.item-content-avatar{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.item-thumbnail-left-avatar,
+.item-thumbnail-left-avatar .item-content-avatar {
+  background-color: transparent !important; 
+  padding-top: 8px;
+  padding-left: 135px;
+  height: 157px;
+  border: 0px; }
+  .item-thumbnail-left-avatar > figure:first-child,
+  .item-thumbnail-left-avatar .item-figure,
+  .item-thumbnail-left-avatar .item-content-avatar > figure:first-child,
+  .item-thumbnail-left-avatar .item-content-avatar .item-figure {
+    position: absolute;
+    top: 10px;
+    left:1px;
+    max-width: 140px;
+    max-height: 147px;
+    width: 100%;
+    height: 100%; }
+
+.item-figure {
+  padding: 0;
+  text-align: center; }
+  .item-figure img:first-child, .item-figure .list-figure {
+    width: 100%;
+    vertical-align: middle; }
+
+/* ngAnimate */
+/* The starting CSS styles for the enter animation */
+/*#habit-list ion-item.ng-enter {
+  transition:0.5s linear all;
+  opacity:0;
+  transform: translateY(100%);
+}
+/* The finishing CSS styles for the enter animation */
+/*#habit-list ion-item.ng-enter.ng-enter-active {
+  opacity:1;
+  transform: translateY(0);
+}
+
+#habit-list ion-item.ng-leave {
+  transition:0.25s linear all;
+  opacity:1;
+  transform: translateX(0);
+}
+#habit-list ion-item.ng-leave.ng-leave-active {
+  opacity:0;
+  transform: translateX(-100%);
+}
+/* ngAnimate ends here */
+
+#costume-tab .button {
+  border: none !important;
+  color: #6e6e6e !important;
+  background: #f5f5f5 !important;
+  font-weight: 700 !important;
+  width: 50%;
+  float:left;
+}
+#challenge.active {
+  color: #2bb096 !important;
+}
+#party.active {
+  color: #2bb096 !important;
+}
+
+#goal-content .item-content {
+    padding: 0px 49px 0px 0px !important;
+}
+
 
 .bar.bar-header.no-bgColor, .bar.bar-footer.no-bgColor{
 border: 0px !important;
@@ -108,7 +213,6 @@ background-image: none !important; }
   height: 275px;
   margin: 1rem;
   position: relative;
-  width: 300px;
 }
 /* Dark theme */
 /*
@@ -219,21 +323,35 @@ ion-header-bar {
 
 .earlier-later-expand-dark {
   color: white;
-  margin: 16px 16px 0 16px;
+  margin: 16px 16px 0 6px;
   font-size: 0.8em;
   opacity: 0.7;
 }
 .earlier-later-expand {
   color: #303030;
-  margin: 16px 16px 0 16px;
+  margin: 16px 16px 0 6px;
   font-size: 0.8em;
   opacity: 0.7;
 }
 .list-location {
   color: #303030;
+  background-color: transparent;
+  font-size: 0.8em;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  margin-top: 0;
+  margin-bottom: 0;
 }
 .list-location-dark {
   color: white;
+  background-color: transparent; 
+  font-size: 0.8em; 
+  padding-top: 5px; 
+  padding-bottom: 5px; 
+  padding-left: 30px; 
+  margin-top: 0; 
+  margin-bottom: 0;
 }
 p.list-text-dark {
   color: white;
@@ -286,9 +404,11 @@ button.button.ng-binding i.icon.ion-edit {
   font-size: 12px;
 }
 button.button.back-button.buttons.button-clear.header-item {
-  color: #fff;
+  color: #303030; opacity: 0.7;
 }
-
+.nav-bar-title {
+  color: #303030; opacity: 0.7;
+}
 /* Profile tab */
 .control-list-item {
   background-color: white! important; height: 50px; margin-top: 0.5px;
@@ -305,7 +425,7 @@ button.button.back-button.buttons.button-clear.header-item {
   padding: 7px 0; font-size: 16px; line-height: 22px; height: 36px;
 }
 .dev-zone-title {
-  padding: 18px 22px;
+  padding: 18px 16px;
 }
 .dev-zone-button {
   position: absolute;
@@ -313,8 +433,77 @@ button.button.back-button.buttons.button-clear.header-item {
   top: 16px;
 }
 .list-card-dark {
-  margin: 16px; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  margin: 16px 0; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .list-card {
-  margin: 16px; background-color: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  margin: 16px 0; background-color: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.list-card-sm {
+  width: 95%;
+}
+.list-card-md {
+  width: 95%;
+}
+.list-card-lg {
+ width: 95%;
+}
+.list-col-left-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left-dark-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left {
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left-dark {
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: white; border-right-style: solid; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-right {
+  text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-right-dark {
+  text-align: center; padding: 0.25em 0.8em; border-bottom-color: white; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.start-time-tag {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #33e0bb;
+        color: black;
+        width: 16%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: 1%;
+        top: 15px;
+        line-height: 16px;
+}
+.stop-time-tag {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 16%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: 1%;
+        top: 275px;
+        line-height: 16px;
+}
+.stop-time-tag-lower {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 16%;
+        height: 16px;
+        border-radius: 8px;
+        font-size: 9px;
+        position: absolute;
+        left: 1%;
+        top: 310px;
+        line-height: 16px;
 }

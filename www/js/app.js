@@ -10,7 +10,7 @@
 angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     'emission.intro', 'emission.main'])
 
-.run(function($ionicPlatform) {
+.run(function($ionicPlatform, $rootScope) {
   console.log("Starting run");
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard

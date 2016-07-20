@@ -4,9 +4,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
     <meta http-equiv="Content-Security-Policy"
-        content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://habitica-assets.s3.amazonaws.com 'unsafe-inline';
+        content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu;
             style-src 'self' 'unsafe-inline';
-            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://habitica-assets.s3.amazonaws.com 'unsafe-inline">
+            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com
+            'unsafe-inline'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -16,6 +17,9 @@
     <link href="css/main.diary.css" rel="stylesheet">
     <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
     <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
+    <link href="build/app.css" rel="stylesheet">
+    <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
+    <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -27,6 +31,7 @@
     <script src="lib/moment/min/moment.min.js"></script>
     <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+    <script src="lib/angular-animate/angular-animate.js"></script>
     <!-- Made a copy to deal with scrolling properly -->
     <script src="manual_lib/leaflet/dist/leaflet-src.js"></script>
     <script src="lib/angular-simple-logger/dist/angular-simple-logger.js"></script>
@@ -39,7 +44,6 @@
 
     <!-- Manually installed javascript for libraries that are not published through bower -->
     <script src="manual_lib/leaflet-plugins/leaflet.textpath.js"></script>
-
     <!-- cordova script (this will be a 404 during development) -->
     <script src="cordova.js"></script>
 
@@ -55,9 +59,14 @@
     <script src="js/diary/detail.js"></script>
     <script src="js/diary/services.js"></script>
     <script src="js/common.js"></script>
+    <script src="js/common/map.js"></script>
+    <script src="js/common/list.js"></script>
+    <script src="js/common/detail.js"></script>
     <script src="js/common/services.js"></script>
     <script src="js/heatmap.js"></script>
     <script src="js/goals.js"></script>
+    <!--script src="js/goals/party.js"></script-->
+    <script src="js/goals/signup.js"></script>
   </head>
   
   <body ng-app="emission">
