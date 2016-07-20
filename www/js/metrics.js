@@ -1,13 +1,14 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper) {
+                                    CommHelper, $window) {
+
     $scope.options = {
         chart: {
             type: 'multiBarChart',
-            width: 350,
+            width: $window.screen.width - 30,
             height: 450,
             margin : {
                 top: 20,
@@ -15,6 +16,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
                 bottom: 40,
                 left: 55
             },
+            showControls: false,
             showValues: true,
             stacked: false,
             x: function(d){ return d[0]; },
@@ -34,6 +36,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
             // clipVoronoi: false,
 
             xAxis: {
+                axisLabelDistance: 3,
                 axisLabel: 'Date',
                 tickFormat: function(d) {
                     return d3.time.format('%y-%m-%d')(new Date(d * 1000))
@@ -47,14 +50,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
             },
         }
     };
-
+  
+    var moment2Localdate = function(momentObj) {
+      return {
+        year: momentObj.year(),
+        month: momentObj.month() + 1,
+        day: momentObj.date()
+      };
+    }
     $scope.data = [];
 
     $scope.getMetrics = function() {
       var data = {
         freq: $scope.selectCtrl.freq,
-        start_time: $scope.selectCtrl.fromDate,
-        end_time: $scope.selectCtrl.toDate,
+        start_time: moment2Localdate($scope.selectCtrl.fromDate),
+        end_time: moment2Localdate($scope.selectCtrl.toDate),
         metric: $scope.selectCtrl.metric
       };
       console.log("Sending data "+JSON.stringify(data));
@@ -136,6 +146,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
                                   $scope.selectCtrl.toDate);
     }
   
+    // $scope.show fil
+
     $scope.changeWeekday = function(stringSetFunction, localDateObj) {
       var weekdayOptions = [
         {text: "All", value: null},
@@ -175,7 +187,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
     $scope.changeFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.freqOptions,
-          titleText: "Select summary freq",
+          titleText: "Select summary freqency",
           cancelText: "Cancel",
           buttonClicked: function(index, button) {
             $scope.selectCtrl.freqString = button.text;
@@ -192,21 +204,67 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services'])
       $scope.selectCtrl.metricString = "COUNT";
       $scope.selectCtrl.freq = 'DAILY';
       $scope.selectCtrl.freqString = "DAILY";
-      $scope.selectCtrl.fromDate = moment2Localdate(monthago)
-      $scope.selectCtrl.toDate = moment2Localdate(now);
+      $scope.selectCtrl.fromDate = monthago;
+      $scope.selectCtrl.toDate = now;
       $scope.selectCtrl.fromDateWeekdayString = "All"
       $scope.selectCtrl.toDateWeekdayString = "All"
       $scope.selectCtrl.region = null;
     };
-  
-    var moment2Localdate = function(momentObj) {
-      return {
-        year: momentObj.year(),
-        month: momentObj.month() + 1,
-        day: momentObj.date()
-      };
+
+
+  $scope.selectCtrl = {}
+  initSelect();
+  $scope.setCurDayFrom = function(val) {
+    if (val) {
+      $scope.selectCtrl.fromDate = moment(val);
+      $scope.datepickerObjFrom.inputDate = val;
+    } else {
+      $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDate.toDate();
     }
-  
-    $scope.selectCtrl = {}
-    initSelect();
+
+  };
+  $scope.setCurDayTo = function(val) {
+    if (val) {
+      $scope.selectCtrl.toDate = moment(val);
+      $scope.datepickerObjTo.inputDate = val;
+    } else {
+      $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDate.toDate();
+    }
+
+  };
+  $scope.datepickerObjFrom = {
+      callback: $scope.setCurDayFrom,
+      inputDate: $scope.selectCtrl.fromDate.toDate(),
+      setLabel: 'Set',
+      todayLabel: 'Today',
+      closeLabel: 'Close',
+      mondayFirst: false,
+      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      templateType: 'popup',
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      showTodayButton: true,
+      dateFormat: 'MMM dd yyyy',
+      closeOnSelect: false,
+      disableWeekdays: [6]
+    };
+  $scope.datepickerObjTo = {
+      callback: $scope.setCurDayTo,
+      inputDate: $scope.selectCtrl.toDate.toDate(),
+      setLabel: 'Set',
+      todayLabel: 'Today',
+      closeLabel: 'Close',
+      mondayFirst: false,
+      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
+      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      templateType: 'popup',
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      showTodayButton: true,
+      dateFormat: 'MMM dd yyyy',
+      closeOnSelect: false,
+      disableWeekdays: [6]
+    };
+
 });
