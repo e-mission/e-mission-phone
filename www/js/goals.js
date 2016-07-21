@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnimate'])
+angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnimate', 'angularLocalStorage'])
 
 /*.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -18,10 +18,11 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, 
-								$window, $http, $ionicGesture, $ionicPopup, $timeout){
+								$window, $http, $ionicGesture, $ionicPopup, $timeout, storage){
 	$scope.goals = [];
 	$scope.goal = {};
 	$scope.challenges=[];
+	var partyId;
 	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -42,9 +43,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
   	//var element = angular.element(document.querySelector('#todo')); 
 
-	$scope.data = {
+	/*$scope.data = {
     	showDelete: false
-  	};
+  	};*/
   	$scope.openPartyModal = function() {
     	$scope.partyModal.show();
   	};
@@ -81,6 +82,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		});
 		CommHelper.habiticaRegister(regConfig, function(response) {
 			console.log("Success!")
+			console.log(response);
+			storage.set('party_id',response.habitica_group_id);
 			refreshInfo();
 		}, function(error) {
 			$ionicLoading.hide();
@@ -222,7 +225,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
 	$scope.joinParty = function() {
-	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/93c35a70-f70e-4d6e-ac2b-3e1c81fedf0f/join",
+	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/"+partyId+"/join",
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts, function(response){
@@ -238,7 +241,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
 	$scope.joinQuest = function() {
-	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/93c35a70-f70e-4d6e-ac2b-3e1c81fedf0f/quests/accept",
+	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/"+partyId+"/quests/accept",
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts, function(response){
@@ -253,7 +256,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
 	$scope.rejectQuest = function() {
-	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/93c35a70-f70e-4d6e-ac2b-3e1c81fedf0f/quests/reject",
+	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/"+partyId+"/quests/reject",
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts, function(response){
@@ -306,7 +309,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
     var getMembers = function() {
-		var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/93c35a70-f70e-4d6e-ac2b-3e1c81fedf0f/members",
+		var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+partyId+"/members",
 					'method_args': null};
 
     	CommHelper.habiticaProxy(callOpts, function(response){
@@ -400,6 +403,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
   	var refreshInfo = function(){
 		console.log("Refreshing information");
+		partyId = storage.get('party_id');
+		console.log("Party ID = " + storage.get('party_id'));
 		getUserInfo();
 		getMembers();
 		getUserTask();

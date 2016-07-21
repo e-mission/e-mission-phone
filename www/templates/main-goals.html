@@ -5,11 +5,11 @@
             <i class="icon ion-ios-minus-outline"></i>
           </button-->
    </ion-nav-buttons>
-	<ion-nav-buttons side="right">
-    	<button class="button button-icon" ng-click="openModal()">
-        	<i class="icon ion-compose"></i>
-   	 	</button>
-   	 </ion-nav-buttons>
+  <ion-nav-buttons side="right">
+      <button class="button button-icon" ng-click="openModal()">
+          <i class="icon ion-compose"></i>
+      </button>
+     </ion-nav-buttons>
      <ion-nav-buttons side="left">
       <button class="button button-icon" ng-click="refreshPage()">
         <i class="icon ion-android-refresh"></i>
@@ -199,18 +199,18 @@
              <i icon="ion-checkmark-circled"></i>
            </button>
            </div-->
-           <div class="col col-25" style="float:left">
-              <div class="row row-center">
-               <i class="icon ion-plus" style="font-size:large;margin-left: 20px;margin-right: 20px;margin-top: 10px !important;margin-bottom: 10px" ng-click="scoreUp(goal._id)"></i>
+           <div class="col col-20" style="float:left;padding-right:10px!important;">
+              <div class="row row-center" style="background:#4CD04C">
+               <i class="icon ion-plus" style="font-size:large;margin-left: 20px;margin-right: 20px;margin-top: 10px !important;margin-bottom: 10px;color:#fff" ng-click="scoreUp(goal._id)"></i>
               </div>
-              <div class="row row-center">
-                <i class="icon ion-minus" style="font-size:large;margin-left: 20px;margin-right: 20px;margin-top: 10px !important;margin-bottom: 10px" ng-click="scoreDown(goal._id)">
+              <div class="row row-center" style="background:#FF5C5C">
+                <i class="icon ion-minus" style="font-size:large;margin-left: 20px;margin-right: 20px;margin-top: 10px !important;margin-bottom:10px;color:#fff" ng-click="scoreDown(goal._id)">
                 </i>
               </div>
             </div>
           <div style="padding-top:15px">
-           <h2>{{goal.name}}</h2>
-           <p style="font-size: 10px">{{goal.note}}</p>
+           <h2 style="font-weight: 700;color:#6e6e6e;">{{goal.name}}</h2>
+           <p style="font-size: 10px;color:#6e6e6e;">{{goal.note}}</p>
            </div>
            <!--ion-delete-button class="ion-minus-circled" 
                              ng-click="deleteGoal(goal._id, goal)">
