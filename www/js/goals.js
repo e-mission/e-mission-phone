@@ -329,14 +329,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully got bike challenge");
 					console.log(response);
-					if($scope.challenges.length==0){
-						$scope.challenges.push(response.data);
-					} else {
-						if(!($scope.challenges.includes(response.data))){
-							$scope.challenges.push(response.data);
-							console.log($scope.challenges);
-						}
-					}
+					$scope.challenges.push(response.data);
 				}, function(error){
 					console.log("Error when getting bike challenge");
 				});
@@ -349,14 +342,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully got carpool challenge");
 					console.log(response);
-					if($scope.challenges.length==0){
-						$scope.challenges.push(response.data);
-					} else {
-						if(!($scope.challenges.includes(response.data))){
-							$scope.challenges.push(response.data);
-							console.log($scope.challenges);
-						}
-					}
+					$scope.challenges.push(response.data);
 				}, function(error){
 					console.log("Error when getting carpool challenge");
 				});
@@ -369,14 +355,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		    	CommHelper.habiticaProxy(callOpts, function(response){
 					console.log("Sucessfully got public transport challenge");
 					console.log(response);
-					if($scope.challenges.length==0){
-						$scope.challenges.push(response.data);
-					} else {
-						if(!($scope.challenges.includes(response.data))){
-							$scope.challenges.push(response.data);
-							console.log($scope.challenges);
-						}
-					}
+					$scope.challenges.push(response.data);
+					console.log($scope.challenges);
 				}, function(error){
 					console.log("Error when getting public transport challenge");
 				});
