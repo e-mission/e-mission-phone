@@ -507,3 +507,75 @@ button.button.back-button.buttons.button-clear.header-item {
         top: 310px;
         line-height: 16px;
 }
+.side-menu-item {
+  padding: 5% 10%;
+}
+.common-list-item {
+  padding: 5% 8% 3% 8%;
+}
+.common-list-item-location {
+  font-size: 0.9em;
+  font-weight: 300;
+  color: #000;
+}
+.common-list-item-times {
+  font-size: 0.8em;
+  font-weight: 300;
+  color: #303030;
+}
+.common-map-item {
+  padding: 0 !important;
+}
+.common-map-item-location {
+   font-size: 0.8em;
+  font-weight: 300;
+  color: #000; 
+}
+.common-detail-title {
+  padding: 2% 3%;
+  font-weight: 400;
+  color: #888;  
+  font-size: 1em;
+  line-height: 1em;
+}
+.common-detail-item {
+  padding: 0 8% 0 8%;
+  border-left-width: 5px;
+  border-left-style: solid;
+  border-left-color: #2bb096;
+}
+.succ-title {
+  font-weight: 400;
+  color: #333;
+}
+.common-detail-trips-to {
+  padding: 0 3% 0 3%;
+  font-size: 0.8em;
+  font-weight: 400;
+  color: #000;
+  margin-top: 5px;
+
+}
+.common-trip-detail-chart-title {
+  padding: 2% 3% 0 3%;
+  color: #333;
+
+}
+text {
+    font: 12px sans-serif;
+}
+svg {
+    display: block;
+}
+html, body, #chart1, svg {
+    
+    padding: 0px;
+    margin: 0 10px 0 0;
+
+}
+html, body, #chart2, svg {
+    
+    padding: 0px;
+    margin: 0 10px 0 0;
+
+}
