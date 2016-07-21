@@ -10,14 +10,15 @@
         	<i class="icon ion-compose"></i>
    	 	</button>
    	 </ion-nav-buttons>
+     <ion-nav-buttons side="left">
+      <button class="button button-icon" ng-click="refreshPage()">
+        <i class="icon ion-android-refresh"></i>
+      </button>
+     </ion-nav-buttons>
      <!--ion-nav-buttons side="left">
       <button class="button button-icon icon ion-ios-minus-outline" ng-click="showDelete = !showDelete"></button>
      </ion-nav-buttons-->
 <ion-content class="has-header" overflow-scroll="true" padding="true">
-    <ion-refresher pulling-text="Pull to refresh"
-      refreshing-text="Refreshing..."
-      on-refresh="refreshPage()">
-    </ion-refresher>
       <!--div>
         <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
       </div-->
@@ -144,7 +145,7 @@
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; !inQuest">
               <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshPage()">
-            <i class="icon ion-refresh"></i>
+            <i class="icon ion-android-refresh"></i>
             </button>
               <div style="padding-top:50px;font-size:15px;">
                 Please wait for the next quest to start...
@@ -155,7 +156,7 @@
             </div>
               <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; !questActive">
               <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshPage()">
-              <i class="icon ion-refresh"></i>
+              <i class="icon ion-android-refresh"></i>
               </button>
               <div style="font-size: 15px; padding-top:50px">
                 Please wait for your members to accept the quest.
@@ -166,7 +167,7 @@
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; questActive" style="position:relative;" ng-cloak>
               <button class="button button-icon" style="position: absolute;right:10px;" ng-click="refreshPage()">
-              <i class="icon ion-refresh"></i>
+              <i class="icon ion-android-refresh"></i>
               </button>
               <h4 style="text-align: center; color:white;margin-top: 0px;font-weight:700;">{{partyName}}</h4>
               <div class="col col-50">

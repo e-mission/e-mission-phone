@@ -81,7 +81,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		});
 		CommHelper.habiticaRegister(regConfig, function(response) {
 			console.log("Success!")
-			getUserInfo();
+			refreshInfo();
 		}, function(error) {
 			$ionicLoading.hide();
 			$ionicPopup.alert({title: "<h4 class='center-align'>Username is Required</h4>",
@@ -356,13 +356,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 					console.log("Sucessfully got public transport challenge");
 					console.log(response);
 					$scope.challenges.push(response.data);
-					console.log($scope.challenges);
 				}, function(error){
 					console.log("Error when getting public transport challenge");
 				});
 	};
 
 	var getChallenges = function(){
+		$scope.challenges=[];
   		bikeChallenge();
 		carpoolChallenge();
 		publicTransChallenge();
@@ -400,7 +400,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
   	var refreshInfo = function(){
 		console.log("Refreshing information");
-		$scope.challenges=[];
 		getUserInfo();
 		getMembers();
 		getUserTask();
@@ -412,7 +411,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.refreshPage = function() {
 		console.log("Refreshing page");
 		refreshInfo();
-		$scope.$broadcast('scroll.refreshComplete');
     };
 
 
