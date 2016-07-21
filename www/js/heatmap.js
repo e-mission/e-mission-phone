@@ -17,11 +17,6 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
-  $scope.$on('leafletDirectiveMap.heatmap.resize', function(event, data) {
-      console.log("heatmap received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-  });
-
   $scope.getPopRoute = function() {
     $ionicLoading.show({
         template: 'Loading...'

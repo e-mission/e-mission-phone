@@ -74,11 +74,12 @@
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
     },
     {
-      "locator": "https://github.com/apla/me.apla.cordova.app-preferences",
-      "id": "cordova-plugin-app-preferences"
-    },
-    "ionic-plugin-deploy",
-    "cordova-plugin-crosswalk-webview"
+      "variables": {
+        "XWALK_MODE": "lite"
+      },
+      "locator": "cordova-plugin-crosswalk-webview",
+      "id": "cordova-plugin-crosswalk-webview"
+    }
   ],
   "cordovaPlatforms": [
     {

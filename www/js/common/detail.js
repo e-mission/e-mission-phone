@@ -1,9 +1,9 @@
 'use strict';
-angular.module('emission.main.common.place-detail',['ui-leaflet',
+angular.module('emission.main.common.detail',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.services'])
 
-.controller("CommonPlaceDetailCtrl", function($scope, $stateParams,
+.controller("CommonDetailCtrl", function($scope, $stateParams,
                                         CommonGraph) {
     $scope.placeId = $stateParams.placeId;
     $scope.place = CommonGraph.data.cPlaceId2ObjMap[$scope.placeId];
