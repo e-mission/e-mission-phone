@@ -1,20 +1,29 @@
-angular.module('emission.splash.startprefs', [])
+angular.module('emission.splash.startprefs', ['angularLocalStorage'])
 
-.factory('StartPrefs', function($window, $state, $interval) {
+.factory('StartPrefs', function($window, $state, $interval, $rootScope, storage) {
     var logger = $window.Logger;
     var startprefs = {};
+    var DEFAULT_THEME_KEY = 'curr_theme'
 
-    startprefs.loadDefaultTheme = function(prefs) {
+    startprefs.setDefaultTheme = function(new_theme) {
+      storage.set(DEFAULT_THEME_KEY, new_theme);
+    }
+
+    startprefs.getDefaultTheme = function() {
+      return storage.get(DEFAULT_THEME_KEY);
+    }
+
+    startprefs.loadDefaultTheme = function() {
         logger.log(logger.LEVEL_INFO, "About to set theme from preference")
-        prefs.fetch('dark_theme').then(function(value) {
-          logger.log(logger.LEVEL_INFO, "preferred dark_theme = "+value)
-          if (value == true) {
+        var curr_theme = startprefs.getDefaultTheme();
+        logger.log(logger.LEVEL_INFO, "preferred theme = "+curr_theme)
+
+        if (curr_theme == 'dark_theme') {
             $rootScope.dark_theme = true;
-          } else {
+        } else {
             $rootScope.dark_theme = false;
-          }
-          logger.log(logger.LEVEL_INFO, "set dark_theme = "+$rootScope.dark_theme)
-        });
+        }
+        logger.log(logger.LEVEL_INFO, "set dark_theme = "+$rootScope.dark_theme);
     };
 
     var changeState = function(destState) {
@@ -49,7 +58,7 @@ angular.module('emission.splash.startprefs', [])
         if ($window.plugins && $window.plugins.appPreferences && $window.Logger) {
           logger = $window.Logger;
           var prefs = plugins.appPreferences;
-          startprefs.loadDefaultTheme(prefs);
+          startprefs.loadDefaultTheme();
           startprefs.loadPreferredScreen(prefs);
         } else {
           console.log("appPreferences plugin not installed, waiting...");

@@ -8,7 +8,8 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.metrics',
                                  'ngCordova',
                                  'emission.services',
-                                 'emission.splash.updatecheck'])
+                                 'emission.splash.updatecheck',
+                                 'emission.splash.startprefs'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -145,7 +146,8 @@ angular.module('emission.main', ['emission.main.recent',
 })
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
-               $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope,
+               $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
+               $rootScope, StartPrefs,
                ControlHelper, UpdateCheck) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
@@ -199,20 +201,11 @@ angular.module('emission.main', ['emission.main.recent',
         if ($scope.dark_theme) {
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
-            if (window.plugins && window.plugins.appPreferences) {
-                var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', false);
-            }
-            // StatusBar.styleDefault();
-
+            StartPrefs.setDefaultTheme(null);
         } else {
             $rootScope.dark_theme = true;
             $scope.dark_theme = true;
-            if (window.plugins && window.plugins.appPreferences) {
-                var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', true);
-            }
-            // StatusBar.style(2);
+            StartPrefs.setDefaultTheme('dark_theme');
         }
         $ionicPopup.alert({template: 'Restart the app to see all changes!'})
     }

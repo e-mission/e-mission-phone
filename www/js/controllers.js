@@ -10,7 +10,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
     UpdateCheck, StartPrefs) {
   console.log('SplashCtrl invoked');
-  // alert("attach debugger!");
+  alert("attach debugger!");
   UpdateCheck.checkForUpdates();
   StartPrefs.startWithPrefs();
 
