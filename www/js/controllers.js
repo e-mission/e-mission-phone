@@ -1,53 +1,29 @@
 'use strict';
 
-angular.module('emission.controllers', [])
+angular.module('emission.controllers', ['emission.splash.updatecheck',
+                                        'emission.splash.startprefs'])
 
 .controller('RootCtrl', function($scope) {})
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $ionicPlatform, $state, $interval, $rootScope) {
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
+    UpdateCheck, StartPrefs) {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
-  // Currently loads main or intro based on whether onboarding is complete.
-  // But easily extensible to storing the last screen that the user was on, 
-  // or the users' preferred screen
-  var changeState = function(destState) {
-    console.log("loading "+destState);
-    $state.go(destState);
-    $interval.cancel(currPromise);
-  };
+  UpdateCheck.checkForUpdates();
+  StartPrefs.startWithPrefs();
 
-  var loadPreferredScreen = function() {
-    console.log("Checking to see whether we are ready to load the screen");
-    if (window.plugins && window.plugins.appPreferences) {
-      var prefs = plugins.appPreferences;
-        prefs.fetch('dark_theme').then(function(value) {
-          if (value == true) {
-            $rootScope.dark_theme = true;
-          } else {
-            $rootScope.dark_theme = false;
-          }
-        });
-        prefs.fetch('setup_complete').then(function(value) {
-          console.log('setup_complete result '+value);
-          if (value == true) {
-              changeState('root.main.diary');
-          } else {
-              changeState('root.intro');
-          }
-        }, function(error) {
-          console.log("error "+error+" loading root.intro");
-          changeState('root.intro');
-        });
-    } else {
-      console.log("appPreferences plugin not installed, waiting...");
-    }
-  }
-  var currPromise = $interval(loadPreferredScreen, 1000);
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
         + " to "+JSON.stringify(toState));
+    /*
+    if ($rootScope.checkedForUpdates) {
+      window.Logger.log(window.Logger.log("Already checked for update, skipping"));
+    } else {
+      UpdateCheck.checkForUpdates();
+      $rootScope.checkedForUpdates = true;
+    } */
   });
   console.log('SplashCtrl invoke finished');
 })

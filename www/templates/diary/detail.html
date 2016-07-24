@@ -1,4 +1,5 @@
-<ion-view style="" title="Detail View">
+<ion-view style="">
+    <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title> 
     <ion-content class="has-header" overflow-scroll="true" padding="true">
         <div class="row" style="">
 
@@ -47,11 +48,13 @@
                   </div>
 
 
-                  <div class="col" style="font-size: 25px;">{{getFormattedDistance(section.properties.distance)}} km</div>
+                  <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} km</div>
                   <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
 
               </div>
           </div>
+
+        <div id="chart"><svg></svg></div>
         <div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"
                 ng-click="refreshMap()">Refresh</button>

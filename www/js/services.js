@@ -18,6 +18,90 @@ angular.module('emission.services', [])
         var dateString = date.startOf('day').format('YYYY-MM-DD');
         window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, successCallback, errorCallback);
     };
+
+    /*
+     * var regConfig = {'username': ....}
+     * Other fields can be added easily and the server can be modified at the same time.
+     */
+    this.habiticaRegister = function(regConfig, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, successCallback, errorCallback);
+    };
+
+    /*
+     * Example usage:
+     * Get profile:
+     * callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
+                    'method_args': null}
+     * Go to sleep:
+     * callOpts = {'method': 'POST', 'method_url': "/api/v3/user/sleep",
+                   'method_args': {'data': True}}
+     * Stop sleeping:
+     * callOpts = {'method': 'POST', 'method_url': "/api/v3/user/sleep",
+                   'method_args': {'data': False}}
+     * Get challenges for a user:
+     * callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/user",
+                    'method_args': null}
+     * ....
+     */
+    this.habiticaProxy = function(callOpts, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, successCallback, errorCallback);
+    };
+
+    this.getMetrics = function(timeType, metrics_query, successCallback, errorCallback) {
+        var msgFiller = function(message) {
+            for (var key in metrics_query) {
+                message[key] = metrics_query[key]
+            };
+        };
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, successCallback, errorCallback);
+    };
+})
+
+.service('ControlHelper', function($cordovaEmailComposer) {
+  this.emailLog = function() {
+        var parentDir = "unknown";
+
+         $cordovaEmailComposer.isAvailable().then(function() {
+           // is available
+         }, function () {
+            alert("Email account is not configured, cannot send email");
+            return;
+         });
+
+        if (ionic.Platform.isAndroid()) {
+            parentDir = "app://databases";
+        } 
+        if (ionic.Platform.isIOS()) {
+            alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
+            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
+        }
+        
+        /*
+        window.Logger.log(window.Logger.LEVEL_INFO,
+            "Going to export logs to "+parentDir);
+         */
+        alert("Going to email database from "+parentDir+"/loggerDB");
+
+        var email = {
+            to: ['shankari@eecs.berkeley.edu'],
+            attachments: [
+                parentDir+"/loggerDB"
+            ],
+            subject: 'emission logs',
+            body: 'please fill in what went wrong'
+        }
+
+        $cordovaEmailComposer.open(email).then(function() {
+           window.Logger.log(window.Logger.LEVEL_DEBUG,
+               "Email queued successfully");
+        },
+        function () {
+           // user cancelled email. in this case too, we want to remove the file
+           // so that the file creation earlier does not fail.
+           window.Logger.log(window.Logger.LEVEL_INFO,
+               "Email cancel reported, seems to be an error on android");
+        });
+    }
 })
 
 // common configuration methods across all screens
