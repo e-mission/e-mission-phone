@@ -877,3 +877,116 @@ html, body, #chart2, svg {
   color: #2bb096;
   height: 35px;
 }
+.metric-summary-option-button {
+  float: right;
+  color: #aaa;
+  background-color: white;
+  height: 20px;
+  border-radius: 3px;
+  width: 80px;
+  margin-right: 1px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+}
+.full-toggle-container {
+ height: 35px; 
+
+
+}
+.full-toggle-left {
+  width: 50%;
+  float: left;
+  height: 35px; 
+
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  background-color: white;
+  color: #2bb096;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.full-toggle-left-active {
+  width: 50%;
+  float: left;
+  height: 35px; 
+  
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  background-color: #2bb096;
+  color: white;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.full-toggle-right {
+  width: 50%;
+  float: right;
+  height: 35px;
+  
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  background-color: white;
+  color: #2bb096;
+}
+.full-toggle-right-active {
+  width: 50%;
+  float: right;
+  height: 35px;
+  
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  background-color: #2bb096;
+  color: white;
+}
+.unit-toggle-container {
+ height: 35px; 
+}
+.unit-toggle-left {
+  width: 50%;
+  float: left;
+  height: 35px; 
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: white;
+  color: #2bb096;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.unit-toggle-left-active {
+  width: 50%;
+  float: left;
+  height: 35px; 
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: #2bb096;
+  color: white;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.unit-toggle-right {
+  width: 50%;
+  float: right;
+  height: 35px; 
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: white;
+  color: #2bb096;
+}
+.unit-toggle-right-active {
+  width: 50%;
+  float: right;
+  height: 35px; 
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #2bb096;
+  color: white;
+}
+.userdata-title {
+  color: #ccc;
+}

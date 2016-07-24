@@ -94,7 +94,7 @@
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.length" class="col-50" style="margin-bottom: 10px;">
             
             <div class="metric-summary-left">
-              <i ng-class="'icon ' + summaryModeIcon(summaryData[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+              <i ng-class="'icon ' + modeIcon(summaryData[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
             </div>
             <div class="metric-summary-right">
               <div class="metric-summary-title">
@@ -106,7 +106,29 @@
             </div>
           </div>
         </div>
+
+        <div class="metric-summary-separator">Calories <div ng-show="!userDataSaved()"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div> </div>
+        <div class="row" ng-repeat="d in caloriesData.defaultCalories" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+          <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<caloriesData.defaultCalories.length" class="col-50" style="margin-bottom: 10px;">
+            
+            <div class="metric-summary-left">
+              <i ng-class="'icon ' + modeIcon(caloriesData.defaultCalories[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+            </div>
+            <div class="metric-summary-right">
+              <div class="metric-summary-title">
+                {{ caloriesData.defaultCalories[dIndex + i].key }}
+              </div>
+              <div class="metric-summary-content">
+                {{ caloriesData.defaultCalories[dIndex + i].values }}
+              </div>
+            </div>
+          </div>
+        </div>  
+
+        <div class="metric-summary-separator">Footprint</div>
+
       </div>
+
     </div>
 
     
