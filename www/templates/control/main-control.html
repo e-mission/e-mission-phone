@@ -72,6 +72,10 @@
         <div ng-click="refreshScreen()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-refresh" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
+        <div class="control-list-text">Check consent</div>
+        <div ng-click="checkConsent()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-checkmark-circled" ng-style="getIconStyle()"></i></div>
+      </div>
+      <div class="control-list-item">
         <div class="control-list-text">Set UI channel</div>
         <input type="text" name="userName"
           ng-model="settings.channel"

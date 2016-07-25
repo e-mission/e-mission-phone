@@ -29,7 +29,7 @@ angular.module('emission.main', ['emission.main.recent',
         templateUrl: 'templates/main-common.html',
         controller: 'CommonCtrl'
       }
-    }
+    },
   })
 
   .state('root.main.heatmap', {
@@ -331,7 +331,13 @@ angular.module('emission.main', ['emission.main.recent',
     };
 
     $scope.returnToIntro = function() {
+      var testReconsent = false
+      if (testReconsent) {
+        $rootScope.req_consent.approval_date = Math.random();
+        StartPrefs.loadPreferredScreen();
+      } else {
         $state.go("root.intro");
+      }
     };
 
     $scope.forceTransition = function(transition) {
@@ -558,5 +564,13 @@ angular.module('emission.main', ['emission.main.recent',
     }
     $scope.checkUpdates = function() {
       UpdateCheck.checkForUpdates();
+    }
+    $scope.checkConsent = function() {
+      window.cordova.plugins.BEMUserCache.getDocument(
+            "config/consent", function(resultList) {
+              $ionicPopup.alert({template: resultList});
+            }, function(error) {
+              $ionicPopup.alert({template: error});
+            });
     }
 });
