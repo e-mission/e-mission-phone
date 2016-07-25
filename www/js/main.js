@@ -152,6 +152,7 @@ angular.module('emission.main', ['emission.main.recent',
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
+        $scope.userData = []
         var height = storage.get("height").toString();
         var weight = storage.get("weight").toString();
         var temp  =  {
@@ -164,7 +165,7 @@ angular.module('emission.main', ['emission.main.recent',
             $scope.userData.push({key: i, value: temp[i]});
         }
     }
-
+    $scope.getUserData();
     $scope.userDataSaved = function() {
         return storage.get('userDataSaved') == true;
     }

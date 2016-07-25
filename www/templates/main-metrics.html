@@ -90,18 +90,18 @@
       <div ng-show="uictrl.showSummary" style="padding: 10px;">
 
         <div class="metric-summary-separator">Modes</div>
-        <div class="row" ng-repeat="d in summaryData" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
-          <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.length" class="col-50" style="margin-bottom: 10px;">
+        <div class="row" ng-repeat="d in summaryData.defaultSummary" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+          <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.length" class="col-50" style="margin-bottom: 10px;">
             
             <div class="metric-summary-left">
-              <i ng-class="'icon ' + modeIcon(summaryData[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+              <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
             </div>
             <div class="metric-summary-right">
               <div class="metric-summary-title">
-                {{ summaryData[dIndex + i].key }}
+                {{ summaryData.defaultSummary[dIndex + i].key }}
               </div>
               <div class="metric-summary-content">
-                {{ summaryData[dIndex + i].values }}
+                {{ summaryData.defaultSummary[dIndex + i].values }}
               </div>
             </div>
           </div>
@@ -126,7 +126,26 @@
         </div>  
 
         <div class="metric-summary-separator">Footprint</div>
+        <div class="row" ng-repeat="d in carbonData.defaultCarbon" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
+          <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<carbonData.defaultCarbon.length" class="col-50" style="margin-bottom: 10px;">
+            
+            <div class="metric-summary-left">
+              <i ng-class="'icon ' + modeIcon(caloriesData.defaultCalories[dIndex + i].key)" style="font-size: 30px !important; color: #2bb096;"></i>
+            </div>
+            <div class="metric-summary-right">
+              <div class="metric-summary-title">
+                {{ carbonData.defaultCarbon[dIndex + i].key }}
+              </div>
+              <div class="metric-summary-content">
+                {{ carbonData.defaultCarbon[dIndex + i].values }}
+              </div>
+            </div>
+          </div>
+        </div>  
 
+        <div class="carbon-goal-chart">
+            
+        </div>
       </div>
 
     </div>
