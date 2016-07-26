@@ -165,7 +165,7 @@ angular.module('emission.main', ['emission.main.recent',
             $scope.userData.push({key: i, value: temp[i]});
         }
     }
-    $scope.getUserData();
+
     $scope.userDataSaved = function() {
         return storage.get('userDataSaved') == true;
     }

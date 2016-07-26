@@ -990,3 +990,10 @@ html, body, #chart2, svg {
 .userdata-title {
   color: #ccc;
 }
+.carbon-goal-chart {
+  height: 5px;
+  background-color: #2bb096;
+  opacity: 0.6;
+  border-radius: 2px;
+  width: 100%;
+}

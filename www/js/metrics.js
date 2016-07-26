@@ -15,6 +15,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   var mtokm = function(v) {
     return v / 1000;
   }
+  fh.getFootprintRaw = function(distance, mode) {
+    if (mode === "IN_VEHICLE") {
+      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
+    } else {
+      return footprint[mode] * mtokm(distance);
+    }    
+  }
   fh.getFootprint = function(distance, mode) {
     if (mode === "IN_VEHICLE") {
       return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
@@ -98,8 +105,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         mets: 7.0
       },
       "SUPER_FAST": {
-        range: [5, Number.MAX_VALUE],
+        range: [5, 6],
         mets: 8.3
+      },
+      "RUNNING": {
+        range: [6, Number.MAX_VALUE],
+        mets: 9.8
       }
     },
     "IN_VEHICLE": {
@@ -185,6 +196,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
     $scope.fullToggleRightClass = function() {
       return $scope.userData.gender == 0? "full-toggle-right-active hvcenter" : "full-toggle-right hvcenter";
+    }
+    $scope.fullToggleLeftClass1 = function() {
+      return $scope.showca2020? "full-toggle-left-active hvcenter" : "full-toggle-left hvcenter";
+    }
+    $scope.fullToggleRightClass1 = function() {
+      return $scope.showca2035? "full-toggle-right-active hvcenter" : "full-toggle-right hvcenter";
     }
     $scope.heightToggleLeftClass = function() {
       return $scope.userData.heightUnit == 1? "unit-toggle-left-active hvcenter" : "unit-toggle-left hvcenter";
@@ -463,6 +480,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           $scope.carbonData.userCarbon = [];
           for (var i in userCarbonData) {
             $scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
+            if (userCarbonData[i].key === "IN_VEHICLE") {
+              $scope.carbonData.userVehicleRange = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+            }
           }
         }
         if (response.aggregate_metrics) {
@@ -470,10 +490,14 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           $scope.carbonData.aggrCarbon = [];
           for (var i in aggrCarbonData) {
             $scope.carbonData.aggrCarbon.push({key: aggrCarbonData[i].key, values: FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key)});
+            if (aggrCarbonData[i].key === "IN_VEHICLE") {
+              $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
+            }          
           }
         }
         $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
-
+        $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
+        $scope.getCarbonGoalChartData();
       })
     };
 
@@ -519,11 +543,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 // Here, we check if the string is all upper case by 
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
+                    if (field === "WALKING" || field === "RUNNING") {
+                      field = "ON_FOOT";
+                    }
                     if (field in mode_bins == false) {
                         mode_bins[field] = []
                     }
-                    mode_bins[field].push([metric.ts, metric[field], metric.fmt_time]);
-                    nUsers += metric.nUsers;
+                    mode_bins[field].push([metric.ts, Math.round(metric[field] / metric.nUsers), metric.fmt_time]);     
                 }
             }
         });      
@@ -531,25 +557,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         for (var mode in mode_bins) {
           var val_arrays = rtn.push({key: mode, values: mode_bins[mode]});
         }
-        return [rtn, nUsers];      
+        return rtn;      
     }
-    var getAvgSummaryDataRaw = function(metrics, metric) {
-        var data = getAvgDataFromMetrics(metrics)[0];
-        var nUsers = getAvgDataFromMetrics(metrics)[1];
-        for (var i = 0; i < data.length; i++) {
-          var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
-          }
-          if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length);
-          } else {
-            data[i].values = Math.round(temp / nUsers);
-          }
-          
-        }
-        return data;      
-    }
+
     var getDataFromMetrics = function(metrics) {
         var mode_bins = {};
         metrics.forEach(function(metric) {
@@ -559,6 +569,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 // Here, we check if the string is all upper case by 
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
+                    if (field === "WALKING" || field === "RUNNING") {
+                      field = "ON_FOOT";
+                    }
                     if (field in mode_bins == false) {
                         mode_bins[field] = []
                     }
@@ -580,7 +593,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             temp += data[i].values[j][1];
           }
           if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length  );
+            data[i].values = Math.round(temp / data[i].values.length);
           } else {
             data[i].values = Math.round(temp);
           }
@@ -588,7 +601,22 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return data;      
     }
-
+    var getAvgSummaryDataRaw = function(metrics, metric) {
+        var data = getAvgDataFromMetrics(metrics);
+        for (var i = 0; i < data.length; i++) {
+          var temp = 0;
+          for (var j = 0; j < data[i].values.length; j++) {
+            temp += data[i].values[j][1];
+          }
+          if (metric === "median_speed") {
+            data[i].values = Math.round(temp / data[i].values.length);
+          } else {
+            data[i].values = Math.round(temp);
+          }
+          
+        }
+        return data;      
+    }
     var getSummaryData = function(metrics, metric) {
         var data = getDataFromMetrics(metrics);
         for (var i = 0; i < data.length; i++) {
@@ -705,15 +733,45 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         });
     };
-    $scope.getCarbonGoalChartData = function(lower, upper, duration) {
+    $scope.getCarbonGoalChartData = function() {
+      var date1 = $scope.selectCtrl.fromDateTimestamp;
+      var date2 = $scope.selectCtrl.toDateTimestamp;
+      var duration = moment.duration(date2.diff(date1));
+      var days = duration.asDays();
+      
+      
+      
+      var lower = $scope.carbonData.defaultVehicleRange[0];
+      var upper = $scope.carbonData.defaultVehicleRange[1];
+      var ca2020 = 43.771628 / 5 * days; // kg/day
+      var ca2035 = 40.142892 / 5 * days; // kg/day
+      var temp2020offset = Math.round((ca2020 - lower) / (upper - lower) * 100);
+      temp2020offset = temp2020offset > 100? 98 : temp2020offset < 0? 2 : temp2020offset;
+      var temp2035offset = Math.round((ca2035 - lower) / (upper - lower) * 100);
+      temp2035offset = temp2035offset > 100? 98 : temp2035offset < 0? 2 : temp2035offset;
+      $scope.carbonGoalChartData = { // first elem: absolute left or right distance, second elem: number
+        min: [2, lower], // 2 for offset padding
+        max: [2, upper],
+        ca2020: [temp2020offset, ca2020],
+        ca2035: [temp2035offset, ca2035]
 
-      var lower = lower; // all train
-      var upper = upper; // all car
-      var ca2020 = 43.771628 / 5; // kg/day
-      var ca2035 = 40.142892 / 5; // kg/day
+      };
+      $scope.showca2020 = false;
+      $scope.showca2035 = false;
 
     }
-
+    $scope.shouldshowca2020 = function() {
+      return $scope.showca2020;
+    }
+    $scope.shouldshowca2035 = function() {
+      return $scope.showca2035;
+    }
+    $scope.toggleca2020 = function() {
+      $scope.showca2020 = !$scope.showca2020;
+    }
+    $scope.toggleca2035 = function() {
+      $scope.showca2035 = !$scope.showca2035;
+    }
     $scope.toggle = function() {
       if (!$scope.uictrl.showMe) {
         $scope.uictrl.showMe = true;
@@ -721,12 +779,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.defaultSummary = $scope.summaryData.userSummary;
         $scope.caloriesData.defaultCalories = $scope.caloriesData.userCalories;
         $scope.carbonData.defaultCarbon = $scope.carbonData.userCarbon;
+        $scope.carbonData.defaultVehicleRange =  $scope.carbonData.userVehicleRange;
+        $scope.getCarbonGoalChartData();
+
       } else {
         $scope.uictrl.showMe = false;
         $scope.showCharts($scope.chartDataAggr);
         $scope.summaryData.defaultSummary = $scope.summaryData.aggrSummary;
         $scope.caloriesData.defaultCalories = $scope.caloriesData.aggrCalories;
         $scope.carbonData.defaultCarbon = $scope.carbonData.aggrCarbon;
+        $scope.carbonData.defaultVehicleRange =  $scope.carbonData.aggrVehicleRange;
+        $scope.getCarbonGoalChartData();
       }
     }
     var initSelect = function() {
