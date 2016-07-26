@@ -77,8 +77,8 @@
       "locator": "https://github.com/apla/me.apla.cordova.app-preferences",
       "id": "cordova-plugin-app-preferences"
     },
-    "ionic-plugin-deploy",
-    "cordova-plugin-crosswalk-webview"
+    "cordova-plugin-crosswalk-webview",
+    "ionic-plugin-deploy"
   ],
   "cordovaPlatforms": [
     {
