@@ -384,31 +384,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $ionicLoading.show({
         template: 'Loading...'
       });
-      var getResponse = new Promise(function(resolve, reject) {
-        CommHelper.getMetrics(mode, data, function(response) {
-          $ionicLoading.hide();
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });  
-      }).then(function(response) {
-        // cacheResults(response); 
-        if (response.user_metrics) {
-          $scope.summaryData.userSummary = getSummaryData(response.user_metrics, $scope.selectCtrl.metric);
-        }
-        if (response.aggregate_metrics) {
-          $scope.summaryData.aggrSummary = getSummaryData(response.aggregate_metrics, $scope.selectCtrl.metric);
-        }
-        $scope.chartDataUser = response.user_metrics? response.user_metrics : [];
-        $scope.chartDataAggr = response.aggregate_metrics? response.aggregate_metrics : [];
-        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) {
-          $scope.$apply(function() {
-            $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
-            $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
-          })
-        } else {
-          $scope.showCharts([]);
-          console.log("did not find aggregate result in response data "+JSON.stringify(response));
-        }        
-      });
       var getDuration = new Promise(function(resolve, reject) {
         data.metric = "duration";
         CommHelper.getMetrics(mode, data, function(response) {
@@ -421,8 +396,30 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           resolve(response);
         }, function(error) { console.log(error); reject(error); });          
       })
-      Promise.all([getDuration, getSpeed]).then(function(results) {
+      var getResponse = new Promise(function(resolve, reject) {
+        CommHelper.getMetrics(mode, data, function(response) {
+          
+          resolve(response);
+        }, function(error) { console.log(error); reject(error); });  
+      });
 
+      var getDistance =  new Promise(function(resolve, reject) {
+        data.metric = "distance";
+        CommHelper.getMetrics(mode, data, function(response) {
+          resolve(response);
+        }, function(error) { console.log(error); reject(error); });  
+      })
+      Promise.all([getDuration, getSpeed, getResponse, getDistance]).then(function(results) {
+        // cacheResults(response); 
+        $ionicLoading.hide();
+        if (results[2].user_metrics) {
+          $scope.summaryData.userSummary = getSummaryData(results[2].user_metrics, $scope.selectCtrl.metric);
+        }
+        if (results[2].aggregate_metrics) {
+          $scope.summaryData.aggrSummary = getSummaryData(results[2].aggregate_metrics, $scope.selectCtrl.metric);
+        }
+        $scope.chartDataUser = results[2].user_metrics? results[2].user_metrics : [];
+        $scope.chartDataAggr = results[2].aggregate_metrics? results[2].aggregate_metrics : [];      
         if (results[0].user_metrics) {
           var durationData = getSummaryDataRaw(results[0].user_metrics, "duration");
         }
@@ -463,20 +460,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             values: Math.round(CalorieHelper.getuserCalories(avgDurationData[i].values / 3600, met)) + ' cal'
           })
         } 
-        $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
-      });
-      var getDistance =  new Promise(function(resolve, reject) {
-        data.metric = "distance";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });  
-      })
-      getDistance.then(function(response) {
+        
+      
         var defaultCarFootprint = 278.0/1609; // kg CO2 per meter
         var defaultTrainFootprint = 92.0/1609; // kg CO2 per meter
         
-        if (response.user_metrics) {
-          var userCarbonData = getSummaryDataRaw(response.user_metrics, 'distance');
+        if (results[3].user_metrics) {
+          var userCarbonData = getSummaryDataRaw(results[3].user_metrics, 'distance');
           $scope.carbonData.userCarbon = [];
           for (var i in userCarbonData) {
             $scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
@@ -485,8 +475,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             }
           }
         }
-        if (response.aggregate_metrics) {
-          var aggrCarbonData = getAvgSummaryDataRaw(response.aggregate_metrics, 'distance');
+        if (results[3].aggregate_metrics) {
+          var aggrCarbonData = getAvgSummaryDataRaw(results[3].aggregate_metrics, 'distance');
           $scope.carbonData.aggrCarbon = [];
           for (var i in aggrCarbonData) {
             $scope.carbonData.aggrCarbon.push({key: aggrCarbonData[i].key, values: FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key)});
@@ -495,10 +485,23 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             }          
           }
         }
+
+        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) {
+          $scope.$apply(function() {
+            $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
+
+          })
+        } else {
+          $scope.showCharts([]);
+          console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
+        }  
+        $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
+        $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
         $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
         $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
         $scope.getCarbonGoalChartData();
-      })
+
+      });
     };
 
     $scope.showCharts = function(agg_metrics) {
