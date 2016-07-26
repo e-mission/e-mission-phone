@@ -1,5 +1,34 @@
 /* Empty. Add your own CSS if you like */
 
+.popup-buttons.row {
+ height: 40px !important; 
+}
+.popup-buttons.button {
+  height: 40px !important;
+}
+.button.ng-binding.button-stable {
+  height: 40px;
+  
+}
+.button.ng-binding.button-positive {
+  background-color: #2bb096;
+  height: 40px;
+}
+.button.ng-binding.button-assertive {
+  background-color: #2bb096; 
+  height: 40px;
+  
+}
+.selected_date_full.ng-binding {
+  color: #2bb096;
+}
+.icon.ion-chevron-left {
+ color: #2bb096; 
+}
+.col.col-10.right_arrow {
+ color: #2bb096; 
+}
+
 .customButtomIconSize:before {
     font-size: 25px !important;
 }

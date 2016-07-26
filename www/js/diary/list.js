@@ -113,13 +113,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.datepickerObject = {
-      titleLabel: 'Title',  //Optional
+      
       todayLabel: 'Today',  //Optional
       closeLabel: 'Close',  //Optional
       setLabel: 'Set',  //Optional
-      setButtonType : 'button-assertive',  //Optional
-      todayButtonType : 'button-assertive',  //Optional
-      closeButtonType : 'button-assertive',  //Optional
+      setButtonType : 'button-positive',  //Optional
+      todayButtonType : 'button-stable',  //Optional
+      closeButtonType : 'button-stable',  //Optional
       inputDate: new Date(),  //Optional
       from: new Date(2015, 1, 1),
       to: new Date(),

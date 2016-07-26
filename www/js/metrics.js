@@ -419,7 +419,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           $scope.summaryData.aggrSummary = getSummaryData(results[2].aggregate_metrics, $scope.selectCtrl.metric);
         }
         $scope.chartDataUser = results[2].user_metrics? results[2].user_metrics : [];
-        $scope.chartDataAggr = results[2].aggregate_metrics? results[2].aggregate_metrics : [];      
+        $scope.chartDataAggr = results[2].aggregate_metrics? results[2].aggregate_metrics : [];  
+
         if (results[0].user_metrics) {
           var durationData = getSummaryDataRaw(results[0].user_metrics, "duration");
         }
@@ -489,18 +490,32 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) {
           $scope.$apply(function() {
             $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
+            $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
+            $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
+            $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
+            $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
+            $scope.getCarbonGoalChartData();
 
+            $scope.modeTitle = $scope.selectCtrl.metric === "median_speed"? "(Average)" : "(Total)";
+            $scope.caloriesTitle = "(Average)";
+            $scope.footprintTitle = "(Average)";
           })
         } else {
-          $scope.showCharts([]);
-          console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
-        }  
-        $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
-        $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
-        $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
-        $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
-        $scope.getCarbonGoalChartData();
+          $scope.$apply(function() {
+            $scope.showCharts([]);
+            console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
+            
+            $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
+            $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
+            $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
+            $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
+            $scope.getCarbonGoalChartData();
 
+            $scope.modeTitle = $scope.selectCtrl.metric === "median_speed"? "(Average)" : "(Total)";
+            $scope.caloriesTitle = "(Average)";
+            $scope.footprintTitle = "(Average)";
+          });
+        }
       });
     };
 
@@ -779,7 +794,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       if (!$scope.uictrl.showMe) {
         $scope.uictrl.showMe = true;
         $scope.showCharts($scope.chartDataUser);
-        $scope.defaultSummary = $scope.summaryData.userSummary;
+        $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
         $scope.caloriesData.defaultCalories = $scope.caloriesData.userCalories;
         $scope.carbonData.defaultCarbon = $scope.carbonData.userCarbon;
         $scope.carbonData.defaultVehicleRange =  $scope.carbonData.userVehicleRange;

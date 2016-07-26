@@ -89,7 +89,8 @@
       <nvd3 options="options" data="data" ng-show="uictrl.showChart"></nvd3>
       <div ng-show="uictrl.showSummary" style="padding: 10px;">
 
-        <div class="metric-summary-separator">Modes</div>
+        <div class="metric-summary-separator">Modes {{modeTitle}}</div>
+        <div ng-show="summaryData.defaultSummary.length == 0" style="margin-bottom: 20px; color: #aaa;">No summary data</div>
         <div class="row" ng-repeat="d in summaryData.defaultSummary" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.length" class="col-50" style="margin-bottom: 10px;">
             
@@ -107,8 +108,8 @@
           </div>
         </div>
 
-        <div class="metric-summary-separator">Calories <div ng-show="!userDataSaved()"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div> </div>
-        <div ng-show="caloriesData.defaultCalories.length == 0" style="margin-bottom: 20px; color: #aaa;">No calorie data</div>
+        <div class="metric-summary-separator">Calories {{caloriesTitle}}<div ng-show="!userDataSaved() && caloriesData.defaultCalories.length != 0"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div> </div>
+        <div ng-show="caloriesData.defaultCalories.length == 0" style="margin-bottom: 20px; color: #aaa;">No calories data</div>
         <div class="row" ng-repeat="d in caloriesData.defaultCalories" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<caloriesData.defaultCalories.length" class="col-50" style="margin-bottom: 10px;">
             
@@ -126,7 +127,7 @@
           </div>
         </div>  
 
-        <div class="metric-summary-separator">Footprint</div>
+        <div class="metric-summary-separator">Footprint {{footprintTitle}}</div>
         <div ng-show="carbonData.defaultCarbon.length == 0" style="margin-bottom: 20px; color: #aaa;">No carbon footprint data</div>
         <div class="row" ng-repeat="d in carbonData.defaultCarbon" ng-if="$index % 2 == 0" ng-init="dIndex = $index">
           <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<carbonData.defaultCarbon.length" class="col-50" style="margin-bottom: 10px;">
@@ -145,9 +146,9 @@
           </div>
         </div>  
         <div style="height: 30px;"></div>
-        <div class="carbon-goal-chart">
+        <div class="carbon-goal-chart" ng-show="carbonData.defaultCarbon.length != 0">
         </div>
-        <div class="carbon-goal-legend" >
+        <div class="carbon-goal-legend" ng-show="carbonData.defaultCarbon.length != 0">
           <i class="ion-arrow-up-b" style="position: absolute; color: #aaa; left: {{carbonGoalChartData.min[0]}}%;"></i>
           <div style="position: absolute; color: #aaa; margin-top: 20px; left: {{carbonGoalChartData.min[0]}}%;">All train</div>
           <i class="ion-arrow-up-b" style="position: absolute; color: #aaa; right: {{carbonGoalChartData.max[0]}}%;"></i>
@@ -158,7 +159,7 @@
            <i class="ion-arrow-up-b" ng-show="shouldshowca2035()" style="position: absolute; color: #2bb096; left: {{carbonGoalChartData.ca2035[0]}}%;"></i>
           
         </div>
-        <div class="full-toggle-container" style="margin-top: 40px;">
+        <div class="full-toggle-container" style="margin-top: 40px;" ng-show="carbonData.defaultCarbon.length != 0">
           <div ng-class="fullToggleLeftClass1()" ng-click="toggleca2020()">CA2020</div>
           <div ng-class="fullToggleRightClass1()" ng-click="toggleca2035()">CA2035</div>
         </div>
