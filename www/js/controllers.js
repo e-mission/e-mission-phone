@@ -25,6 +25,38 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
       $rootScope.checkedForUpdates = true;
     } */
   });
+  $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
+    console.log("Error "+error+" while changing state from "+JSON.stringify(fromState)
+      +" to "+JSON.stringify(toState));
+  });
+  $rootScope.$on('$stateNotFound',
+    function(event, unfoundState, fromState, fromParams){
+        console.log("unfoundState.to = "+unfoundState.to); // "lazy.state"
+        console.log("unfoundState.toParams = " + unfoundState.toParams); // {a:1, b:2}
+        console.log("unfoundState.options = " + unfoundState.options); // {inherit:false} + default options
+  });
+
+  var isInList = function(element, list) {
+    return list.indexOf(element) != -1
+  }
+
+  $rootScope.$on('$stateChangeStart',
+    function(event, toState, toParams, fromState, fromParams, options){
+      var personalTabs = ['root.main.common.map',
+                          'root.main.control',
+                          'root.main.goals',
+                          'root.main.diary']
+      if (isInList(toState.name, personalTabs)) {
+        // toState is in the personalTabs list
+        StartPrefs.getPendingOnboardingState().then(function(result) {
+          if (result != null) {
+            event.preventDefault();
+            $state.go(result);
+          };
+          // else, will do default behavior, which is to go to the tab
+        });
+      }
+  })
   console.log('SplashCtrl invoke finished');
 })
 
