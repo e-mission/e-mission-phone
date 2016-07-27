@@ -2,7 +2,7 @@
 
 angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
 
-.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http, leafletData, Config) {
+.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http, leafletData, Config, $window) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
@@ -16,6 +16,11 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
+
+  $scope.$on('leafletDirectiveMap.heatmap.resize', function(event, data) {
+      console.log("heatmap received resize event, invalidating map size");
+      data.leafletObject.invalidateSize();
+  });
 
   $scope.getPopRoute = function() {
     $ionicLoading.show({
@@ -170,7 +175,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
       hour: momentObj.hour()
     };
   }
-
+  $scope.mapHeight = $window.screen.height - 250;
   $scope.selectCtrl = {}
   initSelect();
 })
