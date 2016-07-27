@@ -5,12 +5,8 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.goals',
                                  'emission.main.common',
                                  'emission.main.heatmap',
-                                 'emission.main.metrics',
                                  'ngCordova',
-                                 'emission.services',
-                                 'emission.splash.updatecheck',
-                                 'emission.splash.startprefs',
-                                 'angularLocalStorage'])
+                                 'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -25,12 +21,12 @@ angular.module('emission.main', ['emission.main.recent',
   .state('root.main.common', {
     url: '/common',
     abstract: true,
-    views: {
-      'main-common': {
+    views: { 
+      'main-common': { 
         templateUrl: 'templates/main-common.html',
         controller: 'CommonCtrl'
-      }
-    },
+      } 
+    } 
   })
 
   .state('root.main.heatmap', {
@@ -42,17 +38,6 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
-
-  .state('root.main.metrics', {
-    url: '/metrics',
-    views: {
-      'main-metrics': {
-        templateUrl: 'templates/main-metrics.html',
-        controller: 'MetricsCtrl'
-      }
-    }
-  })
-
   .state('root.main.control', {
     url: '/control',
     views: {
@@ -62,7 +47,6 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
-
   .state('root.main.goals', {
     url: '/goals',
     views: {
@@ -146,46 +130,23 @@ angular.module('emission.main', ['emission.main.recent',
     }
 })
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
-               $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, StartPrefs,
-               ControlHelper, UpdateCheck, storage) {
+.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate, $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope, ControlHelper) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
-    $scope.userData = []
-    $scope.getUserData = function() {
-        $scope.userData = []
-        var height = storage.get("height").toString();
-        var weight = storage.get("weight").toString();
-        var temp  =  {
-            age: storage.get("age"),
-            height: height + (storage.get("heightUnit") == 1? ' cm' : ' ft'),
-            weight: weight + (storage.get("weightUnit") == 1? ' kg' : ' lb'),
-            gender: storage.get("gender") == 1? 'Male' : 'Female'
-        }
-        for (var i in temp) {
-            $scope.userData.push({key: i, value: temp[i]});
-        }
-    }
 
-    $scope.userDataSaved = function() {
-        return storage.get('userDataSaved') == true;
-    }
-    if ($scope.userDataSaved()) {
-        $scope.getUserData();
-    }
+
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         if ($scope.settings.collect.config == null) {
             return false; // config not loaded when loading ui, set default as false
         } else {
-            var accuracy = $scope.settings.collect.config.accuracy;
+            var accuracy = $scope.settings.collect.config.accuracy; 
             var v;
             for (var k in $scope.settings.collect.accuracyOptions) {
                 if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
                     v = k;
                     break;
-                }
+                } 
             }
             if ($scope.isIOS()) {
                 return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
@@ -208,7 +169,7 @@ angular.module('emission.main', ['emission.main.recent',
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
             } else if ($scope.isAndroid()) {
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
-            }
+            }            
         }
         window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
     }
@@ -222,11 +183,20 @@ angular.module('emission.main', ['emission.main.recent',
         if ($scope.dark_theme) {
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
-            StartPrefs.setDefaultTheme(null);
+            if (window.plugins && window.plugins.appPreferences) {
+                var prefs = plugins.appPreferences;
+                prefs.store('dark_theme', false);
+            }
+            // StatusBar.styleDefault();
+
         } else {
             $rootScope.dark_theme = true;
             $scope.dark_theme = true;
-            StartPrefs.setDefaultTheme('dark_theme');
+            if (window.plugins && window.plugins.appPreferences) {
+                var prefs = plugins.appPreferences;
+                prefs.store('dark_theme', true);   
+            }
+            // StatusBar.style(2);
         }
         $ionicPopup.alert({template: 'Restart the app to see all changes!'})
     }
@@ -340,9 +310,6 @@ angular.module('emission.main', ['emission.main.recent',
         $scope.settings.sync = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
-        $scope.settings.channel = function(newName) {
-          return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
-        };
 
         $scope.getConnectURL();
         $scope.getCollectionSettings();
@@ -352,13 +319,7 @@ angular.module('emission.main', ['emission.main.recent',
     };
 
     $scope.returnToIntro = function() {
-      var testReconsent = false
-      if (testReconsent) {
-        $rootScope.req_consent.approval_date = Math.random();
-        StartPrefs.loadPreferredScreen();
-      } else {
         $state.go("root.intro");
-      }
     };
 
     $scope.forceTransition = function(transition) {
@@ -561,20 +522,6 @@ angular.module('emission.main', ['emission.main.recent',
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
-    $scope.getUserDataExpandButtonClass = function() {
-        return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
-    }
-    $scope.eraseUserData = function() {
-        storage.remove('age');
-        storage.remove('height');
-        storage.remove('heightUnit');
-        storage.remove('weight');
-        storage.remove('weightUnit');
-        storage.remove('gender');
-        storage.remove('userDataSaved');
-        $ionicPopup.alert({template: 'User data erased.'});
-
-    }
     $scope.parseState = function(state) {
         if (state) {
             return state.substring(6);
@@ -590,30 +537,11 @@ angular.module('emission.main', ['emission.main.recent',
             $scope.expanded = true;
             $ionicScrollDelegate.resize();
             $ionicScrollDelegate.scrollTo(0, 1000, true);
-        }
-    }
-    $scope.toggleUserData = function() {
-        if ($scope.dataExpanded) {
-            $scope.dataExpanded = false;
-        } else {
-            $scope.dataExpanded = true;
+
+
         }
     }
     $scope.collectionExpanded = function() {
         return $scope.expanded;
-    }
-    $scope.userDataExpanded = function() {
-        return $scope.dataExpanded && $scope.userDataSaved();
-    }
-    $scope.checkUpdates = function() {
-      UpdateCheck.checkForUpdates();
-    }
-    $scope.checkConsent = function() {
-      window.cordova.plugins.BEMUserCache.getDocument(
-            "config/consent", function(resultList) {
-              $ionicPopup.alert({template: resultList});
-            }, function(error) {
-              $ionicPopup.alert({template: error});
-            });
     }
 });

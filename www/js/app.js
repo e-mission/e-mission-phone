@@ -7,7 +7,7 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers','emission.services',
+angular.module('emission', ['ionic', 'emission.controllers','emission.services',
     'emission.intro', 'emission.main'])
 
 .run(function($ionicPlatform, $rootScope) {
@@ -30,7 +30,6 @@ angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers'
 
 .config(function($stateProvider, $urlRouterProvider) {
   console.log("Starting config");
-
   var waitFn = function($q) {
       var deferred = $q.defer();
       ionic.Platform.ready(function() {

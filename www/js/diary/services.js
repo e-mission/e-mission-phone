@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.diary.services', ['emission.services', 'emission.main.common.services'])
+angular.module('emission.main.diary.services', ['emission.services'])
 .factory('DiaryHelper', function(Timeline, CommonGraph){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -35,7 +35,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",}
+    "IN_VEHICLE":"ion-disc",}
     return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
   dh.getHumanReadable = function(sensed_mode) {
@@ -62,7 +62,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     "WALKING":"ion-android-walk",
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-speedometer",}
+    "IN_VEHICLE":"ion-disc",}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
@@ -92,7 +92,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",}
+    "IN_VEHICLE":"ion-disc",}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
         rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));
@@ -173,9 +173,6 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
 
   }
   dh.getLongerOrShorter = function(trip, id) {
-    if (!angular.isDefined(id)) {
-      return false;
-    }
     var noChangeReturn = [0, ''];
     var ctrip = CommonGraph.trip2Common(id);
     if (!angular.isUndefined(ctrip)) {
@@ -348,7 +345,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope, CommonGraph) {
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -488,14 +485,13 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
             console.log("Already have display name "+ dt.start_place.properties.displayName +" for start_place")
           } else {
             console.log("Don't have display name for start place, going to query nominatim")
-            CommonGraph.getDisplayName('place', trip.start_place);
-
+            getDisplayName(trip.start_place)
           }
           if (angular.isDefined(trip.end_place.properties.displayName)) {
             console.log("Already have display name " + dt.end_place.properties.displayName + " for end_place")
           } else {
             console.log("Don't have display name for end place, going to query nominatim")
-            CommonGraph.getDisplayName('place', trip.end_place);
+            getDisplayName(trip.end_place)
           }
         });
 
@@ -602,6 +598,39 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
             }
           });
       return [startPlace, endPlace, stopList, sectionList];
+    };
+
+    var getDisplayName = function(place_feature) {
+      var responseListener = function(data) {
+        var address = data["address"];
+        var name = "";
+        if (address["road"]) {
+          name = address["road"];
+        } else if (address["neighbourhood"]) {
+          name = address["neighbourhood"];
+        }
+        if (address["city"]) {
+          name = name + ", " + address["city"];
+        } else if (address["town"]) {
+          name = name + ", " + address["town"];
+        } else if (address["county"]) {
+          name = name + ", " + address["county"];
+        }
+
+        console.log("got response, setting display name to "+name);
+        place_feature.properties.displayName = name;
+      };
+
+      var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + place_feature.geometry.coordinates[1]
+      + "&lon=" + place_feature.geometry.coordinates[0];
+      console.log("About to make call "+url);
+      $http.get(url).then(function(response) {
+        console.log("while reading data from nominatim, status = "+response.status
+          +" data = "+JSON.stringify(response.data));
+        responseListener(response.data);
+      }, function(error) {
+        console.log("while reading data from nominatim, error = "+error);
+      });
     };
 
     return timeline;

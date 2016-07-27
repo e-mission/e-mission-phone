@@ -1,63 +1,60 @@
 'use strict';
 
-angular.module('emission.controllers', ['emission.splash.updatecheck',
-                                        'emission.splash.startprefs'])
+angular.module('emission.controllers', [])
 
 .controller('RootCtrl', function($scope) {})
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
-    UpdateCheck, StartPrefs) {
+.controller('SplashCtrl', function($scope, $ionicPlatform, $state, $interval, $rootScope) {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
-  UpdateCheck.checkForUpdates();
-  StartPrefs.startWithPrefs();
+  // Currently loads main or intro based on whether onboarding is complete.
+  // But easily extensible to storing the last screen that the user was on, 
+  // or the users' preferred screen
+  var changeState = function(destState) {
+    console.log("loading "+destState);
+    $state.go(destState);
+    $interval.cancel(currPromise);
+  };
 
+  var loadPreferredScreen = function() {
+    console.log("Checking to see whether we are ready to load the screen");
+    if (window.plugins && window.plugins.appPreferences && window.Logger) {
+      var prefs = plugins.appPreferences;
+        window.Logger.log(window.Logger.LEVEL_INFO, "About to set theme from preference")
+        prefs.fetch('dark_theme').then(function(value) {
+          window.Logger.log(window.Logger.LEVEL_INFO, "preferred dark_theme = "+value)
+          if (value == true) {
+            $rootScope.dark_theme = true;
+          } else {
+            $rootScope.dark_theme = false;
+          }
+          window.Logger.log(window.Logger.LEVEL_INFO, "set dark_theme = "+$rootScope.dark_theme)
+        });
+        window.Logger.log(window.Logger.LEVEL_INFO, "About to navigate to preferred tab")
+        prefs.fetch('setup_complete').then(function(value) {
+          window.Logger.log(window.Logger.LEVEL_DEBUG, 'setup_complete result '+value);
+          if (value == true) {
+              window.Logger.log(window.Logger.LEVEL_INFO, 'changing state to root.main.diary');
+              changeState('root.main.diary');
+          } else {
+              window.Logger.log(window.Logger.LEVEL_INFO, 'changing state to root.intro');
+              changeState('root.intro');
+          }
+        }, function(error) {
+          window.Logger.log(window.Logger.LEVEL_ERROR, "error "+error+" loading root.intro");
+          changeState('root.intro');
+        });
+    } else {
+      console.log("appPreferences plugin not installed, waiting...");
+    }
+  }
+  var currPromise = $interval(loadPreferredScreen, 1000);
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
         + " to "+JSON.stringify(toState));
-    /*
-    if ($rootScope.checkedForUpdates) {
-      window.Logger.log(window.Logger.log("Already checked for update, skipping"));
-    } else {
-      UpdateCheck.checkForUpdates();
-      $rootScope.checkedForUpdates = true;
-    } */
   });
-  $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
-    console.log("Error "+error+" while changing state from "+JSON.stringify(fromState)
-      +" to "+JSON.stringify(toState));
-  });
-  $rootScope.$on('$stateNotFound',
-    function(event, unfoundState, fromState, fromParams){
-        console.log("unfoundState.to = "+unfoundState.to); // "lazy.state"
-        console.log("unfoundState.toParams = " + unfoundState.toParams); // {a:1, b:2}
-        console.log("unfoundState.options = " + unfoundState.options); // {inherit:false} + default options
-  });
-
-  var isInList = function(element, list) {
-    return list.indexOf(element) != -1
-  }
-
-  $rootScope.$on('$stateChangeStart',
-    function(event, toState, toParams, fromState, fromParams, options){
-      var personalTabs = ['root.main.common.map',
-                          'root.main.control',
-                          'root.main.metrics',
-                          'root.main.goals',
-                          'root.main.diary']
-      if (isInList(toState.name, personalTabs)) {
-        // toState is in the personalTabs list
-        StartPrefs.getPendingOnboardingState().then(function(result) {
-          if (result != null) {
-            event.preventDefault();
-            $state.go(result);
-          };
-          // else, will do default behavior, which is to go to the tab
-        });
-      }
-  })
   console.log('SplashCtrl invoke finished');
 })
 

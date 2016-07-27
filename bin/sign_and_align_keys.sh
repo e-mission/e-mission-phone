@@ -23,4 +23,4 @@ jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ~/Safety_Infras
 ~/Library/Android/sdk/build-tools/22.0.1/zipalign -v 4 platforms/android/build/outputs/apk/android-L+-release-signed-unaligned.apk emission-L+-build-$1.apk
 
 # Re-add the plugin
-ionic plugin add cordova-plugin-crosswalk-webview
+ionic plugin add cordova-plugin-crosswalk-webview  --variable XWALK_MODE="lite"

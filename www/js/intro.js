@@ -1,7 +1,6 @@
 'use strict';
 
-angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'ionic-toast'])
+angular.module('emission.intro', ['ionic-toast'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -11,15 +10,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     templateUrl: 'templates/intro/intro.html',
     controller: 'IntroCtrl'
   })
-  .state('root.reconsent', {
-    url: '/reconsent',
-    templateUrl: 'templates/intro/reconsent.html',
-    controller: 'IntroCtrl'
-  });
 })
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, ionicToast, $timeout, CommHelper, StartPrefs) {
+.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate, 
+        $ionicPopup, ionicToast, $timeout, CommHelper) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -35,7 +29,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         title: 'settings',
         template: errorMsg
       });
-
+   
       alertPopup.then(function(res) {
         $scope.next();
       });
@@ -44,17 +38,18 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
 
-  $scope.disagree = function() {
-    $state.go('root.main.heatmap');
-  };
-
-  $scope.agree = function() {
-    StartPrefs.markConsented().then(function(response) {
-      if ($state.is('root.intro')) {
-        $scope.next();
-      } else {
-        StartPrefs.loadPreferredScreen();
-      }
+  $scope.popupUninstall = function() {
+    var alertPopup = $ionicPopup.show({
+      template: 'Please close and uninstall this application. You must accept the terms to use E-Mission',
+      cssClass: 'refuse-popup',
+      buttons: [
+          { text: 'Cancel',
+            type: 'button button-block button-outline button-positive' }
+       ]
+    });
+ 
+    alertPopup.then(function(res) {
+      window.Logger.log(window.Logger.LEVEL_INFO, 'User confirmed that they understood that consent is required'+res);
     });
   };
 
@@ -65,14 +60,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $scope.previous = function() {
     $scope.getIntroBox().previous();
   };
-
+  
   $scope.alertError = function(title, errorResult) {
       var errorMsg = JSON.stringify(errorResult);
       var alertPopup = $ionicPopup.alert({
         title: title,
         template: errorMsg
       });
-
+   
       alertPopup.then(function(res) {
         window.Logger.log(window.Logger.LEVEL_INFO, errorMsg + ' ' + res);
       });
@@ -113,10 +108,13 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.finish = function() {
-    // this is not a promise, so we don't need to use .then
-    StartPrefs.markIntroDone();
-    $scope.getIntroBox().slide(0);
-    StartPrefs.loadPreferredScreen();
+    var prefs = window.plugins.appPreferences;
+    prefs.store('setup_complete', true).then(function(value) {
+        // $scope.alertError("setup_complete", "success -> "+value);
+        $state.go('root.main.diary');
+    }, function(error) {
+        $scope.alertError("setup_complete", "error -> "+error);
+    });
   }
 });
 
