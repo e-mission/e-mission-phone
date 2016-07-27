@@ -22,6 +22,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
       data.leafletObject.invalidateSize();
   });
 
+  $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
+  };
+
   $scope.getPopRoute = function() {
     $ionicLoading.show({
         template: 'Loading...'

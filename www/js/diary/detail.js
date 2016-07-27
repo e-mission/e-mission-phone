@@ -17,6 +17,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
       console.log("diary/detail received resize event, invalidating map size");
       data.leafletObject.invalidateSize();
   });
+
+  $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
+  };
+
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.arrowColor = DiaryHelper.arrowColor;
   $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
