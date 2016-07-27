@@ -9,7 +9,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'ngCordova',
                                  'emission.services',
                                  'emission.splash.updatecheck',
-                                 'emission.splash.startprefs'])
+                                 'emission.splash.startprefs',
                                  'angularLocalStorage'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
