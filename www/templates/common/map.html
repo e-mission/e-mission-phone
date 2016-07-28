@@ -1,4 +1,4 @@
-<ion-view style="" title="Common Patterns">
+<ion-view style="" title="Common Patterns" class="ion-view-background">
       <ion-content class="has-header" overflow-scroll="true" padding="true">
       <!--
       <ion-refresher
@@ -6,11 +6,13 @@
         on-refresh="refreshMap()">
       </ion-refresher>
       -->
-      <div style="" class="button-bar">
-        <button class="button button-stable button-block icon ion-refresh"
-          ng-click="refreshMap()">Refresh</button>
+      <div style="" class="full-toggle-container">
+        <div class="full-toggle-left hvcenter"
+          ng-click="refreshMap()">Refresh</div>
+        <div class="full-toggle-right hvcenter"
+          ng-click="refreshTiles()">Reload Tiles</div>
       </div>
-
+      <div style="height: 10px;"></div>
       <leaflet geojson="mapCtrl.geojson"
                id="common"
                defaults="mapCtrl.defaults"

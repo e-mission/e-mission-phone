@@ -1,9 +1,11 @@
 angular.module('emission.main.common.map',['ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.services'])
+                                      'emission.services',
+                                      'emission.main.diary.services', 'nvd3'])
 
 .controller("CommonMapCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    CommonGraph, Config) {
+                                    leafletMapEvents,
+                                    CommonGraph, Config, DiaryHelper) {
   console.log("controller CommonMapCtrl called");
 
   var db = window.cordova.plugins.BEMUserCache;
@@ -22,6 +24,8 @@ angular.module('emission.main.common.map',['ionic-datepicker',
         return toReturn;
     };
   };
+
+
 
   var onEachFeature = function(feature, layer) {
     console.log("onEachFeature called with "+JSON.stringify(feature));
@@ -44,16 +48,112 @@ angular.module('emission.main.common.map',['ionic-datepicker',
   $scope.refreshMap = function() {
       CommonGraph.updateCurrent();
   };
+  $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
+  };
 
+  /*
+   * Debug code to log ALL events. Note that this is overkill and should be
+   * commented out most of the time. However, for now, we enable it so that
+   * we can see which events are generated on android.
+   */
+  var mapEvents = leafletMapEvents.getAvailableMapEvents();
+  for (var k in mapEvents) {
+    var eventName = 'leafletDirectiveMap.common.' + mapEvents[k];
+    $scope.$on(eventName, function(event, data){
+        console.log("in mapEvents, event = "+JSON.stringify(event.name)+
+              " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+              " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+        $scope.eventDetected = event.name;
+    });
+  }
+
+  // According to the leaflet documentation, a 'load' event is supposed to
+  // to be generated when the map is loaded. However, at least on iOS, that event
+  // is never triggered, and instead, a resize event is the only one that
+  // is generated. Through empirical investigation, we have determined that
+  // it is generated only when the tab is loaded and is not generated after that
+  // So let's over
+
+  $scope.$on('leafletDirectiveMap.common.resize', function(event, data) {
+      console.log("$scope.resize event = "+JSON.stringify(event.name)+
+          " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+          " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+      data.leafletObject.invalidateSize();
+  });
+
+  $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
     $scope.$apply(function() {
         $scope.mapCtrl.geojson = {}
         $scope.mapCtrl.geojson.data = CommonGraph.data.geojson;
         $scope.mapCtrl.geojson.style = styleFeature;
         $scope.mapCtrl.geojson.onEachFeature = onEachFeature;
+        $scope.mapCtrl.trips = CommonGraph.data.graph.common_trips;
         // $scope.mapCtrl.geojson.pointToLayer = pointFormat;
     });
   });
+
+
+  /*
+   * if given group is the selected group, deselect it
+   * else, select the given group
+   */
+  $scope.toggleGroup = function(group) {
+    group.show = !group.show;
+    if (group.show) {
+      var vals = [];
+      var probs = group.probabilites[group.start_times[0].weekday];
+      for (var i = 0; i < 24; i++) {
+        vals.push([i, probs[i]]);
+      }
+      $scope.data =  [
+            {
+                "key" : "Quantity" ,
+                "bar": true,
+                "values" : vals
+            }];
+    }
+  };
+  $scope.isGroupShown = function(group) {
+    return group.show;
+  };
+        $scope.options = {
+            chart: {
+                type: 'historicalBarChart',
+                height: 150,
+                width: 300,
+                margin : {
+                    top: 10,
+                    right: 20,
+                    bottom: 65,
+                    left: 20
+                },
+                x: function(d){return d[0];},
+                y: function(d){return d[1];},
+                showValues: true,
+                valueFormat: function(d){
+                    return d3.format(',.1f')(d);
+                },
+                duration: 100,
+                xAxis: {
+                    axisLabel: 'Distribution of start hours on this weekday',
+                    tickFormat: function(d) {
+                        return d;
+                    },
+
+                    showMaxMin: false
+                },
+                yAxis: {
+                    axisLabel: 'Trips Count',
+                    tickFormat: function(d){
+                        return d;
+                    }
+                }
+            }
+        };
+
+        $scope.data = []
 
   $scope.refreshMap();
 

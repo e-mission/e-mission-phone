@@ -13,6 +13,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   // Add option
   // StatusBar.styleBlackOpaque()
   $scope.dark_theme = $rootScope.dark_theme;
+
+  $scope.$on('leafletDirectiveMap.resize', function(event, data) {
+      console.log("diary/list received resize event, invalidating map size");
+      data.leafletObject.invalidateSize();
+  });
+
   StatusBar.styleDefault();
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -63,39 +69,39 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * +date and -date operations.
      */
      $scope.listExpandClass = function () {
-      return ($scope.dark_theme)? "earlier-later-expand-dark" : "earlier-later-expand"; 
+      return ($scope.dark_theme)? "earlier-later-expand-dark" : "earlier-later-expand";
      }
      $scope.listLocationClass = function() {
-        return ($scope.dark_theme)? "item item-icon-left list-location-dark" : "item item-icon-left list-location"; 
-      
+        return ($scope.dark_theme)? "item item-icon-left list-location-dark" : "item item-icon-left list-location";
+
      }
      $scope.listTextClass = function() {
-        return ($scope.dark_theme)? "list-text-dark" : "list-text"; 
+        return ($scope.dark_theme)? "list-text-dark" : "list-text";
      }
     $scope.ionViewBackgroundClass = function() {
-      return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background"; 
+      return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
     $scope.datePickerClass = function() {
     }
     $scope.listCardClass = function() {
       if ($window.screen.width <= 320) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm"; 
+        return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm";
       } else if ($window.screen.width <= 375) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-md" : "list card list-card list-card-md"; 
+        return ($scope.dark_theme)? "list card list-card-dark list-card-md" : "list card list-card list-card-md";
       } else {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-lg" : "list card list-card list-card-lg"; 
+        return ($scope.dark_theme)? "list card list-card-dark list-card-lg" : "list card list-card list-card-lg";
       }
-      
+
     }
     $scope.listColLeftClass = function(margin) {
       if (margin == 0) {
-        return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left";   
+        return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left";
       } else {
-        return ($scope.dark_theme)? "col-50 list-col-left-margin-dark" : "col-50 list-col-left-margin"; 
+        return ($scope.dark_theme)? "col-50 list-col-left-margin-dark" : "col-50 list-col-left-margin";
       }
     }
     $scope.listColRightClass = function() {
-      return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right"; 
+      return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right";
     }
     $scope.differentCommon = function(tripgj) {
         return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
@@ -113,13 +119,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.datepickerObject = {
-      titleLabel: 'Title',  //Optional
+      
       todayLabel: 'Today',  //Optional
       closeLabel: 'Close',  //Optional
       setLabel: 'Set',  //Optional
-      setButtonType : 'button-assertive',  //Optional
-      todayButtonType : 'button-assertive',  //Optional
-      closeButtonType : 'button-assertive',  //Optional
+      setButtonType : 'button-positive',  //Optional
+      todayButtonType : 'button-stable',  //Optional
+      closeButtonType : 'button-stable',  //Optional
       inputDate: new Date(),  //Optional
       from: new Date(2015, 1, 1),
       to: new Date(),
@@ -163,7 +169,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
-    "icon ion-disc":'red',};
+    "icon ion-speedometer":'red',};
       return { color: colors[mode] };
     }
 
@@ -244,7 +250,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.isCommon = DiaryHelper.isCommon;
     // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
     // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
-    
+
 
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"

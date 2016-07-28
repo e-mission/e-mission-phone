@@ -1,5 +1,9 @@
 <ion-view view-title="Goals">
   <ion-nav-buttons side="left">
+        <!--button class="button button-icon"
+          ng-click="data.showDelete = !data.showDelete;">
+            <i class="icon ion-ios-minus-outline"></i>
+          </button-->
    </ion-nav-buttons>
   <ion-nav-buttons side="right">
       <button class="button button-icon" ng-click="openModal()">
@@ -11,7 +15,10 @@
         <i class="icon ion-android-refresh"></i>
       </button>
      </ion-nav-buttons>
-<ion-content class="has-header" overflow-scroll="true" padding="false">
+     <!--ion-nav-buttons side="left">
+      <button class="button button-icon icon ion-ios-minus-outline" ng-click="showDelete = !showDelete"></button>
+     </ion-nav-buttons-->
+<ion-content class="has-header" overflow-scroll="true" padding="true">
       <!--div>
         <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
       </div-->
@@ -68,7 +75,7 @@
               <p class="stats-name">Health</p>
             </div>
           </div>
-          <div id="stats-wrapper">
+          <div>
             <i id="habitica-star-icon" class="icon ion-android-star"></i>
             <progress class="golden" value="{{profile.stats.exp}}" max="{{profile.stats.toNextLevel}}"></progress>
             <div class="stats-value-wrapper">
@@ -89,7 +96,10 @@
                 <img in-if="profile.stats.class == 'rogue'" src="img/ic_header_rogue.png" style="height:20px; width:20px; float:left;"-->
               <p style="font-size:12px; float:left;padding-left:5px ">{{profile.profile.name}}</p>
             </div>
-              <p style="font-size:12px; margin:0px; float:right;margin-right: 10%;">Level: {{profile.stats.lvl}}</p>
+              <p style="font-size:10px; margin:0px; position:fixed; padding-top:25px">Level: {{profile.stats.lvl}}</p>
+            <!--button class="button button-icon" style="float:right;" ng-click="joinParty()">
+            <i class="icon ion-ios-people"></i>
+            </button-->
           </div>
         </a>
       </div>
@@ -108,13 +118,10 @@
                 <p style="font-size:18px">{{challenge.name}}</p>
                 <p>{{challenge.description}} </p>
                 <p> Prize: {{challenge.prize}} gems</p>
-                <button ng-if="!(joinedChallenges.includes(challenge._id))" class="button" ng-click="joinChallenge(challenge._id)" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
-                  Join Challenge
-                </button>
-                <button ng-if="joinedChallenges.includes(challenge._id)" class="button" ng-click="leaveChallenge(challenge._id)" style="background:#C02D16;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
-                  Leave
-                </button>
-              </div>
+                <button class="button" ng-click="joinChallenge(challenge._id)" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+            Join Challenge
+            </button>
+            </div>
             </ion-list>
           </ion-scroll>
         </div>
@@ -192,35 +199,22 @@
              <i icon="ion-checkmark-circled"></i>
            </button>
            </div-->
-           <div class="col col-20" style="float: left; padding-right: 10px !important;">
-              <div ng-if="goal.up &amp;&amp; !goal.down" class="row row-center" style="background: #4CD04C;padding-top: 10px;padding-bottom: 10px">
-                <button class="button button-icon" ng-click="scoreUp(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
-               <i class="icon ion-plus" style="color:#fff;"></i>
-               </button>
+           <div class="col col-20" style="float:left;padding-right:10px!important;">
+              <div class="row row-center" style="background:#4CD04C">
+               <i class="icon ion-plus" style="font-size:large;margin-left: 20px;margin-right: 20px;margin-top: 10px !important;margin-bottom: 10px;color:#fff" ng-click="scoreUp(goal._id)"></i>
               </div>
-              <div ng-if="!goal.up &amp;&amp; goal.down" class="row row-center" style="background: #FF5C5C;padding-top: 10px;padding-bottom: 10px">
-                <button class="button button-icon" ng-click="scoreDown(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
-               <i class="icon ion-minus" style="color:#fff;"></i>
-               </button>
-              </div>
-            </div>
-            <div class="col col-20" style="float:left;padding-right:10px!important;">
-            <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" style="background:#4CD04C">
-              <button class="button button-icon" ng-click="scoreUp(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
-               <i class="icon ion-plus" style="color:#fff;"></i>
-               </button>
-              </div>
-              <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" style="background:#FF5C5C;margin-top: 0;">
-                <button class="button button-icon" ng-click="scoreDown(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
-                <i class="icon ion-minus" style="color:#fff;">
+              <div class="row row-center" style="background:#FF5C5C">
+                <i class="icon ion-minus" style="font-size:large;margin-left: 20px;margin-right: 20px;margin-top: 10px !important;margin-bottom:10px;color:#fff" ng-click="scoreDown(goal._id)">
                 </i>
-                </button>
               </div>
             </div>
           <div style="padding-top:15px">
            <h2 style="font-weight: 700;color:#6e6e6e;">{{goal.name}}</h2>
            <p style="font-size: 10px;color:#6e6e6e;">{{goal.note}}</p>
            </div>
+           <!--ion-delete-button class="ion-minus-circled" 
+                             ng-click="deleteGoal(goal._id, goal)">
+          </ion-delete-button-->
           <!--ion-option-button class="button-calm">Edit</ion-option-button-->
           <ion-option-button class="button-assertive" ng-click="deleteGoal(goal._id, goal)">Delete</ion-option-button>
          </ion-item>
@@ -228,6 +222,13 @@
        </div>
     </div>
   </div>
+      <!--ion-list>
+      <ion-list ng-click="removeGoal(goal)">
+      <ion-delete-button class="ion-minus-circled"></ion-delete-button>
+        <ion-checkbox ng-repeat="goal in goals" show-delete="showDelete">
+          {{goal.name}}
+        </ion-checkbox>
+      </ion-list-->
       <div ng-if="!screen">
       <h1 class="signup-title" style="text-align:center">Signup</h1>
         <label class="item item-input">

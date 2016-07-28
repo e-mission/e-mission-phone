@@ -1,8 +1,10 @@
 angular.module('emission.main.common',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.map',
-                                      'emission.main.common.list',
-                                      'emission.main.common.detail',
+                                      'emission.main.common.trip-list',
+                                      'emission.main.common.place-list',
+                                      'emission.main.common.trip-detail',
+                                      'emission.main.common.place-detail',
                                       'emission.main.common.services',
                                       'emission.services'])
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
@@ -18,12 +20,12 @@ angular.module('emission.main.common',['ui-leaflet',
     }
   })
 
-  .state('root.main.common.list', {
+  .state('root.main.common.place-list', {
     url: '/places',
     views: {
       'menuContent': {
-        templateUrl: 'templates/common/list.html',
-        controller: 'CommonListCtrl'
+        templateUrl: 'templates/common/place-list.html',
+        controller: 'CommonPlaceListCtrl'
       }
     }
   })
@@ -32,11 +34,31 @@ angular.module('emission.main.common',['ui-leaflet',
     url: '/places/:placeId',
     views: {
         'menuContent': {
-            templateUrl: 'templates/common/detail.html',
-            controller: 'CommonDetailCtrl'
+            templateUrl: 'templates/common/place-detail.html',
+            controller: 'CommonPlaceDetailCtrl'
         }
      }
-  });
+  })
+
+  .state('root.main.common.trip-list', {
+    url: '/trips',
+    views: {
+      'menuContent': {
+        templateUrl: 'templates/common/trip-list.html',
+        controller: 'CommonTripListCtrl'
+      }
+    }
+  })
+
+  .state('root.main.common.trip-detail', {
+    url: '/trips/:tripId',
+    views: {
+        'menuContent': {
+            templateUrl: 'templates/common/trip-detail.html',
+            controller: 'CommonTripDetailCtrl'
+        }
+     }
+  })
 })
 
 .controller("CommonCtrl", function($scope, $http, $ionicPopup,
