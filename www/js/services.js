@@ -23,14 +23,8 @@ angular.module('emission.services', [])
      * var regConfig = {'username': ....}
      * Other fields can be added easily and the server can be modified at the same time.
      */
-    this.habiticaRegister = function(regConfig) {
-        return new Promise(function(resolve, reject){
-          window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, function(response) {
-            resolve(response);
-          }, function(error) {
-            reject(error);
-          });
-      }); 
+    this.habiticaRegister = function(regConfig, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, successCallback, errorCallback);
     };
 
     /*
@@ -49,15 +43,8 @@ angular.module('emission.services', [])
                     'method_args': null}
      * ....
      */
-    
-    this.habiticaProxy = function(callOpts){
-      return new Promise(function(resolve, reject){
-        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, function(response){
-          resolve(response);
-        }, function(error) {
-          reject(error);
-        });
-      });
+    this.habiticaProxy = function(callOpts, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, successCallback, errorCallback);
     };
 
     this.getMetrics = function(timeType, metrics_query, successCallback, errorCallback) {

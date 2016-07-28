@@ -38,7 +38,7 @@
 }
 
 #habitica-heart-icon {
-   font-size: 18px;
+   font-size: 15px;
    color: red;
    padding-left: 10%;
    position: relative;
@@ -46,11 +46,11 @@
 }
 
 #habitica-star-icon {
-   font-size: 18px;
+   font-size: 15px;
    color: gold;
    padding-left: 10%;
    position: relative;
-   bottom: 2px;
+   bottom: 3px;
 }
 
 #stats-wrapper {
@@ -63,13 +63,13 @@
 }
 
 .stats-value {
-  font-size: 10px !important;
+  font-size: 8px !important;
   padding-left: 21%;
   display: inline;
 }
 
 .stats-name {
-  font-size: 10px !important;
+  font-size: 8px !important;
   float: right;
   display: inline;
 }
@@ -87,10 +87,12 @@
 
 progress{
   margin: 0px;
+  /*margin-top: 2px;*/
   float: right;
   width: 80%;
-  height: 14px;
+  height: 12px;
   border-radius: 10px;
+  padding-top: 1%;
 }
 
 progress.quest-boss-bar{
@@ -100,7 +102,7 @@ progress.quest-boss-bar{
 
 progress::-webkit-progress-value{
   background: #f74040;
-  border-radius: 10px !important;
+  border-radius: 10px;
   /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
 
@@ -120,11 +122,11 @@ progress::-webkit-progress-bar{
     height: 70px;
 }*/
 
-progress.golden::-webkit-progress-value{
+.golden::-webkit-progress-value{
   background: #ffd700;
 }
 
-progress.purple::-webkit-progress-value{
+.purple::-webkit-progress-value{
   background: #3D3240;
 }
 
@@ -166,13 +168,13 @@ img.center {
 
 /* ngAnimate */
 /* The starting CSS styles for the enter animation */
-#habit-list ion-item.ng-enter {
+/*#habit-list ion-item.ng-enter {
   transition:0.5s linear all;
   opacity:0;
   transform: translateY(100%);
 }
 /* The finishing CSS styles for the enter animation */
-#habit-list ion-item.ng-enter.ng-enter-active {
+/*#habit-list ion-item.ng-enter.ng-enter-active {
   opacity:1;
   transform: translateY(0);
 }
@@ -196,11 +198,9 @@ img.center {
   width: 50%;
   float:left;
 }
-
 #challenge.active {
   color: #2bb096 !important;
 }
-
 #party.active {
   color: #2bb096 !important;
 }
@@ -208,6 +208,7 @@ img.center {
 #goal-content .item-content {
     padding: 0px 49px 0px 0px !important;
 }
+
 
 .bar.bar-header.no-bgColor, .bar.bar-footer.no-bgColor{
 border: 0px !important;
