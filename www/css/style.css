@@ -39,7 +39,7 @@
 
 #habitica-heart-icon {
    font-size: 18px;
-   color: red;
+   color: #ff6064;
    padding-left: 10%;
    position: relative;
    bottom: 1.5px;
@@ -47,7 +47,7 @@
 
 #habitica-star-icon {
    font-size: 18px;
-   color: gold;
+   color: #ffbe5d;
    padding-left: 10%;
    position: relative;
    bottom: 2px;
@@ -99,7 +99,7 @@ progress.quest-boss-bar{
 }
 
 progress::-webkit-progress-value{
-  background: #f74040;
+  background: #ff6064;
   border-radius: 10px !important;
   /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
@@ -121,7 +121,7 @@ progress::-webkit-progress-bar{
 }*/
 
 progress.golden::-webkit-progress-value{
-  background: #ffd700;
+  background: #ffbe5d;
 }
 
 progress.purple::-webkit-progress-value{
