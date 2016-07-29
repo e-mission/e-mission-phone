@@ -186,6 +186,16 @@ img.center {
   opacity:0;
   transform: translateX(-100%);
 }
+
+#message.ng-enter{
+  -webkit-animation: slideInLeft .25s;
+  animation: slideInLeft .25s;
+}
+
+#message.ng-leave{
+  -webkit-animation: slideOutLeft .25s;
+  animation: slideOutLeft .25s;
+}
 /* ngAnimate ends here */
 
 #costume-tab .button {

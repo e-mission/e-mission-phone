@@ -9,6 +9,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.challenges=[];
 	var partyId;
 	$scope.joinedChallenges = [];
+	$scope.plusInProcess = {};
+	$scope.minusInProcess = {};
+	var floatHp;
+	var floatGold;
 
 	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
@@ -86,11 +90,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			});
 			console.log("Proxy Sucess");
 			$scope.gold = Math.round($scope.profile.stats.gp);
+			floatGold = $scope.profile.stats.gp;
 			$scope.hp = Math.round($scope.profile.stats.hp);
+			floatHp = $scope.profile.stats.hp;
 			$scope.gem = Math.round($scope.profile.balance);
 			$scope.silver = Math.round(($scope.profile.stats.gp - 
 				Math.floor($scope.profile.stats.gp))*100);
 			$scope.exp = $scope.profile.stats.exp;
+			$scope.toNextLevel = $scope.profile.stats.toNextLevel;
 			if(!('_id' in $scope.profile.party)){
 				$scope.hasParty = false;
 			} else{
@@ -192,15 +199,28 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.scoreUp = function(taskId) {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/"+taskId+"/score/up",
 	                    'method_args': null};
-
+	    $scope.plusInProcess[taskId] = true;
 	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Score up");
 				console.log(response);
-				$scope.gainedExp = response.data.exp - $scope.exp;
-				$scope.gainedGold = response.data.gp - $scope.gold;
+				if($scope.exp > response.data.exp){
+					$scope.gainedExp = ($scope.toNextLevel - $scope.exp) + response.data.exp;
+				} else{
+					$scope.gainedExp = response.data.exp - $scope.exp;
+				}
+				$scope.gainedGold = (response.data.gp - floatGold).toFixed(2);
+				//if(response.data.hp > floatHp){
+				//	$scope.gainedHp = (response.data.hp - floatHp).toFixed(2);
+				//	console.log($scope.gainedHp);
+				//}
 				console.log($scope.gainedGold);
 				console.log($scope.gainedExp);
 				getUserInfo();
+				$scope.reward = true;
+				$timeout(function() {
+					$scope.reward = false;
+					$scope.plusInProcess[taskId] = false;
+				}, 2000);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -210,11 +230,20 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.scoreDown = function(taskId) {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/"+taskId+"/score/down",
 	                    'method_args': null};
-
+	    $scope.minusInProcess[taskId] = true;
 	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Score down");
 				console.log(response);
+				$scope.lossHp = (floatHp - response.data.hp).toFixed(2);
+				console.log($scope.lossHp);
 				getUserInfo();
+				$scope.loss = true;
+				$timeout(function() {
+					$scope.loss = false;
+					$scope.minusInProcess[taskId] = false;
+				}, 2000);
+			}).then(function(response){
+				$scope.minusInProcess[taskId] = false;
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
