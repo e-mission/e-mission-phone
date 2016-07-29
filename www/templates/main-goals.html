@@ -89,7 +89,7 @@
                 <img in-if="profile.stats.class == 'rogue'" src="img/ic_header_rogue.png" style="height:20px; width:20px; float:left;"-->
               <p style="font-size:12px; float:left;padding-left:5px ">{{profile.profile.name}}</p>
             </div>
-              <p style="font-size:12px; margin:0px; float:right;margin-right: 10%;">Level: {{profile.stats.lvl}}</p>
+              <p style="font-size:12px; margin:0px; float:right;margin-right: 10%;">Level: <b>{{profile.stats.lvl}}</b></p>
           </div>
         </a>
       </div>
@@ -193,24 +193,24 @@
            </button>
            </div-->
            <div class="col col-20" style="float: left; padding-right: 10px !important;">
-              <div ng-if="goal.up &amp;&amp; !goal.down" class="row row-center" style="background: #4CD04C;padding-top: 10px;padding-bottom: 10px">
+              <div ng-if="goal.up &amp;&amp; !goal.down" class="row row-center" style="background: #4BC3AB;padding-top: 10px;padding-bottom: 10px">
                 <button class="button button-icon" ng-click="scoreUp(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
                <i class="icon ion-plus" style="color:#fff;"></i>
                </button>
               </div>
-              <div ng-if="!goal.up &amp;&amp; goal.down" class="row row-center" style="background: #FF5C5C;padding-top: 10px;padding-bottom: 10px">
+              <div ng-if="!goal.up &amp;&amp; goal.down" class="row row-center" style="background: #F75F74;padding-top: 10px;padding-bottom: 10px">
                 <button class="button button-icon" ng-click="scoreDown(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
                <i class="icon ion-minus" style="color:#fff;"></i>
                </button>
               </div>
             </div>
             <div class="col col-20" style="float:left;padding-right:10px!important;">
-            <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" style="background:#4CD04C">
+            <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" style="background:#4BC3AB">
               <button class="button button-icon" ng-click="scoreUp(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
                <i class="icon ion-plus" style="color:#fff;"></i>
                </button>
               </div>
-              <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" style="background:#FF5C5C;margin-top: 0;">
+              <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" style="background:#F75F74;margin-top: 0;">
                 <button class="button button-icon" ng-click="scoreDown(goal._id)" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
                 <i class="icon ion-minus" style="color:#fff;">
                 </i>

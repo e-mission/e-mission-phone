@@ -9,6 +9,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.challenges=[];
 	var partyId;
 	$scope.joinedChallenges = [];
+
 	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -89,6 +90,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			$scope.gem = Math.round($scope.profile.balance);
 			$scope.silver = Math.round(($scope.profile.stats.gp - 
 				Math.floor($scope.profile.stats.gp))*100);
+			$scope.exp = $scope.profile.stats.exp;
 			if(!('_id' in $scope.profile.party)){
 				$scope.hasParty = false;
 			} else{
@@ -107,7 +109,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 						$scope.monster = $scope.profile.party.quest.key;
 					});
 					$scope.inQuest = true;
-					questContent();
 				}
 			}
 			$scope.joinedChallenges = $scope.profile.challenges;
@@ -193,8 +194,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts).then(function(response){
-				getUserInfo();
 				console.log("Score up");
+				console.log(response);
+				$scope.gainedExp = response.data.exp - $scope.exp;
+				$scope.gainedGold = response.data.gp - $scope.gold;
+				console.log($scope.gainedGold);
+				console.log($scope.gainedExp);
+				getUserInfo();
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -206,8 +212,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	                    'method_args': null};
 
 	    CommHelper.habiticaProxy(callOpts).then(function(response){
-				getUserInfo();
 				console.log("Score down");
+				console.log(response);
+				getUserInfo();
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -267,13 +274,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
     	CommHelper.habiticaProxy(callOpts).then(function(response){
 			console.log("Sucessfully got the party");
 			var partyObj = response.data;
-			if($scope.inQuest){
+			$scope.questActive = partyObj.quest.active;
+			if($scope.questActive){
 				$scope.bossHp = Math.round(partyObj.quest.progress.hp);
-				$scope.questActive = partyObj.quest.active;
 			}
 			$scope.partyName = partyObj.name;
-			console.log($scope.inQuest);
-			console.log($scope.questActive);
+			console.log("In quest: " + $scope.inQuest);
+			console.log("Quest is active: " + $scope.questActive);
 			console.log(response);
 		}, function(error){
 			console.log("Error when getting the party");
@@ -288,7 +295,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				var content = response.data;
 				console.log(content);
 			if($scope.inQuest){
-				console.log($scope.monster);
+				console.log("Current monster: " + $scope.monster);
 				$scope.bossMaxHealth = content.quests[$scope.monster].boss.hp;
 				$scope.bossName = content.quests[$scope.monster].boss.name;
 				$scope.questNote = content.quests[$scope.monster].notes;
@@ -421,6 +428,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		getUserTask();
 		getChallenges();
 		getMembers();
+		if($scope.inQuest){
+			questContent();
+		}
 	};
 
 	refreshInfo();
