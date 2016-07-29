@@ -3,6 +3,36 @@
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
+
+.popup-buttons.row {
+ height: 40px !important; 
+}
+.popup-buttons.button {
+  height: 40px !important;
+}
+.button.ng-binding.button-stable {
+  height: 40px;
+  
+}
+.button.ng-binding.button-positive {
+  background-color: #2bb096;
+  height: 40px;
+}
+.button.ng-binding.button-assertive {
+  background-color: #2bb096; 
+  height: 40px;
+  
+}
+.selected_date_full.ng-binding {
+  color: #2bb096;
+}
+.icon.ion-chevron-left {
+ color: #2bb096; 
+}
+.col.col-10.right_arrow {
+ color: #2bb096; 
+}
+
 .customButtomIconSize:before {
     font-size: 25px !important;
 }
@@ -277,7 +307,7 @@ ion-header-bar {
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .ion-view-background{
-  background-color: #FAFAFA !important;
+  background-color: rgba(238,238,238,0.8) !important;
 }
 .ion-view-background-dark {
   background-color: #303030 !important;
@@ -576,5 +606,483 @@ html, body, #chart2, svg {
     
     padding: 0px;
     margin: 0 10px 0 0;
+}
+.nvd3, nv-noData {
+  font-weight: 300 !important;
+}
+.metric-datepicker {
+  /*height: 33px;*/
+  display: flex;           /* establish flex container */
+  /*flex-direction: column;   make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: center;     /* center items horizontally, in this case */
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.metric-datepicker-title {
+  height: 35px;
+  display: flex;           /* establish flex container */
+  flex-direction: column;  /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: left;     /* center items horizontally, in this case */
+  padding-left: 10px;
+}
 
+.metric-datepicker-container-upper {
+  width: 100%;
+  float: left;
+}
+.metric-weekday-container-upper {
+  width: 28%;
+  float: right;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.metric-weekday-container-lower {
+  width: 28%;
+  float: right;
+  top: 40px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.metric-datepicker-container-lower {
+  top: 40px;
+  width: 100%;
+  float: left;
+}
+.metric-datepicker-left {
+  width: 25%;
+  float: left;
+}
+.metric-datepicker-right {
+  text-align: center;
+  width: 75%;
+  float: right;
+}
+.metric-metric-button {
+  float: left;
+  width: 33%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.metric-freq-button {
+  float: right;
+  width: 49%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.metric-get-button { 
+  width: 60px;
+  border-radius: 5px;
+  color: white;
+  background-color: #2bb096;
+  height: 35px;
+}
+.metric-get-button-inactive { 
+  width: 60px;
+  border-radius: 5px;
+  color: white;
+  background-color: #2bb096;
+  opacity: 0.7;
+  height: 35px;
+}
+.hvcenter {
+  display: flex;           /* establish flex container */
+  flex-direction: column;  /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: center;     /* center items horizontally, in this case */
+}
+.metric-basic {
+  width: 100%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;  
+}
+.metric-half {
+  float: left;
+  width: 60%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;  
+  overflow: hidden;
+}
+.metric-second-half {
+  width: 38%;
+  float: right;
+}
+.metric-current-title {
+  color: #333;
+  position: absolute;
+  width: 28%;
+  height: 35px;  
+}
+.metric-range-button {
+  border-left-color: #ccc;
+  border-left-style: solid;
+  border-left-width: 1px;
+  position: absolute;
+  border-right-color: #ccc;
+  border-right-style: solid;
+  border-right-width: 1px;
+  width: 25%;
+  left: 50%;
+  height: 35px;  
+}
+.metric-range-button-active {
+  border-left-color: #ccc;
+  border-left-style: solid;
+  border-left-width: 1px;
+  position: absolute;
+  border-right-color: #ccc;
+  border-right-style: solid;
+  border-right-width: 1px;
+  width: 25%;
+  left: 50%;
+  height: 35px;  
+  background-color: #2bb096;
+  color: white;
+}
+.metric-filter-button {
+  position: absolute;
+  width: 25%;
+  left: 75%;
+  height: 35px;  
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.metric-filter-button-active {
+  position: absolute;
+  width: 25%;
+  left: 75%;
+  height: 35px;  
+  background-color: #2bb096;
+  color: white;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.metric-chart-button {
+  width: 30%;
+  position: absolute;
+  border-right-color: #ccc;
+  border-right-style: solid;
+  border-right-width: 1px;  
+  height: 35px;  
+  overflow: hidden;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.metric-chart-button-active {
+  width: 30%;
+  position: absolute;
+  border-right-color: #ccc;
+  border-right-style: solid;
+  border-right-width: 1px;  
+  height: 35px;  
+  background-color: #2bb096;
+  color: white;
+  overflow: hidden;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+}
+.metric-summary-button {
+  width: 30%;
+  position: absolute;
+  left: 30%;
+  height: 35px;  
+  overflow: hidden;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.metric-summary-button-active {
+  width: 30%;
+  position: absolute;
+  left: 30%;
+  height: 35px;  
+  background-color: #2bb096;
+  color: white;
+  overflow: hidden;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+.metric-toggle-button {
+  width: 33%;
+  position: absolute;
+  left: 66%;
+  height: 33px;  
+}
+.metric-me-toggle {
+  
+}
+.metric-icon {
+  color: #ccc;
+  font-size: 30px;
+}
+.metric-filter-title {
+  position: absolute;
+  width: 15%;
+  height: 35px;
+  display: flex;           /* establish flex container */
+  flex-direction: column;  /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: left;     /* center items horizontally, in this case */
+  padding-left: 10px;
+}
+.metric-filter-year {
+  position: absolute;
+  width: 19%;
+  left: 21%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.metric-filter-month {
+  position: absolute;
+  width: 13%;
+  left: 42%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.metric-filter-day {
+  position: absolute;
+  width: 13%;
+  left: 57%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.metric-summary-title {
+  padding: 2px;
+  color: #aaa;
+}
+.metric-summary-content {
+  padding: 2px;
+}
+.metric-summary-left {
+  float: left;
+  margin-top: 10px;
+  width: 40px !important;
+
+}
+.metric-summary-right {
+  margin-left: 40px;
+}
+.metric-summary-separator {
+  border-bottom-color: #ccc;
+  border-bottom-style: solid;
+  border-bottom-width: 1px;
+  color: #ccc;
+  margin-bottom: 10px;
+}
+
+
+.heatmap-filter-title {
+  position: absolute;
+  width: 14%;
+  height: 35px;
+  display: flex;           /* establish flex container */
+  flex-direction: column;  /* make main axis vertical */
+  justify-content: center; /* center items vertically, in this case */
+  align-items: left;     /* center items horizontally, in this case */
+  padding-left: 4px;
+}
+.heatmap-filter-year {
+  position: absolute;
+  width: 16%;
+  left: 18%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.heatmap-filter-month {
+  position: absolute;
+  width: 11%;
+  left: 35%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.heatmap-filter-day {
+  position: absolute;
+  width: 11%;
+  left: 47%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.heatmap-filter-hour {
+  position: absolute;
+  width: 11%;
+  left: 59%;
+  height: 35px;
+  border-width: 0;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
+}
+.heatmap-weekday-container-upper {
+  left: 71%;
+  width: 26%;
+  position: absolute;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.heatmap-weekday-container-lower {
+  left: 71%;
+  width: 26%;
+  position: absolute;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.heatmap-get-button { 
+  float: right;
+  width: 30%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.metric-summary-option-button {
+  float: right;
+  color: #aaa;
+  background-color: white;
+  height: 20px;
+  border-radius: 3px;
+  width: 80px;
+  margin-right: 1px;
+  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
+}
+.full-toggle-container {
+ height: 35px; 
+
+
+}
+.full-toggle-left {
+  width: 50%;
+  float: left;
+  height: 35px; 
+
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  background-color: white;
+  color: #2bb096;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.full-toggle-left-active {
+  width: 50%;
+  float: left;
+  height: 35px; 
+  
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+
+  background-color: #2bb096;
+  color: white;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.full-toggle-right {
+  width: 50%;
+  float: right;
+  height: 35px;
+  
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  background-color: white;
+  color: #2bb096;
+}
+.full-toggle-right-active {
+  width: 50%;
+  float: right;
+  height: 35px;
+  
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+
+  background-color: #2bb096;
+  color: white;
+}
+.unit-toggle-container {
+ height: 35px; 
+}
+.unit-toggle-left {
+  width: 50%;
+  float: left;
+  height: 35px; 
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: white;
+  color: #2bb096;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.unit-toggle-left-active {
+  width: 50%;
+  float: left;
+  height: 35px; 
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  background-color: #2bb096;
+  color: white;
+  border-right-style: solid;
+  border-right-width: 1px;
+  border-right-color: #ccc;
+}
+.unit-toggle-right {
+  width: 50%;
+  float: right;
+  height: 35px; 
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: white;
+  color: #2bb096;
+}
+.unit-toggle-right-active {
+  width: 50%;
+  float: right;
+  height: 35px; 
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  background-color: #2bb096;
+  color: white;
+}
+.userdata-title {
+  color: #ccc;
+}
+.carbon-goal-chart {
+  height: 5px;
+  background-color: #2bb096;
+  opacity: 0.6;
+  border-radius: 2px;
+  width: 100%;
 }

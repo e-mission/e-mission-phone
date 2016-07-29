@@ -8,7 +8,9 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.metrics',
                                  'ngCordova',
                                  'emission.services',
-                                 'emission.splash.updatecheck'])
+                                 'emission.splash.updatecheck',
+                                 'emission.splash.startprefs',
+                                 'angularLocalStorage'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -28,7 +30,7 @@ angular.module('emission.main', ['emission.main.recent',
         templateUrl: 'templates/main-common.html',
         controller: 'CommonCtrl'
       }
-    }
+    },
   })
 
   .state('root.main.heatmap', {
@@ -145,12 +147,33 @@ angular.module('emission.main', ['emission.main.recent',
 })
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
-               $state, $ionicPopup, $ionicActionSheet, $ionicPopover, $rootScope,
-               ControlHelper, UpdateCheck) {
+               $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
+               $rootScope, StartPrefs,
+               ControlHelper, UpdateCheck, storage) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
+    $scope.userData = []
+    $scope.getUserData = function() {
+        $scope.userData = []
+        var height = storage.get("height").toString();
+        var weight = storage.get("weight").toString();
+        var temp  =  {
+            age: storage.get("age"),
+            height: height + (storage.get("heightUnit") == 1? ' cm' : ' ft'),
+            weight: weight + (storage.get("weightUnit") == 1? ' kg' : ' lb'),
+            gender: storage.get("gender") == 1? 'Male' : 'Female'
+        }
+        for (var i in temp) {
+            $scope.userData.push({key: i, value: temp[i]});
+        }
+    }
 
-
+    $scope.userDataSaved = function() {
+        return storage.get('userDataSaved') == true;
+    }
+    if ($scope.userDataSaved()) {
+        $scope.getUserData();
+    }
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         if ($scope.settings.collect.config == null) {
@@ -199,20 +222,11 @@ angular.module('emission.main', ['emission.main.recent',
         if ($scope.dark_theme) {
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
-            if (window.plugins && window.plugins.appPreferences) {
-                var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', false);
-            }
-            // StatusBar.styleDefault();
-
+            StartPrefs.setDefaultTheme(null);
         } else {
             $rootScope.dark_theme = true;
             $scope.dark_theme = true;
-            if (window.plugins && window.plugins.appPreferences) {
-                var prefs = plugins.appPreferences;
-                prefs.store('dark_theme', true);
-            }
-            // StatusBar.style(2);
+            StartPrefs.setDefaultTheme('dark_theme');
         }
         $ionicPopup.alert({template: 'Restart the app to see all changes!'})
     }
@@ -338,7 +352,13 @@ angular.module('emission.main', ['emission.main.recent',
     };
 
     $scope.returnToIntro = function() {
+      var testReconsent = false
+      if (testReconsent) {
+        $rootScope.req_consent.approval_date = Math.random();
+        StartPrefs.loadPreferredScreen();
+      } else {
         $state.go("root.intro");
+      }
     };
 
     $scope.forceTransition = function(transition) {
@@ -541,6 +561,20 @@ angular.module('emission.main', ['emission.main.recent',
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
+    $scope.getUserDataExpandButtonClass = function() {
+        return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
+    }
+    $scope.eraseUserData = function() {
+        storage.remove('age');
+        storage.remove('height');
+        storage.remove('heightUnit');
+        storage.remove('weight');
+        storage.remove('weightUnit');
+        storage.remove('gender');
+        storage.remove('userDataSaved');
+        $ionicPopup.alert({template: 'User data erased.'});
+
+    }
     $scope.parseState = function(state) {
         if (state) {
             return state.substring(6);
@@ -556,14 +590,30 @@ angular.module('emission.main', ['emission.main.recent',
             $scope.expanded = true;
             $ionicScrollDelegate.resize();
             $ionicScrollDelegate.scrollTo(0, 1000, true);
-
-
+        }
+    }
+    $scope.toggleUserData = function() {
+        if ($scope.dataExpanded) {
+            $scope.dataExpanded = false;
+        } else {
+            $scope.dataExpanded = true;
         }
     }
     $scope.collectionExpanded = function() {
         return $scope.expanded;
     }
+    $scope.userDataExpanded = function() {
+        return $scope.dataExpanded && $scope.userDataSaved();
+    }
     $scope.checkUpdates = function() {
       UpdateCheck.checkForUpdates();
+    }
+    $scope.checkConsent = function() {
+      window.cordova.plugins.BEMUserCache.getDocument(
+            "config/consent", function(resultList) {
+              $ionicPopup.alert({template: resultList});
+            }, function(error) {
+              $ionicPopup.alert({template: error});
+            });
     }
 });
