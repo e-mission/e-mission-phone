@@ -434,11 +434,22 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 	//Tab switch
 	$scope.isActive = false;
+	var firstActive = true;
   	$scope.activeButton = function() {
   		if($scope.isActiveP == true){
   			$scope.partyButton();
   		}
     	$scope.isActive = !$scope.isActive;
+		//Scroll message
+		if(firstActive){
+			$timeout(function() {
+	   			$scope.scrollMessage = true;
+	   		}, 1000);
+	    	$timeout(function() {
+	   			$scope.scrollMessage = false;
+	   		}, 4000);
+	   		firstActive = false;
+	   	}
   	};
 
   	$scope.isActiveP = false;
