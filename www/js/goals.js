@@ -145,6 +145,17 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 						$scope.goal._id = tasks[habit]._id;
 						$scope.goal.down = tasks[habit].down;
 						$scope.goal.up = tasks[habit].up;
+						var value = tasks[habit].value;
+						if(value<=-20)
+							$scope.goal.value = "negative_big";
+						if(value>-20&&value<=-10)
+							$scope.goal.value = "negative";
+						if(value>-10&&value<=10)
+							$scope.goal.value = "normal";
+						if(value>10&&value<=20)
+							$scope.goal.value = "positive";
+						if(value>20)
+							$scope.goal.value = "positive_big";
 						$scope.createGoal();
 					}
 				}
@@ -171,6 +182,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	    		$scope.goal._id = response.data._id;
 	    		$scope.goal.up = response.data.up;
 	    		$scope.goal.down = response.data.down;
+	    		$scope.goal.value = "normal";
 	    		console.log(response.data);
 				$scope.createGoal();
 				console.log("Sucessfully added the habit");
@@ -216,6 +228,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				console.log($scope.gainedGold);
 				console.log($scope.gainedExp);
 				getUserInfo();
+				getUserTask();				
 				$scope.reward = true;
 				$timeout(function() {
 					$scope.reward = false;
@@ -237,6 +250,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				$scope.lossHp = (floatHp - response.data.hp).toFixed(2);
 				console.log($scope.lossHp);
 				getUserInfo();
+				getUserTask();
 				$scope.loss = true;
 				$timeout(function() {
 					$scope.loss = false;

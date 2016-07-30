@@ -110,16 +110,6 @@ progress::-webkit-progress-bar{
   /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
 
-/*.item-content {
-    padding-top: 8px;
-    padding-bottom: 12px;
-    padding-left: 1px;
-    padding-right: 1px;
-    margin-top: -12px;
-    margin-bottom: -4px;
-    height: 70px;
-}*/
-
 progress.golden::-webkit-progress-value{
   background: #ffbe5d;
 }
@@ -187,6 +177,39 @@ img.center {
 }
 /* ngAnimate ends here */
 
+/* score button color */
+#up_value_negative_big{
+  background-color: #A9EDE0;
+}
+#up_value_negative{
+  background-color: #73D9C5;
+}
+#up_value_normal{
+  background-color: #4BC3AB;
+}
+#up_value_positive{
+  background-color: #2CAC93;  
+}
+#up_value_positive_big{
+  background-color: #0D9C80;
+}
+#down_value_negative_big{
+  background-color: #E81431;
+}
+#down_value_negative{
+  background-color: #F43F58;
+}
+#down_value_normal{
+  background-color: #F75F74;
+}
+#down_value_positive{
+  background-color: #FA8595;  
+}
+#down_value_positive_big{
+  background-color: #FDB3BD;
+}
+/*score button color end*/
+
 #costume-tab .button {
   border: none !important;
   color: #6e6e6e !important;
@@ -208,6 +231,8 @@ img.center {
 #goal-content .item-content {
     padding: 0px 49px 0px 0px !important;
 }
+
+
 
 .bar.bar-header.no-bgColor, .bar.bar-footer.no-bgColor{
 border: 0px !important;
