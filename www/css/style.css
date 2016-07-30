@@ -203,8 +203,8 @@ img.center {
 }
 
 #scroll-message.ng-leave{
-  -webkit-animation: slideOutDown .25s;
-  animation: slideOutDown .25s;
+  -webkit-animation: fadeOut .25s;
+  animation: fadeOut .25s;
 }
 /* ngAnimate ends here */
 
