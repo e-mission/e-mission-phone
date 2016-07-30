@@ -9,6 +9,11 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.challenges=[];
 	var partyId;
 	$scope.joinedChallenges = [];
+	$scope.plusInProcess = {};
+	$scope.minusInProcess = {};
+	var floatHp;
+	var floatGold;
+
 	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -85,10 +90,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			});
 			console.log("Proxy Sucess");
 			$scope.gold = Math.round($scope.profile.stats.gp);
+			floatGold = $scope.profile.stats.gp;
 			$scope.hp = Math.round($scope.profile.stats.hp);
+			floatHp = $scope.profile.stats.hp;
 			$scope.gem = Math.round($scope.profile.balance);
 			$scope.silver = Math.round(($scope.profile.stats.gp - 
 				Math.floor($scope.profile.stats.gp))*100);
+			$scope.exp = $scope.profile.stats.exp;
+			$scope.toNextLevel = $scope.profile.stats.toNextLevel;
 			if(!('_id' in $scope.profile.party)){
 				$scope.hasParty = false;
 			} else{
@@ -107,7 +116,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 						$scope.monster = $scope.profile.party.quest.key;
 					});
 					$scope.inQuest = true;
-					questContent();
 				}
 			}
 			$scope.joinedChallenges = $scope.profile.challenges;
@@ -191,10 +199,28 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.scoreUp = function(taskId) {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/"+taskId+"/score/up",
 	                    'method_args': null};
-
+	    $scope.plusInProcess[taskId] = true;
 	    CommHelper.habiticaProxy(callOpts).then(function(response){
-				getUserInfo();
 				console.log("Score up");
+				console.log(response);
+				if($scope.exp > response.data.exp){
+					$scope.gainedExp = ($scope.toNextLevel - $scope.exp) + response.data.exp;
+				} else{
+					$scope.gainedExp = response.data.exp - $scope.exp;
+				}
+				$scope.gainedGold = (response.data.gp - floatGold).toFixed(2);
+				//if(response.data.hp > floatHp){
+				//	$scope.gainedHp = (response.data.hp - floatHp).toFixed(2);
+				//	console.log($scope.gainedHp);
+				//}
+				console.log($scope.gainedGold);
+				console.log($scope.gainedExp);
+				getUserInfo();
+				$scope.reward = true;
+				$timeout(function() {
+					$scope.reward = false;
+					$scope.plusInProcess[taskId] = false;
+				}, 1500);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -204,10 +230,18 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.scoreDown = function(taskId) {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/"+taskId+"/score/down",
 	                    'method_args': null};
-
+	    $scope.minusInProcess[taskId] = true;
 	    CommHelper.habiticaProxy(callOpts).then(function(response){
-				getUserInfo();
 				console.log("Score down");
+				console.log(response);
+				$scope.lossHp = (floatHp - response.data.hp).toFixed(2);
+				console.log($scope.lossHp);
+				getUserInfo();
+				$scope.loss = true;
+				$timeout(function() {
+					$scope.loss = false;
+					$scope.minusInProcess[taskId] = false;
+				}, 1500);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -267,13 +301,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
     	CommHelper.habiticaProxy(callOpts).then(function(response){
 			console.log("Sucessfully got the party");
 			var partyObj = response.data;
-			if($scope.inQuest){
+			$scope.questActive = partyObj.quest.active;
+			if($scope.questActive){
 				$scope.bossHp = Math.round(partyObj.quest.progress.hp);
-				$scope.questActive = partyObj.quest.active;
 			}
 			$scope.partyName = partyObj.name;
-			console.log($scope.inQuest);
-			console.log($scope.questActive);
+			console.log("In quest: " + $scope.inQuest);
+			console.log("Quest is active: " + $scope.questActive);
 			console.log(response);
 		}, function(error){
 			console.log("Error when getting the party");
@@ -288,7 +322,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				var content = response.data;
 				console.log(content);
 			if($scope.inQuest){
-				console.log($scope.monster);
+				console.log("Current monster: " + $scope.monster);
 				$scope.bossMaxHealth = content.quests[$scope.monster].boss.hp;
 				$scope.bossName = content.quests[$scope.monster].boss.name;
 				$scope.questNote = content.quests[$scope.monster].notes;
@@ -371,9 +405,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 					getUserInfo();
 					getUserTask();
 					console.log(response);
-					//$scope.$apply(function(){
-					//	$scope.joined = true;
-					//});
 				}, function(error){
 					console.log("Error when joining the challenge");
 				});
@@ -388,9 +419,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 					console.log("Sucessfully left the challenge");
 					getUserInfo();
 					getUserTask();
-					//$scope.$apply(function(){
-					//	$scope.joined = false;
-					//});
 				}, function(error){
 					console.log("Error when leaveing the challenge");
 				});
@@ -398,11 +426,22 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 	//Tab switch
 	$scope.isActive = false;
+	var firstActive = true;
   	$scope.activeButton = function() {
   		if($scope.isActiveP == true){
   			$scope.partyButton();
   		}
     	$scope.isActive = !$scope.isActive;
+		//Scroll message
+		if(firstActive){
+			$timeout(function() {
+	   			$scope.scrollMessage = true;
+	   		}, 1000);
+	    	$timeout(function() {
+	   			$scope.scrollMessage = false;
+	   		}, 4000);
+	   		firstActive = false;
+	   	}
   	};
 
   	$scope.isActiveP = false;
@@ -421,6 +460,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		getUserTask();
 		getChallenges();
 		getMembers();
+		if($scope.inQuest){
+			questContent();
+		}
 	};
 
 	refreshInfo();

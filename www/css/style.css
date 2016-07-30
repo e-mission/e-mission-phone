@@ -39,7 +39,7 @@
 
 #habitica-heart-icon {
    font-size: 18px;
-   color: red;
+   color: #ff6064;
    padding-left: 10%;
    position: relative;
    bottom: 1.5px;
@@ -47,7 +47,7 @@
 
 #habitica-star-icon {
    font-size: 18px;
-   color: gold;
+   color: #ffbe5d;
    padding-left: 10%;
    position: relative;
    bottom: 2px;
@@ -99,7 +99,7 @@ progress.quest-boss-bar{
 }
 
 progress::-webkit-progress-value{
-  background: #f74040;
+  background: #ff6064;
   border-radius: 10px !important;
   /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
@@ -121,7 +121,7 @@ progress::-webkit-progress-bar{
 }*/
 
 progress.golden::-webkit-progress-value{
-  background: #ffd700;
+  background: #ffbe5d;
 }
 
 progress.purple::-webkit-progress-value{
@@ -165,26 +165,25 @@ img.center {
     vertical-align: middle; }
 
 /* ngAnimate */
-/* The starting CSS styles for the enter animation */
-#habit-list ion-item.ng-enter {
-  transition:0.5s linear all;
-  opacity:0;
-  transform: translateY(100%);
-}
-/* The finishing CSS styles for the enter animation */
-#habit-list ion-item.ng-enter.ng-enter-active {
-  opacity:1;
-  transform: translateY(0);
+
+#message.ng-enter{
+  -webkit-animation: slideInLeft .25s;
+  animation: slideInLeft .25s;
 }
 
-#habit-list ion-item.ng-leave {
-  transition:0.25s linear all;
-  opacity:1;
-  transform: translateX(0);
+#message.ng-leave{
+  -webkit-animation: slideOutLeft .25s;
+  animation: slideOutLeft .25s;
 }
-#habit-list ion-item.ng-leave.ng-leave-active {
-  opacity:0;
-  transform: translateX(-100%);
+
+#scroll-message.ng-enter{
+  -webkit-animation: bounceInUp .5s;
+  animation: bounceInUp .5s;
+}
+
+#scroll-message.ng-leave{
+  -webkit-animation: fadeOut .25s;
+  animation: fadeOut .25s;
 }
 /* ngAnimate ends here */
 
@@ -195,6 +194,7 @@ img.center {
   font-weight: 700 !important;
   width: 50%;
   float:left;
+  border-radius: 0;
 }
 
 #challenge.active {
