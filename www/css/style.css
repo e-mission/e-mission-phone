@@ -196,6 +196,16 @@ img.center {
   -webkit-animation: slideOutLeft .25s;
   animation: slideOutLeft .25s;
 }
+
+#scroll-message.ng-enter{
+  -webkit-animation: bounceInUp .5s;
+  animation: bounceInUp .5s;
+}
+
+#scroll-message.ng-leave{
+  -webkit-animation: slideOutDown .25s;
+  animation: slideOutDown .25s;
+}
 /* ngAnimate ends here */
 
 #costume-tab .button {
@@ -205,6 +215,7 @@ img.center {
   font-weight: 700 !important;
   width: 50%;
   float:left;
+  border-radius: 0;
 }
 
 #challenge.active {

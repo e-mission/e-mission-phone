@@ -113,43 +113,45 @@
       </div>
       <div>
         <div ng-if="isActive" ng-cloak>
-          <ion-scroll style="background:#F8E1C2;color: black; font-weight: 700;height:200px; text-align:center;">
+          <ion-scroll style="background:#fff;color:#6e6e6e;font-weight: 700;height:200px; text-align:center;">
 
             <ion-list>
               <div style="height: 200px;padding: 25px 10px 10px 10px;" ng-repeat="challenge in challenges">
                 <p style="font-size:18px">{{challenge.name}}</p>
                 <p>{{challenge.description}} </p>
                 <p> Prize: {{challenge.prize}} gems</p>
-                <button ng-if="!(joinedChallenges.includes(challenge._id))" class="button" ng-click="joinChallenge(challenge._id)" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                <button ng-if="!(joinedChallenges.includes(challenge._id))" class="button" ng-click="joinChallenge(challenge._id)" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
                   Join Challenge
                 </button>
-                <button ng-if="joinedChallenges.includes(challenge._id)" class="button" ng-click="leaveChallenge(challenge._id)" style="background:#C02D16;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                <button ng-if="joinedChallenges.includes(challenge._id)" class="button" ng-click="leaveChallenge(challenge._id)" style="background:#F75F74;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
                   Leave
                 </button>
+                <div id="scroll-message" ng-if="scrollMessage" class="icon ion-arrow-down-c" style="font-size:12px; margin-top:12px"><p style="font-size:10px; margin-top:-8px">Scroll down</p>
+                </div>
               </div>
             </ion-list>
           </ion-scroll>
         </div>
         <div ng-if="isActiveP" ng-cloak>
-          <div ng-if="!hasParty" style="background:#FF735C;color:white; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 15px;">
+          <div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 15px;">
             Join the party and battle monsters with E-mission members!
-            <button class="button" ng-click="joinParty()" style="background:#3D899F;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+            <button class="button" ng-click="joinParty()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
             Join Party
             </button>
           </div>
-          <ion-scroll ng-if="hasParty" style="background:#FF735C;color:white; font-weight: 700;height:200px;padding-top: 10px; text-align:center;" ng-cloak>
+          <ion-scroll ng-if="hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top: 10px; text-align:center;" ng-cloak>
             <div ng-if="hasQuestRequest " ng-cloak style="font-size: 15px; padding-top:50px">
               Your group leader has requested you to join a quest.
               <br>
-              <button class="button" ng-click="joinQuest()" style="background:#44BD69;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
+              <button class="button" ng-click="joinQuest()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
               Join Quest
               </button>
-              <button class="button" ng-click="rejectQuest()" style="background:#C02D16;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
+              <button class="button" ng-click="rejectQuest()" style="background:#F75F74;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
               Reject Quest
               </button>
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; !inQuest">
-              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshPage()">
+              <button class="button button-icon" style="float:right;padding-right:15px;color:#6e6e6e;" ng-click="refreshPage()">
             <i class="icon ion-android-refresh"></i>
             </button>
               <div style="padding-top:50px;font-size:15px;">
@@ -171,23 +173,23 @@
               </div>
             </div>
             <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; questActive" style="position:relative;" ng-cloak>
-              <button class="button button-icon" style="position: absolute;right:10px;" ng-click="refreshPage()">
+              <button class="button button-icon" style="position: absolute;right:10px;color:#6e6e6e;" ng-click="refreshPage()">
               <i class="icon ion-android-refresh"></i>
               </button>
-              <h4 style="text-align: center; color:white;margin-top: 0px;font-weight:700;">{{partyName}}</h4>
+              <h4 style="text-align: center; color:#6e6e6e;margin-top: 0px;font-weight:700;">{{partyName}}</h4>
               <div class="col col-50">
                 <img id="boss_{{monster}}" class="boss_png" src="common/img/sprites/spritesmith/quests/bosses/quest_TEMPLATE_FOR_MISSING_IMAGE.png"></img>
               </div>
               <div class="col col-50" style="float:right;padding-right:2%!important">
-                <h5 style="font-weight:700;color: white;">{{bossName}}</h5>
+                <h5 style="font-weight:700;color:#6e6e6e;">{{bossName}}</h5>
                 <progress class="purple quest-boss-bar" value="{{bossHp}}" max="{{bossMaxHealth}}"></progress>
-                <p style="text-align:center font-weight: 700;color:white;">{{bossHp}}/{{bossMaxHealth}}</p>
+                <p style="text-align:center font-weight: 700;color:#6e6e6e;">{{bossHp}}/{{bossMaxHealth}}</p>
                 <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
                 Members
                 </button>
               </div>
               <div style="padding: 0px 10px 20px 10px !important; position: absolute; top: 160px;">
-                <p style="text-align:center font-weight: 700;color:white;">{{questNote}}</p>
+                <p style="text-align:center font-weight: 700;color:#6e6e6e;">{{questNote}}</p>
               </div>
             </div>
           </ion-scroll>
