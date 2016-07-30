@@ -216,11 +216,12 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				console.log($scope.gainedGold);
 				console.log($scope.gainedExp);
 				getUserInfo();
+				getUserTask();
 				$scope.reward = true;
 				$timeout(function() {
 					$scope.reward = false;
 					$scope.plusInProcess[taskId] = false;
-				}, 2000);
+				}, 1500);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -237,13 +238,12 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				$scope.lossHp = (floatHp - response.data.hp).toFixed(2);
 				console.log($scope.lossHp);
 				getUserInfo();
+				getUserTask();
 				$scope.loss = true;
 				$timeout(function() {
 					$scope.loss = false;
 					$scope.minusInProcess[taskId] = false;
-				}, 2000);
-			}).then(function(response){
-				$scope.minusInProcess[taskId] = false;
+				}, 1500);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
