@@ -19,7 +19,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, ionicToast, $timeout, CommHelper, StartPrefs) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -50,6 +50,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.agree = function() {
     StartPrefs.markConsented().then(function(response) {
+      $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
         $scope.next();
       } else {

@@ -119,7 +119,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.datepickerObject = {
-      
+
       todayLabel: 'Today',  //Optional
       closeLabel: 'Close',  //Optional
       setLabel: 'Set',  //Optional
@@ -208,6 +208,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.refresh = function() {
       if ($ionicScrollDelegate.getScrollPosition().top < 5) {
        readAndUpdateForDay(Timeline.data.currDay);
+       $scope.$broadcast('invalidateSize');
       }
     }
 
