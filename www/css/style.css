@@ -165,27 +165,6 @@ img.center {
     vertical-align: middle; }
 
 /* ngAnimate */
-/* The starting CSS styles for the enter animation */
-#habit-list ion-item.ng-enter {
-  transition:0.5s linear all;
-  opacity:0;
-  transform: translateY(100%);
-}
-/* The finishing CSS styles for the enter animation */
-#habit-list ion-item.ng-enter.ng-enter-active {
-  opacity:1;
-  transform: translateY(0);
-}
-
-#habit-list ion-item.ng-leave {
-  transition:0.25s linear all;
-  opacity:1;
-  transform: translateX(0);
-}
-#habit-list ion-item.ng-leave.ng-leave-active {
-  opacity:0;
-  transform: translateX(-100%);
-}
 
 #message.ng-enter{
   -webkit-animation: slideInLeft .25s;
