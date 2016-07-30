@@ -216,7 +216,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				console.log($scope.gainedGold);
 				console.log($scope.gainedExp);
 				getUserInfo();
-				getUserTask();
 				$scope.reward = true;
 				$timeout(function() {
 					$scope.reward = false;
@@ -238,7 +237,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				$scope.lossHp = (floatHp - response.data.hp).toFixed(2);
 				console.log($scope.lossHp);
 				getUserInfo();
-				getUserTask();
 				$scope.loss = true;
 				$timeout(function() {
 					$scope.loss = false;
@@ -407,9 +405,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 					getUserInfo();
 					getUserTask();
 					console.log(response);
-					//$scope.$apply(function(){
-					//	$scope.joined = true;
-					//});
 				}, function(error){
 					console.log("Error when joining the challenge");
 				});
@@ -424,9 +419,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 					console.log("Sucessfully left the challenge");
 					getUserInfo();
 					getUserTask();
-					//$scope.$apply(function(){
-					//	$scope.joined = false;
-					//});
 				}, function(error){
 					console.log("Error when leaveing the challenge");
 				});
