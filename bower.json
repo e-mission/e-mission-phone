@@ -21,7 +21,6 @@
   "dependencies": {
     "angular-nvd3": "^1.0.7",
     "string.startsWith": "*",
-    "angularLocalStorage": "^0.3.2",
-    "animate.css": "^3.5.2"
+    "angularLocalStorage": "^0.3.2"
   }
 }
