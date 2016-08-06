@@ -33,7 +33,7 @@
       <div style="height:157px; position:relative;">
         <a class="item item-thumbnail-left-avatar" id="avatar">
         <!--Habitica jade to html code starts here-->
-          <figure class="herobox background_{{profile.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; profile.items.currentPet), hasMount: (true &amp;&amp; profile.items.currentMount), noBackgroundImage: !profile.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==profile._id}">
+          <figure ng-click="toInventory()" class="herobox background_{{profile.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; profile.items.currentPet), hasMount: (true &amp;&amp; profile.items.currentMount), noBackgroundImage: !profile.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==profile._id}">
             <div class="character-sprites">
               <!-- Mount Body-->
               <span ng-if="profile.items.currentMount" class="Mount_Body_{{profile.items.currentMount}}"></span>
