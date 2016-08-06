@@ -4,7 +4,6 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
                                  'emission.main.control',
                                  'emission.main.goals',
-                                 'emission.main.goals.inventory',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
@@ -71,7 +70,7 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
-  .state('root.main.inventory', {
+  /*.state('root.main.inventory', {
     url: '/inventory',
     views: {
       'main-goals': {
@@ -79,7 +78,7 @@ angular.module('emission.main', ['emission.main.recent',
         controller: 'UserInventoryCtrl'
       }
     }
-  })
+  })*/
   .state('root.main.sensed', {
     url: "/sensed",
     views: {

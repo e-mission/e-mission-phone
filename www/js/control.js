@@ -379,18 +379,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $scope.startStopBtnToggle = $scope.trackingOn();
-    $scope.getAvatarStyle = function() {
-        return {
-            'width': ($window.screen.width * 0.30).toString() + 'px',
-            'height': ($window.screen.width * 0.30).toString() + 'px',
-            'border-radius': ($window.screen.width * 0.15).toString() + 'px',
-            'margin-top': ($window.screen.width * 0.1).toString() + 'px',
-            'margin-bottom': ($window.screen.width * 0.1).toString() + 'px',
-            'border-style': 'solid',
-            'border-width': '7px',
-            'border-color': '#fff'
-        }
-    }
     $scope.getButtonStyle = function(color) {
         return {
             'text-align': 'center',
