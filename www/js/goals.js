@@ -100,8 +100,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			$scope.toNextLevel = $scope.profile.stats.toNextLevel;
 			if(!('_id' in $scope.profile.party)){
 				$scope.hasParty = false;
+				partyId = storage.get('party_id');
 			} else{
 				$scope.hasParty = true;
+				partyId = $scope.profile.party._id;
 			}
 			if($scope.profile.party.quest.RSVPNeeded==true){
 				$scope.hasQuestRequest = true;
@@ -120,6 +122,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			}
 			$scope.joinedChallenges = $scope.profile.challenges;
 			getParty();
+			getMembers();
 			console.log($scope.profile);
 			$ionicLoading.hide();
 			}, function(error){
@@ -438,6 +441,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				});
 	};
 
+	$scope.toInventory = function(){
+		$state.go('root.main.inventory');
+	};
+
 	//Tab switch
 	$scope.isActive = false;
 	var firstActive = true;
@@ -468,12 +475,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
   	var refreshInfo = function(){
 		console.log("Refreshing information");
-		partyId = storage.get('party_id');
 		console.log("Party ID = " + storage.get('party_id'));
 		getUserInfo();
 		getUserTask();
 		getChallenges();
-		getMembers();
 		if($scope.inQuest){
 			questContent();
 		}
