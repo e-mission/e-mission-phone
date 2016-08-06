@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.localstorage'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker','angularLocalStorage'])
 .factory('FootprintHelper', function() {
   var fh = {};
   var footprint = {
@@ -154,8 +154,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
 })
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, CalorieHelper, $ionicPopup,
-                                    FootprintHelper, UserCalorieData) {
+                                    CommHelper, $window, CalorieHelper, $ionicPopup,storage, FootprintHelper) {
 
     $scope.uictrl = {
       showRange: false,
@@ -249,19 +248,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.userData.gender = gender;
     }
 
-    $scope.storeUserData = function() {     
-      var info = {'gender': $scope.userData.gender,
-                  'heightUnit': $scope.userData.heightUnit,
-                  'weightUnit': $scope.userData.weightUnit,
-                  'height': $scope.userData.height,
-                  'weight': $scope.userData.weight,
-                  'age': $scope.userData.age,
-                  'userDataSaved': true};
-      UserCalorieData.set(info);
+    $scope.storeUserData = function() {
+      storage.set('gender', $scope.userData.gender);
+      storage.set('heightUnit', $scope.userData.heightUnit);
+      storage.set('weightUnit', $scope.userData.weightUnit);
+      storage.set('height', $scope.userData.height);
+      storage.set('weight', $scope.userData.weight);
+      storage.set('age', $scope.userData.age);
+      storage.set('userDataSaved', true);
     }
 
     $scope.userDataSaved = function() {
-      return UserCalorieData.get().userDataSaved == true;
+      return storage.get('userDataSaved') == true;
     }
     $scope.options = {
         chart: {
@@ -434,14 +432,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         for (var i in durationData) {
           if ($scope.userDataSaved()) {
-            var userDataFromStorage = UserCalorieData.get();
             var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
-            var gender = userDataFromStorage.gender;
-            var heightUnit = userDataFromStorage.heightUnit;
-            var height = userDataFromStorage.height;
-            var weightUnit = userDataFromStorage.weightUnit;
-            var weight = userDataFromStorage.weight;
-            var age = userDataFromStorage.age;
+            var gender = storage.get('gender');
+            var heightUnit = storage.get('heightUnit');
+            var height = storage.get('height');
+            var weightUnit = storage.get('weightUnit');
+            var weight = storage.get('weight');
+            var age = storage.get('age');
             met = CalorieHelper.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
           } else {
             var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
