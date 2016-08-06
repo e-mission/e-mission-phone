@@ -296,7 +296,7 @@ ion-header-bar {
 /* Dark theme ends */
 /* Light theme */
 
-.getIconButtonStyle{
+.icon-button-style{
   text-align: center;
   float: right;
   height: 100%;
@@ -307,12 +307,21 @@ ion-header-bar {
   font-size:20px;
 }
 
-#signout.getIconButtonStyle{
+#signout.icon-button-style{
   background-color: #E0A1A1 !important;
 }
 
-#gray.getIconButtonStyle{
+#gray.icon-button-style{
   background-color: #CCCCCC !important;
+}
+
+.toggle-color{
+  border-color: #2bb096 !important;
+  background-color: #2bb096 !important;
+}
+
+.control-info{
+  padding: 2px 4px !important;
 }
 
 .tab-nav{
