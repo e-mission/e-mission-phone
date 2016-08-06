@@ -379,33 +379,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $scope.startStopBtnToggle = $scope.trackingOn();
-    $scope.getButtonStyle = function(color) {
-        return {
-            'text-align': 'center',
-            'float': 'right',
-            'height': '100%',
-            'background-color': '#' + color,
-            'color': '#fff',
-            'padding': '15px 15px',
-            'width': + ($window.screen.width * 0.25).toString() + 'px'
-        }
-    }
-    $scope.getIconButtonStyle = function(color) {
-        return {
-            'text-align': 'center',
-            'float': 'right',
-            'height': '100%',
-            'background-color': '#' + color,
-            'color': '#fff',
-            'padding-top': '16px',
-            'width': '64px'
-        }
-    }
-    $scope.getIconStyle = function() {
-        return {
-            'font-size': '20px'
-        }
-    }
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
