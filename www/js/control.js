@@ -100,6 +100,7 @@ angular.module('emission.main.control',['emission.services',
         ControlHelper.getSettings().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.connect.url = response.connectURL;
+                console.log(response);
             });
         }, function(error) {
             console.log("While getting connect Url :" + error);
@@ -278,7 +279,7 @@ angular.module('emission.main.control',['emission.services',
         if (result == true) {
             ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
             .then(function(){
-                $scope.getCollectionSettings
+                $scope.getCollectionSettings()
             },function(err){
                 console.log("setCongif Error: " + err);
             });
@@ -289,7 +290,7 @@ angular.module('emission.main.control',['emission.services',
         console.log("new config = "+$scope.settings.collect.new_config);
         ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
         .then(function(){
-            $scope.getCollectionSettings
+            $scope.getCollectionSettings()
         }, function(err){
             console.log("setCongif Error: " + err);
         });
@@ -300,7 +301,7 @@ angular.module('emission.main.control',['emission.services',
         console.log("new config = "+$scope.settings.sync.new_config);
         ControlHelper.serverSyncSetConfig($scope.settings.sync.new_config)
         .then(function(){
-            $scope.getSyncSettings
+            $scope.getSyncSettings()
         }, function(err){
             console.log("setCongif Error: " + err);
         });
