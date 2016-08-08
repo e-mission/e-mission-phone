@@ -102,6 +102,91 @@ angular.module('emission.services', [])
                "Email cancel reported, seems to be an error on android");
         });
     }
+
+    this.dataCollectionSetConfig = function(config) {
+      return new Promise(function(resolve, reject) {
+          resolve(window.cordova.plugins.BEMDataCollection.setConfig(config));
+      });
+    };
+
+    this.dataCollectionGetConfig = function() {
+      return new Promise(function(reslove, reject) {
+          reslove(window.cordova.plugins.BEMDataCollection.getConfig());
+      });
+    };
+    this.serverSyncSetConfig = function(config) {
+      return new Promise(function(resolve, reject) {
+          resolve(window.cordova.plugins.BEMServerSync.setConfig(config));
+      });
+    };
+
+    this.serverSyncGetConfig = function() {
+      return new Promise(function(reslove, reject) {
+          reslove(window.cordova.plugins.BEMServerSync.getConfig());
+      });
+    };
+
+    this.getAccuracyOptions = function() {
+      return new Promise(function(reslove, reject) {
+          reslove(window.cordova.plugins.BEMDataCollection.getAccuracyOptions());
+      });
+    };
+
+    this.getUserEmail = function() {
+      return new Promise(function(reslove, reject) {
+        window.cordova.plugins.BEMJWTAuth.getUserEmail(function(response) {
+            reslove(response);
+        }, function(error) {
+            reject(error);
+        });
+      });
+    };
+
+    this.getState = function() {
+      return new Promise(function(reslove, reject) {
+        window.cordova.plugins.BEMDataCollection.getState(function(response) {
+            reslove(response);
+        }, function(error) {
+            reject(error);
+        });
+      });
+    };
+
+    this.getSettings = function() {
+      return new Promise(function(reslove, reject) {
+        window.cordova.plugins.BEMConnectionSettings.getSettings(function(response) {
+            reslove(response);
+        }, function(error) {
+            reject(error);
+        });
+      });
+    };
+
+    this.forceTransition = function(transition) {
+      return new Promise(function(resolve, reject) {
+        resolve(window.cordova.plugins.BEMDataCollection.forceTransition(transition));
+      });
+    };
+
+    this.forceSync = function() {
+      return new Promise(function(resolve, reject) {
+        window.cordova.plugins.BEMServerSync.forceSync(function(response) {
+          resolve(response);
+        }, function(error) {
+           reject(error); 
+        });
+      });
+    };
+
+    this.getDocument = function() {
+      return new Promise(function(resolve, reject) {
+        window.cordova.plugins.BEMUserCache.getDocument("config/consent", function(response){
+          resolve(response);
+        }, function(error) {
+          reject(error);
+        });
+      });
+    };
 })
 
 // common configuration methods across all screens

@@ -70,7 +70,12 @@ angular.module('emission.main.control',['emission.services',
                 $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
             }
         }
-        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config);
+        ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
+        .then(function(){
+            console.log("setConfig Sucess");
+        }, function(err){
+            console.log("setCongif Error: " + err);
+        });
     }
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
@@ -92,47 +97,49 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.getConnectURL = function() {
-        window.cordova.plugins.BEMConnectionSettings.getSettings(function(result) {
+        ControlHelper.getSettings().then(function(response) {
             $scope.$apply(function() {
-                $scope.settings.connect.url = result.connectURL;
+                $scope.settings.connect.url = response.connectURL;
             });
+        }, function(error) {
+            console.log("While getting connect Url :" + error);
         });
     };
 
     $scope.getCollectionSettings = function() {
         var promiseList = []
-        promiseList.push(window.cordova.plugins.BEMDataCollection.getConfig());
-        promiseList.push(window.cordova.plugins.BEMDataCollection.getAccuracyOptions());
-
-        Promise.all(promiseList).then(function(resultList) {
-            var config = resultList[0];
-            var accuracyOptions = resultList[1];
-            $scope.settings.collect.config = config;
-            $scope.settings.collect.accuracyOptions = accuracyOptions;
-            var retVal = [];
-            for (var prop in config) {
-                if (prop == "accuracy") {
-                    for (var name in accuracyOptions) {
-                        if (accuracyOptions[name] == config[prop]) {
-                            retVal.push({'key': prop, 'val': name});
+        ControlHelper.dataCollectionGetConfig().then(function(response){
+            promiseList.push(response);
+        }).then(function(){
+            ControlHelper.getAccuracyOptions().then(function(response){
+                promiseList.push(response);
+            }).then(function(){
+                var config = promiseList[0];
+                var accuracyOptions = promiseList[1];
+                $scope.settings.collect.config = config;
+                $scope.settings.collect.accuracyOptions = accuracyOptions;
+                var retVal = [];
+                for (var prop in config) {
+                    if (prop == "accuracy") {
+                        for (var name in accuracyOptions) {
+                            if (accuracyOptions[name] == config[prop]) {
+                                retVal.push({'key': prop, 'val': name});
+                            }
                         }
+                    } else {
+                        retVal.push({'key': prop, 'val': config[prop]});
                     }
-                } else {
-                    retVal.push({'key': prop, 'val': config[prop]});
                 }
-            }
-            $scope.$apply(function() {
-                $scope.settings.collect.show_config = retVal;
-            });
-        });
+                $scope.$apply(function() {
+                    $scope.settings.collect.show_config = retVal;
+                })
+            })
+        })
     };
 
     $scope.getSyncSettings = function() {
-        var promiseList = []
-        promiseList.push(window.cordova.plugins.BEMServerSync.getConfig());
-        Promise.all(promiseList).then(function(resultList) {
-            var config = resultList[0];
-            var accuracyOptions = resultList[1];
+        ControlHelper.serverSyncGetConfig().then(function(response) {
+            var config = response;
             $scope.settings.sync.config = config;
             var retVal = [];
             for (var prop in config) {
@@ -144,22 +151,13 @@ angular.module('emission.main.control',['emission.services',
         });
     };
     $scope.getEmail = function() {
-        /*
-        return new Promise(function(resolve, reject) {
-            window.cordova.plugins.BEMJWTAuth.getJWT(function(result) {
-                resolve(result);
-            }, function(error) {
-                resolve(error);
-            });
-        });
-        */
-        window.cordova.plugins.BEMJWTAuth.getUserEmail(function(result) {
-            console.log("user email = "+result);
+        ControlHelper.getUserEmail().then(function(response) {
+           console.log("user email = "+response);
             $scope.$apply(function() {
-                if (result == null) {
+                if (response == null) {
                   $scope.settings.auth.email = "Not logged in";
                 } else {
-                  $scope.settings.auth.email = result;
+                  $scope.settings.auth.email = response;
                 }
             });
         }, function(error) {
@@ -175,19 +173,10 @@ angular.module('emission.main.control',['emission.services',
     $scope.showMap = function() {
         $state.go("root.main.map");
     }
-    $scope.getState = function() {
-        /*
-        return new Promise(function(resolve, reject) {
-            window.cordova.plugins.BEMJWTAuth.getJWT(function(result) {
-                resolve(result);
-            }, function(error) {
-                resolve(error);
-            });
-        });
-        */
-        window.cordova.plugins.BEMDataCollection.getState(function(result) {
+    $scope.getState = function() {       
+        ControlHelper.getState().then(function(response) {
             $scope.$apply(function() {
-                $scope.settings.collect.state = result;
+                $scope.settings.collect.state = response;
             });
         }, function(error) {
             $ionicPopup.alert("while getting email, "+error);
@@ -222,7 +211,7 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.forceTransition = function(transition) {
-        window.cordova.plugins.BEMDataCollection.forceTransition(transition).then(function(result) {
+        ControlHelper.forceTransition(transition).then(function(result) {
             $scope.$apply(function() {
                 $ionicPopup.alert({template: 'success -> '+result});
             });
@@ -234,14 +223,10 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.forceSync = function() {
-        return new Promise(function(resolve, reject) {
-            window.cordova.plugins.BEMServerSync.forceSync(function(result) {
-                // the alert is thenable, so I can resolve with it, I think
-                resolve($ionicPopup.alert({template: 'success -> '+result}));
-            }, function(error) {
-                // the alert is thenable, so I can resolve with it, I think
-                resolve($ionicPopup.alert({template: 'error -> '+error}));
-            });
+        ControlHelper.forceSync().then(function(response) {
+            $ionicPopup.alert({template: 'success -> '+response});
+        }, function(error) {
+            $ionicPopup.alert({template: 'error -> '+error});
         });
     };
 
@@ -291,22 +276,34 @@ angular.module('emission.main.control',['emission.services',
     $scope.saveAndReloadSettingsPopup = function(result) {
         console.log("new config = "+$scope.settings.collect.new_config);
         if (result == true) {
-            window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
-            .then($scope.getCollectionSettings);
+            ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
+            .then(function(){
+                $scope.getCollectionSettings
+            },function(err){
+                console.log("setCongif Error: " + err);
+            });
         }
     };
 
     $scope.saveAndReloadCollectionSettingsPopover = function() {
         console.log("new config = "+$scope.settings.collect.new_config);
-        window.cordova.plugins.BEMDataCollection.setConfig($scope.settings.collect.new_config)
-            .then($scope.getCollectionSettings);
+        ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
+        .then(function(){
+            $scope.getCollectionSettings
+        }, function(err){
+            console.log("setCongif Error: " + err);
+        });
         $scope.collectSettingsPopup.hide();
     };
 
     $scope.saveAndReloadSyncSettingsPopover = function() {
         console.log("new config = "+$scope.settings.sync.new_config);
-        window.cordova.plugins.BEMServerSync.setConfig($scope.settings.sync.new_config)
-            .then($scope.getSyncSettings);
+        ControlHelper.serverSyncSetConfig($scope.settings.sync.new_config)
+        .then(function(){
+            $scope.getSyncSettings
+        }, function(err){
+            console.log("setCongif Error: " + err);
+        });
         $scope.syncSettingsPopup.hide();
     };
     // Execute action on hide popover
@@ -424,11 +421,10 @@ angular.module('emission.main.control',['emission.services',
       UpdateCheck.checkForUpdates();
     }
     $scope.checkConsent = function() {
-      window.cordova.plugins.BEMUserCache.getDocument(
-            "config/consent", function(resultList) {
-              $ionicPopup.alert({template: resultList});
-            }, function(error) {
-              $ionicPopup.alert({template: error});
-            });
+        ControlHelper.getDocument().then(function(resultList){
+            $ionicPopup.alert({template: resultList});
+        }, function(error) {
+            $ionicPopup.alert({template: error});
+        });
     }
 });
