@@ -104,88 +104,46 @@ angular.module('emission.services', [])
     }
 
     this.dataCollectionSetConfig = function(config) {
-      return new Promise(function(resolve, reject) {
-          resolve(window.cordova.plugins.BEMDataCollection.setConfig(config));
-      });
+      return window.cordova.plugins.BEMDataCollection.setConfig(config);
     };
 
     this.dataCollectionGetConfig = function() {
-      return new Promise(function(resolve, reject) {
-          resolve(window.cordova.plugins.BEMDataCollection.getConfig());
-      });
+      return window.cordova.plugins.BEMDataCollection.getConfig();
     };
     this.serverSyncSetConfig = function(config) {
-      return new Promise(function(resolve, reject) {
-          resolve(window.cordova.plugins.BEMServerSync.setConfig(config));
-      });
+      return window.cordova.plugins.BEMServerSync.setConfig(config);
     };
 
     this.serverSyncGetConfig = function() {
-      return new Promise(function(resolve, reject) {
-          resolve(window.cordova.plugins.BEMServerSync.getConfig());
-      });
+      return window.cordova.plugins.BEMServerSync.getConfig();
     };
 
     this.getAccuracyOptions = function() {
-      return new Promise(function(resolve, reject) {
-          resolve(window.cordova.plugins.BEMDataCollection.getAccuracyOptions());
-      });
+      return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
     };
 
     this.getUserEmail = function() {
-      return new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMJWTAuth.getUserEmail(function(response) {
-            resolve(response);
-        }, function(error) {
-            reject(error);
-        });
-      });
+      return window.cordova.plugins.BEMJWTAuth.getUserEmail();
     };
 
     this.getState = function() {
-      return new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMDataCollection.getState(function(response) {
-            resolve(response);
-        }, function(error) {
-            reject(error);
-        });
-      });
+      return window.cordova.plugins.BEMDataCollection.getState();
     };
 
     this.getSettings = function() {
-      return new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMConnectionSettings.getSettings(function(response) {
-            resolve(response);
-        }, function(error) {
-            reject(error);
-        });
-      });
+      return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
 
     this.forceTransition = function(transition) {
-      return new Promise(function(resolve, reject) {
-        resolve(window.cordova.plugins.BEMDataCollection.forceTransition(transition));
-      });
+      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
     };
 
     this.forceSync = function() {
-      return new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMServerSync.forceSync(function(response) {
-          resolve(response);
-        }, function(error) {
-           reject(error); 
-        });
-      });
+      return window.cordova.plugins.BEMServerSync.forceSync();
     };
 
     this.getDocument = function() {
-      return new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMUserCache.getDocument("config/consent", function(response){
-          resolve(response);
-        }, function(error) {
-          reject(error);
-        });
-      });
+      return window.cordova.plugins.BEMUserCache.getDocument("config/consent");
     };
 })
 

@@ -40,7 +40,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
     for(key in info){
       storage.set(key, info[key])
     }
-  };;;
+  };
   cc.get = function() {
     var userData = {
         'gender': storage.get('gender'),
