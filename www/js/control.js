@@ -112,14 +112,11 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.getCollectionSettings = function() {
         var promiseList = []
-        ControlHelper.dataCollectionGetConfig().then(function(response){
-            promiseList.push(response);
-        }).then(function(){
-            ControlHelper.getAccuracyOptions().then(function(response){
-                promiseList.push(response);
-            }).then(function(){
-                var config = promiseList[0];
-                var accuracyOptions = promiseList[1];
+        promiseList.push(ControlHelper.dataCollectionGetConfig());
+        promiseList.push(ControlHelper.getAccuracyOptions());
+        Promise.all(promiseList).then(function(resultList){
+                var config = resultList[0];
+                var accuracyOptions = resultList[1];
                 $scope.settings.collect.config = config;
                 $scope.settings.collect.accuracyOptions = accuracyOptions;
                 var retVal = [];
@@ -138,7 +135,6 @@ angular.module('emission.main.control',['emission.services',
                     $scope.settings.collect.show_config = retVal;
                 })
             })
-        })
     };
 
     $scope.getSyncSettings = function() {
