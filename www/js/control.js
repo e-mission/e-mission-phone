@@ -3,17 +3,17 @@
 angular.module('emission.main.control',['emission.services',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
-                                        'emission.main.localstorage'])
+                                        'emission.main.metrics.factory'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, StartPrefs,
-               ControlHelper, UpdateCheck, UserCalorieData) {
+               $rootScope, StartPrefs, ControlHelper, UpdateCheck, 
+               CalorieCal) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
-        var userDataFromStorage = UserCalorieData.get();
+        var userDataFromStorage = CalorieCal.get();
         $scope.userData = []
         var height = userDataFromStorage.height.toString();
         var weight = userDataFromStorage.weight.toString();
@@ -29,7 +29,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.userDataSaved = function() {
-        return UserCalorieData.get().userDataSaved == true;
+        return CalorieCal.get().userDataSaved == true;
     }
     if ($scope.userDataSaved()) {
         $scope.getUserData();
@@ -51,6 +51,8 @@ angular.module('emission.main.control',['emission.services',
                 return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
             } else if ($scope.isAndroid()) {
                 return v != "PRIORITY_HIGH_ACCURACY";
+            } else {
+                $ionicPopup.alert("Emission does not supprt this platform");
             }
 
         }
@@ -74,7 +76,7 @@ angular.module('emission.main.control',['emission.services',
         .then(function(){
             console.log("setConfig Sucess");
         }, function(err){
-            console.log("setCongif Error: " + err);
+            console.log("setConfig Error: " + err);
         });
     }
     $scope.ionViewBackgroundClass = function() {
@@ -88,12 +90,13 @@ angular.module('emission.main.control',['emission.services',
             $rootScope.dark_theme = false;
             $scope.dark_theme = false;
             StartPrefs.setDefaultTheme(null);
+            $state.reload();
         } else {
             $rootScope.dark_theme = true;
             $scope.dark_theme = true;
             StartPrefs.setDefaultTheme('dark_theme');
+            $state.reload();
         }
-        $ionicPopup.alert({template: 'Restart the app to see all changes!'})
     }
 
     $scope.getConnectURL = function() {
@@ -258,14 +261,6 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
         console.log("settings popup = "+$scope.collectSettingsPopup);
         $scope.collectSettingsPopup.show($event);
-        /*
-        var editPopup = $ionicPopup.confirm({
-            templateUrl: 'templates/control/main-collect-settings.html',
-            scope: $scope
-        });
-        editPopup.then($scope.saveAndReloadSettingsPopup);
-        });
-        */
     }
 
     $scope.editSyncConfig = function($event) {
@@ -281,7 +276,7 @@ angular.module('emission.main.control',['emission.services',
             .then(function(){
                 $scope.getCollectionSettings()
             },function(err){
-                console.log("setCongif Error: " + err);
+                console.log("setConfig Error: " + err);
             });
         }
     };
@@ -292,7 +287,7 @@ angular.module('emission.main.control',['emission.services',
         .then(function(){
             $scope.getCollectionSettings()
         }, function(err){
-            console.log("setCongif Error: " + err);
+            console.log("setConfig Error: " + err);
         });
         $scope.collectSettingsPopup.hide();
     };
@@ -303,7 +298,7 @@ angular.module('emission.main.control',['emission.services',
         .then(function(){
             $scope.getSyncSettings()
         }, function(err){
-            console.log("setCongif Error: " + err);
+            console.log("setConfig Error: " + err);
         });
         $scope.syncSettingsPopup.hide();
     };
@@ -384,7 +379,7 @@ angular.module('emission.main.control',['emission.services',
         return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
     $scope.eraseUserData = function() {
-        UserCalorieData.delete();
+        CalorieCal.delete();
         $ionicPopup.alert({template: 'User data erased.'});
 
     }
@@ -393,7 +388,7 @@ angular.module('emission.main.control',['emission.services',
             return state.substring(6);
         }
     }
-    $scope.toggleCollection = function() {
+    $scope.expandDeveloperZone = function() {
         if ($scope.collectionExpanded()) {
             $scope.expanded = false;
             $ionicScrollDelegate.resize();

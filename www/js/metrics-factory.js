@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics.factory', [])
+angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
 
 .factory('FootprintHelper', function() {
   var fh = {};
@@ -33,12 +33,39 @@ angular.module('emission.main.metrics.factory', [])
   return fh;
 })
 
-.factory('CalorieHelper', function(){
+.factory('CalorieCal', function(storage){
+
+  var cc = {}; 
+  cc.set = function(info) {
+    for(key in info){
+      storage.set(key, info[key])
+    }
+  };;;
+  cc.get = function() {
+    var userData = {
+        'gender': storage.get('gender'),
+        'heightUnit': storage.get('heightUnit'),
+        'height': storage.get('height'),
+        'weightUnit': storage.get('weightUnit'),
+        'weight': storage.get('weight'),
+        'age': storage.get('age'),
+        'userDataSaved': storage.get('userDataSaved')
+      }
+      return userData;
+  };
+  cc.delete = function() {
+    storage.remove('gender');
+        storage.remove('height');
+        storage.remove('heightUnit');
+        storage.remove('weight');
+        storage.remove('weightUnit');
+        storage.remove('age');
+        storage.remove('userDataSaved');
+  };
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
   };
-  var ch = {};
-  ch.getMet = function(mode, speed) {
+  cc.getMet = function(mode, speed) {
     if (!standardMETs[mode]) return console.log("Illegal mode");
     for (var i in standardMETs[mode]) {
       if (mpstomph(speed).between(standardMETs[mode][i].range[0], standardMETs[mode][i].range[1])) {
@@ -55,7 +82,7 @@ angular.module('emission.main.metrics.factory', [])
   var fttocm = function(ft) {
     return ft * 30.48;
   }
-  ch.getCorrectedMet = function(met, gender, age, height, heightUnit, weight, weightUnit) {
+  cc.getCorrectedMet = function(met, gender, age, height, heightUnit, weight, weightUnit) {
     var height = heightUnit == 0? fttocm(height) : height;
     var weight = weightUnit == 0? lbtokg(weight) : weight;
     if (gender == 1) { //male
@@ -66,10 +93,10 @@ angular.module('emission.main.metrics.factory', [])
       return met;
     }
   }
-  ch.getuserCalories = function(durationInMin, met) {
+  cc.getuserCalories = function(durationInMin, met) {
     return 65 * durationInMin * met;
   }
-  ch.getCalories = function(weightInKg, durationInMin, met) {
+  cc.getCalories = function(weightInKg, durationInMin, met) {
     return weightInKg * durationInMin * met;
   }
   var standardMETs = {
@@ -152,6 +179,6 @@ angular.module('emission.main.metrics.factory', [])
       }
     }
   }
-  return ch;
+  return cc;
 
 });

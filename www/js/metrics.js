@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.localstorage', 'emission.main.metrics.factory'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, CalorieHelper, $ionicPopup,
-                                    FootprintHelper, UserCalorieData) {
+                                    CommHelper, $window, $ionicPopup,
+                                    FootprintHelper, CalorieCal) {
     $scope.uictrl = {
       showRange: false,
       showFilter: false,
@@ -105,11 +105,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                   'weight': $scope.userData.weight,
                   'age': $scope.userData.age,
                   'userDataSaved': true};
-      UserCalorieData.set(info);
+      CalorieCal.set(info);
     }
 
     $scope.userDataSaved = function() {
-      return UserCalorieData.get().userDataSaved == true;
+      return CalorieCal.get().userDataSaved == true;
     }
     $scope.options = {
         chart: {
@@ -282,21 +282,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         for (var i in durationData) {
           if ($scope.userDataSaved()) {
-            var userDataFromStorage = UserCalorieData.get();
-            var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
+            var userDataFromStorage = CalorieCal.get();
+            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
             var gender = userDataFromStorage.gender;
             var heightUnit = userDataFromStorage.heightUnit;
             var height = userDataFromStorage.height;
             var weightUnit = userDataFromStorage.weightUnit;
             var weight = userDataFromStorage.weight;
             var age = userDataFromStorage.age;
-            met = CalorieHelper.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
+            met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
           } else {
-            var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
+            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
           }
           $scope.caloriesData.userCalories.push({
             key: durationData[i].key,
-            values: Math.round(CalorieHelper.getuserCalories(durationData[i].values / 3600, met)) + ' cal'
+            values: Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) + ' cal'
           })
         }
 
@@ -308,11 +308,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         for (var i in avgDurationData) {
 
-          var met = CalorieHelper.getMet(avgDurationData[i].key, avgSpeedData[i].values);
+          var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
 
           $scope.caloriesData.aggrCalories.push({
             key: avgDurationData[i].key,
-            values: Math.round(CalorieHelper.getuserCalories(avgDurationData[i].values / 3600, met)) + ' cal'
+            values: Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) + ' cal'
           })
         }
 

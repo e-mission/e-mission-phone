@@ -133,4 +133,4 @@ angular.module('emission.main', ['emission.main.recent',
     $scope.tabsCustomClass = function() {
         return ($scope.dark_theme)? "tabs-icon-top tabs-custom-dark" : "tabs-icon-top tabs-custom";
     }
-})
+});

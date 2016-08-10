@@ -110,8 +110,8 @@ angular.module('emission.services', [])
     };
 
     this.dataCollectionGetConfig = function() {
-      return new Promise(function(reslove, reject) {
-          reslove(window.cordova.plugins.BEMDataCollection.getConfig());
+      return new Promise(function(resolve, reject) {
+          resolve(window.cordova.plugins.BEMDataCollection.getConfig());
       });
     };
     this.serverSyncSetConfig = function(config) {
@@ -121,21 +121,21 @@ angular.module('emission.services', [])
     };
 
     this.serverSyncGetConfig = function() {
-      return new Promise(function(reslove, reject) {
-          reslove(window.cordova.plugins.BEMServerSync.getConfig());
+      return new Promise(function(resolve, reject) {
+          resolve(window.cordova.plugins.BEMServerSync.getConfig());
       });
     };
 
     this.getAccuracyOptions = function() {
-      return new Promise(function(reslove, reject) {
-          reslove(window.cordova.plugins.BEMDataCollection.getAccuracyOptions());
+      return new Promise(function(resolve, reject) {
+          resolve(window.cordova.plugins.BEMDataCollection.getAccuracyOptions());
       });
     };
 
     this.getUserEmail = function() {
-      return new Promise(function(reslove, reject) {
+      return new Promise(function(resolve, reject) {
         window.cordova.plugins.BEMJWTAuth.getUserEmail(function(response) {
-            reslove(response);
+            resolve(response);
         }, function(error) {
             reject(error);
         });
@@ -143,9 +143,9 @@ angular.module('emission.services', [])
     };
 
     this.getState = function() {
-      return new Promise(function(reslove, reject) {
+      return new Promise(function(resolve, reject) {
         window.cordova.plugins.BEMDataCollection.getState(function(response) {
-            reslove(response);
+            resolve(response);
         }, function(error) {
             reject(error);
         });
@@ -153,9 +153,9 @@ angular.module('emission.services', [])
     };
 
     this.getSettings = function() {
-      return new Promise(function(reslove, reject) {
+      return new Promise(function(resolve, reject) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(function(response) {
-            reslove(response);
+            resolve(response);
         }, function(error) {
             reject(error);
         });
