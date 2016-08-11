@@ -145,25 +145,28 @@ The avatar has seperate PNG for head, costume, shirt, pet etc. Spritesmith conve
 
 The PNG and CSS folder that has the avatar is located at www/common/. Add new avatar PNG and CSS here.
 
-Walk though to cloning the required files from habitrpg to emission
+Walk through to clone the required files from habitrpg to emission
 	
 	1. Clone habitrpg repository
 
 		$ git clone https://github.com/HabitRPG/habitrpg.git
 
-	2. Copy the gulp-sprites.js file from habitrpg to emission
+	2. Make task file in emission
 
 		$ cd e-mission-phone/www/js/
 		$ mkdir tasks
+
+	3. Copy the gulp-sprites.js file from habitrpg to emission
+
 		$ cp -r habitrpg/tasks/gulp-sprites.js e-mission-phone/www/js/tasks/
 
-	3. Add the following line to e-mission-phone/gulpfule.js to sycn the gulp-sprites.js file
+	4. Add the following line to e-mission-phone/gulpfule.js to sycn the gulp-sprites.js file
 
 		require('glob').sync('/www/tasks/gulp-*').forEach(require);
 
-	4. Copy the 3 folders from habitrpg/common- css, dist and img and paste it to e-mission-phone/www/common
+	5. Copy the 3 folders from habitrpg/common- css, dist and img and paste it to e-mission-phone/www/common
 
-	5. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines that points to common folder copied from habitrpg to e-mission
+	6. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines that points to common folder copied from habitrpg to e-mission
 
 
 Alternative way is to get the avatar PNG directly through the API. E-mission-phone has Content-Security-Policy that blocks unknown contents, to allow E-mission-phone to recognize the URL add the Habitrpg server url and the s3 URL to “Content-Secutiry-Policy” in the head of www/templates/index.html   
