@@ -19,9 +19,9 @@
     <div class="heatmap-weekday-container-lower hvcenter" ng-click="changeToWeekday()">{{selectCtrl.toDateWeekdayString}}</div>
   </div>
   <div style="height: 40px; width: 100%;">
-    <div class="metric-metric-button hvcenter" ng-click="changeMode()">{{selectCtrl.modeString}}</div>
+    <div class="heatmap-mode-button hvcenter" ng-click="changeMode()">{{selectCtrl.modeString}}</div>
     <div class="heatmap-get-button hvcenter" ng-click="getPopRoute()">Get!</div>
-    <div class="heatmap-get-button hvcenter" ng-click="refreshTiles()">Fix Map</div>
+    <div class="heatmap-fixmap-button hvcenter" ng-click="refreshTiles()">Fix Map</div>
     
   </div>
     <leaflet id='heatmap' width="100%" height="{{mapHeight}}px" defaults="mapCtrl.defaults"></leaflet>

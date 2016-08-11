@@ -50,25 +50,25 @@
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Force sync</div>
-      <div ng-click="forceSync()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-sync" ng-style="getIconStyle()"></i></div>
+      <div class="control-icon-button" ng-click="forceSync()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-sync" ng-style="getIconStyle()"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Check for UI updates</div>
-      <div ng-click="checkUpdates()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-download" ng-style="getIconStyle()"></i></div>
+      <div class="control-icon-button" ng-click="checkUpdates()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-download" ng-style="getIconStyle()"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Email log</div>
-      <div ng-click="emailLog()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-mail" ng-style="getIconStyle()"></i></div>
+      <div class="control-icon-button" ng-click="emailLog()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-mail" ng-style="getIconStyle()"></i></div>
     </div>
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text">User data</div>
-      <div ng-click="toggleUserData()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getUserDataExpandButtonClass()" ng-style="getIconStyle()" id="userDataButton"></i></div>
+      <div class="control-icon-button" ng-click="toggleUserData()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getUserDataExpandButtonClass()" ng-style="getIconStyle()" id="userDataButton"></i></div>
     </div>
     <!-- Begin user data -->
     <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Erase data</div>
-        <div ng-click="eraseUserData()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-trash-b" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="eraseUserData()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-trash-b" ng-style="getIconStyle()"></i></div>
       </div>
       <ion-list>
 
@@ -82,18 +82,18 @@
 
     <div class="control-list-item">
       <div class="control-list-text">Developer zone</div>
-      <div ng-click="toggleCollection()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getExpandButtonClass()" ng-style="getIconStyle()" id="expandButton"></i></div>
+      <div class="control-icon-button" ng-click="toggleCollection()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getExpandButtonClass()" ng-style="getIconStyle()" id="expandButton"></i></div>
     </div>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Refresh</div>
-        <div ng-click="refreshScreen()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-refresh" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="refreshScreen()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-refresh" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check consent</div>
-        <div ng-click="checkConsent()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-checkmark-circled" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="checkConsent()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-checkmark-circled" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Set UI channel</div>
@@ -103,24 +103,24 @@
       </div>
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
-        <div ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check log</div>
-        <div ng-click="showLog()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="showLog()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check sensed data</div>
-        <div ng-click="showSensed()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="showSensed()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check map</div>
-        <div ng-click="showMap()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="showMap()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
       </div>
 
       <div class="control-list-item">
         <div class="control-list-text">Collection</div>
-        <div ng-click="editCollectionConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="editCollectionConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
       </div>
       <ion-list>
 
@@ -132,7 +132,7 @@
 
       <div class="control-list-item">
         <div class="control-list-text">Sync</div>
-        <div ng-click="editSyncConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
+        <div class="control-icon-button" ng-click="editSyncConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
           <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
                 <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">{{entry.key}}</div>
                 <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.val}}</div>

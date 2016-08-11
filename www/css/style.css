@@ -677,6 +677,15 @@ html, body, #chart2, svg {
 }
 .metric-metric-button {
   float: left;
+  width: 49%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.heatmap-mode-button {
+  float: left;
   width: 33%;
   border-radius: 5px;
   background-color: white;
@@ -964,6 +973,16 @@ html, body, #chart2, svg {
   color: #2bb096;
   height: 35px;
 }
+.heatmap-fixmap-button { 
+  float: right;
+  width: 30%;
+  margin-right: 10px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
 .heatmap-get-button { 
   float: right;
   width: 30%;
@@ -1098,4 +1117,13 @@ html, body, #chart2, svg {
 }
 .item.item-input.item-select {
   border-width: 1px !important;
+}
+.control-icon-button:active {
+  opacity: 0.7;
+}
+.full-toggle-left:active {
+ opacity: 0.7; 
+}
+.full-toggle-right:active {
+  opacity: 0.7;
 }
