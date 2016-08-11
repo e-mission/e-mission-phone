@@ -131,18 +131,39 @@ $ git branch -d mybranch
 ```
 Game - Adding Habitica Avatar
 ---
-E-mission-phone does not use the API to get the Habitica avatar, instead it uses the same HTML, dependencies and PNG files as Habitica to generate the avatar. The avatar png are converted into CSS using the [gulp.spritesmith](https://github.com/twolfson/gulp.spritesmith/blob/master/README.md)
+E-mission-phone does not use the API to get the Habitica avatar, instead it uses the same HTML, dependencies and PNG files as Habitica to generate the avatar. The avatar png are converted into CSS using [gulp.spritesmith](https://github.com/twolfson/gulp.spritesmith/blob/master/README.md)
 
 Habitrpg frequently update the sprites PNG and CSS folder and the dependencies may change too, so E-mission-phone may have to change the sprites folder, following a guide to update the avatar:
 
 Habitrgp use Jade template instead of HTML but E-mission-phone uses HTML. 
 	
-	1. Use the [Habitica API](https://habitica.com/apidoc/#api-DataExport-ExportUserAvatarHtml) to render any user avatar HTML page.
+	1. Use the [Habitica API](https://habitica.com/apidoc/#api-DataExport-ExportUserAvatarHtml) with a habitica user id on the browser to render an user avatar HTML page.
 	2. Right click on the HTML page and click the Inspect option (This shows the Avatar HTML instead of Jade).
 	3. Use the body of HTML inside the <figure> tag
 
-The avatar has seperate PNG for head, costume, shirt, pet etc. Spritesmith converts the PNG to and avatar. The spritesmith gulp JavaScript that converts the PNG to a CSS avatar is located at www/js/tasks/gulp-sprites.js, change this JavaScript to add new type of PNG or updated according to Habitrpg repo.
+The avatar has seperate PNG for head, costume, shirt, pet etc. Spritesmith converts the PNG to and avatar. The spritesmith gulp JavaScript that converts the PNG to a CSS avatar is located at www/tasks/gulp-sprites.js, updated this file according to Habitrpg repo. If there is a new PNG with different height and width than the defult PNG change this JavaScript.
 
 The PNG and CSS folder that has the avatar is located at www/common/. Add new avatar PNG and CSS here.
+
+Walk though to cloning the required files from habitrpg to emission
+	
+	1. Clone habitrpg repository
+
+		$ git clone https://github.com/HabitRPG/habitrpg.git
+
+	2. Copy the gulp-sprites.js file from habitrpg to emission
+
+		$ cd e-mission-phone/www/js/
+		$ mkdir tasks
+		$ cp -r habitrpg/tasks/gulp-sprites.js e-mission-phone/www/js/tasks/
+
+	3. Add the following line to e-mission-phone/gulpfule.js to sycn the gulp-sprites.js file
+
+		require('glob').sync('/www/tasks/gulp-*').forEach(require);
+
+	4. Copy the 3 folders from habitrpg/common- css, dist and img and paste it to e-mission-phone/www/common
+
+	5. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines that points to common folder copied from habitrpg to e-mission
+
 
 Alternative way is to get the avatar PNG directly through the API. E-mission-phone has Content-Security-Policy that blocks unknown contents, to allow E-mission-phone to recognize the URL add the Habitrpg server url and the s3 URL to “Content-Secutiry-Policy” in the head of www/templates/index.html   

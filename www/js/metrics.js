@@ -234,34 +234,25 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $ionicLoading.show({
         template: 'Loading...'
       });
-      var getDuration = new Promise(function(resolve, reject) {
+      var getDuration = function() {
         var clonedData = angular.copy(data);
         clonedData.metric = "duration";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      var getSpeed = new Promise(function(resolve, reject) {
+        return CommHelper.getMetrics(mode, data);
+      }
+      var getSpeed = function() {
         var clonedData = angular.copy(data);
         clonedData.metric = "median_speed";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      var getResponse = new Promise(function(resolve, reject) {
-        CommHelper.getMetrics(mode, data, function(response) {
+        return CommHelper.getMetrics(mode, data);
+      }
+      var getResponse = function() {
+        return CommHelper.getMetrics(mode, data);
+      }
 
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      });
-
-      var getDistance =  new Promise(function(resolve, reject) {
+      var getDistance =  function() {
         var clonedData = angular.copy(data);
         clonedData.metric = "distance";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
+        return CommHelper.getMetrics(mode, data);
+      }
       Promise.all([getDuration, getSpeed, getResponse, getDistance]).then(function(results) {
         // cacheResults(response);
         $ionicLoading.hide();

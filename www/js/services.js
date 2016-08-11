@@ -47,13 +47,15 @@ angular.module('emission.services', [])
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, successCallback, errorCallback);
     };
 
-    this.getMetrics = function(timeType, metrics_query, successCallback, errorCallback) {
-        var msgFiller = function(message) {
+    this.getMetrics = function(timeType, metrics_query) {
+      return new Promise(function(resolve, reject) {
+        ar msgFiller = function(message) {
             for (var key in metrics_query) {
                 message[key] = metrics_query[key]
             };
         };
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, successCallback, errorCallback);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
+      })
     };
 })
 
