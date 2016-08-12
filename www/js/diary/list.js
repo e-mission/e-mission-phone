@@ -117,6 +117,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           readAndUpdateForDay(moment(val));
         }
     }
+    $scope.localTimeString = function(dt) {
+      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
+      var post = ((dt.hour >= 12))? " pm" : " am";
+      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
+      return hr + ":" + min + post;
+    }
 
     $scope.datepickerObject = {
 
