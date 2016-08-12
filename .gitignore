@@ -9,3 +9,4 @@ package-hooks/
 .DS_Store
 app-settings.json
 .idea/
+.io-config.json
