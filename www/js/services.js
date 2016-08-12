@@ -49,7 +49,7 @@ angular.module('emission.services', [])
 
     this.getMetrics = function(timeType, metrics_query) {
       return new Promise(function(resolve, reject) {
-        ar msgFiller = function(message) {
+        var msgFiller = function(message) {
             for (var key in metrics_query) {
                 message[key] = metrics_query[key]
             };

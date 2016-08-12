@@ -166,7 +166,7 @@ Walk through to clone the required files from habitrpg to emission
 
 	5. Copy the 3 folders from habitrpg/common- css, dist and img and paste it to e-mission-phone/www/common
 
-	6. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines that points to common folder copied from habitrpg to e-mission
+	6. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines those point to common folder that was copied from habitrpg to e-mission
 
 
-Alternative way is to get the avatar PNG directly through the API. E-mission-phone has Content-Security-Policy that blocks unknown contents, to allow E-mission-phone to recognize the URL add the Habitrpg server url and the s3 URL to “Content-Secutiry-Policy” in the head of www/templates/index.html   
+Alternative way is to get the avatar PNG directly through the API. E-mission-phone has Content-Security-Policy that blocks unknown contents, to allow E-mission-phone to recognize the URL add the Habitrpg server URL and the s3 URL to “Content-Secutiry-Policy” in the head of www/templates/index.html   
