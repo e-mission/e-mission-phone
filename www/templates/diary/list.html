@@ -30,7 +30,7 @@
         -->
 
 		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
-           <div class="start-time-tag">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>      
+           <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>      
             <div  style="padding-left: 19%;">
 	      
 			 <ion-item style="background-color: transparent;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
@@ -80,7 +80,7 @@
             </ion-item>
            
             </div>
-            <div ng-class="stopTimeTagClass(tripgj)">{{getFormattedTime(tripgj.data.properties.end_ts)}}</div>
+            <div ng-class="stopTimeTagClass(tripgj)">{{localTimeString (tripgj.data.properties.end_local_dt)}}</div>
         </div>
 		</ion-list>
 	</ion-content>

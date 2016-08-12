@@ -596,6 +596,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         });
     };
+    $scope.getDefaultCarboGoalCharData = function() {
+      var lower = 0;
+      var upper = 100;
+      $scope.carbonGoalChartData = { // first elem: absolute left or right distance, second elem: number
+        min: [2, lower], // 2 for offset padding
+        max: [2, upper],
+      }     
+    }
+    $scope.getDefaultCarboGoalCharData();
     $scope.getCarbonGoalChartData = function() {
       var date1 = $scope.selectCtrl.fromDateTimestamp;
       var date2 = $scope.selectCtrl.toDateTimestamp;

@@ -35,25 +35,25 @@
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Force sync</div>
-      <div ng-click="forceSync()" class="icon-button-style" ><i class="ion-android-sync"></i></div>
+      <div ng-click="forceSync()" class="icon-button-style control-icon-button" ><i class="ion-android-sync"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Check for UI updates</div>
-      <div ng-click="checkUpdates()" class="icon-button-style"><i class="ion-android-download"></i></div>
+      <div ng-click="checkUpdates()" class="icon-button-style control-icon-button"><i class="ion-android-download"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Email log</div>
-      <div ng-click="emailLog()" class="icon-button-style"><i class="ion-android-mail"></i></div>
+      <div ng-click="emailLog()" class="icon-button-style control-icon-button"><i class="ion-android-mail"></i></div>
     </div>
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text">User data</div>
-      <div ng-click="toggleUserData()" class="icon-button-style"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
+      <div ng-click="toggleUserData()" class="icon-button-style control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
     </div>
     <!-- Begin user data -->
     <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Erase data</div>
-        <div ng-click="eraseUserData()" id="gray" class="icon-button-style"><i class="ion-trash-b"></i></div>
+        <div ng-click="eraseUserData()" id="gray" class="icon-button-style control-icon-button"><i class="ion-trash-b"></i></div>
       </div>
       <ion-list>
 
@@ -67,18 +67,18 @@
 
     <div class="control-list-item">
       <div class="control-list-text">Developer zone</div>
-      <div ng-click="expandDeveloperZone()" class="icon-button-style"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
+      <div ng-click="expandDeveloperZone()" class="icon-button-style control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
     </div>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Refresh</div>
-        <div ng-click="refreshScreen()" class="icon-button-style"><i class="ion-refresh"></i></div>
+        <div ng-click="refreshScreen()" class="icon-button-style control-icon-button"><i class="ion-refresh"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check consent</div>
-        <div ng-click="checkConsent()" class="icon-button-style"><i class="ion-checkmark-circled"></i></div>
+        <div ng-click="checkConsent()" class="icon-button-style control-icon-button"><i class="ion-checkmark-circled"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Set UI channel</div>
@@ -88,24 +88,24 @@
       </div>
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
-        <div ng-click="forceState()" id="gray" class="icon-button-style"><i class="ion-edit"></i></div>
+        <div ng-click="forceState()" id="gray" class="icon-button-style control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check log</div>
-        <div ng-click="showLog()" id="gray" class="icon-button-style"><i class="ion-ios-arrow-right"></i></div>
+        <div ng-click="showLog()" id="gray" class="icon-button-style control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check sensed data</div>
-        <div ng-click="showSensed()" id="gray" class="icon-button-style"><i class="ion-ios-arrow-right"></i></div>
+        <div ng-click="showSensed()" id="gray" class="icon-button-style control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check map</div>
-        <div ng-click="showMap()" id="gray" class="icon-button-style"><i class="ion-ios-arrow-right"></i></div>
+        <div ng-click="showMap()" id="gray" class="icon-button-style control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
 
       <div class="control-list-item">
         <div class="control-list-text">Collection</div>
-        <div ng-click="editCollectionConfig($event)" id="gray" class="icon-button-style""><i class="ion-edit"></i></div>
+        <div ng-click="editCollectionConfig($event)" id="gray" class="icon-button-style control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
 
@@ -117,7 +117,7 @@
 
       <div class="control-list-item">
         <div class="control-list-text">Sync</div>
-        <div ng-click="editSyncConfig($event)" id="gray" class="icon-button-style"><i class="ion-edit"></i></div>
+        <div ng-click="editSyncConfig($event)" id="gray" class="icon-button-style control-icon-button"><i class="ion-edit"></i></div>
           <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
                 <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
                 <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>

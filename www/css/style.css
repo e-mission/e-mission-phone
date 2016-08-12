@@ -29,10 +29,16 @@
 .icon.ion-chevron-left {
  color: #2bb096; 
 }
-.col.col-10.right_arrow {
+.icon.ion-chevron-right {
  color: #2bb096; 
 }
-
+.date_col.date_selected {
+ background-color: #2bb096 !important;
+ 
+}
+.date_col:active {
+ background-color: #2bb096 !important;
+}
 .customButtomIconSize:before {
     font-size: 25px !important;
 }
@@ -399,8 +405,8 @@ ion-header-bar {
   padding-top: 5px;
   padding-bottom: 5px;
   padding-left: 30px;
-  margin-top: 0;
-  margin-bottom: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0!important;
 }
 .list-location-dark {
   color: white;
@@ -409,8 +415,8 @@ ion-header-bar {
   padding-top: 5px; 
   padding-bottom: 5px; 
   padding-left: 30px; 
-  margin-top: 0; 
-  margin-bottom: 0;
+  margin-top: 0 !important;
+  margin-bottom: 0 !important;
 }
 p.list-text-dark {
   color: white;
@@ -700,6 +706,15 @@ html, body, #chart2, svg {
 }
 .metric-metric-button {
   float: left;
+  width: 49%;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
+.heatmap-mode-button {
+  float: left;
   width: 33%;
   border-radius: 5px;
   background-color: white;
@@ -987,6 +1002,16 @@ html, body, #chart2, svg {
   color: #2bb096;
   height: 35px;
 }
+.heatmap-fixmap-button { 
+  float: right;
+  width: 30%;
+  margin-right: 10px;
+  border-radius: 5px;
+  background-color: white;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
+  color: #2bb096;
+  height: 35px;
+}
 .heatmap-get-button { 
   float: right;
   width: 30%;
@@ -1115,4 +1140,19 @@ html, body, #chart2, svg {
   opacity: 0.6;
   border-radius: 2px;
   width: 100%;
+}
+.item {
+  border-width: 0 !important;
+}
+.item.item-input.item-select {
+  border-width: 1px !important;
+}
+.control-icon-button:active {
+  opacity: 0.7;
+}
+.full-toggle-left:active {
+ opacity: 0.7; 
+}
+.full-toggle-right:active {
+  opacity: 0.7;
 }
