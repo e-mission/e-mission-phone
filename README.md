@@ -166,6 +166,12 @@ Walk through to clone the required files from habitrpg to emission
 
 	5. Copy the 3 folders from habitrpg/common- css, dist and img and paste it to e-mission-phone/www/common
 
+		$ cd e-mission-phone/www
+		$ mkdir common
+		$ cp -r habitrpg/common/css e-mission-phone/www/common
+		$ cp -r habitrpg/common/dist e-mission-phone/www/common
+		$ cp -r habitrpg/common/img e-mission-phone/www/common
+	
 	6. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines those point to common folder that was copied from habitrpg to e-mission
 
 
