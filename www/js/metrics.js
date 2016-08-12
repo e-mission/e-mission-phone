@@ -1,161 +1,10 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker','angularLocalStorage'])
-.factory('FootprintHelper', function() {
-  var fh = {};
-  var footprint = {
-    train: 92/1609,
-    car: 287/1609,
-    ON_FOOT: 0,
-    BICYCLING: 0
-  }
-  var readable = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
-  }
-  var mtokm = function(v) {
-    return v / 1000;
-  }
-  fh.getFootprintRaw = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
-    } else {
-      return footprint[mode] * mtokm(distance);
-    }
-  }
-  fh.getFootprint = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
-    } else {
-      return readable(footprint[mode] * mtokm(distance));
-    }
-  }
-  return fh;
-})
-.factory('CalorieHelper', function(){
-  Number.prototype.between = function (min, max) {
-    return this >= min && this <= max;
-  };
-  var ch = {};
-  ch.getMet = function(mode, speed) {
-    if (!standardMETs[mode]) return console.log("Illegal mode");
-    for (var i in standardMETs[mode]) {
-      if (mpstomph(speed).between(standardMETs[mode][i].range[0], standardMETs[mode][i].range[1])) {
-        return standardMETs[mode][i].mets;
-      }
-    }
-  }
-  var mpstomph = function(mps) {
-    return 2.23694 * mps;
-  }
-  var lbtokg = function(lb) {
-    return lb * 0.453592;
-  }
-  var fttocm = function(ft) {
-    return ft * 30.48;
-  }
-  ch.getCorrectedMet = function(met, gender, age, height, heightUnit, weight, weightUnit) {
-    var height = heightUnit == 0? fttocm(height) : height;
-    var weight = weightUnit == 0? lbtokg(weight) : weight;
-    if (gender == 1) { //male
-      var met = met*3.5/((66.4730+5.0033*height+13.7516*weight-6.7550*age)/ 1440 / 5 / weight * 1000);
-      return met;
-    } else if (gender == 0) { //female
-      var met = met*3.5/((655.0955+1.8496*height+9.5634*weight-4.6756*age)/ 1440 / 5 / weight * 1000);
-      return met;
-    }
-  }
-  ch.getuserCalories = function(durationInMin, met) {
-    return 65 * durationInMin * met;
-  }
-  ch.getCalories = function(weightInKg, durationInMin, met) {
-    return weightInKg * durationInMin * met;
-  }
-  var standardMETs = {
-    "ON_FOOT": {
-      "VERY_SLOW": {
-        range: [0, 2.0],
-        mets: 2.0
-      },
-      "SLOW": {
-        range: [2.0, 2.5],
-        mets: 2.8
-      },
-      "MODERATE_0": {
-        range: [2.5, 2.8],
-        mets: 3.0
-      },
-      "MODERATE_1": {
-        range: [2.8, 3.2],
-        mets: 3.5
-      },
-      "FAST": {
-        range: [3.2, 3.5],
-        mets: 4.3
-      },
-      "VERY_FAST_0": {
-        range: [3.5, 4.0],
-        mets: 5.0
-      },
-      "VERY_FAST_!": {
-        range: [4.0, 4.5],
-        mets: 6.0
-      },
-      "VERY_VERY_FAST": {
-        range: [4.5, 5],
-        mets: 7.0
-      },
-      "SUPER_FAST": {
-        range: [5, 6],
-        mets: 8.3
-      },
-      "RUNNING": {
-        range: [6, Number.MAX_VALUE],
-        mets: 9.8
-      }
-    },
-    "IN_VEHICLE": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "BICYCLING": {
-      "VERY_VERY_SLOW": {
-        range: [0, 5.5],
-        mets: 3.5
-      },
-      "VERY_SLOW": {
-        range: [5.5, 10],
-        mets: 5.8
-      },
-      "SLOW": {
-        range: [10, 12],
-        mets: 6.8
-      },
-      "MODERATE": {
-        range: [12, 14],
-        mets: 8.0
-      },
-      "FAST": {
-        range: [14, 16],
-        mets: 10.0
-      },
-      "VERT_FAST": {
-        range: [16, 19],
-        mets: 12.0
-      },
-      "RACING": {
-        range: [20, Number.MAX_VALUE],
-        mets: 15.8
-      }
-    }
-  }
-  return ch;
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory'])
 
-})
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, CalorieHelper, $ionicPopup,storage, FootprintHelper) {
-
+                                    CommHelper, $window, $ionicPopup,
+                                    FootprintHelper, CalorieCal) {
     $scope.uictrl = {
       showRange: false,
       showFilter: false,
@@ -248,18 +97,19 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.userData.gender = gender;
     }
 
-    $scope.storeUserData = function() {
-      storage.set('gender', $scope.userData.gender);
-      storage.set('heightUnit', $scope.userData.heightUnit);
-      storage.set('weightUnit', $scope.userData.weightUnit);
-      storage.set('height', $scope.userData.height);
-      storage.set('weight', $scope.userData.weight);
-      storage.set('age', $scope.userData.age);
-      storage.set('userDataSaved', true);
+    $scope.storeUserData = function() {     
+      var info = {'gender': $scope.userData.gender,
+                  'heightUnit': $scope.userData.heightUnit,
+                  'weightUnit': $scope.userData.weightUnit,
+                  'height': $scope.userData.height,
+                  'weight': $scope.userData.weight,
+                  'age': $scope.userData.age,
+                  'userDataSaved': true};
+      CalorieCal.set(info);
     }
 
     $scope.userDataSaved = function() {
-      return storage.get('userDataSaved') == true;
+      return CalorieCal.get().userDataSaved == true;
     }
     $scope.options = {
         chart: {
@@ -384,34 +234,25 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $ionicLoading.show({
         template: 'Loading...'
       });
-      var getDuration = new Promise(function(resolve, reject) {
+      var getDuration = function() {
         var clonedData = angular.copy(data);
         clonedData.metric = "duration";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      var getSpeed = new Promise(function(resolve, reject) {
+        return CommHelper.getMetrics(mode, data);
+      }
+      var getSpeed = function() {
         var clonedData = angular.copy(data);
         clonedData.metric = "median_speed";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      var getResponse = new Promise(function(resolve, reject) {
-        CommHelper.getMetrics(mode, data, function(response) {
+        return CommHelper.getMetrics(mode, data);
+      }
+      var getResponse = function() {
+        return CommHelper.getMetrics(mode, data);
+      }
 
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      });
-
-      var getDistance =  new Promise(function(resolve, reject) {
+      var getDistance =  function() {
         var clonedData = angular.copy(data);
         clonedData.metric = "distance";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
+        return CommHelper.getMetrics(mode, data);
+      }
       Promise.all([getDuration, getSpeed, getResponse, getDistance]).then(function(results) {
         // cacheResults(response);
         $ionicLoading.hide();
@@ -432,20 +273,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         for (var i in durationData) {
           if ($scope.userDataSaved()) {
-            var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
-            var gender = storage.get('gender');
-            var heightUnit = storage.get('heightUnit');
-            var height = storage.get('height');
-            var weightUnit = storage.get('weightUnit');
-            var weight = storage.get('weight');
-            var age = storage.get('age');
-            met = CalorieHelper.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
+            var userDataFromStorage = CalorieCal.get();
+            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
+            var gender = userDataFromStorage.gender;
+            var heightUnit = userDataFromStorage.heightUnit;
+            var height = userDataFromStorage.height;
+            var weightUnit = userDataFromStorage.weightUnit;
+            var weight = userDataFromStorage.weight;
+            var age = userDataFromStorage.age;
+            met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
           } else {
-            var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
+            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
           }
           $scope.caloriesData.userCalories.push({
             key: durationData[i].key,
-            values: Math.round(CalorieHelper.getuserCalories(durationData[i].values / 3600, met)) + ' cal'
+            values: Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) + ' cal'
           })
         }
 
@@ -457,11 +299,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         for (var i in avgDurationData) {
 
-          var met = CalorieHelper.getMet(avgDurationData[i].key, avgSpeedData[i].values);
+          var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
 
           $scope.caloriesData.aggrCalories.push({
             key: avgDurationData[i].key,
-            values: Math.round(CalorieHelper.getuserCalories(avgDurationData[i].values / 3600, met)) + ' cal'
+            values: Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) + ' cal'
           })
         }
 
