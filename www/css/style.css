@@ -128,12 +128,14 @@ progress::-webkit-progress-bar{
     height: 70px;
 }*/
 
-.golden::-webkit-progress-value{
+progress.golden::-webkit-progress-value{
   background: #ffd700;
+  border-radius: 10px;
 }
 
-.purple::-webkit-progress-value{
+progress.purple::-webkit-progress-value{
   background: #3D3240;
+  border-radius: 10px;
 }
 
 img.center {
@@ -237,10 +239,10 @@ background-image: none !important; }
   display: block !important;
 }
 .input-label {
-	font-size: 16px;
+  font-size: 16px;
 }
 .list {
-	padding-top: 0.5px !important;
+  padding-top: 0.5px !important;
 }
 .card {
   background: #fff;
@@ -302,7 +304,7 @@ ion-header-bar {
 /* Dark theme ends */
 /* Light theme */
 
-.icon-button-style{
+.control-icon-button{
   text-align: center;
   float: right;
   height: 100%;
@@ -313,11 +315,11 @@ ion-header-bar {
   font-size:20px;
 }
 
-#switch-user.icon-button-style{
+#switch-user.control-icon-button{
   background-color: #E0A1A1 !important;
 }
 
-#gray.icon-button-style{
+#gray.control-icon-button{
   background-color: #CCCCCC !important;
 }
 
