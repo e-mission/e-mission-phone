@@ -45,6 +45,10 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
          'Ionic Deploy: Update error! '+ res);
     }, function(prog) {
       console.log('Ionic Deploy: Progress... ', prog);
+      $rootScope.progress = prog;
+      $rootScope.isDownloading = true;
+    }).then(function(){
+      $rootScope.isDownloading = false;
     });
   };
 
