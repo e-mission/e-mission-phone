@@ -45,7 +45,6 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
       var personalTabs = ['root.main.common.map',
                           'root.main.control',
                           'root.main.metrics',
-                          'root.main.dashboard',
                           'root.main.goals',
                           'root.main.diary']
       if (isInList(toState.name, personalTabs)) {

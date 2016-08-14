@@ -1,7 +1,4 @@
 <ion-view view-title="Profile" ng-class="ionViewBackgroundClass()">
-  <div>
-    <progress ng-if="isDownloading" class=" has-header download" value="{{progress}}" max="100"></progress>
-  </div>
   <ion-content>
     <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
@@ -36,10 +33,6 @@
         </div>
       </label>
     </div>
-    <!--div class="control-list-item">
-      <div class="control-list-text">Test</div>
-      <div ng-click="test()" class="control-icon-button" ><i class="ion-code-download"></i></div>
-    </div-->
     <div class="control-list-item">
       <div class="control-list-text">Force sync</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>

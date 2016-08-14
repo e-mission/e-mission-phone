@@ -4,10 +4,10 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
                                  'emission.main.control',
                                  'emission.main.goals',
-                                 'emission.main.dashboard',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'ngCordova',
                                  'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
@@ -67,15 +67,6 @@ angular.module('emission.main', ['emission.main.recent',
       'main-goals': {
         templateUrl: 'templates/main-goals.html',
         controller: 'GoalsCtrl'
-      }
-    }
-  })
-    .state('root.main.dashboard', {
-    url: '/dashboard',
-    views: {
-      'main-dashboard': {
-        templateUrl: 'templates/main-dashboard.html',
-        controller: 'DashboardCtrl'
       }
     }
   })
