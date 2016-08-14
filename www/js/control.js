@@ -8,7 +8,7 @@ angular.module('emission.main.control',['emission.services',
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, StartPrefs, ControlHelper, UpdateCheck, 
-               CalorieCal) {
+               CalorieCal, $timeout) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
@@ -199,6 +199,19 @@ angular.module('emission.main.control',['emission.services',
         $scope.getEmail();
         $scope.getState();
     };
+
+    /*$scope.progressTest = 0;
+    $scope.test = function() {
+        $scope.isDownloading = true;
+        for(var i = 0; i<=100; i++){  
+            (function(index){
+                $timeout(function(){
+                    $scope.progressTest = index;
+                    console.log("Downlaoding..." + index);
+                }, 100*i);
+            })(i);
+        }
+    };*/
 
     $scope.returnToIntro = function() {
       var testReconsent = false
