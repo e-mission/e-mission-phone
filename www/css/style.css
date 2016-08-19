@@ -106,6 +106,29 @@ progress.quest-boss-bar{
   width: 100% !important;;
 }
 
+progress.download{
+  margin: 0;
+  width: 100%;
+  height: 5px;
+  border-radius: 0;
+  padding-top: 0;
+  position: fixed;
+  z-index:1;
+  -webkit-appearance: none;
+   appearance: none;
+}
+
+progress.download::-webkit-progress-bar{
+  background: transparent;
+  border-radius: 0;
+  /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
+}
+
+progress.download::-webkit-progress-value{
+  background: #5eedce;
+  border-radius: 0;
+}
+
 progress::-webkit-progress-value{
   background: #f74040;
   border-radius: 10px;
@@ -128,12 +151,14 @@ progress::-webkit-progress-bar{
     height: 70px;
 }*/
 
-.golden::-webkit-progress-value{
+progress.golden::-webkit-progress-value{
   background: #ffd700;
+  border-radius: 10px;
 }
 
-.purple::-webkit-progress-value{
+progress.purple::-webkit-progress-value{
   background: #3D3240;
+  border-radius: 10px;
 }
 
 img.center {
@@ -237,10 +262,10 @@ background-image: none !important; }
   display: block !important;
 }
 .input-label {
-	font-size: 16px;
+  font-size: 16px;
 }
 .list {
-	padding-top: 0.5px !important;
+  padding-top: 0.5px !important;
 }
 .card {
   background: #fff;
@@ -302,7 +327,7 @@ ion-header-bar {
 /* Dark theme ends */
 /* Light theme */
 
-.icon-button-style{
+.control-icon-button{
   text-align: center;
   float: right;
   height: 100%;
@@ -313,11 +338,11 @@ ion-header-bar {
   font-size:20px;
 }
 
-#switch-user.icon-button-style{
+#switch-user.control-icon-button{
   background-color: #E0A1A1 !important;
 }
 
-#gray.icon-button-style{
+#gray.control-icon-button{
   background-color: #CCCCCC !important;
 }
 

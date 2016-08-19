@@ -4,7 +4,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
-                                    FootprintHelper, CalorieCal) {
+                                    FootprintHelper, CalorieCal) {   
     $scope.uictrl = {
       showRange: false,
       showFilter: false,
@@ -253,7 +253,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         clonedData.metric = "distance";
         return CommHelper.getMetrics(mode, data);
       }
-      Promise.all([getDuration, getSpeed, getResponse, getDistance]).then(function(results) {
+      Promise.all([getDuration(), getSpeed(), getResponse(), getDistance()]).then(function(results) {
         // cacheResults(response);
         $ionicLoading.hide();
         if (results[2].user_metrics) {
