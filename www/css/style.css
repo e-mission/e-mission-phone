@@ -348,10 +348,10 @@ h4.dashboard-headers{
   font-weight: 700;
   color: #54DCC1;
   font-size: 18px;
-  padding-top: 30px;
+  padding-top: 10px;
 }
 
-.carbon-change{
+.percentage-change{
   font-weight: 700;
   color: #54DCC1;
   margin-bottom: 30px;
@@ -361,7 +361,6 @@ h4.dashboard-headers{
   padding-top: 5px;
   font-weight: 700;
   color: #54DCC1;
-  padding-bottom: 30px;
 }
 
 .dashboard-list{

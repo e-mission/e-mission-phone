@@ -12,6 +12,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
     var twoWeeksAgoCarbon = "";
+    var twoWeeksAgoCalories = 0;
     $scope.setCookie = function(){
       $scope.cookie = true;
       $scope.iceCream = false;
@@ -330,6 +331,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
+      $scope.caloriesData.changeInPercentage = "0%"
 
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "0 kg CO₂";
@@ -464,17 +466,30 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         var twoWeekAgoCarAndTrain = twoWeeksAgoCarbon.replace(/ /g,'').split("~");
         var calculation = (((parseInt(lastWeekCarAndTrain[0]) + parseInt(lastWeekCarAndTrain[1])) / 2)
                           / ((parseInt(twoWeekAgoCarAndTrain[0]) + parseInt(twoWeekAgoCarAndTrain[1])) / 2))
-                          * 100 - 100
-        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
-        if(parseInt(lastWeekCarAndTrain[0])>parseInt(twoWeekAgoCarAndTrain[0])){
+                          * 100 - 100;
+        
+        if(parseInt(lastWeekCarAndTrain[0]) > parseInt(twoWeekAgoCarAndTrain[0])){
           $scope.carbonData.change = " increase over a week";
-          $scope.up = true;
-          $scope.down = false;
+          $scope.carbonUp = true;
+          $scope.carbonDown = false;
         } else {
           $scope.carbonData.change = " decrease over a week"
-          $scope.up = false;
-          $scope.down = true;
+          $scope.carbonUp = false;
+          $scope.carbonDown = true;
         }
+        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+
+        $scope.caloriesData.changeInPercentage = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100)) + "%";
+        if(lastWeekCalories > twoWeeksAgoCalories){
+          $scope.caloriesData.change = " increase over a week";
+          $scope.caloriesUp = true;
+          $scope.caloriesDown = false;
+        } else {
+          $scope.caloriesData.change = " decrease over a week"
+          $scope.caloriesUp = false;
+          $scope.caloriesDown = true;
+        }
+
         $scope.uictrl.showContent = true;
 
         if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) {
@@ -491,16 +506,39 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     };
 
     var getTwoWeeksAgo = function() {
-       getDistance().then(function(result) {
-          if (result.user_metrics) {
-            var userCarbonData = getSummaryDataRaw(result.user_metrics, 'distance');
+      Promise.all([getDuration(), getSpeed(), getDistance()]).then(function(results) {
+          if (results[2].user_metrics) {
+            var userCarbonData = getSummaryDataRaw(results[2].user_metrics, 'distance');
             for (var i in userCarbonData) {
               if (userCarbonData[i].key === "IN_VEHICLE") {
                 twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);              
               }
             }
           }
-       });
+          if (results[0].user_metrics) {
+            var durationData = getSummaryDataRaw(results[0].user_metrics, "duration");
+          }
+          if (results[1].user_metrics) {
+            var speedData = getSummaryDataRaw(results[1].user_metrics, "median_speed");
+          }
+          for (var i in durationData) {
+            if ($scope.userDataSaved()) {
+              var userDataFromStorage = CalorieCal.get();
+              var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
+              var gender = userDataFromStorage.gender;
+              var heightUnit = userDataFromStorage.heightUnit;
+              var height = userDataFromStorage.height;
+              var weightUnit = userDataFromStorage.weightUnit;
+              var weight = userDataFromStorage.weight;
+              var age = userDataFromStorage.age;
+              met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
+            } else {
+              var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
+            }
+            twoWeeksAgoCalories += 
+              Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
+          }
+      });
     };
 
     $scope.showCharts = function(agg_metrics) {
@@ -872,7 +910,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   }, 1)
   $timeout(function() {
     getData();
-  }, 2)
+  }, 100)
 
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
@@ -999,11 +1037,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   }
   var expandCalorieDOM = function() {
     var div = document.getElementById('dashboard-calorie');
-    if (div.style.height == '350px'){ 
+    if (div.style.height == '380px'){ 
       div.style.height = '140px'
       $ionicScrollDelegate.scrollTop()
     } else { 
-      div.style.height = '350px'
+      div.style.height = '380px'
     }
   }
 
