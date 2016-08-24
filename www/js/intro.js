@@ -29,7 +29,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.showSettings = function() {
-    window.cordova.plugins.BEMConnectionSettings.getSettings(function(settings) {
+    window.cordova.plugins.BEMConnectionSettings.getSettings().then(function(settings) {
       var errorMsg = JSON.stringify(settings);
       var alertPopup = $ionicPopup.alert({
         title: 'settings',
@@ -80,7 +80,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.signIn(function(userEmail) {
+    window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);

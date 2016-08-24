@@ -366,8 +366,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
       $ionicLoading.show({
         template: 'Reading from cache...'
       });
-      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day),
-        function (tripListArray) {
+      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day))
+      .then(function (tripListArray) {
          if (tripListArray.length > 0) {
            var tripListStr = tripListArray[0];
            var tripList = JSON.parse(tripListStr);

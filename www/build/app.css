@@ -6569,18 +6569,18 @@ textarea.option-content {
   padding-top: 0em;
 }
 .herobox.noBackgroundImage {
-  background: #fff;
+  background: #c5d3d6;
 }
 .herobox.noBackgroundImage:hover,
 .herobox.noBackgroundImage:focus {
-  background: #fff;
+  background: #cad7da;
 }
 .herobox.noBackgroundImage.isUser {
-  background: #fff;
+  background: #dae3e5;
 }
 .herobox.noBackgroundImage.isUser:hover,
 .herobox.noBackgroundImage.isUser:focus {
-  background: #fff;
+  background: #e0e8e9;
 }
 .herobox .addthis_pill_style {
   width: 50px !important;

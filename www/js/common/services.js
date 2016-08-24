@@ -11,7 +11,7 @@ angular.module('emission.main.common.services', [])
     var selKey = "common-trips";
 
     commonGraph.updateCurrent = function() {
-      db.getDocument(selKey, function(entryList) {
+      db.getDocument(selKey).then(function(entryList) {
         try{
             var cmGraph = JSON.parse(entryList);
         } catch(err) {
