@@ -37,7 +37,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
 
   var cc = {}; 
   cc.set = function(info) {
-    for(key in info){
+    for(var key in info){
       storage.set(key, info[key])
     }
   };
