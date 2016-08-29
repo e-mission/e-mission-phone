@@ -261,8 +261,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         };
       } else if (mode === 'timestamp') { // timestamp range
         if(lastWeekQuery) {
-          var tempFrom = moment2Timestamp(moment().utc().day(-14)); // TODO: other way to get Sunday -14 does not work
-          var tempTo = moment2Timestamp(moment().utc().day(-1)); // Was -1 Last week's Satruday
+          var tempFrom = moment2Timestamp(moment().utc().day(-14)); 
+          var tempTo = moment2Timestamp(moment().utc().day(-1));
           lastWeekQuery = false; // Only get last week's data once
           console.log(moment().utc().day(-14));
           console.log(moment().day(-14));
@@ -361,7 +361,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           // Don't store the any other data as last we data
          }
         if(first){
-          var twoWeeksAgoDuration = results[0].user_metrics.slice(0,7); //Have to get 15 days and cut the 0th index because of -14 issue
+          var twoWeeksAgoDuration = results[0].user_metrics.slice(0,7); 
           var twoWeeksAgoMedianSpeed = results[1].user_metrics.slice(0,7);
           var twoWeeksAgoDistance = results[3].user_metrics.slice(0,7)
           var userDuration = results[0].user_metrics.slice(7);
