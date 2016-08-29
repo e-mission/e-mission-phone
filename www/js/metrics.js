@@ -6,7 +6,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate) {
-    
+
     var lastWeekQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -109,6 +109,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
     $scope.weightToggleRightClass = function() {
       return $scope.userData.weightUnit == 0? "unit-toggle-right-active hvcenter" : "unit-toggle-right hvcenter";
+    }
+    $scope.currentQueryForCalorie = function() {
+      return $scope.uictrl.current == "Last week"? "user-calorie-percentage" : "user-calorie-no-percentage";
+    }
+    $scope.currentQueryForCarbon = function() {
+      return $scope.uictrl.current == "Last week"? "user-carbon-percentage" : "user-carbon-no-percentage";
     }
     $scope.showRange = function() {
       if ($scope.uictrl.showFilter) {
@@ -255,9 +261,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         };
       } else if (mode === 'timestamp') { // timestamp range
         if(lastWeekQuery) {
-          var tempFrom = moment2Timestamp(moment().weekday(-15)); // TODO: other way to get Sunday -14 does not work
-          var tempTo = moment2Timestamp(moment().weekday(-1)); // Was -1 Last week's Satruday
+          var tempFrom = moment2Timestamp(moment().utc().day(-14)); // TODO: other way to get Sunday -14 does not work
+          var tempTo = moment2Timestamp(moment().utc().day(-1)); // Was -1 Last week's Satruday
           lastWeekQuery = false; // Only get last week's data once
+          console.log(moment().utc().day(-14));
+          console.log(moment().day(-14));
+          console.log(moment().utc().day(-1));
+          console.log(moment().day(-1));
+          console.log(moment().utc().day(0));
+          console.log(moment().day(0));          
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
@@ -308,7 +320,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $ionicLoading.show({
         template: 'Loading...'
       });
-      $scope.uictrl.current = "Custom";
+      if(!first){
+        $scope.uictrl.current = "Custom";
+      }
       //$scope.uictrl.showRange = false;
       //$scope.uictrl.showFilter = false;
       $scope.uictrl.showVis = true;
@@ -321,6 +335,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
       $scope.caloriesData.changeInPercentage = "0%"
+      $scope.caloriesData.change = " change";
 
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "0 kg CO₂";
@@ -346,17 +361,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           // Don't store the any other data as last we data
          }
         if(first){
-          var twoWeeksAgoDuration = results[0].user_metrics.slice(1,8); //Have to get 15 days and cut the 0th index because of -14 issue
-          var twoWeeksAgoMedianSpeed = results[1].user_metrics.slice(1,8);
-          var twoWeeksAgoDistance = results[3].user_metrics.slice(1,8)
-          var userDuration = results[0].user_metrics.slice(8);
-          var usedMedianSpeed = results[1].user_metrics.slice(8);
-          var userCount = results[2].user_metrics.slice(8);
-          var userDistance = results[3].user_metrics.slice(8);
-          var aggDuration = results[0].aggregate_metrics.slice(8);
-          var aggMedianSpeed = results[1].aggregate_metrics.slice(8);
-          var aggCount = results[2].aggregate_metrics.slice(8);
-          var aggDistance = results[3].aggregate_metrics.slice(8);
+          var twoWeeksAgoDuration = results[0].user_metrics.slice(0,7); //Have to get 15 days and cut the 0th index because of -14 issue
+          var twoWeeksAgoMedianSpeed = results[1].user_metrics.slice(0,7);
+          var twoWeeksAgoDistance = results[3].user_metrics.slice(0,7)
+          var userDuration = results[0].user_metrics.slice(7);
+          var usedMedianSpeed = results[1].user_metrics.slice(7);
+          var userCount = results[2].user_metrics.slice(7);
+          var userDistance = results[3].user_metrics.slice(7);
+          var aggDuration = results[0].aggregate_metrics.slice(7);
+          var aggMedianSpeed = results[1].aggregate_metrics.slice(7);
+          var aggCount = results[2].aggregate_metrics.slice(7);
+          var aggDistance = results[3].aggregate_metrics.slice(7);
         } else {
           var userDuration = results[0].user_metrics;
           var usedMedianSpeed = results[1].user_metrics;
@@ -367,6 +382,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var aggCount = results[2].aggregate_metrics;
           var aggDistance = results[3].aggregate_metrics;
         }
+
+        console.log(results[3])
+        console.log(twoWeeksAgoDistance)
+        console.log(userDistance)
+        console.log(aggDistance)
   
         $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
         $scope.summaryData.userSummary.median_speed = getSummaryData(usedMedianSpeed, "median_speed");
@@ -837,8 +857,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       }
     }
     var initSelect = function() {
-      var now = moment();
-      var weekAgoFromNow = moment().subtract(7, 'd');
+      var now = moment().utc();
+      var weekAgoFromNow = moment().utc().subtract(7, 'd');
       $scope.selectCtrl.metric = 'count';
       $scope.selectCtrl.metricString = "COUNT";
       $scope.selectCtrl.freq = 'DAILY';
@@ -878,7 +898,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   $scope.setCurDayFrom = function(val) {
     if (val) {
-      $scope.selectCtrl.fromDateTimestamp = moment(val);
+      $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
       $scope.datepickerObjFrom.inputDate = val;
     } else {
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
@@ -887,7 +907,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   };
   $scope.setCurDayTo = function(val) {
     if (val) {
-      $scope.selectCtrl.toDateTimestamp = moment(val);
+      $scope.selectCtrl.toDateTimestamp = moment(val).utc();
       $scope.datepickerObjTo.inputDate = val;
     } else {
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
@@ -961,7 +981,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     };
 
   $scope.extendFootprintCard = function() {
-    expandFootprintDOM();
     if($scope.expandedf){
       $scope.expandedf = false;
     } else {
@@ -972,7 +991,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedf)? "icon ion-chevron-up" : "icon ion-chevron-down";
   }
   $scope.extendCalorieCard = function() {
-    expandCalorieDOM();
     if($scope.expandedc){
       $scope.expandedc = false;
     } else {
@@ -982,23 +1000,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.checkCalorieCardExpanded = function() {
         return ($scope.expandedc)? "icon ion-chevron-up" : "icon ion-chevron-down";
   }
-  var expandFootprintDOM = function() {
-    var div = document.getElementById('dashboard-footprint');
-    if (div.style.height == '470px'){ 
-      div.style.height = '140px'
-      $ionicScrollDelegate.scrollTop()
-    } else { 
-      div.style.height = '470px'
-    }
+
+  $scope.changeFootprintCardHeight = function() {
+        return ($scope.expandedf)? "expanded-footprint-card" : "small-footprint-card";
   }
-  var expandCalorieDOM = function() {
-    var div = document.getElementById('dashboard-calorie');
-    if (div.style.height == '380px'){ 
-      div.style.height = '140px'
-      $ionicScrollDelegate.scrollTop()
-    } else { 
-      div.style.height = '380px'
-    }
+
+  $scope.changeCalorieCardHeight = function() {
+        return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
 });
