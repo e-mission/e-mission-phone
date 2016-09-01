@@ -60,13 +60,41 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       showSummary: true,
       showMe: true,
       showAggr: false,
-      showContent: false
+      showContent: false,
+      showTrips: false,
+      showDuration: false,
+      showDistance: false,
+      showSpeed: false,
     }
     $scope.showChart = function() {
       $scope.uictrl.showSummary = false;
       $scope.uictrl.showChart = true;
+      $scope.showDistance();
     }
-
+    $scope.showDistance = function() {
+      $scope.uictrl.showTrips = false;
+      $scope.uictrl.showDuration = false;
+      $scope.uictrl.showSpeed = false;
+      $scope.uictrl.showDistance = true;
+    }
+    $scope.showTrips = function() {
+      $scope.uictrl.showDistance = false;
+      $scope.uictrl.showSpeed = false;
+      $scope.uictrl.showDuration = false;
+      $scope.uictrl.showTrips = true;
+    }
+    $scope.showDuration = function() {
+      $scope.uictrl.showSpeed = false;
+      $scope.uictrl.showDistance = false;
+      $scope.uictrl.showTrips = false;
+      $scope.uictrl.showDuration = true;
+    }
+    $scope.showSpeed = function() {
+      $scope.uictrl.showTrips = false;
+      $scope.uictrl.showDuration = false;
+      $scope.uictrl.showDistance = false;
+      $scope.uictrl.showSpeed = true;
+    }
     $scope.showSummary = function() {
       $scope.uictrl.showChart = false;
       $scope.uictrl.showSummary = true;
@@ -76,6 +104,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
     $scope.summaryButtonClass = function() {
       return $scope.uictrl.showSummary? "metric-summary-button-active hvcenter" : "metric-summary-button hvcenter";
+    }
+    $scope.distanceButtonClass = function() {
+      return $scope.uictrl.showDistance? "distance-button-active hvcenter" : "distance-button hvcenter";
+    }
+    $scope.tripsButtonClass = function() {
+      return $scope.uictrl.showTrips? "trips-button-active hvcenter" : "trips-button hvcenter";
+    }
+    $scope.durationButtonClass = function() {
+      return $scope.uictrl.showDuration? "duration-button-active hvcenter" : "duration-button hvcenter";
+    }
+    $scope.speedButtonClass = function() {
+      return $scope.uictrl.showSpeed? "speed-button-active hvcenter" : "speed-button hvcenter";
     }
     $scope.rangeButtonClass = function() {
       return $scope.uictrl.showRange? "metric-range-button-active hvcenter" : "metric-range-button hvcenter";
@@ -257,19 +297,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           freq: $scope.selectCtrl.freq,
           start_time: tempFrom,
           end_time: tempTo,
-          metric: $scope.selectCtrl.metric
+          metric: ""
         };
       } else if (mode === 'timestamp') { // timestamp range
         if(lastWeekQuery) {
           var tempFrom = moment2Timestamp(moment().utc().day(-14)); 
           var tempTo = moment2Timestamp(moment().utc().day(-1));
-          lastWeekQuery = false; // Only get last week's data once
-          console.log(moment().utc().day(-14));
-          console.log(moment().day(-14));
-          console.log(moment().utc().day(-1));
-          console.log(moment().day(-1));
-          console.log(moment().utc().day(0));
-          console.log(moment().day(0));          
+          lastWeekQuery = false; // Only get last week's data once          
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
@@ -280,7 +314,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           freq: $scope.selectCtrl.pandaFreq,
           start_time: tempFrom,
           end_time: tempTo,
-          //metric: $scope.selectCtrl.metric
           metric: ""
         };
       } else {
@@ -346,6 +379,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.carbonData.change = " change";
 
       $scope.summaryData.userSummary = [];
+      $scope.chartDataUser = {};
+      $scope.chartDataAggr = {};
       var food = {
         'chocolateChip' : 78, //16g 1 cookie
         'vanillaIceCream' : 137, //1/2 cup
@@ -382,36 +417,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var aggCount = results[2].aggregate_metrics;
           var aggDistance = results[3].aggregate_metrics;
         }
-
-        console.log(results[3])
-        console.log(twoWeeksAgoDistance)
-        console.log(userDistance)
-        console.log(aggDistance)
-  
         $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
         $scope.summaryData.userSummary.median_speed = getSummaryData(usedMedianSpeed, "median_speed");
         $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
         $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
-        
-
-        switch($scope.selectCtrl.metric) {
-          case "duration":
-            $scope.chartDataUser = userDuration? userDuration : [];
-            $scope.chartDataAggr = aggDuration? aggDuration : [];
-            break;
-          case "median_speed":
-            $scope.chartDataUser = usedMedianSpeed? usedMedianSpeed : [];
-            $scope.chartDataAggr = aggMedianSpeed? aggMedianSpeed : [];
-            break;
-          case "count":
-            $scope.chartDataUser = userCount? userCount : [];
-            $scope.chartDataAggr = aggCount? aggCount : [];
-            break;
-          case "distance":
-            $scope.chartDataUser = userDistance? userDistance : [];
-            $scope.chartDataAggr = aggDistance? aggDistance : [];
-            break;
-        }
+        $scope.chartDataUser.duration = userDuration? userDuration : [];
+        $scope.chartDataAggr.duration = aggDuration? aggDuration : [];
+        $scope.chartDataUser.speed = usedMedianSpeed? usedMedianSpeed : [];
+        $scope.chartDataAggr.speed = aggMedianSpeed? aggMedianSpeed : [];
+        $scope.chartDataUser.count = userCount? userCount : [];
+        $scope.chartDataAggr.count = aggCount? aggCount : [];
+        $scope.chartDataUser.distance = userDistance? userDistance : [];
+        $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
 
         if (userDuration) {
           var durationData = getSummaryDataRaw(userDuration, "duration");
@@ -561,7 +578,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
         $scope.uictrl.showContent = true;
 
-        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) {
+        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because 
           $scope.$apply(function() {
             $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
           })
@@ -582,16 +599,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data = getDataFromMetrics(agg_metrics);
-
-        var metricLabelMap = {
-           "COUNT":'Number',
-           "DISTANCE": 'm',
-           "DURATION": 'secs',
-           "MEDIAN_SPEED": 'm/sec'
-        };
-
-        $scope.options.chart.yAxis.axisLabel = metricLabelMap[$scope.selectCtrl.metricString];
+      $scope.data.count = getDataFromMetrics(agg_metrics.count);
+      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
+      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
+      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.countOptions = angular.copy($scope.options)
+      $scope.countOptions.chart.yAxis.axisLabel = 'Number';
+      $scope.distanceOptions = angular.copy($scope.options)
+      $scope.distanceOptions.chart.yAxis.axisLabel = 'm';
+      $scope.durationOptions = angular.copy($scope.options)
+      $scope.durationOptions.chart.yAxis.axisLabel = 'secs'
+      $scope.speedOptions = angular.copy($scope.options)
+      $scope.speedOptions.chart.yAxis.axisLabel = 'm/sec'
     };
     $scope.pandaFreqOptions = [
       {text: "DAILY", value: 'D'},
@@ -600,14 +619,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       {text: "MONTHLY", value: 'M'},
       {text: "YEARLY", value: 'A'}
     ];
-
-    $scope.metricOptions = [
-      {text: "COUNT", value:'count'},
-      {text: "DISTANCE", value: 'distance'},
-      {text: "DURATION", value: 'duration'},
-      {text: "MEDIAN_SPEED", value: 'median_speed'}
-    ];
-
     $scope.freqOptions = [
       {text: "DAILY", value:'DAILY'},
       {text: "MONTHLY", value: 'MONTHLY'},
@@ -805,21 +816,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
       });
     };
-
-
-    $scope.changeMetric = function() {
-        $ionicActionSheet.show({
-          buttons: $scope.metricOptions,
-          titleText: "Select metric",
-          cancelText: "Cancel",
-          buttonClicked: function(index, button) {
-            $scope.selectCtrl.metricString = button.text;
-            $scope.selectCtrl.metric = button.value;
-            return true;
-          }
-        });
-    };
-
     $scope.changeFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.freqOptions,
@@ -859,8 +855,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var initSelect = function() {
       var now = moment().utc();
       var weekAgoFromNow = moment().utc().subtract(7, 'd');
-      $scope.selectCtrl.metric = 'count';
-      $scope.selectCtrl.metricString = "COUNT";
       $scope.selectCtrl.freq = 'DAILY';
       $scope.selectCtrl.freqString = "DAILY";
       $scope.selectCtrl.pandaFreq = 'D';
