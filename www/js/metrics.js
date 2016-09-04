@@ -5,7 +5,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state) {
 
     var lastWeekQuery = true;
     var first = true;
@@ -240,6 +240,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
               axisLabel: "Number",
               axisLabelDistance: -10
             },
+            callback: function(chart) {
+              chart.multibar.dispatch.on('elementClick', function(bar) {
+                  var date = bar.data[2].slice(0,10);
+                  $rootScope.barDetailDate = moment(date);
+                  $rootScope.barDetail = true;
+                  $state.go('root.main.diary');
+                  console.log($rootScope.barDetailDate);
+              })
+            }
         }
     };
 

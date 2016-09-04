@@ -30,6 +30,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     CommonGraph.updateCurrent();
   };
 
+  $scope.$on('$ionicView.enter', function() {
+    if($rootScope.barDetail){
+      readAndUpdateForDay($rootScope.barDetailDate);
+      $rootScope.barDetail = false;
+    };
+  });
+
   readAndUpdateForDay(moment().startOf('day'));
 
   angular.extend($scope, {
