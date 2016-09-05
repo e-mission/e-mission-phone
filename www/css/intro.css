@@ -86,3 +86,6 @@
   padding-right: 8%;
 }
 
+.pull-right {
+  float: right
+}
