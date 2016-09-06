@@ -5,36 +5,36 @@
 }
 
 .popup-buttons.row {
- height: 40px !important; 
+ height: 40px !important;
 }
 .popup-buttons.button {
   height: 40px !important;
 }
 .button.ng-binding.button-stable {
   height: 40px;
-  
+
 }
 .button.ng-binding.button-positive {
   background-color: #01D0A7;
   height: 40px;
 }
 .button.ng-binding.button-assertive {
-  background-color: #01D0A7; 
+  background-color: #01D0A7;
   height: 40px;
-  
+
 }
 .selected_date_full.ng-binding {
   color: #01D0A7;
 }
 .icon.ion-chevron-left {
- color: #01D0A7; 
+ color: #01D0A7;
 }
 .icon.ion-chevron-right {
- color: #01D0A7; 
+ color: #01D0A7;
 }
 .date_col.date_selected {
  background-color: #01D0A7 !important;
- 
+
 }
 .date_col:active {
  background-color: #01D0A7 !important;
@@ -83,7 +83,7 @@
 .item-thumbnail-left-avatar.activated {
   background-color: transparent;
   box-shadow: none;
-  color: #fff; 
+  color: #fff;
 }
 
 .signup-title{
@@ -173,7 +173,7 @@ img.center {
 
 .item-thumbnail-left-avatar,
 .item-thumbnail-left-avatar .item-content-avatar {
-  background-color: transparent !important; 
+  background-color: transparent !important;
   padding-top: 8px;
   padding-left: 135px;
   height: 157px;
@@ -241,7 +241,7 @@ img.center {
 }
 
 #dashboard-footprint.card {
-  background: #fff; 
+  background: #fff;
   color: #54DCC1;
   border-radius: 5px;
   display: block;
@@ -249,7 +249,7 @@ img.center {
   margin: 10px;
   margin-top: 55px;
   position: relative;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05); 
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
   /*background: rgba(40,218,183,1);
   background: -moz-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
   background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(40,218,183,1)), color-stop(30%, rgba(99,230,199,1)), color-stop(51%, rgba(94,235,212,1)), color-stop(69%, rgba(87,235,223,1)), color-stop(85%, rgba(99,237,226,1)), color-stop(100%, rgba(127,250,250,1)));
@@ -264,7 +264,7 @@ img.center {
 }
 
 #dashboard-calorie.card {
-  background: #fff; 
+  background: #fff;
   color: #54DCC1;
   border-radius: 5px;
   display: block;
@@ -307,7 +307,7 @@ img.center {
   height: 140px;
   margin: 10px;
   margin-top:0px;
-  position: relative; 
+  position: relative;
   margin-bottom: 5px !important;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
   /*background: rgba(40,218,183,1);
@@ -644,11 +644,11 @@ ion-header-bar {
 }
 .list-location-dark {
   color: white;
-  background-color: transparent; 
-  font-size: 0.8em; 
-  padding-top: 5px; 
-  padding-bottom: 5px; 
-  padding-left: 30px; 
+  background-color: transparent;
+  font-size: 0.8em;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
@@ -668,7 +668,7 @@ a.list-text {
   margin: 3px auto 1px auto;
   font-size: 25px;
   height: 25px;
-  
+
 }
 
 .card-1 {
@@ -807,9 +807,25 @@ button.button.back-button.buttons.button-clear.header-item {
         line-height: 16px;
 }
 
+.start-end-addresses-container {
+  display: inline-block;
+  width: calc(100% - 25px);
+}
+.diary-arrow-container {
+  display: inline-block;
+}
+.diary-arrow-container i {
+  font-size: 32px;
+  float: right;
+}
+
 .side-menu-item {
   padding: 5% 10%;
 }
+.side-menu-item:active {
+  background-color: #dddfe2;
+}
+
 .common-list-item {
   padding: 5% 8% 3% 8%;
 }
@@ -829,12 +845,12 @@ button.button.back-button.buttons.button-clear.header-item {
 .common-map-item-location {
    font-size: 0.8em;
   font-weight: 300;
-  color: #000; 
+  color: #000;
 }
 .common-detail-title {
   padding: 2% 3%;
   font-weight: 400;
-  color: #888;  
+  color: #888;
   font-size: 1em;
   line-height: 1em;
 }
@@ -868,13 +884,13 @@ svg {
     display: block;
 }
 html, body, #chart1, svg {
-    
+
     padding: 0px;
     margin: 0 10px 0 0;
 
 }
 html, body, #chart2, svg {
-    
+
     padding: 0px;
     margin: 0 10px 0 0;
 }
@@ -981,14 +997,14 @@ html, body, #chart2, svg {
   color: #01D0A7;
   height: 35px;
 }
-.metric-get-button { 
+.metric-get-button {
   width: 60px;
   border-radius: 5px;
   color: white;
   background-color: #01D0A7;
   height: 35px;
 }
-.metric-get-button-inactive { 
+.metric-get-button-inactive {
   width: 60px;
   border-radius: 5px;
   color: white;
@@ -1008,7 +1024,7 @@ html, body, #chart2, svg {
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #01D0A7;
-  height: 35px;  
+  height: 35px;
 }
 .metric-half {
  float: left;
@@ -1016,7 +1032,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);  color: #01D0A7;
-  height: 30px; 
+  height: 30px;
   overflow: hidden;
   position: relative;
 }
@@ -1030,7 +1046,7 @@ html, body, #chart2, svg {
   color: #333;
   position: absolute;
   width: 28%;
-  height: 35px;  
+  height: 35px;
 }
 .metric-range-button {
   border-left-color: #ccc;
@@ -1042,7 +1058,7 @@ html, body, #chart2, svg {
   border-right-width: 1px;
   width: 25%;
   left: 50%;
-  height: 35px;  
+  height: 35px;
 }
 .metric-range-button-active {
   border-left-color: #ccc;
@@ -1054,7 +1070,7 @@ html, body, #chart2, svg {
   border-right-width: 1px;
   width: 25%;
   left: 50%;
-  height: 35px;  
+  height: 35px;
   background-color: #01D0A7;
   color: white;
 }
@@ -1062,7 +1078,7 @@ html, body, #chart2, svg {
   position: absolute;
   width: 25%;
   left: 75%;
-  height: 35px;  
+  height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
@@ -1070,7 +1086,7 @@ html, body, #chart2, svg {
   position: absolute;
   width: 25%;
   left: 75%;
-  height: 35px;  
+  height: 35px;
   background-color: #01D0A7;
   color: white;
   border-top-right-radius: 5px;
@@ -1081,7 +1097,7 @@ html, body, #chart2, svg {
   position: absolute;
   left: 50%;
   height: 30px;
-  font-weight: 700; 
+  font-weight: 700;
   overflow: hidden;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1090,7 +1106,7 @@ html, body, #chart2, svg {
   width: 50%;
   position: absolute;
   left: 50%;
-  height: 30px; 
+  height: 30px;
   background-color: #01D0A7;
   color: white;
   font-weight: 700;
@@ -1103,8 +1119,8 @@ html, body, #chart2, svg {
   position: absolute;
   border-right-color: #ccc;
   border-right-style: solid;
-  border-right-width: 1px; 
-  height: 30px; 
+  border-right-width: 1px;
+  height: 30px;
   font-weight: 700;
   overflow: hidden;
   border-top-left-radius: 5px;
@@ -1115,8 +1131,8 @@ html, body, #chart2, svg {
   position: absolute;
   border-right-color: #ccc;
   border-right-style: solid;
-  border-right-width: 1px; 
-  height: 30px; 
+  border-right-width: 1px;
+  height: 30px;
   background-color: #01D0A7;
   color: white;
   font-weight: 700;
@@ -1128,10 +1144,10 @@ html, body, #chart2, svg {
   width: 33%;
   position: absolute;
   left: 66%;
-  height: 33px;  
+  height: 33px;
 }
 .metric-me-toggle {
-  
+
 }
 .metric-icon {
   color: #ccc;
@@ -1262,7 +1278,7 @@ html, body, #chart2, svg {
   color: #01D0A7;
   height: 35px;
 }
-.heatmap-fixmap-button { 
+.heatmap-fixmap-button {
   float: right;
   width: 30%;
   margin-right: 10px;
@@ -1272,7 +1288,7 @@ html, body, #chart2, svg {
   color: #01D0A7;
   height: 35px;
 }
-.heatmap-get-button { 
+.heatmap-get-button {
   float: right;
   width: 30%;
   border-radius: 5px;
@@ -1292,14 +1308,14 @@ html, body, #chart2, svg {
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .full-toggle-container {
- height: 35px; 
+ height: 35px;
 
 
 }
 .full-toggle-left {
   width: 50%;
   float: left;
-  height: 35px; 
+  height: 35px;
 
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
@@ -1313,8 +1329,8 @@ html, body, #chart2, svg {
 .full-toggle-left-active {
   width: 50%;
   float: left;
-  height: 35px; 
-  
+  height: 35px;
+
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 
@@ -1328,7 +1344,7 @@ html, body, #chart2, svg {
   width: 50%;
   float: right;
   height: 35px;
-  
+
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
@@ -1339,7 +1355,7 @@ html, body, #chart2, svg {
   width: 50%;
   float: right;
   height: 35px;
-  
+
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
@@ -1347,12 +1363,12 @@ html, body, #chart2, svg {
   color: white;
 }
 .unit-toggle-container {
- height: 35px; 
+ height: 35px;
 }
 .unit-toggle-left {
   width: 50%;
   float: left;
-  height: 35px; 
+  height: 35px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: white;
@@ -1364,7 +1380,7 @@ html, body, #chart2, svg {
 .unit-toggle-left-active {
   width: 50%;
   float: left;
-  height: 35px; 
+  height: 35px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: #01D0A7;
@@ -1376,7 +1392,7 @@ html, body, #chart2, svg {
 .unit-toggle-right {
   width: 50%;
   float: right;
-  height: 35px; 
+  height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: white;
@@ -1385,7 +1401,7 @@ html, body, #chart2, svg {
 .unit-toggle-right-active {
   width: 50%;
   float: right;
-  height: 35px; 
+  height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: #01D0A7;
@@ -1411,7 +1427,7 @@ html, body, #chart2, svg {
   opacity: 0.7;
 }
 .full-toggle-left:active {
- opacity: 0.7; 
+ opacity: 0.7;
 }
 .full-toggle-right:active {
   opacity: 0.7;

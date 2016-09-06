@@ -7,11 +7,11 @@
   color: #000;
   background-color: #fff;
   text-align: center;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
   font-weight: 300;
 }
 
-.scroll { 
+.scroll {
   min-width: 100%;
 }
 .nav-placeholder {
@@ -50,7 +50,7 @@
   padding-top: 10%;
   padding-right: 8%;
   padding-left: 8%;
-  font-size: 18px; 
+  font-size: 18px;
 }
 .consent-text {
   padding-top: 5%;
@@ -75,7 +75,7 @@
   font-size: 13px;
   line-height: 1.5;
   text-align: left;
-  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif; 
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
 }
 .refuse-popup .popup-buttons {
     margin-left: 15%;
