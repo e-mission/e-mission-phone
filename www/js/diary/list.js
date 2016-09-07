@@ -1,7 +1,8 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.services'])
+                                      'emission.services',
+                                      'ng-walkthrough'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
@@ -28,6 +29,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     Timeline.updateForDay(day);
     CommonGraph.updateCurrent();
   };
+
+  $scope.$on('$ionicView.enter', function() {
+    if($rootScope.barDetail){
+      readAndUpdateForDay($rootScope.barDetailDate);
+      $rootScope.barDetail = false;
+    };
+  });
 
   readAndUpdateForDay(moment().startOf('day'));
 

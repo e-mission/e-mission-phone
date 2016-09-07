@@ -245,7 +245,6 @@ img.center {
   color: #54DCC1;
   border-radius: 5px;
   display: block;
-  height: 140px;
   margin: 10px;
   margin-top: 55px;
   position: relative;
@@ -263,12 +262,19 @@ img.center {
   overflow: hidden;
 }
 
+.small-footprint-card{
+  height: 140px !important;
+}
+
+.expanded-footprint-card{
+  height: 460px !important;
+}
+
 #dashboard-calorie.card {
   background: #fff; 
   color: #54DCC1;
   border-radius: 5px;
   display: block;
-  height: 140px;
   margin: 10px;
   position: relative;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -283,6 +289,14 @@ img.center {
   text-align: center;
   transition: height 0.3s ease-out;
   overflow: hidden;
+}
+
+.small-calorie-card{
+  height: 140px !important;
+}
+
+.expanded-calorie-card{
+  height: 370px !important;
 }
 
 /*#dashboard.card.inactive:after{
@@ -337,24 +351,46 @@ h4.dashboard-headers{
   margin-bottom: 0px !important;
 }
 
+.user-carbon-no-percentage{
+  padding-top: 40px;
+  position: absolute;
+  width: 100%;
+}
+
+.user-carbon-percentage{
+  padding-top: 20px;
+  position: absolute;
+  width: 100%;
+}
+
 .user-carbon{
   font-weight: 700;
   color: #54DCC1;
   font-size: 16px;
-  padding-top: 20px;
+}
+
+.user-calorie-no-percentage{
+  padding-top: 30px;
+  position: absolute;
+  width: 100%;
+}
+
+.user-calorie-percentage{
+  padding-top: 10px;
+  position: absolute;
+  width: 100%;
 }
 
 .user-calorie{
   font-weight: 700;
   color: #54DCC1;
   font-size: 18px;
-  padding-top: 10px;
 }
 
 .percentage-change{
   font-weight: 700;
   color: #54DCC1;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .calorie-change{
@@ -892,7 +928,7 @@ html, body, #chart2, svg {
   color: #01D0A7;
   height: 35px;
 }
-.metric-datepicker-title {
+.metric-title {
   height: 35px;
   display: flex;           /* establish flex container */
   flex-direction: column;  /* make main axis vertical */
@@ -929,11 +965,11 @@ html, body, #chart2, svg {
   width: 100%;
   float: left;
 }
-.metric-datepicker-left {
+.metric-left {
   width: 25%;
   float: left;
 }
-.metric-datepicker-right {
+.metric-right {
   text-align: center;
   width: 75%;
   float: right;
@@ -973,7 +1009,7 @@ html, body, #chart2, svg {
 }
 .metric-freq-button {
   float: right;
-  width: 49%;
+  width: 100%;
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
@@ -1122,6 +1158,86 @@ html, body, #chart2, svg {
   overflow: hidden;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
+}
+.distance-button{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  overflow: hidden;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  float: left;
+  height: 30px;
+}
+.speed-button{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  overflow: hidden;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  float: left;
+  height: 30px;
+}
+.trips-button{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  overflow: hidden;
+  float: left;
+  height: 30px;
+}
+.duration-button{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  overflow: hidden;
+  float: left;
+  height: 30px;
+}
+.distance-button-active{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  background-color: #01D0A7;
+  color: white;
+  overflow: hidden;
+  border-top-left-radius: 5px;
+  border-bottom-left-radius: 5px;
+  float: left;
+  height: 30px;
+}
+.speed-button-active{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  overflow: hidden;
+  background-color: #01D0A7;
+  color: white;
+  border-top-right-radius: 5px;
+  border-bottom-right-radius: 5px;
+  float: left;
+  height: 30px;
+}
+.trips-button-active{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  background-color: #01D0A7;
+  color: white;
+  overflow: hidden;
+  float: left;
+  height: 30px;
+}
+.duration-button-active{
+  width:25%;
+  font-size: 12px;
+  font-weight: 700; 
+  background-color: #01D0A7;
+  color: white;
+  overflow: hidden;
+  float: left;
+  height: 30px;
 }
 .metric-toggle-button {
   width: 33%;
@@ -1287,7 +1403,8 @@ html, body, #chart2, svg {
   height: 20px;
   border-radius: 5px;
   width: 80px;
-  margin-right: 1px;
+  margin-right: 5px;
+  margin-top: -28px;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
 }
 .full-toggle-container {
