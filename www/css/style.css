@@ -4,6 +4,13 @@
   display: none !important;
 }
 
+.pull-right {
+  float: right
+}
+.pull-left {
+  float: left
+}
+
 .popup-buttons.row {
  height: 40px !important;
 }
@@ -822,7 +829,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .side-menu-item {
   padding: 5% 10%;
 }
-.side-menu-item:active {
+.menu-item:active {
   background-color: #dddfe2;
 }
 
