@@ -236,7 +236,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				$timeout(function() {
 					$scope.reward = false;
 					$scope.plusInProcess[taskId] = false;
-				}, 1500);
+				}, 2000);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -258,7 +258,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				$timeout(function() {
 					$scope.loss = false;
 					$scope.minusInProcess[taskId] = false;
-				}, 1500);
+				}, 2000);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -482,7 +482,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			questContent();
 		}
 	};
-	
+
 	getChallenges();
 	refreshInfo();
 
