@@ -478,12 +478,12 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		console.log("Party ID = " + storage.get('party_id'));
 		getUserInfo();
 		getUserTask();
-		getChallenges();
 		if($scope.inQuest){
 			questContent();
 		}
 	};
-
+	
+	getChallenges();
 	refreshInfo();
 
 	$scope.refreshPage = function() {
