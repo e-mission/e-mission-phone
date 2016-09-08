@@ -1,177 +1,100 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker','angularLocalStorage'])
-.factory('FootprintHelper', function() {
-  var fh = {};
-  var footprint = {
-    train: 92/1609,
-    car: 287/1609,
-    ON_FOOT: 0,
-    BICYCLING: 0
-  }
-  var readable = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
-  }
-  var mtokm = function(v) {
-    return v / 1000;
-  }
-  fh.getFootprintRaw = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
-    } else {
-      return footprint[mode] * mtokm(distance);
-    }
-  }
-  fh.getFootprint = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
-    } else {
-      return readable(footprint[mode] * mtokm(distance));
-    }
-  }
-  return fh;
-})
-.factory('CalorieHelper', function(){
-  Number.prototype.between = function (min, max) {
-    return this >= min && this <= max;
-  };
-  var ch = {};
-  ch.getMet = function(mode, speed) {
-    if (!standardMETs[mode]) return console.log("Illegal mode");
-    for (var i in standardMETs[mode]) {
-      if (mpstomph(speed).between(standardMETs[mode][i].range[0], standardMETs[mode][i].range[1])) {
-        return standardMETs[mode][i].mets;
-      }
-    }
-  }
-  var mpstomph = function(mps) {
-    return 2.23694 * mps;
-  }
-  var lbtokg = function(lb) {
-    return lb * 0.453592;
-  }
-  var fttocm = function(ft) {
-    return ft * 30.48;
-  }
-  ch.getCorrectedMet = function(met, gender, age, height, heightUnit, weight, weightUnit) {
-    var height = heightUnit == 0? fttocm(height) : height;
-    var weight = weightUnit == 0? lbtokg(weight) : weight;
-    if (gender == 1) { //male
-      var met = met*3.5/((66.4730+5.0033*height+13.7516*weight-6.7550*age)/ 1440 / 5 / weight * 1000);
-      return met;
-    } else if (gender == 0) { //female
-      var met = met*3.5/((655.0955+1.8496*height+9.5634*weight-4.6756*age)/ 1440 / 5 / weight * 1000);
-      return met;
-    }
-  }
-  ch.getuserCalories = function(durationInMin, met) {
-    return 65 * durationInMin * met;
-  }
-  ch.getCalories = function(weightInKg, durationInMin, met) {
-    return weightInKg * durationInMin * met;
-  }
-  var standardMETs = {
-    "ON_FOOT": {
-      "VERY_SLOW": {
-        range: [0, 2.0],
-        mets: 2.0
-      },
-      "SLOW": {
-        range: [2.0, 2.5],
-        mets: 2.8
-      },
-      "MODERATE_0": {
-        range: [2.5, 2.8],
-        mets: 3.0
-      },
-      "MODERATE_1": {
-        range: [2.8, 3.2],
-        mets: 3.5
-      },
-      "FAST": {
-        range: [3.2, 3.5],
-        mets: 4.3
-      },
-      "VERY_FAST_0": {
-        range: [3.5, 4.0],
-        mets: 5.0
-      },
-      "VERY_FAST_!": {
-        range: [4.0, 4.5],
-        mets: 6.0
-      },
-      "VERY_VERY_FAST": {
-        range: [4.5, 5],
-        mets: 7.0
-      },
-      "SUPER_FAST": {
-        range: [5, 6],
-        mets: 8.3
-      },
-      "RUNNING": {
-        range: [6, Number.MAX_VALUE],
-        mets: 9.8
-      }
-    },
-    "IN_VEHICLE": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "BICYCLING": {
-      "VERY_VERY_SLOW": {
-        range: [0, 5.5],
-        mets: 3.5
-      },
-      "VERY_SLOW": {
-        range: [5.5, 10],
-        mets: 5.8
-      },
-      "SLOW": {
-        range: [10, 12],
-        mets: 6.8
-      },
-      "MODERATE": {
-        range: [12, 14],
-        mets: 8.0
-      },
-      "FAST": {
-        range: [14, 16],
-        mets: 10.0
-      },
-      "VERT_FAST": {
-        range: [16, 19],
-        mets: 12.0
-      },
-      "RACING": {
-        range: [20, Number.MAX_VALUE],
-        mets: 15.8
-      }
-    }
-  }
-  return ch;
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage'])
 
-})
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, CalorieHelper, $ionicPopup,storage, FootprintHelper) {
+                                    CommHelper, $window, $ionicPopup,
+                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
+                                    $ionicScrollDelegate, $rootScope, $location,  $state) {
 
+    var lastWeekQuery = true;
+    var first = true;
+    var lastWeekCalories = 0;
+    var lastWeekCarbon = "0 kg CO₂";
+    var twoWeeksAgoCarbon = "";
+    var lastWeekCarbonInt = [];
+    var twoWeeksAgoCarbonInt = [];
+    var twoWeeksAgoCalories = 0;
+    $scope.setCookie = function(){
+      $scope.foodCompare = 'cookie';
+      storage.set('foodCompare', 'cookie');
+    }
+    $scope.setIceCream = function(){
+      $scope.foodCompare = 'iceCream';
+      storage.set('foodCompare', 'iceCream');
+    }
+    $scope.setBanana = function(){
+      $scope.foodCompare = 'banana';
+      storage.set('foodCompare', 'banana');
+    }
+    if(storage.get('foodCompare') == null){
+      $scope.setCookie();
+    } else {
+      var choosenFood = storage.get('foodCompare')
+      if(choosenFood == 'cookie')
+        $scope.setCookie();
+      else if (choosenFood == 'iceCream')
+        $scope.setIceCream();
+      else
+        $scope.setBanana();
+    }
+    $ionicModal.fromTemplateUrl('templates/metrics/metrics-control.html', {
+      scope: $scope,
+      animation: 'slide-in-up'
+    }).then(function(modal) {
+      $scope.modal = modal;
+    });
+    $scope.openModal = function(){
+      $scope.modal.show();
+    }
+    $scope.closeModal = function(){
+      $scope.modal.hide();
+    }
     $scope.uictrl = {
-      showRange: false,
+      showRange: true,
       showFilter: false,
       showVis: true,
       showResult: true,
       current: "Last week",
-      showChart: true,
-      showSummary: false,
+      showChart: false,
+      showSummary: true,
       showMe: true,
-      showAggr: false
+      showAggr: false,
+      showContent: false,
+      showTrips: false,
+      showDuration: false,
+      showDistance: false,
+      showSpeed: false,
     }
     $scope.showChart = function() {
       $scope.uictrl.showSummary = false;
       $scope.uictrl.showChart = true;
+      $scope.showDistance();
     }
-
+    $scope.showDistance = function() {
+      $scope.uictrl.showTrips = false;
+      $scope.uictrl.showDuration = false;
+      $scope.uictrl.showSpeed = false;
+      $scope.uictrl.showDistance = true;
+    }
+    $scope.showTrips = function() {
+      $scope.uictrl.showDistance = false;
+      $scope.uictrl.showSpeed = false;
+      $scope.uictrl.showDuration = false;
+      $scope.uictrl.showTrips = true;
+    }
+    $scope.showDuration = function() {
+      $scope.uictrl.showSpeed = false;
+      $scope.uictrl.showDistance = false;
+      $scope.uictrl.showTrips = false;
+      $scope.uictrl.showDuration = true;
+    }
+    $scope.showSpeed = function() {
+      $scope.uictrl.showTrips = false;
+      $scope.uictrl.showDuration = false;
+      $scope.uictrl.showDistance = false;
+      $scope.uictrl.showSpeed = true;
+    }
     $scope.showSummary = function() {
       $scope.uictrl.showChart = false;
       $scope.uictrl.showSummary = true;
@@ -181,6 +104,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
     $scope.summaryButtonClass = function() {
       return $scope.uictrl.showSummary? "metric-summary-button-active hvcenter" : "metric-summary-button hvcenter";
+    }
+    $scope.distanceButtonClass = function() {
+      return $scope.uictrl.showDistance? "distance-button-active hvcenter" : "distance-button hvcenter";
+    }
+    $scope.tripsButtonClass = function() {
+      return $scope.uictrl.showTrips? "trips-button-active hvcenter" : "trips-button hvcenter";
+    }
+    $scope.durationButtonClass = function() {
+      return $scope.uictrl.showDuration? "duration-button-active hvcenter" : "duration-button hvcenter";
+    }
+    $scope.speedButtonClass = function() {
+      return $scope.uictrl.showSpeed? "speed-button-active hvcenter" : "speed-button hvcenter";
     }
     $scope.rangeButtonClass = function() {
       return $scope.uictrl.showRange? "metric-range-button-active hvcenter" : "metric-range-button hvcenter";
@@ -215,24 +150,22 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.weightToggleRightClass = function() {
       return $scope.userData.weightUnit == 0? "unit-toggle-right-active hvcenter" : "unit-toggle-right hvcenter";
     }
+    $scope.currentQueryForCalorie = function() {
+      return $scope.uictrl.current == "Last week"? "user-calorie-percentage" : "user-calorie-no-percentage";
+    }
+    $scope.currentQueryForCarbon = function() {
+      return $scope.uictrl.current == "Last week"? "user-carbon-percentage" : "user-carbon-no-percentage";
+    }
     $scope.showRange = function() {
-      if (!$scope.uictrl.showRange) {
+      if ($scope.uictrl.showFilter) {
         $scope.uictrl.showFilter = false;
         $scope.uictrl.showRange = true;
-        $scope.uictrl.showVis = false;
-        $scope.uictrl.showResult = false;
-      } else {
-        $scope.uictrl.showRange = false;
       }
     }
     $scope.showFilter = function() {
-      if (!$scope.uictrl.showFilter) {
+      if ($scope.uictrl.showRange) {
         $scope.uictrl.showRange = false;
         $scope.uictrl.showFilter = true;
-        $scope.uictrl.showVis = false;
-        $scope.uictrl.showResult = false;
-      } else {
-        $scope.uictrl.showFilter = false;
       }
     }
 
@@ -248,18 +181,19 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.userData.gender = gender;
     }
 
-    $scope.storeUserData = function() {
-      storage.set('gender', $scope.userData.gender);
-      storage.set('heightUnit', $scope.userData.heightUnit);
-      storage.set('weightUnit', $scope.userData.weightUnit);
-      storage.set('height', $scope.userData.height);
-      storage.set('weight', $scope.userData.weight);
-      storage.set('age', $scope.userData.age);
-      storage.set('userDataSaved', true);
+    $scope.storeUserData = function() {     
+      var info = {'gender': $scope.userData.gender,
+                  'heightUnit': $scope.userData.heightUnit,
+                  'weightUnit': $scope.userData.weightUnit,
+                  'height': $scope.userData.height,
+                  'weight': $scope.userData.weight,
+                  'age': $scope.userData.age,
+                  'userDataSaved': true};
+      CalorieCal.set(info);
     }
 
     $scope.userDataSaved = function() {
-      return storage.get('userDataSaved') == true;
+      return CalorieCal.get().userDataSaved == true;
     }
     $scope.options = {
         chart: {
@@ -295,7 +229,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 axisLabelDistance: 3,
                 axisLabel: 'Date',
                 tickFormat: function(d) {
-                    return d3.time.format('%y-%m-%d')(new Date(d * 1000))
+                    var day = new Date(d * 1000)
+                    day.setDate(day.getDate()+1) // Had to add a day to match date with data
+                    return d3.time.format('%y-%m-%d')(day)
                 },
                 showMaxMin: false,
                 staggerLabels: true
@@ -304,6 +240,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
               axisLabel: "Number",
               axisLabelDistance: -10
             },
+            callback: function(chart) {
+              chart.multibar.dispatch.on('elementClick', function(bar) {
+                  var date = bar.data[2].slice(0,10);
+                  $rootScope.barDetailDate = moment(date);
+                  $rootScope.barDetail = true;
+                  $state.go('root.main.diary');
+                  console.log($rootScope.barDetailDate);
+              })
+            }
         }
     };
 
@@ -320,41 +265,37 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.data = [];
 
+    var getData = function(){
+      $scope.getMetricsHelper();
+    }
 
     $scope.getMetricsHelper = function() {
+      $scope.uictrl.showContent = false;
+      setMetricsHelper(getMetrics);
+    }
+
+    var setMetricsHelper = function(metricsToGet) {
       if ($scope.uictrl.showRange) {
-        $scope.getMetrics('timestamp');
+        setMetrics('timestamp', metricsToGet);
       } else if ($scope.uictrl.showFilter) {
-        $scope.getMetrics('local_date');
+        setMetrics('local_date', metricsToGet);
       } else {
         console.log("Illegal time_type"); // Notice that you need to set query
       }
+      if($scope.modal.isShown()){
+        $scope.modal.hide();
+      }
     }
-    $scope.getMetrics = function(mode, metric) {
 
+    var data = {}
+    var theMode = "";
+
+    var setMetrics = function(mode, callback) {
+      theMode = mode;
       if (['local_date', 'timestamp'].indexOf(mode) == -1) {
         console.log('Illegal time_type');
         return;
       }
-      $scope.uictrl.current = "Custom";
-      $scope.uictrl.showRange = false;
-      $scope.uictrl.showFilter = false;
-      $scope.uictrl.showVis = true;
-      $scope.uictrl.showResult = true;
-
-      var data = {};
-
-      $scope.caloriesData = {};
-      $scope.carbonData = {};
-      $scope.summaryData = {};
-      $scope.caloriesData.userCalories = [];
-      $scope.caloriesData.aggrCalories = [];
-
-      $scope.carbonData.userCarbon = [];
-      $scope.carbonData.aggrCarbon = [];
-
-      $scope.summaryData.userSummary = [];
-      $scope.summaryData.aggrSummary = [];
 
       if (mode === 'local_date') { // local_date filter
         var tempFrom = $scope.selectCtrl.fromDateLocalDate;
@@ -365,174 +306,320 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           freq: $scope.selectCtrl.freq,
           start_time: tempFrom,
           end_time: tempTo,
-          metric: $scope.selectCtrl.metric
+          metric: ""
         };
       } else if (mode === 'timestamp') { // timestamp range
-        var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
-        var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
+        if(lastWeekQuery) {
+          var tempFrom = moment2Timestamp(moment().utc().day(-14)); 
+          var tempTo = moment2Timestamp(moment().utc().day(-1));
+          lastWeekQuery = false; // Only get last week's data once          
+        } else {
+          var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
+          var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
+          console.log($scope.selectCtrl.fromDateTimestamp);
+          console.log($scope.selectCtrl.toDateTimestamp);
+        }
         data = {
           freq: $scope.selectCtrl.pandaFreq,
           start_time: tempFrom,
           end_time: tempTo,
-          metric: $scope.selectCtrl.metric
+          metric: ""
         };
       } else {
         console.log('Illegal mode');
         return;
       }
       console.log("Sending data "+JSON.stringify(data));
+      callback()
+    };
+
+   var getDuration = function() {
+      var clonedData = angular.copy(data);
+      clonedData.metric = "duration";
+      var getDuration = CommHelper.getMetrics(theMode, clonedData);
+      return getDuration;
+    }
+    var getSpeed = function() {
+      var clonedData = angular.copy(data);
+      clonedData.metric = "median_speed";
+      var speedData = CommHelper.getMetrics(theMode, clonedData);
+      return speedData;
+    }
+    var getCount = function(){
+      var clonedData = angular.copy(data);
+      clonedData.metric = "count";
+      var getCount = CommHelper.getMetrics(theMode, clonedData);
+      return getCount;
+    }
+    var getDistance =  function() {
+      var clonedData = angular.copy(data);
+      clonedData.metric = "distance";
+      var getDistance = CommHelper.getMetrics(theMode, clonedData);
+      return getDistance;
+    }
+
+    var getMetrics = function(){
       $ionicLoading.show({
         template: 'Loading...'
       });
-      var getDuration = new Promise(function(resolve, reject) {
-        var clonedData = angular.copy(data);
-        clonedData.metric = "duration";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      var getSpeed = new Promise(function(resolve, reject) {
-        var clonedData = angular.copy(data);
-        clonedData.metric = "median_speed";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      var getResponse = new Promise(function(resolve, reject) {
-        CommHelper.getMetrics(mode, data, function(response) {
+      if(!first){
+        $scope.uictrl.current = "Custom";
+      }
+      //$scope.uictrl.showRange = false;
+      //$scope.uictrl.showFilter = false;
+      $scope.uictrl.showVis = true;
+      $scope.uictrl.showResult = true;
 
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      });
+      $scope.caloriesData = {};
+      $scope.carbonData = {};
+      $scope.summaryData = {};
+      $scope.caloriesData.userCalories = 0;
+      $scope.caloriesData.aggrCalories = 0;
+      $scope.caloriesData.lastWeekUserCalories = 0;
+      $scope.caloriesData.changeInPercentage = "0%"
+      $scope.caloriesData.change = " change";
 
-      var getDistance =  new Promise(function(resolve, reject) {
-        var clonedData = angular.copy(data);
-        clonedData.metric = "distance";
-        CommHelper.getMetrics(mode, data, function(response) {
-          resolve(response);
-        }, function(error) { console.log(error); reject(error); });
-      })
-      Promise.all([getDuration, getSpeed, getResponse, getDistance]).then(function(results) {
+      $scope.carbonData.userCarbon = "0 kg CO₂";
+      $scope.carbonData.aggrCarbon = "0 kg CO₂";
+      $scope.carbonData.optimalCarbon = "0 kg CO₂";
+      $scope.carbonData.worstCarbon = "0 kg CO₂";
+      $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
+      $scope.carbonData.changeInPercentage = "0%";
+      $scope.carbonData.change = " change";
+
+      $scope.summaryData.userSummary = [];
+      $scope.chartDataUser = {};
+      $scope.chartDataAggr = {};
+      var food = {
+        'chocolateChip' : 78, //16g 1 cookie
+        'vanillaIceCream' : 137, //1/2 cup
+        'banana' : 105, //medium banana 118g
+      };
+
+      Promise.all([getDuration(), getSpeed(), getCount(), getDistance()]).then(function(results) {
         // cacheResults(response);
         $ionicLoading.hide();
-        if (results[2].user_metrics) {
-          $scope.summaryData.userSummary = getSummaryData(results[2].user_metrics, $scope.selectCtrl.metric);
+        if(results[0].user_metrics.length == 0){
+          first = false; 
+          // If there is no data from last week (ex. new user) 
+          // Don't store the any other data as last we data
+         }
+        if(first){
+          var twoWeeksAgoDuration = results[0].user_metrics.slice(0,7); 
+          var twoWeeksAgoMedianSpeed = results[1].user_metrics.slice(0,7);
+          var twoWeeksAgoDistance = results[3].user_metrics.slice(0,7)
+          var userDuration = results[0].user_metrics.slice(7);
+          var usedMedianSpeed = results[1].user_metrics.slice(7);
+          var userCount = results[2].user_metrics.slice(7);
+          var userDistance = results[3].user_metrics.slice(7);
+          var aggDuration = results[0].aggregate_metrics.slice(7);
+          var aggMedianSpeed = results[1].aggregate_metrics.slice(7);
+          var aggCount = results[2].aggregate_metrics.slice(7);
+          var aggDistance = results[3].aggregate_metrics.slice(7);
+        } else {
+          var userDuration = results[0].user_metrics;
+          var usedMedianSpeed = results[1].user_metrics;
+          var userCount = results[2].user_metrics;
+          var userDistance = results[3].user_metrics;
+          var aggDuration = results[0].aggregate_metrics;
+          var aggMedianSpeed = results[1].aggregate_metrics;
+          var aggCount = results[2].aggregate_metrics;
+          var aggDistance = results[3].aggregate_metrics;
         }
-        if (results[2].aggregate_metrics) {
-          $scope.summaryData.aggrSummary = getSummaryData(results[2].aggregate_metrics, $scope.selectCtrl.metric);
-        }
-        $scope.chartDataUser = results[2].user_metrics? results[2].user_metrics : [];
-        $scope.chartDataAggr = results[2].aggregate_metrics? results[2].aggregate_metrics : [];
+        $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
+        $scope.summaryData.userSummary.median_speed = getSummaryData(usedMedianSpeed, "median_speed");
+        $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
+        $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
+        $scope.chartDataUser.duration = userDuration? userDuration : [];
+        $scope.chartDataAggr.duration = aggDuration? aggDuration : [];
+        $scope.chartDataUser.speed = usedMedianSpeed? usedMedianSpeed : [];
+        $scope.chartDataAggr.speed = aggMedianSpeed? aggMedianSpeed : [];
+        $scope.chartDataUser.count = userCount? userCount : [];
+        $scope.chartDataAggr.count = aggCount? aggCount : [];
+        $scope.chartDataUser.distance = userDistance? userDistance : [];
+        $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
 
-        if (results[0].user_metrics) {
-          var durationData = getSummaryDataRaw(results[0].user_metrics, "duration");
+        if (userDuration) {
+          var durationData = getSummaryDataRaw(userDuration, "duration");
         }
-        if (results[1].user_metrics) {
-          var speedData = getSummaryDataRaw(results[1].user_metrics, "median_speed");
+        if (usedMedianSpeed) {
+          var speedData = getSummaryDataRaw(usedMedianSpeed, "median_speed");
         }
         for (var i in durationData) {
           if ($scope.userDataSaved()) {
-            var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
-            var gender = storage.get('gender');
-            var heightUnit = storage.get('heightUnit');
-            var height = storage.get('height');
-            var weightUnit = storage.get('weightUnit');
-            var weight = storage.get('weight');
-            var age = storage.get('age');
-            met = CalorieHelper.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
+            var userDataFromStorage = CalorieCal.get();
+            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
+            var gender = userDataFromStorage.gender;
+            var heightUnit = userDataFromStorage.heightUnit;
+            var height = userDataFromStorage.height;
+            var weightUnit = userDataFromStorage.weightUnit;
+            var weight = userDataFromStorage.weight;
+            var age = userDataFromStorage.age;
+            met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
           } else {
-            var met = CalorieHelper.getMet(durationData[i].key, speedData[i].values);
+            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
           }
-          $scope.caloriesData.userCalories.push({
-            key: durationData[i].key,
-            values: Math.round(CalorieHelper.getuserCalories(durationData[i].values / 3600, met)) + ' cal'
-          })
+          $scope.caloriesData.userCalories += 
+            Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) //+ ' cal'
         }
+        $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/food.chocolateChip);
+        $scope.numberOfIceCreams = Math.floor($scope.caloriesData.userCalories/food.vanillaIceCream);
+        $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/food.banana);
+        if(first){
+            lastWeekCalories = $scope.caloriesData.userCalories;
+        }
+        $scope.caloriesData.lastWeekUserCalories = lastWeekCalories;
 
-        if (results[0].aggregate_metrics) {
-          var avgDurationData = getAvgSummaryDataRaw(results[0].aggregate_metrics, "duration");
+        if (aggDuration) {
+          var avgDurationData = getAvgSummaryDataRaw(aggDuration, "duration");
         }
-        if (results[1].aggregate_metrics) {
-          var avgSpeedData = getAvgSummaryDataRaw(results[1].aggregate_metrics, "median_speed");
+        if (aggMedianSpeed) {
+          var avgSpeedData = getAvgSummaryDataRaw(aggMedianSpeed, "median_speed");
         }
         for (var i in avgDurationData) {
 
-          var met = CalorieHelper.getMet(avgDurationData[i].key, avgSpeedData[i].values);
+          var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
 
-          $scope.caloriesData.aggrCalories.push({
-            key: avgDurationData[i].key,
-            values: Math.round(CalorieHelper.getuserCalories(avgDurationData[i].values / 3600, met)) + ' cal'
-          })
+          $scope.caloriesData.aggrCalories +=
+            Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) //+ ' cal'
         }
 
-
-        var defaultCarFootprint = 278.0/1609; // kg CO2 per meter
-        var defaultTrainFootprint = 92.0/1609; // kg CO2 per meter
-
-        if (results[3].user_metrics) {
-          var userCarbonData = getSummaryDataRaw(results[3].user_metrics, 'distance');
-          $scope.carbonData.userCarbon = [];
+        if (userDistance) {
+          var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
+          var optimalDistance = getOptimalFootprintDistance(userDistance);
+          var worstDistance = getWorstFootprintDistance(userDistance);
+          var date1 = $scope.selectCtrl.fromDateTimestamp;
+          var date2 = $scope.selectCtrl.toDateTimestamp;
+          var duration = moment.duration(date2.diff(date1));
+          var days = duration.asDays();
+          //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
+          $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
+          $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
+          //$scope.carbonData.userCarbon = [];
           for (var i in userCarbonData) {
-            $scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
+            //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
             if (userCarbonData[i].key === "IN_VEHICLE") {
-              $scope.carbonData.userVehicleRange = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+              $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);              
+              $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
+              $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
+              lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+              if(first){
+                lastWeekCarbon = $scope.carbonData.userCarbon;
+              }
+            $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
             }
           }
         }
-        if (results[3].aggregate_metrics) {
-          var aggrCarbonData = getAvgSummaryDataRaw(results[3].aggregate_metrics, 'distance');
-          $scope.carbonData.aggrCarbon = [];
+        if (aggDistance) {
+          var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
           for (var i in aggrCarbonData) {
-            $scope.carbonData.aggrCarbon.push({key: aggrCarbonData[i].key, values: FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key)});
             if (aggrCarbonData[i].key === "IN_VEHICLE") {
               $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
+              $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
             }
           }
         }
+        $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
 
-        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) {
+        if(first){
+          if (twoWeeksAgoDistance) {
+            var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
+            for (var i in userCarbonData) {
+              if (userCarbonData[i].key === "IN_VEHICLE") {
+                twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);              
+                twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);              
+              }
+            }
+          }
+          if (twoWeeksAgoDuration) {
+            var durationData = getSummaryDataRaw(twoWeeksAgoDuration, "duration");
+          }
+          if (twoWeeksAgoMedianSpeed) {
+            var speedData = getSummaryDataRaw(twoWeeksAgoMedianSpeed, "median_speed");
+          }
+          for (var i in durationData) {
+            if ($scope.userDataSaved()) {
+              var userDataFromStorage = CalorieCal.get();
+              var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
+              var gender = userDataFromStorage.gender;
+              var heightUnit = userDataFromStorage.heightUnit;
+              var height = userDataFromStorage.height;
+              var weightUnit = userDataFromStorage.weightUnit;
+              var weight = userDataFromStorage.weight;
+              var age = userDataFromStorage.age;
+              met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
+            } else {
+              var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
+            }
+            twoWeeksAgoCalories += 
+              Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
+          }
+
+          var change = "";
+          var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
+                            / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
+                            * 100 - 100;
+          
+          if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
+            $scope.carbonData.change = " increase over a week";
+            $scope.carbonUp = true;
+            $scope.carbonDown = false;
+          } else {
+            $scope.carbonData.change = " decrease over a week"
+            $scope.carbonUp = false;
+            $scope.carbonDown = true;
+          }
+          $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+
+          $scope.caloriesData.changeInPercentage = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100)) + "%";
+          if(lastWeekCalories > twoWeeksAgoCalories){
+            $scope.caloriesData.change = " increase over a week";
+            $scope.caloriesUp = true;
+            $scope.caloriesDown = false;
+          } else {
+            $scope.caloriesData.change = " decrease over a week"
+            $scope.caloriesUp = false;
+            $scope.caloriesDown = true;
+          }
+
+          first = false; //If there is data from last week store the data only first time
+        }
+
+        $scope.uictrl.showContent = true;
+
+        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because 
           $scope.$apply(function() {
             $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
-            $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
-            $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
-            $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
-            $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
-            $scope.getCarbonGoalChartData();
-
-            $scope.modeTitle = $scope.selectCtrl.metric === "median_speed"? "(Average)" : "(Total)";
-            $scope.caloriesTitle = "(Average)";
-            $scope.footprintTitle = "(Average)";
           })
         } else {
           $scope.$apply(function() {
             $scope.showCharts([]);
             console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
-
-            $scope.summaryData.defaultSummary = $scope.uictrl.showMe? $scope.summaryData.userSummary : $scope.summaryData.aggrSummary;
-            $scope.caloriesData.defaultCalories = $scope.uictrl.showMe? $scope.caloriesData.userCalories : $scope.caloriesData.aggrCalories;
-            $scope.carbonData.defaultCarbon = $scope.uictrl.showMe? $scope.carbonData.userCarbon : $scope.carbonData.aggrCarbon;
-            $scope.carbonData.defaultVehicleRange = $scope.uictrl.showMe? $scope.carbonData.userVehicleRange : $scope.carbonData.aggrVehicleRange;
-            $scope.getCarbonGoalChartData();
-
-            $scope.modeTitle = $scope.selectCtrl.metric === "median_speed"? "(Average)" : "(Total)";
-            $scope.caloriesTitle = "(Average)";
-            $scope.footprintTitle = "(Average)";
           });
         }
+      }, function(error) {
+        $ionicLoading.hide();
+        $ionicPopup.alert({
+          title: "Error Loading Data",
+          template: ''
+        });
+        console.log(error);
       });
     };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data = getDataFromMetrics(agg_metrics);
-
-        var metricLabelMap = {
-           "COUNT":'Number',
-           "DISTANCE": 'm',
-           "DURATION": 'secs',
-           "MEDIAN_SPEED": 'm/sec'
-        };
-
-        $scope.options.chart.yAxis.axisLabel = metricLabelMap[$scope.selectCtrl.metricString];
+      $scope.data.count = getDataFromMetrics(agg_metrics.count);
+      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
+      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
+      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.countOptions = angular.copy($scope.options)
+      $scope.countOptions.chart.yAxis.axisLabel = 'Number';
+      $scope.distanceOptions = angular.copy($scope.options)
+      $scope.distanceOptions.chart.yAxis.axisLabel = 'm';
+      $scope.durationOptions = angular.copy($scope.options)
+      $scope.durationOptions.chart.yAxis.axisLabel = 'secs'
+      $scope.speedOptions = angular.copy($scope.options)
+      $scope.speedOptions.chart.yAxis.axisLabel = 'm/sec'
     };
     $scope.pandaFreqOptions = [
       {text: "DAILY", value: 'D'},
@@ -541,14 +628,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       {text: "MONTHLY", value: 'M'},
       {text: "YEARLY", value: 'A'}
     ];
-
-    $scope.metricOptions = [
-      {text: "COUNT", value:'count'},
-      {text: "DISTANCE", value: 'distance'},
-      {text: "DURATION", value: 'duration'},
-      {text: "MEDIAN_SPEED", value: 'median_speed'}
-    ];
-
     $scope.freqOptions = [
       {text: "DAILY", value:'DAILY'},
       {text: "MONTHLY", value: 'MONTHLY'},
@@ -622,6 +701,34 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return data;
     }
+    /*var sortNumber = function(a,b) {
+      return a - b;
+    }*/
+    var getOptimalFootprintDistance = function(metrics){
+      var data = getDataFromMetrics(metrics);
+      var distance = 0;
+      var longTrip = 5000;
+      for(var i = 0; i < data.length; i++) {
+        if(data[i].key == "IN_VEHICLE") {
+          for(var j = 0; j < data[i].values.length; j++){
+            if(data[i].values[j][1] >= longTrip){
+              distance += data[i].values[j][1];
+            }
+          }
+        }
+      }
+      return distance;
+    }
+    var getWorstFootprintDistance = function(metrics){
+      var data = getDataFromMetrics(metrics);
+      var distance = 0;
+      for(var i = 0; i < data.length; i++) {
+        for(var j = 0; j < data[i].values.length; j++){
+          distance += data[i].values[j][1];
+        }
+      }
+      return distance;
+    }
     var getAvgSummaryDataRaw = function(metrics, metric) {
         var data = getAvgDataFromMetrics(metrics);
         for (var i = 0; i < data.length; i++) {
@@ -662,6 +769,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
           if (metric === "median_speed") {
             data[i].values = Math.round(temp / data[i].values.length  ) + ' ' + unit;
+          } else if(metric === "distance" && temp.toString().length > 4){
+            data[i].values = Math.round(temp / 1000) + ' ' + "km";
+          } else if(metric === "duration" && temp > 60){
+            data[i].values = Math.round(temp / 60) + ' ' + "mins";
           } else {
             data[i].values = Math.round(temp) + ' ' + unit;
           }
@@ -714,21 +825,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
       });
     };
-
-
-    $scope.changeMetric = function() {
-        $ionicActionSheet.show({
-          buttons: $scope.metricOptions,
-          titleText: "Select metric",
-          cancelText: "Cancel",
-          buttonClicked: function(index, button) {
-            $scope.selectCtrl.metricString = button.text;
-            $scope.selectCtrl.metric = button.value;
-            return true;
-          }
-        });
-    };
-
     $scope.changeFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.freqOptions,
@@ -754,79 +850,29 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         });
     };
-    $scope.getCarbonGoalChartData = function() {
-      var date1 = $scope.selectCtrl.fromDateTimestamp;
-      var date2 = $scope.selectCtrl.toDateTimestamp;
-      var duration = moment.duration(date2.diff(date1));
-      var days = duration.asDays();
-
-
-
-      var lower = $scope.carbonData.defaultVehicleRange[0];
-      var upper = $scope.carbonData.defaultVehicleRange[1];
-      var ca2020 = 43.771628 / 5 * days; // kg/day
-      var ca2035 = 40.142892 / 5 * days; // kg/day
-      var temp2020offset = Math.round((ca2020 - lower) / (upper - lower) * 100);
-      temp2020offset = temp2020offset > 100? 98 : temp2020offset < 0? 2 : temp2020offset;
-      var temp2035offset = Math.round((ca2035 - lower) / (upper - lower) * 100);
-      temp2035offset = temp2035offset > 100? 98 : temp2035offset < 0? 2 : temp2035offset;
-      $scope.carbonGoalChartData = { // first elem: absolute left or right distance, second elem: number
-        min: [2, lower], // 2 for offset padding
-        max: [2, upper],
-        ca2020: [temp2020offset, ca2020],
-        ca2035: [temp2035offset, ca2035]
-
-      };
-      $scope.showca2020 = false;
-      $scope.showca2035 = false;
-
-    }
-    $scope.shouldshowca2020 = function() {
-      return $scope.showca2020;
-    }
-    $scope.shouldshowca2035 = function() {
-      return $scope.showca2035;
-    }
-    $scope.toggleca2020 = function() {
-      $scope.showca2020 = !$scope.showca2020;
-    }
-    $scope.toggleca2035 = function() {
-      $scope.showca2035 = !$scope.showca2035;
-    }
+    
     $scope.toggle = function() {
       if (!$scope.uictrl.showMe) {
         $scope.uictrl.showMe = true;
         $scope.showCharts($scope.chartDataUser);
-        $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
-        $scope.caloriesData.defaultCalories = $scope.caloriesData.userCalories;
-        $scope.carbonData.defaultCarbon = $scope.carbonData.userCarbon;
-        $scope.carbonData.defaultVehicleRange =  $scope.carbonData.userVehicleRange;
-        $scope.getCarbonGoalChartData();
 
       } else {
         $scope.uictrl.showMe = false;
         $scope.showCharts($scope.chartDataAggr);
-        $scope.summaryData.defaultSummary = $scope.summaryData.aggrSummary;
-        $scope.caloriesData.defaultCalories = $scope.caloriesData.aggrCalories;
-        $scope.carbonData.defaultCarbon = $scope.carbonData.aggrCarbon;
-        $scope.carbonData.defaultVehicleRange =  $scope.carbonData.aggrVehicleRange;
-        $scope.getCarbonGoalChartData();
       }
     }
     var initSelect = function() {
-      var now = moment();
-      var monthago = moment().subtract(7, 'd');
-      $scope.selectCtrl.metric = 'count';
-      $scope.selectCtrl.metricString = "COUNT";
+      var now = moment().utc();
+      var weekAgoFromNow = moment().utc().subtract(7, 'd');
       $scope.selectCtrl.freq = 'DAILY';
       $scope.selectCtrl.freqString = "DAILY";
       $scope.selectCtrl.pandaFreq = 'D';
       $scope.selectCtrl.pandaFreqString = "DAILY";
       // local_date saved as localdate
-      $scope.selectCtrl.fromDateLocalDate = moment2Localdate(monthago);
+      $scope.selectCtrl.fromDateLocalDate = moment2Localdate(weekAgoFromNow);
       $scope.selectCtrl.toDateLocalDate = moment2Localdate(now);
       // ts saved as moment
-      $scope.selectCtrl.fromDateTimestamp= monthago;
+      $scope.selectCtrl.fromDateTimestamp= weekAgoFromNow;
       $scope.selectCtrl.toDateTimestamp = now;
 
       $scope.selectCtrl.fromDateWeekdayString = "All"
@@ -840,7 +886,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
 
   $scope.selectCtrl = {}
-  initSelect();
+  initSelect(); 
+  $timeout(function() {
+    getData();
+  }, 1)
 
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
@@ -852,7 +901,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   $scope.setCurDayFrom = function(val) {
     if (val) {
-      $scope.selectCtrl.fromDateTimestamp = moment(val);
+      $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
       $scope.datepickerObjFrom.inputDate = val;
     } else {
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
@@ -861,7 +910,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   };
   $scope.setCurDayTo = function(val) {
     if (val) {
-      $scope.selectCtrl.toDateTimestamp = moment(val);
+      $scope.selectCtrl.toDateTimestamp = moment(val).utc();
       $scope.datepickerObjTo.inputDate = val;
     } else {
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
@@ -933,5 +982,34 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       closeOnSelect: false,
       disableWeekdays: [6]
     };
+
+  $scope.extendFootprintCard = function() {
+    if($scope.expandedf){
+      $scope.expandedf = false;
+    } else {
+      $scope.expandedf = true
+    }
+  }
+  $scope.checkFootprintCardExpanded = function() {
+        return ($scope.expandedf)? "icon ion-chevron-up" : "icon ion-chevron-down";
+  }
+  $scope.extendCalorieCard = function() {
+    if($scope.expandedc){
+      $scope.expandedc = false;
+    } else {
+      $scope.expandedc = true
+    }
+  }
+  $scope.checkCalorieCardExpanded = function() {
+        return ($scope.expandedc)? "icon ion-chevron-up" : "icon ion-chevron-down";
+  }
+
+  $scope.changeFootprintCardHeight = function() {
+        return ($scope.expandedf)? "expanded-footprint-card" : "small-footprint-card";
+  }
+
+  $scope.changeCalorieCardHeight = function() {
+        return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
+  }
 
 });

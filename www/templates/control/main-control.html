@@ -1,29 +1,17 @@
 <ion-view view-title="Profile" ng-class="ionViewBackgroundClass()">
-  <!-- <div align-title="center" class="bar bar-positive bar-subheader">
-      <div class="buttons" style="text-align:center">
-        <button class="button button-assertive icon-right ion-stop"
-            ng-click="forceTransition('STOP_TRACKING')"> Stop Tracking </button>
-        <button class="button icon-right ion-refresh" ng-click="refreshScreen()"/> </button>
-        <button class="button icon-right ion-cloud" ng-click="forceSync()"> Sync </button>
-        <button class="button button-balanced icon-right ion-play"
-            ng-click="forceTransition('START_TRACKING')"> Start Tracking </button>
-      </div>
-  </div> -->
-
+   <div>
+    <progress ng-if="isDownloading" class=" has-header download" value="{{progress}}" max="100"></progress>
+  </div>
   <ion-content>
-<!--     <div style="text-align: center;">
-      <img src="img/avatar_1.png" ng-style="getAvatarStyle()">
-    </div> -->
-
     <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
-      <div ng-click="returnToIntro()" ng-style="getIconButtonStyle('E0A1A1')"><i class="icon ion-log-out" ng-style="getIconStyle()"></i></div>
+      <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Tracking</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle">
         <input type="checkbox" ng-checked="trackingOn()">
-        <div class="track" style="border-color: #2bb096; background-color: #2bb096;">
+        <div class="track toggle-color">
           <div class="handle"></div>
         </div>
       </label>
@@ -32,7 +20,7 @@
       <div class="control-list-text">Medium accuracy</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle">
         <input type="checkbox" ng-checked="getLowAccuracy()">
-        <div class="track" style="border-color: #2bb096; background-color: #2bb096;">
+        <div class="track toggle-color">
           <div class="handle"></div>
         </div>
       </label>
@@ -43,37 +31,37 @@
       <div class="control-list-text">Dark theme</div>
       <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle">
         <input type="checkbox" ng-checked="getDarkTheme()">
-        <div class="track" style="border-color: #2bb096; background-color: #2bb096;">
+        <div class="track toggle-color">
           <div class="handle"></div>
         </div>
       </label>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Force sync</div>
-      <div ng-click="forceSync()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-sync" ng-style="getIconStyle()"></i></div>
+      <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Check for UI updates</div>
-      <div ng-click="checkUpdates()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-download" ng-style="getIconStyle()"></i></div>
+      <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Email log</div>
-      <div ng-click="emailLog()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-android-mail" ng-style="getIconStyle()"></i></div>
+      <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
     </div>
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text">User data</div>
-      <div ng-click="toggleUserData()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getUserDataExpandButtonClass()" ng-style="getIconStyle()" id="userDataButton"></i></div>
+      <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
     </div>
     <!-- Begin user data -->
     <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Erase data</div>
-        <div ng-click="eraseUserData()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-trash-b" ng-style="getIconStyle()"></i></div>
+        <div ng-click="eraseUserData()" id="gray" class=" control-icon-button"><i class="ion-trash-b"></i></div>
       </div>
       <ion-list>
 
           <ion-item class="row" ng-repeat="entry in userData">
-                <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">{{entry.key}}</div>
+                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
                 <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.value}}</div>
           </ion-item>
       </ion-list>
@@ -82,18 +70,18 @@
 
     <div class="control-list-item">
       <div class="control-list-text">Developer zone</div>
-      <div ng-click="toggleCollection()" ng-style="getIconButtonStyle('D6C780')"><i ng-class="getExpandButtonClass()" ng-style="getIconStyle()" id="expandButton"></i></div>
+      <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
     </div>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Refresh</div>
-        <div ng-click="refreshScreen()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-refresh" ng-style="getIconStyle()"></i></div>
+        <div ng-click="refreshScreen()" class="control-icon-button"><i class="ion-refresh"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check consent</div>
-        <div ng-click="checkConsent()" ng-style="getIconButtonStyle('D6C780')"><i class="ion-checkmark-circled" ng-style="getIconStyle()"></i></div>
+        <div ng-click="checkConsent()" class="control-icon-button"><i class="ion-checkmark-circled"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Set UI channel</div>
@@ -103,60 +91,45 @@
       </div>
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
-        <div ng-click="forceState()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
+        <div ng-click="forceState()" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check log</div>
-        <div ng-click="showLog()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+        <div ng-click="showLog()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check sensed data</div>
-        <div ng-click="showSensed()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+        <div ng-click="showSensed()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text">Check map</div>
-        <div ng-click="showMap()" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-ios-arrow-right" ng-style="getIconStyle()"></i></div>
+        <div ng-click="showMap()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
 
       <div class="control-list-item">
         <div class="control-list-text">Collection</div>
-        <div ng-click="editCollectionConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
+        <div ng-click="editCollectionConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
 
           <ion-item class="row" ng-repeat="entry in settings.collect.show_config">
-                <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">{{entry.key}}</div>
-                <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.val}}</div>
+                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
+                <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
           </ion-item>
       </ion-list>
 
       <div class="control-list-item">
         <div class="control-list-text">Sync</div>
-        <div ng-click="editSyncConfig($event)" ng-style="getIconButtonStyle('CCCCCC')"><i class="ion-edit" ng-style="getIconStyle()"></i></div>
+        <div ng-click="editSyncConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
           <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
-                <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">{{entry.key}}</div>
-                <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.val}}</div>
+                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
+                <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
           </ion-item>
           <ion-item class="row">
-                <div class="col timestamp item-text-wrap" style="padding: 2px 4px !important;">host</div>
-                <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{settings.connect.url}}</div>
+                <div class="col timestamp item-text-wrap control-info">host</div>
+                <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
           </ion-item>
       </div>
     </div>
-
-    <!-- <div class="card">
-      <div class="row item item-divider">
-        <div class="col">
-            Collection
-        </div>
-        <button class="col col-25 button button-positive" ng-click="editConfig($event)"> Edit </button>
-      </div>
-      <ion-list>
-          <ion-item class="row" ng-repeat="entry in settings.collect.show_config" ng-show="collectionExpanded()">
-                <div class="col timestamp item-text-wrap">{{entry.key}}</div>
-                <div class="col detail item-text-wrap"> {{entry.val}}</div>
-          </ion-item>
-      </ion-list>
-    </div> -->
   </ion-content>
 </ion-view>

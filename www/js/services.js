@@ -23,14 +23,8 @@ angular.module('emission.services', [])
      * var regConfig = {'username': ....}
      * Other fields can be added easily and the server can be modified at the same time.
      */
-    this.habiticaRegister = function(regConfig) {
-        return new Promise(function(resolve, reject){
-          window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, function(response) {
-            resolve(response);
-          }, function(error) {
-            reject(error);
-          });
-      }); 
+    this.habiticaRegister = function(regConfig, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, successCallback, errorCallback);
     };
 
     /*
@@ -49,24 +43,19 @@ angular.module('emission.services', [])
                     'method_args': null}
      * ....
      */
-    
-    this.habiticaProxy = function(callOpts){
-      return new Promise(function(resolve, reject){
-        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, function(response){
-          resolve(response);
-        }, function(error) {
-          reject(error);
-        });
-      });
+    this.habiticaProxy = function(callOpts, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, successCallback, errorCallback);
     };
 
-    this.getMetrics = function(timeType, metrics_query, successCallback, errorCallback) {
+    this.getMetrics = function(timeType, metrics_query) {
+      return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
             for (var key in metrics_query) {
                 message[key] = metrics_query[key]
             };
         };
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, successCallback, errorCallback);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
+      })
     };
 })
 
@@ -115,6 +104,49 @@ angular.module('emission.services', [])
                "Email cancel reported, seems to be an error on android");
         });
     }
+
+    this.dataCollectionSetConfig = function(config) {
+      return window.cordova.plugins.BEMDataCollection.setConfig(config);
+    };
+
+    this.dataCollectionGetConfig = function() {
+      return window.cordova.plugins.BEMDataCollection.getConfig();
+    };
+    this.serverSyncSetConfig = function(config) {
+      return window.cordova.plugins.BEMServerSync.setConfig(config);
+    };
+
+    this.serverSyncGetConfig = function() {
+      return window.cordova.plugins.BEMServerSync.getConfig();
+    };
+
+    this.getAccuracyOptions = function() {
+      return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
+    };
+
+    this.getUserEmail = function() {
+      return window.cordova.plugins.BEMJWTAuth.getUserEmail();
+    };
+
+    this.getState = function() {
+      return window.cordova.plugins.BEMDataCollection.getState();
+    };
+
+    this.getSettings = function() {
+      return window.cordova.plugins.BEMConnectionSettings.getSettings();
+    };
+
+    this.forceTransition = function(transition) {
+      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
+    };
+
+    this.forceSync = function() {
+      return window.cordova.plugins.BEMServerSync.forceSync();
+    };
+
+    this.getDocument = function() {
+      return window.cordova.plugins.BEMUserCache.getDocument("config/consent");
+    };
 })
 
 // common configuration methods across all screens

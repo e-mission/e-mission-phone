@@ -137,7 +137,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
-          return 'root.main.diary';
+          return 'root.main.metrics';
         } else {
           return result;
         }

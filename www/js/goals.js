@@ -507,4 +507,3 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 });
 
 
-

@@ -1,7 +1,8 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.services'])
+                                      'emission.services',
+                                      'ng-walkthrough'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
@@ -28,6 +29,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     Timeline.updateForDay(day);
     CommonGraph.updateCurrent();
   };
+
+  $scope.$on('$ionicView.enter', function() {
+    if($rootScope.barDetail){
+      readAndUpdateForDay($rootScope.barDetailDate);
+      $rootScope.barDetail = false;
+    };
+  });
 
   readAndUpdateForDay(moment().startOf('day'));
 
@@ -116,6 +124,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
           readAndUpdateForDay(moment(val));
         }
+    }
+    $scope.localTimeString = function(dt) {
+      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
+      var post = ((dt.hour >= 12))? " pm" : " am";
+      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
+      return hr + ":" + min + post;
     }
 
     $scope.datepickerObject = {
