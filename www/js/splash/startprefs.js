@@ -37,11 +37,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     };
 
     var writeConsentToNative = function() {
-     return $window.cordova.plugins.BEMUserCache.putRWDocument(CONSENTED_KEY, 
-      JSON.stringify({category: "emSensorDataCollectionProtocol",
-      protocol_id: $rootScope.req_consent.protocol_id,
-      approval_date: $rootScope.req_consent.approval_date})
-      );
+     return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
     };
 
     startprefs.markConsented = function() {

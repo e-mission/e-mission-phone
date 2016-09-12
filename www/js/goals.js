@@ -96,8 +96,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			$scope.gem = Math.round($scope.profile.balance);
 			$scope.silver = Math.round(($scope.profile.stats.gp - 
 				Math.floor($scope.profile.stats.gp))*100);
-			$scope.exp = $scope.profile.stats.exp;
-			$scope.toNextLevel = $scope.profile.stats.toNextLevel;
 			if(!('_id' in $scope.profile.party)){
 				$scope.hasParty = false;
 				partyId = storage.get('party_id');
