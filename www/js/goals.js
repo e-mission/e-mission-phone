@@ -439,10 +439,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				});
 	};
 
-	$scope.toInventory = function(){
-		$state.go('root.main.inventory');
-	};
-
 	//Tab switch
 	$scope.isActive = false;
 	var firstActive = true;

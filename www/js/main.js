@@ -4,7 +4,6 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
                                  'emission.main.control',
                                  'emission.main.goals',
-                                 'emission.main.goals.inventory',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
@@ -67,15 +66,6 @@ angular.module('emission.main', ['emission.main.recent',
       'main-goals': {
         templateUrl: 'templates/main-goals.html',
         controller: 'GoalsCtrl'
-      }
-    }
-  })
-  .state('root.main.inventory', {
-    url: '/inventory',
-    views: {
-      'main-goals': {
-        templateUrl: 'templates/goals/inventory.html',
-        controller: 'UserInventoryCtrl'
       }
     }
   })
