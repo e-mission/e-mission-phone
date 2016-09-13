@@ -51,19 +51,19 @@
 }
 
 #habitica-heart-icon {
-   font-size: 15px;
-   color: red;
+   font-size: 18px;
+   color: #ff6064;
    padding-left: 10%;
    position: relative;
    bottom: 1.5px;
 }
 
 #habitica-star-icon {
-   font-size: 15px;
-   color: gold;
+   font-size: 18px;
+   color: #ffbe5d;
    padding-left: 10%;
    position: relative;
-   bottom: 3px;
+   bottom: 2px;
 }
 
 #stats-wrapper {
@@ -76,13 +76,13 @@
 }
 
 .stats-value {
-  font-size: 8px !important;
+  font-size: 10px !important;
   padding-left: 21%;
   display: inline;
 }
 
 .stats-name {
-  font-size: 8px !important;
+  font-size: 10px !important;
   float: right;
   display: inline;
 }
@@ -90,7 +90,7 @@
 .item-thumbnail-left-avatar.activated {
   background-color: transparent;
   box-shadow: none;
-  color: #fff;
+  color: #fff; 
 }
 
 .signup-title{
@@ -100,19 +100,16 @@
 
 progress{
   margin: 0px;
-  /*margin-top: 2px;*/
   float: right;
   width: 80%;
-  height: 12px;
+  height: 14px;
   border-radius: 10px;
-  padding-top: 1%;
 }
 
 progress.quest-boss-bar{
   height: 20px !important;
   width: 100% !important;;
 }
-
 progress.download{
   margin: 0;
   width: 100%;
@@ -139,7 +136,6 @@ progress.download::-webkit-progress-value{
 progress::-webkit-progress-value{
   background: #f74040;
   border-radius: 10px;
-  /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
 
 progress::-webkit-progress-bar{
@@ -493,6 +489,83 @@ h4.dashboard-headers{
   filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#87f5f5', endColorstr='#5ffad8', GradientType=0 );
 }*/
 
+#message.ng-enter{
+  -webkit-animation: slideInLeft .25s;
+  animation: slideInLeft .25s;
+}
+
+#message.ng-leave{
+  -webkit-animation: slideOutLeft .25s;
+  animation: slideOutLeft .25s;
+}
+
+#scroll-message.ng-enter{
+  -webkit-animation: bounceInUp .5s;
+  animation: bounceInUp .5s;
+}
+
+#scroll-message.ng-leave{
+  -webkit-animation: fadeOut .25s;
+  animation: fadeOut .25s;
+}
+/* ngAnimate ends here */
+
+/* score button color */
+#up_value_negative_big{
+  background-color: #A9EDE0;
+}
+#up_value_negative{
+  background-color: #73D9C5;
+}
+#up_value_normal{
+  background-color: #4BC3AB;
+}
+#up_value_positive{
+  background-color: #2CAC93;  
+}
+#up_value_positive_big{
+  background-color: #0D9C80;
+}
+#down_value_negative_big{
+  background-color: #E81431;
+}
+#down_value_negative{
+  background-color: #F43F58;
+}
+#down_value_normal{
+  background-color: #F75F74;
+}
+#down_value_positive{
+  background-color: #FA8595;  
+}
+#down_value_positive_big{
+  background-color: #FDB3BD;
+}
+/*score button color end*/
+
+#costume-tab .button {
+  border: none !important;
+  color: #6e6e6e !important;
+  background: #f5f5f5 !important;
+  font-weight: 700 !important;
+  width: 50%;
+  float:left;
+  border-radius: 0;
+}
+
+#challenge.active {
+  color: #2bb096 !important;
+}
+
+#party.active {
+  color: #2bb096 !important;
+}
+
+#goal-content .item-content {
+    padding: 0px 49px 0px 0px !important;
+}
+
+
 .bar.bar-header.no-bgColor, .bar.bar-footer.no-bgColor{
 border: 0px !important;
 border-color: transparent !important;
@@ -578,7 +651,6 @@ ion-header-bar {
 */
 /* Dark theme ends */
 /* Light theme */
-
 .control-icon-button{
   text-align: center;
   float: right;
@@ -695,6 +767,16 @@ ion-header-bar {
   margin-top: 0 !important;
   margin-bottom: 0 !important;
 }
+.list-location-dark {
+  color: white;
+  background-color: transparent; 
+  font-size: 0.8em; 
+  padding-top: 5px; 
+  padding-bottom: 5px; 
+  padding-left: 30px; 
+  margin-top: 0; 
+  margin-bottom: 0;
+}
 p.list-text-dark {
   color: white;
 }
@@ -711,7 +793,6 @@ a.list-text {
   margin: 3px auto 1px auto;
   font-size: 25px;
   height: 25px;
-
 }
 
 .card-1 {
@@ -869,6 +950,9 @@ button.button.back-button.buttons.button-clear.header-item {
   background-color: #dddfe2;
 }
 
+.side-menu-item {
+  padding: 5% 10%;
+}
 .common-list-item {
   padding: 5% 8% 3% 8%;
 }
@@ -927,13 +1011,11 @@ svg {
     display: block;
 }
 html, body, #chart1, svg {
-
     padding: 0px;
     margin: 0 10px 0 0;
 
 }
 html, body, #chart2, svg {
-
     padding: 0px;
     margin: 0 10px 0 0;
 }
