@@ -83,9 +83,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				storage.remove(REFERRED_USER_ID);
 			}
 		} else {
-			showNeedRegister();
+			if (storage.get(REFERRED_KEY) == true) {
+			    showNeedRegister();
+            }
 		}
-
 	}
 
 	/*$scope.onGesture = function(gesture) {
