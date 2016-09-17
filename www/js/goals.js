@@ -126,7 +126,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			prepopulateMessage = {
 		    	message: 'Join my party in Emission',
 		    	subject: 'Emission - Party Invite',
-		    	url: 'emission://join?groupid='+ partyId
+		    	url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid'+ partyId
 		    };
 			$ionicLoading.hide();
 			}, function(error){
