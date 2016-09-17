@@ -84,8 +84,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			}
 		} else {
 			if (storage.get(REFERRED_KEY) == true) {
-			    showNeedRegister();
-            }
+				showNeedRegister();
+			}
 		}
 	}
 
