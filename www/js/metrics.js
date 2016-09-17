@@ -15,19 +15,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var twoWeeksAgoCarbonInt = [];
     var twoWeeksAgoCalories = 0;
     
-
-    // popup saying u need to register first
-    var handlePendingRefer = function() {
-      storage.removeItem(REFERRAL_NAVIGATION_KEY);
-      var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
-      var REFERED_KEY = 'refered';
-      var REFERED_GROUP_ID = 'refered_group_id';
-      if (storage.get(REFERED_KEY) == true) {
-        var groupid = storage.get(REFERED_GROUP_ID);
-        showNeedRegister();
-      }
-    }
-    handlePendingRefer();
     $scope.setCookie = function(){
       $scope.foodCompare = 'cookie';
       storage.set('foodCompare', 'cookie');

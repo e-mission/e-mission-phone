@@ -66,18 +66,10 @@ angular.module('emission.services', [])
     this.joinGroup = function(groupid, userid) {
     
     // TODO:
-    new Promise(function(resolve, reject) {
+    return new Promise(function(resolve, reject) {
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/join.group/"+groupid, "inviter", userid, resolve, reject);
       })
-    .then(function(response){
-      var mres = response.data;
-      console.log(mres);
-      return true;
-    },function(err){
-      var merr = err.data;
-      console.log(merr);
-      return false;
-    });
+    
     //function firstUpperCase(string) {
     //  return string[0].toUpperCase() + string.slice(1);
     //}*/

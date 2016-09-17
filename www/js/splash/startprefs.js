@@ -140,9 +140,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         if (result == null) {
           var temp = getReferralNavigation();
           storage.remove(REFERRAL_NAVIGATION_KEY);
-          if (temp == 'metrics') {
-            return 'root.main.metrics';  
-          } else if (temp == 'goals') {
+          if (temp == 'goals') {
             return 'root.main.goals';
           } else {
             return 'root.main.metrics';

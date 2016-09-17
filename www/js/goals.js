@@ -40,7 +40,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	var joinGroupSuccess = function() {
 	   var alertPopup = $ionicPopup.alert({
 	     title: 'Cool!',
-	     template: 'Request has been sent.'
+	     template: 'You have successfully joined the group!'
 	   });
 
 	   alertPopup.then(function(res) {
@@ -49,7 +49,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	var joinGroupFail = function() {
 	   var alertPopup = $ionicPopup.alert({
 	     title: 'Err!',
-	     template: 'Request has not been sent.'
+	     template: 'Service is not available.'
 	   });
 
 	   alertPopup.then(function(res) {
@@ -66,30 +66,27 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	         console.log('User should register');
 	       } else { // do nothing
 	         console.log('User decides not to register or join group');
-	         storage.remove(REFERED_KEY);
-	         storage.remove(REFERED_GROUP_ID);
-	         storage.remove(REFERED_USER_ID);
+	         storage.remove(REFERRED_KEY);
+	         storage.remove(REFERRED_GROUP_ID);
+	         storage.remove(REFERRED_USER_ID);
 	       }
 	    })
  	};
 	var handlePendingRefer = function() {
 
-		var REFERED_KEY = 'refered';
-		var REFERED_GROUP_ID = 'refered_group_id';
-		var REFERED_USER_ID = 'refered_user_id';
+		var REFERRED_KEY = 'referred';
+		var REFERRED_GROUP_ID = 'referred_group_id';
+		var REFERRED_USER_ID = 'referred_user_id';
 		if (storage.get('habitica_registered') == true) {
-			if (storage.get(REFERED_KEY) == true) {
-				var groupid = storage.get(REFERED_GROUP_ID);
-				var userid = storage.get(REFERED_USER_ID);
-				var response = ReferHelper.joinGroup(groupid, userid);
-				if (response) {
-					joinGroupSuccess();
-				} else {
-					joinGroupFail();
-				}
-				storage.remove(REFERED_KEY);
-				storage.remove(REFERED_GROUP_ID);
-				storage.remove(REFERED_USER_ID);
+			if (storage.get(REFERRED_KEY) == true) {
+				var groupid = storage.get(REFERRED_GROUP_ID);
+				var userid = storage.get(REFERRED_USER_ID);
+				ReferHelper.joinGroup(groupid, userid).then(
+					joinGroupSuccess, joinGroupFail
+				)
+				storage.remove(REFERRED_KEY);
+				storage.remove(REFERRED_GROUP_ID);
+				storage.remove(REFERRED_USER_ID);
 			}
 		} else {
 			showNeedRegister();
