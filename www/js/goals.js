@@ -58,7 +58,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
     var showNeedRegister = function() {
      var confirmPopup = $ionicPopup.confirm({
        title: 'Join Group',
-       template: 'A friend invited you to join a group, but you need to sign up first.'
+       template: 'A friend invited you to join a group, but you need to sign up first. (Pressing "Cancel" will reject the invite)'
      });
 
 	    confirmPopup.then(function(res) {
