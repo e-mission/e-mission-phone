@@ -71,7 +71,23 @@ angular.module('emission.services', [])
       })
     };
 })
+.service('ReferHelper', function($http) {
 
+    this.habiticaRegister = function(groupid, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, successCallback, errorCallback);
+    };
+    this.joinGroup = function(groupid, userid) {
+    
+    // TODO:
+    return new Promise(function(resolve, reject) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/join.group/"+groupid, "inviter", userid, resolve, reject);
+      })
+    
+    //function firstUpperCase(string) {
+    //  return string[0].toUpperCase() + string.slice(1);
+    //}*/
+    }
+})
 .service('ControlHelper', function($cordovaEmailComposer) {
   this.emailLog = function() {
         var parentDir = "unknown";
