@@ -423,7 +423,7 @@ angular.module('emission.main.control',['emission.services',
       message: 'Join me in making transportation greener and healthier \n Download the emission app:', // not supported on some apps (Facebook, Instagram)
       //subject: 'the subject', // fi. for email
       //files: ['', ''], // an array of filenames either locally or remotely
-      url: 'https://itunes.apple.com/us/app/emission/id1084198445',
+      url: 'https://bic2cal.eecs.berkeley.edu/#download',
       //chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
     }
 
