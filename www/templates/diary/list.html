@@ -1,16 +1,21 @@
-<ion-view title="Trip Diary" ng-class="ionViewBackgroundClass()">
-	<ion-nav-title class="dark-color">
-		<div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
-			<button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-			</button>
-			<ionic-datepicker input-obj="datepickerObject" style="color: white;">
-			  <button class="button date-picker-button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-		    </ionic-datepicker>
+<ion-view ng-class="ionViewBackgroundClass()">
+    <ion-nav-bar class="bar-stable">
+        <ion-nav-title class="dark-color">
+                <div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
+                    <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+                    </button>
+                    <ionic-datepicker class="pickerdate" input-obj="datepickerObject" style="color: white;">
+                      <button class="button date-picker-button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+                    </ionic-datepicker>
 
-    		<button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-    		</button>
-		</div>
-	</ion-nav-title>
+                    <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
+                    </button>
+                </div>
+         </ion-nav-title>
+         <ion-nav-buttons side="right">
+             <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+         </ion-nav-buttons>
+    </ion-nav-bar>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="">
         <ion-refresher

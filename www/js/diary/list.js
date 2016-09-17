@@ -2,14 +2,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.services',
-                                      'ng-walkthrough'])
+                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config) {
+                                    Config, nzTour, storage) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -72,20 +72,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 });
 
     /*
-     * While working with dates, note that the datepicker needs a javascript date because it uses
-     * setHours here, while the currDay is a moment, since we use it to perform
-     * +date and -date operations.
-     */
-     $scope.listExpandClass = function () {
+    * While working with dates, note that the datepicker needs a javascript date because it uses
+    * setHours here, while the currDay is a moment, since we use it to perform
+    * +date and -date operations.
+    */
+    $scope.listExpandClass = function () {
       return ($scope.dark_theme)? "earlier-later-expand-dark" : "earlier-later-expand";
-     }
-     $scope.listLocationClass = function() {
-        return ($scope.dark_theme)? "item item-icon-left list-location-dark" : "item item-icon-left list-location";
-
-     }
-     $scope.listTextClass = function() {
-        return ($scope.dark_theme)? "list-text-dark" : "list-text";
-     }
+    }
+    $scope.listLocationClass = function() {
+      return ($scope.dark_theme)? "item item-icon-left list-location-dark" : "item item-icon-left list-location";
+    }
+    $scope.listTextClass = function() {
+      return ($scope.dark_theme)? "list-text-dark" : "list-text";
+    }
     $scope.ionViewBackgroundClass = function() {
       return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
@@ -155,6 +154,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got event with args "+JSON.stringify(args));
+      checkDiaryTutorialDone();
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
@@ -179,14 +179,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
-
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
     "icon ion-speedometer":'red',};
       return { color: colors[mode] };
     }
-
 
     var showNoTripsAlert = function() {
         var buttons = [
@@ -280,6 +278,38 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     };
 
+    // Tour steps
+    var tour = window.tour = {
+      config: {
+
+      },
+      steps: [{
+        target: '.nav-bar-block[nav-bar="active"] .pickerdate',
+        content: 'Use this to select the day whose timeline you want to see'
+      }]
+    };
+
+    var startWalkthrough = function () {
+      nzTour.start(tour);
+    };
+
+    /*
+    * Checks if it is the first time the user has loaded the diary tab. If it is then
+    * show a walkthrough and store the info that the user has seen the tutorial.
+    */
+    var checkDiaryTutorialDone = function () {
+      startWalkthrough();
+      var DIARY_DONE_KEY = 'diary_tutorial_done';
+      var diaryTutorialDone = storage.get(DIARY_DONE_KEY);
+      if (!diaryTutorialDone) {
+        startWalkthrough();
+        storage.set(DIARY_DONE_KEY, true);
+      }
+    };
+
+    $scope.startWalkthrough = function () {
+      startWalkthrough();
+    }
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
