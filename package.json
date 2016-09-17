@@ -79,6 +79,10 @@
     "ionic-plugin-deploy",
     "cordova-plugin-crosswalk-webview",
     {
+      "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+      "id": "cordova-plugin-x-socialsharing"
+    },
+    {
       "variables": {
         "URL_SCHEME": "emission"
       },

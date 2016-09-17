@@ -2,27 +2,19 @@
 
 angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnimate', 'angularLocalStorage'])
 
-/*.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
-  $stateProvider
-
-  .state('root.main.goals.party', {
-    url: '/party',
-    views: {
-      'main-goals': {
-        templateUrl: 'templates/goals/party.html',
-        controller: 'PartyCtrl'
-      }
-    }
-  });
-  })*/
-
-
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, 
 								$window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferHelper){
 	$scope.goals = [];
 	$scope.goal = {};
 	$scope.challenges=[];
 	var partyId;
+	$scope.joinedChallenges = [];
+	$scope.plusInProcess = {};
+	$scope.minusInProcess = {};
+	var prepopulateMessage = {};
+	var floatHp;
+	var floatGold;
+
 	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
 		animation: 'slide-in-up'
@@ -45,7 +37,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 	   alertPopup.then(function(res) {
 	   });
-	 };
+    };
+
 	var joinGroupFail = function() {
 	   var alertPopup = $ionicPopup.alert({
 	     title: 'Err!',
@@ -54,7 +47,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 	   alertPopup.then(function(res) {
 	   });
-	 };	
+	};	
+
     var showNeedRegister = function() {
      var confirmPopup = $ionicPopup.confirm({
        title: 'Join Group',
@@ -93,7 +87,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				showNeedRegister();
 			}
 		}
-
 	}
 
 	/*$scope.onGesture = function(gesture) {
@@ -105,11 +98,11 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	/*$scope.data = {
     	showDelete: false
   	};*/
+
   	$scope.openPartyModal = function() {
     	$scope.partyModal.show();
   	};
   	$scope.closePartyModal = function() {
-  		$scope.goal = {};
     	$scope.partyModal.hide();
   	};  
 
@@ -131,7 +124,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
 	$scope.theUser = {};
-
 	$scope.signup = function(){
 		console.log($scope.theUser.username);
 		var regConfig = {'username': $scope.theUser.username};
@@ -139,8 +131,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		$ionicLoading.show({
 			template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
 		});
-		CommHelper.habiticaRegister(regConfig, function(response) {
-			console.log("Success!")
+		CommHelper.habiticaRegister(regConfig).then(function(response) {
+			console.log("Success!");
 			console.log(response);
 			storage.set('party_id',response.habitica_group_id);
 			storage.set('habitica_registered', true);
@@ -163,21 +155,25 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
 	                    'method_args': null};
 
-		CommHelper.habiticaProxy(callOpts, function(response){
+		CommHelper.habiticaProxy(callOpts).then(function(response){
 			$scope.screen = response.success;
 			$scope.$apply(function() {
 				$scope.profile = response.data;
 			});
 			console.log("Proxy Sucess");
 			$scope.gold = Math.round($scope.profile.stats.gp);
+			floatGold = $scope.profile.stats.gp;
 			$scope.hp = Math.round($scope.profile.stats.hp);
+			floatHp = $scope.profile.stats.hp;
 			$scope.gem = Math.round($scope.profile.balance);
 			$scope.silver = Math.round(($scope.profile.stats.gp - 
 				Math.floor($scope.profile.stats.gp))*100);
 			if(!('_id' in $scope.profile.party)){
 				$scope.hasParty = false;
+				partyId = storage.get('party_id');
 			} else{
 				$scope.hasParty = true;
+				partyId = $scope.profile.party._id;
 			}
 			if($scope.profile.party.quest.RSVPNeeded==true){
 				$scope.hasQuestRequest = true;
@@ -192,11 +188,17 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 						$scope.monster = $scope.profile.party.quest.key;
 					});
 					$scope.inQuest = true;
-					questContent();
 				}
 			}
+			$scope.joinedChallenges = $scope.profile.challenges;
 			getParty();
+			getMembers();
 			console.log($scope.profile);
+			prepopulateMessage = {
+		    	message: 'Join my party in Emission',
+		    	subject: 'Emission - Party Invite',
+		    	url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid'+ partyId
+		    };
 			$ionicLoading.hide();
 			}, function(error){
 				$ionicLoading.hide();
@@ -208,7 +210,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/tasks/user",
                     'method_args': null};
 	    var tasks;
-	    CommHelper.habiticaProxy(callOpts, function(response){
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 			$scope.$apply(function() {
 				tasks = response.data;
 			});
@@ -219,6 +221,19 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 						$scope.goal.name = tasks[habit].text;
 						$scope.goal.note = tasks[habit].notes;
 						$scope.goal._id = tasks[habit]._id;
+						$scope.goal.down = tasks[habit].down;
+						$scope.goal.up = tasks[habit].up;
+						var value = tasks[habit].value;
+						if(value<=-20)
+							$scope.goal.value = "negative_big";
+						if(value>-20&&value<=-10)
+							$scope.goal.value = "negative";
+						if(value>-10&&value<=10)
+							$scope.goal.value = "normal";
+						if(value>10&&value<=20)
+							$scope.goal.value = "positive";
+						if(value>20)
+							$scope.goal.value = "positive_big";
 						$scope.createGoal();
 					}
 				}
@@ -228,13 +243,26 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
     $scope.createGoalPhone = function() {
+    	var up;
+		var down;
+    	if($scope.goal.up==true && $scope.goal.down==null){
+			up = true;
+			down = false;
+		} else if($scope.goal.up==null && $scope.goal.down==true){
+			down = true;
+			up = false;
+		}
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/user",
-	                    'method_args': {'type': "habit", 'text': $scope.goal.name, 'notes': $scope.goal.note}};
+	                    'method_args': {'type': "habit", 'text': $scope.goal.name, 'notes': $scope.goal.note,
+	                    					'up': up , 'down': down}};
 
-	    CommHelper.habiticaProxy(callOpts, function(response){
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 	    		$scope.goal._id = response.data._id;
-	    		console.log(response.data)
-				$scope.createGoal()
+	    		$scope.goal.up = response.data.up;
+	    		$scope.goal.down = response.data.down;
+	    		$scope.goal.value = "normal";
+	    		console.log(response.data);
+				$scope.createGoal();
 				console.log("Sucessfully added the habit");
 				$scope.goal = {};
 				$scope.modal.hide();
@@ -250,7 +278,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	   	var callOpts = {'method': 'DELETE', 'method_url': "/api/v3/tasks/"+taskId,
 	                    'method_args': null};
 
-	    CommHelper.habiticaProxy(callOpts, function(response){
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Sucessfully deleted the habit");
 			}, function(error){
 				console.log(JSON.stringify(error));
@@ -261,10 +289,29 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.scoreUp = function(taskId) {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/"+taskId+"/score/up",
 	                    'method_args': null};
-
-	    CommHelper.habiticaProxy(callOpts, function(response){
-				getUserInfo();
+	    $scope.plusInProcess[taskId] = true;
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Score up");
+				console.log(response);
+				if($scope.exp > response.data.exp){
+					$scope.gainedExp = ($scope.toNextLevel - $scope.exp) + response.data.exp;
+				} else{
+					$scope.gainedExp = response.data.exp - $scope.exp;
+				}
+				$scope.gainedGold = (response.data.gp - floatGold).toFixed(2);
+				//if(response.data.hp > floatHp){
+				//	$scope.gainedHp = (response.data.hp - floatHp).toFixed(2);
+				//	console.log($scope.gainedHp);
+				//}
+				console.log($scope.gainedGold);
+				console.log($scope.gainedExp);
+				getUserInfo();
+				getUserTask();				
+				$scope.reward = true;
+				$timeout(function() {
+					$scope.reward = false;
+					$scope.plusInProcess[taskId] = false;
+				}, 2000);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -274,10 +321,19 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.scoreDown = function(taskId) {
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/tasks/"+taskId+"/score/down",
 	                    'method_args': null};
-
-	    CommHelper.habiticaProxy(callOpts, function(response){
-				getUserInfo();
+	    $scope.minusInProcess[taskId] = true;
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Score down");
+				console.log(response);
+				$scope.lossHp = (floatHp - response.data.hp).toFixed(2);
+				console.log($scope.lossHp);
+				getUserInfo();
+				getUserTask();
+				$scope.loss = true;
+				$timeout(function() {
+					$scope.loss = false;
+					$scope.minusInProcess[taskId] = false;
+				}, 2000);
 			}, function(error){
 				console.log(JSON.stringify(error));
 				console.log("error");
@@ -288,7 +344,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/"+partyId+"/join",
 	                    'method_args': null};
 
-	    CommHelper.habiticaProxy(callOpts, function(response){
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Sucessfully joing the party");
 				$scope.$apply(function(){
 					$scope.hasParty = true;
@@ -304,7 +360,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/"+partyId+"/quests/accept",
 	                    'method_args': null};
 
-	    CommHelper.habiticaProxy(callOpts, function(response){
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Sucessfully joing the quest");
 				$scope.$apply(function(){
 					$scope.hasQuestRequest = false;
@@ -319,7 +375,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	   	var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups/"+partyId+"/quests/reject",
 	                    'method_args': null};
 
-	    CommHelper.habiticaProxy(callOpts, function(response){
+	    CommHelper.habiticaProxy(callOpts).then(function(response){
 				console.log("Sucessfully rejected the quest");
 				$scope.$apply(function(){
 					$scope.hasQuestRequest = false;
@@ -334,16 +390,16 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	var getParty = function() {
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/party",
                     'method_args': null};
-    	CommHelper.habiticaProxy(callOpts, function(response){
+    	CommHelper.habiticaProxy(callOpts).then(function(response){
 			console.log("Sucessfully got the party");
 			var partyObj = response.data;
-			if($scope.inQuest){
+			$scope.questActive = partyObj.quest.active;
+			if($scope.questActive){
 				$scope.bossHp = Math.round(partyObj.quest.progress.hp);
-				$scope.questActive = partyObj.quest.active;
 			}
 			$scope.partyName = partyObj.name;
-			console.log($scope.inQuest);
-			console.log($scope.questActive);
+			console.log("In quest: " + $scope.inQuest);
+			console.log("Quest is active: " + $scope.questActive);
 			console.log(response);
 		}, function(error){
 			console.log("Error when getting the party");
@@ -353,12 +409,12 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	var questContent = function(){
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/content",
                     'method_args': null};
-    	CommHelper.habiticaProxy(callOpts, function(response){
+    	CommHelper.habiticaProxy(callOpts).then(function(response){
 			console.log("Sucessfully got the content");
 				var content = response.data;
 				console.log(content);
 			if($scope.inQuest){
-				console.log($scope.monster);
+				console.log("Current monster: " + $scope.monster);
 				$scope.bossMaxHealth = content.quests[$scope.monster].boss.hp;
 				$scope.bossName = content.quests[$scope.monster].boss.name;
 				$scope.questNote = content.quests[$scope.monster].notes;
@@ -369,10 +425,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	};
 
     var getMembers = function() {
-		var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+partyId+"/members",
+		var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+partyId+"/members?includeAllPublicFields=true",
 					'method_args': null};
 
-    	CommHelper.habiticaProxy(callOpts, function(response){
+    	CommHelper.habiticaProxy(callOpts).then(function(response){
     		$scope.membersName=[];
 			console.log("Sucessfully got the members");
 			var members = response.data;
@@ -382,6 +438,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			});
 		}, function(error){
 			console.log("Error when fetching members");
+			console.log(error);
 		});
 	};
 
@@ -389,7 +446,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/8a8134d6-066d-424d-8f3d-0b559c2c1e78",
 							'method_args': null};
 
-		    	CommHelper.habiticaProxy(callOpts, function(response){
+		    	CommHelper.habiticaProxy(callOpts).then(function(response){
 					console.log("Sucessfully got bike challenge");
 					console.log(response);
 					$scope.challenges.push(response.data);
@@ -402,7 +459,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/d3e0ee13-8922-47ef-86a0-2c2f662585e1",
 							'method_args': null};
 
-		    	CommHelper.habiticaProxy(callOpts, function(response){
+		    	CommHelper.habiticaProxy(callOpts).then(function(response){
 					console.log("Sucessfully got carpool challenge");
 					console.log(response);
 					$scope.challenges.push(response.data);
@@ -415,7 +472,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/581aea56-8f1f-42fa-ae1c-c6608bc780d5",
 							'method_args': null};
 
-		    	CommHelper.habiticaProxy(callOpts, function(response){
+		    	CommHelper.habiticaProxy(callOpts).then(function(response){
 					console.log("Sucessfully got public transport challenge");
 					console.log(response);
 					$scope.challenges.push(response.data);
@@ -435,8 +492,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		var callOpts = {'method': 'POST', 'method_url': "/api/v3/challenges/"+challengeId+"/join",
 							'method_args': null};
 
-		    	CommHelper.habiticaProxy(callOpts, function(response){
+		    	CommHelper.habiticaProxy(callOpts).then(function(response){
 					console.log("Sucessfully joined the challenge");
+					getUserInfo();
 					getUserTask();
 					console.log(response);
 				}, function(error){
@@ -444,13 +502,38 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				});
 	};
 
+
+	$scope.leaveChallenge = function(challengeId) {
+		var callOpts = {'method': 'POST', 'method_url': "/api/v3/challenges/"+challengeId+"/leave",
+							'method_args': null};
+
+				CommHelper.habiticaProxy(callOpts).then(function(response){
+					console.log("Sucessfully left the challenge");
+					getUserInfo();
+					getUserTask();
+				}, function(error){
+					console.log("Error when leaveing the challenge");
+				});
+	};
+
 	//Tab switch
 	$scope.isActive = false;
+	var firstActive = true;
   	$scope.activeButton = function() {
   		if($scope.isActiveP == true){
   			$scope.partyButton();
   		}
     	$scope.isActive = !$scope.isActive;
+		//Scroll message
+		if(firstActive){
+			$timeout(function() {
+	   			$scope.scrollMessage = true;
+	   		}, 1000);
+	    	$timeout(function() {
+	   			$scope.scrollMessage = false;
+	   		}, 4000);
+	   		firstActive = false;
+	   	}
   	};
 
   	$scope.isActiveP = false;
@@ -463,14 +546,16 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
   	var refreshInfo = function(){
 		console.log("Refreshing information");
-		partyId = storage.get('party_id');
 		console.log("Party ID = " + storage.get('party_id'));
 		getUserInfo();
+		getUserTask();
+        // inQuest needs to be after getUserInfo()
+		if($scope.inQuest){
+			questContent();
+		}
+        getChallenges();
 		handlePendingRefer();
 		getMembers();
-		getUserTask();
-		getChallenges();
-		
 	};
 	
 	refreshInfo();
@@ -480,18 +565,15 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		refreshInfo();
     };
 
-
-	/*$http.get('http://54.159.38.241:3000/export/avatar-'+userId+'.html')
-    .then(function(response) {
-          var html = response.data;
-          console.log(html)
-          $scope.rawHtml = $sce.trustAsHtml(html);
-	}), function(error) {
-    	console.log(JSON.stringify(error));
-    	console.log(error.data);
-	}*/
+    $scope.inviteToParty = function() {
+    	window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
+    		console.log("Shared?" + result.completed);
+    		console.log("Shared to app: " + result.app);
+    	}, function(err) {
+    		console.log("Failed to share the message: " + err);
+    	});
+    }
    	
-
 	/*var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
 
 	$http.get('https://habitica.com/api/v3/members/'+ UUID)
@@ -506,6 +588,5 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	//	return string[0].toUpperCase() + string.slice(1);
 	//}*/
 });
-
 
 
