@@ -8,6 +8,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.goal = {};
 	$scope.challenges=[];
 	var partyId;
+	var userId;
 	$scope.joinedChallenges = [];
 	$scope.plusInProcess = {};
 	$scope.minusInProcess = {};
@@ -161,6 +162,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				$scope.profile = response.data;
 			});
 			console.log("Proxy Sucess");
+			userId = $scope.profile._id
 			$scope.gold = Math.round($scope.profile.stats.gp);
 			floatGold = $scope.profile.stats.gp;
 			$scope.hp = Math.round($scope.profile.stats.hp);
@@ -197,7 +199,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			prepopulateMessage = {
 		    	message: 'Join my party in Emission',
 		    	subject: 'Emission - Party Invite',
-		    	url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid'+ partyId
+		    	url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId +
+		    		'&userid=' + userId;
 		    };
 			$ionicLoading.hide();
 			}, function(error){
