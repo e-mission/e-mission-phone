@@ -66,10 +66,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
     return this >= min && this <= max;
   };
   cc.getMet = function(mode, speed) {
-    if (!standardMETs[mode]) {
-      console.log("Illegal mode");
-      return 0; //So the calorie sum does not break with wrong return type
-    }
+    if (!standardMETs[mode]) return console.log("Illegal mode");
     for (var i in standardMETs[mode]) {
       if (mpstomph(speed).between(standardMETs[mode][i].range[0], standardMETs[mode][i].range[1])) {
         return standardMETs[mode][i].mets;

@@ -35,9 +35,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",
-    "AIR_OR_HSR": "ion-plane"
-  }
+    "IN_VEHICLE":"ion-speedometer",}
     return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
   dh.getHumanReadable = function(sensed_mode) {
@@ -64,9 +62,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     "WALKING":"ion-android-walk",
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-speedometer",
-    "AIR_OR_HSR": "ion-plane"
-  }
+    "IN_VEHICLE":"ion-speedometer",}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
@@ -96,9 +92,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",
-    "AIR_OR_HSR": "ion-plane"
-  }
+    "IN_VEHICLE":"ion-speedometer",}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
         rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));

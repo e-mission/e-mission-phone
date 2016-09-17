@@ -421,7 +421,7 @@ angular.module('emission.main.control',['emission.services',
     }
     var options = {
       message: 'Join me in making transportation greener and healthier \n Download the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Emission - UC Berkeley Research Project', // fi. for email
+      subject: 'Emission - UC Brekeley Research Project', // fi. for email
       //files: ['', ''], // an array of filenames either locally or remotely
       url: 'https://bic2cal.eecs.berkeley.edu/#download',
       //chooserTitle: 'Pick an app' // Android only, you can override the default share sheet title
