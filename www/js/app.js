@@ -78,7 +78,8 @@ function parseURL(url) {
   var paramsList = params.split('&');
   var rtn = {route: route};
   for (var i = 0; i < paramsList.length; i++) {
-    rtn[paramsList[i].split('=')[0]] = paramsList[i].split('=')[1];
+    var splitList = paramsList[i].split('=');
+    rtn[splitList[0]] = splitList[1];
   }
   return rtn;
 }
@@ -89,29 +90,16 @@ function handleOpenURL(url) {
     
     if (kvList.route == 'join') {
       var INTRO_DONE_KEY = 'intro_done';
-      if (window.localStorage.getItem(INTRO_DONE_KEY) == false) { 
-        // User type 1: Completely new user
-        var REFERED_KEY = 'refered';
-        var REFERED_GROUP_ID = 'refered_group_id';
-        window.localStorage.setItem(REFERED_KEY, true);
-        window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
-        alert(JSON.stringify(kvList));
-      } else if (1) { 
-        // User type 2: User already has the app, but not yet activated the game
-        // maybe redirect to game tab? and alert that you sure you want to join this group?
-        var REFERED_KEY = 'refered';
-        var REFERED_GROUP_ID = 'refered_group_id';
-        window.localStorage.setItem(REFERED_KEY, true);
-        window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
-        alert(JSON.stringify(kvList));
-      } else {
-        // User type 3: User already has the game, and part of the game
-      }
+      var HABITICA_REGISTERED_KEY = 'habitica_registered';
+      var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
+      var REFERRED_KEY = 'referred';
+      var REFERRED_GROUP_ID = 'referred_group_id';
+      var REFERRED_USER_ID = 'referred_user_id'
+      window.localStorage.setItem(REFERRED_KEY, true);
+      window.localStorage.setItem(REFERRED_GROUP_ID, kvList['groupid']);
+      window.localStorage.setItem(REFERRED_USER_ID, kvList['userid']);
+      window.localStorage.setItem(REFERRAL_NAVIGATION_KEY, 'goals');
     }
-
-
-    
-
   }, 0);
 }
     

@@ -129,11 +129,21 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           });
       }
     };
-
+    var getReferralNavigation = function() {
+      var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
+      return storage.get(REFERRAL_NAVIGATION_KEY);
+    }
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
+        var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
         if (result == null) {
-          return 'root.main.metrics';
+          var temp = getReferralNavigation();
+          storage.remove(REFERRAL_NAVIGATION_KEY);
+          if (temp == 'goals') {
+            return 'root.main.goals';
+          } else {
+            return 'root.main.metrics';
+          }
         } else {
           return result;
         }
