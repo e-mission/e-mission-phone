@@ -77,7 +77,14 @@
       "id": "cordova-plugin-app-preferences"
     },
     "ionic-plugin-deploy",
-    "cordova-plugin-crosswalk-webview"
+    "cordova-plugin-crosswalk-webview",
+    {
+      "variables": {
+        "URL_SCHEME": "emission"
+      },
+      "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
+      "id": "cordova-plugin-customurlscheme"
+    }
   ],
   "cordovaPlatforms": [
     {

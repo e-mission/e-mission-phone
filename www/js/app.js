@@ -86,8 +86,8 @@ function handleOpenURL(url) {
   setTimeout(function() {
     var kvList = parseURL(url);
     // There are 3 types of users in total
-
-    if (kvList['route'] == 'join') {
+    
+    if (kvList.route == 'join') {
       var INTRO_DONE_KEY = 'intro_done';
       if (window.localStorage.getItem(INTRO_DONE_KEY) == false) { 
         // User type 1: Completely new user
@@ -95,9 +95,15 @@ function handleOpenURL(url) {
         var REFERED_GROUP_ID = 'refered_group_id';
         window.localStorage.setItem(REFERED_KEY, true);
         window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
-      } else if (1 == 1) { 
+        alert(JSON.stringify(kvList));
+      } else if (1) { 
         // User type 2: User already has the app, but not yet activated the game
         // maybe redirect to game tab? and alert that you sure you want to join this group?
+        var REFERED_KEY = 'refered';
+        var REFERED_GROUP_ID = 'refered_group_id';
+        window.localStorage.setItem(REFERED_KEY, true);
+        window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
+        alert(JSON.stringify(kvList));
       } else {
         // User type 3: User already has the game, and part of the game
       }
