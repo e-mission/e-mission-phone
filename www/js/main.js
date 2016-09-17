@@ -69,15 +69,6 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
-  /*.state('root.main.inventory', {
-    url: '/inventory',
-    views: {
-      'main-goals': {
-        templateUrl: 'templates/goals/inventory.html',
-        controller: 'UserInventoryCtrl'
-      }
-    }
-  })*/
   .state('root.main.sensed', {
     url: "/sensed",
     views: {
