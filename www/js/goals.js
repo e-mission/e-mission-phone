@@ -11,6 +11,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.joinedChallenges = [];
 	$scope.plusInProcess = {};
 	$scope.minusInProcess = {};
+	var prepopulateMessage = {};
 	var floatHp;
 	var floatGold;
 
@@ -122,6 +123,11 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			getParty();
 			getMembers();
 			console.log($scope.profile);
+			prepopulateMessage = {
+		    	message: 'Join my party in Emission',
+		    	subject: 'Emission - Party Invite',
+		    	url: 'emission://join?groupid='+ partyId
+		    };
 			$ionicLoading.hide();
 			}, function(error){
 				$ionicLoading.hide();
@@ -484,6 +490,15 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		console.log("Refreshing page");
 		refreshInfo();
     };
+
+    $scope.inviteToParty = function() {
+    	window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
+    		console.log("Shared?" + result.completed);
+    		console.log("Shared to app: " + result.app);
+    	}, function(err) {
+    		console.log("Failed to share the message: " + err);
+    	});
+    }
    	
 	/*var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
 
