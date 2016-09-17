@@ -7,7 +7,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state) {
 
-    var lastWeekQuery = true;
+    var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
@@ -309,10 +309,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           metric: ""
         };
       } else if (mode === 'timestamp') { // timestamp range
-        if(lastWeekQuery) {
+        if(lastTwoWeeksQuery) {
           var tempFrom = moment2Timestamp(moment().utc().day(-14)); 
           var tempTo = moment2Timestamp(moment().utc().day(-1));
-          lastWeekQuery = false; // Only get last week's data once          
+          lastTwoWeeksQuery = false; // Only get last week's data once          
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
@@ -438,6 +438,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.chartDataAggr.count = aggCount? aggCount : [];
         $scope.chartDataUser.distance = userDistance? userDistance : [];
         $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
+
+        console.log(results);
 
         if (userDuration) {
           var durationData = getSummaryDataRaw(userDuration, "duration");
@@ -662,6 +664,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getDataFromMetrics = function(metrics) {
         var mode_bins = {};
+        var fieldPhone = "";
         metrics.forEach(function(metric) {
             for (var field in metric) {
                 // TODO: Consider creating a prefix such as M_ to signal
@@ -670,12 +673,14 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
                     if (field === "WALKING" || field === "RUNNING") {
-                      field = "ON_FOOT";
+                      fieldPhone = "ON_FOOT";
+                    } else {
+                      fieldPhone = field;
                     }
-                    if (field in mode_bins == false) {
-                        mode_bins[field] = []
+                    if (fieldPhone in mode_bins == false) {
+                        mode_bins[fieldPhone] = []
                     }
-                    mode_bins[field].push([metric.ts, metric[field], metric.fmt_time]);
+                    mode_bins[fieldPhone].push([metric.ts, metric[field], metric.fmt_time]);
                 }
             }
         });
@@ -895,7 +900,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
-    "UNKNOWN": "ion-ios-help"}
+    "UNKNOWN": "ion-ios-help",
+    "AIR_OR_HSR": "ion-plane"
+    }
     return icons[key];
   }
 
