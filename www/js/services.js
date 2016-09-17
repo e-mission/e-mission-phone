@@ -58,7 +58,24 @@ angular.module('emission.services', [])
       })
     };
 })
-
+.service('ReferHelper', function($http) {
+  this.joinGroup = function(groupid) {
+    // TODO:
+    $http.get('https://e-mission.eecs.berkeley.edu/join.group/'+ groupid)
+    .then(function(response){
+      var mres = response.data;
+      console.log(mres);
+      return true;
+    },function(err){
+      var merr = err.data;
+      console.log(merr);
+      return false;
+    });
+    //function firstUpperCase(string) {
+    //  return string[0].toUpperCase() + string.slice(1);
+    //}*/
+    }
+})
 .service('ControlHelper', function($cordovaEmailComposer) {
   this.emailLog = function() {
         var parentDir = "unknown";

@@ -18,7 +18,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, 
-								$window, $http, $ionicGesture, $ionicPopup, $timeout, storage){
+								$window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferHelper){
 	$scope.goals = [];
 	$scope.goal = {};
 	$scope.challenges=[];
@@ -36,6 +36,62 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	}).then(function(modal) {
 		$scope.partyModal = modal;
 	});
+
+	var joinGroupSuccess = function() {
+	   var alertPopup = $ionicPopup.alert({
+	     title: 'Cool!',
+	     template: 'Request has been sent.'
+	   });
+
+	   alertPopup.then(function(res) {
+	   });
+	 };
+	var joinGroupFail = function() {
+	   var alertPopup = $ionicPopup.alert({
+	     title: 'Err!',
+	     template: 'Request has not been sent.'
+	   });
+
+	   alertPopup.then(function(res) {
+	   });
+	 };	
+    var showNeedRegister = function() {
+     var confirmPopup = $ionicPopup.confirm({
+       title: 'Join Group',
+       template: 'A friend invited you to join a group, but you need to sign up first.'
+     });
+
+	    confirmPopup.then(function(res) {
+	       if(res) { // to game page
+	         console.log('User should register');
+	       } else { // do nothing
+	         console.log('User decides not to register or join group');
+	         storage.remove(REFERED_KEY);
+	         storage.remove(REFERED_GROUP_ID);
+	       }
+	    })
+ 	};
+	var handlePendingRefer = function() {
+
+		var REFERED_KEY = 'refered';
+		var REFERED_GROUP_ID = 'refered_group_id';
+		if (storage.get('habitica_registered') == true) {
+			if (storage.get(REFERED_KEY) == true) {
+				var groupid = storage.get(REFERED_GROUP_ID);
+				var response = ReferHelper.joinGroup(groupid);
+				if (response) {
+					joinGroupSuccess();
+				} else {
+					joinGroupFail();
+				}
+				storage.remove(REFERED_KEY);
+				storage.remove(REFERED_GROUP_ID);
+			}
+		} else {
+			showNeedRegister();
+		}
+
+	}
 
 	/*$scope.onGesture = function(gesture) {
     	console.log(gesture);
@@ -84,6 +140,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			console.log("Success!")
 			console.log(response);
 			storage.set('party_id',response.habitica_group_id);
+			storage.set('habitica_registered', true);
 			refreshInfo();
 		}, function(error) {
 			$ionicLoading.hide();
@@ -406,11 +463,13 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		partyId = storage.get('party_id');
 		console.log("Party ID = " + storage.get('party_id'));
 		getUserInfo();
+		handlePendingRefer();
 		getMembers();
 		getUserTask();
 		getChallenges();
+		
 	};
-
+	
 	refreshInfo();
 
 	$scope.refreshPage = function() {

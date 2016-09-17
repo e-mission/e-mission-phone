@@ -89,29 +89,28 @@ function handleOpenURL(url) {
     
     if (kvList.route == 'join') {
       var INTRO_DONE_KEY = 'intro_done';
+      var HABITICA_REGISTERED_KEY = 'habitica_registered';
+      var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
+      var REFERED_KEY = 'refered';
+      var REFERED_GROUP_ID = 'refered_group_id';
+      window.localStorage.setItem(REFERED_KEY, true);
+      window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
       if (window.localStorage.getItem(INTRO_DONE_KEY) == false) { 
         // User type 1: Completely new user
-        var REFERED_KEY = 'refered';
-        var REFERED_GROUP_ID = 'refered_group_id';
-        window.localStorage.setItem(REFERED_KEY, true);
-        window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
-        alert(JSON.stringify(kvList));
-      } else if (1) { 
+        window.localStorage.setItem(REFERRAL_NAVIGATION_KEY, 'goals');
+        
+      } else if (window.localStorage.getItem(HABITICA_REGISTERED_KEY) != null) { // INTRO_DONE_KEY == true
         // User type 2: User already has the app, but not yet activated the game
         // maybe redirect to game tab? and alert that you sure you want to join this group?
-        var REFERED_KEY = 'refered';
-        var REFERED_GROUP_ID = 'refered_group_id';
-        window.localStorage.setItem(REFERED_KEY, true);
-        window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
-        alert(JSON.stringify(kvList));
-      } else {
+        window.localStorage.setItem(REFERRAL_NAVIGATION_KEY, 'goals');
+        // type 2 is different from type 1 in that type 2 user is navigated to metrics AND asked to register first
+
+      } else { // Intro done && registered
         // User type 3: User already has the game, and part of the game
+        window.localStorage.setItem(REFERRAL_NAVIGATION_KEY, 'goals');
+
       }
     }
-
-
-    
-
   }, 0);
 }
     
