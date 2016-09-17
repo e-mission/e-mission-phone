@@ -59,9 +59,16 @@ angular.module('emission.services', [])
     };
 })
 .service('ReferHelper', function($http) {
-  this.joinGroup = function(groupid) {
+
+    this.habiticaRegister = function(groupid, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, successCallback, errorCallback);
+    };
+    this.joinGroup = function(groupid) {
+    
     // TODO:
-    $http.get('https://e-mission.eecs.berkeley.edu/join.group/'+ groupid)
+    new Promise(function(resolve, reject) {
+        window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, resolve, reject);
+      })
     .then(function(response){
       var mres = response.data;
       console.log(mres);
