@@ -70,9 +70,42 @@ angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers'
   console.log("Ending config");
 });
 
+
+function parseURL(url) {
+  var addr = url.split('//')[1];
+  var route = addr.split('?')[0];
+  var params = addr.split('?')[1];
+  var paramsList = params.split('&');
+  var rtn = {route: route};
+  for (var i = 0; i < paramsList.length; i++) {
+    rtn[paramsList[i].split('=')[0]] = paramsList[i].split('=')[1];
+  }
+  return rtn;
+}
 function handleOpenURL(url) {
   setTimeout(function() {
-    alert("received url: " + url);
+    var kvList = parseURL(url);
+    // There are 3 types of users in total
+
+    if (kvList['route'] == 'join') {
+      var INTRO_DONE_KEY = 'intro_done';
+      if (window.localStorage.getItem(INTRO_DONE_KEY) == false) { 
+        // User type 1: Completely new user
+        var REFERED_KEY = 'refered';
+        var REFERED_GROUP_ID = 'refered_group_id';
+        window.localStorage.setItem(REFERED_KEY, true);
+        window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
+      } else if (1 == 1) { 
+        // User type 2: User already has the app, but not yet activated the game
+        // maybe redirect to game tab? and alert that you sure you want to join this group?
+      } else {
+        // User type 3: User already has the game, and part of the game
+      }
+    }
+
+
+    
+
   }, 0);
 }
     
