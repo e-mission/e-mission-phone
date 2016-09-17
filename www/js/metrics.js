@@ -6,7 +6,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state) {
-
     var lastWeekQuery = true;
     var first = true;
     var lastWeekCalories = 0;

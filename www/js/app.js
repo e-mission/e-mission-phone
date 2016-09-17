@@ -69,3 +69,10 @@ angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers'
   $urlRouterProvider.otherwise('/splash');
   console.log("Ending config");
 });
+
+function handleOpenURL(url) {
+  setTimeout(function() {
+    alert("received url: " + url);
+  }, 0);
+}
+    
