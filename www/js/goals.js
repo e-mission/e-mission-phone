@@ -68,6 +68,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	         console.log('User decides not to register or join group');
 	         storage.remove(REFERED_KEY);
 	         storage.remove(REFERED_GROUP_ID);
+	         storage.remove(REFERED_USER_ID);
 	       }
 	    })
  	};
@@ -75,10 +76,12 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
 		var REFERED_KEY = 'refered';
 		var REFERED_GROUP_ID = 'refered_group_id';
+		var REFERED_USER_ID = 'refered_user_id';
 		if (storage.get('habitica_registered') == true) {
 			if (storage.get(REFERED_KEY) == true) {
 				var groupid = storage.get(REFERED_GROUP_ID);
-				var response = ReferHelper.joinGroup(groupid);
+				var userid = storage.get(REFERED_USER_ID);
+				var response = ReferHelper.joinGroup(groupid, userid);
 				if (response) {
 					joinGroupSuccess();
 				} else {
@@ -86,6 +89,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 				}
 				storage.remove(REFERED_KEY);
 				storage.remove(REFERED_GROUP_ID);
+				storage.remove(REFERED_USER_ID);
 			}
 		} else {
 			showNeedRegister();

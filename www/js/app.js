@@ -93,8 +93,10 @@ function handleOpenURL(url) {
       var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
       var REFERED_KEY = 'refered';
       var REFERED_GROUP_ID = 'refered_group_id';
+      var REFERED_USER_ID = 'refered_user_id'
       window.localStorage.setItem(REFERED_KEY, true);
       window.localStorage.setItem(REFERED_GROUP_ID, kvList['groupid']);
+      window.localStorage.setItem(REFERED_USER_ID, kvList['userid']);
       if (window.localStorage.getItem(INTRO_DONE_KEY) == false) { 
         // User type 1: Completely new user
         window.localStorage.setItem(REFERRAL_NAVIGATION_KEY, 'goals');

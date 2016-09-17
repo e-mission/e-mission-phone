@@ -63,11 +63,11 @@ angular.module('emission.services', [])
     this.habiticaRegister = function(groupid, successCallback, errorCallback) {
         window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, successCallback, errorCallback);
     };
-    this.joinGroup = function(groupid) {
+    this.joinGroup = function(groupid, userid) {
     
     // TODO:
     new Promise(function(resolve, reject) {
-        window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, resolve, reject);
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/join.group/"+groupid, "inviter", userid, resolve, reject);
       })
     .then(function(response){
       var mres = response.data;
