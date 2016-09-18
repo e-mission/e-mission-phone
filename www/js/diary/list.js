@@ -279,7 +279,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     // Tour steps
-    var tour = window.tour = {
+    var tour = {
       config: {
 
       },
@@ -298,7 +298,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     * show a walkthrough and store the info that the user has seen the tutorial.
     */
     var checkDiaryTutorialDone = function () {
-      startWalkthrough();
       var DIARY_DONE_KEY = 'diary_tutorial_done';
       var diaryTutorialDone = storage.get(DIARY_DONE_KEY);
       if (!diaryTutorialDone) {
