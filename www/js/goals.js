@@ -31,6 +31,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	});
 
 	var joinGroupSuccess = function() {
+       refreshInfo();
 	   var alertPopup = $ionicPopup.alert({
 	     title: 'Cool!',
 	     template: 'You have successfully joined the group!'
@@ -40,10 +41,10 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	   });
     };
 
-	var joinGroupFail = function() {
+	var joinGroupFail = function(error) {
 	   var alertPopup = $ionicPopup.alert({
 	     title: 'Err!',
-	     template: 'Service is not available.'
+	     template: 'Service is not available.' + JSON.stringify(error)
 	   });
 
 	   alertPopup.then(function(res) {
@@ -67,6 +68,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	       }
 	    })
  	};
+
+    /*
+     * Truth table:
+     * registered & referred => join group
+     * registered & not referred => do nothing
+     * not registered & referred => suggest registration
+     * not registered & not referred => do nothing
+     */
 	var handlePendingRefer = function() {
 
 		var REFERRED_KEY = 'referred';
@@ -199,8 +208,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			prepopulateMessage = {
 		    	message: 'Join my party in Emission',
 		    	subject: 'Emission - Party Invite',
-		    	url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId +
-		    		'&userid=' + userId;
+		    	url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
 		    };
 			$ionicLoading.hide();
 			}, function(error){
@@ -550,18 +558,23 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
   	var refreshInfo = function(){
 		console.log("Refreshing information");
 		console.log("Party ID = " + storage.get('party_id'));
-		getUserInfo();
-		getUserTask();
-        // inQuest needs to be after getUserInfo()
-		if($scope.inQuest){
-			questContent();
-		}
-        getChallenges();
+        if (storage.get('habitica_registered') == true) {
+            getUserInfo();
+            getUserTask();
+            // inQuest needs to be after getUserInfo()
+            if($scope.inQuest){
+                questContent();
+            }
+        } else {
+			$ionicLoading.hide();
+        }
 		handlePendingRefer();
-		getMembers();
 	};
-	
-	refreshInfo();
+
+    if (storage.get('habitica_registered') == true) {
+        getChallenges();
+    }
+    refreshInfo();
 
 	$scope.refreshPage = function() {
 		console.log("Refreshing page");
