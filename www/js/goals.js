@@ -573,10 +573,23 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
   		// THIS LINE FOR inAppBrowser
 	    $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0DO2F56h8oMGEYt', '_blank', options)
       .then(function(event) {
+        console.log("successfully opened page with result "+JSON.stringify(event));
         // success
       })
       .catch(function(event) {
         // error
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+        console.log("started loading, event = "+JSON.stringify(event));
+        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
+            $cordovaInAppBrowser.close()
+        }
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+        console.log("stopped loading, event = "+JSON.stringify(event));
+      });
+      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+        console.log("exiting, event = "+JSON.stringify(event));
       });
   	}
   	var refreshInfo = function(){
