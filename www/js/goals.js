@@ -172,6 +172,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			});
 			console.log("Proxy Sucess");
 			userId = $scope.profile._id
+			$scope.exp = $scope.profile.stats.exp
 			$scope.gold = Math.round($scope.profile.stats.gp);
 			floatGold = $scope.profile.stats.gp;
 			$scope.hp = Math.round($scope.profile.stats.hp);

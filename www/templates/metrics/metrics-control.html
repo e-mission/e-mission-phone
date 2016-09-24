@@ -62,9 +62,11 @@
     <input class="metric-filter-day hvcenter" placeholder="dd" ng-model="selectCtrl.toDateLocalDate.day"></input>
     <div class="metric-weekday-container-lower hvcenter" ng-click="changeToWeekday()">{{selectCtrl.toDateWeekdayString}}</div>
   </div>
-  <div style="height: 40px; width: 100%;">
-    <div class="metric-metric-button hvcenter" ng-click="changeMetric()">{{selectCtrl.metricString}}</div>
-    <div class="metric-freq-button hvcenter" ng-click="changeFreq()">{{selectCtrl.freqString}}</div>
+  <div class="metric-left">
+        <div class="metric-title">Frequency:</div>
+  </div>
+  <div class="metric-right">
+    <div class="metric-freq-button hvcenter" ng-click="changePandaFreq()">{{selectCtrl.freqString}}</div>
   </div>
   </div>
 
