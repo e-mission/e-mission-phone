@@ -35,7 +35,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
-    "IN_VEHICLE":"ion-disc",}
+    "IN_VEHICLE":"ion-speedometer",}
     return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
   dh.getHumanReadable = function(sensed_mode) {
@@ -62,7 +62,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     "WALKING":"ion-android-walk",
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-disc",}
+    "IN_VEHICLE":"ion-speedometer",}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
@@ -92,7 +92,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-disc",}
+    "IN_VEHICLE":"ion-speedometer",}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
         rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));
@@ -366,8 +366,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
       $ionicLoading.show({
         template: 'Reading from cache...'
       });
-      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day),
-        function (tripListArray) {
+      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day))
+      .then(function (tripListArray) {
          if (tripListArray.length > 0) {
            var tripListStr = tripListArray[0];
            var tripList = JSON.parse(tripListStr);

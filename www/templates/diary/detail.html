@@ -13,12 +13,12 @@
             <div class="col-70">
 
                 <div class="item item-icon-left" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
-                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #72b026;"></i>
+                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
             {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
                 </div>
                 <div class="item item-icon-left" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #d63e2a;"></i>
+                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
             {{tripgj.end_place.properties.displayName.split(',')[0]}}
                 </div>
             </div>
@@ -58,6 +58,8 @@
         <div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"
                 ng-click="refreshMap()">Refresh</button>
+            <button class="button button-stable button-block"
+                ng-click="refreshTiles()">Fix Map</button>
             <!--
             <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
             -->

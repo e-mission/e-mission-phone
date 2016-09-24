@@ -69,3 +69,37 @@ angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers'
   $urlRouterProvider.otherwise('/splash');
   console.log("Ending config");
 });
+
+
+function parseURL(url) {
+  var addr = url.split('//')[1];
+  var route = addr.split('?')[0];
+  var params = addr.split('?')[1];
+  var paramsList = params.split('&');
+  var rtn = {route: route};
+  for (var i = 0; i < paramsList.length; i++) {
+    var splitList = paramsList[i].split('=');
+    rtn[splitList[0]] = splitList[1];
+  }
+  return rtn;
+}
+function handleOpenURL(url) {
+  setTimeout(function() {
+    var kvList = parseURL(url);
+    // There are 3 types of users in total
+    
+    if (kvList.route == 'join') {
+      var INTRO_DONE_KEY = 'intro_done';
+      var HABITICA_REGISTERED_KEY = 'habitica_registered';
+      var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
+      var REFERRED_KEY = 'referred';
+      var REFERRED_GROUP_ID = 'referred_group_id';
+      var REFERRED_USER_ID = 'referred_user_id'
+      window.localStorage.setItem(REFERRED_KEY, true);
+      window.localStorage.setItem(REFERRED_GROUP_ID, kvList['groupid']);
+      window.localStorage.setItem(REFERRED_USER_ID, kvList['userid']);
+      window.localStorage.setItem(REFERRAL_NAVIGATION_KEY, 'goals');
+    }
+  }, 0);
+}
+    

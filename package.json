@@ -28,7 +28,6 @@
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
-    "cordova-plugin-splashscreen",
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
     {
@@ -77,19 +76,22 @@
       "locator": "https://github.com/apla/me.apla.cordova.app-preferences",
       "id": "cordova-plugin-app-preferences"
     },
+    "ionic-plugin-deploy",
     "cordova-plugin-crosswalk-webview",
-    "ionic-plugin-deploy"
-  ],
-  "cordovaPlatforms": [
     {
-      "platform": "ios",
-      "version": "4.1.0",
-      "locator": "ios"
+      "locator": "https://github.com/EddyVerbruggen/SocialSharing-PhoneGap-Plugin.git",
+      "id": "cordova-plugin-x-socialsharing"
     },
     {
-      "platform": "android",
-      "version": "5.1.1",
-      "locator": "android"
+      "variables": {
+        "URL_SCHEME": "emission"
+      },
+      "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
+      "id": "cordova-plugin-customurlscheme"
     }
+  ],
+  "cordovaPlatforms": [
+    "ios",
+    "android"
   ]
 }

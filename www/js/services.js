@@ -59,17 +59,35 @@ angular.module('emission.services', [])
         });
       });
     };
-
-    this.getMetrics = function(timeType, metrics_query, successCallback, errorCallback) {
+    
+    this.getMetrics = function(timeType, metrics_query) {
+      return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
             for (var key in metrics_query) {
                 message[key] = metrics_query[key]
             };
         };
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, successCallback, errorCallback);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
+      })
     };
 })
+.service('ReferHelper', function($http) {
 
+    this.habiticaRegister = function(groupid, successCallback, errorCallback) {
+        window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, successCallback, errorCallback);
+    };
+    this.joinGroup = function(groupid, userid) {
+    
+    // TODO:
+    return new Promise(function(resolve, reject) {
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/join.group/"+groupid, "inviter", userid, resolve, reject);
+      })
+    
+    //function firstUpperCase(string) {
+    //  return string[0].toUpperCase() + string.slice(1);
+    //}*/
+    }
+})
 .service('ControlHelper', function($cordovaEmailComposer) {
   this.emailLog = function() {
         var parentDir = "unknown";
@@ -115,6 +133,49 @@ angular.module('emission.services', [])
                "Email cancel reported, seems to be an error on android");
         });
     }
+
+    this.dataCollectionSetConfig = function(config) {
+      return window.cordova.plugins.BEMDataCollection.setConfig(config);
+    };
+
+    this.dataCollectionGetConfig = function() {
+      return window.cordova.plugins.BEMDataCollection.getConfig();
+    };
+    this.serverSyncSetConfig = function(config) {
+      return window.cordova.plugins.BEMServerSync.setConfig(config);
+    };
+
+    this.serverSyncGetConfig = function() {
+      return window.cordova.plugins.BEMServerSync.getConfig();
+    };
+
+    this.getAccuracyOptions = function() {
+      return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
+    };
+
+    this.getUserEmail = function() {
+      return window.cordova.plugins.BEMJWTAuth.getUserEmail();
+    };
+
+    this.getState = function() {
+      return window.cordova.plugins.BEMDataCollection.getState();
+    };
+
+    this.getSettings = function() {
+      return window.cordova.plugins.BEMConnectionSettings.getSettings();
+    };
+
+    this.forceTransition = function(transition) {
+      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
+    };
+
+    this.forceSync = function() {
+      return window.cordova.plugins.BEMServerSync.forceSync();
+    };
+
+    this.getDocument = function() {
+      return window.cordova.plugins.BEMUserCache.getDocument("config/consent");
+    };
 })
 
 // common configuration methods across all screens
