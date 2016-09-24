@@ -13,6 +13,8 @@
   </author>
   <content src="index.html"/>
   <access origin="*"/>
+  <allow-navigation href="https://berkeley.qualtrics.com/*" />
+  <allow-navigation href="https://jfe-cdn.qualtrics.com/*" />
   <hook type="after_prepare" src="package-hooks/ios9_allow_http.sh"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
