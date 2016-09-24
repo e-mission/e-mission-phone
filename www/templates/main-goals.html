@@ -11,7 +11,7 @@
         <i class="icon ion-android-refresh"></i>
       </button>
      </ion-nav-buttons>
-    <div ng-if="screen && b2cOnboard && !showSurvey">
+    <div ng-if="screen">
       <div id="message" class="has-header" ng-if="reward" style="position: fixed;width: 100px;height: 20px;background-color: #6e6e6e;;border-top-right-radius: 10px;border-bottom-right-radius: 10px;z-index:1;">
           <i class="icon ion-arrow-up-b" style="font-size: 15px; color:#4BC3AB; float:left; margin: 0 8px 0 8px;"></i>
           <img src="img/ic_header_gold.png" style="height:13px; width:13px;float: left;margin-top:3px">
@@ -244,24 +244,13 @@
        </div>
     </div>
     </div>
-        <div ng-if="!screen && b2cOnboard && !showSurvey">
+        <div ng-if="!screen">
         <h1 class="signup-title" style="text-align:center">Signup</h1>
           <label class="item item-input">
             <input type="text" placeholder="Username" ng-model="theUser.username">
           </label>
 
         <button class="button button-positive button-full" ng-click="signup()">Submit</button>
-    </div>
-    <div ng-if="!b2cOnboard && !showSurvey">
-      <h1 class="signup-title" style="text-align:center">Bic2Cal</h1>
-        <button ng-click="bic2calNo()">No</button>
-        <button ng-click="bic2calYes()">Yes</button>
-    </div>
-    <div ng-if="showSurvey" data-tap-disabled="true" >
-      <!-- THIS LINE FOR iframe
-      <iframe src="https://berkeley.qualtrics.com/SE/?SID=SV_0DO2F56h8oMGEYt" style="height: 90%; width: 100%;"></iframe>
-      -->
-      <button>SOMEBUTTON</button>
     </div>
 </ion-content>
 </ion-view>

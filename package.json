@@ -88,8 +88,7 @@
       },
       "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
       "id": "cordova-plugin-customurlscheme"
-    },
-    "cordova-plugin-inappbrowser"
+    }
   ],
   "cordovaPlatforms": [
     "ios",
