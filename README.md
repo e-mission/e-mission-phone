@@ -19,6 +19,24 @@ Clone your fork
 $ git clone <your repo URL>
 ``
 
+``
+$ cd e-mission-phone
+``
+
+Create a remote to pull updates from upstream
+``
+$ git remote add upstream https://github.com/e-mission/e-mission-phone.git
+``
+
+Make sure you have an updated repo
+``
+$ git pull upstream master
+``
+
+``
+$ npm install
+``
+
 Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
 
 ``
@@ -37,9 +55,18 @@ Install all javascript components using bower
 $ bower update
 ``
 
+``
+$ ionic io init
+``
+
+``
+$ ionic state reset
+``
+
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ ionic emulate ios --target="iPhone-6"
+
 
 JS Testing
 ---
