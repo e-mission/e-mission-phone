@@ -629,6 +629,21 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		refreshInfo();
     };
 
+	$scope.showCreds = function() {
+		console.log("Showing login credentials");
+        var email = $scope.profile.auth.local.email;
+        $scope.profile.auth.local.password = email.substring(0, email.lastIndexOf("@"));
+        $ionicPopup.show({
+          title: 'Username and password', // String. The title of the popup.
+          templateUrl: 'templates/goals/creds-modal.html', // String (optional). The html template to place in the popup body.
+          scope: $scope,
+            buttons: [{
+              text: 'OK',
+              type: 'button-positive',
+            }]
+        });
+    };
+
     $scope.inviteToParty = function() {
     	window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
     		console.log("Shared?" + result.completed);
