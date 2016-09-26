@@ -591,7 +591,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
       $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
         console.log("exiting, event = "+JSON.stringify(event));
       });
-  	}
+      $scope.refreshPage();
+  	};
   	var refreshInfo = function(){
 		console.log("Refreshing information");
 		console.log("Party ID = " + storage.get('party_id'));
