@@ -163,6 +163,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 								okType: "button-assertive"});
 			console.log("Not signed up");
 		});
+		$scope.gameActive = true;
 	};
  
 
@@ -563,6 +564,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
   		}
     	$scope.isActiveP = !$scope.isActiveP;
   	};
+
+  	$scope.gameOff = function() {
+  		//at some point this should disable the game tab, 
+  		//and then the user would have to reactivate the game by going to settings
+  		$scope.gameActive = false;
+  		return 'root.main.metrics';
+  	};
+
   	$scope.bic2calNo = function() {
   		$scope.b2cOnboard = true;
   	}
@@ -582,8 +591,9 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));
         if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
-            $cordovaInAppBrowser.close()
+            $cordovaInAppBrowser.close()           
         }
+        //$scope.refreshPage();
       });
       $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
         console.log("stopped loading, event = "+JSON.stringify(event));
@@ -614,8 +624,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			$scope.habiticaOnboard = storage.get('habitica_onboard');
 			// Step 2: See if user joined B2C
 			$scope.b2cOnboard = storage.get('b2c_onboard');
-
-
 		}
 	};
 
