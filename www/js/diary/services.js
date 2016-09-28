@@ -367,10 +367,9 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
         template: 'Reading from cache...'
       });
       window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day))
-      .then(function (tripListArray) {
-         if (tripListArray.length > 0) {
-           var tripListStr = tripListArray[0];
-           var tripList = JSON.parse(tripListStr);
+      .then(function (timelineDoc) {
+         if (!window.cordova.plugins.BEMUserCache.isEmptyDoc(timelineDoc)) {
+           var tripList = timelineDoc;
            console.log("About to hide 'Reading from cache'");
            $ionicLoading.hide();
            foundFn(day, tripList);
