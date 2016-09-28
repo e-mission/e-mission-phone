@@ -9,22 +9,28 @@ angular.module('emission.main.common.services', [])
 
     var db = window.cordova.plugins.BEMUserCache;
     var selKey = "common-trips";
+    
+    commonGraph.createEmpty = function() {
+        return { 'user_id': 'unknown',
+                 'common_trips': [],
+                 'common_places': []
+               }
+    };
 
     commonGraph.updateCurrent = function() {
       db.getDocument(selKey).then(function(entryList) {
         try{
-            var cmGraph = JSON.parse(entryList);
+            var cmGraph = entryList;
+            if (db.isEmptyDoc(cmGraph)) {
+                cmGraph = createEmpty();
+            }
         } catch(err) {
             window.Logger.log("Error "+err+" while parsing common trip data");
             // If there was an error in parsing the current common trips, and
             // there is no existing cached common trips, we create a blank
             // version so that other things don't crash
             if (angular.isUndefined(cmGraph)) {
-                cmGraph = {
-                    'user_id': 'unknown',
-                    'common_trips': [],
-                    'common_places': []
-                }
+                cmGraph = createEmpty();
             }
         }
         commonGraph.data.graph = cmGraph;

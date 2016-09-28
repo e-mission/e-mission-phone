@@ -89,15 +89,15 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     $scope.config = {}
     $scope.config.key_data_mapping = {
         "Transitions": {
-            fn: db.getMessages,
+            fn: db.getAllMessages,
             key: "statemachine/transition"
         },
         "Locations": {
-            fn: db.getSensorData,
+            fn: db.getAllSensorData,
             key: "background/location"
         },
         "Motion Type": {
-            fn: db.getSensorData,
+            fn: db.getAllSensorData,
             key: "background/motion_activity"
         },
     }
@@ -176,7 +176,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
   $scope.updateEntries = function() {
     if (angular.isUndefined($scope.selected.key)) {
-        usercacheFn = db.getMessages;
+        usercacheFn = db.getAllMessages;
         usercacheKey = "statemachine/transition";
     } else {
         usercacheFn = $scope.config.key_data_mapping[$scope.selected.key]["fn"]
@@ -221,7 +221,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     });
 
     $scope.refreshMap = function() {
-        db.getSensorData($scope.mapCtrl.selKey, function(entryList) {
+        db.getAllSensorData($scope.mapCtrl.selKey, function(entryList) {
             var coordinates = entryList.map(function(locWrapper, index, locList) {
                 var parsedData = JSON.parse(locWrapper.data);
                 return [parsedData.longitude, parsedData.latitude];

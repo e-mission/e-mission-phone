@@ -8,7 +8,6 @@ angular.module('emission.main.common.map',['ionic-datepicker',
                                     CommonGraph, Config, DiaryHelper) {
   console.log("controller CommonMapCtrl called");
 
-  var db = window.cordova.plugins.BEMUserCache;
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {

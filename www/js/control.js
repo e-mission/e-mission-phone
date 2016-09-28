@@ -413,8 +413,12 @@ angular.module('emission.main.control',['emission.services',
       UpdateCheck.checkForUpdates();
     }
     $scope.checkConsent = function() {
-        ControlHelper.getDocument().then(function(resultList){
-            $ionicPopup.alert({template: resultList});
+        ControlHelper.getConsentDocument().then(function(resultDoc){
+            if (window.cordova.plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
+                $ionicPopup.alert({template: "No consent for data collection, please log out and log in again"});
+            } else {
+                $ionicPopup.alert({template: JSON.stringify(resultDoc)});
+            }
         }, function(error) {
             $ionicPopup.alert({template: error});
         });
