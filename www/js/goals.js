@@ -7,7 +7,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	$scope.goals = [];
 	$scope.goal = {};
 	$scope.challenges=[];
-	$scope.showSurvey = false;
+	$scope.showB2Crsvp = true;
 	var partyId;
 	var userId;
 	$scope.joinedChallenges = [];
@@ -24,6 +24,95 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
     };
 
 
+    var displaySurvey = function () {
+    	// THIS LINE FOR inAppBrowser
+	    $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0DO2F56h8oMGEYt', '_blank', options)
+		.then(function(event) {
+			console.log("successfully opened page with result "+JSON.stringify(event));
+			// success
+		})
+		.catch(function(event) {
+			// error
+		});
+		$rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+			console.log("started loading, event = "+JSON.stringify(event));
+			if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
+		    	$cordovaInAppBrowser.close();
+		    	//$scope.refreshPage();           
+			}
+		});
+		$rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+			console.log("stopped loading, event = "+JSON.stringify(event));
+		});
+		$rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+			console.log("exiting, event = "+JSON.stringify(event));
+		});
+    };
+
+    var checkSurveyDone = function () {
+		var SURVEY_DONE_KEY = 'survey_done';
+		var surveyDone = storage.get(SURVEY_DONE_KEY);
+		if (!surveyDone) {
+			displaySurvey();
+			storage.set(SURVEY_DONE_KEY, true);
+		}
+    };
+
+  	$scope.b2cYes = function() {
+  		$scope.showB2Crsvp = false;
+  		var B2C_PARTICIPANT_KEY = 'b2c_participant';
+  		storage.set(B2C_PARTICIPANT_KEY, true);
+  		checkSurveyDone();
+  		// Show survey
+  		//checkSurveyDone();
+  		//refreshPage();
+  	};
+  	$scope.b2cNo = function() {
+  		$scope.showB2Crsvp = false;
+  		var B2C_PARTICIPANT_KEY = 'b2c_participant';
+  		storage.set(B2C_PARTICIPANT_KEY, false);
+  		// Show survey
+  		checkSurveyDone();
+  		//refreshPage();
+  	};
+
+    
+
+    $scope.displaySurvey = function () {
+      displaySurvey();
+    };
+
+  	var refreshInfo = function(){
+		console.log("Refreshing information");
+		console.log("Party ID = " + storage.get('party_id'));
+		if (storage.get('habitica_onboard') == true) {
+	        if (storage.get('habitica_registered') == true) {
+	            getUserInfo();
+	            getUserTask();
+	            // inQuest needs to be after getUserInfo()
+	            if($scope.inQuest){
+	                questContent();
+	            }
+	        } else {
+				$ionicLoading.hide();
+	        }
+			handlePendingRefer();
+		} else {
+			$ionicLoading.hide();
+			// Assign local vairable for ng-if trick
+			// Step 1: See if user went through game onboarding
+			$scope.habiticaOnboard = storage.get('habitica_onboard');
+			// Step 2: See if user joined B2C
+			$scope.b2cOnboard = storage.get('b2c_onboard');
+		}
+	};
+
+	$scope.gameOff = function() {
+  		//at some point this should disable the game tab, 
+  		//and then the user would have to reactivate the game by going to settings
+  		$scope.gameActive = false;
+  		return 'root.main.metrics';
+  	};
 
 	$ionicModal.fromTemplateUrl('templates/goals/goal-modal.html', {
 		scope: $scope,
@@ -564,68 +653,6 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
   		}
     	$scope.isActiveP = !$scope.isActiveP;
   	};
-
-  	$scope.gameOff = function() {
-  		//at some point this should disable the game tab, 
-  		//and then the user would have to reactivate the game by going to settings
-  		$scope.gameActive = false;
-  		return 'root.main.metrics';
-  	};
-
-  	$scope.bic2calNo = function() {
-  		$scope.b2cOnboard = true;
-  	}
-  	$scope.bic2calYes = function() {
-  		$scope.b2cOnboard = true;
-  		// Show survey
-  		$scope.showSurvey = true;
-  		// THIS LINE FOR inAppBrowser
-	    $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0DO2F56h8oMGEYt', '_blank', options)
-      .then(function(event) {
-        console.log("successfully opened page with result "+JSON.stringify(event));
-        // success
-      })
-      .catch(function(event) {
-        // error
-      });
-      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-        console.log("started loading, event = "+JSON.stringify(event));
-        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
-            $cordovaInAppBrowser.close()           
-        }
-        //$scope.refreshPage();
-      });
-      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
-        console.log("stopped loading, event = "+JSON.stringify(event));
-      });
-      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
-        console.log("exiting, event = "+JSON.stringify(event));
-      });
-  	}
-  	var refreshInfo = function(){
-		console.log("Refreshing information");
-		console.log("Party ID = " + storage.get('party_id'));
-		if (storage.get('habitica_onboard') == true) {
-	        if (storage.get('habitica_registered') == true) {
-	            getUserInfo();
-	            getUserTask();
-	            // inQuest needs to be after getUserInfo()
-	            if($scope.inQuest){
-	                questContent();
-	            }
-	        } else {
-				$ionicLoading.hide();
-	        }
-			handlePendingRefer();
-		} else {
-			$ionicLoading.hide();
-			// Assign local vairable for ng-if trick
-			// Step 1: See if user went through game onboarding
-			$scope.habiticaOnboard = storage.get('habitica_onboard');
-			// Step 2: See if user joined B2C
-			$scope.b2cOnboard = storage.get('b2c_onboard');
-		}
-	};
 
     if (storage.get('habitica_registered') == true) {
         getChallenges();

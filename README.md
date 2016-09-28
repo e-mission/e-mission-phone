@@ -23,12 +23,6 @@ $ git clone <your repo URL>
 $ cd e-mission-phone
 ``
 
-Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
-
-``
-$ ionic state restore
-``
-
 Enable platform hooks, including http on iOS9
 
 ``
@@ -51,6 +45,12 @@ Generate your App ID with
 
 ``
 $ ionic io init
+``
+
+Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
+
+``
+$ ionic state restore
 ``
 
 Installation is now complete. You can view the current state of the application in the emulator

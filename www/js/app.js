@@ -94,7 +94,7 @@ function handleOpenURL(url) {
       var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
       var REFERRED_KEY = 'referred';
       var REFERRED_GROUP_ID = 'referred_group_id';
-      var REFERRED_USER_ID = 'referred_user_id'
+      var REFERRED_USER_ID = 'referred_user_id';
       window.localStorage.setItem(REFERRED_KEY, true);
       window.localStorage.setItem(REFERRED_GROUP_ID, kvList['groupid']);
       window.localStorage.setItem(REFERRED_USER_ID, kvList['userid']);

@@ -1,18 +1,18 @@
 <ion-view view-title="Goals">
   <!--nav buttons: Create new task and refresh habitica data-->
   <!--nav buttons will change to a hamburger menu and a help button-->
-  <ion-nav-buttons ng-if="screen && b2cOnboard && !showSurvey" side="right">
+  <ion-nav-buttons ng-if="screen" side="right">
     <button class="button button-icon" ng-click="openModal()">
       <i class="icon ion-compose"></i>
     </button>
   </ion-nav-buttons>
-  <ion-nav-buttons ng-if="screen && b2cOnboard && !showSurvey" side="left">
+  <ion-nav-buttons ng-if="screen" side="left">
     <button class="button button-icon" ng-click="refreshPage()">
       <i class="icon ion-android-refresh"></i>
     </button>
   </ion-nav-buttons>
   <!--popup alerts for when user gains or loses points-->
-  <div ng-if="screen && b2cOnboard && !showSurvey">
+  <div ng-if="screen">
     <div id="message" class="has-header" ng-if="reward" style="position: fixed;width: 100px;height: 20px;background-color: #6e6e6e;border-top-right-radius: 10px;border-bottom-right-radius: 10px;z-index:1;">
         <i class="icon ion-arrow-up-b" style="font-size: 15px; color:#4BC3AB; float:left; margin: 0 8px 0 8px;"></i>
         <img src="img/ic_header_gold.png" style="height:13px; width:13px;float: left;margin-top:3px">
@@ -245,7 +245,11 @@
       </div>
     </div>
     <!--signup screen: if !screen and b2cOnboard, then user has completed Bic2Cal onboarding but has not signed up for Habitica. Prompt username to register-->
-    <div ng-if="!screen && b2cOnboard && !showSurvey">
+    <div ng-if="!screen && !showB2Crsvp">
+        <!--<p>showB2Crsvp: {{showB2Crsvp}}</p>
+        <p>is_b2c_participant: {{is_b2c_participant}}</p>
+        <p>surveyDone: {{surveyDone}}</p>
+        <p>screen: {{screen}}</p>-->
         <h1 class="signup-title" style="text-align:center">Signup</h1>
         <label class="item item-input">
           <input type="text" placeholder="Enter a Username" ng-model="theUser.username">
@@ -256,15 +260,19 @@
         </div>
     </div>
     <!--Bic2Cal signup: if !b2cOnboard, show signup page for Bic2Cal, then load survey on browser-->
-    <div ng-if="!b2cOnboard && !showSurvey">
+    <div ng-if="showB2Crsvp">
+      <!--<p>showB2Crsvp: {{showB2Crsvp}}</p>
+      <p>is_b2c_participant: {{is_b2c_participant}}</p>
+      <p>surveyDone: {{surveyDone}}</p>
+      <p>screen: {{screen}}</p>-->
       <h1 class="consent-title" style="text-align:center">Would you like to participate in the Bic2Cal challenge?</h1>
-      <p class="consent-text">On October 5th, this year's International Walk and Bike to School Day, EECS is challenging the UC Berkeley community, students, staff, and faculty, to team up for sustainable transportation and fight climate change with us. You will be able to choose, from a number of different mini challenges, the ones that are right for you, so everyone can participate. To learn more about this UC Berkeley developing research, go to https://bic2cal.eecs.berkeley.edu/</p>
+      <p class="consent-text">On October 5th, this year's International Walk and Bike to School Day, EECS is challenging the UC Berkeley community, students, staff, and faculty, to team up for sustainable transportation and fight climate change with us. You will be able to choose from a number of different challenges and find the one that's right for you. To learn more about this UC Berkeley developing research, go to <a href="https://bic2cal.eecs.berkeley.edu/">https://bic2cal.eecs.berkeley.edu/</a></p>
       <div class="row" style="margin-top: 20px; padding: 20px;">
         <div class="col" style="margin-right: 5px">
-          <button class="button button-block button-assertive button-outline" ng-click="bic2calNo()" id="consent-button">No</button>
+          <button class="button button-block button-assertive button-outline" ng-click="b2cNo()" id="consent-button">No</button>
         </div>
         <div class="col" style="margin-left: 5px">
-          <button class="button button-block button-balanced button-positive" ng-click="bic2calYes()" id="consent-button">Yes</button>
+          <button class="button button-block button-balanced button-positive" ng-click="b2cYes()" id="consent-button">Yes</button>
         </div>
       </div>
     </div>
