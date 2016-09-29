@@ -41,6 +41,10 @@ Create a remote to pull updates from upstream
 $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
 ``
 
+``
+$ npm install
+``
+
 Generate your App ID with
 
 ``

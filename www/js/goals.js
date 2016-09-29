@@ -37,8 +37,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		$rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
 			console.log("started loading, event = "+JSON.stringify(event));
 			if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
-		    	$cordovaInAppBrowser.close();
-		    	//$scope.refreshPage();           
+		    	$cordovaInAppBrowser.close();      
 			}
 		});
 		$rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
@@ -63,20 +62,14 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
   		var B2C_PARTICIPANT_KEY = 'b2c_participant';
   		storage.set(B2C_PARTICIPANT_KEY, true);
   		checkSurveyDone();
-  		// Show survey
-  		//checkSurveyDone();
-  		//refreshPage();
   	};
+
   	$scope.b2cNo = function() {
   		$scope.showB2Crsvp = false;
   		var B2C_PARTICIPANT_KEY = 'b2c_participant';
   		storage.set(B2C_PARTICIPANT_KEY, false);
-  		// Show survey
   		checkSurveyDone();
-  		//refreshPage();
   	};
-
-    
 
     $scope.displaySurvey = function () {
       displaySurvey();
