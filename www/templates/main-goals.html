@@ -245,26 +245,20 @@
       </div>
     </div>
     <!--signup screen: if !screen and b2cOnboard, then user has completed Bic2Cal onboarding but has not signed up for Habitica. Prompt username to register-->
-    <div ng-if="!screen && !showB2Crsvp">
-        <!--<p>showB2Crsvp: {{showB2Crsvp}}</p>
-        <p>is_b2c_participant: {{is_b2c_participant}}</p>
-        <p>surveyDone: {{surveyDone}}</p>
-        <p>screen: {{screen}}</p>-->
+    <div ng-if="!screen">
+    <!--<div ng-if="!screen && !showB2Crsvp">-->
         <h1 class="signup-title" style="text-align:center">Signup</h1>
         <label class="item item-input">
           <input type="text" placeholder="Enter a Username" ng-model="theUser.username">
         </label>
         <button class="button button-positive button-full" ng-click="signup()">Submit</button>
+        <!--
         <div style="text-align: center; padding-top: 50px;">
           <button class="button button-assertive button-outline" ng-click="gameOff()">I don't want to play.</button>
-        </div>
+        </div>-->
     </div>
-    <!--Bic2Cal signup: if !b2cOnboard, show signup page for Bic2Cal, then load survey on browser-->
+    <!--Bic2Cal signup: if !b2cOnboard, show signup page for Bic2Cal, then load survey on browser
     <div ng-if="showB2Crsvp">
-      <!--<p>showB2Crsvp: {{showB2Crsvp}}</p>
-      <p>is_b2c_participant: {{is_b2c_participant}}</p>
-      <p>surveyDone: {{surveyDone}}</p>
-      <p>screen: {{screen}}</p>-->
       <h1 class="consent-title" style="text-align:center">Would you like to participate in the Bic2Cal challenge?</h1>
       <p class="consent-text">On October 5th, this year's International Walk and Bike to School Day, EECS is challenging the UC Berkeley community, students, staff, and faculty, to team up for sustainable transportation and fight climate change with us. You will be able to choose from a number of different challenges and find the one that's right for you. To learn more about this UC Berkeley developing research, go to <a href="https://bic2cal.eecs.berkeley.edu/">https://bic2cal.eecs.berkeley.edu/</a></p>
       <div class="row" style="margin-top: 20px; padding: 20px;">
@@ -275,6 +269,6 @@
           <button class="button button-block button-balanced button-positive" ng-click="b2cYes()" id="consent-button">Yes</button>
         </div>
       </div>
-    </div>
+    </div>-->
 </ion-content>
 </ion-view>
