@@ -183,6 +183,36 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
+    $scope.nukeUserCache = function() {
+        $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
+        .then(function(result) {
+            if (result) { 
+                window.cordova.plugins.BEMUserCache.clearAll()
+                .then(function(result) {
+                    $scope.$apply(function() {
+                        $ionicPopup.alert({template: 'success -> '+result});
+                    });
+                }, function(error) {
+                    $scope.$apply(function() {
+                        $ionicPopup.alert({template: 'error -> '+error});
+                    });
+               });
+            }
+        });
+    }
+
+    $scope.invalidateCache = function() {
+        window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'success -> '+result});
+            });
+        }, function(error) {
+            $scope.$apply(function() {
+                $ionicPopup.alert({template: 'error -> '+error});
+            });
+        });
+    }
+
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
