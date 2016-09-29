@@ -619,9 +619,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 		}
 	};
 
-    if (storage.get('habitica_registered') == true) {
-        getChallenges();
-    }
+    getChallenges();
     refreshInfo();
 
 	$scope.refreshPage = function() {
@@ -667,5 +665,4 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 	//	return string[0].toUpperCase() + string.slice(1);
 	//}*/
 });
-
 
