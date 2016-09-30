@@ -14,6 +14,23 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var lastWeekCarbonInt = [];
     var twoWeeksAgoCarbonInt = [];
     var twoWeeksAgoCalories = 0;
+
+    // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
+    // But it is not clear to me why it needs to be in the profile screen...
+    var prepopulateMessage = {
+      message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
+      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
+      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+    }
+
+    $scope.share = function() {
+        window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
+            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+        }, function(msg) {
+            console.log("Sharing failed with message: " + msg);
+        });
+    }
     
     $scope.setCookie = function(){
       $scope.foodCompare = 'cookie';

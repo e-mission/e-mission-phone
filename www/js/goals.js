@@ -207,8 +207,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
             getMembers();
             console.log($scope.profile);
             prepopulateMessage = {
-                message: 'Join my party in Emission',
-                subject: 'Emission - Party Invite',
+                message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
+                subject: 'Help Berkeley become more bikeable and walkable',
                 url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
             };
             $ionicLoading.hide();
