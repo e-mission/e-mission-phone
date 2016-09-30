@@ -35,7 +35,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",}
+    "IN_VEHICLE":"ion-speedometer",
+    "AIR_OR_HSR": "ion-plane"}
     return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
   dh.getHumanReadable = function(sensed_mode) {
@@ -62,7 +63,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     "WALKING":"ion-android-walk",
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-speedometer",}
+    "IN_VEHICLE":"ion-speedometer",
+    "AIR_OR_HSR": "ion-plane"}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
@@ -92,7 +94,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",}
+    "IN_VEHICLE":"ion-speedometer",
+    "AIR_OR_HSR": "ion-plane"}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
         rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));
@@ -341,6 +344,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
             case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
             case "TRANSPORT": return getColoredStyle(baseDict, 'red');
+            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red')
             default: return getColoredStyle(baseDict, 'black');
         }
       };
@@ -367,10 +371,9 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
         template: 'Reading from cache...'
       });
       window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day))
-      .then(function (tripListArray) {
-         if (tripListArray.length > 0) {
-           var tripListStr = tripListArray[0];
-           var tripList = JSON.parse(tripListStr);
+      .then(function (timelineDoc) {
+         if (!window.cordova.plugins.BEMUserCache.isEmptyDoc(timelineDoc)) {
+           var tripList = timelineDoc;
            console.log("About to hide 'Reading from cache'");
            $ionicLoading.hide();
            foundFn(day, tripList);

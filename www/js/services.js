@@ -71,6 +71,7 @@ angular.module('emission.services', [])
       })
     };
 })
+
 .service('ReferHelper', function($http) {
 
     this.habiticaRegister = function(groupid, successCallback, errorCallback) {
@@ -173,7 +174,7 @@ angular.module('emission.services', [])
       return window.cordova.plugins.BEMServerSync.forceSync();
     };
 
-    this.getDocument = function() {
+    this.getConsentDocument = function() {
       return window.cordova.plugins.BEMUserCache.getDocument("config/consent");
     };
 })

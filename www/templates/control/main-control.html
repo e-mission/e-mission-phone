@@ -88,6 +88,14 @@
         <div ng-click="checkConsent()" class="control-icon-button"><i class="ion-checkmark-circled"></i></div>
       </div>
       <div class="control-list-item">
+        <div class="control-list-text">Invalidate cached docs</div>
+        <div ng-click="invalidateCache()" class="control-icon-button"><i class="ion-backspace"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text">Nuke all buffers and cache</div>
+        <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-trash-a"></i></div>
+      </div>
+      <div class="control-list-item">
         <div class="control-list-text">Set UI channel</div>
         <input type="text" name="userName"
           ng-model="settings.channel"
