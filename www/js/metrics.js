@@ -310,8 +310,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         };
       } else if (mode === 'timestamp') { // timestamp range
         if(lastTwoWeeksQuery) {
-          var tempFrom = moment2Timestamp(moment().utc().day(-14)); 
-          var tempTo = moment2Timestamp(moment().utc().day(-1));
+          var tempFrom = moment2Timestamp(moment().utc().subtract(14, 'days'));
+          var tempTo = moment2Timestamp(moment().utc().subtract(1, 'days'))
           lastTwoWeeksQuery = false; // Only get last week's data once          
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
