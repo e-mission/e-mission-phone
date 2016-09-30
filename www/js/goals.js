@@ -96,7 +96,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 			// Step 1: See if user went through game onboarding
 			$scope.habiticaOnboard = storage.get('habitica_onboard');
 			// Step 2: See if user joined B2C
-			$scope.b2cOnboard = storage.get('b2c_onboard');
+			//$scope.b2cOnboard = storage.get('b2c_onboard');
 		}
 	};
 
@@ -245,7 +245,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 								okType: "button-assertive"});
 			console.log("Not signed up");
 		});
-		$scope.gameActive = true;
+		//$scope.gameActive = true;
 	};
  
 
