@@ -112,7 +112,10 @@
       </div>
       <div class="row" id="costume-tab">
         <div class="col">
+         <!--
           <button id="challenge" class="button" ng-class="{'active': isActive}" ng-click="activeButton()" type="button">Challenges</button>
+         -->
+          <button class="button" ng-class="{'active': hasParty}" ng-click="inviteToParty()" type="Button">Invite friends</button>
           <button id="party" class="button" ng-class="{'active': isActiveP}" ng-click="partyButton()" type="button">Party</button> 
         </div>
       </div>
@@ -138,10 +141,19 @@
           </ion-scroll>
         </div>
         <div ng-if="isActiveP" ng-cloak>
-          <div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 15px;">
+          <!--div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 15px;">
             Join the party and battle monsters with E-mission members!
             <button class="button" ng-click="joinParty()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
             Join Party
+            </button>
+          </div-->
+           <div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 18px;">
+            Create a party
+            <label class="item item-input">
+              <input type="text" placeholder="Party name" ng-model="party.name" style="text-align: center;">
+            </label>
+            <button class="button" ng-click="createParty()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+            Create
             </button>
           </div>
           <ion-scroll ng-if="hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top: 10px; text-align:center;" ng-cloak>
@@ -164,6 +176,9 @@
                 <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
                   Members
                 </button>
+                <button class="button" ng-click="inviteToParty()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 20px;">
+            Invite Friends
+            </button>
               </div>
             </div>
               <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; !questActive">

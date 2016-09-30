@@ -182,4 +182,5 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
   $scope.mapHeight = $window.screen.height - 250;
   $scope.selectCtrl = {}
   initSelect();
+  $scope.getPopRoute();
 })

@@ -263,6 +263,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
             });
             console.log("Proxy Sucess");
             userId = $scope.profile._id
+            $scope.exp = $scope.profile.stats.exp
             $scope.gold = Math.round($scope.profile.stats.gp);
             floatGold = $scope.profile.stats.gp;
             $scope.hp = Math.round($scope.profile.stats.hp);
@@ -297,8 +298,8 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
             getMembers();
             console.log($scope.profile);
             prepopulateMessage = {
-                message: 'Join my party in Emission',
-                subject: 'Emission - Party Invite',
+                message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
+                subject: 'Help Berkeley become more bikeable and walkable',
                 url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
             };
             $ionicLoading.hide();
@@ -507,6 +508,23 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
             console.log("Error when getting the party");
         });
     };
+
+    $scope.party = {}
+		$scope.createParty = function() {
+		var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups",
+						'method_args': {'type': 'party', 'privacy': 'private', 'name': $scope.party.name}}
+		CommHelper.habiticaProxy(callOpts).then(function(response) {
+			console.log("created party");
+			$scope.$apply(function(){
+				$scope.hasParty = true;
+			});
+			refreshInfo();
+			console.log(response);
+		}, function(error) {
+			console.log("Error createing party");
+		})
+	}
+
 
     var questContent = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/content",
