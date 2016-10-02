@@ -115,7 +115,7 @@
          <!--
           <button id="challenge" class="button" ng-class="{'active': isActive}" ng-click="activeButton()" type="button">Challenges</button>
          -->
-          <button class="button" ng-class="{'active': hasParty}" ng-click="inviteToParty()" type="Button">Invite friends</button>
+          <button class="button" ng-disabled="!hasParty" ng-click="inviteToParty()" type="Button">Invite friends</button>
           <button id="party" class="button" ng-class="{'active': isActiveP}" ng-click="partyButton()" type="button">Party</button> 
         </div>
       </div>

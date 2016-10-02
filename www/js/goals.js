@@ -213,6 +213,7 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
             };
             $ionicLoading.hide();
             }, function(error){
+                $scope.screen = false;
                 $ionicLoading.hide();
                 console.log("User profile error");
             });
@@ -420,20 +421,23 @@ angular.module('emission.main.goals',['emission.services', 'ngSanitize', 'ngAnim
 
     $scope.party = {}
 		$scope.createParty = function() {
-		var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups",
-						'method_args': {'type': 'party', 'privacy': 'private', 'name': $scope.party.name}}
-		CommHelper.habiticaProxy(callOpts).then(function(response) {
-			console.log("created party");
-			$scope.$apply(function(){
-				$scope.hasParty = true;
-			});
-			refreshInfo();
-			console.log(response);
-		}, function(error) {
-			console.log("Error createing party");
-		})
+        if (!angular.isUndefined($scope.party.name)) {
+            var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups",
+                            'method_args': {'type': 'party', 'privacy': 'private', 'name': $scope.party.name}}
+            CommHelper.habiticaProxy(callOpts).then(function(response) {
+                console.log("created party");
+                $scope.$apply(function(){
+                    $scope.hasParty = true;
+                });
+                refreshInfo();
+                console.log(response);
+            }, function(error) {
+                console.log("Error createing party");
+            })
+        } else {
+            $ionicPopup.alert({"template": "Please specify a name"});
+        }
 	}
-
 
     var questContent = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/content",
