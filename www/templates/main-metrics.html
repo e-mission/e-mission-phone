@@ -2,9 +2,14 @@
   <ion-nav-bar class="bar-stable">
     <ion-nav-back-button></ion-nav-back-button>
   </ion-nav-bar>
-  <ion-nav-buttons side="left">
+  <ion-nav-buttons side="primary">
       <button class="button button-icon" ng-click="share()">
         <i class="icon ion-share"></i>
+      </button>
+  </ion-nav-buttons>
+  <ion-nav-buttons side="secondary">
+      <button class="button button-icon" ng-click="doRefresh()">
+        <i class="icon ion-refresh"></i>
       </button>
   </ion-nav-buttons>
   <ion-content class="has-header">

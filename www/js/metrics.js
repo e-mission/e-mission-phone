@@ -31,7 +31,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             console.log("Sharing failed with message: " + msg);
         });
     }
-    
+
     $scope.setCookie = function(){
       $scope.foodCompare = 'cookie';
       storage.set('foodCompare', 'cookie');
@@ -198,7 +198,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.userData.gender = gender;
     }
 
-    $scope.storeUserData = function() {     
+    $scope.storeUserData = function() {
       var info = {'gender': $scope.userData.gender,
                   'heightUnit': $scope.userData.heightUnit,
                   'weightUnit': $scope.userData.weightUnit,
@@ -329,7 +329,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         if(lastTwoWeeksQuery) {
           var tempFrom = moment2Timestamp(moment().utc().startOf('day').subtract(14, 'days'));
           var tempTo = moment2Timestamp(moment().utc().startOf('day').subtract(1, 'days'))
-          lastTwoWeeksQuery = false; // Only get last week's data once          
+          lastTwoWeeksQuery = false; // Only get last week's data once
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
@@ -413,12 +413,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'banana' : 105, //medium banana 118g
       };
 
-      Promise.all([getDuration(), getSpeed(), getCount(), getDistance()]).then(function(results) {
+      return Promise.all([getDuration(), getSpeed(), getCount(), getDistance()]).then(function(results) {
         // cacheResults(response);
         $ionicLoading.hide();
         if(results[0].user_metrics.length == 0){
-          first = false; 
-          // If there is no data from last week (ex. new user) 
+          console.log("first = "+first);
+          first = false;
+          // If there is no data from last week (ex. new user)
           // Don't store the any other data as last we data
          }
          var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
@@ -435,7 +436,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
               userDuration.push(results[0].user_metrics[i]);
               usedMedianSpeed.push(results[1].user_metrics[i]);
               userCount.push(results[2].user_metrics[i]);
-              userDistance.push(results[3].user_metrics[i]);  
+              userDistance.push(results[3].user_metrics[i]);
             } else {
               twoWeeksAgoDuration.push(results[0].user_metrics[i]);
               twoWeeksAgoMedianSpeed.push(results[1].user_metrics[i]);
@@ -446,6 +447,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var aggMedianSpeed = results[1].aggregate_metrics.slice(7);
           var aggCount = results[2].aggregate_metrics.slice(7);
           var aggDistance = results[3].aggregate_metrics.slice(7);
+          console.log("twoWeeksAgoDuration = "+twoWeeksAgoDuration);
+          console.log("twoWeeksAgoMedianSpeed = "+twoWeeksAgoMedianSpeed);
+          console.log("twoWeeksAgoDistance = "+twoWeeksAgoDistance);
         } else {
           var userDuration = results[0].user_metrics;
           var usedMedianSpeed = results[1].user_metrics;
@@ -489,7 +493,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           } else {
             var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
           }
-          $scope.caloriesData.userCalories += 
+          $scope.caloriesData.userCalories +=
             Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) //+ ' cal'
         }
         $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/food.chocolateChip);
@@ -529,7 +533,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           for (var i in userCarbonData) {
             //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
             if (userCarbonData[i].key === "IN_VEHICLE") {
-              $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);              
+              $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
               $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
               $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
               lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
@@ -556,8 +560,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
             for (var i in userCarbonData) {
               if (userCarbonData[i].key === "IN_VEHICLE") {
-                twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);              
-                twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);              
+                twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
+                twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
               }
             }
           }
@@ -581,35 +585,52 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             } else {
               var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
             }
-            twoWeeksAgoCalories += 
+            twoWeeksAgoCalories +=
               Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
           }
 
           var change = "";
+          console.log("Running calculation with "
+                        + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
+                        + " and "
+                        + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
           var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
                             / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
                             * 100 - 100;
-          
-          if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
-            $scope.carbonData.change = " increase over a week";
-            $scope.carbonUp = true;
-            $scope.carbonDown = false;
-          } else {
-            $scope.carbonData.change = " decrease over a week"
-            $scope.carbonUp = false;
-            $scope.carbonDown = true;
-          }
-          $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
 
-          $scope.caloriesData.changeInPercentage = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100)) + "%";
-          if(lastWeekCalories > twoWeeksAgoCalories){
-            $scope.caloriesData.change = " increase over a week";
-            $scope.caloriesUp = true;
-            $scope.caloriesDown = false;
-          } else {
-            $scope.caloriesData.change = " decrease over a week"
-            $scope.caloriesUp = false;
-            $scope.caloriesDown = true;
+          // TODO: Refactor this so that we can filter out bad values ahead of time
+          // instead of having to work around it here
+          if (Number.isFinite(calculation)) {
+              if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
+                $scope.carbonData.change = " increase over a week";
+                $scope.carbonUp = true;
+                $scope.carbonDown = false;
+              } else {
+                $scope.carbonData.change = " decrease over a week"
+                $scope.carbonUp = false;
+                $scope.carbonDown = true;
+              }
+              $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+          }
+
+          console.log("Running calorieData with "
+                        + (lastWeekCalories)
+                        + " and "
+                        + (twoWeeksAgoCalories));
+          // TODO: Refactor this so that we can filter out bad values ahead of time
+          // instead of having to work around it here
+          var calorieCalculation = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100));
+          if (Number.isFinite(calorieCalculation)) {
+              $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
+              if(lastWeekCalories > twoWeeksAgoCalories){
+                $scope.caloriesData.change = " increase over a week";
+                $scope.caloriesUp = true;
+                $scope.caloriesDown = false;
+              } else {
+                $scope.caloriesData.change = " decrease over a week"
+                $scope.caloriesUp = false;
+                $scope.caloriesDown = true;
+              }
           }
 
           first = false; //If there is data from last week store the data only first time
@@ -617,7 +638,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
         $scope.uictrl.showContent = true;
 
-        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because 
+        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because
           $scope.$apply(function() {
             $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
           })
@@ -883,7 +904,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         });
     };
-    
+
     $scope.toggle = function() {
       if (!$scope.uictrl.showMe) {
         $scope.uictrl.showMe = true;
@@ -919,10 +940,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
 
   $scope.selectCtrl = {}
-  initSelect(); 
+  initSelect();
   $timeout(function() {
     getData();
   }, 1)
+
+  $scope.doRefresh = function() {
+    first = true;
+    getMetrics();
+  }
 
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
