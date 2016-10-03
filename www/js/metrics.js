@@ -456,11 +456,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var aggCount = results[2].aggregate_metrics;
           var aggDistance = results[3].aggregate_metrics;
         }
-        console.log(moment().utc().startOf('day'));
-        console.log(moment().utc().startOf('day').subtract(7, 'days'));
-        console.log(moment().utc().startOf('day').subtract(7, 'days').unix());
-        //console.log(userDuration);
-        console.log(twoWeeksAgoMedianSpeed);
         $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
         $scope.summaryData.userSummary.median_speed = getSummaryData(usedMedianSpeed, "median_speed");
         $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
