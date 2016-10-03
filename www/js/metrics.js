@@ -327,8 +327,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         };
       } else if (mode === 'timestamp') { // timestamp range
         if(lastTwoWeeksQuery) {
-          var tempFrom = moment2Timestamp(moment().utc().subtract(14, 'days'));
-          var tempTo = moment2Timestamp(moment().utc().subtract(1, 'days'))
+          var tempFrom = moment2Timestamp(moment().utc().startOf('day').subtract(14, 'days'));
+          var tempTo = moment2Timestamp(moment().utc().startOf('day').subtract(1, 'days'))
           lastTwoWeeksQuery = false; // Only get last week's data once          
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
@@ -421,14 +421,27 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           // If there is no data from last week (ex. new user) 
           // Don't store the any other data as last we data
          }
+         var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
+         var twoWeeksAgoDuration = [];
+         var twoWeeksAgoMedianSpeed = [];
+         var twoWeeksAgoDistance = [];
+         var userDuration = [];
+         var usedMedianSpeed = [];
+         var userCount = [];
+         var userDistance = [];
         if(first){
-          var twoWeeksAgoDuration = results[0].user_metrics.slice(0,7); 
-          var twoWeeksAgoMedianSpeed = results[1].user_metrics.slice(0,7);
-          var twoWeeksAgoDistance = results[3].user_metrics.slice(0,7)
-          var userDuration = results[0].user_metrics.slice(7);
-          var usedMedianSpeed = results[1].user_metrics.slice(7);
-          var userCount = results[2].user_metrics.slice(7);
-          var userDistance = results[3].user_metrics.slice(7);
+          for(var i in results[0].user_metrics) {
+            if(seventhDayAgo.isSameOrBefore(moment.unix(results[0].user_metrics[i].ts).utc())){
+              userDuration.push(results[0].user_metrics[i]);
+              usedMedianSpeed.push(results[1].user_metrics[i]);
+              userCount.push(results[2].user_metrics[i]);
+              userDistance.push(results[3].user_metrics[i]);  
+            } else {
+              twoWeeksAgoDuration.push(results[0].user_metrics[i]);
+              twoWeeksAgoMedianSpeed.push(results[1].user_metrics[i]);
+              twoWeeksAgoDistance.push(results[3].user_metrics[i]);
+            }
+          }
           var aggDuration = results[0].aggregate_metrics.slice(7);
           var aggMedianSpeed = results[1].aggregate_metrics.slice(7);
           var aggCount = results[2].aggregate_metrics.slice(7);
@@ -443,6 +456,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var aggCount = results[2].aggregate_metrics;
           var aggDistance = results[3].aggregate_metrics;
         }
+        console.log(moment().utc().startOf('day'));
+        console.log(moment().utc().startOf('day').subtract(7, 'days'));
+        console.log(moment().utc().startOf('day').subtract(7, 'days').unix());
+        //console.log(userDuration);
+        console.log(twoWeeksAgoMedianSpeed);
         $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
         $scope.summaryData.userSummary.median_speed = getSummaryData(usedMedianSpeed, "median_speed");
         $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
