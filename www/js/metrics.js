@@ -1,4 +1,4 @@
-// 'use strict';
+'use strict';
 
 angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage'])
 
@@ -211,7 +211,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.userDataSaved = function() {
       var saved_user_data = CalorieCal.get();
-      console.log("saved vals = "+JSON.stringify(saved_user_data));
+      // console.log("saved vals = "+JSON.stringify(saved_user_data));
       return saved_user_data.userDataSaved == true;
     }
     $scope.options = {
@@ -649,10 +649,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
             $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
             lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-            if(first){
-              lastWeekCarbon = $scope.carbonData.userCarbon;
-            }
-            $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
           }
         }
       }
@@ -664,6 +660,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             if (userCarbonData[i].key === "IN_VEHICLE") {
               twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
               twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+              if(first){
+                lastWeekCarbon = twoWeeksAgoCarbon;
+              }
+              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
             }
           }
         }
