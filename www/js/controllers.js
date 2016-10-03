@@ -1,16 +1,27 @@
 'use strict';
 
 angular.module('emission.controllers', ['emission.splash.updatecheck',
-                                        'emission.splash.startprefs'])
+                                        'emission.splash.startprefs',
+                                        'emission.splash.referral',
+                                        'customURLScheme'])
 
 .controller('RootCtrl', function($scope) {})
 
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
-    UpdateCheck, StartPrefs) {
+    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler) {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
+  CustomURLScheme.onLaunch(function(event, url){
+    console.log("GOT URL:"+url);
+    var kvList = ReferralHandler.parseURL(url);
+    // There are 3 types of users in total
+    if (kvList.route == 'join') {
+      ReferralHandler.setupGroupReferral(kvList);
+    } // can add other routes here if needed
+    StartPrefs.loadWithPrefs();
+  });
   UpdateCheck.checkForUpdates();
   StartPrefs.startWithPrefs();
 
