@@ -5,7 +5,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 'emission.splash.referral', 'angularLocalStorage',
                 'ng-walkthrough', 'nzTour'])
 
-.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour, Config,
+.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger){
     $scope.goals = [];
     $scope.goal = {};
