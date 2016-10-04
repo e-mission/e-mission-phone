@@ -2,9 +2,10 @@
 
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
                 'ngSanitize', 'ngAnimate',
-                'emission.splash.referral', 'angularLocalStorage'])
+                'emission.splash.referral', 'angularLocalStorage',
+                'ng-walkthrough', 'nzTour'])
 
-.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal,
+.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger){
     $scope.goals = [];
     $scope.goal = {};
@@ -638,18 +639,47 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
-    /*var UUID= '4f369eef-aed4-4408-bcbf-b34896daf7e3';
+    // Tour steps
+    var tour = {
+      config: {
 
-    $http.get('https://habitica.com/api/v3/members/'+ UUID)
-    .then(function(response){
-        $scope.user = response.data;
-        //console.log(response.data);
-    },function(err){
-        $scope.error = err.data;
-        console.log($scope.error);
-    });
-    //function firstUpperCase(string) {
-    //  return string[0].toUpperCase() + string.slice(1);
-    //}*/
+      },
+      steps: [{
+        target: '.retrieve-pw',
+        content: 'Click here to retrieve your password and key for the game. To access the game on a web browser, go to https://em-game.eecs.berkeley.edu/'
+      },
+      {
+        target: '.party',
+        content: 'Click here to create a group for your team.'
+      },
+      {
+        target: '.invite-friends',
+        content: 'Grow your party by invite friends to join you!'
+      },
+      {
+        target: '.habit-list',
+        content: 'Once you join a challenge, your goals will appear here.'
+      }]
+    };
+
+    var startWalkthrough = function () {
+      nzTour.start(tour);
+    };
+
+    /*
+    * Checks if it is the first time the user has loaded the goals tab. If it is then
+    * show a walkthrough and store the info that the user has seen the tutorial.
+    */
+    var checkGoalsTutorialDone = function () {
+      var GOALS_DONE_KEY = 'goals_tutorial_done';
+      var goalsTutorialDone = storage.get(GOALS_DONE_KEY);
+      if (!goalsTutorialDone) {
+        startWalkthrough();
+        storage.set(GOALS_DONE_KEY, true);
+      }
+    };
+
+    $scope.startWalkthrough = function () {
+      startWalkthrough();
+    }
 });
-

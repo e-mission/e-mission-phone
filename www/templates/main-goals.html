@@ -5,9 +5,10 @@
       <button class="button button-icon" ng-click="openModal()">
           <i class="icon ion-compose"></i>
       </button>
-      <button class="button button-icon" ng-click="showCreds()">
+      <button class="button button-icon retrieve-pw" ng-click="showCreds()">
           <i class="icon ion-key"></i>
       </button>
+      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
      </ion-nav-buttons>
      <ion-nav-buttons side="left">
       <button class="button button-icon" ng-click="refreshPage()">
@@ -115,8 +116,8 @@
          <!--
           <button id="challenge" class="button" ng-class="{'active': isActive}" ng-click="activeButton()" type="button">Challenges</button>
          -->
-          <button class="button" ng-disabled="!hasParty" ng-click="inviteToParty()" type="Button">Invite friends</button>
-          <button id="party" class="button" ng-class="{'active': isActiveP}" ng-click="partyButton()" type="button">Party</button> 
+          <button class="button invite-friends" ng-disabled="!hasParty" ng-click="inviteToParty()" type="Button">Invite friends</button>
+          <button id="party" class="button party" ng-class="{'active': isActiveP}" ng-click="partyButton()" type="button">Party</button> 
         </div>
       </div>
       <div>
@@ -215,7 +216,7 @@
           </ion-scroll>
         </div>
       <div>
-      <ion-list id="habit-list">
+      <ion-list id="habit-list" class="habit-list">
         <ion-item id="goal-content" ng-repeat="goal in goals">
           <!--div class="row">
            <lable class="checkbox">

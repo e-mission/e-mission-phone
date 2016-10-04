@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
+angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services', 'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
 
-.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http, leafletData, Config, $window) {
+.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http, leafletData, Config, $window, nzTour, storage) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
@@ -19,6 +19,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
 
   $scope.$on('leafletDirectiveMap.heatmap.resize', function(event, data) {
       console.log("heatmap received resize event, invalidating map size");
+      checkHeatmapTutorialDone();
       data.leafletObject.invalidateSize();
   });
 
@@ -183,4 +184,45 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services'])
   $scope.selectCtrl = {}
   initSelect();
   $scope.getPopRoute();
-})
+
+
+  // Tour steps
+  var tour = {
+    config: {
+
+    },
+    steps: [{
+      target: '.datepicker',
+      content: 'This heatmap shows the aggregate data for all E-mission users. Select the dates you want to see, and filter by hours of the day (24h format) and days of the week. For example, if you enter 16 and 19 in the last field, and select Monday and Friday, you\'ll see the Heatmap filtered to show the traffic on weekdays between 4pm and 7pm.'
+    },
+    {
+      target: '.heatmap-mode-button',
+      content: 'Click here to filter your results by mode of transportation. The default is to show all modes.'
+    },
+    {
+      target: '.heatmap-get-button',
+      content: 'Click here to generate the heatmap.'
+    }]
+  };
+
+  var startWalkthrough = function () {
+    nzTour.start(tour);
+  };
+
+  /*
+  * Checks if it is the first time the user has loaded the heatmap tab. If it is then
+  * show a walkthrough and store the info that the user has seen the tutorial.
+  */
+  var checkHeatmapTutorialDone = function () {
+    var HEATMAP_DONE_KEY = 'heatmap_tutorial_done';
+    var heatmapTutorialDone = storage.get(HEATMAP_DONE_KEY);
+    if (!heatmapTutorialDone) {
+      startWalkthrough();
+      storage.set(HEATMAP_DONE_KEY, true);
+    }
+  };
+
+  $scope.startWalkthrough = function () {
+    startWalkthrough();
+  }
+});

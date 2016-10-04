@@ -154,7 +154,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got event with args "+JSON.stringify(args));
-      checkDiaryTutorialDone();
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
@@ -176,6 +175,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                 DiaryHelper.fillCommonTripCount(tripWrapper);
              });
           };
+          checkDiaryTutorialDone();
       });
     });
 
@@ -285,7 +285,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       },
       steps: [{
         target: '.nav-bar-block[nav-bar="active"] .pickerdate',
-        content: 'Use this to select the day whose timeline you want to see'
+        content: 'Use this to select the day you want to see.'
+      },
+      {
+        target: '.diary-entry',
+        content: 'Click on the map to see more details about each trip.'
       }]
     };
 
