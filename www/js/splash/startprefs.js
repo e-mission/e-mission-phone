@@ -1,8 +1,9 @@
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
+                                              'emission.splash.referral',
                                               'angularLocalStorage'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope,
-      $ionicPopup, storage, $http, Logger) {
+      $ionicPopup, storage, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var startprefs = {};
     var DEFAULT_THEME_KEY = 'curr_theme';
@@ -129,16 +130,10 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           });
       }
     };
-    var getReferralNavigation = function() {
-      var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
-      return storage.get(REFERRAL_NAVIGATION_KEY);
-    }
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
-        var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
         if (result == null) {
-          var temp = getReferralNavigation();
-          storage.remove(REFERRAL_NAVIGATION_KEY);
+          var temp = ReferralHandler.getReferralNavigation();
           if (temp == 'goals') {
             return 'root.main.goals';
           } else {
@@ -153,7 +148,17 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var changeState = function(destState) {
         logger.log('changing state to '+destState);
         console.log("loading "+destState);
-        $state.go(destState);
+        // TODO: Fix this the right way when we fix the FSM
+        // https://github.com/e-mission/e-mission-phone/issues/146#issuecomment-251061736
+        var reload = false;
+        if (($state.$current == destState) && ($state.$current.name == 'root.main.goals')) {
+          reload = true;
+        }
+        $state.go(destState).then(function() {
+            if (reload) {
+              $rootScope.$broadcast("RELOAD_GOAL_PAGE_FOR_REFERRAL")
+            }
+        });
         $interval.cancel(currPromise);
     };
 

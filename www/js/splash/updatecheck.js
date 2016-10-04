@@ -22,8 +22,8 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
   var getChannelToUse = function() {
       var channel = uc.getChannel();
       if (channel == null || channel == "") {
-        console.log("No saved channel found, using dev")
-        channel = 'dev';
+        console.log("No saved channel found, using prod")
+        channel = 'prod';
       };
       console.log("Returning channel "+channel)
       return channel;

@@ -4,6 +4,9 @@ Each tab's child <ion-nav-view> directive will have its own
 navigation history that also transitions its views in and out.
 -->
 <ion-view>
+   <div>
+    <progress ng-if="isDownloading" class=" has-header download" value="{{progress}}" max="100"></progress>
+  </div>
 <ion-tabs ng-class="tabsCustomClass()">
 
   <!-- Diary Tab -->

@@ -1,4 +1,7 @@
 <ion-view hide-nav-bar="true" class="intro-view">
+    <div>
+        <progress ng-if="isDownloading" class=" has-header download" value="{{progress}}" max="100"></progress>
+    </div>
     <ion-slide-box delegate-handle="intro-box" on-slide-changed="slideChanged(index)" show-pager="false">
       <ion-slide>
         <ng-include src="'templates/intro/summary.html'"></ng-include>
