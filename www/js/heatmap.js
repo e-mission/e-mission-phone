@@ -19,7 +19,6 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services', 'ng-w
 
   $scope.$on('leafletDirectiveMap.heatmap.resize', function(event, data) {
       console.log("heatmap received resize event, invalidating map size");
-      checkHeatmapTutorialDone();
       data.leafletObject.invalidateSize();
   });
 
@@ -225,4 +224,6 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services', 'ng-w
   $scope.startWalkthrough = function () {
     startWalkthrough();
   }
+
+  checkHeatmapTutorialDone();
 });
