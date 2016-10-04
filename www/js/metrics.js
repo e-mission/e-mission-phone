@@ -15,6 +15,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var twoWeeksAgoCarbonInt = [];
     var twoWeeksAgoCalories = 0;
 
+    var DURATION = "duration";
+    var MEDIAN_SPEED = "median_speed";
+    var COUNT = "count";
+    var DISTANCE = "distance";
+
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
@@ -352,30 +357,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
-   var getDuration = function() {
+   var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
-      clonedData.metric = "duration";
+      delete clonedData.metric;
+      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      clonedData.is_return_aggregate = false;
       var getDuration = CommHelper.getMetrics(theMode, clonedData);
       return getDuration;
-    }
-    var getSpeed = function() {
+   }
+   var getAggMetricsFromServer = function() {
       var clonedData = angular.copy(data);
-      clonedData.metric = "median_speed";
-      var speedData = CommHelper.getMetrics(theMode, clonedData);
-      return speedData;
-    }
-    var getCount = function(){
-      var clonedData = angular.copy(data);
-      clonedData.metric = "count";
-      var getCount = CommHelper.getMetrics(theMode, clonedData);
-      return getCount;
-    }
-    var getDistance =  function() {
-      var clonedData = angular.copy(data);
-      clonedData.metric = "distance";
-      var getDistance = CommHelper.getMetrics(theMode, clonedData);
-      return getDistance;
-    }
+      delete clonedData.metric;
+      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      var getDuration = CommHelper.getMetrics(theMode, clonedData);
+      return getDuration;
+   }
 
    var getMetrics = function() {
       $ionicLoading.show({
@@ -415,50 +411,60 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'banana' : 105, //medium banana 118g
       };
 
-      return Promise.all([getDuration(), getSpeed(), getCount(), getDistance()]).then(function(results) {
-        // cacheResults(response);
-        $ionicLoading.hide();
-        if(results[0].user_metrics.length == 0){
-          console.log("first = "+first);
-          first = false;
-          // If there is no data from last week (ex. new user)
-          // Don't store the any other data as last we data
-        }
-        var userResults = results.map(function(currResult) {
-            return currResult.user_metrics;
-        });
-        console.log("userResults = "+userResults);
-        var aggResults = results.map(function(currResult) {
-            return currResult.aggregate_metrics;
-        });
-        console.log("aggResults = "+aggResults);
-        $scope.fillUserValues(userResults);
-        $scope.fillAggregateValues(aggResults);
-
-        $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
-
-        first = false; //If there is data from last week store the data only first time
-
-        $scope.uictrl.showContent = true;
-
-        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because
-          $scope.$apply(function() {
-            $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
-          })
-        } else {
-          $scope.$apply(function() {
-            $scope.showCharts([]);
-            console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
-          });
-        }
-      }, function(error) {
+      getUserMetricsFromServer().then(function(results) {
+          $ionicLoading.hide();
+          if(results.user_metrics.length == 1){
+            console.log("first = "+first);
+            first = false;
+            // If there is no data from last week (ex. new user)
+            // Don't store the any other data as last we data
+          }
+          $scope.fillUserValues(results.user_metrics);
+          $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
+          first = false; //If there is data from last week store the data only first time
+          $scope.uictrl.showContent = true;
+          if (angular.isDefined($scope.chartDataUser)) {
+            $scope.$apply(function() {
+              if ($scope.uictrl.showMe) {
+                $scope.showCharts($scope.chartDataUser);
+              }
+            })
+          } else {
+            $scope.$apply(function() {
+              $scope.showCharts([]);
+              console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
+            });
+          }
+      })
+      .catch(function(error) {
         $ionicLoading.hide();
         $ionicPopup.alert({
           title: "Error Loading Data",
           template: ''
         });
         console.log(error);
+      })
+
+/*
+      getAggMetricsFromServer().then(function(results) {
+          $scope.fillAggregateValues(userResults);
+          if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because
+            $scope.$apply(function() {
+              $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
+            })
+          } else {
+            $scope.$apply(function() {
+              $scope.showCharts([]);
+              console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
+            });
+          }
+      })
+      .catch(function(error) {
+      })
+      , function(error) {
+        $ionicLoading.hide();
       });
+      */
    };
 
    $scope.fillUserValues = function(user_metrics_arr) {
