@@ -5,7 +5,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -362,15 +362,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = false;
-      var getDuration = CommHelper.getMetrics(theMode, clonedData);
-      return getDuration;
+      var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
+      return getMetricsResult;
    }
    var getAggMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
-      var getDuration = CommHelper.getMetrics(theMode, clonedData);
-      return getDuration;
+      clonedData.is_return_aggregate = true;
+      var getMetricsResult = $http.post(
+        "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
+        clonedData)
+      return getMetricsResult;
    }
 
    var getMetrics = function() {
@@ -384,6 +387,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       //$scope.uictrl.showFilter = false;
       $scope.uictrl.showVis = true;
       $scope.uictrl.showResult = true;
+      $scope.uictrl.hasAggr = false;
 
       $scope.caloriesData = {};
       $scope.carbonData = {};
@@ -395,7 +399,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.change = " change";
 
       $scope.carbonData.userCarbon = "0 kg CO₂";
-      $scope.carbonData.aggrCarbon = "0 kg CO₂";
+      $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
       $scope.carbonData.worstCarbon = "0 kg CO₂";
       $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
@@ -445,26 +449,33 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         console.log(error);
       })
 
-/*
       getAggMetricsFromServer().then(function(results) {
-          $scope.fillAggregateValues(userResults);
-          if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because
-            $scope.$apply(function() {
-              $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
-            })
+          $scope.fillAggregateValues(results.data.aggregate_metrics);
+          $scope.uictrl.hasAggr = true;
+          if (angular.isDefined($scope.chartDataAggr)) { //Only have to check one because
+            // Restore the $apply if/when we go away from $http
+            // $scope.$apply(function() {
+              if (!$scope.uictrl.showMe) {
+                $scope.showCharts($scope.chartDataAggr);
+              }
+            // })
           } else {
-            $scope.$apply(function() {
+            // $scope.$apply(function() {
               $scope.showCharts([]);
               console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
-            });
+            // });
           }
       })
       .catch(function(error) {
-      })
-      , function(error) {
         $ionicLoading.hide();
+        $scope.carbonData.aggrCarbon = "Unknown";
+        $scope.caloriesData.aggrCalories = "Unknown...";
+        $ionicPopup.alert({
+          title: "Error loading aggregate data, averages not available",
+          template: ''
+        });
+        console.log(error);
       });
-      */
    };
 
    $scope.fillUserValues = function(user_metrics_arr) {
@@ -516,10 +527,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
         if (first) {
-            var aggDuration = agg_metrics_arr[0].slice(7);
-            var aggMedianSpeed = agg_metrics_arr[1].slice(7);
-            var aggCount = agg_metrics_arr[2].slice(7);
-            var aggDistance = agg_metrics_arr[3].slice(7);
+            var aggDuration = agg_metrics_arr[0].slice(0, 7);
+            var aggMedianSpeed = agg_metrics_arr[1].slice(0, 7);
+            var aggCount = agg_metrics_arr[2].slice(0, 7);
+            var aggDistance = agg_metrics_arr[3].slice(0, 7);
         } else {
             var aggDuration = agg_metrics_arr[0];
             var aggMedianSpeed = agg_metrics_arr[1];
