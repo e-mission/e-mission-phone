@@ -12,7 +12,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
     CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler) {
   console.log('SplashCtrl invoked');
-  alert("attach debugger!");
+  // alert("attach debugger!");
   CustomURLScheme.onLaunch(function(event, url){
     console.log("GOT URL:"+url);
     var kvList = ReferralHandler.parseURL(url);

@@ -15,6 +15,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var twoWeeksAgoCarbonInt = [];
     var twoWeeksAgoCalories = 0;
 
+    var DURATION = "duration";
+    var MEDIAN_SPEED = "median_speed";
+    var COUNT = "count";
+    var DISTANCE = "distance";
+
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
@@ -210,7 +215,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
 
     $scope.userDataSaved = function() {
-      return CalorieCal.get().userDataSaved == true;
+      var saved_user_data = CalorieCal.get();
+      // console.log("saved vals = "+JSON.stringify(saved_user_data));
+      return saved_user_data.userDataSaved == true;
     }
     $scope.options = {
         chart: {
@@ -350,32 +357,23 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
-   var getDuration = function() {
+   var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
-      clonedData.metric = "duration";
+      delete clonedData.metric;
+      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      clonedData.is_return_aggregate = false;
       var getDuration = CommHelper.getMetrics(theMode, clonedData);
       return getDuration;
-    }
-    var getSpeed = function() {
+   }
+   var getAggMetricsFromServer = function() {
       var clonedData = angular.copy(data);
-      clonedData.metric = "median_speed";
-      var speedData = CommHelper.getMetrics(theMode, clonedData);
-      return speedData;
-    }
-    var getCount = function(){
-      var clonedData = angular.copy(data);
-      clonedData.metric = "count";
-      var getCount = CommHelper.getMetrics(theMode, clonedData);
-      return getCount;
-    }
-    var getDistance =  function() {
-      var clonedData = angular.copy(data);
-      clonedData.metric = "distance";
-      var getDistance = CommHelper.getMetrics(theMode, clonedData);
-      return getDistance;
-    }
+      delete clonedData.metric;
+      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      var getDuration = CommHelper.getMetrics(theMode, clonedData);
+      return getDuration;
+   }
 
-    var getMetrics = function(){
+   var getMetrics = function() {
       $ionicLoading.show({
         template: 'Loading...'
       });
@@ -407,256 +405,312 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.summaryData.userSummary = [];
       $scope.chartDataUser = {};
       $scope.chartDataAggr = {};
-      var food = {
+      $scope.food = {
         'chocolateChip' : 78, //16g 1 cookie
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
 
-      return Promise.all([getDuration(), getSpeed(), getCount(), getDistance()]).then(function(results) {
-        // cacheResults(response);
-        $ionicLoading.hide();
-        if(results[0].user_metrics.length == 0){
-          console.log("first = "+first);
-          first = false;
-          // If there is no data from last week (ex. new user)
-          // Don't store the any other data as last we data
-         }
-         var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
-         var twoWeeksAgoDuration = [];
-         var twoWeeksAgoMedianSpeed = [];
-         var twoWeeksAgoDistance = [];
-         var userDuration = [];
-         var usedMedianSpeed = [];
-         var userCount = [];
-         var userDistance = [];
-        if(first){
-          for(var i in results[0].user_metrics) {
-            if(seventhDayAgo.isSameOrBefore(moment.unix(results[0].user_metrics[i].ts).utc())){
-              userDuration.push(results[0].user_metrics[i]);
-              usedMedianSpeed.push(results[1].user_metrics[i]);
-              userCount.push(results[2].user_metrics[i]);
-              userDistance.push(results[3].user_metrics[i]);
-            } else {
-              twoWeeksAgoDuration.push(results[0].user_metrics[i]);
-              twoWeeksAgoMedianSpeed.push(results[1].user_metrics[i]);
-              twoWeeksAgoDistance.push(results[3].user_metrics[i]);
-            }
+      getUserMetricsFromServer().then(function(results) {
+          $ionicLoading.hide();
+          if(results.user_metrics.length == 1){
+            console.log("first = "+first);
+            first = false;
+            // If there is no data from last week (ex. new user)
+            // Don't store the any other data as last we data
           }
-          var aggDuration = results[0].aggregate_metrics.slice(7);
-          var aggMedianSpeed = results[1].aggregate_metrics.slice(7);
-          var aggCount = results[2].aggregate_metrics.slice(7);
-          var aggDistance = results[3].aggregate_metrics.slice(7);
-          console.log("twoWeeksAgoDuration = "+twoWeeksAgoDuration);
-          console.log("twoWeeksAgoMedianSpeed = "+twoWeeksAgoMedianSpeed);
-          console.log("twoWeeksAgoDistance = "+twoWeeksAgoDistance);
-        } else {
-          var userDuration = results[0].user_metrics;
-          var usedMedianSpeed = results[1].user_metrics;
-          var userCount = results[2].user_metrics;
-          var userDistance = results[3].user_metrics;
-          var aggDuration = results[0].aggregate_metrics;
-          var aggMedianSpeed = results[1].aggregate_metrics;
-          var aggCount = results[2].aggregate_metrics;
-          var aggDistance = results[3].aggregate_metrics;
-        }
-        $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
-        $scope.summaryData.userSummary.median_speed = getSummaryData(usedMedianSpeed, "median_speed");
-        $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
-        $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
-        $scope.chartDataUser.duration = userDuration? userDuration : [];
-        $scope.chartDataAggr.duration = aggDuration? aggDuration : [];
-        $scope.chartDataUser.speed = usedMedianSpeed? usedMedianSpeed : [];
-        $scope.chartDataAggr.speed = aggMedianSpeed? aggMedianSpeed : [];
-        $scope.chartDataUser.count = userCount? userCount : [];
-        $scope.chartDataAggr.count = aggCount? aggCount : [];
-        $scope.chartDataUser.distance = userDistance? userDistance : [];
-        $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
-
-        if (userDuration) {
-          var durationData = getSummaryDataRaw(userDuration, "duration");
-        }
-        if (usedMedianSpeed) {
-          var speedData = getSummaryDataRaw(usedMedianSpeed, "median_speed");
-        }
-        for (var i in durationData) {
-          if ($scope.userDataSaved()) {
-            var userDataFromStorage = CalorieCal.get();
-            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
-            var gender = userDataFromStorage.gender;
-            var heightUnit = userDataFromStorage.heightUnit;
-            var height = userDataFromStorage.height;
-            var weightUnit = userDataFromStorage.weightUnit;
-            var weight = userDataFromStorage.weight;
-            var age = userDataFromStorage.age;
-            met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
-          } else {
-            var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
-          }
-          $scope.caloriesData.userCalories +=
-            Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) //+ ' cal'
-        }
-        $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/food.chocolateChip);
-        $scope.numberOfIceCreams = Math.floor($scope.caloriesData.userCalories/food.vanillaIceCream);
-        $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/food.banana);
-        if(first){
-            lastWeekCalories = $scope.caloriesData.userCalories;
-        }
-        $scope.caloriesData.lastWeekUserCalories = lastWeekCalories;
-
-        if (aggDuration) {
-          var avgDurationData = getAvgSummaryDataRaw(aggDuration, "duration");
-        }
-        if (aggMedianSpeed) {
-          var avgSpeedData = getAvgSummaryDataRaw(aggMedianSpeed, "median_speed");
-        }
-        for (var i in avgDurationData) {
-
-          var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
-
-          $scope.caloriesData.aggrCalories +=
-            Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) //+ ' cal'
-        }
-
-        if (userDistance) {
-          var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
-          var optimalDistance = getOptimalFootprintDistance(userDistance);
-          var worstDistance = getWorstFootprintDistance(userDistance);
-          var date1 = $scope.selectCtrl.fromDateTimestamp;
-          var date2 = $scope.selectCtrl.toDateTimestamp;
-          var duration = moment.duration(date2.diff(date1));
-          var days = duration.asDays();
-          //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
-          $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
-          $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
-          //$scope.carbonData.userCarbon = [];
-          for (var i in userCarbonData) {
-            //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-            if (userCarbonData[i].key === "IN_VEHICLE") {
-              $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-              $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
-              $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
-              lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-              if(first){
-                lastWeekCarbon = $scope.carbonData.userCarbon;
-              }
-            $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-            }
-          }
-        }
-        if (aggDistance) {
-          var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
-          for (var i in aggrCarbonData) {
-            if (aggrCarbonData[i].key === "IN_VEHICLE") {
-              $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
-              $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
-            }
-          }
-        }
-        $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
-
-        if(first){
-          if (twoWeeksAgoDistance) {
-            var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-            for (var i in userCarbonData) {
-              if (userCarbonData[i].key === "IN_VEHICLE") {
-                twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-                twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-              }
-            }
-          }
-          if (twoWeeksAgoDuration) {
-            var durationData = getSummaryDataRaw(twoWeeksAgoDuration, "duration");
-          }
-          if (twoWeeksAgoMedianSpeed) {
-            var speedData = getSummaryDataRaw(twoWeeksAgoMedianSpeed, "median_speed");
-          }
-          for (var i in durationData) {
-            if ($scope.userDataSaved()) {
-              var userDataFromStorage = CalorieCal.get();
-              var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
-              var gender = userDataFromStorage.gender;
-              var heightUnit = userDataFromStorage.heightUnit;
-              var height = userDataFromStorage.height;
-              var weightUnit = userDataFromStorage.weightUnit;
-              var weight = userDataFromStorage.weight;
-              var age = userDataFromStorage.age;
-              met = CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
-            } else {
-              var met = CalorieCal.getMet(durationData[i].key, speedData[i].values);
-            }
-            twoWeeksAgoCalories +=
-              Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
-          }
-
-          var change = "";
-          console.log("Running calculation with "
-                        + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
-                        + " and "
-                        + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
-          var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
-                            / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
-                            * 100 - 100;
-
-          // TODO: Refactor this so that we can filter out bad values ahead of time
-          // instead of having to work around it here
-          if (Number.isFinite(calculation)) {
-              if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
-                $scope.carbonData.change = " increase over a week";
-                $scope.carbonUp = true;
-                $scope.carbonDown = false;
-              } else {
-                $scope.carbonData.change = " decrease over a week"
-                $scope.carbonUp = false;
-                $scope.carbonDown = true;
-              }
-              $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
-          }
-
-          console.log("Running calorieData with "
-                        + (lastWeekCalories)
-                        + " and "
-                        + (twoWeeksAgoCalories));
-          // TODO: Refactor this so that we can filter out bad values ahead of time
-          // instead of having to work around it here
-          var calorieCalculation = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100));
-          if (Number.isFinite(calorieCalculation)) {
-              $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
-              if(lastWeekCalories > twoWeeksAgoCalories){
-                $scope.caloriesData.change = " increase over a week";
-                $scope.caloriesUp = true;
-                $scope.caloriesDown = false;
-              } else {
-                $scope.caloriesData.change = " decrease over a week"
-                $scope.caloriesUp = false;
-                $scope.caloriesDown = true;
-              }
-          }
-
+          $scope.fillUserValues(results.user_metrics);
+          $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
           first = false; //If there is data from last week store the data only first time
-        }
-
-        $scope.uictrl.showContent = true;
-
-        if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because
-          $scope.$apply(function() {
-            $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
-          })
-        } else {
-          $scope.$apply(function() {
-            $scope.showCharts([]);
-            console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
-          });
-        }
-      }, function(error) {
+          $scope.uictrl.showContent = true;
+          if (angular.isDefined($scope.chartDataUser)) {
+            $scope.$apply(function() {
+              if ($scope.uictrl.showMe) {
+                $scope.showCharts($scope.chartDataUser);
+              }
+            })
+          } else {
+            $scope.$apply(function() {
+              $scope.showCharts([]);
+              console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
+            });
+          }
+      })
+      .catch(function(error) {
         $ionicLoading.hide();
         $ionicPopup.alert({
           title: "Error Loading Data",
           template: ''
         });
         console.log(error);
+      })
+
+/*
+      getAggMetricsFromServer().then(function(results) {
+          $scope.fillAggregateValues(userResults);
+          if (angular.isDefined($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr)) { //Only have to check one because
+            $scope.$apply(function() {
+              $scope.showCharts($scope.uictrl.showMe? $scope.chartDataUser: $scope.chartDataAggr);
+            })
+          } else {
+            $scope.$apply(function() {
+              $scope.showCharts([]);
+              console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
+            });
+          }
+      })
+      .catch(function(error) {
+      })
+      , function(error) {
+        $ionicLoading.hide();
       });
-    };
+      */
+   };
+
+   $scope.fillUserValues = function(user_metrics_arr) {
+        var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
+        var twoWeeksAgoDuration = [];
+        var twoWeeksAgoMedianSpeed = [];
+        var twoWeeksAgoDistance = [];
+        var userDuration = [];
+        var userMedianSpeed = [];
+        var userCount = [];
+        var userDistance = [];
+
+        if(first){
+          for(var i in user_metrics_arr[0]) {
+            if(seventhDayAgo.isSameOrBefore(moment.unix(user_metrics_arr[0][i].ts).utc())){
+              userDuration.push(user_metrics_arr[0][i]);
+              userMedianSpeed.push(user_metrics_arr[1][i]);
+              userCount.push(user_metrics_arr[2][i]);
+              userDistance.push(user_metrics_arr[3][i]);
+            } else {
+              twoWeeksAgoDuration.push(user_metrics_arr[0][i]);
+              twoWeeksAgoMedianSpeed.push(user_metrics_arr[1][i]);
+              twoWeeksAgoDistance.push(user_metrics_arr[3][i]);
+            }
+          }
+          console.log("twoWeeksAgoDuration = "+twoWeeksAgoDuration);
+          console.log("twoWeeksAgoMedianSpeed = "+twoWeeksAgoMedianSpeed);
+          console.log("twoWeeksAgoDistance = "+twoWeeksAgoDistance);
+        } else {
+          var userDuration = user_metrics_arr[0];
+          var userMedianSpeed = user_metrics_arr[1];
+          var userCount = user_metrics_arr[2];
+          var userDistance = user_metrics_arr[3];
+        }
+        $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
+        $scope.summaryData.userSummary.median_speed = getSummaryData(userMedianSpeed, "median_speed");
+        $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
+        $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
+        $scope.chartDataUser.duration = userDuration? userDuration : [];
+        $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
+        $scope.chartDataUser.count = userCount? userCount : [];
+        $scope.chartDataUser.distance = userDistance? userDistance : [];
+
+        // Fill in user calorie information
+        $scope.fillCalorieCardUserVals(userDuration, userMedianSpeed,
+                                       twoWeeksAgoDuration, twoWeeksAgoMedianSpeed);
+        $scope.fillFootprintCardUserVals(userDistance, twoWeeksAgoDistance);
+   }
+
+   $scope.fillAggregateValues = function(agg_metrics_arr) {
+        if (first) {
+            var aggDuration = agg_metrics_arr[0].slice(7);
+            var aggMedianSpeed = agg_metrics_arr[1].slice(7);
+            var aggCount = agg_metrics_arr[2].slice(7);
+            var aggDistance = agg_metrics_arr[3].slice(7);
+        } else {
+            var aggDuration = agg_metrics_arr[0];
+            var aggMedianSpeed = agg_metrics_arr[1];
+            var aggCount = agg_metrics_arr[2];
+            var aggDistance = agg_metrics_arr[3];
+        }
+
+        $scope.chartDataAggr.duration = aggDuration? aggDuration : [];
+        $scope.chartDataAggr.speed = aggMedianSpeed? aggMedianSpeed : [];
+        $scope.chartDataAggr.count = aggCount? aggCount : [];
+        $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
+
+        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed)
+        $scope.fillFootprintAggVals(aggDistance);
+   }
+
+   $scope.fillCalorieCardUserVals = function(userDuration, userMedianSpeed,
+                                             twoWeeksAgoDuration, twoWeeksAgoMedianSpeed) {
+       if (userDuration) {
+         var durationData = getSummaryDataRaw(userDuration, "duration");
+       }
+       if (userMedianSpeed) {
+         var speedData = getSummaryDataRaw(userMedianSpeed, "median_speed");
+       }
+       for (var i in durationData) {
+         var met = $scope.getCorrectedMetFromUserData(durationData[i], speedData[i])
+         $scope.caloriesData.userCalories +=
+           Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) //+ ' cal'
+       }
+
+       if(first){
+           lastWeekCalories = $scope.caloriesData.userCalories;
+       }
+
+       $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/
+                                           $scope.food.chocolateChip);
+       $scope.numberOfIceCreams = Math.floor($scope.caloriesData.userCalories/
+                                             $scope.food.vanillaIceCream);
+       $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
+                                           $scope.food.banana);
+
+       if(first){
+         if (twoWeeksAgoDuration) {
+           var durationData = getSummaryDataRaw(twoWeeksAgoDuration, "duration");
+         }
+         if (twoWeeksAgoMedianSpeed) {
+           var speedData = getSummaryDataRaw(twoWeeksAgoMedianSpeed, "median_speed");
+         }
+         for (var i in durationData) {
+           var met = $scope.getCorrectedMetFromUserData(durationData[i], speedData[i])
+           twoWeeksAgoCalories +=
+             Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
+         }
+       }
+
+       if (first) {
+          $scope.caloriesData.lastWeekUserCalories = twoWeeksAgoCalories;
+       } else {
+          $scope.caloriesData.lastWeekUserCalories = ""
+       }
+
+
+       console.log("Running calorieData with "
+                    + (lastWeekCalories)
+                    + " and "
+                    + (twoWeeksAgoCalories));
+       // TODO: Refactor this so that we can filter out bad values ahead of time
+       // instead of having to work around it here
+       var calorieCalculation = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100));
+       if (Number.isFinite(calorieCalculation)) {
+          $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
+          if(lastWeekCalories > twoWeeksAgoCalories){
+            $scope.caloriesData.change = " increase over a week";
+            $scope.caloriesUp = true;
+            $scope.caloriesDown = false;
+          } else {
+            $scope.caloriesData.change = " decrease over a week"
+            $scope.caloriesUp = false;
+            $scope.caloriesDown = true;
+          }
+       }
+   }
+
+   $scope.fillCalorieAggVals = function(aggDuration, aggMedianSpeed) {
+       if (aggDuration) {
+         var avgDurationData = getAvgSummaryDataRaw(aggDuration, "duration");
+       }
+       if (aggMedianSpeed) {
+         var avgSpeedData = getAvgSummaryDataRaw(aggMedianSpeed, "median_speed");
+       }
+       for (var i in avgDurationData) {
+
+         var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
+
+         $scope.caloriesData.aggrCalories +=
+           Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) //+ ' cal'
+       }
+   }
+
+   $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData) {
+       if ($scope.userDataSaved()) {
+         var userDataFromStorage = CalorieCal.get();
+         var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
+         var gender = userDataFromStorage.gender;
+         var heightUnit = userDataFromStorage.heightUnit;
+         var height = userDataFromStorage.height;
+         var weightUnit = userDataFromStorage.weightUnit;
+         var weight = userDataFromStorage.weight;
+         var age = userDataFromStorage.age;
+         return CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
+       } else {
+         return CalorieCal.getMet(currDurationData.key, currSpeedData.values);
+       }
+   };
+
+   $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
+      if (userDistance) {
+        var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
+        var optimalDistance = getOptimalFootprintDistance(userDistance);
+        var worstDistance = getWorstFootprintDistance(userDistance);
+        var date1 = $scope.selectCtrl.fromDateTimestamp;
+        var date2 = $scope.selectCtrl.toDateTimestamp;
+        var duration = moment.duration(date2.diff(date1));
+        var days = duration.asDays();
+        //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
+        $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
+        $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
+        //$scope.carbonData.userCarbon = [];
+        for (var i in userCarbonData) {
+          //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
+          if (userCarbonData[i].key === "IN_VEHICLE") {
+            $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
+            $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
+            $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
+            lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+          }
+        }
+      }
+
+      if (first) {
+        if (twoWeeksAgoDistance) {
+          var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
+          for (var i in userCarbonData) {
+            if (userCarbonData[i].key === "IN_VEHICLE") {
+              twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
+              twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+              if(first){
+                lastWeekCarbon = twoWeeksAgoCarbon;
+              }
+              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
+            }
+          }
+        }
+      }
+
+      var change = "";
+      console.log("Running calculation with "
+                    + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
+                    + " and "
+                    + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
+      var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
+                        / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
+                        * 100 - 100;
+
+      // TODO: Refactor this so that we can filter out bad values ahead of time
+      // instead of having to work around it here
+      if (Number.isFinite(calculation)) {
+          if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
+            $scope.carbonData.change = " increase over a week";
+            $scope.carbonUp = true;
+            $scope.carbonDown = false;
+          } else {
+            $scope.carbonData.change = " decrease over a week"
+            $scope.carbonUp = false;
+            $scope.carbonDown = true;
+          }
+          $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+      }
+   };
+
+   $scope.fillFootprintAggVals = function(aggDistance) {
+      if (aggDistance) {
+        var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
+        for (var i in aggrCarbonData) {
+          if (aggrCarbonData[i].key === "IN_VEHICLE") {
+            $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
+            $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
+          }
+        }
+      }
+   };
 
     $scope.showCharts = function(agg_metrics) {
       $scope.data.count = getDataFromMetrics(agg_metrics.count);
