@@ -32,6 +32,12 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
   var deploy = new Ionic.Deploy();
 
   var applyUpdate = function() {
+    $ionicPopup.show({
+      title: 'Downloading UI-only update',
+      template: '<progress class="download" value="{{progress}}" max="100"></progress>',
+      scope: $rootScope,
+      buttons: []
+    });
     deploy.update().then(function(res) {
       window.Logger.log(window.Logger.LEVEL_INFO,
        'Ionic Deploy: Update Success! ', res);
@@ -47,10 +53,13 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
        $ionicPopup.alert({template: 'Error during update'});
     }, function(prog) {
       console.log('Ionic Deploy: Progress... ', prog);
-      $rootScope.progress = prog;
-      $rootScope.isDownloading = true;
-      if(prog==100)
-        $rootScope.isDownloading = false;
+      $rootScope.$apply(function(){
+          $rootScope.progress = prog;
+          $rootScope.isDownloading = true;
+          if(prog==100) {
+            $rootScope.isDownloading = false;
+          }
+      });
     })
   };
 
