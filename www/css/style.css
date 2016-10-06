@@ -236,7 +236,7 @@ img.center {
   .item-figure img:first-child, .item-figure .list-figure {
     width: 100%;
     vertical-align: middle; }
-.habit-list.item {
+.habit-list-border.item {
   border-width: 0.5px !important;
 }
 
