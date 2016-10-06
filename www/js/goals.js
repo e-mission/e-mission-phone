@@ -18,6 +18,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var prepopulateMessage = {};
     var floatHp;
     var floatGold;
+    var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
 
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
@@ -213,6 +214,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                     });
                     $scope.inQuest = true;
                 }
+            }
+            if($scope.inQuest && refresh){
+                questContent();
+                refresh = false;
             }
             $scope.joinedChallenges = $scope.profile.challenges;
             getParty();
@@ -592,13 +597,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var refreshInfo = function(){
         console.log("Refreshing information");
         console.log("Party ID = " + storage.get('party_id'));
+        refresh = true;
         if (storage.get(HABITICA_REGISTERED_KEY) == true) {
             getUserInfo();
             getUserTask();
-            // inQuest needs to be after getUserInfo()
-            if($scope.inQuest){
-                questContent();
-            }
         } else {
             $ionicLoading.hide();
         }
