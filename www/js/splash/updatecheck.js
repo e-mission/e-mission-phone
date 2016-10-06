@@ -38,6 +38,9 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
       scope: $rootScope,
       buttons: []
     });
+    if ($rootScope.isDownloading) {
+      return;
+    }
     deploy.update().then(function(res) {
       window.Logger.log(window.Logger.LEVEL_INFO,
        'Ionic Deploy: Update Success! ', res);

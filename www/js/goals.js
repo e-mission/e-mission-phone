@@ -684,6 +684,4 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     $scope.startWalkthrough = function () {
       startWalkthrough();
     }
-
-    checkGoalsTutorialDone();
 });
