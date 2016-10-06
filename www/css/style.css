@@ -237,7 +237,7 @@ img.center {
     width: 100%;
     vertical-align: middle; }
 .habit-list.item {
-  border-width: 1px !important;
+  border-width: 0.5px !important;
 }
 
 /* ngAnimate */
