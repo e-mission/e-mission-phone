@@ -38,7 +38,7 @@
            <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>
             <div  style="padding-left: 19%;">
 
-			 <ion-item style="background-color: transparent;" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
+			 <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
                 <div ng-class="listExpandClass()" ng-if="differentCommon(tripgj)" id="hidden-{{tripgj.data.id}}">
                     {{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}
                 </div>
@@ -68,12 +68,12 @@
                 <leaflet geojson="tripgj" id="$index" defaults="defaults" ng-class="leafletClass()"></leaflet>
                 <div style="padding: 0.5em;">
                     <div class="start-end-addresses-container">
-                        <div ng-class="listLocationClass()" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                        <div ng-class="listLocationClass()" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
                                 {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
                         </div>
-                        <div ng-class="listLocationClass()" href="#">
+                        <div ng-class="listLocationClass()" id="no-border" href="#">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
                                 {{tripgj.end_place.properties.displayName.split(',')[0]}}
                         </div>
