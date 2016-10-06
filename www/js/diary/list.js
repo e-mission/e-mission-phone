@@ -290,11 +290,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       {
         target: '.diary-entry',
         content: 'Click on the map to see more details about each trip.'
+      },
+      {
+        target: '.refresh-tiles',
+        content: 'Use this to fix the map tiles if they have not loaded properly.'
       }]
     };
 
     var startWalkthrough = function () {
       nzTour.start(tour);
+    };
+
+    $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
     };
 
     /*
