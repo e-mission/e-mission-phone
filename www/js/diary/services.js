@@ -36,6 +36,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
@@ -64,6 +65,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-speedometer",
+    "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
@@ -95,6 +97,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
@@ -344,7 +347,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
             case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
             case "TRANSPORT": return getColoredStyle(baseDict, 'red');
-            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red')
+            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
             default: return getColoredStyle(baseDict, 'black');
         }
       };
