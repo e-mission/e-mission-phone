@@ -264,6 +264,20 @@ img.center {
 }
 /* ngAnimate ends here */
 
+#leaderboard-stats{
+  padding-left: 20px;
+  padding-top: 10px;
+}
+
+.leaderboard-card.card{
+  background: #fff !important;
+  border-radius: 20px;
+  display: block;
+  margin: 10px;
+  position: relative;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
+}
+
 #costume-tab .button {
   border: none !important;
   color: #6e6e6e !important;

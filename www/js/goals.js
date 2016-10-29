@@ -20,6 +20,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var floatGold;
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
+    //var challengeMembersId = [];
 
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
@@ -40,6 +41,13 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         animation: 'slide-in-up'
     }).then(function(modal) {
         $scope.partyModal = modal;
+    });
+
+    $ionicModal.fromTemplateUrl('templates/goals/leaderboard-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.leaderboardModal = modal;
     });
 
     var joinGroupSuccess = function() {
@@ -122,6 +130,13 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         showDelete: false
     };*/
 
+    $scope.openLeaderboard = function() {
+        $scope.leaderboardModal.show();
+    };
+    $scope.closeLeaderboard = function() {
+        $scope.leaderboardModal.hide();
+    };
+
     $scope.openPartyModal = function() {
         $scope.partyModal.show();
     };
@@ -184,8 +199,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 $scope.profile = response.data;
             });
             console.log("Proxy Sucess");
-            userId = $scope.profile._id
-            $scope.exp = $scope.profile.stats.exp
+            userId = $scope.profile._id;
+            $scope.exp = $scope.profile.stats.exp;
             $scope.gold = Math.round($scope.profile.stats.gp);
             floatGold = $scope.profile.stats.gp;
             $scope.hp = Math.round($scope.profile.stats.hp);
@@ -222,6 +237,11 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.joinedChallenges = $scope.profile.challenges;
             getParty();
             getMembers();
+            allUsersForLeaderBoard();
+            /*if($scope.joinedChallenges.length > 0){
+                getUserChallenges();
+                getUserChallengeMembers();
+            }*/
             console.log($scope.profile);
             prepopulateMessage = {
                 message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
@@ -436,7 +456,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     };
 
-    $scope.party = {}
+    $scope.party = {};
 		$scope.createParty = function() {
         if (!angular.isUndefined($scope.party.name)) {
             var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups",
@@ -454,7 +474,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         } else {
             $ionicPopup.alert({"template": "Please specify a name"});
         }
-	}
+	};
 
     var questContent = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/content",
@@ -474,6 +494,143 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     };
 
+    var users = [];
+    //var allPartyList = [];
+    var allUsersForLeaderBoard = function(){
+        var callOpts = {'method': 'GET', 'method_url': "/api/v3/members/all",
+                    'method_args': null};
+        CommHelper.habiticaProxy(callOpts).then(function(response){
+            console.log("Sucessfully got all the users");
+            users = response.data;
+            users = roundExp(users);
+            sortForLeaderboard(users);
+            users = addRank(users);
+            console.log("Sucessfully sorted all the users");
+            var threeUsers = users.slice(0,3);
+            $scope.topThreeUsers = [];
+            $scope.topThreeUsers.push(threeUsers[1]);
+            $scope.topThreeUsers.push(threeUsers[0]);
+            $scope.topThreeUsers.push(threeUsers[2]);
+            $scope.usersUnderTopThree = users.slice(3);
+            //allPartyList = getPatyForAllUsers(users);
+            console.log($scope.usersUnderTopThree);
+            //console.log(allPartyList);
+        }, function(error){
+            console.log("Error getting all the users");
+            console.log(error);
+        });
+    };
+
+    /*var getPatyForAllUsers = function(users) {
+        var partys = [];
+        for (var i = 0; i < users.length; i++) {
+            if('_id' in users[i].party){
+                userParty = getPartyById(users[i].party._id);
+                partys.push(userParty);
+            } else {
+                var noPartyObj = {'name': 'Has not joined a Party'};
+                partys.push(noPartyObj);
+            }
+        }
+        return partys;
+    };
+
+    var getPartyById = function(id) {
+        var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/" + id,
+                    'method_args': null};
+        CommHelper.habiticaProxy(callOpts).then(function(response){
+            console.log("Sucessfully a user's party");
+            var partyObj = response.data;
+            return partyObj;
+        }, function(error){
+            console.log("Error when getting a user's party");
+        });
+    };*/
+
+    var getChallenges = function() {
+        var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/user', 
+                    'method_args': null};
+        $scope.challenges=[];
+        CommHelper.habiticaProxy(callOpts).then(function(response){
+            console.log("Got challenges");
+            $scope.challenges = response.data;
+            console.log(response.data);
+        }, function(error){
+            console.log("Error getting challenges");
+            console.log(error);
+        });
+    };
+
+    var roundExp = function(list){
+        for (var i = 0; i < list.length; i++) {
+           list[i].stats.exp = Math.round(list[i].stats.exp);
+        }
+        return list;
+    };
+
+    var sortForLeaderboard = function(list){
+        list.sort(function(a, b){
+            var c = b.stats.lvl - a.stats.lvl;
+            if (c !== 0)
+                return c;
+            return b.stats.exp - a.stats.exp;
+        });
+    };
+
+    var addRank = function(list){
+        for (var i = 0; i < list.length; i++) {
+           list[i].rank = i+1;
+        }
+        return list;
+    };
+
+    /*var getUserChallenges = function(){
+        for(var challenge in $scope.joinedChallenges){
+            var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/' + $scope.joinedChallenges[challenge], 
+                        'method_args': null};
+            CommHelper.habiticaProxy(callOpts).then(function(response){
+                console.log("Got user's challenges");
+                console.log(response.data);
+            }, function(error){
+                console.log("Error getting user's challenges");
+                console.log(error);
+            });
+        }
+    };
+
+    var getUserChallengeMembers = function() {
+        for(var challenge in $scope.joinedChallenges){
+                var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/' + $scope.joinedChallenges[challenge]+'/members?includeAllMembers=true',
+                            'method_args': null};
+                CommHelper.habiticaProxy(callOpts).then(function(response){
+                console.log("Got joined challenges' members");
+                var members = response.data;
+                members.forEach(function(user){
+                    challengeMembersId.push(user.id);
+                });
+                console.log(challengeMembersId);
+                getchallengeMemberProfile();
+            }, function(error){
+                console.log("Error getting joined challenges' member");
+                console.log(error);
+            });
+        }
+    };
+
+    var getchallengeMemberProfile = function() {
+        for(var memberId in challengeMembersId){
+            var callOpts = {'method': 'GET', 'method_url': '/api/v3/members/' + challengeMembersId[memberId],
+                            'method_args': null};
+                CommHelper.habiticaProxy(callOpts).then(function(response){
+                console.log("Got challenge members' profile");
+                console.log(response.data);
+            }, function(error){
+                console.log("Error getting challenge members' profile");
+                console.log(error);
+            });
+        }
+    };*/
+
     var getMembers = function() {
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+partyId+"/members?includeAllPublicFields=true",
                     'method_args': null};
@@ -492,7 +649,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     };
 
-    var bikeChallenge = function() {
+    /*var bikeChallenge = function() {
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/8a8134d6-066d-424d-8f3d-0b559c2c1e78",
                             'method_args': null};
 
@@ -536,7 +693,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         bikeChallenge();
         carpoolChallenge();
         publicTransChallenge();
-    };
+    };*/
 
     $scope.joinChallenge = function(challengeId) {
         var callOpts = {'method': 'POST', 'method_url': "/api/v3/challenges/"+challengeId+"/join",

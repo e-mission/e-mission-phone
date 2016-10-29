@@ -4,7 +4,7 @@
   <ion-nav-buttons side="right">
       <button ng-if="screen" class="button button-icon" ng-click="openModal()">
           <i class="icon ion-compose"></i>
-      </button>
+      </button-->
       <button ng-if="screen" class="button button-icon retrieve-pw" ng-click="showCreds()">
           <i class="icon ion-key"></i>
       </button>
@@ -98,6 +98,7 @@
             <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{gold}}</p>
             <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{silver}}</p>
             <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2px;">{{gem}}</p>
+            <div style="float: right;padding-right: 10%;" class="ion-ios-people" ng-click="openLeaderboard()"></div>
           </div>
           <div class="col" style="margin-left: 10%; float:left;">
             <div style="text-align:center; padding-top:6px">
