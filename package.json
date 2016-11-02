@@ -31,10 +31,6 @@
     "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
     {
-      "locator": "https://github.com/litehelpers/Cordova-sqlite-storage.git",
-      "id": "cordova-sqlite-storage"
-    },
-    {
       "locator": "https://github.com/e-mission/cordova-connection-settings.git",
       "id": "edu.berkeley.eecs.emission.cordova.settings"
     },
@@ -53,10 +49,6 @@
     {
       "locator": "https://github.com/e-mission/cordova-jwt-auth.git",
       "id": "edu.berkeley.eecs.emission.cordova.auth"
-    },
-    {
-      "locator": "https://github.com/e-mission/cordova-stats.git",
-      "id": "edu.berkeley.eecs.emission.cordova.clientstats"
     },
     {
       "locator": "https://github.com/e-mission/e-mission-data-collection.git",
