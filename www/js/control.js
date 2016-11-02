@@ -3,11 +3,12 @@
 angular.module('emission.main.control',['emission.services',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
-                                        'emission.main.metrics.factory'])
+                                        'emission.main.metrics.factory',
+                                        'angularLocalStorage'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, StartPrefs, ControlHelper, UpdateCheck, 
+               $rootScope, storage, StartPrefs, ControlHelper, UpdateCheck, 
                CalorieCal) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
@@ -187,6 +188,7 @@ angular.module('emission.main.control',['emission.services',
         $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
         .then(function(result) {
             if (result) { 
+                storage.clearAll();
                 window.cordova.plugins.BEMUserCache.clearAll()
                 .then(function(result) {
                     $scope.$apply(function() {
