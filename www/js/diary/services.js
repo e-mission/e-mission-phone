@@ -373,7 +373,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
       $ionicLoading.show({
         template: 'Reading from cache...'
       });
-      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day))
+      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
       .then(function (timelineDoc) {
          if (!window.cordova.plugins.BEMUserCache.isEmptyDoc(timelineDoc)) {
            var tripList = timelineDoc;

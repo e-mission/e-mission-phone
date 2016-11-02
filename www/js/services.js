@@ -175,7 +175,7 @@ angular.module('emission.services', [])
     };
 
     this.getConsentDocument = function() {
-      return window.cordova.plugins.BEMUserCache.getDocument("config/consent");
+      return window.cordova.plugins.BEMUserCache.getDocument("config/consent", false);
     };
 })
 

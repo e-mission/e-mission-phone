@@ -18,7 +18,7 @@ angular.module('emission.main.common.services', [])
     };
 
     commonGraph.updateCurrent = function() {
-      db.getDocument(selKey).then(function(entryList) {
+      db.getDocument(selKey, false).then(function(entryList) {
         try{
             var cmGraph = entryList;
             if (db.isEmptyDoc(cmGraph)) {
