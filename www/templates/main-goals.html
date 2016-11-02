@@ -2,16 +2,10 @@
   <ion-nav-buttons side="left">
    </ion-nav-buttons>
   <ion-nav-buttons side="right">
-      <button class="button button-icon" ng-click="openModal()">
-          <i class="icon ion-compose"></i>
-      </button>
-      <button class="button button-icon retrieve-pw" ng-click="showCreds()">
-          <i class="icon ion-key"></i>
-      </button>
-      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+      <button ng-if="screen" class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
      </ion-nav-buttons>
      <ion-nav-buttons side="left">
-      <button class="button button-icon" ng-click="refreshPage()">
+      <button ng-if="screen" class="button button-icon" ng-click="refreshPage()">
         <i class="icon ion-android-refresh"></i>
       </button>
      </ion-nav-buttons>
@@ -150,7 +144,7 @@
           </div-->
            <div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 18px;">
             Create a party
-            <label class="item item-input">
+            <label class="item item-input" id="no-border">
               <input type="text" placeholder="Party name" ng-model="party.name" style="text-align: center;">
             </label>
             <button class="button" ng-click="createParty()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
@@ -216,8 +210,28 @@
           </ion-scroll>
         </div>
       <div>
-      <ion-list id="habit-list" class="habit-list">
-        <ion-item id="goal-content" ng-repeat="goal in goals">
+      <div class="row" style="border-top-style: solid;border-top-color: #ddd;border-top-width: 0.5px;border-bottom-style: solid;border-bottom-color: #ddd;border-bottom-width: 0.5px;">
+        <a class="col col-33" style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="openModal()">
+          <i class="icon ion-compose" style="display: block;font-size: 20px;"></i>
+          <span style="font-size: 12px">
+            Add Goals
+          </span>
+        </a>
+        <a class="col col-33" style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="openLeaderboard()">
+          <i class="icon ion-podium" style="display: block;font-size: 20px;"></i>
+          <span style="font-size: 12px">
+            Leaderboard
+          </span>
+        </a>
+        <a class="col col-33 retrieve-pw" style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="showCreds()">
+          <i class="icon ion-key" style="display: block;font-size: 20px;"></i>
+          <sapn style="font-size: 12px">
+            Website Key
+          </sapn>
+        </a>
+      </div>
+      <ion-list class="habit-list">
+        <ion-item id="goal-content" class="habit-list-border" ng-repeat="goal in goals">
           <!--div class="row">
            <lable class="checkbox">
                <input type="checkbox" ng-click="completeGoal()">
@@ -265,11 +279,11 @@
     </div>
         <div ng-if="!screen">
         <h1 class="signup-title" style="text-align:center">Signup</h1>
-          <label class="item item-input">
-            <input type="text" placeholder="Username" ng-model="theUser.username">
+          <label class="item item-input" id="no-border">
+            <input type="text" placeholder="Username" ng-model="theUser.username" style="text-align:center">
           </label>
 
-        <button class="button button-positive button-full" ng-click="signup()">Submit</button>
+        <button class="button signup-button button-light-green" ng-click="signup()">Submit</button>
     </div>
 </ion-content>
 </ion-view>
