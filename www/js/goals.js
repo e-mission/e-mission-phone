@@ -457,7 +457,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     };
 
     $scope.party = {};
-		$scope.createParty = function() {
+        $scope.createParty = function() {
         if (!angular.isUndefined($scope.party.name)) {
             var callOpts = {'method': 'POST', 'method_url': "/api/v3/groups",
                             'method_args': {'type': 'party', 'privacy': 'private', 'name': $scope.party.name}}
@@ -474,7 +474,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         } else {
             $ionicPopup.alert({"template": "Please specify a name"});
         }
-	};
+    };
 
     var questContent = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/content",
@@ -501,7 +501,15 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                     'method_args': null};
         CommHelper.habiticaProxy(callOpts).then(function(response){
             console.log("Sucessfully got all the users");
-            users = response.data;
+            var allUsers = response.data;
+            var ignoreList = ['Superb Girl','Test-em-mri','Test_em-mr','Test_berkeley',
+                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1','Test'];
+            users = allUsers.filter(function(obj) {
+                return ignoreList.indexOf(obj.profile.name) === -1;
+            });
+            users = users.filter(function(obj){
+                return obj.profile.name.slice(0,14).toLowerCase() !== 'e-mission-test';
+            });
             users = roundExp(users);
             sortForLeaderboard(users);
             users = addRank(users);
@@ -513,7 +521,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.topThreeUsers.push(threeUsers[2]);
             $scope.usersUnderTopThree = users.slice(3);
             //allPartyList = getPatyForAllUsers(users);
-            console.log($scope.usersUnderTopThree);
+            console.log($scope.topThreeUsers);
             //console.log(allPartyList);
         }, function(error){
             console.log("Error getting all the users");
