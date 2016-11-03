@@ -4,12 +4,13 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
+                                        'emission.stats.clientstats',
                                         'angularLocalStorage'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, StartPrefs, ControlHelper, UpdateCheck, 
-               CalorieCal) {
+               $rootScope, storage, StartPrefs, ControlHelper, UpdateCheck,
+               CalorieCal, ClientStats) {
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
@@ -174,7 +175,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.showMap = function() {
         $state.go("root.main.map");
     }
-    $scope.getState = function() {       
+    $scope.getState = function() {
         ControlHelper.getState().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
@@ -187,7 +188,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.nukeUserCache = function() {
         $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
         .then(function(result) {
-            if (result) { 
+            if (result) {
                 storage.clearAll();
                 window.cordova.plugins.BEMUserCache.clearAll()
                 .then(function(result) {
@@ -255,6 +256,10 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.forceSync = function() {
+        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
+            function() {
+                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+            });
         ControlHelper.forceSync().then(function(response) {
             $ionicPopup.alert({template: 'success -> '+response});
         }, function(error) {

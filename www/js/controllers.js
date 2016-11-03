@@ -3,6 +3,7 @@
 angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.startprefs',
                                         'emission.splash.referral',
+                                        'emission.stats.clientstats',
                                         'customURLScheme'])
 
 .controller('RootCtrl', function($scope) {})
@@ -10,11 +11,12 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
-    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler) {
+    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats) {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   CustomURLScheme.onLaunch(function(event, url){
     console.log("GOT URL:"+url);
+
     var kvList = ReferralHandler.parseURL(url);
     // There are 3 types of users in total
     if (kvList.route == 'join') {
@@ -35,16 +37,22 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
       UpdateCheck.checkForUpdates();
       $rootScope.checkedForUpdates = true;
     } */
+    ClientStats.addReading(ClientStats.getStatKeys().STATE_CHANGED,
+      fromState.name + '-2-' + toState.name).then(function() {}, function() {});
   });
   $rootScope.$on('$stateChangeError', function(event, toState, toParams, fromState, fromParams, error){
     console.log("Error "+error+" while changing state from "+JSON.stringify(fromState)
       +" to "+JSON.stringify(toState));
+    ClientStats.addError(ClientStats.getStatKeys().STATE_CHANGED,
+      fromState.name + '-2-' + toState.name+ "_" + error).then(function() {}, function() {});
   });
   $rootScope.$on('$stateNotFound',
     function(event, unfoundState, fromState, fromParams){
         console.log("unfoundState.to = "+unfoundState.to); // "lazy.state"
         console.log("unfoundState.toParams = " + unfoundState.toParams); // {a:1, b:2}
         console.log("unfoundState.options = " + unfoundState.options); // {inherit:false} + default options
+    ClientStats.addError(ClientStats.getStatKeys().STATE_CHANGED,
+      fromState.name + '-2-' + unfoundState.name).then(function() {}, function() {});
   });
 
   var isInList = function(element, list) {
