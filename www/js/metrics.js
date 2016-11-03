@@ -376,6 +376,14 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return getMetricsResult;
    }
 
+   var isValidNumber = function(number) {
+     if (angular.isDefined(Number.isFinite)) {
+       return Number.isFinite(number);
+     } else {
+       return !isNaN(number);
+     }
+   }
+
    var getMetrics = function() {
       $ionicLoading.show({
         template: 'Loading...'
@@ -600,7 +608,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
        // TODO: Refactor this so that we can filter out bad values ahead of time
        // instead of having to work around it here
        var calorieCalculation = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100));
-       if (Number.isFinite(calorieCalculation)) {
+       if (isValidNumber(calorieCalculation)) {
           $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
           if(lastWeekCalories > twoWeeksAgoCalories){
             $scope.caloriesData.change = " increase over a week";
@@ -697,7 +705,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
-      if (Number.isFinite(calculation)) {
+      if (isValidNumber(calculation)) {
           if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
             $scope.carbonData.change = " increase over a week";
             $scope.carbonUp = true;
