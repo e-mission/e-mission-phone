@@ -20,7 +20,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       data.leafletObject.invalidateSize();
   });
 
-  StatusBar.styleDefault();
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
     // based on the time when the database finishes reading.
