@@ -22,7 +22,7 @@ angular.module('emission.main.common.services', [])
         try{
             var cmGraph = entryList;
             if (db.isEmptyDoc(cmGraph)) {
-                cmGraph = createEmpty();
+                cmGraph = commonGraph.createEmpty();
             }
         } catch(err) {
             window.Logger.log("Error "+err+" while parsing common trip data");
@@ -30,7 +30,7 @@ angular.module('emission.main.common.services', [])
             // there is no existing cached common trips, we create a blank
             // version so that other things don't crash
             if (angular.isUndefined(cmGraph)) {
-                cmGraph = createEmpty();
+                cmGraph = commonGraph.createEmpty();
             }
         }
         commonGraph.data.graph = cmGraph;
