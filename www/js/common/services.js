@@ -9,7 +9,7 @@ angular.module('emission.main.common.services', [])
 
     var db = window.cordova.plugins.BEMUserCache;
     var selKey = "common-trips";
-    
+
     commonGraph.createEmpty = function() {
         return { 'user_id': 'unknown',
                  'common_trips': [],
@@ -18,11 +18,11 @@ angular.module('emission.main.common.services', [])
     };
 
     commonGraph.updateCurrent = function() {
-      db.getDocument(selKey).then(function(entryList) {
+      db.getDocument(selKey, false).then(function(entryList) {
         try{
             var cmGraph = entryList;
             if (db.isEmptyDoc(cmGraph)) {
-                cmGraph = createEmpty();
+                cmGraph = commonGraph.createEmpty();
             }
         } catch(err) {
             window.Logger.log("Error "+err+" while parsing common trip data");
@@ -30,7 +30,7 @@ angular.module('emission.main.common.services', [])
             // there is no existing cached common trips, we create a blank
             // version so that other things don't crash
             if (angular.isUndefined(cmGraph)) {
-                cmGraph = createEmpty();
+                cmGraph = commonGraph.createEmpty();
             }
         }
         commonGraph.data.graph = cmGraph;
@@ -46,11 +46,21 @@ angular.module('emission.main.common.services', [])
      * Returns the common trip corresponding to the specified tripId
      */
     commonGraph.trip2Common = function(tripId) {
-        return commonGraph.data.trip2CommonMap[tripId];
+        if (angular.isDefined(commonGraph.data)) {
+          return commonGraph.data.trip2CommonMap[tripId];
+        } else {
+          // return undefined because that is what the invoking locations expect
+          return;
+        }
     };
 
     commonGraph.place2Common = function(placeId) {
-        return commonGraph.data.place2CommonMap[placeId];
+        if (angular.isDefined(commonGraph.data)) {
+          return commonGraph.data.place2CommonMap[placeId];
+        } else {
+          // return undefined because that is what the invoking locations expect
+          return;
+        }
     };
 
     commonGraph.time_fns = {};
@@ -60,7 +70,7 @@ angular.module('emission.main.common.services', [])
         return localTime.hour;
       }
       var hourMap = binEntries(timeArray, binFn);
-      return hourMap;   
+      return hourMap;
     }
     commonGraph.time_fns.getMostFrequentHour = function(timeArray) {
       var binFn = function(localTime) {
@@ -162,7 +172,7 @@ angular.module('emission.main.common.services', [])
             obj.start_displayName = name;
             break;
         }
-        
+
       };
       var responseListener1 = function(data) {
         var address = data["address"];
@@ -183,11 +193,11 @@ angular.module('emission.main.common.services', [])
         }
         console.log("got response, setting display name to "+name);
         obj.end_displayName = name;
-        
+
       };
       switch (mode) {
         case 'place':
-          var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1] 
+          var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1]
           + "&lon=" + obj.geometry.coordinates[0];
           $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
@@ -200,7 +210,7 @@ angular.module('emission.main.common.services', [])
         case 'cplace':
         var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
         + "&lon=" + obj.location.coordinates[0];
-          
+
           $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
               +" data = "+JSON.stringify(response.data));
@@ -229,7 +239,7 @@ angular.module('emission.main.common.services', [])
             responseListener1(response.data);
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
-          });       
+          });
           break;
       }
     };

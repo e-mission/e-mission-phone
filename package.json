@@ -28,12 +28,7 @@
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
-    "cordova-plugin-statusbar",
     "ionic-plugin-keyboard",
-    {
-      "locator": "https://github.com/litehelpers/Cordova-sqlite-storage.git",
-      "id": "cordova-sqlite-storage"
-    },
     {
       "locator": "https://github.com/e-mission/cordova-connection-settings.git",
       "id": "edu.berkeley.eecs.emission.cordova.settings"
@@ -55,10 +50,6 @@
       "id": "edu.berkeley.eecs.emission.cordova.auth"
     },
     {
-      "locator": "https://github.com/e-mission/cordova-stats.git",
-      "id": "edu.berkeley.eecs.emission.cordova.clientstats"
-    },
-    {
       "locator": "https://github.com/e-mission/e-mission-data-collection.git",
       "id": "edu.berkeley.eecs.emission.cordova.datacollection"
     },
@@ -71,10 +62,6 @@
     {
       "locator": "https://github.com/e-mission/cordova-server-sync.git",
       "id": "edu.berkeley.eecs.emission.cordova.serversync"
-    },
-    {
-      "locator": "https://github.com/apla/me.apla.cordova.app-preferences",
-      "id": "cordova-plugin-app-preferences"
     },
     "ionic-plugin-deploy",
     "cordova-plugin-crosswalk-webview",
