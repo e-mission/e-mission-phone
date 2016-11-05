@@ -46,7 +46,8 @@ angular.module('emission.main.common.services', [])
      * Returns the common trip corresponding to the specified tripId
      */
     commonGraph.trip2Common = function(tripId) {
-        if (angular.isDefined(commonGraph.data)) {
+        if (angular.isDefined(commonGraph.data) && 
+            angular.isDefined(commonGraph.data.trip2CommonMap)) {
           return commonGraph.data.trip2CommonMap[tripId];
         } else {
           // return undefined because that is what the invoking locations expect
