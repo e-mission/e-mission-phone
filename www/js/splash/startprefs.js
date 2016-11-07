@@ -86,6 +86,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var readConsentState = function() {
       /*
        * Read from local storage and move on so that we don't depend on native code.
+       * Native code will be checked once the plugins are ready
        */
       if (angular.isDefined($rootScope.req_consent) &&
           angular.isDefined($rootScope.curr_consented)) {
@@ -103,10 +104,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                     startprefs.DATA_COLLECTION_CONSENTED_PROTOCOL);
           });
       }
-      /*
-       * Read from local storage and move on so that we don't depend on native code.
-       */
-      
     }
 
     /*
@@ -152,7 +149,12 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.checkNativeConsent = function() {
         startprefs.getConsentDocument().then(function(resultDoc) {
             if (resultDoc == null) {
-                // TODO: Need to figure out what to do here.
+                readConsentState()
+                    .then($rootScope.isConsented)
+                    .then(writeConsentToNative)
+                    .then(function() {
+                        $ionicPopup.alert({template: "Local consent found, native consent missing, writing consent to native"});
+                    });
             }
         });
     }
