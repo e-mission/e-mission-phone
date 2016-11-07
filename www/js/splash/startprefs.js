@@ -75,15 +75,18 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         alert("why is curr_consented null when intro is done?");
       }
       if ($rootScope.curr_consented.approval_date != $rootScope.req_consent.approval_date) {
-        console.log("Not consented, need to show consent");
+        console.log("Not consented in local storage, need to show consent");
         return false;
       } else {
-        console.log("Consented, no need to show consent");
+        console.log("Consented in local storage, no need to show consent");
         return true;
       }
     }
 
     var readConsentState = function() {
+      /*
+       * Read from local storage and move on so that we don't depend on native code.
+       */
       if (angular.isDefined($rootScope.req_consent) &&
           angular.isDefined($rootScope.curr_consented)) {
           // consent state is all populated
@@ -98,8 +101,12 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                   logger.log("required consent version = " + JSON.stringify($rootScope.req_consent));
                   $rootScope.curr_consented = storage.get(
                     startprefs.DATA_COLLECTION_CONSENTED_PROTOCOL);
-              });
+          });
       }
+      /*
+       * Read from local storage and move on so that we don't depend on native code.
+       */
+      
     }
 
     /*
@@ -130,6 +137,26 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           });
       }
     };
+
+    startprefs.getConsentDocument = function() {
+      return $window.cordova.plugins.BEMUserCache.getDocument("config/consent", false)
+            .then(function(resultDoc) {
+                if ($window.cordova.plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
+                    return null;
+                } else {
+                    return resultDoc;
+                }
+            });
+    };
+
+    startprefs.checkNativeConsent = function() {
+        startprefs.getConsentDocument().then(function(resultDoc) {
+            if (resultDoc == null) {
+                // TODO: Need to figure out what to do here.
+            }
+        });
+    }
+
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {

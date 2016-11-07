@@ -173,10 +173,6 @@ angular.module('emission.services', [])
     this.forceSync = function() {
       return window.cordova.plugins.BEMServerSync.forceSync();
     };
-
-    this.getConsentDocument = function() {
-      return window.cordova.plugins.BEMUserCache.getDocument("config/consent", false);
-    };
 })
 
 // common configuration methods across all screens
