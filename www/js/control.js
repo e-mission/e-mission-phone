@@ -185,11 +185,10 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.nukeUserCache = function() {
+    var clearUsercache = function() {
         $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
         .then(function(result) {
             if (result) {
-                storage.clearAll();
                 window.cordova.plugins.BEMUserCache.clearAll()
                 .then(function(result) {
                     $scope.$apply(function() {
@@ -200,6 +199,30 @@ angular.module('emission.main.control',['emission.services',
                         $ionicPopup.alert({template: 'error -> '+error});
                     });
                });
+            }
+        });
+    }
+
+    var clearBoth = function() {
+        storage.clearAll();
+        clearUsercache();
+    }
+
+    $scope.nukeUserCache = function() {
+        var nukeChoiceActions = [{text: "UI state only",
+                                  action: storage.clearAll},
+                                 {text: 'Native cache only',
+                                  action: clearUsercache},
+                                 {text: 'Everything',
+                                  action: clearBoth}];
+
+        $ionicActionSheet.show({
+            titleText: "Clear data",
+            cancelText: "Cancel",
+            buttons: nukeChoiceActions,
+            buttonClicked: function(index, button) {
+                button.action();
+                return true;
             }
         });
     }
@@ -449,17 +472,47 @@ angular.module('emission.main.control',['emission.services',
     $scope.checkUpdates = function() {
       UpdateCheck.checkForUpdates();
     }
-    $scope.checkConsent = function() {
-        ControlHelper.getConsentDocument().then(function(resultDoc){
-            if (window.cordova.plugins.BEMUserCache.isEmptyDoc(resultDoc)) {
-                $ionicPopup.alert({template: "No consent for data collection, please log out and log in again"});
+
+    var handleNoConsent = function(resultDoc) {
+        $ionicPopup.confirm({template: "Consent for data collection not found, consent now?"})
+        .then(function(res){
+            if (res) {
+               $state.go("root.reconsent");
             } else {
-                $ionicPopup.alert({template: JSON.stringify(resultDoc)});
+               $ionicPopup.alert({
+                template: "OK! Note that you won't get any personalized stats until you do!"});
+            }
+        });
+    }
+
+    var handleConsent = function(resultDoc) {
+        $scope.consentDoc = resultDoc;
+        $ionicPopup.confirm({
+            template: 'Consented to protocol {{consentDoc.protocol_id}}, {{consentDoc.approval_date}}',
+            scope: $scope,
+            title: "Consent found!",
+            buttons: [ 
+            // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
+            //  type: 'button-calm'},
+            {text: "<b>OK</b>",
+             type: 'button-positive'} ]
+        }).finally(function(res) {
+            $scope.consentDoc = null;
+        });
+    }
+
+    $scope.checkConsent = function() {
+        StartPrefs.getConsentDocument().then(function(resultDoc){
+            if (resultDoc == null) {
+                handleNoConsent(resultDoc);
+            } else {
+                handleConsent(resultDoc);
             }
         }, function(error) {
             $ionicPopup.alert({template: error});
         });
     }
+
     var prepopulateMessage = {
       message: 'Join me in making transportation greener and healthier \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
       subject: 'Emission - UC Berkeley Research Project', // fi. for email
