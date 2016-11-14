@@ -236,7 +236,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             }
             $scope.joinedChallenges = $scope.profile.challenges;
             getParty();
-            getMembers();
             allUsersForLeaderBoard();
             /*if($scope.joinedChallenges.length > 0){
                 getUserChallenges();
@@ -495,7 +494,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     };
 
     var users = [];
-    //var allPartyList = [];
+    var partyList = [];
     var allUsersForLeaderBoard = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/members/all",
                     'method_args': null};
@@ -503,8 +502,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             console.log("Sucessfully got all the users");
             var allUsers = response.data;
             var ignoreList = ['Superb Girl','Test-em-mri','Test_em-mr','Test_berkeley',
-                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1',
-                        'Test', "Em Jr.#4", "Em jr#3", "Em_MR_2", ];
+                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1','Test'];
             users = allUsers.filter(function(obj) {
                 return ignoreList.indexOf(obj.profile.name) === -1;
             });
@@ -521,40 +519,74 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.topThreeUsers.push(threeUsers[0]);
             $scope.topThreeUsers.push(threeUsers[2]);
             $scope.usersUnderTopThree = users.slice(3);
-            //allPartyList = getPatyForAllUsers(users);
             console.log($scope.topThreeUsers);
-            //console.log(allPartyList);
+            getPartyForAllUsers(users);
+            setRank(partyList);
         }, function(error){
             console.log("Error getting all the users");
             console.log(error);
         });
     };
 
-    /*var getPatyForAllUsers = function(users) {
-        var partys = [];
+    var getPartyForAllUsers = function(users) {
+        partyList = [];
         for (var i = 0; i < users.length; i++) {
+            var partyInList = false;
             if('_id' in users[i].party){
-                userParty = getPartyById(users[i].party._id);
-                partys.push(userParty);
-            } else {
-                var noPartyObj = {'name': 'Has not joined a Party'};
-                partys.push(noPartyObj);
+                if(partyList.length === 0){
+                    var party = {'_id' : users[i].party._id, 'members': [users[i]], 'partyObj': {}, 'stats':{}};
+                    getPartyById(users[i].party._id, 0);
+                    partyList.push(party);
+                } else {
+                    for (var j = 0; j < partyList.length; j++) {
+                        if(partyList[j]._id === users[i].party._id){
+                            partyList[j].members.push(users[i]);
+                            partyInList = true;
+                        }
+                    }
+                    if(!partyInList) {
+                        party = {'_id' : users[i].party._id, 'members': [users[i]], 'partyObj': {}, 'stats':{}};
+                        getPartyById(users[i].party._id, j);
+                        partyList.push(party);
+                    }
+                }
             }
         }
-        return partys;
     };
 
-    var getPartyById = function(id) {
-        var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/" + id,
+    var getPartyById = function(id, j) {
+        var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+id,
                     'method_args': null};
         CommHelper.habiticaProxy(callOpts).then(function(response){
-            console.log("Sucessfully a user's party");
-            var partyObj = response.data;
-            return partyObj;
+            console.log("Sucessfully got a user's party");
+            partyList[j].partyObj = response.data;
         }, function(error){
             console.log("Error when getting a user's party");
         });
-    };*/
+    };
+
+    var setRank = function(partyList) {
+        partyList.forEach(function(party){
+            var totalLvl = 0;
+            var totalExp = 0;
+            var memberCount = 0; //Can't use member count of the partyObj because of invisible member count bug
+            party.members.forEach(function(member) {
+                totalLvl += member.stats.lvl;
+                totalExp += member.stats.exp;
+                memberCount++;
+            });
+            party.stats.lvl = totalLvl;
+            party.stats.exp = totalExp;
+            party.memberCount = memberCount;
+        });
+        partyList = partyList.filter(function(obj){
+            return obj.memberCount > 1;
+        });
+        sortForLeaderboard(partyList);
+        partyList = addRank(partyList);
+        $scope.partys = partyList;
+        console.log(partyList);
+    };
 
     var getChallenges = function() {
         var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/user', 
@@ -640,7 +672,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         }
     };*/
 
-    var getMembers = function() {
+    /*var getMembers = function() {
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+partyId+"/members?includeAllPublicFields=true",
                     'method_args': null};
 
@@ -656,7 +688,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             console.log("Error when fetching members");
             console.log(error);
         });
-    };
+    };*/
 
     /*var bikeChallenge = function() {
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/8a8134d6-066d-424d-8f3d-0b559c2c1e78",
