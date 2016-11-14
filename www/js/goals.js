@@ -503,7 +503,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             console.log("Sucessfully got all the users");
             var allUsers = response.data;
             var ignoreList = ['Superb Girl','Test-em-mri','Test_em-mr','Test_berkeley',
-                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1','Test'];
+                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1','Test', 'Test100'];
             users = allUsers.filter(function(obj) {
                 return ignoreList.indexOf(obj.profile.name) === -1;
             });
