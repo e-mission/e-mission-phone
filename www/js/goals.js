@@ -129,7 +129,22 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
-
+    $scope.toBrowser = function() {
+        var settings = {
+                auth: {
+                    apiId: "80b3b5fb-679a-42e1-ac7b-a5c44721c636",
+                    apiToken: "6d883508-169b-410b-91b3-e96724af3d98"
+                }
+            };
+        
+        $scope.browserModal.show();
+        $('#iframe')[0].contentWindow.localStorage.setItem("habit-mobile-settings", JSON.stringify(settings));
+        $('#iframe').css('width', $(document)[0].width);
+        var to = function() {
+            $("#iframe").attr( 'src', function ( i, val ) { return "https://em-game.eecs.berkeley.edu/#/tasks"; });
+        }
+        setTimeout(to, 1000);
+    };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
     };
