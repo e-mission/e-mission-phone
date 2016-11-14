@@ -3,7 +3,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.services', 'nvd3'])
 
-.controller("DiaryDetailCtrl", function($scope, $stateParams,
+.controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
+                                        leafletData, leafletMapEvents,
                                         Timeline, DiaryHelper,Config) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
@@ -11,6 +12,74 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
     defaults : Config.getMapTiles()
+  });
+
+  /*
+  var mapEvents = leafletMapEvents.getAvailableMapEvents();
+  for (var k in mapEvents) {
+    var eventName = 'leafletDirectiveMap.detail.' + mapEvents[k];
+    $scope.$on(eventName, function(event, data){
+        console.log("in mapEvents, event = "+JSON.stringify(event.name)+
+              " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+              " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+        $scope.eventDetected = event.name;
+    });
+  }
+
+  leafletData.getMap('detail').then(function(map) {
+    map.on('click', function(ev) {
+      alert("click" + ev.latlng); // ev is an event object (MouseEvent in this case)
+    });
+  });
+
+  leafletData.getMap('detail').then(function(map) {
+    map.on('touch', function(ev) {
+      alert("touch" + ev.latlng); // ev is an event object (MouseEvent in this case)
+    });
+  });
+  */
+
+  var addSafeEntry = function(latlng, ts, marker, event, map) {
+    // marker.setStyle({color: 'green'});
+    addEntry("manual/incident", "green", latlng, ts, 0, marker)
+  };
+
+  var addSuckEntry = function(latlng, ts, marker, event, map) {
+    addEntry("manual/incident", "red", latlng, ts, 100, marker)
+  };
+
+  var addEntry = function(key, newcolor, latlng, ts, stressLevel, marker) {
+    marker.setStyle({color: newcolor});
+    var value = {
+        loc: marker.toGeoJSON(),
+        ts: ts,
+        stress: stressLevel
+    }
+    $window.cordova.plugins.BEMUserCache.putMessage(key, value)
+  }
+
+  var cancelEntry = function(latlng, ts, marker, event, map) {
+    map.removeLayer(marker);
+  }
+
+  $scope.$on('leafletDirectiveMap.detail.mouseup', function(event, data) {
+      console.log("diary/detail received mouseup event, showing stress popup at "+data.leafletEvent.latlng);
+      var safe_suck_cancel_actions = [{text: "Safe",
+                                       action: addSafeEntry},
+                                      {text: "Suck",
+                                       action: addSuckEntry},
+                                      {text: "Cancel",
+                                       action: cancelEntry}]
+      var latlng = data.leafletEvent.latlng;
+      var ts = 0;
+      var marker = L.circleMarker(latlng).addTo(data.leafletObject);
+      $ionicActionSheet.show({titleText: latlng + " at " + ts,
+            buttons: safe_suck_cancel_actions,
+            buttonClicked: function(index, button) {
+                button.action(latlng, ts, marker, data.leafletEvent, data.leafletObject);
+                return true;
+            }
+      });
   });
 
   $scope.$on('leafletDirectiveMap.detail.resize', function(event, data) {

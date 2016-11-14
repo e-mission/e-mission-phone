@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services', 'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
+               'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
 
 .controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http, leafletData, Config, $window, nzTour, storage) {
   $scope.mapCtrl = {};
