@@ -495,6 +495,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     var users = [];
     var partyList = [];
+    $scope.userParty = [];
     var allUsersForLeaderBoard = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/members/all",
                     'method_args': null};
@@ -578,6 +579,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             party.stats.lvl = totalLvl;
             party.stats.exp = totalExp;
             party.memberCount = memberCount;
+            if(party._id === $scope.profile.party._id){
+                $scope.userParty = addRank(party.members);
+                console.log($scope.userParty);
+            }
         });
         partyList = partyList.filter(function(obj){
             return obj.memberCount > 1;
