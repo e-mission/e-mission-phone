@@ -630,6 +630,27 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         return list;
     };
 
+    $scope.uictrl = {
+      showIndividual: true,
+      showGroup: false,
+      showVis: true,
+    };
+    //Using metrics.js chart and summary button switch for individual and group
+    $scope.groupButtonClass = function() {
+      return $scope.uictrl.showGroup? "metric-chart-button-active hvcenter" : "metric-chart-button hvcenter";
+    };
+    $scope.individualButtonClass = function() {
+      return $scope.uictrl.showIndividual? "metric-summary-button-active hvcenter" : "metric-summary-button hvcenter";
+    };
+    $scope.showGroup = function() {
+      $scope.uictrl.showIndividual = false;
+      $scope.uictrl.showGroup = true;
+    };
+    $scope.showIndividual = function() {
+      $scope.uictrl.showIndividual = true;
+      $scope.uictrl.showGroup = false;
+    };
+
     /*var getUserChallenges = function(){
         for(var challenge in $scope.joinedChallenges){
             var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/' + $scope.joinedChallenges[challenge], 
