@@ -3,8 +3,15 @@
       <button side="left" class="button" ng-click="closeLeaderboard()">Close</button>
       <h1 class = "title">Leaderboard</h1>
    </ion-header-bar>
-   <ion-content>
-   	  <div class="row" style="background-color: #ededed; margin-bottom: 0px !important; padding-left: 3%;">
+   <ion-content style="background-color: #ededed;">
+     <div style="height: 40px; width: 100%; padding: 10px; background-color: #ededed;" ng-if="uictrl.showVis"> 
+        <div class="metric-half">
+          <div ng-class="groupButtonClass()" ng-click="showGroup()">Group</div>
+          <div ng-class="individualButtonClass()" ng-click="showIndividual()">Individual</div>
+        </div>
+      </div>
+      <div ng-if="uictrl.showIndividual">
+      <div class="row" style="background-color: #ededed; margin-bottom: 0px !important; padding-left: 3%;">
         <div ng-repeat="user in topThreeUsers" 
            class="col" style="padding-top: 0px !important; height: 200px !important;">
           <figure ng-if="user.rank != 1" class="herobox background_{{user.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; user.items.currentPet), hasMount: (true &amp;&amp; user.items.currentMount), noBackgroundImage: !user.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==user._id}" style="top: -20px !important; left: 0px !important; width: 0px !important;">
@@ -39,6 +46,10 @@
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.shield : user.items.gear.equipped.shield"></span>
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.weapon : user.items.gear.equipped.weapon"></span>
               </span>
+              <!-- Mount Head-->
+              <span ng-if="user.items.currentMount" class="current-mount Mount_Head_{{user.items.currentMount}}"></span>
+              <!-- Resting-->
+              <span ng-class="{zzz:user.preferences.sleep}"></span>
             </div>
           </figure>
           <figure ng-if="user.rank == 1" class="herobox background_{{user.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; user.items.currentPet), hasMount: (true &amp;&amp; user.items.currentMount), noBackgroundImage: !user.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==user._id}" style="top: 10px !important; left: 0px !important; width: 0px !important;">
@@ -73,25 +84,29 @@
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.shield : user.items.gear.equipped.shield"></span>
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.weapon : user.items.gear.equipped.weapon"></span>
               </span>
+              <!-- Mount Head-->
+              <span ng-if="user.items.currentMount" class="current-mount Mount_Head_{{user.items.currentMount}}"></span>
+              <!-- Resting-->
+              <span ng-class="{zzz:user.preferences.sleep}"></span>
             </div>
-          </figure>      	
+          </figure>       
           <div ng-if="user.rank != 1" style="margin-top: -45px;color: #505050;text-align: center;">
-	        <p style="font-size: 30px;font-family: monospace;font-weight: 600;">{{user.rank}}</p>
-	        <p><b>{{user.profile.name}}</b></p>
-	        <p>Level: {{user.stats.lvl}}</p>
-	    </div>
-	    <div ng-if="user.rank == 1" style="margin-top: -15px;color: #505050;text-align: center;">
-	        <p style="font-size: 30px;font-family: monospace;font-weight: 600;">{{user.rank}}</p>
-	        <p><b>{{user.profile.name}}</b></p>
-	        <p>Level: {{user.stats.lvl}}</p>
-	    </div>
+          <p style="font-size: 30px;font-family: monospace;font-weight: 600;">{{user.rank}}</p>
+          <p><b>{{user.profile.name}}</b></p>
+          <p>Level: {{user.stats.lvl}}</p>
+      </div>
+      <div ng-if="user.rank == 1" style="margin-top: -15px;color: #505050;text-align: center;">
+          <p style="font-size: 30px;font-family: monospace;font-weight: 600;">{{user.rank}}</p>
+          <p><b>{{user.profile.name}}</b></p>
+          <p>Level: {{user.stats.lvl}}</p>
+      </div>
         </div>
       </div>
       <div class="row" style="position: fixed;top: 100px;">
-      	<div ng-repeat="user in topThreeUsers" class="col width-33">
-		</div>
-	  </div>
-   	  <div class="list" style="background-color: #ededed;">
+        <div ng-repeat="user in topThreeUsers" class="col width-33">
+        </div>
+      </div>
+      <div class="list" style="background-color: #ededed;">
         <div ng-repeat="user in usersUnderTopThree" 
            class="card item-thumbnail-left-avatar leaderboard-card" id="avatar" style="padding-top: 10px !important;height: 117px !important;">
           <figure class="herobox background_{{user.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; user.items.currentPet), hasMount: (true &amp;&amp; user.items.currentMount), noBackgroundImage: !user.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==user._id}" style="top: -10px !important; left: 0px !important;width: 0px;">
@@ -126,6 +141,8 @@
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.shield : user.items.gear.equipped.shield"></span>
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.weapon : user.items.gear.equipped.weapon"></span>
               </span>
+              <!-- Mount Head-->
+              <span ng-if="user.items.currentMount" class="current-mount Mount_Head_{{user.items.currentMount}}"></span>
               <!-- Resting-->
               <span ng-class="{zzz:user.preferences.sleep}"></span>
               <!-- Pet-->
@@ -133,13 +150,31 @@
             </div>
           </figure>
           <div id="leaderboard-stats" style="color: #6e6e6e;">
-	          <p><b>{{user.profile.name}}</b></p>
-	          <p>Level: {{user.stats.lvl}}</p>
-	          <p>Level exp: {{user.stats.exp}}</p>
-	          <p style="font-size: 30px;font-family: monospace;font-weight: 600;float: right;padding-right: 10px;">{{user.rank}}</p>
-	      </div>
+            <p><b>{{user.profile.name}}</b></p>
+            <p>Level: {{user.stats.lvl}}</p>
+            <p>Level exp: {{user.stats.exp}}</p>
+            <p style="font-size: 30px;font-family: monospace;font-weight: 600;float: right;padding-right: 10px;">{{user.rank}}</p>
         </div>
-
+        </div>
       </div>
+    </div>
+    <div ng-if="uictrl.showGroup">
+      <div class="list" style="background-color: #ededed;">
+        <div ng-repeat="party in partys" 
+           class="card leaderboard-card" id="avatar" style="padding-top: 10px !important;height: 85px !important;">
+          <div id="group-leaderboard" style="color: #6e6e6e;">
+            <p><b>{{party.partyObj.name}}</b></p>
+            <div>
+              <p class="group-leaderboard-left-stats">Leader: {{party.partyObj.leader.profile.name}}</p>
+            </div>
+            <div>
+              <p class="group-leaderboard-left-stats">Level: {{party.stats.lvl}}</p>
+              <p class="group-leaderboard-right-stats">Members: {{party.memberCount}}</p>
+            </div>
+            <p style="font-size: 30px;font-family: monospace;font-weight: 600;float: right;padding-right: 20px;margin-top: -30px;">{{party.rank}}</p>
+          </div>
+        </div>
+      </div>
+    </div>
    </ion-content>
 </ion-modal-view>
