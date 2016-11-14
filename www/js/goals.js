@@ -43,11 +43,19 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.partyModal = modal;
     });
 
+<<<<<<< HEAD
     $ionicModal.fromTemplateUrl('templates/goals/leaderboard-modal.html', {
         scope: $scope,
         animation: 'slide-in-up'
     }).then(function(modal) {
         $scope.leaderboardModal = modal;
+=======
+    $ionicModal.fromTemplateUrl('templates/goals/browser.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.browserModal = modal;
+>>>>>>> navi-browser
     });
 
     var joinGroupSuccess = function() {
@@ -137,6 +145,45 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.leaderboardModal.hide();
     };
 
+    $scope.toBrowser = function() {
+        // var STORAGE_SETTINGS_ID = "habit-mobile-settings";
+        // var settings = {};
+        // try {
+        //     settings = JSON.parse(localStorage.getItem(STORAGE_SETTINGS_ID));
+        // } catch (e) {
+        //     settings = {
+        //         auth: {
+        //             apiId: "80b3b5fb-679a-42e1-ac7b-a5c44721c636",
+        //             apiToken: "6d883508-169b-410b-91b3-e96724af3d98"
+        //         }
+        //     };
+        //     localStorage.setItem(STORAGE_SETTINGS_ID, JSON.stringify(settings));
+        //     settings = JSON.parse(localStorage.getItem(STORAGE_SETTINGS_ID));
+        // }
+        // if (settings && settings.auth && settings.auth.apiId && settings.auth.apiToken) {
+        //     $httpProvider.defaults.headers.common['x-api-user'] = settings.auth.apiId;
+        //     $httpProvider.defaults.headers.common['x-api-key'] = settings.auth.apiToken;
+        // }
+        var settings = {
+                auth: {
+                    apiId: "80b3b5fb-679a-42e1-ac7b-a5c44721c636",
+                    apiToken: "6d883508-169b-410b-91b3-e96724af3d98"
+                }
+            };
+        
+        $scope.browserModal.show();
+        $('#iframe')[0].contentWindow.localStorage.setItem("habit-mobile-settings", JSON.stringify(settings));
+        $('#iframe').css('width', $(document)[0].width);
+        var to = function() {
+            $("#iframe").attr( 'src', function ( i, val ) { return "https://em-game.eecs.berkeley.edu/#/tasks"; });
+        }
+        setTimeout(to, 1000);
+            
+         
+    };
+    $scope.closeBrowser = function() {
+        $scope.browserModal.hide();
+    };
     $scope.openPartyModal = function() {
         $scope.partyModal.show();
     };
