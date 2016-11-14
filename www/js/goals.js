@@ -43,19 +43,16 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.partyModal = modal;
     });
 
-<<<<<<< HEAD
     $ionicModal.fromTemplateUrl('templates/goals/leaderboard-modal.html', {
         scope: $scope,
         animation: 'slide-in-up'
     }).then(function(modal) {
         $scope.leaderboardModal = modal;
-=======
     $ionicModal.fromTemplateUrl('templates/goals/browser.html', {
         scope: $scope,
         animation: 'slide-in-up'
     }).then(function(modal) {
         $scope.browserModal = modal;
->>>>>>> navi-browser
     });
 
     var joinGroupSuccess = function() {
