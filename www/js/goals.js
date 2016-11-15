@@ -503,7 +503,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             console.log("Sucessfully got all the users");
             var allUsers = response.data;
             var ignoreList = ['Superb Girl','Test-em-mri','Test_em-mr','Test_berkeley',
-                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1','Test', 'Test100'];
+                        'Abcdef','admin','Ucb.sdb.android.3','Ucb.sdb.android.1','Test', 'Test100',
+                        "Em Jr. #4", "Em jr#3", "Em_MR_2", 'MpoOR', 'QH9Ht', 'ZLsYA', 'Fe5Be', "UHJR8"];
             users = allUsers.filter(function(obj) {
                 return ignoreList.indexOf(obj.profile.name) === -1;
             });
