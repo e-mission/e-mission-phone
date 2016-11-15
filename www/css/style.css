@@ -264,6 +264,20 @@ img.center {
 }
 /* ngAnimate ends here */
 
+#group-leaderboard{
+  padding-left: 20px
+}
+
+.group-leaderboard-left-stats{
+  display: inline;
+}
+
+.group-leaderboard-right-stats{
+  display: inline;
+  float: right;
+  padding-right: 100px;
+}
+
 #leaderboard-stats{
   padding-left: 20px;
   padding-top: 10px;
@@ -291,6 +305,15 @@ img.center {
 }
 #party.active {
   color: #01D0A7 !important;
+}
+#add-goal:active {
+  color: #ededed !important;
+}
+#leaderboard:active {
+  color: #ededed !important;
+}
+#webkey:active {
+  color: #ededed !important;
 }
 
 #goal-content .item-content {
@@ -605,14 +628,6 @@ h4.dashboard-headers{
   width: 50%;
   float:left;
   border-radius: 0;
-}
-
-#challenge.active {
-  color: #2bb096 !important;
-}
-
-#party.active {
-  color: #2bb096 !important;
 }
 
 #goal-content .item-content {
