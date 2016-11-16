@@ -1,11 +1,12 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet',
-                                      'ionic-datepicker',
-                                      'emission.services', 'nvd3'])
+                                      'ionic-datepicker', 'nvd3',
+                                      'emission.services', 'emission.plugin.logger'])
 
 .controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
-                                        leafletData, leafletMapEvents,
+                                        leafletData, leafletMapEvents, Logger,
                                         Timeline, DiaryHelper,Config) {
+  var MULTI_PASS_THRESHOLD = 90;
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -39,6 +40,95 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   });
   */
 
+  /*
+   * Returns objects of the form: {
+   * gj: geojson representation,
+   * latlng: latlng representation,
+   * ts: timestamp
+   * }
+   */
+
+  var getSectionPoints = function(section) {
+    var mappedPoints = section.geometry.coordinates.map(function(currCoords, index) {
+      var currMappedPoint = {gj: currCoords,
+        latlng: L.GeoJSON.coordsToLatLng(currCoords),
+        ts: section.properties.times[index]}
+      if (index % 100 == 0) {
+        Logger.log("Mapped point "+ JSON.stringify(currCoords)+" to "+currMappedPoint);
+      }
+      return currMappedPoint;
+    });
+    return mappedPoints;
+  }
+
+  var getAllPoints = function() {
+    var allPoints = [];
+    $scope.tripgj.sections.forEach(function(s) {
+        Array.prototype.push.apply(allPoints, getSectionPoints(s));
+    });
+    return allPoints;
+  }
+
+  var sortPointsByDistance = function(a, b) {
+    return a.selDistance - b.selDistance;
+  }
+
+  var sortPointsByTime = function(a, b) {
+    return a.ts - b.ts;
+  }
+
+  var getClosestPoints = function(selPoint, allPoints)  {
+    var selPointLatLng = L.GeoJSON.coordsToLatLng(selPoint.geometry.coordinates);
+    // Add distance to the selected point to the properties
+    var sortedPoints = angular.copy(allPoints);
+    sortedPoints.forEach(function(currPoint) {
+        currPoint.selDistance = selPointLatLng.distanceTo(currPoint.latlng);
+    });
+    sortedPoints.sort(sortPointsByDistance);
+    return sortedPoints;
+  }
+
+  /* It would be great to just use the timestamp of the closest point.
+   * HOWEVER, we could have round trips in which we pass by the same point
+   * multiple times. So first we need to see how many times we go through
+   * the point. We do this by determining the time difference between the n
+   * closest points. If we pass by the point only once, we expect that all
+   * of the points will be from the same section and will be 30 secs apart
+   * But if we pass by the point multiple times, the points will be from
+   * different sections and will be greater than 30 secs apart
+   */
+
+  var getTimeBins = function(closestPoints) {
+      var sortedTsList = angular.copy(closestPoints).sort(sortPointsByTime);
+      sortedTsList.forEach(function(currItem, i) {
+        if (i == 0) {
+            currItem.timeDiff = 0;
+        } else {
+            currItem.timeDiff = currItem.ts - sortedTsList[i - 1].ts;
+        }
+      });
+      var timeDiffList = sortedTsList.map(function(currItem) {
+        return currItem.timeDiff;
+      });
+      var maxDiff = Math.max.apply(0, timeDiffList);
+
+      // We take the calculated time differences and split them into bins
+      // common case: one bin
+      // multiple passes: multiple bins
+      var timeBins = [];
+      var currBin = [];
+      timeBins.push(currBin);
+      sortedTsList.forEach(function(currItem){
+        if (currItem.timeDiff > MULTI_PASS_THRESHOLD) {
+          currBin = [];
+          timeBins.push(currBin);
+        }
+        currBin.push(currItem);
+      });
+      Logger.log("maxDiff = " + maxDiff);
+      return timeBins;
+  }
+
   var addSafeEntry = function(latlng, ts, marker, event, map) {
     // marker.setStyle({color: 'green'});
     addEntry("manual/incident", "green", latlng, ts, 0, marker)
@@ -71,9 +161,49 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
                                       {text: "Cancel",
                                        action: cancelEntry}]
       var latlng = data.leafletEvent.latlng;
-      var ts = 0;
       var marker = L.circleMarker(latlng).addTo(data.leafletObject);
-      $ionicActionSheet.show({titleText: latlng + " at " + ts,
+
+      var sortedPoints = getClosestPoints(marker.toGeoJSON(), getAllPoints());
+      var closestPoints = sortedPoints.slice(0,10);
+      Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
+
+      var timeBins = getTimeBins(closestPoints);
+      Logger.log("number of bins = " + timeBins.length);
+
+      if (timeBins.length == 1) {
+        // Common case: find the first item in the first time bin, no need to
+        // prompt
+        var ts = timeBins[0][0].ts;
+      } else {
+        // Uncommon case: multiple passes - get the closest point in each bin
+        // Note that this may not be the point with the smallest time diff
+        // e.g. if I am going to school and coming back, when sorted by time diff,
+        // the points will be ordered from home to school on the way there and
+        // from school to home on the way back. So if the incident happened
+        // close to home, the second bin, sorted by time, will have the first
+        // point as the point closest to school, not to home. We will need to
+        // re-sort based on distance. Or we can just accept an error in the timestamp,
+        // which will be a max of 5 * 30 secs = 2.5 minutes
+        // Let's accept the error for now and fix later.
+        var tsOptions = timeBins.map(function(bin) {
+          return bin[0].ts;
+        });
+        Logger.log("tsOptions = " + tsOptions);
+        var timeSelActions = tsOptions.map(function(ts) {
+          return {text: DiaryHelper.getFormattedTime(ts),
+                  selValue: ts};
+        });
+        $ionicActionSheet.show({titleText: "Choose incident time",
+          buttons: timeSelActions,
+          buttonClicked: function(index, button) {
+            var ts = button.selValue;
+          }
+        });
+      }
+
+      $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
+                +", lng: " + latlng.lng.toFixed(6)
+                + " at " + DiaryHelper.getFormattedTime(ts),
             buttons: safe_suck_cancel_actions,
             buttonClicked: function(index, button) {
                 button.action(latlng, ts, marker, data.leafletEvent, data.leafletObject);
