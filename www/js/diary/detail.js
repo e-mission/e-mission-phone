@@ -141,7 +141,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   var addEntry = function(key, newcolor, latlng, ts, stressLevel, marker) {
     marker.setStyle({color: newcolor});
     var value = {
-        loc: marker.toGeoJSON(),
+        loc: marker.toGeoJSON().geometry,
         ts: ts,
         stress: stressLevel
     }
@@ -185,6 +185,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
         // re-sort based on distance. Or we can just accept an error in the timestamp,
         // which will be a max of 5 * 30 secs = 2.5 minutes
         // Let's accept the error for now and fix later.
+        // Example: 8:06 - 8:48 on 16 Nov on iPhone3
         var tsOptions = timeBins.map(function(bin) {
           return bin[0].ts;
         });
