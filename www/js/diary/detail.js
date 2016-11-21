@@ -5,17 +5,20 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
 
 .controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, Logger,
-                                        Timeline, DiaryHelper,Config) {
+                                        Timeline, DiaryHelper, Config, CommHelper) {
   var MULTI_PASS_THRESHOLD = 90;
+  var MANUAL_INCIDENT = "manual/incident";
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
-    defaults : Config.getMapTiles()
+    defaults : {
+    }
   });
 
-  /*
+  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
+
   var mapEvents = leafletMapEvents.getAvailableMapEvents();
   for (var k in mapEvents) {
     var eventName = 'leafletDirectiveMap.detail.' + mapEvents[k];
@@ -27,6 +30,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
     });
   }
 
+  /*
   leafletData.getMap('detail').then(function(map) {
     map.on('click', function(ev) {
       alert("click" + ev.latlng); // ev is an event object (MouseEvent in this case)
@@ -131,11 +135,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
 
   var addSafeEntry = function(latlng, ts, marker, event, map) {
     // marker.setStyle({color: 'green'});
-    addEntry("manual/incident", "green", latlng, ts, 0, marker)
+    addEntry(MANUAL_INCIDENT, "green", latlng, ts, 0, marker)
   };
 
   var addSuckEntry = function(latlng, ts, marker, event, map) {
-    addEntry("manual/incident", "red", latlng, ts, 100, marker)
+    addEntry(MANUAL_INCIDENT, "red", latlng, ts, 100, marker)
   };
 
   var addEntry = function(key, newcolor, latlng, ts, stressLevel, marker) {
@@ -152,7 +156,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
     map.removeLayer(marker);
   }
 
-  $scope.$on('leafletDirectiveMap.detail.mouseup', function(event, data) {
+  $scope.$on('leafletDirectiveMap.detail.click', function(event, data) {
       console.log("diary/detail received mouseup event, showing stress popup at "+data.leafletEvent.latlng);
       var safe_suck_cancel_actions = [{text: "Safe",
                                        action: addSafeEntry},
@@ -185,7 +189,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
         // re-sort based on distance. Or we can just accept an error in the timestamp,
         // which will be a max of 5 * 30 secs = 2.5 minutes
         // Let's accept the error for now and fix later.
-        // Example: 8:06 - 8:48 on 16 Nov on iPhone3
+        // Example: 8:06 - 8:48 on 16 Nov on iPhone3, around 3pm on 16 Nov on
         var tsOptions = timeBins.map(function(bin) {
           return bin[0].ts;
         });
@@ -241,8 +245,48 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
+
+  $scope.getMap = function() {
+    return leafletData.getMap('detail');
+  };
+
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
+  // We need to get all entries from the cache because we really want to filter
+  // by the data ts not the write_ts, but the data_ts is part of the json and
+  // cannot be queried
+  $window.cordova.plugins.BEMUserCache.getMessagesForInterval(MANUAL_INCIDENT,
+    $window.cordova.plugins.BEMUserCache.getAllTimeQuery(),
+    false).then(function(allIncidentList) {
+      var filteredList = allIncidentList.filter(function(item) {
+        return $scope.trip.properties.start_ts < item.ts < $scope.trip.properties.end_ts;
+      });
+      Logger.log("After filtering, entries went from "+allIncidentList.length
+        + " to " + filteredList.length);
+      displayIncidents(filteredList);
+  });
+
+  CommHelper.getIncidents($scope.trip.properties.start_ts,
+    $scope.trip.properties.end_ts).then(displayIncidents);
+
+  var displayIncidents = function(incidentList) {
+    $scope.getMap().then(function(map) {
+      console.log("About to display " + incidentList.map(JSON.stringify));
+      incidentList.forEach(function(incident) {
+        console.log("About to display "+incident.loc);
+        var newFeature = L.GeoJSON.asFeature(incident.loc);
+        newFeature.properties = angular.copy(incident);
+        delete newFeature.properties.loc;
+        newFeature.properties.feature_type = "incident";
+        $scope.tripgj.data.features.push(newFeature);
+        // L.circleMarker(L.GeoJSON.coordsToLatLng(incident.loc.coordinates)).addTo(
+        //  map);
+      });
+    });
+  };
+
+
+  /*
   var data  = [];
   var totalDistance = 0;
   for (var s in $scope.tripgj.sections) {
@@ -279,7 +323,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
-
-
+  */
 
 })

@@ -30,7 +30,7 @@ angular.module('emission.services', [])
           }, function(error) {
             reject(error);
           });
-      }); 
+      });
     };
 
     /*
@@ -49,7 +49,7 @@ angular.module('emission.services', [])
                     'method_args': null}
      * ....
      */
-    
+
     this.habiticaProxy = function(callOpts){
       return new Promise(function(resolve, reject){
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, function(response){
@@ -59,7 +59,7 @@ angular.module('emission.services', [])
         });
       });
     };
-    
+
     this.getMetrics = function(timeType, metrics_query) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
@@ -70,6 +70,19 @@ angular.module('emission.services', [])
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
       })
     };
+
+    this.getIncidents = function(start_ts, end_ts) {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+           message.start_time = start_ts;
+           message.end_time = end_ts;
+           message.sel_region = None;
+           console.log("About to return message "+JSON.stringify(message));
+        };
+        console.log("About to call pushGetJSON for the timestamp");
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
+      })
+    };
 })
 
 .service('ReferHelper', function($http) {
@@ -78,12 +91,12 @@ angular.module('emission.services', [])
         window.cordova.plugins.BEMServerComm.getUserPersonalData("/join.group/"+groupid, successCallback, errorCallback);
     };
     this.joinGroup = function(groupid, userid) {
-    
+
     // TODO:
     return new Promise(function(resolve, reject) {
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/join.group/"+groupid, "inviter", userid, resolve, reject);
       })
-    
+
     //function firstUpperCase(string) {
     //  return string[0].toUpperCase() + string.slice(1);
     //}*/
@@ -102,12 +115,12 @@ angular.module('emission.services', [])
 
         if (ionic.Platform.isAndroid()) {
             parentDir = "app://databases";
-        } 
+        }
         if (ionic.Platform.isIOS()) {
             alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
             parentDir = cordova.file.dataDirectory+"../LocalDatabase";
         }
-        
+
         /*
         window.Logger.log(window.Logger.LEVEL_INFO,
             "Going to export logs to "+parentDir);
