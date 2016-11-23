@@ -188,9 +188,7 @@ angular.module('emission.incident.posttrip.manual', [])
           var safe_suck_cancel_actions = [{text: "Safe",
                                            action: addSafeEntry},
                                           {text: "Suck",
-                                           action: addSuckEntry},
-                                          {text: "Cancel",
-                                           action: cancelEntry}]
+                                           action: addSuckEntry}]
           var map = layer._map;
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
@@ -201,6 +199,7 @@ angular.module('emission.incident.posttrip.manual', [])
 
           var timeBins = getTimeBins(closestPoints);
           Logger.log("number of bins = " + timeBins.length);
+
 
           if (timeBins.length == 1) {
             // Common case: find the first item in the first time bin, no need to
@@ -264,8 +263,10 @@ angular.module('emission.incident.posttrip.manual', [])
    * for a particular trip
    */
   ptmm.addUnpushedIncidents = function(trip) {
-    getIncidents(trip).then(function(incidentList) {
-      displayIncidents(trip, incidentList);
+    getUnpushedIncidents(trip).then(function(incidentList) {
+      return filterAlreadyAdded(trip, incidentList);
+    }).then(function(incidentList) {
+      return displayIncidents(trip, incidentList);
     });
   };
 
@@ -273,7 +274,7 @@ angular.module('emission.incident.posttrip.manual', [])
   // We need to get all entries from the cache because we really want to filter
   // by the data ts not the write_ts, but the data_ts is part of the json and
   // cannot be queried
-  var getIncidents = function(trip) {
+  var getUnpushedIncidents = function(trip) {
     return $window.cordova.plugins.BEMUserCache.getMessagesForInterval(MANUAL_INCIDENT,
       $window.cordova.plugins.BEMUserCache.getAllTimeQuery(),
       false).then(function(allIncidentList) {
@@ -287,6 +288,22 @@ angular.module('emission.incident.posttrip.manual', [])
     });
   };
 
+  var filterAlreadyAdded = function(trip, incidentList) {
+    var existingTs = trip.features.filter(function(currFeature) {
+      return (currFeature.type == "Feature") &&
+        (currFeature.properties.feature_type == "incident");
+    }).map(function(currFeature) {
+      return currFeature.properties.ts;
+    });
+    Logger.log("existing incident ts = "+existingTs
+      +" with length "+existingTs.length);
+    var retList = incidentList.filter(function(currFeature) {
+      return existingTs.indexOf(currFeature.ts) == -1;
+    });
+    Logger.log("After filtering existing length went from = "
+      +existingTs.length +" to "+retList.length);
+    return retList;
+  };
 
   var displayIncidents = function(trip, incidentList) {
     console.log("About to display " + incidentList.map(JSON.stringify));
