@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('emission.main.diary.services', ['emission.services', 'emission.main.common.services'])
-.factory('DiaryHelper', function(Timeline, CommonGraph){
+angular.module('emission.main.diary.services', ['emission.services',
+    'emission.main.common.services', 'emission.incident.posttrip.manual'])
+.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -316,9 +317,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
       case "stop": layer.bindPopup(""+feature.properties.duration); break;
       case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
       case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
-      // case "section": layer.on('click', dh.showModes(feature)); break;
+      case "section": layer.on('click', PostTripManualMarker.startAddingIncident(feature, layer)); break;
       case "incident": layer.bindPopup(""+dh.getFormattedTime(feature.properties.ts)); break;
-      // case "location": layer.bindPopup(JSON.stringify(feature.properties)); break
     }
 };
 
@@ -374,7 +374,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope, CommonGraph) {
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope,
+    CommonGraph, PostTripManualMarker) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -506,6 +507,10 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
           trip.end_place = tc[1];
           trip.stops = tc[2];
           trip.sections = tc[3];
+        });
+
+        timeline.data.currDayTrips.forEach(function(trip, index, array) {
+          PostTripManualMarker.addUnpushedIncidents(trip);
         });
 
         timeline.data.currDayTrips.forEach(function(trip, index, array) {
