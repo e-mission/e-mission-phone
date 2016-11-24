@@ -170,6 +170,42 @@ angular.module('emission.incident.posttrip.manual', [])
   }
 
   /*
+   * INTERNAL FUNCTION, not part of factory
+   *
+   * Converts the incident to a geojson feature
+   */
+
+  var toGeoJSONFeature = function(incident) {
+
+  };
+
+  /*
+   * INTERNAL FUNCTION:
+   *
+   */
+
+  var showSheet = function(latlng, ts, marker, e, map) {
+    var safe_suck_cancel_actions = [{text: "Safe",
+                                     action: addSafeEntry},
+                                    {text: "Suck",
+                                     action: addSuckEntry}]
+
+    $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
+              +", lng: " + latlng.lng.toFixed(6)
+              + " at " + moment(ts * 1000).format('LT'),
+          cancelText: 'Cancel',
+          cancel: function() {
+            cancelEntry(latlng, ts, marker, e, map);
+          },
+          buttons: safe_suck_cancel_actions,
+          buttonClicked: function(index, button) {
+              button.action(latlng, ts, marker, e, map);
+              return true;
+          }
+    });
+  }
+
+  /*
    * EXTERNAL FUNCTION, part of factory, bound to the section to report
    * an incident on it. Note that this is a function that takes in the feature,
    * but it needs to return a curried function that takes in the event.
@@ -185,10 +221,6 @@ angular.module('emission.incident.posttrip.manual', [])
                       + " -> "+feature.properties.end_fmt_time
                       + " received click event, adding stress popup at "
                       + e.latlng);
-          var safe_suck_cancel_actions = [{text: "Safe",
-                                           action: addSafeEntry},
-                                          {text: "Suck",
-                                           action: addSuckEntry}]
           var map = layer._map;
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
@@ -205,6 +237,7 @@ angular.module('emission.incident.posttrip.manual', [])
             // Common case: find the first item in the first time bin, no need to
             // prompt
             var ts = timeBins[0][0].ts;
+            showSheet(latlng, ts, marker, e, map);
           } else {
             // Uncommon case: multiple passes - get the closest point in each bin
             // Note that this may not be the point with the smallest time diff
@@ -222,30 +255,18 @@ angular.module('emission.incident.posttrip.manual', [])
             });
             Logger.log("tsOptions = " + tsOptions);
             var timeSelActions = tsOptions.map(function(ts) {
-              return {text: DiaryHelper.getFormattedTime(ts),
+              return {text: moment(ts * 1000).format('LT'),
                       selValue: ts};
             });
             $ionicActionSheet.show({titleText: "Choose incident time",
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
+                showSheet(latlng, ts, marker, e, map);
+                return true;
               }
             });
           }
-
-          $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
-                    +", lng: " + latlng.lng.toFixed(6)
-                    + " at " + moment(ts * 1000).format('LT'),
-                cancelText: 'Cancel',
-                cancel: function() {
-                  cancelEntry(latlng, ts, marker, e, map);
-                },
-                buttons: safe_suck_cancel_actions,
-                buttonClicked: function(index, button) {
-                    button.action(latlng, ts, marker, e, map);
-                    return true;
-                }
-          });
       };
   };
 
