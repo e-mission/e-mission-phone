@@ -375,7 +375,7 @@ angular.module('emission.main.diary.services', ['emission.services',
 
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope,
-    CommonGraph, PostTripManualMarker) {
+    CommonGraph) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -507,10 +507,6 @@ angular.module('emission.main.diary.services', ['emission.services',
           trip.end_place = tc[1];
           trip.stops = tc[2];
           trip.sections = tc[3];
-        });
-
-        timeline.data.currDayTrips.forEach(function(trip, index, array) {
-          PostTripManualMarker.addUnpushedIncidents(trip);
         });
 
         timeline.data.currDayTrips.forEach(function(trip, index, array) {

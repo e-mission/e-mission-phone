@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('emission.incident.posttrip.manual', [])
-.factory('PostTripManualMarker', function($window, $ionicActionSheet) {
+angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
+  'emission.main.diary.services'])
+.factory('PostTripManualMarker', function($window, $ionicActionSheet, Logger, Timeline) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
@@ -130,7 +131,7 @@ angular.module('emission.incident.posttrip.manual', [])
 
   var addSafeEntry = function(latlng, ts, marker, event, map) {
     // marker.setStyle({color: 'green'});
-    addEntry(MANUAL_INCIDENT, "green", latlng, ts, 0, marker)
+    return addEntry(MANUAL_INCIDENT, "green", latlng, ts, 0, marker)
   };
 
   /*
@@ -140,7 +141,7 @@ angular.module('emission.incident.posttrip.manual', [])
    */
 
   var addSuckEntry = function(latlng, ts, marker, event, map) {
-    addEntry(MANUAL_INCIDENT, "red", latlng, ts, 100, marker)
+    return addEntry(MANUAL_INCIDENT, "red", latlng, ts, 100, marker)
   };
 
   /*
@@ -150,13 +151,14 @@ angular.module('emission.incident.posttrip.manual', [])
    */
 
   var addEntry = function(key, newcolor, latlng, ts, stressLevel, marker) {
-    marker.setStyle({color: newcolor});
+    // marker.setStyle({color: newcolor});
     var value = {
         loc: marker.toGeoJSON().geometry,
         ts: ts,
         stress: stressLevel
     }
     $window.cordova.plugins.BEMUserCache.putMessage(key, value)
+    return value;
   }
 
   /*
@@ -165,18 +167,25 @@ angular.module('emission.incident.posttrip.manual', [])
    * Allow the user to cancel the insertion of the marker
    */
 
-  var cancelEntry = function(latlng, ts, marker, event, map) {
+  var cancelTempEntry = function(latlng, ts, marker, event, map) {
     map.removeLayer(marker);
   }
 
   /*
    * INTERNAL FUNCTION, not part of factory
    *
-   * Converts the incident to a geojson feature
+   * Converts the incident to a geojson feature.
+   * Maybe we should do something similar for all entries (trip/section)
+   * as well.
    */
 
   var toGeoJSONFeature = function(incident) {
-
+    console.log("About to convert"+incident.loc);
+    var newFeature = L.GeoJSON.asFeature(incident.loc);
+    newFeature.properties = angular.copy(incident);
+    delete newFeature.properties.loc;
+    newFeature.properties.feature_type = "incident";
+    return newFeature;
   };
 
   /*
@@ -184,7 +193,7 @@ angular.module('emission.incident.posttrip.manual', [])
    *
    */
 
-  var showSheet = function(latlng, ts, marker, e, map) {
+  var showSheet = function(section, latlng, ts, marker, e, map) {
     var safe_suck_cancel_actions = [{text: "Safe",
                                      action: addSafeEntry},
                                     {text: "Suck",
@@ -195,11 +204,22 @@ angular.module('emission.incident.posttrip.manual', [])
               + " at " + moment(ts * 1000).format('LT'),
           cancelText: 'Cancel',
           cancel: function() {
-            cancelEntry(latlng, ts, marker, e, map);
+            cancelTempEntry(latlng, ts, marker, e, map);
           },
           buttons: safe_suck_cancel_actions,
           buttonClicked: function(index, button) {
-              button.action(latlng, ts, marker, e, map);
+              var newEntry = button.action(latlng, ts, marker, e, map);
+              /*
+               * The markers are now displayed using the trip geojson. If we only
+               * store the incidents to the usercache and don't add it to the geojson
+               * it will look like the incident is deleted until we refresh the trip
+               * information by pulling to refresh. So let's add to the geojson as well.
+               */
+              var newFeature = toGeoJSONFeature(newEntry);
+              var trip = Timeline.getTrip(section.properties.trip_id.$oid);
+              trip.features.push(newFeature);
+              // And one that is done, let's remove the temporary marker
+              cancelTempEntry(latlng, ts, marker, e, map);
               return true;
           }
     });
@@ -237,7 +257,7 @@ angular.module('emission.incident.posttrip.manual', [])
             // Common case: find the first item in the first time bin, no need to
             // prompt
             var ts = timeBins[0][0].ts;
-            showSheet(latlng, ts, marker, e, map);
+            showSheet(feature, latlng, ts, marker, e, map);
           } else {
             // Uncommon case: multiple passes - get the closest point in each bin
             // Note that this may not be the point with the smallest time diff
@@ -262,7 +282,7 @@ angular.module('emission.incident.posttrip.manual', [])
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
-                showSheet(latlng, ts, marker, e, map);
+                showSheet(feature, latlng, ts, marker, e, map);
                 return true;
               }
             });
@@ -328,12 +348,9 @@ angular.module('emission.incident.posttrip.manual', [])
 
   var displayIncidents = function(trip, incidentList) {
     console.log("About to display " + incidentList.map(JSON.stringify));
-    incidentList.forEach(function(incident) {
-      console.log("About to display "+incident.loc);
-      var newFeature = L.GeoJSON.asFeature(incident.loc);
-      newFeature.properties = angular.copy(incident);
-      delete newFeature.properties.loc;
-      newFeature.properties.feature_type = "incident";
+    var mappedList = incidentList.map(toGeoJSONFeature);
+    Logger.log("After mapping, "+mappedList.map(JSON.stringify))
+    mappedList.forEach(function(newFeature) {
       trip.features.push(newFeature);
     });
   };

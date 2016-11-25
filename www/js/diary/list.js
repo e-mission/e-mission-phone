@@ -1,6 +1,7 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
+                                      'emission.incident.posttrip.manual',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
 
@@ -9,7 +10,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, nzTour, storage) {
+                                    Config, PostTripManualMarker, nzTour, storage) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -156,6 +157,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
+          $scope.data.currDayTrips.forEach(function(trip, index, array) {
+              PostTripManualMarker.addUnpushedIncidents(trip);
+          });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
             DiaryHelper.directiveForTrip);
           $ionicScrollDelegate.scrollTop(true);
