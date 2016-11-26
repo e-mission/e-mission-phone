@@ -172,14 +172,14 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   }
 
   /*
-   * INTERNAL FUNCTION, not part of factory
+   * EXTERNAL FUNCTION
    *
    * Converts the incident to a geojson feature.
    * Maybe we should do something similar for all entries (trip/section)
    * as well.
    */
 
-  var toGeoJSONFeature = function(incident) {
+  ptmm.toGeoJSONFeature = function(incident) {
     console.log("About to convert"+incident.loc);
     var newFeature = L.GeoJSON.asFeature(incident.loc);
     newFeature.properties = angular.copy(incident);
@@ -201,7 +201,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
 
     $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
               +", lng: " + latlng.lng.toFixed(6)
-              + " at " + moment(ts * 1000).format('LT'),
+              + " at " + getFormattedTime(ts),
           cancelText: 'Cancel',
           cancel: function() {
             cancelTempEntry(latlng, ts, marker, e, map);
@@ -223,6 +223,10 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               return true;
           }
     });
+  }
+
+  var getFormattedTime = function(ts_sec) {
+    return moment(ts_sec * 1000).format('LT');
   }
 
   /*
@@ -275,7 +279,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
             });
             Logger.log("tsOptions = " + tsOptions);
             var timeSelActions = tsOptions.map(function(ts) {
-              return {text: moment(ts * 1000).format('LT'),
+              return {text: getFormattedTime(ts),
                       selValue: ts};
             });
             $ionicActionSheet.show({titleText: "Choose incident time",
@@ -354,6 +358,30 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
       trip.features.push(newFeature);
     });
   };
+
+  /*
+   * EXTERNAL FUNCTION: part of factory, invoked to display incident details
+   */
+
+  ptmm.displayIncident = function(feature, layer) {
+    return layer.bindPopup(""+getFormattedTime(feature.properties.ts));
+  };
+
+  /*
+   * EXTERNAL FUNCTION: format the incident as a colored marker
+   */
+
+  ptmm.incidentMarker = function(feature, latlng) {
+    var m = L.circleMarker(latlng);
+    if (feature.properties.stress == 0) {
+      m.setStyle({color: "green"});
+    } else {
+      m.setStyle({color: "red"});
+    }
+    return m;
+  };
+
+  // END: Displaying incidents
 
   return ptmm;
 });

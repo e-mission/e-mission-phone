@@ -318,26 +318,16 @@ angular.module('emission.main.diary.services', ['emission.services',
       case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
       case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
       case "section": layer.on('click', PostTripManualMarker.startAddingIncident(feature, layer)); break;
-      case "incident": layer.bindPopup(""+dh.getFormattedTime(feature.properties.ts)); break;
+      case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
     }
 };
-
-  var incidentMarker = function(feature, latlng) {
-    var m = L.circleMarker(latlng);
-    if (feature.properties.stress == 0) {
-      m.setStyle({color: "green"});
-    } else {
-      m.setStyle({color: "red"});
-    }
-    return m;
-  }
 
   var pointFormat = function(feature, latlng) {
     switch(feature.properties.feature_type) {
       case "start_place": return L.marker(latlng, {icon: startIcon});
       case "end_place": return L.marker(latlng, {icon: stopIcon});
       case "stop": return L.circleMarker(latlng);
-      case "incident": return incidentMarker(feature, latlng);
+      case "incident": return PostTripManualMarker.incidentMarker(feature, latlng);
       case "location": return L.marker(latlng, {icon: pointIcon});
       default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
     }
