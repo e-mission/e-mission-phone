@@ -76,7 +76,7 @@ angular.module('emission.services', [])
         var msgFiller = function(message) {
            message.start_time = start_ts;
            message.end_time = end_ts;
-           message.sel_region = None;
+           message.sel_region = null;
            console.log("About to return message "+JSON.stringify(message));
         };
         console.log("About to call pushGetJSON for the timestamp");
