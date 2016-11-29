@@ -71,19 +71,18 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
 
-  $scope.getMap = function() {
-    return leafletData.getMap('detail');
-  };
-
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
-  /*
+  
+
   var data  = [];
-  var totalDistance = 0;
+  var start_ts = $scope.trip.start_ts;
+  var totalTime = 0;
   for (var s in $scope.tripgj.sections) {
-    for (var p in $scope.tripgj.sections[s].properties.distances) {
-      totalDistance += $scope.tripgj.sections[s].properties.distances[p];
-      data.push({x: totalDistance, y: $scope.tripgj.sections[s].properties.speeds[p] });
+    // ti = time index
+    for (var ti in $scope.tripgj.sections[s].properties.times) {
+      totalTime += ($scope.tripgj.sections[s].properties.times[ti] - start_ts);
+      data.push({x: totalTime, y: $scope.tripgj.sections[s].properties.speeds[ti] });
     }
   }
   var dataset = {
@@ -94,13 +93,13 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   var chart = nv.models.lineChart()
                 .margin({left: 65, right: 10})  //Adjust chart margins to give the x-axis some breathing room.
                 .useInteractiveGuideline(false)  //We want nice looking tooltips and a guideline!
-                .x(function(d) {return d.x / 1000})
+                .x(function(t) {return t.x / 60})
                 .showLegend(true)       //Show the legend, allowing users to turn on/off line series.
                 .showYAxis(true)        //Show the y-axis
                 .showXAxis(true);        //Show the x-axis
   chart.xAxis
     .tickFormat(d3.format(".1f"))
-    .axisLabel('Distance (km)');
+    .axisLabel('Time (mins)');
 
   chart.yAxis     //Chart y-axis settings
       .axisLabel('Speed (m/s)')
@@ -114,6 +113,4 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
-  */
-
 })
