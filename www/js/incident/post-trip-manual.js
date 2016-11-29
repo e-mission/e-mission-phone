@@ -2,7 +2,7 @@
 
 angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   'emission.main.diary.services'])
-.factory('PostTripManualMarker', function($window, $ionicActionSheet, Logger, Timeline) {
+.factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, Logger, Timeline) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
@@ -245,6 +245,10 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                       + " -> "+feature.properties.end_fmt_time
                       + " received click event, adding stress popup at "
                       + e.latlng);
+          if ($state.$current == "root.main.diary") {
+            Logger.log("skipping incident addition in list view");
+            return;
+          }
           var map = layer._map;
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
