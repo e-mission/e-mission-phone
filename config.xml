@@ -13,6 +13,7 @@
   </author>
   <content src="index.html"/>
   <access origin="*"/>
+  <allow-navigation href="https://em-game.eecs.berkeley.edu/*" />
   <hook type="after_prepare" src="package-hooks/ios9_allow_http.sh"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>

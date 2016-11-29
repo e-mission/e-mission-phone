@@ -6,7 +6,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser){
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -139,18 +139,68 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     $scope.toBrowser = function() {
         var settings = {
                 auth: {
-                    apiId: "80b3b5fb-679a-42e1-ac7b-a5c44721c636",
-                    apiToken: "6d883508-169b-410b-91b3-e96724af3d98"
+                    apiId: "7ce7f19a-4668-4ba3-85f8-dd588910b9d0",
+                    apiToken: "f3964931-174b-4366-96e9-1e2a7896d6e0"
                 }
             };
-        
-        $scope.browserModal.show();
-        $('#iframe')[0].contentWindow.localStorage.setItem("habit-mobile-settings", JSON.stringify(settings));
-        $('#iframe').css('width', $(document)[0].width);
-        var to = function() {
-            $("#iframe").attr( 'src', function ( i, val ) { return "https://em-game.eecs.berkeley.edu/#/tasks"; });
-        }
-        setTimeout(to, 1000);
+            var options = {
+              location: 'yes',
+              clearcache: 'yes',
+              toolbar: 'yes'
+            };
+
+
+
+          $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event){
+            // insert Javascript via code / file
+            $cordovaInAppBrowser.executeScript({
+              code: "localStorage.setItem('habit-mobile-settings', '" + JSON.stringify(settings) + "');" 
+              + "alert('a');window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+            });
+
+          });
+        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)
+          .then(function(event) {
+            // success
+          })
+          .catch(function(event) {
+            // error
+          });
+
+        // $scope.browserModal.show();
+        // $('#iframe')[0].contentWindow.localStorage.setItem("habit-mobile-settings", JSON.stringify(settings));
+        // function resizeIFrameToFitContent( iFrame ) {
+
+        //     iFrame.width  = iFrame.contentWindow.document.body.scrollWidth;
+        //     iFrame.height = iFrame.contentWindow.document.body.scrollHeight;
+        // }
+
+        // window.addEventListener('DOMContentReady', function(e) {
+
+        //     var iFrame = document.getElementById( 'iframe' );
+        //     resizeIFrameToFitContent( iFrame );
+
+        //     // or, to resize all iframes:
+        //     var iframes = document.querySelectorAll("iframe");
+        //     for( var i = 0; i < iframes.length; i++) {
+        //         resizeIFrameToFitContent( iframes[i] );
+        //     }
+        // } );
+
+        // var to = function() {
+        //     // $('#iframe')[0].contentWindow.resizeTo($(document)[0].width, $(document)[0].height);
+            
+        //     // $("#iframe")[0].setAttribute("width", "375");
+        //     // $("#iframe")[0].attr("width", "375");
+        //     // $("#iframe")[0].width('375');
+        //     // $("#iframe")[0].setAttribute("width", "375");
+            
+        //     $("#iframe")[0].attr( 'src', function ( i, val ) { return "https://em-game.eecs.berkeley.edu/#/tasks"; });
+        // }
+        // setTimeout(to, 1000);
+    };
+    $scope.closeBrowser = function() {
+        $scope.browserModal.hide();
     };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
