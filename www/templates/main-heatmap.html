@@ -5,6 +5,12 @@
       <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
   </ion-nav-buttons>
   <ion-content class="has-header padding" scroll="false">
+    <div style="height: 40px; width: 100%; padding: 10px;"> <!-- visualization control -->
+      <div class="metric-half">
+        <div ng-class="countButtonClass()" ng-click="showCounts()">Counts</div>
+        <div ng-class="stressButtonClass()" ng-click="showStress()">Stress</div>
+      </div>
+    </div>
     <div class="datepicker">
       <div style="height: 40px; width: 100%;">
         <div class="heatmap-filter-title">From:</div>
@@ -24,10 +30,10 @@
       </div>
     </div>
     <div style="height: 40px; width: 100%;">
-      <div class="heatmap-mode-button hvcenter" ng-click="changeMode()">{{selectCtrl.modeString}}</div>
-      <div class="heatmap-get-button hvcenter" ng-click="getPopRoute()">Get!</div>
+      <div ng-disabled="$scope.selectCtrl.showStress" class="heatmap-mode-button hvcenter" ng-click="changeMode()">{{selectCtrl.modeString}}</div>
+      <div class="heatmap-get-button hvcenter" ng-click="getHeatmaps()">Get!</div>
       <div class="heatmap-fixmap-button hvcenter" ng-click="refreshTiles()">Fix Map</div>
     </div>
-    <leaflet id='heatmap' width="100%" height="{{mapHeight}}px" defaults="mapCtrl.defaults"></leaflet>
+    <leaflet id='heatmap' width="100%" height="{{mapHeight}}px" defaults="mapCtrl.defaults" data-tap-disabled="true"></leaflet>
   </ion-content>
 </ion-view>

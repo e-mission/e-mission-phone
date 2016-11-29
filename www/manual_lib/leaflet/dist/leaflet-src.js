@@ -7444,8 +7444,15 @@ L.Map.Tap = L.Handler.extend({
          * set of static images. At that point, we expect to be able to treat it as an 
          * image - i.e. click on it and scroll the underlying window.
          * So we preventDefault only when dragging and zooming are enabled
+         *
+         * We want to do the checks for dragging, etc only on a map because
+         * they won't be defined on the oher layers. So if this has a _map
+         * defined on it, we want to preventDefault, and otherwise, it is a
+         * map and we want to check for the other configurations.
          */
-        if (this.dragging || this.doubleClickZoom || this.scrollWheelZoom || this.touchZoom) {
+        var mapOptions = this._map.options;
+        if (mapOptions.dragging || mapOptions.doubleClickZoom || 
+                mapOptions.scrollWheelZoom || mapOptions.touchZoom) {
 		    L.DomEvent.preventDefault(e);
         }
 

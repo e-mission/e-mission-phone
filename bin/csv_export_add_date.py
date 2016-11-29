@@ -28,6 +28,6 @@ if __name__ == '__main__':
     print "adding dates to the dataframe"
     log_df = pd.read_csv(exported_csv_filename)
     log_df['dt'] = log_df.ts.apply(lambda ts: 
-            pydt.datetime.fromtimestamp(ts).replace(tzinfo=pytz.timezone("America/Los_Angeles")))
+            str(pydt.datetime.fromtimestamp(ts).replace(tzinfo=pytz.timezone("America/Los_Angeles"))))
     print "exporting csv with date to "+out_path
     log_df[["ts", "dt", "message"]].to_csv(out_path)
