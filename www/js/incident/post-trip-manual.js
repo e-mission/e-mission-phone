@@ -215,7 +215,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                * it will look like the incident is deleted until we refresh the trip
                * information by pulling to refresh. So let's add to the geojson as well.
                */
-              var newFeature = toGeoJSONFeature(newEntry);
+              var newFeature = ptmm.toGeoJSONFeature(newEntry);
               var trip = Timeline.getTrip(section.properties.trip_id.$oid);
               trip.features.push(newFeature);
               // And one that is done, let's remove the temporary marker
@@ -352,7 +352,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
 
   var displayIncidents = function(trip, incidentList) {
     console.log("About to display " + incidentList.map(JSON.stringify));
-    var mappedList = incidentList.map(toGeoJSONFeature);
+    var mappedList = incidentList.map(ptmm.toGeoJSONFeature);
     Logger.log("After mapping, "+mappedList.map(JSON.stringify))
     mappedList.forEach(function(newFeature) {
       trip.features.push(newFeature);
