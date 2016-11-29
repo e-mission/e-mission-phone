@@ -76,12 +76,12 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   
 
   var data  = [];
-  var start_ts = $scope.trip.start_ts;
+  var start_ts = $scope.trip.properties.start_ts;
   var totalTime = 0;
   for (var s in $scope.tripgj.sections) {
     // ti = time index
     for (var ti in $scope.tripgj.sections[s].properties.times) {
-      totalTime += ($scope.tripgj.sections[s].properties.times[ti] - start_ts);
+      totalTime = ($scope.tripgj.sections[s].properties.times[ti] - start_ts);
       data.push({x: totalTime, y: $scope.tripgj.sections[s].properties.speeds[ti] });
     }
   }
