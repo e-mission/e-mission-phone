@@ -193,7 +193,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    *
    */
 
-  var showSheet = function(section, latlng, ts, marker, e, map) {
+  var showSheet = function(featureArray, latlng, ts, marker, e, map) {
     var safe_suck_cancel_actions = [{text: "Safe",
                                      action: addSafeEntry},
                                     {text: "Suck",
@@ -216,8 +216,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                * information by pulling to refresh. So let's add to the geojson as well.
                */
               var newFeature = ptmm.toGeoJSONFeature(newEntry);
-              var trip = Timeline.getTrip(section.properties.trip_id.$oid);
-              trip.features.push(newFeature);
+              featureArray.push(newFeature);
               // And one that is done, let's remove the temporary marker
               cancelTempEntry(latlng, ts, marker, e, map);
               return true;
@@ -234,15 +233,43 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * an incident on it. Note that this is a function that takes in the feature,
    * but it needs to return a curried function that takes in the event.
    */
-
-  ptmm.startAddingIncident = function(feature, layer) {
+  ptmm.startAddingIncidentToSection = function(feature, layer) {
       Logger.log("section "+feature.properties.start_fmt_time
                   + " -> "+feature.properties.end_fmt_time
-                  + " bound incident addition ")
+                  + " bound incident addition ");
+      var allPoints = getSectionPoints(feature);
+      var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
+      var featureArray = trip.features;
+      return ptmm.startAddingIncidentToPoints(layer, allPoints, featureArray);
+  }
+
+  /*
+   * EXTERNAL FUNCTION, part of factory, bound to a set of points to report
+   * an incident on it. It turns out that on actual devices (not the emulator),
+   * the target for a touch method is frequently off. This is particularly true
+   * for sections - the target is the parent svg, which means that this is not
+   * triggered correctly.
+   *
+   * If we do zoom down to the maximum zoom and then click multiple times,
+   * it does sometimes trigger, and I can now get it to work fairly reliably,
+   * but it is unclear how to signal that.
+   *
+   * Therefore, we refactor this to support a set of points instead. Note that
+   * this also makes it easier to support uncleaned trips, so it is not a total
+   * loss.
+   *
+   * We could also replace this with a popup saying that the point needs to be
+   * closer or sth.
+   */
+
+  ptmm.startAddingIncidentToPoints = function(layer, allPoints, geojsonFeatureArray) {
+      Logger.log("points "+getFormattedTime(allPoints[0].ts)
+                  + " -> "+getFormattedTime(allPoints[allPoints.length -1])
+                  + " bound incident addition ");
 
       return function(e) {
-          Logger.log("section "+feature.properties.start_fmt_time
-                      + " -> "+feature.properties.end_fmt_time
+          Logger.log("section "+getFormattedTime(allPoints[0].ts)
+                      + " -> "+getFormattedTime(allPoints[allPoints.length -1])
                       + " received click event, adding stress popup at "
                       + e.latlng);
           if ($state.$current == "root.main.diary") {
@@ -253,7 +280,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
 
-          var sortedPoints = getClosestPoints(marker.toGeoJSON(), getSectionPoints(feature));
+          var sortedPoints = getClosestPoints(marker.toGeoJSON(), allPoints);
           var closestPoints = sortedPoints.slice(0,10);
           Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
 
@@ -265,7 +292,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
             // Common case: find the first item in the first time bin, no need to
             // prompt
             var ts = timeBins[0][0].ts;
-            showSheet(feature, latlng, ts, marker, e, map);
+            showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
           } else {
             // Uncommon case: multiple passes - get the closest point in each bin
             // Note that this may not be the point with the smallest time diff
@@ -290,7 +317,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
-                showSheet(feature, latlng, ts, marker, e, map);
+                showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
                 return true;
               }
             });
