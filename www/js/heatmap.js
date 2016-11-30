@@ -201,12 +201,6 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
    * END: general controls
    */
 
-  if ($scope.showCount) {
-      $scope.getIncidents();
-  } else {
-      $scope.getPopRoute();
-  }
-
   /*
    * BEGIN: Switching code
    */
@@ -324,9 +318,21 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     $scope.stressData.bounds = bounds;
   }
 
-
   /*
    * END: Stress map code
+   */
+
+  /*
+   * BEGIN: One-time init code.
+   * Note that this is after all the other code to ensure that the functions are defined
+   * before they are invoked.
+   */
+
+  $scope.getHeatmaps();
+  $scope.switchSelData();
+
+  /*
+   * END: One-time init code
    */
 
   // Tour steps
