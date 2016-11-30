@@ -44,7 +44,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("http://localhost:8080/result/heatmap/pop.route/local_date", data)
+    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/pop.route/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.lnglat)) {
         Logger.log("Got points in heatmap "+response.data.lnglat.length);
@@ -293,7 +293,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("http://localhost:8080/result/heatmap/incidents/local_date", data)
+    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.incidents)) {
         Logger.log("Got incidents"+response.data.incidents.length);
