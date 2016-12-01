@@ -205,12 +205,14 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
     var safe_suck_cancel_actions = [{text: "Safe",
                                      action: addSafeEntry},
                                     {text: "Suck",
-                                     action: addSuckEntry}]
+                                     action: addSuckEntry},
+                                    {text: "Cancel",
+                                     action: cancelTempEntry}]
 
     $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
               +", lng: " + latlng.lng.toFixed(6)
               + " at " + getFormattedTime(ts),
-          cancelText: 'Cancel',
+          // cancelText: 'Cancel',
           cancel: function() {
             cancelTempEntry(latlng, ts, marker, e, map);
           },
@@ -223,10 +225,12 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                * it will look like the incident is deleted until we refresh the trip
                * information by pulling to refresh. So let's add to the geojson as well.
                */
-              var newFeature = ptmm.toGeoJSONFeature(newEntry);
-              featureArray.push(newFeature);
-              // And one that is done, let's remove the temporary marker
-              cancelTempEntry(latlng, ts, marker, e, map);
+              if (button.text != "Cancel") {
+                var newFeature = ptmm.toGeoJSONFeature(newEntry);
+                featureArray.push(newFeature);
+                // And one that is done, let's remove the temporary marker
+                cancelTempEntry(latlng, ts, marker, e, map);
+              }
               return true;
           }
     });
