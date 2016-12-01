@@ -2,11 +2,19 @@
 
 angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   'emission.main.diary.services'])
-.factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, Logger, Timeline) {
+.factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, $ionicPlatform,
+                                          Logger, Timeline) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
   var MANUAL_INCIDENT = "manual/incident";
+  var DISTANCE_THRESHOLD = function() {
+    if ($ionicPlatform.is("android")) {
+      return 200;
+    } else {
+      return 50;
+    }
+  };
 
   // BEGIN: Adding incidents
 
@@ -243,6 +251,30 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
       return ptmm.startAddingIncidentToPoints(layer, allPoints, featureArray);
   }
 
+  var getAllPointsForTrip = function(trip) {
+    var allPoints = [];
+    trip.sections.forEach(function(s) {
+      Array.prototype.push.apply(allPoints, getSectionPoints(s));
+    });
+    return allPoints;
+  }
+
+  /*
+   * EXTERNAL FUNCTION, part of factory, bound to the map to report
+   * an incident on the trip displayed in the map. Note that this is a function
+   * that takes in the feature,
+   * but it needs to return a curried function that takes in the event.
+   */
+
+  ptmm.startAddingIncidentToTrip = function(trip, map) {
+      Logger.log("section "+trip.properties.start_fmt_time
+                  + " -> "+trip.properties.end_fmt_time
+                  + " bound incident addition ");
+      var allPoints = getAllPointsForTrip(trip);
+      var featureArray = trip.features;
+      return ptmm.startAddingIncidentToPoints(map, allPoints, featureArray);
+  }
+
   /*
    * EXTERNAL FUNCTION, part of factory, bound to a set of points to report
    * an incident on it. It turns out that on actual devices (not the emulator),
@@ -268,19 +300,28 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                   + " bound incident addition ");
 
       return function(e) {
-          Logger.log("section "+getFormattedTime(allPoints[0].ts)
-                      + " -> "+getFormattedTime(allPoints[allPoints.length -1])
+          Logger.log("points "+getFormattedTime(allPoints[0].ts)
+                      + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
                       + " received click event, adding stress popup at "
                       + e.latlng);
           if ($state.$current == "root.main.diary") {
             Logger.log("skipping incident addition in list view");
             return;
           }
-          var map = layer._map;
+          var map = layer;
+          if (!(layer instanceof L.Map)) {
+            map = layer._map;
+          }
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
 
           var sortedPoints = getClosestPoints(marker.toGeoJSON(), allPoints);
+          if (sortedPoints[0].selDistance > DISTANCE_THRESHOLD()) {
+            Logger.log("skipping incident addition because closest distance "
+              + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + DISTANCE_THRESHOLD());
+            cancelTempEntry(latlng, ts, marker, e, map);
+            return;
+          };
           var closestPoints = sortedPoints.slice(0,10);
           Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
 

@@ -1,11 +1,13 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet',
                                       'ionic-datepicker', 'nvd3',
-                                      'emission.services', 'emission.plugin.logger'])
+                                      'emission.services', 'emission.plugin.logger',
+                                      'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, Logger,
-                                        Timeline, DiaryHelper, Config, CommHelper) {
+                                        Timeline, DiaryHelper, Config, CommHelper,
+                                        PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -29,12 +31,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   }
 
   /*
-  leafletData.getMap('detail').then(function(map) {
-    map.on('click', function(ev) {
-      alert("click" + ev.latlng); // ev is an event object (MouseEvent in this case)
-    });
-  });
-
   leafletData.getMap('detail').then(function(map) {
     map.on('touch', function(ev) {
       alert("touch" + ev.latlng); // ev is an event object (MouseEvent in this case)
@@ -73,7 +69,9 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
-  
+  leafletData.getMap('detail').then(function(map) {
+    map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
+  });
 
   var data  = [];
   var start_ts = $scope.trip.properties.start_ts;
