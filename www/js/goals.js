@@ -521,7 +521,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.topThreeUsers.push(threeUsers[0]);
             $scope.topThreeUsers.push(threeUsers[2]);
             $scope.usersUnderTopThree = users.slice(3);
-            console.log($scope.topThreeUsers);
             getPartyForAllUsers(users);
             setRank(partyList);
         }, function(error){
@@ -571,7 +570,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         partyList.forEach(function(party){
             var totalLvl = 0;
             var totalExp = 0;
-            var memberCount = 0; //Can't use member count of the partyObj because of invisible member count bug
+            var memberCount = 0; //Can't use member count of the partyObj, when a member is deleted from DB there is an invisible member count
             party.members.forEach(function(member) {
                 totalLvl += member.stats.lvl;
                 totalExp += member.stats.exp;
@@ -581,8 +580,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             party.stats.exp = totalExp;
             party.memberCount = memberCount;
             if(party._id === $scope.profile.party._id){
-                $scope.userParty = addRank(party.members);
-                console.log($scope.userParty);
+                var dupMember = angular.copy(party.members);
+                $scope.userParty = addRank(dupMember);
             }
         });
         partyList = partyList.filter(function(obj){
@@ -591,7 +590,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         sortForLeaderboard(partyList);
         partyList = addRank(partyList);
         $scope.partys = partyList;
-        console.log(partyList);
     };
 
     var getChallenges = function() {
