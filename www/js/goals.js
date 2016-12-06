@@ -137,24 +137,18 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         showDelete: false
     };*/
     $scope.toBrowser = function() {
-        var settings = {
-                auth: {
-                    apiId: "7ce7f19a-4668-4ba3-85f8-dd588910b9d0",
-                    apiToken: "f3964931-174b-4366-96e9-1e2a7896d6e0"
-                }
-            };
             var options = {
               location: 'yes',
               clearcache: 'yes',
               toolbar: 'yes'
             };
 
-
+            var settings = localStorage.getItem("habit-mobile-settings")
 
           $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
             // insert Javascript via code / file
             $cordovaInAppBrowser.executeScript({
-              code: "localStorage.setItem('habit-mobile-settings', '" + JSON.stringify(settings) + "');" 
+              code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
               + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
             });
 
@@ -167,37 +161,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             // error
           });
 
-        // $scope.browserModal.show();
-        // $('#iframe')[0].contentWindow.localStorage.setItem("habit-mobile-settings", JSON.stringify(settings));
-        // function resizeIFrameToFitContent( iFrame ) {
-
-        //     iFrame.width  = iFrame.contentWindow.document.body.scrollWidth;
-        //     iFrame.height = iFrame.contentWindow.document.body.scrollHeight;
-        // }
-
-        // window.addEventListener('DOMContentReady', function(e) {
-
-        //     var iFrame = document.getElementById( 'iframe' );
-        //     resizeIFrameToFitContent( iFrame );
-
-        //     // or, to resize all iframes:
-        //     var iframes = document.querySelectorAll("iframe");
-        //     for( var i = 0; i < iframes.length; i++) {
-        //         resizeIFrameToFitContent( iframes[i] );
-        //     }
-        // } );
-
-        // var to = function() {
-        //     // $('#iframe')[0].contentWindow.resizeTo($(document)[0].width, $(document)[0].height);
-            
-        //     // $("#iframe")[0].setAttribute("width", "375");
-        //     // $("#iframe")[0].attr("width", "375");
-        //     // $("#iframe")[0].width('375');
-        //     // $("#iframe")[0].setAttribute("width", "375");
-            
-        //     $("#iframe")[0].attr( 'src', function ( i, val ) { return "https://em-game.eecs.berkeley.edu/#/tasks"; });
-        // }
-        // setTimeout(to, 1000);
     };
     $scope.closeBrowser = function() {
         $scope.browserModal.hide();
