@@ -50,12 +50,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.leaderboardModal = modal;
     });
 
-    $ionicModal.fromTemplateUrl('templates/goals/browser.html', {
-        scope: $scope,
-        animation: 'slide-in-up'
-    }).then(function(modal) {
-        $scope.browserModal = modal;
-    });
 
     var joinGroupSuccess = function() {
        refreshInfo();
