@@ -40,9 +40,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
 
     // iOS
-    $window.broadcaster.addEventListener("TRANSITION_NAME", function(e) {
-      console.log("Received TRANSITION_NAME event"+JSON.stringify(e));
-      showTripEndNotification();
+    $window.cordova.plugins.BEMTransitionNotification.addEventListener("TRANSITION_NAME",  {test: "me"}).then(function(result) {
+    // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
+      console.log("Finished registering TRANSITION_NAME event"+JSON.stringify(result));
+      // showTripEndNotification();
     });
   }
 
@@ -69,4 +70,3 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
 });
 
-// UIMutableUserNotificationAction
