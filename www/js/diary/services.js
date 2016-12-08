@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('emission.main.diary.services', ['emission.services', 'emission.main.common.services'])
-.factory('DiaryHelper', function(Timeline, CommonGraph){
+angular.module('emission.main.diary.services', ['emission.services',
+    'emission.main.common.services', 'emission.incident.posttrip.manual'])
+.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -281,6 +282,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
       });
 
       // Show the action sheet
+      /*
        var modeSheet = $ionicActionSheet.show({
          buttons: currButtons,
          titleText: 'Trip Mode?',
@@ -294,6 +296,7 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
          return true;
        }
      });
+     */
    }
  };
   var style_feature = function(feature) {
@@ -303,22 +306,28 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
       default: return {}
     }
   };
+
+  var showClickTime = function(feature, layer) {
+    return layer.bindPopup("click: "+dh.getFormattedTime(feature.properties.ts));
+  };
+
   var onEachFeature = function(feature, layer) {
     // console.log("onEachFeature called with "+JSON.stringify(feature));
     switch(feature.properties.feature_type) {
       case "stop": layer.bindPopup(""+feature.properties.duration); break;
-      case "start_place": layer.on('click', layer.bindPopup(""+feature.properties.displayName)); break;
-      case "end_place": layer.on('click', layer.bindPopup(""+feature.properties.displayName)); break;
-      // case "section": layer.setText(dh.getHumanReadable(feature.properties.sensed_mode), {offset: 20});
-          layer.on('click', dh.showModes(feature)); break;
-      // case "location": layer.bindPopup(JSON.stringify(feature.properties)); break
+      case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
+      case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
+      case "section": layer.on('click', PostTripManualMarker.startAddingIncident(feature, layer)); break;
+      case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
     }
 };
+
   var pointFormat = function(feature, latlng) {
     switch(feature.properties.feature_type) {
       case "start_place": return L.marker(latlng, {icon: startIcon});
       case "end_place": return L.marker(latlng, {icon: stopIcon});
       case "stop": return L.circleMarker(latlng);
+      case "incident": return PostTripManualMarker.incidentMarker(feature, latlng);
       case "location": return L.marker(latlng, {icon: pointIcon});
       default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
     }
@@ -355,7 +364,8 @@ angular.module('emission.main.diary.services', ['emission.services', 'emission.m
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope, CommonGraph) {
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope,
+    CommonGraph) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
