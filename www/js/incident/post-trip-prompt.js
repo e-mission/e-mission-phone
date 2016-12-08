@@ -5,7 +5,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
 
-  var showTripEndNotification = function() {
+  var getTripEndReportNotification = function() {
     var actions = [{
        identifier: 'MUTE',
        title: 'Mute',
@@ -22,29 +22,31 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
         authenticationRequired: false
     }];
 
-    console.log("About to show notification");
-    $window.cordova.plugins.notification.local.schedule({
+    reportNotifyConfig = {
       id: REPORT,
       title: "Trip just ended",
       text: "Incident to report?",
       actions: [actions[0], actions[1]],
       category: 'REPORT_INCIDENT'
-    });
+    };
+    Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
+    return reportNotifyConfig;
   }
 
   ptap.registerTripEnd = function() {
     console.log( "registertripEnd received!" );
-    // Android
-    $window.broadcaster.addEventListener("local.transition.stopped_moving", function( e ) {
-      showTripEndNotification();
-    });
-
     // iOS
-    $window.cordova.plugins.BEMTransitionNotification.addEventListener("TRANSITION_NAME",  {test: "me"}).then(function(result) {
-    // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
-      console.log("Finished registering TRANSITION_NAME event"+JSON.stringify(result));
-      // showTripEndNotification();
-    });
+    var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
+    notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
+        .then(function(result) {
+            // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
+            Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
+        })
+        .catch(function(error) {
+            $ionicPopup.alert({
+                title: "Unable to register notifications for trip end"
+            });
+        });;
   }
 
   ptap.registerUserResponse = function() {
