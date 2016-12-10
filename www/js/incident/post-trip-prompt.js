@@ -22,7 +22,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
         authenticationRequired: false
     }];
 
-    reportNotifyConfig = {
+    var reportNotifyConfig = {
       id: REPORT,
       title: "Trip just ended",
       text: "Incident to report?",
@@ -37,6 +37,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     console.log( "registertripEnd received!" );
     // iOS
     var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
+    notifyPlugin.TRIP_END = "trip_ended";
     notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
         .then(function(result) {
             // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
@@ -59,7 +60,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       }
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
-      alert("swiped, no action");
+      alert("clicked, no action");
+    });
+    $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
+      alert("triggered, no action");
     });
   }
 
