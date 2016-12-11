@@ -27,7 +27,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       title: "Trip just ended",
       text: "Incident to report?",
       actions: [actions[0], actions[1]],
-      category: 'REPORT_INCIDENT'
+      category: 'REPORT_INCIDENT',
+      autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
     return reportNotifyConfig;
@@ -58,6 +59,9 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       } else if (data.identifier === 'MUTE') {
           alert('About to mute');
       }
+    });
+    $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
+        alert("notification cleared, no report");
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       alert("clicked, no action");

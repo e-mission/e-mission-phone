@@ -14,7 +14,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, $ionicPlatform,
     CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats, PostTripAutoPrompt)  {
   console.log('SplashCtrl invoked');
-  alert("attach debugger!");
+  // alert("attach debugger!");
   CustomURLScheme.onLaunch(function(event, url){
     console.log("GOT URL:"+url);
 
