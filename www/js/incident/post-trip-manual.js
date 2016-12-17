@@ -22,20 +22,36 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * INTERNAL FUNCTION, not part of factory
    *
    * Returns objects of the form: {
-   * gj: geojson representation,
+   * loc: geojson representation,
    * latlng: latlng representation,
    * ts: timestamp
    * }
    */
 
   var getSectionPoints = function(section) {
+    console.log("Called getSection points with list of size "+section.geometry.coordinates.length);
     var mappedPoints = section.geometry.coordinates.map(function(currCoords, index) {
-      var currMappedPoint = {gj: currCoords,
+      Logger.log("About to map point"+ JSON.stringify(currCoords)+" at index "+index);
+      var currMappedPoint = {loc: currCoords,
         latlng: L.GeoJSON.coordsToLatLng(currCoords),
         ts: section.properties.times[index]}
       if (index % 100 == 0) {
         Logger.log("Mapped point "+ JSON.stringify(currCoords)+" to "+currMappedPoint);
       }
+      return currMappedPoint;
+    });
+    return mappedPoints;
+  }
+
+  ptmm.addLatLng = function(locEntryList) {
+    console.log("called addLatLng with list of length "+locEntryList.length);
+    var mappedPoints = locEntryList.map(function(currEntry) {
+      var currMappedPoint = {loc: currEntry.data.loc,
+        latlng: L.GeoJSON.coordsToLatLng(currEntry.data.loc),
+        ts: currEntry.data.ts}
+      // if (index % 100 == 0) {
+        Logger.log("Mapped point "+ JSON.stringify(currEntry)+" to "+currMappedPoint);
+      // }
       return currMappedPoint;
     });
     return mappedPoints;
@@ -202,9 +218,9 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    */
 
   var showSheet = function(featureArray, latlng, ts, marker, e, map) {
-    var safe_suck_cancel_actions = [{text: "Safe",
+    var safe_suck_cancel_actions = [{text: "<i class='ion-heart icon-action'></i>",
                                      action: addSafeEntry},
-                                    {text: "Suck",
+                                    {text: "<i class='ion-heart-broken icon-action'></i>",
                                      action: addSuckEntry},
                                     {text: "Cancel",
                                      action: cancelTempEntry}]
@@ -300,7 +316,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
 
   ptmm.startAddingIncidentToPoints = function(layer, allPoints, geojsonFeatureArray) {
       Logger.log("points "+getFormattedTime(allPoints[0].ts)
-                  + " -> "+getFormattedTime(allPoints[allPoints.length -1])
+                  + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
                   + " bound incident addition ");
 
       return function(e) {

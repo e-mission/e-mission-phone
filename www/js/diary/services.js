@@ -256,7 +256,7 @@ angular.module('emission.main.diary.services', ['emission.services',
     retVal.data = trip;
     retVal.style = style_feature;
     retVal.onEachFeature = onEachFeature;
-    retVal.pointToLayer = pointFormat;
+    retVal.pointToLayer = dh.pointFormat;
     retVal.start_place = trip.start_place;
     retVal.end_place = trip.end_place;
     retVal.stops = trip.stops;
@@ -323,7 +323,7 @@ angular.module('emission.main.diary.services', ['emission.services',
     }
 };
 
-  var pointFormat = function(feature, latlng) {
+  dh.pointFormat = function(feature, latlng) {
     switch(feature.properties.feature_type) {
       case "start_place": return L.marker(latlng, {icon: startIcon});
       case "end_place": return L.marker(latlng, {icon: stopIcon});
