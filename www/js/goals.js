@@ -3,10 +3,10 @@
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
-                'ng-walkthrough', 'nzTour'])
+                'ng-walkthrough', 'nzTour', 'ngCordova', 'ngclipboard'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, $cordovaClipboard){
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -21,6 +21,13 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
     //var challengeMembersId = [];
+
+    // THIS BLOCK FOR inAppBrowser
+    var options = {
+      location: 'no',
+      clearcache: 'no',
+      toolbar: 'no'
+    };
 
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
@@ -864,6 +871,70 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
+    var showUserId = function() {
+        console.log("Showing user id");
+        var email = $scope.profile.auth.local.email;
+        $scope.profile.auth.local.password = email.substring(0, email.lastIndexOf("@"));
+        $ionicPopup.show({
+          title: 'Bic2Cal Survey',
+          templateUrl: 'templates/goals/uid.html',
+          scope: $scope,
+            buttons: [{
+              text: 'Copy user id',
+              type: 'button-positive',
+            }]
+        });
+        $cordovaClipboard.copy('HelloW').then(function () {
+            console.log("copying to clipboard");
+        }, function () {
+            // error
+        }); 
+        
+    };
+
+
+    var startSurvey = function () {
+        
+      // THIS LINE FOR inAppBrowser
+        $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0DO2F56h8oMGEYt', '_blank', options)
+      .then(function(event) {
+        console.log("successfully opened page with result "+JSON.stringify(event));
+        // success
+      })
+      .catch(function(event) {
+        // error
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+        console.log("started loading, event = "+JSON.stringify(event));
+        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
+            $cordovaInAppBrowser.close();
+        }
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+        console.log("stopped loading, event = "+JSON.stringify(event));
+      });
+      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+        console.log("exiting, event = "+JSON.stringify(event));
+      });
+    };
+
+    $scope.startSurvey = function () {
+      showUserId();
+    }
+
+    /*var checkSurveyDone = function () {
+      startSurvey();
+      var SURVEY_DONE_KEY = 'survey_done';
+      var surveyDone = storage.get(SURVEY_DONE_KEY);
+      if (!surveylDone) {
+        startSurvey();
+        storage.set(SURVEY_DONE_KEY, true);
+      }
+    };*/
+
+
+    
+
     // Tour steps
     var tour = {
       config: {
@@ -879,7 +950,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       },
       {
         target: '.invite-friends',
-        content: 'Grow your party by invite friends to join you!'
+        content: 'Grow your party by inviting friends to join you!'
       },
       {
         target: '.habit-list',
@@ -891,20 +962,22 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       nzTour.start(tour);
     };
 
+    $scope.startWalkthrough = function () {
+      startWalkthrough();
+    }
+
     /*
     * Checks if it is the first time the user has loaded the goals tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
     */
-    var checkGoalsTutorialDone = function () {
+    /*var checkGoalsTutorialDone = function () {
       var GOALS_DONE_KEY = 'goals_tutorial_done';
       var goalsTutorialDone = storage.get(GOALS_DONE_KEY);
       if (!goalsTutorialDone) {
         startWalkthrough();
         storage.set(GOALS_DONE_KEY, true);
       }
-    };
+    };*/
 
-    $scope.startWalkthrough = function () {
-      startWalkthrough();
-    }
+    
 });

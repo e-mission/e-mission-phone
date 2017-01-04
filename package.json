@@ -76,7 +76,11 @@
       "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
       "id": "cordova-plugin-customurlscheme"
     },
-    "cordova-plugin-inappbrowser"
+    "cordova-plugin-inappbrowser",
+    {
+      "locator": "https://github.com/VersoSolutions/CordovaClipboard.git",
+      "id": "cordova-plugin-clipboard"
+    }
   ],
   "cordovaPlatforms": [
     "ios",
