@@ -3,7 +3,7 @@
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
-                'ng-walkthrough', 'nzTour', 'ngCordova', 'ngclipboard'])
+                'ng-walkthrough', 'nzTour', 'ngCordova'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, $cordovaClipboard){
@@ -873,28 +873,27 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     var showUserId = function() {
         console.log("Showing user id");
-        var email = $scope.profile.auth.local.email;
-        $scope.profile.auth.local.password = email.substring(0, email.lastIndexOf("@"));
         $ionicPopup.show({
           title: 'Bic2Cal Survey',
           templateUrl: 'templates/goals/uid.html',
           scope: $scope,
             buttons: [{
-              text: 'Copy user id',
+              text: 'Copy user id and open survey',
               type: 'button-positive',
+              onTap: function(e) {
+                $cordovaClipboard.copy($scope.profile.id).then(function () {
+                    console.log("copying to clipboard"+$scope.profile.id);
+                    startSurvey();
+                }, function () {
+                    // error
+                }); 
+              }
             }]
         });
-        $cordovaClipboard.copy('HelloW').then(function () {
-            console.log("copying to clipboard");
-        }, function () {
-            // error
-        }); 
-        
     };
 
 
     var startSurvey = function () {
-        
       // THIS LINE FOR inAppBrowser
         $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0DO2F56h8oMGEYt', '_blank', options)
       .then(function(event) {
@@ -922,15 +921,27 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       showUserId();
     }
 
-    /*var checkSurveyDone = function () {
-      startSurvey();
+    var checkSurveyDone = function () {
+      console.log("Checking if user already completed survey");
       var SURVEY_DONE_KEY = 'survey_done';
       var surveyDone = storage.get(SURVEY_DONE_KEY);
       if (!surveylDone) {
-        startSurvey();
+        $ionicPopup.show({
+          title: 'Bic2Cal Survey: Please take this 15 minute survey to provide feedback for research purposes.',
+          //templateUrl: 'templates/goals/uid.html',
+          scope: $scope,
+            buttons: [{
+              text: 'Ok',
+              type: 'button-positive',
+              onTap: function(e) {
+                 showUserId();
+              }
+            }]
+        });
         storage.set(SURVEY_DONE_KEY, true);
       }
-    };*/
+    };
+
 
 
     
@@ -979,5 +990,5 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       }
     };*/
 
-    
+    //checkSurveyDone();
 });
