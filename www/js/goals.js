@@ -26,7 +26,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var options = {
       location: 'no',
       clearcache: 'no',
-      toolbar: 'no'
+      toolbar: 'yes'
     };
 
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
@@ -189,6 +189,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                                 okType: "button-assertive"});
             console.log("Not signed up");
         });
+        checkSurveyDone();
     };
 
 
@@ -881,8 +882,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
               text: 'Copy user id and open survey',
               type: 'button-positive',
               onTap: function(e) {
-                $cordovaClipboard.copy($scope.profile.id).then(function () {
-                    console.log("copying to clipboard"+$scope.profile.id);
+                $cordovaClipboard.copy(userId).then(function () {
+                    console.log("copying to clipboard "+userId);
                     startSurvey();
                 }, function () {
                     // error
@@ -892,17 +893,21 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     };
 
+    var getUId = function(){
+      document.getElementById('QR~QID2').innerHTML+=userId;
+    };
 
     var startSurvey = function () {
       // THIS LINE FOR inAppBrowser
-        $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0DO2F56h8oMGEYt', '_blank', options)
-      .then(function(event) {
-        console.log("successfully opened page with result "+JSON.stringify(event));
-        // success
-      })
-      .catch(function(event) {
-        // error
-      });
+      $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', '_blank', options)
+          .then(function(event) {
+            console.log("successfully opened page with result "+JSON.stringify(event));
+            // success
+            $cordovaInAppBrowser.executeScript({ code:'getUId()' });
+          })
+          .catch(function(event) {
+            // error
+          });
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));
         if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
@@ -925,10 +930,9 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       console.log("Checking if user already completed survey");
       var SURVEY_DONE_KEY = 'survey_done';
       var surveyDone = storage.get(SURVEY_DONE_KEY);
-      if (!surveylDone) {
+      if (!surveyDone) {
         $ionicPopup.show({
-          title: 'Bic2Cal Survey: Please take this 15 minute survey to provide feedback for research purposes.',
-          //templateUrl: 'templates/goals/uid.html',
+          title: 'Bic2Cal Survey: Please take this 15-minute survey to provide feedback for our research.',
           scope: $scope,
             buttons: [{
               text: 'Ok',
@@ -941,10 +945,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         storage.set(SURVEY_DONE_KEY, true);
       }
     };
-
-
-
-    
 
     // Tour steps
     var tour = {
@@ -990,5 +990,5 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       }
     };*/
 
-    //checkSurveyDone();
+    checkSurveyDone();
 });
