@@ -3,10 +3,10 @@
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
-                'ng-walkthrough', 'nzTour', 'ngCordova'])
+                'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, $cordovaClipboard){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser){
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -872,7 +872,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
-    var showUserId = function() {
+    /*var showUserId = function() {
         console.log("Showing user id");
         $ionicPopup.show({
           title: 'Bic2Cal Survey',
@@ -891,11 +891,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
               }
             }]
         });
-    };
-
-    var getUId = function(){
-      document.getElementById('QR~QID2').innerHTML+=userId;
-    };
+    };*/
 
     var startSurvey = function () {
       // THIS LINE FOR inAppBrowser
@@ -903,7 +899,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
           .then(function(event) {
             console.log("successfully opened page with result "+JSON.stringify(event));
             // success
-            $cordovaInAppBrowser.executeScript({ code:'getUId()' });
           })
           .catch(function(event) {
             // error
@@ -916,6 +911,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       });
       $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
         console.log("stopped loading, event = "+JSON.stringify(event));
+        $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '" + userId + "';" });
+        console.log("inserting user id into qualtrics survey. userId = "+ userId);
       });
       $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
         console.log("exiting, event = "+JSON.stringify(event));
@@ -923,7 +920,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     };
 
     $scope.startSurvey = function () {
-      showUserId();
+      startSurvey();
     }
 
     var checkSurveyDone = function () {
@@ -938,7 +935,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
               text: 'Ok',
               type: 'button-positive',
               onTap: function(e) {
-                 showUserId();
+                 startSurvey();
               }
             }]
         });
