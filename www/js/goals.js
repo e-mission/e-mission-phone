@@ -6,7 +6,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser){
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -21,6 +21,13 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
     //var challengeMembersId = [];
+
+    // THIS BLOCK FOR inAppBrowser
+    var options = {
+      location: 'no',
+      clearcache: 'no',
+      toolbar: 'yes'
+    };
 
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
@@ -182,6 +189,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                                 okType: "button-assertive"});
             console.log("Not signed up");
         });
+        checkSurveyDone();
     };
 
 
@@ -521,7 +529,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.topThreeUsers.push(threeUsers[0]);
             $scope.topThreeUsers.push(threeUsers[2]);
             $scope.usersUnderTopThree = users.slice(3);
-            console.log($scope.topThreeUsers);
             getPartyForAllUsers(users);
             setRank(partyList);
         }, function(error){
@@ -571,7 +578,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         partyList.forEach(function(party){
             var totalLvl = 0;
             var totalExp = 0;
-            var memberCount = 0; //Can't use member count of the partyObj because of invisible member count bug
+            var memberCount = 0; //Can't use member count of the partyObj, when a member is deleted from DB there is an invisible member count
             party.members.forEach(function(member) {
                 totalLvl += member.stats.lvl;
                 totalExp += member.stats.exp;
@@ -581,8 +588,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             party.stats.exp = totalExp;
             party.memberCount = memberCount;
             if(party._id === $scope.profile.party._id){
-                $scope.userParty = addRank(party.members);
-                console.log($scope.userParty);
+                var dupMember = angular.copy(party.members);
+                $scope.userParty = addRank(dupMember);
             }
         });
         partyList = partyList.filter(function(obj){
@@ -591,7 +598,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         sortForLeaderboard(partyList);
         partyList = addRank(partyList);
         $scope.partys = partyList;
-        console.log(partyList);
     };
 
     var getChallenges = function() {
@@ -866,6 +872,77 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
+    /*var showUserId = function() {
+        console.log("Showing user id");
+        $ionicPopup.show({
+          title: 'Bic2Cal Survey',
+          templateUrl: 'templates/goals/uid.html',
+          scope: $scope,
+            buttons: [{
+              text: 'Copy user id and open survey',
+              type: 'button-positive',
+              onTap: function(e) {
+                $cordovaClipboard.copy(userId).then(function () {
+                    console.log("copying to clipboard "+userId);
+                    startSurvey();
+                }, function () {
+                    // error
+                }); 
+              }
+            }]
+        });
+    };*/
+
+    var startSurvey = function () {
+      // THIS LINE FOR inAppBrowser
+      $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', '_blank', options)
+          .then(function(event) {
+            console.log("successfully opened page with result "+JSON.stringify(event));
+            // success
+          })
+          .catch(function(event) {
+            // error
+          });
+      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+        console.log("started loading, event = "+JSON.stringify(event));
+        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
+            $cordovaInAppBrowser.close();
+        }
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+        console.log("stopped loading, event = "+JSON.stringify(event));
+        $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '" + userId + "';" });
+        console.log("inserting user id into qualtrics survey. userId = "+ userId);
+      });
+      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+        console.log("exiting, event = "+JSON.stringify(event));
+      });
+    };
+
+    $scope.startSurvey = function () {
+      startSurvey();
+    }
+
+    var checkSurveyDone = function () {
+      console.log("Checking if user already completed survey");
+      var SURVEY_DONE_KEY = 'survey_done';
+      var surveyDone = storage.get(SURVEY_DONE_KEY);
+      if (!surveyDone) {
+        $ionicPopup.show({
+          title: 'Bic2Cal Survey: Please take this 15-minute survey to provide feedback for our research.',
+          scope: $scope,
+            buttons: [{
+              text: 'Ok',
+              type: 'button-positive',
+              onTap: function(e) {
+                 startSurvey();
+              }
+            }]
+        });
+        storage.set(SURVEY_DONE_KEY, true);
+      }
+    };
+
     // Tour steps
     var tour = {
       config: {
@@ -881,7 +958,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       },
       {
         target: '.invite-friends',
-        content: 'Grow your party by invite friends to join you!'
+        content: 'Grow your party by inviting friends to join you!'
       },
       {
         target: '.habit-list',
@@ -893,20 +970,22 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       nzTour.start(tour);
     };
 
+    $scope.startWalkthrough = function () {
+      startWalkthrough();
+    }
+
     /*
     * Checks if it is the first time the user has loaded the goals tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
     */
-    var checkGoalsTutorialDone = function () {
+    /*var checkGoalsTutorialDone = function () {
       var GOALS_DONE_KEY = 'goals_tutorial_done';
       var goalsTutorialDone = storage.get(GOALS_DONE_KEY);
       if (!goalsTutorialDone) {
         startWalkthrough();
         storage.set(GOALS_DONE_KEY, true);
       }
-    };
+    };*/
 
-    $scope.startWalkthrough = function () {
-      startWalkthrough();
-    }
+    checkSurveyDone();
 });
