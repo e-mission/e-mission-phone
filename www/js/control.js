@@ -1,6 +1,8 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
+                                        'ionic-datepicker',
+                                        'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
@@ -9,8 +11,35 @@ angular.module('emission.main.control',['emission.services',
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, StartPrefs, ControlHelper, UpdateCheck,
+               $rootScope, storage, ionicDatePicker,
+               StartPrefs, ControlHelper, UpdateCheck,
                CalorieCal, ClientStats) {
+
+    var datepickerObject = {
+      todayLabel: 'Today',  //Optional
+      closeLabel: 'Close',  //Optional
+      setLabel: 'Set',  //Optional
+      titleLabel: 'One week of data from',
+      setButtonType : 'button-positive',  //Optional
+      todayButtonType : 'button-stable',  //Optional
+      closeButtonType : 'button-stable',  //Optional
+      inputDate: moment().subtract(1, 'week').toDate(),  //Optional
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      mondayFirst: true,  //Optional
+      templateType: 'popup', //Optional
+      showTodayButton: 'true', //Optional
+      modalHeaderColor: 'bar-positive', //Optional
+      modalFooterColor: 'bar-positive', //Optional
+      callback: ControlHelper.getMyData, //Mandatory
+      dateFormat: 'dd MMM yyyy', //Optional
+      closeOnSelect: true //Optional
+    }
+
+    $scope.openDatePicker = function(){
+      ionicDatePicker.openDatePicker(datepickerObject);
+    };
+
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
@@ -491,7 +520,7 @@ angular.module('emission.main.control',['emission.services',
             template: 'Consented to protocol {{consentDoc.protocol_id}}, {{consentDoc.approval_date}}',
             scope: $scope,
             title: "Consent found!",
-            buttons: [ 
+            buttons: [
             // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
             //  type: 'button-calm'},
             {text: "<b>OK</b>",
