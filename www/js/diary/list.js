@@ -9,6 +9,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
+                                    ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     Config, PostTripManualMarker, nzTour, storage) {
   console.log("controller DiaryListCtrl called");
@@ -148,9 +149,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       modalHeaderColor: 'bar-positive', //Optional
       modalFooterColor: 'bar-positive', //Optional
       callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'dd MMMM yyyy', //Optional
+      dateFormat: 'dd MMM yyyy', //Optional
       closeOnSelect: true //Optional
     };
+
+    $scope.pickDay = function() {
+      ionicDatePicker.openDatePicker($scope.datepickerObject);
+    }
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got event with args "+JSON.stringify(args));

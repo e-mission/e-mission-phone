@@ -1,0 +1,22 @@
+<ion-view style="" title="Map">
+    <ion-nav-title>{{ getFormattedDate(mapCtrl.start_ts) }}</ion-nav-title> 
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
+        <div class="row" style="">
+            <div class="col-30">
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(mapCtrl.start_ts)}}</div>
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(mapCtrl.end_ts)}}
+                </div>
+            </div>
+            <div style="height: 10px;"></div>
+        </div>
+            <leaflet geojson="mapCtrl.geojson" id="incident" defaults="mapCtrl.defaults" 
+                height="75%" width="100%" data-tap-disabled="true">
+            </leaflet>
+        <div style="" class="button-bar">
+            <button class="button button-stable button-block icon ion-refresh"
+                ng-click="refreshWholeMap()">Refresh</button>
+            <button class="button button-stable button-block"
+                ng-click="refreshTiles()">Fix Map</button>
+        </div>
+    </ion-content>
+</ion-view>

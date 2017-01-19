@@ -55,9 +55,10 @@
     },
     "cordova-plugin-app-version",
     "cordova-plugin-file",
+    "cordova-plugin-compat",
     {
       "locator": "https://github.com/shankari/cordova-plugin-email-composer.git",
-      "id": "de.appplant.cordova.plugin.email-composer"
+      "id": "cordova-plugin-email-composer"
     },
     {
       "locator": "https://github.com/e-mission/cordova-server-sync.git",
@@ -76,7 +77,16 @@
       "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
       "id": "cordova-plugin-customurlscheme"
     },
-    "cordova-plugin-inappbrowser"
+    "cordova-plugin-inappbrowser",
+    "cordova-plugin-registerusernotificationsettings",
+    {
+      "locator": "https://github.com/shankari/cordova-plugin-local-notifications.git",
+      "id": "de.appplant.cordova.plugin.local-notification-ios9-fix"
+    },
+    {
+      "locator": "https://github.com/e-mission/e-mission-transition-notify.git",
+      "id": "edu.berkeley.eecs.emission.cordova.transitionnotify"
+    }
   ],
   "cordovaPlatforms": [
     "ios",

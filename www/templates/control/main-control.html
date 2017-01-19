@@ -45,10 +45,20 @@
       <div class="control-list-text">Check for UI updates</div>
       <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
     </div>
+
+    <div class="control-list-item">
+      <div class="control-list-text">Download json dump</div>
+      <div ng-click="openDatePicker()" class="control-icon-button">
+        <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
+      </div>
+      <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div> -->
+    </div>
+
     <div class="control-list-item">
       <div class="control-list-text">Email log</div>
       <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
     </div>
+
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text">User data</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
