@@ -7,7 +7,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet',
 .controller("PostTripMapCtrl", function($scope, $window,
                                         $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, Logger,
-                                        Timeline, DiaryHelper, Config, CommHelper,
+                                        Timeline, DiaryHelper, Config, UnifiedDataLoader,
                                         PostTripManualMarker) {
   console.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
@@ -46,10 +46,13 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet',
     $scope.mapCtrl.geojson.pointToLayer = DiaryHelper.pointFormat;
     $scope.mapCtrl.geojson.data = {
         type: "Point",
-        coordinates: [-122, 37]
+        coordinates: [-122, 37],
+        properties: {
+          feature_type: "location"
+        }
     };
     console.log("About to query buffer for "+JSON.stringify(tq));
-    $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(LOC_KEY, tq, true)
+    UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       // .then(PostTripManualMarker.addLatLng)
       .then(function(resultList) {
         console.log("Read data of length "+resultList.length);
@@ -107,7 +110,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet',
           });
           console.log("Finished getting section points");
               */
-            
+
           $scope.mapCtrl.cache.loaded = true;
           $scope.$apply(function() {
             // data is in the cache, so we can just load it from there
