@@ -47,7 +47,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       // mark in native storage
       return readConsentState().then(writeConsentToNative).then(function(response) {
           // mark in local storage
-          storage.set(startprefs.DATA_COLLECTION_CONSENTED_PROTOCOL,
+          storage.set(DATA_COLLECTION_CONSENTED_PROTOCOL,
             $rootScope.req_consent);
           // mark in local variable as well
           $rootScope.curr_consented = angular.copy($rootScope.req_consent);
@@ -101,7 +101,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                   $rootScope.req_consent = startupConfigResult.data.emSensorDataCollectionProtocol;
                   logger.log("required consent version = " + JSON.stringify($rootScope.req_consent));
                   $rootScope.curr_consented = storage.get(
-                    startprefs.DATA_COLLECTION_CONSENTED_PROTOCOL);
+                    DATA_COLLECTION_CONSENTED_PROTOCOL);
           });
       }
     }

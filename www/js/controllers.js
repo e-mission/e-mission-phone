@@ -4,6 +4,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.startprefs',
                                         'emission.splash.referral',
                                         'emission.stats.clientstats',
+                                        'emission.incident.posttrip.prompt',
                                         'customURLScheme'])
 
 .controller('RootCtrl', function($scope) {})
@@ -11,7 +12,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, $ionicPlatform,
-    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats) {
+    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats, PostTripAutoPrompt)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   CustomURLScheme.onLaunch(function(event, url){

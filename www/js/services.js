@@ -83,6 +83,25 @@ angular.module('emission.services', [])
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
       })
     };
+
+    /*
+     * key_list = list of keys to retrieve or None for all keys
+     * start_time = beginning timestamp for range
+     * end_time = ending timestamp for rangeA
+     */
+
+    this.getRawEntries = function(key_list, start_ts, end_ts) {
+      return new Promise(function(resolve, reject) {
+          var msgFiller = function(message) {
+            message.key_list = key_list;
+            message.start_time = start_ts;
+            message.end_time = end_ts;
+            console.log("About to return message "+JSON.stringify(message));
+          };
+          console.log("getRawEntries: about to get pushGetJSON for the timestamp");
+          window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, resolve, reject);
+      });
+    };
 })
 
 .service('ReferHelper', function($http) {
@@ -102,7 +121,40 @@ angular.module('emission.services', [])
     //}*/
     }
 })
-.service('ControlHelper', function($cordovaEmailComposer) {
+.service('UnifiedDataLoader', function($window, CommHelper) {
+    var combineWithDedup = function(list1, list2) {
+      var combinedList = list1.concat(list2);
+      return combinedList.filter(function(value, i, array) {
+        var firstIndexOfValue = array.findIndex(function(element, index, array) {
+          return element.metadata.write_ts == value.metadata.write_ts;
+        });
+        return firstIndexOfValue == i;
+      });
+    };
+
+    // TODO: Generalize this to work for both sensor data and messages
+    // Do we even need to separate the two kinds of data?
+    // Alternatively, we can maintain another mapping between key -> type
+    // Probably in www/json...
+    this.getUnifiedSensorDataForInterval = function(key, tq) {
+        return new Promise(function(resolve, reject) {
+          var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
+          var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs);
+          Promise.all([localPromise, remotePromise])
+            .then(function(resultList) {
+              var dedupedList = combineWithDedup(resultList[0], resultList[1].phone_data);
+              resolve(dedupedList);
+            })
+            .catch(reject);
+        })
+    };
+
+    this.getUnifiedMessagesForInterval = function(key, tq, withMetadata) {
+    }
+})
+.service('ControlHelper', function($cordovaEmailComposer,
+                                   $ionicPopup,
+                                   CommHelper) {
   this.emailLog = function() {
         var parentDir = "unknown";
 
@@ -120,6 +172,8 @@ angular.module('emission.services', [])
             alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
             parentDir = cordova.file.dataDirectory+"../LocalDatabase";
         }
+
+        assert(parentDir != "unknown");
 
         /*
         window.Logger.log(window.Logger.LEVEL_INFO,
@@ -146,7 +200,106 @@ angular.module('emission.services', [])
            window.Logger.log(window.Logger.LEVEL_INFO,
                "Email cancel reported, seems to be an error on android");
         });
+    };
+
+    this.writeFile = function(fileEntry, resultList) {
+      // Create a FileWriter object for our FileEntry (log.txt).
     }
+
+    this.getMyData = function(startTs) {
+        var fmt = "YYYY-MM-DD";
+        var startMoment = moment(startTs);
+        var endMoment = startMoment.clone().add(1, "week");
+        var dumpFile = startMoment.format(fmt) + "."
+          + endMoment.format(fmt)
+          + ".timeline";
+          alert("Going to retrieve data to "+dumpFile);
+
+          var writeDumpFile = function(result) {
+            return new Promise(function(resolve, reject) {
+              var resultList = result.phone_data;
+              window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
+                console.log('file system open: ' + fs.name);
+                fs.root.getFile(dumpFile, { create: true, exclusive: false }, function (fileEntry) {
+                  console.log("fileEntry "+fileEntry.nativeURL+" is file?" + fileEntry.isFile.toString());
+                  fileEntry.createWriter(function (fileWriter) {
+                    fileWriter.onwriteend = function() {
+                      console.log("Successful file write...");
+                      resolve();
+                      // readFile(fileEntry);
+                    };
+
+                    fileWriter.onerror = function (e) {
+                      console.log("Failed file write: " + e.toString());
+                      reject();
+                    };
+
+                    // If data object is not passed in,
+                    // create a new Blob instead.
+                    var dataObj = new Blob([JSON.stringify(resultList, null, 2)],
+                    { type: 'application/json' });
+                    fileWriter.write(dataObj);
+                  });
+                  // this.writeFile(fileEntry, resultList);
+                });
+              });
+            });
+          }
+
+
+          var emailData = function(result) {
+            return new Promise(function(resolve, reject) {
+              window.cordova.plugins.BEMJWTAuth.getUserEmail().then(function(userEmail) {
+                window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
+                  console.log("During email, file system open: "+fs.name);
+                  fs.root.getFile(dumpFile, null, function(fileEntry) {
+                    console.log("fileEntry "+fileEntry.nativeURL+" is file?"+fileEntry.isFile.toString());
+                    fileEntry.file(function (file) {
+                      var reader = new FileReader();
+
+                      reader.onloadend = function() {
+                        console.log("Successful file read with " + this.result.length +" characters");
+                        var dataArray = JSON.parse(this.result);
+                        console.log("Successfully read resultList of size "+dataArray.length);
+                        // displayFileData(fileEntry.fullPath + ": " + this.result);
+                        var email = {
+                          to: [userEmail],
+                          attachments: [
+                            fileEntry.nativeURL
+                          ],
+                          subject: 'Data dump from '+startMoment.format(fmt)
+                          + " to " + endMoment.format(fmt),
+                          body: 'Data consists of a list of entries.'
+                          + 'Entry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper'
+                          + 'Data can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data'
+                          + ' and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb'
+                        }
+                        $cordovaEmailComposer.open(email).then(resolve());
+                      }
+                      reader.readAsText(file);
+                    }, function(error) {
+                      $ionicPopup.alert({template: error});
+                      reject(error);
+                    });
+                  });
+                });
+              });
+            });
+          };
+
+        CommHelper.getRawEntries(null, startMoment.unix(), endMoment.unix())
+          .then(writeDumpFile)
+          .then(emailData)
+          .then(function() {
+             window.Logger.log(window.Logger.LEVEL_DEBUG,
+                 "Email queued successfully");
+          })
+          .catch(function(error) {
+             window.Logger.log(window.Logger.LEVEL_INFO,
+                 "Email cancel reported, seems to be an error on android");
+            $ionicPopup.alert({'template': JSON.stringify(error)});
+          })
+    };
 
     this.dataCollectionSetConfig = function(config) {
       return window.cordova.plugins.BEMDataCollection.setConfig(config);
