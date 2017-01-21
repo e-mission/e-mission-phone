@@ -218,9 +218,18 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    */
 
   var showSheet = function(featureArray, latlng, ts, marker, e, map) {
+    /*
     var safe_suck_cancel_actions = [{text: "<i class='ion-heart icon-action'></i>",
                                      action: addSafeEntry},
                                     {text: "<i class='ion-heart-broken icon-action'></i>",
+                                     action: addSuckEntry},
+                                    {text: "Cancel",
+                                     action: cancelTempEntry}]
+                                     */
+
+    var safe_suck_cancel_actions = [{text: "<font size='+5'>&#x263B;</font>",
+                                     action: addSafeEntry},
+                                    {text: "<font size='+5'>&#x2639;</font>",
                                      action: addSuckEntry},
                                     {text: "Cancel",
                                      action: cancelTempEntry}]

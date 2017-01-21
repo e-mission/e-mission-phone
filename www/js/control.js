@@ -19,7 +19,7 @@ angular.module('emission.main.control',['emission.services',
       todayLabel: 'Today',  //Optional
       closeLabel: 'Close',  //Optional
       setLabel: 'Set',  //Optional
-      titleLabel: 'One week of data from',
+      titleLabel: 'Choose date to download data',
       setButtonType : 'button-positive',  //Optional
       todayButtonType : 'button-stable',  //Optional
       closeButtonType : 'button-stable',  //Optional
