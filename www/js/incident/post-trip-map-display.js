@@ -145,7 +145,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
     },
     steps: [{
-      target: '.incident',
+      target: '#incident',
       content: 'Zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
     }]
   };
