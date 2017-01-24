@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="edu.berkeley.eecs.emission" 
-        version="1.6.0" 
-        android-versionCode="20"
-        ios-CFBundleVersion="20"
+        version="1.7.0" 
+        android-versionCode="21"
+        ios-CFBundleVersion="21"
         xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>emission</name>
   <description>

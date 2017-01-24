@@ -29,7 +29,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    */
 
   var getSectionPoints = function(section) {
-    console.log("Called getSection points with list of size "+section.geometry.coordinates.length);
+    Logger.log("Called getSection points with list of size "+section.geometry.coordinates.length);
     var mappedPoints = section.geometry.coordinates.map(function(currCoords, index) {
       Logger.log("About to map point"+ JSON.stringify(currCoords)+" at index "+index);
       var currMappedPoint = {loc: currCoords,
@@ -44,7 +44,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   }
 
   ptmm.addLatLng = function(locEntryList) {
-    console.log("called addLatLng with list of length "+locEntryList.length);
+    Logger.log("called addLatLng with list of length "+locEntryList.length);
     var mappedPoints = locEntryList.map(function(currEntry) {
       var currMappedPoint = {loc: currEntry.data.loc,
         latlng: L.GeoJSON.coordsToLatLng(currEntry.data.loc),
@@ -218,13 +218,23 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    */
 
   var showSheet = function(featureArray, latlng, ts, marker, e, map) {
+    /*
     var safe_suck_cancel_actions = [{text: "<i class='ion-heart icon-action'></i>",
                                      action: addSafeEntry},
                                     {text: "<i class='ion-heart-broken icon-action'></i>",
                                      action: addSuckEntry},
                                     {text: "Cancel",
                                      action: cancelTempEntry}]
+                                     */
+    Logger.log("About to show sheet for latlng = "+latlng+" ts = "+ ts);
+    var safe_suck_cancel_actions = [{text: "<font size='+5'>&#x263B;</font>",
+                                     action: addSafeEntry},
+                                    {text: "<font size='+5'>&#x2639;</font>",
+                                     action: addSuckEntry},
+                                    {text: "Cancel",
+                                     action: cancelTempEntry}]
 
+    Logger.log("About to call ionicActionSheet.show");
     $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
               +", lng: " + latlng.lng.toFixed(6)
               + " at " + getFormattedTime(ts),
@@ -235,6 +245,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
           buttons: safe_suck_cancel_actions,
           buttonClicked: function(index, button) {
               var newEntry = button.action(latlng, ts, marker, e, map);
+              Logger.log("Clicked button "+button.text+" at index "+index);
               /*
                * The markers are now displayed using the trip geojson. If we only
                * store the incidents to the usercache and don't add it to the geojson
@@ -352,6 +363,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
           if (timeBins.length == 1) {
             // Common case: find the first item in the first time bin, no need to
             // prompt
+            Logger.log("About to retrieve ts from first bin of "+timeBins);
             var ts = timeBins[0][0].ts;
             showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
           } else {
@@ -366,6 +378,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
             // which will be a max of 5 * 30 secs = 2.5 minutes
             // Let's accept the error for now and fix later.
             // Example: 8:06 - 8:48 on 16 Nov on iPhone3, around 3pm on 16 Nov on
+            Logger.log("About to retrieve first ts from each bin of "+timeBins);
             var tsOptions = timeBins.map(function(bin) {
               return bin[0].ts;
             });

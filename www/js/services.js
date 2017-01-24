@@ -89,6 +89,26 @@ angular.module('emission.services', [])
      * start_time = beginning timestamp for range
      * end_time = ending timestamp for rangeA
      */
+    var moment2Localdate = function(momentObj) {
+       return {
+         year: momentObj.year(),
+         month: momentObj.month() + 1,
+         day: momentObj.date(),
+       };
+    }
+
+    this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
+      return new Promise(function(resolve, reject) {
+          var msgFiller = function(message) {
+            message.key_list = key_list;
+            message.from_local_date = moment2Localdate(moment.unix(start_ts));
+            message.to_local_date = moment2Localdate(moment.unix(end_ts));
+            console.log("About to return message "+JSON.stringify(message));
+          };
+          console.log("getRawEntries: about to get pushGetJSON for the timestamp");
+          window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/local_date", msgFiller, resolve, reject);
+      });
+    };
 
     this.getRawEntries = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
@@ -173,7 +193,9 @@ angular.module('emission.services', [])
             parentDir = cordova.file.dataDirectory+"../LocalDatabase";
         }
 
-        assert(parentDir != "unknown");
+        if (parentDir == "unknown") {
+          alert("parentDir unexpectedly = "+parentDir+"!")
+        }
 
         /*
         window.Logger.log(window.Logger.LEVEL_INFO,
@@ -208,8 +230,10 @@ angular.module('emission.services', [])
 
     this.getMyData = function(startTs) {
         var fmt = "YYYY-MM-DD";
+        // We are only retrieving data for a single day to avoid
+        // running out of memory on the phone
         var startMoment = moment(startTs);
-        var endMoment = startMoment.clone().add(1, "week");
+        var endMoment = moment(startTs).endOf("day");
         var dumpFile = startMoment.format(fmt) + "."
           + endMoment.format(fmt)
           + ".timeline";
@@ -262,16 +286,25 @@ angular.module('emission.services', [])
                         var dataArray = JSON.parse(this.result);
                         console.log("Successfully read resultList of size "+dataArray.length);
                         // displayFileData(fileEntry.fullPath + ": " + this.result);
+                        var attachFile = fileEntry.nativeURL;
+                        if (ionic.Platform.isAndroid()) {
+                          // At least on nexus, getting a temporary file puts it into
+                          // the cache, so I can hardcode that for now
+                          attachFile = "app://cache/"+dumpFile;
+                        }
+                        if (ionic.Platform.isIOS()) {
+                          alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
+                        }
                         var email = {
                           to: [userEmail],
                           attachments: [
-                            fileEntry.nativeURL
+                            attachFile
                           ],
                           subject: 'Data dump from '+startMoment.format(fmt)
                           + " to " + endMoment.format(fmt),
-                          body: 'Data consists of a list of entries.'
-                          + 'Entry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper'
-                          + 'Data can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data'
+                          body: 'Data consists of a list of entries.\n'
+                          + 'Entry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \n'
+                          + 'Data can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n'
                           + ' and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb'
                         }
                         $cordovaEmailComposer.open(email).then(resolve());

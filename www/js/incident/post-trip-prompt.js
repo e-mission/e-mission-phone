@@ -27,7 +27,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       id: REPORT,
       title: "Trip just ended",
       text: "Incident to report?",
-      actions: [actions[0], actions[1]],
+      actions: [actions[1]],
       category: 'REPORT_INCIDENT',
       autoClear: true
     };
@@ -65,6 +65,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     console.log("notification = "+JSON.stringify(notification));
     console.log("state = "+JSON.stringify(state));
     console.log("data = "+JSON.stringify(data));
+    /*
     $ionicPopup.show({title: "Report incident for trip",
         scope: newScope,
         template: "{{start_ts}} -> {{end_ts}}",
@@ -76,23 +77,26 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       console.log("About to go to incident map page");
       $state.go("root.main.incident", notification.data);
     });
+    */
+    console.log("About to go to incident map page");
+    $state.go("root.main.incident", notification.data);
   }
 
   ptap.registerUserResponse = function() {
     console.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (data.identifier === 'REPORT') {
-          alert("About to report");
+          // alert("About to report");
           displayCompletedTrip(notification, state, data);
       } else if (data.identifier === 'MUTE') {
-          alert('About to mute');
+          // alert('About to mute');
       }
     });
     $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
-        alert("notification cleared, no report");
+        // alert("notification cleared, no report");
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
-      alert("clicked, no action");
+      // alert("clicked, no action");
       displayCompletedTrip(notification, state, data);
     });
   }
