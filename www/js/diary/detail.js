@@ -1,13 +1,13 @@
 'use strict';
-angular.module('emission.main.diary.detail',['ui-leaflet',
-                                      'ionic-datepicker', 'nvd3',
+angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
+                                      'ionic-datepicker', 'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, Logger,
-                                        Timeline, DiaryHelper, Config, CommHelper,
-                                        PostTripManualMarker) {
+                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        Logger, Timeline, DiaryHelper, Config,
+                                        CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -111,4 +111,43 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
+
+  /* START: ng-walkthrough code */
+  // Tour steps
+  var tour = {
+    config: {
+
+    },
+    steps: [{
+      target: '#detail',
+      content: 'To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
+    }, {
+      target: '#sectionList',
+      content: 'Trip sections, along with times and modes'
+    }, {
+      target: '#sectionPct',
+      content: '% of time spent in each mode for this trip'
+    }]
+  };
+
+  var startWalkthrough = function () {
+    nzTour.start(tour);
+  };
+
+
+  var checkDetailTutorialDone = function () {
+    var DETAIL_DONE_KEY = 'detail_tutorial_done';
+    var detailTutorialDone = storage.get(DETAIL_DONE_KEY);
+    if (!detailTutorialDone) {
+      startWalkthrough();
+      storage.set(DETAIL_DONE_KEY, true);
+    }
+  };
+
+  $scope.startWalkthrough = function () {
+    startWalkthrough();
+  }
+
+  checkDetailTutorialDone();
+  /* END: ng-walkthrough code */
 })

@@ -1,14 +1,15 @@
 'use strict';
-angular.module('emission.incident.posttrip.map',['ui-leaflet',
+angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
+                                      'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.main.diary.services',
                                       'emission.incident.posttrip.manual'])
 
 .controller("PostTripMapCtrl", function($scope, $window,
                                         $stateParams, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, Logger,
-                                        Timeline, DiaryHelper, Config, UnifiedDataLoader,
-                                        PostTripManualMarker) {
+                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        Logger, Timeline, DiaryHelper, Config,
+                                        UnifiedDataLoader, PostTripManualMarker) {
   console.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   $scope.mapCtrl = {};
@@ -134,5 +135,39 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet',
   }
 
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
+  $scope.getFormattedTime = DiaryHelper.getFormattedTime;
   $scope.refreshMap($scope.mapCtrl.start_ts, $scope.mapCtrl.end_ts);
+
+  /* START: ng-walkthrough code */
+  // Tour steps
+  var tour = {
+    config: {
+
+    },
+    steps: [{
+      target: '#incident',
+      content: 'Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size="+3">&#x263B;</font> or <font size="+3">&#x2639;</font> incident'
+    }]
+  };
+
+  var startWalkthrough = function () {
+    nzTour.start(tour);
+  };
+
+
+  var checkIncidentTutorialDone = function () {
+    var INCIDENT_DONE_KEY = 'incident_tutorial_done';
+    var incidentTutorialDone = storage.get(INCIDENT_DONE_KEY);
+    if (!incidentTutorialDone) {
+      startWalkthrough();
+      storage.set(INCIDENT_DONE_KEY, true);
+    }
+  };
+
+  $scope.startWalkthrough = function () {
+    startWalkthrough();
+  }
+
+  checkIncidentTutorialDone();
+  /* END: ng-walkthrough code */
 });
