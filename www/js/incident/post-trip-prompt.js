@@ -27,7 +27,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       id: REPORT,
       title: "Trip just ended",
       text: "Incident to report?",
-      actions: [actions[0], actions[1]],
+      actions: [actions[1]],
       category: 'REPORT_INCIDENT',
       autoClear: true
     };
