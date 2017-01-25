@@ -54,39 +54,73 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
         });;
   }
 
-  var displayCompletedTrip = function(notification, state, data) {
-    console.log("About to display completed trip");
+  var getFormattedTime = function(ts_in_secs) {
+    if (angular.isDefined(ts_in_secs)) {
+      return moment(ts_in_secs * 1000).format('LT');
+    } else {
+      return "---";
+    }
+  };
+
+  var promptReport = function(notification, state, data) {
+    console.log("About to prompt whether to report a trip");
     var newScope = $rootScope.$new();
+    angular.extend(newScope, notification.data);
+    newScope.getFormattedTime = getFormattedTime;
+    console.log("notification = "+JSON.stringify(notification));
+    console.log("state = "+JSON.stringify(state));
+    console.log("data = "+JSON.stringify(data));
+    return $ionicPopup.show({title: "Report incident for trip",
+        scope: newScope,
+        template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
+        buttons: [{
+          text: 'Report',
+          type: 'button-positive',
+          onTap: function(e) {
+            // e.preventDefault() will stop the popup from closing when tapped.
+            return true;
+          }
+        }, {
+          text: 'Skip',
+          type: 'button-positive',
+          onTap: function(e) {
+            return false;
+          }
+        }]
+    })
+  }
+
+  var cleanDataIfNecessary = function(notification, state, data) {
     if ($ionicPlatform.is('ios')) {
       console.log("About to parse "+notification.data);
       notification.data = JSON.parse(notification.data);
     }
-    angular.extend(newScope, notification.data);
-    console.log("notification = "+JSON.stringify(notification));
-    console.log("state = "+JSON.stringify(state));
-    console.log("data = "+JSON.stringify(data));
+  };
+
+  var displayCompletedTrip = function(notification, state, data) {
+    console.log("About to display completed trip");
+
     /*
-    $ionicPopup.show({title: "Report incident for trip",
-        scope: newScope,
-        template: "{{start_ts}} -> {{end_ts}}",
-        buttons: [{
-          text: 'OK',
-          type: 'button-positive'
-        }]
-    }).then(function() {
-      console.log("About to go to incident map page");
-      $state.go("root.main.incident", notification.data);
+    promptReport(notification, state, data).then(function(res) {
+      if (res == true) {
+        console.log("About to go to incident map page");
+        $state.go("root.main.incident", notification.data);
+      } else {
+        console.log("Skipped incident reporting");
+      }
     });
     */
+
     console.log("About to go to incident map page");
     $state.go("root.main.incident", notification.data);
-  }
+  };
 
   ptap.registerUserResponse = function() {
     console.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (data.identifier === 'REPORT') {
           // alert("About to report");
+          cleanDataIfNecessary(notification, state, data);
           displayCompletedTrip(notification, state, data);
       } else if (data.identifier === 'MUTE') {
           // alert('About to mute');
@@ -95,8 +129,25 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
         // alert("notification cleared, no report");
     });
+    $window.cordova.plugins.notification.local.on('cancel', function (notification, state, data) {
+        // alert("notification cancelled, no report");
+    });
+    $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
+        // alert("triggered, no action");
+        cleanDataIfNecessary(notification, state, data);
+        promptReport(notification, state, data).then(function(res) {
+          if (res == true) {
+            console.log("About to go to incident map page");
+            displayCompletedTrip(notification, state, data);
+            $state.go("root.main.incident", notification.data);
+          } else {
+            console.log("Skipped incident reporting");
+          }
+        });
+    });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");
+      cleanDataIfNecessary(notification, state, data);
       displayCompletedTrip(notification, state, data);
     });
   }
