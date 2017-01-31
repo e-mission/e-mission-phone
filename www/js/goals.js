@@ -137,7 +137,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
               toolbar: 'yes'
             };
 
-            var settings = localStorage.getItem("habit-mobile-settings")
+            var settings = localStorage.getItem("habit-mobile-settings");
 
           $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
             // insert Javascript via code / file
@@ -223,6 +223,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                         'method_args': null};
 
         CommHelper.habiticaProxy(callOpts).then(function(response){
+            localStorage.setItem("habit-mobile-settings", JSON.stringify({'auth': response.auth}));
             $scope.screen = response.success;
             $scope.$apply(function() {
                 $scope.profile = response.data;
@@ -283,6 +284,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 $ionicLoading.hide();
                 console.log("User profile error");
             });
+
     };
 
     var getUserTask = function(){
