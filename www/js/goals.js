@@ -57,6 +57,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.leaderboardModal = modal;
     });
 
+
     var joinGroupSuccess = function() {
        refreshInfo();
        var alertPopup = $ionicPopup.alert({
@@ -136,7 +137,35 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
+    $scope.toBrowser = function() {
+            var options = {
+              location: 'yes',
+              clearcache: 'yes',
+              toolbar: 'yes'
+            };
 
+            var settings = localStorage.getItem("habit-mobile-settings");
+
+          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
+            // insert Javascript via code / file
+            $cordovaInAppBrowser.executeScript({
+              code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
+              + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+            });
+
+          });
+        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)
+          .then(function(event) {
+            // success
+          })
+          .catch(function(event) {
+            // error
+          });
+
+    };
+    $scope.closeBrowser = function() {
+        $scope.browserModal.hide();
+    };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
     };
@@ -202,6 +231,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                         'method_args': null};
 
         CommHelper.habiticaProxy(callOpts).then(function(response){
+            localStorage.setItem("habit-mobile-settings", JSON.stringify({'auth': response.auth}));
             $scope.screen = response.success;
             $scope.$apply(function() {
                 $scope.profile = response.data;
@@ -261,6 +291,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 $ionicLoading.hide();
                 console.log("User profile error");
             });
+
     };
 
     var getUserTask = function(){
