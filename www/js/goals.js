@@ -148,11 +148,14 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
           $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
             // insert Javascript via code / file
-            $cordovaInAppBrowser.executeScript({
-              code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
-              + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
-            });
-
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
+                $cordovaInAppBrowser.executeScript({
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+                });
+            } else {
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");
+            }
           });
         $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)
           .then(function(event) {
@@ -942,8 +945,19 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       });
       $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
         console.log("stopped loading, event = "+JSON.stringify(event));
-        $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '" + userId + "';" });
-        console.log("inserting user id into qualtrics survey. userId = "+ userId);
+        if (event.url == 'https://berkeley.qualtrics.com/jfe/form/SV_5pzFk7JnMkfWBw1') {
+            /*
+            $cordovaInAppBrowser.executeScript({ code: "alert('connect debugger'); "
+            + "var populateId = function() { if (document == null) { alert('document == '+document); setTimeout(populateId, 1000); } else { var element = document.getElementById('QR~QID2'); alert('document = '+document+ ' element = '+ element); if (element == null) { populateId(); } else { console.log('setting '"+userId+"'); element.value += '"+userId+"';}}};" 
+            + "populateId();"
+            + "alert('connect debugger after ');"
+            });
+            */
+            $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '"+userId+"';" });
+            Logger.log("inserting user id into qualtrics survey. userId = "+ userId);
+        } else {
+            Logger.log("checking for survey loadstop, finished loading url "+event.url+" ignoring...");
+        }
       });
       $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
         console.log("exiting, event = "+JSON.stringify(event));
