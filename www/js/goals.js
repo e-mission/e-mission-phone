@@ -57,6 +57,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.leaderboardModal = modal;
     });
 
+
     var joinGroupSuccess = function() {
        refreshInfo();
        var alertPopup = $ionicPopup.alert({
@@ -136,7 +137,38 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
+    $scope.toBrowser = function() {
+            var options = {
+              location: 'yes',
+              clearcache: 'yes',
+              toolbar: 'yes'
+            };
 
+            var settings = localStorage.getItem("habit-mobile-settings");
+
+          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
+            // insert Javascript via code / file
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
+                $cordovaInAppBrowser.executeScript({
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+                });
+            } else {
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");
+            }
+          });
+        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)
+          .then(function(event) {
+            // success
+          })
+          .catch(function(event) {
+            // error
+          });
+
+    };
+    $scope.closeBrowser = function() {
+        $scope.browserModal.hide();
+    };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
     };
@@ -202,6 +234,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                         'method_args': null};
 
         CommHelper.habiticaProxy(callOpts).then(function(response){
+            localStorage.setItem("habit-mobile-settings", JSON.stringify({'auth': response.auth}));
             $scope.screen = response.success;
             $scope.$apply(function() {
                 $scope.profile = response.data;
@@ -261,6 +294,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 $ionicLoading.hide();
                 console.log("User profile error");
             });
+
     };
 
     var getUserTask = function(){
@@ -911,8 +945,19 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       });
       $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
         console.log("stopped loading, event = "+JSON.stringify(event));
-        $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '" + userId + "';" });
-        console.log("inserting user id into qualtrics survey. userId = "+ userId);
+        if (event.url == 'https://berkeley.qualtrics.com/jfe/form/SV_5pzFk7JnMkfWBw1') {
+            /*
+            $cordovaInAppBrowser.executeScript({ code: "alert('connect debugger'); "
+            + "var populateId = function() { if (document == null) { alert('document == '+document); setTimeout(populateId, 1000); } else { var element = document.getElementById('QR~QID2'); alert('document = '+document+ ' element = '+ element); if (element == null) { populateId(); } else { console.log('setting '"+userId+"'); element.value += '"+userId+"';}}};" 
+            + "populateId();"
+            + "alert('connect debugger after ');"
+            });
+            */
+            $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '"+userId+"';" });
+            Logger.log("inserting user id into qualtrics survey. userId = "+ userId);
+        } else {
+            Logger.log("checking for survey loadstop, finished loading url "+event.url+" ignoring...");
+        }
       });
       $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
         console.log("exiting, event = "+JSON.stringify(event));
