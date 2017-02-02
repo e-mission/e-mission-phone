@@ -306,7 +306,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       } else {
         console.log("Illegal time_type"); // Notice that you need to set query
       }
-      if($scope.modal.isShown()){
+      if(angular.isDefined($scope.modal) && $scope.modal.isShown()){
         $scope.modal.hide();
       }
     }
