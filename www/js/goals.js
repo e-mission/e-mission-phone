@@ -948,7 +948,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         if (event.url == 'https://berkeley.qualtrics.com/jfe/form/SV_5pzFk7JnMkfWBw1') {
             $http.get("js/goals/survey_uuid_insert.js")
               .then(function(scriptText) {
-                alert("finished loading script");
+                // alert("finished loading script");
                 console.log(scriptText.data);
                 // I tried to use http://stackoverflow.com/posts/23387583/revisions
                 // for the idea on how to invoke the function in the script
