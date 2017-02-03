@@ -77,7 +77,10 @@
       "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
       "id": "cordova-plugin-customurlscheme"
     },
-    "cordova-plugin-inappbrowser",
+    {
+      "locator": "https://github.com/shankari/cordova-plugin-inappbrowser.git",
+      "id": "cordova-plugin-inappbrowser"
+    },
     "cordova-plugin-registerusernotificationsettings",
     {
       "locator": "https://github.com/shankari/cordova-plugin-local-notifications.git",
