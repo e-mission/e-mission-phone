@@ -139,8 +139,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     };*/
     $scope.toBrowser = function() {
             var options = {
-              location: 'yes',
-              clearcache: 'yes',
+              location: 'no',
+              clearcache: 'no',
               toolbar: 'yes'
             };
 
