@@ -956,21 +956,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 // script file directly and insert the userId.
                 var codeTemplate = scriptText.data;
                 var codeString = codeTemplate.replace("SCRIPT_EDIT_UUID", userId);
-                $cordovaInAppBrowser.executeScript({ code: codeString },
-                  // this callback is never executed!!
-                  function(retArr) {
-                    alert("initial script result, about to run new code with retArr = "+retArr);
-                    $cordovaInAppBrowser.executeScript({
-                      code: "alert('connect debugger'); "
-                          + "populateId('"+userId+"');"
-                          + "alert('connect debugger after ');"
-                    });
-                    alert("finished running new code");
-                });
+                $cordovaInAppBrowser.executeScript({ code: codeString });
               });
-            /*
-            $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '"+userId+"';" });
-            */
             Logger.log("inserting user id into qualtrics survey. userId = "+ userId);
         } else {
             Logger.log("checking for survey loadstop, finished loading url "+event.url+" ignoring...");
