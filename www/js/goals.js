@@ -946,11 +946,28 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
         console.log("stopped loading, event = "+JSON.stringify(event));
         if (event.url == 'https://berkeley.qualtrics.com/jfe/form/SV_5pzFk7JnMkfWBw1') {
-            $cordovaInAppBrowser.executeScript({ code: "alert('connect debugger'); "
-            + "var populateId = function() { if (document == null) { alert('document == '+document); setTimeout(populateId, 1000); } else { var el = document.getElementById('QR~QID2'); alert('document = '+document+ ' element = '+ el); if (el == null) { alert('element == null!'); setTimeout(populateId, 1000); } else { el.value += '"+userId+"';}}};" 
-            + "populateId();"
-            + "alert('connect debugger after ');"
-            });
+            $http.get("js/goals/survey_uuid_insert.js")
+              .then(function(scriptText) {
+                alert("finished loading script");
+                console.log(scriptText.data);
+                // I tried to use http://stackoverflow.com/posts/23387583/revisions
+                // for the idea on how to invoke the function in the script
+                // file, but the callback function was never invoked. So I edit the
+                // script file directly and insert the userId.
+                var codeTemplate = scriptText.data;
+                var codeString = codeTemplate.replace("SCRIPT_EDIT_UUID", userId);
+                $cordovaInAppBrowser.executeScript({ code: codeString },
+                  // this callback is never executed!!
+                  function(retArr) {
+                    alert("initial script result, about to run new code with retArr = "+retArr);
+                    $cordovaInAppBrowser.executeScript({
+                      code: "alert('connect debugger'); "
+                          + "populateId('"+userId+"');"
+                          + "alert('connect debugger after ');"
+                    });
+                    alert("finished running new code");
+                });
+              });
             /*
             $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '"+userId+"';" });
             */
