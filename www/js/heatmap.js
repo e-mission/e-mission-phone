@@ -338,7 +338,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   // Tour steps
   var tour = {
     config: {
-
+      mask: {
+        visibleOnNoTarget: true,
+        clickExit: true
+      }
     },
     steps: [{
       target: '.datepicker',
@@ -355,7 +358,11 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   };
 
   var startWalkthrough = function () {
-    nzTour.start(tour);
+    nzTour.start(tour).then(function(result) {
+      Logger.log("heatmap walkthrough start completed, no error");
+    }).catch(function(err) {
+      Logger.log("heatmap walkthrough start errored" + err);
+    });
   };
 
   /*
@@ -375,5 +382,11 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     startWalkthrough();
   }
 
-  checkHeatmapTutorialDone();
+  $scope.$on('$ionicView.afterEnter', function(ev) {
+    // Workaround from
+    // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+    if(ev.targetScope !== $scope)
+      return;
+    checkHeatmapTutorialDone();
+  });
 });
