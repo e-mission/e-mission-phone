@@ -7,6 +7,18 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var REPORT = 737678; // REPORT on the phone keypad
   var REPORT_INCIDENT_TEXT = 'REPORT_INCIDENT';
 
+  var reportMessage = function(platform) {
+    var platformSpecificMessage = {
+      "ios": "Swipe to ",
+      "android": "Select to "
+    };
+    var selMessage = platformSpecificMessage[platform];
+    if (!angular.isDefined(selMessage)) {
+      selMessage = "Select to ";
+    }
+    return selMessage + " report incident";
+  };
+
   var getTripEndReportNotification = function() {
     var actions = [{
        identifier: 'MUTE',
@@ -27,7 +39,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     var reportNotifyConfig = {
       id: REPORT,
       title: "Trip just ended",
-      text: "Incident to report?",
+      text: reportMessage(ionic.Platform.platform()),
+      icon: 'file://img/icon.png',
+      // smallIcon: 'res://ic_mood_black.png',
+      sound: null,
       actions: [actions[1]],
       category: REPORT_INCIDENT_TEXT,
       autoClear: true
@@ -113,7 +128,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     */
 
     Logger.log("About to go to incident map page");
-    $state.go("root.main.incident", notification.data);
+    $state.go("root.main.control", notification.data).then(function(result) {
+       Logger.log("result of moving to control screen = "+result);
+       $state.go("root.main.incident"); 
+    });
   };
 
   var checkCategory = function(notification) {
