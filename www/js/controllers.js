@@ -11,7 +11,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, $ionicPlatform,
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats, PostTripAutoPrompt)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
@@ -26,13 +26,6 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
     StartPrefs.loadWithPrefs();
   });
   UpdateCheck.checkForUpdates();
-  StartPrefs.startWithPrefs();
-
-  $ionicPlatform.ready().then(function() {
-    // Here's where we initialize all the native code
-    // Theoretically, this should let us remove the $timeout hacks
-    StartPrefs.checkNativeConsent();
-  });
 
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
