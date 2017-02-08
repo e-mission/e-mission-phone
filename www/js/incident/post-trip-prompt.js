@@ -41,7 +41,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       title: "Trip just ended",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
-      // smallIcon: 'res://ic_mood_black.png',
+      // smallIcon: 'res://ic_mood_question.png',
       sound: null,
       actions: [actions[1]],
       category: REPORT_INCIDENT_TEXT,
@@ -130,7 +130,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     Logger.log("About to go to incident map page");
     $state.go("root.main.control", notification.data).then(function(result) {
        Logger.log("result of moving to control screen = "+result);
-       $state.go("root.main.incident"); 
+       $state.go("root.main.incident", notification.data); 
     });
   };
 
