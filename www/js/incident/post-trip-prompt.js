@@ -41,7 +41,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       title: "Trip just ended",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
-      // smallIcon: 'res://ic_mood_question.png',
+      smallIcon: 'res://ic_mood_question.png',
       sound: null,
       actions: [actions[1]],
       category: REPORT_INCIDENT_TEXT,
