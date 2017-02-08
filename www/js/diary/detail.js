@@ -116,7 +116,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   // Tour steps
   var tour = {
     config: {
-
+      mask: {
+        visibleOnNoTarget: true,
+        clickExit: true
+      }
     },
     steps: [{
       target: '#detail',
@@ -131,7 +134,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   };
 
   var startWalkthrough = function () {
-    nzTour.start(tour);
+    nzTour.start(tour).then(function(result) {
+      Logger.log("detail walkthrough start completed, no error");
+    }).catch(function(err) {
+      Logger.log("detail walkthrough start errored" + err);
+    });
   };
 
 
@@ -148,6 +155,12 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     startWalkthrough();
   }
 
-  checkDetailTutorialDone();
+  $scope.$on('$ionicView.afterEnter', function(ev) {
+    // Workaround from 
+    // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+    if(ev.targetScope !== $scope)
+      return;
+    checkDetailTutorialDone();
+  });
   /* END: ng-walkthrough code */
 })

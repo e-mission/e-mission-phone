@@ -2,7 +2,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
                                               'angularLocalStorage'])
 
-.factory('StartPrefs', function($window, $state, $interval, $rootScope,
+.factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
       $ionicPopup, storage, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var startprefs = {};
@@ -199,7 +199,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
               $rootScope.$broadcast("RELOAD_GOAL_PAGE_FOR_REFERRAL")
             }
         });
-        $interval.cancel(currPromise);
     };
 
     // Currently loads main or intro based on whether onboarding is complete.
@@ -215,20 +214,24 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     };
 
     startprefs.loadWithPrefs = function() {
-        // alert("attach debugger!");
-        console.log("Checking to see whether we are ready to load the screen");
-        if (angular.isDefined($window.Logger)) {
-          logger = Logger;
-          startprefs.loadDefaultTheme();
-          startprefs.loadPreferredScreen();
-        } else {
-          console.log("appPreferences plugin not installed, waiting...");
-        }
+      // alert("attach debugger!");
+      console.log("Checking to see whether we are ready to load the screen");
+      if (!angular.isDefined($window.Logger)) {
+          alert("ionic is ready, but logger not present?");
+      }
+      logger = Logger;
+      startprefs.loadDefaultTheme();
+      startprefs.loadPreferredScreen();
     };
 
-    var currPromise = null;
     startprefs.startWithPrefs = function() {
-      currPromise = $interval(startprefs.loadWithPrefs, 1000);
+      startprefs.loadWithPrefs();
     }
+
+    $ionicPlatform.ready().then(function() {
+      startprefs.startWithPrefs();
+      startprefs.checkNativeConsent();
+    });
+
     return startprefs;
 });

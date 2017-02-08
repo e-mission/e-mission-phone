@@ -10,7 +10,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
                                         UnifiedDataLoader, PostTripManualMarker) {
-  console.log("controller PostTripMapDisplay called with params = "+
+  Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
@@ -27,7 +27,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   for (var k in mapEvents) {
     var eventName = 'leafletDirectiveMap.incident.' + mapEvents[k];
     $scope.$on(eventName, function(event, data){
-        console.log("in mapEvents, event = "+JSON.stringify(event.name)+
+        Logger.log("in mapEvents, event = "+JSON.stringify(event.name)+
               " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
               " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
         $scope.eventDetected = event.name;
@@ -52,15 +52,15 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
           feature_type: "location"
         }
     };
-    console.log("About to query buffer for "+JSON.stringify(tq));
+    Logger.log("About to query buffer for "+JSON.stringify(tq));
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       // .then(PostTripManualMarker.addLatLng)
       .then(function(resultList) {
-        console.log("Read data of length "+resultList.length);
+        Logger.log("Read data of length "+resultList.length);
         if (resultList.length > 0) {
           // $scope.mapCtrl.cache.points = PostTripManualMarker.addLatLng(resultList);
           // $scope.mapCtrl.cache.points = resultList;
-          // console.log("Finished adding latlng");
+          // Logger.log("Finished adding latlng");
           var pointCoords = resultList.map(function(locEntry) {
             return [locEntry.data.longitude, locEntry.data.latitude];
           });
@@ -86,10 +86,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
             }
           };
 
-          console.log("About to get section points");
+          Logger.log("About to get section points");
           var points = resultList.map(function(locEntry) {
             var coords = [locEntry.data.longitude, locEntry.data.latitude];
-            // console.log("coords = "+coords);
+            // Logger.log("coords = "+coords);
             return {loc: coords,
                 latlng: L.GeoJSON.coordsToLatLng(coords),
                 ts: locEntry.data.ts};
@@ -98,10 +98,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
           var points = PostTripManualMarker.addLatLng(resultList);
           */
           $scope.mapCtrl.cache.points = points;
-          console.log("Finished getting section points");
+          Logger.log("Finished getting section points");
               /*
           $scope.mapCtrl.cache.points = resultList.map(function(locEntry) {
-              console.log("locEntry = "+JSON.serialize(locEntry));
+              Logger.log("locEntry = "+JSON.serialize(locEntry));
               var currMappedPoint = {loc: locEntry.data.loc,
                 latlng: L.GeoJSON.coordsToLatLng(locEntry.data.loc),
                 ts: locEntry.data.ts};
@@ -109,23 +109,22 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
               return currMappedPoint;
              return locEntry.data.ts;
           });
-          console.log("Finished getting section points");
+          Logger.log("Finished getting section points");
               */
 
           $scope.mapCtrl.cache.loaded = true;
           $scope.$apply(function() {
             // data is in the cache, so we can just load it from there
-            // console.log("About to set geojson = "+JSON.stringify($scope.mapCtrl.cache.data));
+            // Logger.log("About to set geojson = "+JSON.stringify($scope.mapCtrl.cache.data));
             $scope.mapCtrl.geojson.data = $scope.mapCtrl.cache.data;
           });
 
           leafletData.getMap('incident').then(function(map) {
-            console.log("registered click receiver");
+            Logger.log("registered click receiver");
             map.on('click', PostTripManualMarker.startAddingIncidentToPoints(map,
                 $scope.mapCtrl.cache.points,
                 $scope.mapCtrl.cache.features));
           });
-
         }
     });
   }
@@ -142,7 +141,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   // Tour steps
   var tour = {
     config: {
-
+      mask: {
+        visibleOnNoTarget: true,
+        clickExit: true
+      }
     },
     steps: [{
       target: '#incident',
@@ -151,7 +153,11 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   };
 
   var startWalkthrough = function () {
-    nzTour.start(tour);
+    nzTour.start(tour).then(function(result) {
+      Logger.log("list walkthrough start completed, no error");
+    }).catch(function(err) {
+      Logger.log("incident walkthrough start errored" + err);
+    });
   };
 
 
@@ -168,6 +174,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     startWalkthrough();
   }
 
-  checkIncidentTutorialDone();
+  $scope.$on('$ionicView.afterEnter', function(ev) {
+    // Workaround from
+    // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+    if(ev.targetScope !== $scope)
+      return;
+    checkIncidentTutorialDone();
+  });
   /* END: ng-walkthrough code */
 });

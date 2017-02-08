@@ -7,6 +7,18 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var REPORT = 737678; // REPORT on the phone keypad
   var REPORT_INCIDENT_TEXT = 'REPORT_INCIDENT';
 
+  var reportMessage = function(platform) {
+    var platformSpecificMessage = {
+      "ios": "Swipe to ",
+      "android": "Select to "
+    };
+    var selMessage = platformSpecificMessage[platform];
+    if (!angular.isDefined(selMessage)) {
+      selMessage = "Select to ";
+    }
+    return selMessage + " report incident";
+  };
+
   var getTripEndReportNotification = function() {
     var actions = [{
        identifier: 'MUTE',
@@ -27,7 +39,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     var reportNotifyConfig = {
       id: REPORT,
       title: "Trip just ended",
-      text: "Incident to report?",
+      text: reportMessage(ionic.Platform.platform()),
+      icon: 'file://img/icon.png',
+      smallIcon: 'res://ic_mood_question.png',
+      sound: null,
       actions: [actions[1]],
       category: REPORT_INCIDENT_TEXT,
       autoClear: true
@@ -37,7 +52,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   }
 
   ptap.registerTripEnd = function() {
-    console.log( "registertripEnd received!" );
+    Logger.log( "registertripEnd received!" );
     // iOS
     var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
     notifyPlugin.TRIP_END = "trip_ended";
@@ -64,13 +79,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   };
 
   var promptReport = function(notification, state, data) {
-    console.log("About to prompt whether to report a trip");
+    Logger.log("About to prompt whether to report a trip");
     var newScope = $rootScope.$new();
     angular.extend(newScope, notification.data);
     newScope.getFormattedTime = getFormattedTime;
-    console.log("notification = "+JSON.stringify(notification));
-    console.log("state = "+JSON.stringify(state));
-    console.log("data = "+JSON.stringify(data));
+    Logger.log("notification = "+JSON.stringify(notification));
+    Logger.log("state = "+JSON.stringify(state));
+    Logger.log("data = "+JSON.stringify(data));
     return $ionicPopup.show({title: "Report incident for trip",
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
@@ -93,13 +108,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var cleanDataIfNecessary = function(notification, state, data) {
     if ($ionicPlatform.is('ios') && angular.isDefined(notification.data)) {
-      console.log("About to parse "+notification.data);
+      Logger.log("About to parse "+notification.data);
       notification.data = JSON.parse(notification.data);
     }
   };
 
   var displayCompletedTrip = function(notification, state, data) {
-    console.log("About to display completed trip");
+    Logger.log("About to display completed trip");
 
     /*
     promptReport(notification, state, data).then(function(res) {
@@ -112,8 +127,11 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     */
 
-    console.log("About to go to incident map page");
-    $state.go("root.main.incident", notification.data);
+    Logger.log("About to go to incident map page");
+    $state.go("root.main.control", notification.data).then(function(result) {
+       Logger.log("result of moving to control screen = "+result);
+       $state.go("root.main.incident", notification.data); 
+    });
   };
 
   var checkCategory = function(notification) {
@@ -125,12 +143,12 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   }
 
   ptap.registerUserResponse = function() {
-    console.log( "registerUserResponse received!" );
+    Logger.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (data.identifier === 'REPORT') {
           // alert("About to report");
           if (!checkCategory(notification)) {
-              logger.log("notification "+notification+" is not an incident report, returning...");
+              Logger.log("notification "+notification+" is not an incident report, returning...");
               return;
           }
           cleanDataIfNecessary(notification, state, data);
@@ -148,24 +166,24 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
         // alert("triggered, no action");
         if (!checkCategory(notification)) {
-            logger.log("notification "+notification+" is not an incident report, returning...");
+            Logger.log("notification "+notification+" is not an incident report, returning...");
             return;
         }
         cleanDataIfNecessary(notification, state, data);
         promptReport(notification, state, data).then(function(res) {
           if (res == true) {
-            console.log("About to go to incident map page");
+            Logger.log("About to go to incident map page");
             displayCompletedTrip(notification, state, data);
             $state.go("root.main.incident", notification.data);
           } else {
-            console.log("Skipped incident reporting");
+            Logger.log("Skipped incident reporting");
           }
         });
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");
       if (!checkCategory(notification)) {
-          logger.log("notification "+notification+" is not an incident report, returning...");
+          Logger.log("notification "+notification+" is not an incident report, returning...");
           return;
       }
       cleanDataIfNecessary(notification, state, data);

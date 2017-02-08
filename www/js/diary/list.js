@@ -31,7 +31,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     CommonGraph.updateCurrent();
   };
 
-  $scope.$on('$ionicView.enter', function() {
+  $scope.$on('$ionicView.afterEnter', function() {
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
@@ -183,7 +183,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                 DiaryHelper.fillCommonTripCount(tripWrapper);
              });
           };
-          checkDiaryTutorialDone();
       });
     });
 
@@ -289,10 +288,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // Tour steps
     var tour = {
       config: {
-
+        mask: {
+          visibleOnNoTarget: true,
+          clickExit: true
+        }
       },
       steps: [{
-        target: '.nav-bar-block[nav-bar="active"] .pickerdate',
+        target: '.date-picker-button',
         content: 'Use this to select the day you want to see.'
       },
       {
@@ -306,7 +308,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     var startWalkthrough = function () {
-      nzTour.start(tour);
+      nzTour.start(tour).then(function(result) {
+        Logger.log("list walkthrough start completed, no error");
+      }).catch(function(err) {
+        Logger.log("list walkthrough start errored" + err);
+      });
     };
 
     $scope.refreshTiles = function() {
@@ -329,6 +335,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.startWalkthrough = function () {
       startWalkthrough();
     }
+
+    $scope.$on('$ionicView.enter', function(ev) {
+      // Workaround from 
+      // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+      if(ev.targetScope !== $scope)
+        return;
+      checkDiaryTutorialDone();
+    });
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
