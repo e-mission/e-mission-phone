@@ -149,6 +149,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     $scope.refreshMap($scope.mapCtrl.start_ts, $scope.mapCtrl.end_ts);
   }
 
+  $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
+  };
+
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
   $scope.refreshMap($scope.mapCtrl.start_ts, $scope.mapCtrl.end_ts);
