@@ -5,8 +5,8 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.main.diary.services',
                                       'emission.incident.posttrip.manual'])
 
-.controller("PostTripMapCtrl", function($scope, $window,
-                                        $stateParams, $ionicActionSheet,
+.controller("PostTripMapCtrl", function($scope, $window, $state,
+                                        $stateParams, $ionicActionSheet, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
                                         UnifiedDataLoader, PostTripManualMarker) {
@@ -53,10 +53,16 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
         }
     };
     Logger.log("About to query buffer for "+JSON.stringify(tq));
+    $ionicLoading.show({
+      template: 'Loading...'
+    });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       // .then(PostTripManualMarker.addLatLng)
       .then(function(resultList) {
         Logger.log("Read data of length "+resultList.length);
+        $ionicLoading.show({
+          template: 'Mapping '+resultList.length+' points'
+        });
         if (resultList.length > 0) {
           // $scope.mapCtrl.cache.points = PostTripManualMarker.addLatLng(resultList);
           // $scope.mapCtrl.cache.points = resultList;
@@ -126,12 +132,26 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                 $scope.mapCtrl.cache.features));
           });
         }
+        $ionicLoading.hide();
+    })
+    .catch(function(error) {
+        var errStr = JSON.stringify(error);
+        $ionicLoading.hide();
+        Logger.log(errStr);
+        $ionicPopup.alert({
+            title: "Unable to retrieve data",
+            template: errStr
+        });
     });
   }
 
   $scope.refreshWholeMap = function() {
     $scope.refreshMap($scope.mapCtrl.start_ts, $scope.mapCtrl.end_ts);
   }
+
+  $scope.refreshTiles = function() {
+      $scope.$broadcast('invalidateSize');
+  };
 
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
@@ -172,6 +192,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
   $scope.startWalkthrough = function () {
     startWalkthrough();
+  }
+
+  $scope.closeView = function () {
+    $state.go('root.main.control');
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {

@@ -57,7 +57,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.leaderboardModal = modal;
     });
 
-
     var joinGroupSuccess = function() {
        refreshInfo();
        var alertPopup = $ionicPopup.alert({
@@ -148,7 +147,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
           $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
             // insert Javascript via code / file
-            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||
+                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
                 $cordovaInAppBrowser.executeScript({
                   code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
                   + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"

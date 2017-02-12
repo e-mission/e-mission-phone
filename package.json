@@ -3,6 +3,7 @@
   "version": "1.1.1",
   "description": "Automatic tracker",
   "dependencies": {
+    "fs-extra": "^2.0.0",
     "gulp": "^3.5.6",
     "gulp-concat": "^2.2.0",
     "gulp-imagemin": "^2.4.0",
@@ -11,6 +12,7 @@
     "gulp-sass": "^2.0.4",
     "gulp.spritesmith": "^4.1.0",
     "image-size": "^0.3.2",
+    "klaw-sync": "^1.1.1",
     "lodash": "^3.10.1",
     "merge-stream": "^1.0.0",
     "rimraf": "^2.4.3"
