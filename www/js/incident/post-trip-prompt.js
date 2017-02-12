@@ -165,6 +165,11 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
         // alert("triggered, no action");
+        Logger.log("triggered, no action");
+        if (!$ionicPlatform.is('ios')) {
+            Logger.log("notification is displayed even when app is in foreground, ignoring trigger");
+            return;
+        }
         if (!checkCategory(notification)) {
             Logger.log("notification "+notification+" is not an incident report, returning...");
             return;
