@@ -5,6 +5,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
       $ionicPopup, storage, $http, Logger, ReferralHandler) {
     var logger = Logger;
+    var nTimesCalled = 0;
     var startprefs = {};
     var DEFAULT_THEME_KEY = 'curr_theme';
      // Boolean: represents that the "intro" - the one page summary
@@ -229,8 +230,11 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     }
 
     $ionicPlatform.ready().then(function() {
+      Logger.log("ionicPlatform.ready() called " + nTimesCalled+" times!");
+      nTimesCalled = nTimesCalled + 1;
       startprefs.startWithPrefs();
       startprefs.checkNativeConsent();
+      Logger.log("startprefs startup done");
     });
 
     return startprefs;
