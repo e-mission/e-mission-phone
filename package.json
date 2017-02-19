@@ -28,7 +28,7 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
-   {
+    {
       "id": "phonegap-plugin-push",
       "locator": "phonegap-plugin-push",
       "variables": {
@@ -99,8 +99,7 @@
     {
       "locator": "https://github.com/e-mission/e-mission-transition-notify.git",
       "id": "edu.berkeley.eecs.emission.cordova.transitionnotify"
-    },
-    "cordova-plugin-broadcaster"
+    }
   ],
   "cordovaPlatforms": [
     "ios@4.3.1",
