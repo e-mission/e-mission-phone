@@ -17,6 +17,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     var CONSENTED_KEY = "config/consent";
 
+    startprefs.CONSENTED_EVENT = "data_collection_consented";
+
     startprefs.setDefaultTheme = function(new_theme) {
       storage.set(DEFAULT_THEME_KEY, new_theme);
     }
@@ -52,6 +54,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.req_consent);
           // mark in local variable as well
           $rootScope.curr_consented = angular.copy($rootScope.req_consent);
+          $rootScope.$emit(startprefs.CONSENTED_EVENT, $rootScope.req_consent);
       });
     };
 

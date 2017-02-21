@@ -1,7 +1,8 @@
 angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.logger',
                                               'emission.services',
+                                              'emission.splash.startprefs',
                                               'angularLocalStorage'])
-.factory('PushNotify', function($window, $state, $rootScope, $ionicPush, $ionicPlatform,        $ionicPopup, storage, Logger, CommHelper) {
+.factory('PushNotify', function($window, $state, $rootScope, $ionicPush, $ionicPlatform,        $ionicPopup, storage, Logger, CommHelper, StartPrefs) {
 
     var pushnotify = {};
     var push = null;
@@ -58,18 +59,24 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
         }
         Logger.log("Platform is ios, calling handleSilentPush on DataCollection");
 
-        pushnotify.datacollect.handleSilentPush()
-        .then(function() {
-           Logger.log("silent push finished successfully, calling push.finish");
-           showDebugLocalNotification("silent push finished, calling push.finish"); 
-           $ionicPush.plugin.finish(function(result) {
-             Logger.log("Finish successful with result " + result);
-           }, function(error) {
-             Logger.log("Finish unsuccessful with result "+error);
-           });
-        })
-        .catch(function(error) {
-            $ionicPopup.alert({template: JSON.stringify(error)});
+        pushnotify.datacollect.getConfig().then(function(config) {
+          if(config.ios_use_remote_push_for_sync) {
+            pushnotify.datacollect.handleSilentPush()
+            .then(function() {
+               Logger.log("silent push finished successfully, calling push.finish");
+               showDebugLocalNotification("silent push finished, calling push.finish"); 
+               $ionicPush.plugin.finish(function(result) {
+                 Logger.log("Finish successful with result " + result);
+               }, function(error) {
+                 Logger.log("Finish unsuccessful with result "+error);
+               });
+            })
+            .catch(function(error) {
+                $ionicPopup.alert({template: JSON.stringify(error)});
+            });
+          } else {
+            Logger.log("Using background fetch for sync, no need to redirect push");
+          };
         });
     }
 
@@ -126,10 +133,19 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
 
     $ionicPlatform.ready().then(function() {
       pushnotify.datacollect = $window.cordova.plugins.BEMDataCollection;
-      pushnotify.registerPush();
+      if (StartPrefs.isConsented()) {
+          pushnotify.registerPush();
+      } else {
+        Logger.log("no consent yet, waiting to sign up for remote push");
+      }
       pushnotify.registerNotificationHandler();
-
       Logger.log("pushnotify startup done");
+    });
+
+    $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
+        console.log("got consented event "+JSON.stringify(event)
+                        +" with data "+ JSON.stringify(data));
+        pushnotify.registerPush();
     });
 
     return pushnotify;
