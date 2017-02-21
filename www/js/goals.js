@@ -161,9 +161,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
           });
 
     };
-    $scope.closeBrowser = function() {
-        $scope.browserModal.hide();
-    };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
     };
@@ -903,7 +900,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     $scope.startSurvey = function () {
       // (URL, elementID)
-      SurveyLaunch.startSurvey("CURR_IGNORED", 'QR~QID2');
+      SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
       // startSurvey();
     }
 
