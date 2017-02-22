@@ -65,6 +65,26 @@ angular.module('emission.survey.launch', ['emission.services',
       });
     };
 
+    surveylaunch.init = function() {
+      $rootScope.$on('cloud:push:notification', function(event, data) {
+        Logger.log("data = "+JSON.stringify(data));
+        if (angular.isDefined(data.message) &&
+            angular.isDefined(data.message.payload) &&
+            angular.isDefined(data.message.payload.alert_type) &&
+            data.message.payload.alert_type == "survey") {
+            var survey_spec = data.message.payload.spec;
+            if (angular.isDefined(survey_spec) &&
+                angular.isDefined(survey_spec.url) &&
+                angular.isDefined(survey_spec.uuidElementId)) {
+                surveylaunch.startSurvey(survey_spec.url, survey_spec.uuidElementId);
+            } else {
+                $ionicPopup.alert("survey was not specified correctly. spec is "+JSON.stringify(survey_spec));
+            }
+        }
+      });
+    };
+
+    surveylaunch.init();
     return surveylaunch;
 
     /*var showUserId = function() {
