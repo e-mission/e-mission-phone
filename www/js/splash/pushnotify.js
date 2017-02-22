@@ -133,11 +133,15 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
 
     $ionicPlatform.ready().then(function() {
       pushnotify.datacollect = $window.cordova.plugins.BEMDataCollection;
-      if (StartPrefs.isConsented()) {
-          pushnotify.registerPush();
-      } else {
-        Logger.log("no consent yet, waiting to sign up for remote push");
-      }
+      StartPrefs.readConsentState()
+        .then(StartPrefs.isConsented)
+        .then(function(consentState) {
+          if (consentState == true) {
+              pushnotify.registerPush();
+          } else {
+            Logger.log("no consent yet, waiting to sign up for remote push");
+          }
+        });
       pushnotify.registerNotificationHandler();
       Logger.log("pushnotify startup done");
     });

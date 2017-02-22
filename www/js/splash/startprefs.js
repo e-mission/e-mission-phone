@@ -48,7 +48,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       logger.log("changing consent from "+
         $rootScope.curr_consented+" -> "+$rootScope.req_consent);
       // mark in native storage
-      return readConsentState().then(writeConsentToNative).then(function(response) {
+      return startprefs.readConsentState().then(writeConsentToNative).then(function(response) {
           // mark in local storage
           storage.set(DATA_COLLECTION_CONSENTED_PROTOCOL,
             $rootScope.req_consent);
@@ -75,7 +75,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       }
     }
 
-    $rootScope.isConsented = function() {
+    startprefs.isConsented = function() {
       logger.log("curr_consented = "+$rootScope.curr_consented+
             "isIntroDone = " + startprefs.isIntroDone());
       if (startprefs.isIntroDone() && 
@@ -92,7 +92,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       }
     }
 
-    var readConsentState = function() {
+    startprefs.readConsentState = function() {
       /*
        * Read from local storage and move on so that we don't depend on native code.
        * Native code will be checked once the plugins are ready
@@ -136,8 +136,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         // intro is done. Now, let's read and check the current version
         // of the startup config
         return $http.get("json/startupConfig.json")
-          .then(readConsentState)
-          .then($rootScope.isConsented)
+          .then(startprefs.readConsentState)
+          .then(startprefs.isConsented)
           .then(function(result) {
             if (result) {
               return null;
@@ -162,8 +162,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.checkNativeConsent = function() {
         startprefs.getConsentDocument().then(function(resultDoc) {
             if (resultDoc == null) {
-                readConsentState()
-                    .then($rootScope.isConsented)
+                startprefs.readConsentState()
+                    .then(startprefs.isConsented)
                     .then(function(consentState) {
                         if (consentState == true) {
                             $ionicPopup.alert({template: "Local consent found, native consent missing, writing consent to native"});
