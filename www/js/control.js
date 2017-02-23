@@ -381,7 +381,16 @@ angular.module('emission.main.control',['emission.services',
         console.log("new config = "+$scope.settings.sync.new_config);
         ControlHelper.serverSyncSetConfig($scope.settings.sync.new_config)
         .then(function(){
-            $scope.getSyncSettings()
+            CommHelper.updateUser({
+                // TODO: worth thinking about where best to set this
+                // Currently happens in native code. Now that we are switching
+                // away from parse, we can store this from javascript here. 
+                // or continue to store from native
+                // this is easier for people to see, but means that calls to
+                // native, even through the javascript interface are not complete
+                curr_sync_interval: $scope.settings.sync.new_config.sync_interval
+            });
+            $scope.getSyncSettings();
         }, function(err){
             console.log("setConfig Error: " + err);
         });
