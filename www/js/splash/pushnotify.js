@@ -120,9 +120,17 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
     });
 
     $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
-        console.log("got consented event "+JSON.stringify(event.name)
-                        +" with data "+ JSON.stringify(data));
-        pushnotify.registerPush();
+      console.log("got consented event "+JSON.stringify(event.name)
+                      +" with data "+ JSON.stringify(data));
+      if (StartPrefs.isIntroDone()) {
+          console.log("intro is done -> reconsent situation, we already have a token -> register");
+          pushnotify.registerPush();
+      }
+    });
+
+    $rootScope.$on(StartPrefs.INTRO_DONE_EVENT, function(event, data) {
+          console.log("intro is done -> original consent situation, we should have a token by now -> register");
+       pushnotify.registerPush();
     });
 
     return pushnotify;

@@ -18,6 +18,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var CONSENTED_KEY = "config/consent";
 
     startprefs.CONSENTED_EVENT = "data_collection_consented";
+    startprefs.INTRO_DONE_EVENT = "intro_done";
 
     startprefs.setDefaultTheme = function(new_theme) {
       storage.set(DEFAULT_THEME_KEY, new_theme);
@@ -60,6 +61,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
+      $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
 
     // returns boolean
