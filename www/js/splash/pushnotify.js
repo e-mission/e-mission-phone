@@ -55,9 +55,11 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
         Logger.log("Found silent push notification, for platform "+ionic.Platform.platform());
         if (!$ionicPlatform.is('ios')) {
           Logger.log("Platform is not ios, handleSilentPush is not implemented or needed");
+          // doesn't matter if we finish or not because platforms other than ios don't care
           return;
         }
         Logger.log("Platform is ios, calling handleSilentPush on DataCollection");
+        var notId = data.message.payload.notId;
 
         pushnotify.datacollect.getConfig().then(function(config) {
           if(config.ios_use_remote_push_for_sync) {
@@ -65,56 +67,27 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
             .then(function() {
                Logger.log("silent push finished successfully, calling push.finish");
                showDebugLocalNotification("silent push finished, calling push.finish"); 
-               $ionicPush.plugin.finish(function(result) {
-                 Logger.log("Finish successful with result " + result);
-               }, function(error) {
-                 Logger.log("Finish unsuccessful with result "+error);
-               });
+               $ionicPush.plugin.finish(function(){}, function(){}, notId);
             })
-            .catch(function(error) {
-                $ionicPopup.alert({template: JSON.stringify(error)});
-            });
           } else {
             Logger.log("Using background fetch for sync, no need to redirect push");
+            $ionicPush.plugin.finish(function(){}, function(){}, notId);
           };
+        })
+        .catch(function(error) {
+            $ionicPush.plugin.finish(function(){}, function(){}, notId);
+            $ionicPopup.alert({template: JSON.stringify(error)});
         });
     }
 
     var showDebugLocalNotification = function(message) {
         pushnotify.datacollect.getConfig().then(function(config) {
             if(config.simulate_user_interaction) {
-              var actions = [ {
-                    identifier: 'SIGN_IN',
-                    title: 'Yes',
-                    icon: 'res://ic_signin',
-                    activationMode: 'background',
-                    destructive: false,
-                    authenticationRequired: true
-                },
-                {
-                   identifier: 'MORE_SIGNIN_OPTIONS',
-                   title: 'More Options',
-                   icon: 'res://ic_moreoptions',
-                   activationMode: 'foreground',
-                   destructive: false,
-                   authenticationRequired: false
-                },
-                {
-                   identifier: 'PROVIDE_INPUT',
-                   title: 'Provide Input',
-                   icon: 'ic_input',
-                   activationMode: 'background',
-                   destructive: false,
-                   authenticationRequired: false,
-                   behavior: 'textInput',
-                   textInputSendTitle: 'Reply'
-                }];
-
               cordova.plugins.notification.local.schedule({
                   id: 1,
                   title: "Debug javascript notification",
                   text: message,
-                  actions: [actions[0], actions[1]],
+                  actions: [],
                   category: 'SIGN_IN_TO_CLASS'
               });
             }
@@ -127,7 +100,7 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
         Logger.log("data = "+JSON.stringify(data));
         if (data.raw.additionalData["content-available"] == 1) {
            redirectSilentPush(event, data);
-        };
+        }; // else no need to call finish
       });
     };
 
@@ -147,7 +120,7 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
     });
 
     $rootScope.$on(StartPrefs.CONSENTED_EVENT, function(event, data) {
-        console.log("got consented event "+JSON.stringify(event)
+        console.log("got consented event "+JSON.stringify(event.name)
                         +" with data "+ JSON.stringify(data));
         pushnotify.registerPush();
     });
