@@ -5,7 +5,9 @@ var path = require('path');
 var klawSync = require('klaw-sync')
 
 var androidPlatformsDir = path.resolve(__dirname, '../../platforms/android/res'); 
-var notificationIconsList = [path.resolve(__dirname, '../../resources/android/ic_mood_question')];
+var notificationIconsList = [
+  path.resolve(__dirname, '../../resources/android/ic_mood_question'),
+  path.resolve(__dirname, '../../resources/android/ic_question_answer')];
 
 var copyAllIcons = function(iconDir) {
     var densityDirs = klawSync(iconDir, {nofile: true})
