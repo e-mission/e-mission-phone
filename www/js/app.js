@@ -55,7 +55,8 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
           "clearBadge": true
         },
         "android": {
-          "iconColor": "#343434",
+          "icon": "ic_question_answer",
+          "iconColor": "#54DCC1",
           "clearNotifications": true
         }
       }
