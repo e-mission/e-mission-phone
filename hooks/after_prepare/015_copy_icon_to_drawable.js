@@ -5,9 +5,6 @@ var path = require('path');
 var klawSync = require('klaw-sync')
 
 var androidPlatformsDir = path.resolve(__dirname, '../../platforms/android/res'); 
-var notificationIconsList = [
-  path.resolve(__dirname, '../../resources/android/ic_mood_question'),
-  path.resolve(__dirname, '../../resources/android/ic_question_answer')];
 
 var copyAllIcons = function(iconDir) {
     var densityDirs = klawSync(iconDir, {nofile: true})
@@ -17,19 +14,19 @@ var copyAllIcons = function(iconDir) {
       files.forEach(function(file) {
         var dirName = path.basename(dDir.path);
         var fileName = path.basename(file.path);
-        var srcName = path.join(iconDir, dirName, fileName);
-        var dstName = path.join(androidPlatformsDir, dirName, fileName);
-        console.log("About to copy file "+srcName+" -> "+dstName);
-        fs.copySync(srcName, dstName);
+        if (dirName.startsWith("mipmap")) {
+            var drawableName = dirName.replace("mipmap", "drawable");
+            var srcName = path.join(iconDir, dirName, fileName);
+            var dstName = path.join(iconDir, drawableName, fileName);
+            console.log("About to copy file "+srcName+" -> "+dstName);
+            fs.copySync(srcName, dstName);
+        }
       });
     });
 };
 
 var copyIconsFromAllDirs = function() {
-  notificationIconsList.forEach(function(iconDir) {
-    console.log("About to copy icons from "+iconDir);
-    copyAllIcons(iconDir);
-  });
+  copyAllIcons(androidPlatformsDir);
 }
 
 var platformList = process.env.CORDOVA_PLATFORMS;

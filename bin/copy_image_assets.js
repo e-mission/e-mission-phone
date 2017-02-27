@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
+var imageToCopy = process.argv[2]
+
 var fs = require('fs-extra');
 var path = require('path');
 var klawSync = require('klaw-sync')
 
 var androidPlatformsDir = path.resolve(__dirname, '../platforms/android/res'); 
-var notificationIconsDir = path.resolve(__dirname, '../resources/android/ic_mood_question');
-var iconFileName = 'ic_mood_question.png';
+var notificationIconsDir = path.resolve(__dirname, '../resources/android/' + imageToCopy);
+var iconFileName = imageToCopy + ".png";
 
 var copyAllIcons = function(iconDir) {
     var densityDirs = klawSync(iconDir, {nofile: true})

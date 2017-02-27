@@ -7,11 +7,13 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers','emission.services',
+angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
+    'emission.controllers','emission.services',
     'emission.intro', 'emission.main'])
 
 .run(function($ionicPlatform, $rootScope) {
   console.log("Starting run");
+  // alert("Starting run");
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -28,7 +30,7 @@ angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers'
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $ionicCloudProvider) {
   console.log("Starting config");
 
   var waitFn = function($q) {
@@ -38,6 +40,28 @@ angular.module('emission', ['ionic','ionic.service.core', 'emission.controllers'
       });
       return deferred.promise;
   };
+
+  $ionicCloudProvider.init({
+    "core": {
+      "app_id": "9a6e5f95"
+    },
+    "push": {
+      "sender_id": "97387382925",
+      "pluginConfig": {
+        "ios": {
+          "badge": true,
+          "sound": true,
+          "vibration": true,
+          "clearBadge": true
+        },
+        "android": {
+          "icon": "ic_question_answer",
+          "iconColor": "#54DCC1",
+          "clearNotifications": true
+        }
+      }
+    }
+  });
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

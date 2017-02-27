@@ -5,6 +5,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
       $ionicPopup, storage, $http, Logger, ReferralHandler) {
     var logger = Logger;
+    var nTimesCalled = 0;
     var startprefs = {};
     var DEFAULT_THEME_KEY = 'curr_theme';
      // Boolean: represents that the "intro" - the one page summary
@@ -15,6 +16,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
 
     var CONSENTED_KEY = "config/consent";
+
+    startprefs.CONSENTED_EVENT = "data_collection_consented";
+    startprefs.INTRO_DONE_EVENT = "intro_done";
 
     startprefs.setDefaultTheme = function(new_theme) {
       storage.set(DEFAULT_THEME_KEY, new_theme);
@@ -45,17 +49,19 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       logger.log("changing consent from "+
         $rootScope.curr_consented+" -> "+$rootScope.req_consent);
       // mark in native storage
-      return readConsentState().then(writeConsentToNative).then(function(response) {
+      return startprefs.readConsentState().then(writeConsentToNative).then(function(response) {
           // mark in local storage
           storage.set(DATA_COLLECTION_CONSENTED_PROTOCOL,
             $rootScope.req_consent);
           // mark in local variable as well
           $rootScope.curr_consented = angular.copy($rootScope.req_consent);
+          $rootScope.$emit(startprefs.CONSENTED_EVENT, $rootScope.req_consent);
       });
     };
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
+      $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
 
     // returns boolean
@@ -71,7 +77,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       }
     }
 
-    $rootScope.isConsented = function() {
+    startprefs.isConsented = function() {
       logger.log("curr_consented = "+$rootScope.curr_consented+
             "isIntroDone = " + startprefs.isIntroDone());
       if (startprefs.isIntroDone() && 
@@ -88,7 +94,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       }
     }
 
-    var readConsentState = function() {
+    startprefs.readConsentState = function() {
       /*
        * Read from local storage and move on so that we don't depend on native code.
        * Native code will be checked once the plugins are ready
@@ -132,8 +138,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         // intro is done. Now, let's read and check the current version
         // of the startup config
         return $http.get("json/startupConfig.json")
-          .then(readConsentState)
-          .then($rootScope.isConsented)
+          .then(startprefs.readConsentState)
+          .then(startprefs.isConsented)
           .then(function(result) {
             if (result) {
               return null;
@@ -158,8 +164,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.checkNativeConsent = function() {
         startprefs.getConsentDocument().then(function(resultDoc) {
             if (resultDoc == null) {
-                readConsentState()
-                    .then($rootScope.isConsented)
+                startprefs.readConsentState()
+                    .then(startprefs.isConsented)
                     .then(function(consentState) {
                         if (consentState == true) {
                             $ionicPopup.alert({template: "Local consent found, native consent missing, writing consent to native"});
@@ -229,8 +235,11 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     }
 
     $ionicPlatform.ready().then(function() {
+      Logger.log("ionicPlatform.ready() called " + nTimesCalled+" times!");
+      nTimesCalled = nTimesCalled + 1;
       startprefs.startWithPrefs();
       startprefs.checkNativeConsent();
+      Logger.log("startprefs startup done");
     });
 
     return startprefs;

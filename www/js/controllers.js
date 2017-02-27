@@ -3,6 +3,8 @@
 angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.startprefs',
                                         'emission.splash.referral',
+                                        'emission.splash.pushnotify',
+                                        'emission.survey.launch',
                                         'emission.stats.clientstats',
                                         'emission.incident.posttrip.prompt',
                                         'customURLScheme'])
@@ -12,9 +14,11 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
-    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats, PostTripAutoPrompt)  {
+    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, PushNotify,
+    ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
+  // PushNotify.startupInit();
   CustomURLScheme.onLaunch(function(event, url){
     console.log("GOT URL:"+url);
 

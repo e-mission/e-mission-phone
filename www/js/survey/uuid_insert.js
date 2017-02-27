@@ -6,7 +6,7 @@ var populateId = function(userId) {
 //     alert('document == '+document);
      setTimeout(curriedPI, 1000);
   } else {
-    var el = document.getElementById('QR~QID2');
+    var el = document.getElementById('SCRIPT_REPLACE_ELEMENT_ID');
 //    alert('document = '+document+ ' element = '+ el);
     if (el == null) {
 //      alert('element == null!');
@@ -18,5 +18,5 @@ var populateId = function(userId) {
 };
 
 // alert("executing script");
-populateId('SCRIPT_EDIT_UUID');
+populateId('SCRIPT_REPLACE_UUID');
 // alert("done executing script");

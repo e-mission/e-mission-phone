@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
+                'emission.survey.launch',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -23,12 +24,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     //var challengeMembersId = [];
 
     // THIS BLOCK FOR inAppBrowser
-    var options = {
-      location: 'no',
-      clearcache: 'no',
-      toolbar: 'yes'
-    };
-
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
       if ($state.$current.name == 'root.main.goals') {
@@ -165,9 +160,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             // error
           });
 
-    };
-    $scope.closeBrowser = function() {
-        $scope.browserModal.hide();
     };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
@@ -906,70 +898,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
-    /*var showUserId = function() {
-        console.log("Showing user id");
-        $ionicPopup.show({
-          title: 'Bic2Cal Survey',
-          templateUrl: 'templates/goals/uid.html',
-          scope: $scope,
-            buttons: [{
-              text: 'Copy user id and open survey',
-              type: 'button-positive',
-              onTap: function(e) {
-                $cordovaClipboard.copy(userId).then(function () {
-                    console.log("copying to clipboard "+userId);
-                    startSurvey();
-                }, function () {
-                    // error
-                }); 
-              }
-            }]
-        });
-    };*/
-
-    var startSurvey = function () {
-      // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', '_blank', options)
-          .then(function(event) {
-            console.log("successfully opened page with result "+JSON.stringify(event));
-            // success
-          })
-          .catch(function(event) {
-            // error
-          });
-      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-        console.log("started loading, event = "+JSON.stringify(event));
-        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
-            $cordovaInAppBrowser.close();
-        }
-      });
-      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
-        console.log("stopped loading, event = "+JSON.stringify(event));
-        if (event.url == 'https://berkeley.qualtrics.com/jfe/form/SV_5pzFk7JnMkfWBw1') {
-            $http.get("js/goals/survey_uuid_insert.js")
-              .then(function(scriptText) {
-                // alert("finished loading script");
-                console.log(scriptText.data);
-                // I tried to use http://stackoverflow.com/posts/23387583/revisions
-                // for the idea on how to invoke the function in the script
-                // file, but the callback function was never invoked. So I edit the
-                // script file directly and insert the userId.
-                var codeTemplate = scriptText.data;
-                var codeString = codeTemplate.replace("SCRIPT_EDIT_UUID", userId);
-                $cordovaInAppBrowser.executeScript({ code: codeString });
-              });
-            Logger.log("inserting user id into qualtrics survey. userId = "+ userId);
-        } else {
-            Logger.log("checking for survey loadstop, finished loading url "+event.url+" ignoring...");
-        }
-      });
-      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
-        console.log("exiting, event = "+JSON.stringify(event));
-      });
-    };
-
     $scope.startSurvey = function () {
-      startSurvey();
+      // (URL, elementID)
+      SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
+      // startSurvey();
     }
 
     var checkSurveyDone = function () {
@@ -984,7 +916,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
               text: 'Ok',
               type: 'button-positive',
               onTap: function(e) {
-                 startSurvey();
+                 $scope.startSurvey();
               }
             }]
         });

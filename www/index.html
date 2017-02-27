@@ -3,9 +3,9 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://berkeley.qualtrics.com https://jfe-cdn.qualtrics.com emission: 'unsafe-eval';
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval';
             style-src 'self' 'unsafe-inline';
-            script-src 'self' 'unsafe-inline' https://berkeley.qualtrics.com https://jfe-cdn.qualtrics.com 'unsafe-eval';
+            script-src 'self' 'unsafe-inline' 'unsafe-eval';
             img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com
             'unsafe-inline'">
     <title></title>
@@ -31,6 +31,7 @@
     <!-- ionic/angularjs js -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="manual_lib/ionic.cloud.min.js"></script>
     <script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
 
     <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
@@ -67,6 +68,7 @@
     <script src="js/splash/customURL.js"></script>
     <script src="js/splash/updatecheck.js"></script>
     <script src="js/splash/startprefs.js"></script>
+    <script src="js/splash/pushnotify.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/services.js"></script>
     <script src="js/intro.js"></script>
@@ -86,6 +88,7 @@
     <script src="js/common/place-list.js"></script>
     <script src="js/common/place-detail.js"></script>
     <script src="js/common/services.js"></script>
+    <script src="js/survey/launch.js"></script>
     <script src="js/heatmap.js"></script>
     <script src="js/metrics.js"></script>
     <script src="js/goals.js"></script>
