@@ -2,9 +2,10 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
                                               'angularLocalStorage'])
 
-.factory('StartPrefs', function($window, $state, $interval, $rootScope,
+.factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
       $ionicPopup, storage, $http, Logger, ReferralHandler) {
     var logger = Logger;
+    var nTimesCalled = 0;
     var startprefs = {};
     var DEFAULT_THEME_KEY = 'curr_theme';
      // Boolean: represents that the "intro" - the one page summary
@@ -15,6 +16,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
 
     var CONSENTED_KEY = "config/consent";
+
+    startprefs.CONSENTED_EVENT = "data_collection_consented";
+    startprefs.INTRO_DONE_EVENT = "intro_done";
 
     startprefs.setDefaultTheme = function(new_theme) {
       storage.set(DEFAULT_THEME_KEY, new_theme);
@@ -38,43 +42,50 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     };
 
     var writeConsentToNative = function() {
-     return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
+      return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
     };
 
     startprefs.markConsented = function() {
       logger.log("changing consent from "+
         $rootScope.curr_consented+" -> "+$rootScope.req_consent);
       // mark in native storage
-      return readConsentState().then(writeConsentToNative).then(function(response) {
+      return startprefs.readConsentState().then(writeConsentToNative).then(function(response) {
           // mark in local storage
           storage.set(DATA_COLLECTION_CONSENTED_PROTOCOL,
             $rootScope.req_consent);
           // mark in local variable as well
           $rootScope.curr_consented = angular.copy($rootScope.req_consent);
+          $rootScope.$emit(startprefs.CONSENTED_EVENT, $rootScope.req_consent);
       });
     };
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
+      $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
 
     // returns boolean
     startprefs.isIntroDone = function() {
       var read_val = storage.get(INTRO_DONE_KEY);
+      logger.log("in isIntroDone, read_val = "+read_val);
       if (read_val == null || read_val == "") {
+        logger.log("in isIntroDone, returning false");
         return false;
       } else {
+        logger.log("in isIntroDone, returning "+read_val);
         return read_val;
       }
     }
 
-    $rootScope.isConsented = function() {
-      if ($rootScope.curr_consented == null || $rootScope.curr_consented == "") {
-        logger.log("curr_consented = "+$rootScope.curr_consented+
-            "INTRO_DONE_KEY" + storage.get(INTRO_DONE_KEY));
-        alert("why is curr_consented null when intro is done?");
+    startprefs.isConsented = function() {
+      logger.log("curr_consented = "+$rootScope.curr_consented+
+            "isIntroDone = " + startprefs.isIntroDone());
+      if (startprefs.isIntroDone() && 
+            ($rootScope.curr_consented == null || $rootScope.curr_consented == "")) {
+        alert("intro is done, but consent not found, re-consenting...");
       }
-      if ($rootScope.curr_consented.approval_date != $rootScope.req_consent.approval_date) {
+      if ($rootScope.curr_consented == null || $rootScope.curr_consented == "" ||
+            $rootScope.curr_consented.approval_date != $rootScope.req_consent.approval_date) {
         console.log("Not consented in local storage, need to show consent");
         return false;
       } else {
@@ -83,15 +94,19 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       }
     }
 
-    var readConsentState = function() {
+    startprefs.readConsentState = function() {
       /*
        * Read from local storage and move on so that we don't depend on native code.
        * Native code will be checked once the plugins are ready
        */
       if (angular.isDefined($rootScope.req_consent) &&
-          angular.isDefined($rootScope.curr_consented)) {
+          angular.isDefined($rootScope.curr_consented) &&
+          $rootScope.curr_consented != null) {
           // consent state is all populated
+          logger.log("req_consent = "+$rootScope.req_consent
+                        +" curr_consented = " + $rootScope.curr_consented);
           return new Promise(function(resolve, reject) {
+            logger.log("resolving with empty information");
             resolve();
           });
       } else {
@@ -123,8 +138,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         // intro is done. Now, let's read and check the current version
         // of the startup config
         return $http.get("json/startupConfig.json")
-          .then(readConsentState)
-          .then($rootScope.isConsented)
+          .then(startprefs.readConsentState)
+          .then(startprefs.isConsented)
           .then(function(result) {
             if (result) {
               return null;
@@ -149,11 +164,13 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.checkNativeConsent = function() {
         startprefs.getConsentDocument().then(function(resultDoc) {
             if (resultDoc == null) {
-                readConsentState()
-                    .then($rootScope.isConsented)
-                    .then(writeConsentToNative)
-                    .then(function() {
-                        $ionicPopup.alert({template: "Local consent found, native consent missing, writing consent to native"});
+                startprefs.readConsentState()
+                    .then(startprefs.isConsented)
+                    .then(function(consentState) {
+                        if (consentState == true) {
+                            $ionicPopup.alert({template: "Local consent found, native consent missing, writing consent to native"});
+                            return writeConsentToNative();
+                        }
                     });
             }
         });
@@ -188,7 +205,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
               $rootScope.$broadcast("RELOAD_GOAL_PAGE_FOR_REFERRAL")
             }
         });
-        $interval.cancel(currPromise);
     };
 
     // Currently loads main or intro based on whether onboarding is complete.
@@ -204,20 +220,27 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     };
 
     startprefs.loadWithPrefs = function() {
-        // alert("attach debugger!");
-        console.log("Checking to see whether we are ready to load the screen");
-        if (angular.isDefined($window.Logger)) {
-          logger = Logger;
-          startprefs.loadDefaultTheme();
-          startprefs.loadPreferredScreen();
-        } else {
-          console.log("appPreferences plugin not installed, waiting...");
-        }
+      // alert("attach debugger!");
+      console.log("Checking to see whether we are ready to load the screen");
+      if (!angular.isDefined($window.Logger)) {
+          alert("ionic is ready, but logger not present?");
+      }
+      logger = Logger;
+      startprefs.loadDefaultTheme();
+      startprefs.loadPreferredScreen();
     };
 
-    var currPromise = null;
     startprefs.startWithPrefs = function() {
-      currPromise = $interval(startprefs.loadWithPrefs, 1000);
+      startprefs.loadWithPrefs();
     }
+
+    $ionicPlatform.ready().then(function() {
+      Logger.log("ionicPlatform.ready() called " + nTimesCalled+" times!");
+      nTimesCalled = nTimesCalled + 1;
+      startprefs.startWithPrefs();
+      startprefs.checkNativeConsent();
+      Logger.log("startprefs startup done");
+    });
+
     return startprefs;
 });

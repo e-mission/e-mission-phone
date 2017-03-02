@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
+                'emission.survey.launch',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -23,12 +24,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     //var challengeMembersId = [];
 
     // THIS BLOCK FOR inAppBrowser
-    var options = {
-      location: 'no',
-      clearcache: 'no',
-      toolbar: 'yes'
-    };
-
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
       if ($state.$current.name == 'root.main.goals') {
@@ -136,7 +131,36 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
+    $scope.toBrowser = function() {
+            var options = {
+              location: 'no',
+              clearcache: 'no',
+              toolbar: 'yes'
+            };
 
+            var settings = localStorage.getItem("habit-mobile-settings");
+
+          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
+            // insert Javascript via code / file
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||
+                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
+                $cordovaInAppBrowser.executeScript({
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+                });
+            } else {
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");
+            }
+          });
+        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)
+          .then(function(event) {
+            // success
+          })
+          .catch(function(event) {
+            // error
+          });
+
+    };
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
     };
@@ -202,6 +226,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                         'method_args': null};
 
         CommHelper.habiticaProxy(callOpts).then(function(response){
+            localStorage.setItem("habit-mobile-settings", JSON.stringify({'auth': response.auth}));
             $scope.screen = response.success;
             $scope.$apply(function() {
                 $scope.profile = response.data;
@@ -261,6 +286,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 $ionicLoading.hide();
                 console.log("User profile error");
             });
+
     };
 
     var getUserTask = function(){
@@ -872,55 +898,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
-    /*var showUserId = function() {
-        console.log("Showing user id");
-        $ionicPopup.show({
-          title: 'Bic2Cal Survey',
-          templateUrl: 'templates/goals/uid.html',
-          scope: $scope,
-            buttons: [{
-              text: 'Copy user id and open survey',
-              type: 'button-positive',
-              onTap: function(e) {
-                $cordovaClipboard.copy(userId).then(function () {
-                    console.log("copying to clipboard "+userId);
-                    startSurvey();
-                }, function () {
-                    // error
-                }); 
-              }
-            }]
-        });
-    };*/
-
-    var startSurvey = function () {
-      // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', '_blank', options)
-          .then(function(event) {
-            console.log("successfully opened page with result "+JSON.stringify(event));
-            // success
-          })
-          .catch(function(event) {
-            // error
-          });
-      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-        console.log("started loading, event = "+JSON.stringify(event));
-        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
-            $cordovaInAppBrowser.close();
-        }
-      });
-      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
-        console.log("stopped loading, event = "+JSON.stringify(event));
-        $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '" + userId + "';" });
-        console.log("inserting user id into qualtrics survey. userId = "+ userId);
-      });
-      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
-        console.log("exiting, event = "+JSON.stringify(event));
-      });
-    };
-
     $scope.startSurvey = function () {
-      startSurvey();
+      // (URL, elementID)
+      SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
+      // startSurvey();
     }
 
     var checkSurveyDone = function () {
@@ -935,7 +916,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
               text: 'Ok',
               type: 'button-positive',
               onTap: function(e) {
-                 startSurvey();
+                 $scope.startSurvey();
               }
             }]
         });

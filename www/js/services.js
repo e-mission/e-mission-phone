@@ -14,6 +14,18 @@ angular.module('emission.services', [])
             window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
     };
 
+    this.updateUser = function(updateDoc) {
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMServerComm.postUserPersonalData("/profile/update", "update_doc", updateDoc, resolve, reject);
+        });
+    };
+
+    this.getUser = function() {
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/get", resolve, reject);
+        });
+    };
+
     this.getTimelineForDay = function(date, successCallback, errorCallback) {
         var dateString = date.startOf('day').format('YYYY-MM-DD');
         window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, successCallback, errorCallback);
@@ -25,11 +37,7 @@ angular.module('emission.services', [])
      */
     this.habiticaRegister = function(regConfig) {
         return new Promise(function(resolve, reject){
-          window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, function(response) {
-            resolve(response);
-          }, function(error) {
-            reject(error);
-          });
+          window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, resolve, reject);
       });
     };
 
@@ -52,11 +60,7 @@ angular.module('emission.services', [])
 
     this.habiticaProxy = function(callOpts){
       return new Promise(function(resolve, reject){
-        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, function(response){
-          resolve(response);
-        }, function(error) {
-          reject(error);
-        });
+        window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, resolve, reject);
       });
     };
 
@@ -383,7 +387,7 @@ angular.module('emission.services', [])
 
     config.getMapTiles = function() {
       return {
-          tileLayer: 'http://tile.stamen.com/toner/{z}/{x}/{y}.png',
+          tileLayer: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
           tileLayerOptions: {
               attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
               opacity: 0.9,

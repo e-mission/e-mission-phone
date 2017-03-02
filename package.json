@@ -3,6 +3,8 @@
   "version": "1.1.1",
   "description": "Automatic tracker",
   "dependencies": {
+    "@ionic/cloud": "^0.15.1",
+    "fs-extra": "^2.0.0",
     "gulp": "^3.5.6",
     "gulp-concat": "^2.2.0",
     "gulp-imagemin": "^2.4.0",
@@ -11,6 +13,7 @@
     "gulp-sass": "^2.0.4",
     "gulp.spritesmith": "^4.1.0",
     "image-size": "^0.3.2",
+    "klaw-sync": "^1.1.1",
     "lodash": "^3.10.1",
     "merge-stream": "^1.0.0",
     "rimraf": "^2.4.3"
@@ -25,6 +28,13 @@
     "shelljs": "^0.3.0"
   },
   "cordovaPlugins": [
+    {
+      "id": "phonegap-plugin-push",
+      "locator": "phonegap-plugin-push",
+      "variables": {
+        "SENDER_ID": "97387382925"
+      }
+    },
     "cordova-plugin-device",
     "cordova-plugin-console",
     "cordova-plugin-whitelist",
@@ -71,13 +81,16 @@
       "id": "cordova-plugin-x-socialsharing"
     },
     {
+      "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
+      "id": "cordova-plugin-customurlscheme",
       "variables": {
         "URL_SCHEME": "emission"
-      },
-      "locator": "https://github.com/EddyVerbruggen/Custom-URL-scheme.git",
-      "id": "cordova-plugin-customurlscheme"
+      }
     },
-    "cordova-plugin-inappbrowser",
+    {
+      "locator": "https://github.com/shankari/cordova-plugin-inappbrowser.git",
+      "id": "cordova-plugin-inappbrowser"
+    },
     "cordova-plugin-registerusernotificationsettings",
     {
       "locator": "https://github.com/shankari/cordova-plugin-local-notifications.git",
@@ -89,7 +102,7 @@
     }
   ],
   "cordovaPlatforms": [
-    "ios",
-    "android"
+    "ios@4.3.1",
+    "android@6.1.2"
   ]
 }
