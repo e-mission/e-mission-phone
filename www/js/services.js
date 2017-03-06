@@ -126,6 +126,13 @@ angular.module('emission.services', [])
           window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, resolve, reject);
       });
     };
+
+    this.getPipelineCompleteTs = function() {
+      return new Promise(function(resolve, reject) {
+          console.log("getting pipeline complete timestamp");
+          window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
+      });
+    };
 })
 
 .service('ReferHelper', function($http) {
@@ -174,6 +181,16 @@ angular.module('emission.services', [])
     };
 
     this.getUnifiedMessagesForInterval = function(key, tq, withMetadata) {
+        return new Promise(function(resolve, reject) {
+          var localPromise = $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
+          var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs);
+          Promise.all([localPromise, remotePromise])
+            .then(function(resultList) {
+              var dedupedList = combineWithDedup(resultList[0], resultList[1].phone_data);
+              resolve(dedupedList);
+            })
+            .catch(reject);
+        })
     }
 })
 .service('ControlHelper', function($cordovaEmailComposer,
