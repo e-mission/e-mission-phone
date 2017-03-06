@@ -379,51 +379,39 @@ angular.module('emission.main.diary.services', ['emission.services',
       return "diary/trips-"+dateString;
     };
 
-    timeline.updateFromDatabase = function(day, foundFn, notFoundFn) {
+    timeline.updateFromDatabase = function(day) {
       console.log("About to show 'Reading from cache'");
       $ionicLoading.show({
         template: 'Reading from cache...'
       });
-      window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
+      return window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
       .then(function (timelineDoc) {
          if (!window.cordova.plugins.BEMUserCache.isEmptyDoc(timelineDoc)) {
            var tripList = timelineDoc;
            console.log("About to hide 'Reading from cache'");
            $ionicLoading.hide();
-           foundFn(day, tripList);
+           return tripList;
          } else {
            console.log("while reading data for "+day+" from database, no records found");
            console.log("About to hide 'Reading from cache'");
            $ionicLoading.hide();
-           notFoundFn(day, "no matching record for key "+getKeyForDate(day));
+           return [];
          }
-       }, function(error) {
-        console.log("About to hide 'Reading from cache'");
-        $ionicLoading.hide();
-        $ionicPopup.alert({template: JSON.stringify(error)})
-        .then(function(res) {console.log("finished showing alert");});
-      });
+       });
     };
 
-    timeline.updateFromServer = function(day, foundFn, notFoundFn) {
+    timeline.updateFromServer = function(day) {
       console.log("About to show 'Reading from server'");
       $ionicLoading.show({
         template: 'Reading from server...'
       });
-      CommHelper.getTimelineForDay(day, function(response) {
-       var tripList = response.timeline;
-       window.Logger.log(window.Logger.LEVEL_DEBUG,
-        "while reading data for "+day+" from server, got nTrips = "+tripList.length);
-       console.log("About to hide 'Reading from server'");
-       $ionicLoading.hide();
-       foundFn(day, tripList);
-     }, function(error) {
-       window.Logger.log(window.Logger.LEVEL_INFO,
-        "while reading data for "+day
-        +" from server, error = "+JSON.stringify(error));
-       console.log("About to hide 'Reading from server'");
-       $ionicLoading.hide();
-       notFoundFn(day, error);
+      return CommHelper.getTimelineForDay(day).then(function(response) {
+        var tripList = response.timeline;
+        window.Logger.log(window.Logger.LEVEL_DEBUG,
+          "while reading data for "+day+" from server, got nTrips = "+tripList.length);
+        console.log("About to hide 'Reading from server'");
+        $ionicLoading.hide();
+        return tripList;
      });
     };
 
@@ -434,13 +422,14 @@ angular.module('emission.main.diary.services', ['emission.services',
      * movement, not restructuring, so it should stay here.
      */
      var readAndUpdateFromFile = function(day, foundFn, notFoundFn) {
-      $http.get("test_data/"+getKeyForDate(day)).then(function(response) {
+      console.log("About to show 'Reading from local file'");
+      $ionicLoading.show({
+        template: 'Debugging: Reading from local file...'
+      });
+      return $http.get("test_data/"+getKeyForDate(day)).then(function(response) {
        console.log("while reading data for "+day+" from file, status = "+response.status);
        tripList = response.data;
-       foundFn(day, tripList);
-     }, function(response) {
-       console.log("while reading data for "+day+" from file, status = "+response.status);
-       notFoundFn(day, response);
+       return tripList;
      });
     };
 
@@ -452,19 +441,29 @@ angular.module('emission.main.diary.services', ['emission.services',
         // And if we don't find anything there, we fallback to the real server
         // processTripsForDay is the foundFn
         // the other function (that reads from the server) is the notFoundFn
-        localCacheReadFn(day, processTripsForDay, function(day, error) {
-          timeline.updateFromServer(day, processTripsForDay, function(day, error) {
-                // showNoTripsAlert().then(function(res) {
-                  console.log("Alerted user");
-                  timeline.data.currDay = day;
-                  timeline.data.currDayTrips = []
-                  timeline.data.currDaySummary = {}
-                  $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'error'});
-                  $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'error'});
-               // });
-             });
+        localCacheReadFn(day).then(function(tripList) {
+          if (tripList.length != 0) {
+            processTripsForDay(day, tripList);
+          } else {
+            timeline.updateFromServer(day).then(function(tripList) {
+              if (tripList.length != 0) {
+                processTripsForDay(day, tripList);
+              } else {
+                console.log("Alerted user");
+                timeline.data.currDay = day;
+                timeline.data.currDayTrips = []
+                timeline.data.currDaySummary = {}
+                $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'error'});
+                $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'error'});
+              }
+            });
+          }
+        }).catch(function(error) {
+          Logger.log("while reading data for "+day +" error = "+JSON.stringify(error));
+          console.log("About to hide loading overlay");
+          $ionicLoading.hide();
         });
-      };
+      }
 
       timeline.getTrip = function(tripId) {
         return timeline.data.tripMap[tripId];

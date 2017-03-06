@@ -26,9 +26,11 @@ angular.module('emission.services', [])
         });
     };
 
-    this.getTimelineForDay = function(date, successCallback, errorCallback) {
-        var dateString = date.startOf('day').format('YYYY-MM-DD');
-        window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, successCallback, errorCallback);
+    this.getTimelineForDay = function(date) {
+        return new Promise(function(resolve, reject) {
+          var dateString = date.startOf('day').format('YYYY-MM-DD');
+          window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, resolve, reject);
+        });
     };
 
     /*
