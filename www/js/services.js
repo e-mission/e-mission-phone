@@ -165,34 +165,70 @@ angular.module('emission.services', [])
       });
     };
 
+    // TODO: generalize to iterable of promises
+    var combinedPromise = function(localPromise, remotePromise, combiner) {
+        return new Promise(function(resolve, reject) {
+          var localResult = [];
+          var localError = null;
+
+          var remoteResult = [];
+          var remoteError = null;
+      
+          var localPromiseDone = false;
+          var remotePromiseDone = false;
+
+          var checkAndResolve = function() {
+            if (localPromiseDone && remotePromiseDone) {
+              // time to return from this promise
+              if (localError && remoteError) {
+                reject([localError, remoteError]);
+              } else {
+                var dedupedList = combiner(localResult, remoteResult);
+                resolve(dedupedList);
+              }
+            }
+          };
+
+          localPromise.then(function(currentLocalResult) {
+            localResult = currentLocalResult;
+            localPromiseDone = true;
+          }, function(error) {
+            localResult = [];
+            localError = error;
+            localPromiseDone = true;
+          }).then(checkAndResolve);
+
+          remotePromise.then(function(currentRemoteResult) {
+            remoteResult = currentRemoteResult;
+            remotePromiseDone = true;
+          }, function(error) {
+            remoteResult = [];
+            remoteError = error;
+            remotePromiseDone = true;
+          }).then(checkAndResolve);
+        })
+    }
+
     // TODO: Generalize this to work for both sensor data and messages
     // Do we even need to separate the two kinds of data?
     // Alternatively, we can maintain another mapping between key -> type
     // Probably in www/json...
     this.getUnifiedSensorDataForInterval = function(key, tq) {
-        return new Promise(function(resolve, reject) {
-          var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
-          var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs);
-          Promise.all([localPromise, remotePromise])
-            .then(function(resultList) {
-              var dedupedList = combineWithDedup(resultList[0], resultList[1].phone_data);
-              resolve(dedupedList);
-            })
-            .catch(reject);
-        })
+        var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
+        var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs)
+          .then(function(serverResponse) {
+            return serverResponse.phone_data;
+          });
+        return combinedPromise(localPromise, remotePromise, combineWithDedup);
     };
 
     this.getUnifiedMessagesForInterval = function(key, tq, withMetadata) {
-        return new Promise(function(resolve, reject) {
-          var localPromise = $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
-          var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs);
-          Promise.all([localPromise, remotePromise])
-            .then(function(resultList) {
-              var dedupedList = combineWithDedup(resultList[0], resultList[1].phone_data);
-              resolve(dedupedList);
-            })
-            .catch(reject);
-        })
+      var localPromise = $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
+      var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs)
+          .then(function(serverResponse) {
+            return serverResponse.phone_data;
+          });
+      return combinedPromise(localPromise, remotePromise, combineWithDedup);
     }
 })
 .service('ControlHelper', function($cordovaEmailComposer,
