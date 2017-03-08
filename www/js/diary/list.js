@@ -158,7 +158,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
-      console.log("Got event with args "+JSON.stringify(args));
+      console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
@@ -172,7 +172,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
-      console.log("Got event with args "+JSON.stringify(args));
+      console.log("Got common graph update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           // If we don't have the trip wrappers yet, then we can just bail because
           // the counts will be filled in when that is done. If the currDayTripWrappers
