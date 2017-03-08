@@ -365,8 +365,8 @@ angular.module('emission.main.diary.services', ['emission.services',
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup, $rootScope,
-    CommonGraph) {
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup,
+    $rootScope, CommonGraph, UnifiedDataLoader) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -402,15 +402,18 @@ angular.module('emission.main.diary.services', ['emission.services',
 
     timeline.updateFromServer = function(day) {
       console.log("About to show 'Reading from server'");
+      /*
       $ionicLoading.show({
         template: 'Reading from server...'
       });
+      */
       return CommHelper.getTimelineForDay(day).then(function(response) {
         var tripList = response.timeline;
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "while reading data for "+day+" from server, got nTrips = "+tripList.length);
         console.log("About to hide 'Reading from server'");
         $ionicLoading.hide();
+        console.log("Finished hiding ionicLoading, returning list of size "+tripList.length);
         return tripList;
      });
     };
@@ -423,9 +426,11 @@ angular.module('emission.main.diary.services', ['emission.services',
      */
      var readAndUpdateFromFile = function(day, foundFn, notFoundFn) {
       console.log("About to show 'Reading from local file'");
+      /*
       $ionicLoading.show({
         template: 'Debugging: Reading from local file...'
       });
+      */
       return $http.get("test_data/"+getKeyForDate(day)).then(function(response) {
        console.log("while reading data for "+day+" from file, status = "+response.status);
        tripList = response.data;
@@ -433,37 +438,128 @@ angular.module('emission.main.diary.services', ['emission.services',
      });
     };
 
+    timeline.isProcessingComplete = function(day) {
+      return CommHelper.getPipelineCompleteTs().then(function(complete_ts) {
+          var retVal = (complete_ts > moment(day).endOf("day"));
+          Logger.log("complete_ts = "+complete_ts
+              +" end of current day = "+moment(day).endOf("day")
+              +" retVal = "+retVal);
+          return retVal;
+      });
+    }
+
+    timeline.readUnprocessedTrips = function(day, tripListForDay) {
+      /*
+       * We want to read all unprocessed transitions, which are all transitions
+       * from the last processed trip until the end of the day. But now we
+       * need to figure out which timezone we need to use for the end of the
+       * day.
+       * 
+       * I think that it should be fine to use the current timezone.
+       * 
+       * Details: https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284284382
+       * One problem with simply querying for transactions after this is
+       * that sometimes we skip trips in the cleaning phase because they are
+       * spurious. So if we have already processed this day but had a
+       * spurious trip after the last real trip, it would show up again.
+       * 
+       * We deal with this by ensuring that this is called iff we are beyond
+       * the end of the processed data.
+       *
+       * Logic for start_ts described at
+       * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284312004
+       */
+       if (tripListForDay.length == 0) {
+         var last_processed_ts = moment(day).startOf("day");
+       } else {
+         var last_processed_ts = tripListForDay[tripListForDay.length - 1].properties.end_ts;
+       }
+       Logger.log("found "+tripListForDay.length+" trips, last_processed_ts = "+moment(last_processed_ts).toString());
+
+       var tq = {key: "write_ts",
+          startTs: last_processed_ts,
+          endTs: moment(day).endOf("day")
+       }
+       Logger.log("about to query for unprocessed trip with query "+JSON.stringify(tq));
+       return UnifiedDataLoader.getUnifiedMessagesForInterval("statemachine/transition", tq)
+        .then(function(transitionList) {
+          if (transitionList.length == 0) {
+            Logger.log("No unprocessed trips. yay!");
+            return [];
+          } else {
+            // var tripsList = transition2Trip(transitionList);
+            // return tripsList.map(trip2Geojson);
+            Logger.log("Found "+transitionList.length+" trips. yay!");
+            return [];
+          }
+        });
+    }
+
+    var processOrDisplayNone = function(day, tripList) {
+      console.log("processOrDisplayName("+day+", "+tripList.length+") called");
+      if (tripList.length != 0) {
+        console.log("trip count = "+tripList.length+", calling processTripsForDay");
+        processTripsForDay(day, tripList);
+      } else {
+        console.log("No trips found, alerting user");
+        timeline.data.currDay = day;
+        timeline.data.currDayTrips = []
+        timeline.data.currDaySummary = {}
+        $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'error'});
+        $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'error'});
+      }
+    }
+
     var localCacheReadFn = timeline.updateFromDatabase;
 
     // Functions
     timeline.updateForDay = function(day) { // currDay is a moment
-        // First, we try the local cache
-        // And if we don't find anything there, we fallback to the real server
-        // processTripsForDay is the foundFn
-        // the other function (that reads from the server) is the notFoundFn
-        localCacheReadFn(day).then(function(tripList) {
-          if (tripList.length != 0) {
-            processTripsForDay(day, tripList);
-          } else {
-            timeline.updateFromServer(day).then(function(tripList) {
-              if (tripList.length != 0) {
-                processTripsForDay(day, tripList);
-              } else {
-                console.log("Alerted user");
-                timeline.data.currDay = day;
-                timeline.data.currDayTrips = []
-                timeline.data.currDaySummary = {}
-                $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'error'});
-                $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'error'});
-              }
+      // First, we try the server
+      var tripsFromServerPromise = timeline.updateFromServer(day);
+      var isProcessingCompletePromise = timeline.isProcessingComplete(day);
+      /*
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise])
+        .then(function(processedTripList, completeStatus) {
+      */
+        console.log("Promise.all() finished successfully with length "
+          +processedTripList.length+" completeStatus = "+completeStatus);
+        var tripList = processedTripList;
+        if (!completeStatus) {
+          timeline.readUnprocessedTrips(day, processedTripList)
+            .then(function(unprocessedTripList) {
+              Logger.log("tripList.length = "+tripList.length
+                         +"unprocessedTripList.length = "+unprocessedTripList.length);
+              Array.prototype.push.apply(tripList, unprocessedTripList);
             });
-          }
+        }
+        console.log("After merge, returning trip list of size "+tripList.length);
+        return tripList;
+      }).then(function(combinedTripList) {
+        processOrDisplayNone(day, combinedTripList);
+      }).catch(function(error) {
+        // If there is any error reading from the server, we fallback on the local cache
+        Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
+        console.log("About to hide loading overlay");
+        $ionicLoading.hide();
+        localCacheReadFn(day).then(function(processedTripList) {
+          var tripList = processedTripList;
+          timeline.readUnprocessedTrips(day, processedTripList)
+            .then(function(unprocessedTripList) {
+              Logger.log("tripList.length = "+tripList.length
+                         +"unprocessedTripList.length = "+unprocessedTripList.length);
+              Array.prototype.push.apply(tripList, unprocessedTripList);
+            });
+          console.log("After merge, returning trip list of size "+tripList.length);
+          return tripList;
+        }).then(function(combinedTripList) {
+          processOrDisplayNone(day, combinedTripList);
         }).catch(function(error) {
-          Logger.log("while reading data for "+day +" error = "+JSON.stringify(error));
+          Logger.log("while reading data from cache for "+day +" error = "+JSON.stringify(error));
           console.log("About to hide loading overlay");
           $ionicLoading.hide();
-        });
-      }
+        })
+      });
+    }
 
       timeline.getTrip = function(tripId) {
         return timeline.data.tripMap[tripId];
