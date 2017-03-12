@@ -44,7 +44,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/pop.route/local_date", data)
+    return $http.post("http://localhost:8080/result/heatmap/pop.route/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.lnglat)) {
         Logger.log("Got points in heatmap "+response.data.lnglat.length);
@@ -201,6 +201,12 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
    * END: general controls
    */
 
+  if ($scope.showCount) {
+      $scope.getIncidents();
+  } else {
+      $scope.getPopRoute();
+  }
+
   /*
    * BEGIN: Switching code
    */
@@ -287,7 +293,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", data)
+    return $http.post("http://localhost:8080/result/heatmap/incidents/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.incidents)) {
         Logger.log("Got incidents"+response.data.incidents.length);
@@ -318,30 +324,15 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     $scope.stressData.bounds = bounds;
   }
 
+
   /*
    * END: Stress map code
-   */
-
-  /*
-   * BEGIN: One-time init code.
-   * Note that this is after all the other code to ensure that the functions are defined
-   * before they are invoked.
-   */
-
-  $scope.getHeatmaps();
-  $scope.switchSelData();
-
-  /*
-   * END: One-time init code
    */
 
   // Tour steps
   var tour = {
     config: {
-      mask: {
-        visibleOnNoTarget: true,
-        clickExit: true
-      }
+
     },
     steps: [{
       target: '.datepicker',
@@ -358,11 +349,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   };
 
   var startWalkthrough = function () {
-    nzTour.start(tour).then(function(result) {
-      Logger.log("heatmap walkthrough start completed, no error");
-    }).catch(function(err) {
-      Logger.log("heatmap walkthrough start errored" + err);
-    });
+    nzTour.start(tour);
   };
 
   /*
@@ -382,11 +369,5 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     startWalkthrough();
   }
 
-  $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from
-    // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-    if(ev.targetScope !== $scope)
-      return;
-    checkHeatmapTutorialDone();
-  });
+  checkHeatmapTutorialDone();
 });

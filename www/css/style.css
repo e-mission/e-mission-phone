@@ -1707,9 +1707,3 @@ html, body, #chart2, svg {
 .full-toggle-right:active {
   opacity: 0.7;
 }
-#iframe {
-    /*width: 375px !important;*/
-    height: 100%;
-    -webkit-overflow-scrolling: touch !important;
-    overflow: scroll !important;
-}

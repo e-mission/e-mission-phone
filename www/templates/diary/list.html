@@ -4,9 +4,9 @@
                 <div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
                     <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
                     </button>
-                    <!-- <ionic-datepicker class="pickerdate" input-obj="datepickerObject" style="color: white;"> -->
-                    <button class="button date-picker-button" ng-click="pickDay()"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-                    <!-- </ionic-datepicker> -->
+                    <ionic-datepicker class="pickerdate" input-obj="datepickerObject" style="color: white;">
+                      <button class="button date-picker-button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+                    </ionic-datepicker>
 
                     <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
                     </button>

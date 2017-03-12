@@ -9,7 +9,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
-                                    ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     Config, PostTripManualMarker, nzTour, storage) {
   console.log("controller DiaryListCtrl called");
@@ -31,7 +30,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     CommonGraph.updateCurrent();
   };
 
-  $scope.$on('$ionicView.afterEnter', function() {
+  $scope.$on('$ionicView.enter', function() {
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
@@ -149,13 +148,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       modalHeaderColor: 'bar-positive', //Optional
       modalFooterColor: 'bar-positive', //Optional
       callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'dd MMM yyyy', //Optional
+      dateFormat: 'dd MMMM yyyy', //Optional
       closeOnSelect: true //Optional
     };
-
-    $scope.pickDay = function() {
-      ionicDatePicker.openDatePicker($scope.datepickerObject);
-    }
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got event with args "+JSON.stringify(args));
@@ -183,6 +178,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                 DiaryHelper.fillCommonTripCount(tripWrapper);
              });
           };
+          checkDiaryTutorialDone();
       });
     });
 
@@ -288,13 +284,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // Tour steps
     var tour = {
       config: {
-        mask: {
-          visibleOnNoTarget: true,
-          clickExit: true
-        }
+
       },
       steps: [{
-        target: '.date-picker-button',
+        target: '.nav-bar-block[nav-bar="active"] .pickerdate',
         content: 'Use this to select the day you want to see.'
       },
       {
@@ -308,11 +301,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     var startWalkthrough = function () {
-      nzTour.start(tour).then(function(result) {
-        Logger.log("list walkthrough start completed, no error");
-      }).catch(function(err) {
-        Logger.log("list walkthrough start errored" + err);
-      });
+      nzTour.start(tour);
     };
 
     $scope.refreshTiles = function() {
@@ -335,14 +324,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.startWalkthrough = function () {
       startWalkthrough();
     }
-
-    $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from 
-      // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-      if(ev.targetScope !== $scope)
-        return;
-      checkDiaryTutorialDone();
-    });
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));

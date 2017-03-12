@@ -3,22 +3,17 @@
 angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.startprefs',
                                         'emission.splash.referral',
-                                        'emission.splash.pushnotify',
-                                        'emission.survey.launch',
                                         'emission.stats.clientstats',
-                                        'emission.incident.posttrip.prompt',
                                         'customURLScheme'])
 
 .controller('RootCtrl', function($scope) {})
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
-    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, PushNotify,
-    ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, $ionicPlatform,
+    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, ClientStats) {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
-  // PushNotify.startupInit();
   CustomURLScheme.onLaunch(function(event, url){
     console.log("GOT URL:"+url);
 
@@ -30,6 +25,13 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
     StartPrefs.loadWithPrefs();
   });
   UpdateCheck.checkForUpdates();
+  StartPrefs.startWithPrefs();
+
+  $ionicPlatform.ready().then(function() {
+    // Here's where we initialize all the native code
+    // Theoretically, this should let us remove the $timeout hacks
+    StartPrefs.checkNativeConsent();
+  });
 
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)

@@ -256,7 +256,7 @@ angular.module('emission.main.diary.services', ['emission.services',
     retVal.data = trip;
     retVal.style = style_feature;
     retVal.onEachFeature = onEachFeature;
-    retVal.pointToLayer = dh.pointFormat;
+    retVal.pointToLayer = pointFormat;
     retVal.start_place = trip.start_place;
     retVal.end_place = trip.end_place;
     retVal.stops = trip.stops;
@@ -317,13 +317,12 @@ angular.module('emission.main.diary.services', ['emission.services',
       case "stop": layer.bindPopup(""+feature.properties.duration); break;
       case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
       case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
-      case "section": layer.on('click',
-        PostTripManualMarker.startAddingIncidentToSection(feature, layer)); break;
+      case "section": layer.on('click', PostTripManualMarker.startAddingIncident(feature, layer)); break;
       case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
     }
 };
 
-  dh.pointFormat = function(feature, latlng) {
+  var pointFormat = function(feature, latlng) {
     switch(feature.properties.feature_type) {
       case "start_place": return L.marker(latlng, {icon: startIcon});
       case "end_place": return L.marker(latlng, {icon: stopIcon});

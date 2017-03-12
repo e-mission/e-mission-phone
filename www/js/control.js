@@ -1,8 +1,6 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
-                                        'ionic-datepicker',
-                                        'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
@@ -11,35 +9,8 @@ angular.module('emission.main.control',['emission.services',
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, ionicDatePicker,
-               StartPrefs, ControlHelper, UpdateCheck,
+               $rootScope, storage, StartPrefs, ControlHelper, UpdateCheck,
                CalorieCal, ClientStats) {
-
-    var datepickerObject = {
-      todayLabel: 'Today',  //Optional
-      closeLabel: 'Close',  //Optional
-      setLabel: 'Set',  //Optional
-      titleLabel: 'Choose date to download data',
-      setButtonType : 'button-positive',  //Optional
-      todayButtonType : 'button-stable',  //Optional
-      closeButtonType : 'button-stable',  //Optional
-      inputDate: moment().subtract(1, 'week').toDate(),  //Optional
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      mondayFirst: true,  //Optional
-      templateType: 'popup', //Optional
-      showTodayButton: 'true', //Optional
-      modalHeaderColor: 'bar-positive', //Optional
-      modalFooterColor: 'bar-positive', //Optional
-      callback: ControlHelper.getMyData, //Mandatory
-      dateFormat: 'dd MMM yyyy', //Optional
-      closeOnSelect: true //Optional
-    }
-
-    $scope.openDatePicker = function(){
-      ionicDatePicker.openDatePicker(datepickerObject);
-    };
-
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
@@ -381,16 +352,7 @@ angular.module('emission.main.control',['emission.services',
         console.log("new config = "+$scope.settings.sync.new_config);
         ControlHelper.serverSyncSetConfig($scope.settings.sync.new_config)
         .then(function(){
-            CommHelper.updateUser({
-                // TODO: worth thinking about where best to set this
-                // Currently happens in native code. Now that we are switching
-                // away from parse, we can store this from javascript here. 
-                // or continue to store from native
-                // this is easier for people to see, but means that calls to
-                // native, even through the javascript interface are not complete
-                curr_sync_interval: $scope.settings.sync.new_config.sync_interval
-            });
-            $scope.getSyncSettings();
+            $scope.getSyncSettings()
         }, function(err){
             console.log("setConfig Error: " + err);
         });
@@ -529,7 +491,7 @@ angular.module('emission.main.control',['emission.services',
             template: 'Consented to protocol {{consentDoc.protocol_id}}, {{consentDoc.approval_date}}',
             scope: $scope,
             title: "Consent found!",
-            buttons: [
+            buttons: [ 
             // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
             //  type: 'button-calm'},
             {text: "<b>OK</b>",
