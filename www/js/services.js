@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.services', [])
+angular.module('emission.services', ['emission.plugin.logger'])
 
 .service('CommHelper', function($http) {
     var getConnectURL = function(successCallback, errorCallback) {
@@ -154,7 +154,7 @@ angular.module('emission.services', [])
     //}*/
     }
 })
-.service('UnifiedDataLoader', function($window, CommHelper) {
+.service('UnifiedDataLoader', function($window, CommHelper, Logger) {
     var combineWithDedup = function(list1, list2) {
       var combinedList = list1.concat(list2);
       return combinedList.filter(function(value, i, array) {
@@ -183,7 +183,10 @@ angular.module('emission.services', [])
               if (localError && remoteError) {
                 reject([localError, remoteError]);
               } else {
+                Logger.log("About to dedup localResult = "+localResult.length
+                    +"remoteResult = "+remoteResult.length);
                 var dedupedList = combiner(localResult, remoteResult);
+                Logger.log("Deduped list = "+dedupedList.length);
                 resolve(dedupedList);
               }
             }
