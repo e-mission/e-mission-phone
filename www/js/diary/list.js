@@ -28,7 +28,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
     Timeline.updateForDay(day);
-    CommonGraph.updateCurrent();
+    // CommonGraph.updateCurrent();
   };
 
   $scope.$on('$ionicView.afterEnter', function() {
