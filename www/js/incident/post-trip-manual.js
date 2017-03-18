@@ -31,7 +31,9 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   var getSectionPoints = function(section) {
     Logger.log("Called getSection points with list of size "+section.geometry.coordinates.length);
     var mappedPoints = section.geometry.coordinates.map(function(currCoords, index) {
-      Logger.log("About to map point"+ JSON.stringify(currCoords)+" at index "+index);
+      if (index % 100 == 0) {
+        Logger.log("About to map point"+ JSON.stringify(currCoords)+" at index "+index);
+      }
       var currMappedPoint = {loc: currCoords,
         latlng: L.GeoJSON.coordsToLatLng(currCoords),
         ts: section.properties.times[index]}
