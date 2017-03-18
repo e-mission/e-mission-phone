@@ -39,6 +39,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "UNKNOWN": "ion-ios-help",
+    "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
@@ -68,6 +69,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-speedometer",
     "UNKNOWN": "ion-ios-help",
+    "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
@@ -93,6 +95,27 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return 'transparent';
     }
   }
+  dh.isDraft = function(tripgj) {
+    if (tripgj.data.features.length == 3 && 
+      tripgj.data.features[2].features[0].properties.feature_type == "section" &&
+      tripgj.data.features[2].features[0].properties.sensed_mode == "MotionTypes.UNPROCESSED") {
+        return true;
+    } else {
+        return false;
+    }
+  }
+
+  dh.getTripBackground = function(dark_theme, tripgj) {
+      var background = "bg-light";
+      if (dark_theme) {
+        background = "bg-dark";
+      }
+      if (dh.isDraft(tripgj)) {
+        background = "bg-unprocessed";
+      }
+      return background;
+  }
+
   dh.allModes = function(trip) {
     var rtn = [];
     var icons = {"BICYCLING":"ion-android-bicycle",
@@ -100,6 +123,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "RUNNING":"ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "UNKNOWN": "ion-ios-help",
+    "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
@@ -357,7 +381,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             case "WALKING": return getColoredStyle(baseDict, 'brown');
             case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
-            case "TRANSPORT": return getColoredStyle(baseDict, 'red');
+            case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
+            case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
+            case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
             case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
             default: return getColoredStyle(baseDict, 'black');
         }
@@ -480,7 +506,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               } else {
                   currStartTransitionIndex = processedUntil + foundStartTransitionIndex;
                   processedUntil = currStartTransitionIndex;
-                  Logger.log("currStartTransitionIndex = "+currStartTransitionIndex);
                   Logger.log("Unprocessed trip started at "+JSON.stringify(transitionList[currStartTransitionIndex]));
                   inTrip = true;
               }
@@ -505,26 +530,26 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var isStartingTransition = function(transWrapper) {
-        Logger.log("isStartingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
+        // Logger.log("isStartingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
         if(transWrapper.data.transition == 'local.transition.exited_geofence' ||
             transWrapper.data.transition == 'T_EXITED_GEOFENCE' ||
             transWrapper.data.transition == 1) {
-            Logger.log("Returning true");
+            // Logger.log("Returning true");
             return true;
         }
-        Logger.log("Returning false");
+        // Logger.log("Returning false");
         return false;
     }
 
     var isEndingTransition = function(transWrapper) {
-        Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
+        // Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
         if(transWrapper.data.transition == 'T_TRIP_ENDED' ||
             transWrapper.data.transition == 'local.transition.stopped_moving' || 
             transWrapper.data.transition == 2) {
-            Logger.log("Returning true");
+            // Logger.log("Returning true");
             return true;
         }
-        Logger.log("Returning false");
+        // Logger.log("Returning false");
         return false;
     }
 
@@ -536,12 +561,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var moment2localdate = function(currMoment, tz) {
         return {
             timezone: tz,
-            year: currMoment.year,
-            month: currMoment.month,
-            day: currMoment.day,
-            weekday: currMoment.weekday,
-            hour: currMoment.hour,
-            second: currMoment.second
+            year: currMoment.year(),
+            month: currMoment.month(),
+            day: currMoment.day(),
+            weekday: currMoment.weekday(),
+            hour: currMoment.hour(),
+            minute: currMoment.minute(),
+            second: currMoment.second()
         };
     }
 
@@ -641,14 +667,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             end_local_dt: moment2localdate(endMoment),
             end_ts: endPoint.data.ts,
             feature_type: "section",
-            sensed_mode: "unprocessed",
+            sensed_mode: "MotionTypes.UNPROCESSED",
             source: "unprocessed",
             speeds: speeds,
             start_fmt_time: startMoment.format(),
             start_local_dt: moment2localdate(startMoment),
             start_ts: startPoint.data.ts,
             times: times,
-            trip_id: tripAndSectionId
+            trip_id: {$oid: tripAndSectionId}
         }
       }
       return {
@@ -678,7 +704,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           ];
           var section_gj = features[2];
           var trip_gj = {
-            id: section_gj.id,
+            id: section_gj.features[0].id,
             type: "FeatureCollection",
             features: features,
             properties: angular.copy(section_gj.features[0].properties)
@@ -764,9 +790,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               // get the start transition for each trip and compare their timestamps
               return t1.data.ts - t2.data.ts;
             });
+            /*
             sortedTransitionList.forEach(function(transition) {
                 console.log(JSON.stringify(transition));
             });
+            */
             var tripsList = transition2Trip(transitionList);
             Logger.log("Mapped into"+tripsList.length+" trips. yay!");
             tripsList.forEach(function(trip) {
@@ -787,7 +815,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 for (var i = 0; i < trip_gj_list.length-1; i++) {
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
                 }
-                if (tripListForDay.length != 0) {
+                if (tripListForDay.length != 0 && trip_gj_list.length != 0) {
                     // Need to link the entire chain above to the processed data
                     var last_processed_trip = tripListForDay[tripListForDay.length - 1]
                     linkTrips(last_processed_trip, trip_gj_list[0]);
@@ -825,19 +853,18 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
         var tripList = processedTripList;
-        if (tripList.length > 0) {
-            Logger.log("tripList[0] = "+JSON.stringify(tripList[0]));
-        }
         if (!completeStatus) {
-          timeline.readUnprocessedTrips(day, processedTripList)
+          return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
               Logger.log("tripList.length = "+tripList.length
                          +"unprocessedTripList.length = "+unprocessedTripList.length);
               Array.prototype.push.apply(tripList, unprocessedTripList);
+              console.log("After merge, returning trip list of size "+tripList.length);
+              return tripList;
             });
+        } else {
+            return tripList;
         }
-        console.log("After merge, returning trip list of size "+tripList.length);
-        return tripList;
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
@@ -852,9 +879,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               Logger.log("tripList.length = "+tripList.length
                          +"unprocessedTripList.length = "+unprocessedTripList.length);
               Array.prototype.push.apply(tripList, unprocessedTripList);
-            });
-          console.log("After merge, returning trip list of size "+tripList.length);
-          return tripList;
+              console.log("After merge, returning trip list of size "+tripList.length);
+              return tripList;
+            })
         }).then(function(combinedTripList) {
           processOrDisplayNone(day, combinedTripList);
         }).catch(function(error) {
