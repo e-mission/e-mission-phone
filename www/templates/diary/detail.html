@@ -1,9 +1,9 @@
-<ion-view style="">
+<ion-view ng-class="getTripBackground()">
     <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title> 
     <ion-nav-buttons side="right">
          <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>
-    <ion-content class="has-header" overflow-scroll="true" padding="true">
+    <ion-content class="has-header" ng-class="getTripBackground" overflow-scroll="true" padding="true">
         <div class="row" style="">
 
             <div class="col-30">

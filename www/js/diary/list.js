@@ -91,13 +91,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
     $scope.datePickerClass = function() {
     }
-    $scope.listCardClass = function() {
+    $scope.listCardClass = function(tripgj) {
+      var background = DiaryHelper.getTripBackground($scope.dark_theme, tripgj);
       if ($window.screen.width <= 320) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm";
+        return "list card list-card "+ background +" list-card-sm";
       } else if ($window.screen.width <= 375) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-md" : "list card list-card list-card-md";
+        return "list card list-card "+ background +" list-card-md";
       } else {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-lg" : "list card list-card list-card-lg";
+        return "list card list-card "+background+" list-card-lg";
       }
 
     }
@@ -268,9 +269,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.arrowColor = DiaryHelper.arrowColor;
     $scope.getArrowClass = DiaryHelper.getArrowClass;
     $scope.isCommon = DiaryHelper.isCommon;
+    $scope.isDraft = DiaryHelper.isDraft;
     // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
     // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
 
+    $scope.makeCurrent = function() {
+        $ionicPopup.alert({template: "Coming soon, after Shankari's quals in early March!"});
+    }
 
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
