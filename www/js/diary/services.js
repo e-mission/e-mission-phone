@@ -772,6 +772,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        * Logic for start_ts described at
        * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284312004
        */
+        $ionicLoading.show({
+          template: 'Reading unprocessed data...'
+        });
        if (tripListForDay.length == 0) {
          var last_processed_ts = moment(day).startOf("day").unix();
        } else {
@@ -823,6 +826,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                     var last_processed_trip = tripListForDay[tripListForDay.length - 1]
                     linkTrips(last_processed_trip, trip_gj_list[0]);
                 }
+                $ionicLoading.hide();
                 return trip_gj_list;
             });
           }
