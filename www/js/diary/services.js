@@ -393,7 +393,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup,
-    $rootScope, CommonGraph, UnifiedDataLoader) {
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -827,8 +827,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var processOrDisplayNone = function(day, tripList) {
-      console.log("processOrDisplayName("+day+", "+tripList.length+") called");
-      if (tripList.length != 0) {
+      if (angular.isDefined(tripList) && tripList.length != 0) {
         console.log("trip count = "+tripList.length+", calling processTripsForDay");
         processTripsForDay(day, tripList);
       } else {
@@ -874,7 +873,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         $ionicLoading.hide();
         localCacheReadFn(day).then(function(processedTripList) {
           var tripList = processedTripList;
-          timeline.readUnprocessedTrips(day, processedTripList)
+          return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
               Logger.log("tripList.length = "+tripList.length
                          +"unprocessedTripList.length = "+unprocessedTripList.length);
