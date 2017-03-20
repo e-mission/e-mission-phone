@@ -683,6 +683,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }
     }
 
+    var tsEntrySort = function(e1, e2) {
+      // compare timestamps
+      return e1.data.ts - e2.data.ts;
+    }
+
     var trip2Geojson = function(trip) {
       var tripStartTransition = trip[0];
       var tripEndTransition = trip[1];
@@ -694,13 +699,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         + moment.unix(tripStartTransition.data.ts).toString() + " -> " 
         + moment.unix(tripEndTransition.data.ts).toString());
       return UnifiedDataLoader.getUnifiedSensorDataForInterval("background/filtered_location", tq).then(function(locationList) {
-          var tripStartPoint = locationList[0];
-          var tripEndPoint = locationList[locationList.length-1];
+          var sortedLocationList = locationList.sort(tsEntrySort);
+          var tripStartPoint = sortedLocationList[0];
+          var tripEndPoint = sortedLocationList[sortedLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
             place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
-            points2Geojson(trip, locationList)
+            points2Geojson(trip, sortedLocationList)
           ];
           var section_gj = features[2];
           var trip_gj = {
@@ -786,10 +792,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return [];
           } else {
             Logger.log("Found "+transitionList.length+" transitions. yay!");
-            var sortedTransitionList = transitionList.sort(function(t1, t2) {
-              // get the start transition for each trip and compare their timestamps
-              return t1.data.ts - t2.data.ts;
-            });
+            var sortedTransitionList = transitionList.sort(tsEntrySort);
             /*
             sortedTransitionList.forEach(function(transition) {
                 console.log(JSON.stringify(transition));
