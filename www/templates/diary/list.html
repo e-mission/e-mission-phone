@@ -47,7 +47,7 @@
                 </div>
 
 
-                <div ng-class="listCardClass()">
+                <div ng-class="listCardClass(tripgj)">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i> -->
 
                 <div class="row">
@@ -61,6 +61,9 @@
                     <div ng-class="listColRightClass()">
                         <div>
                             <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="setColor(mode)"></i>
+                            <div ng-if="isDraft(tripgj)" ng-class="listTextClass()" style="font-size: 0.6em; margin-right: 0.4em;"> (draft) 
+                              <button ng-click="makeCurrent()" style="font-size: 0.6em;"> Update now </button>
+                            </div>
                         </div>
                         <div style="margin-top: -5px;">
                             <a ng-class="listTextClass()" ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>

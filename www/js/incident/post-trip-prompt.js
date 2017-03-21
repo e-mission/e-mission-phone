@@ -127,11 +127,9 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     */
 
-    Logger.log("About to go to incident map page");
-    $state.go("root.main.control", notification.data).then(function(result) {
-       Logger.log("result of moving to control screen = "+result);
-       $state.go("root.main.incident", notification.data); 
-    });
+    Logger.log("About to go to diary, which now displays draft information");
+    $rootScope.displayingIncident = true;
+    $state.go("root.main.diary");
   };
 
   var checkCategory = function(notification) {
@@ -179,7 +177,6 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
           if (res == true) {
             Logger.log("About to go to incident map page");
             displayCompletedTrip(notification, state, data);
-            $state.go("root.main.incident", notification.data);
           } else {
             Logger.log("Skipped incident reporting");
           }

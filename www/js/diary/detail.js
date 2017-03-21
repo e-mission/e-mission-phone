@@ -4,7 +4,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
@@ -66,6 +66,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
+  $scope.getTripBackground = function() {
+     var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
+     return ret_val;
+  }
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
