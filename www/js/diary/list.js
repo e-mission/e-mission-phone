@@ -43,7 +43,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       } else {
          Logger.log("currDay is not defined, load not complete");
       }
-      $rootScope.displayingIncident == false;
+      $rootScope.displayingIncident = false;
     }
   });
 
