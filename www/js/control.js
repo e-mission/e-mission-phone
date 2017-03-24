@@ -13,7 +13,7 @@ angular.module('emission.main.control',['emission.services',
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, storage, ionicDatePicker,
                StartPrefs, ControlHelper, UpdateCheck,
-               CalorieCal, ClientStats) {
+               CalorieCal, ClientStats, CommHelper) {
 
     var datepickerObject = {
       todayLabel: 'Today',  //Optional

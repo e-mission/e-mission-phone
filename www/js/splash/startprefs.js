@@ -182,6 +182,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           var temp = ReferralHandler.getReferralNavigation();
           if (temp == 'goals') {
             return 'root.main.goals';
+          } else if ($rootScope.displayingIncident == true) {
+            $rootScope.displayingIncident = false;
+            return 'root.main.diary';
           } else {
             return 'root.main.metrics';
           }
