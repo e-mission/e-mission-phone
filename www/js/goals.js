@@ -65,10 +65,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     var joinGroupFail = function(error) {
        var displayMsg = error;
-       if (error.indexOf("Code=400") != -1) {
+       if ((error.indexOf("error 400") != -1) || (error.indexOf("400 Bad Request"))) {
           displayMsg = "You are already part of a group! If you want to accept "+
-           "this invite, please leave this group using the website and then "+
-           "click on this link again to join"
+           "this invite, please leave your current group using the Advanced tab "+
+            "and then click on this link again to join"
        }
 
        var alertPopup = $ionicPopup.alert({
@@ -105,8 +105,11 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
      * not registered & not referred => do nothing
      */
     var handlePendingRefer = function() {
+        Logger.log("About to handle pending referral");
         if (storage.get(HABITICA_REGISTERED_KEY) == true) {
+            Logger.log("Registered with habitica - checking pending registration");
             if (ReferralHandler.hasPendingRegistration() == true) {
+                Logger.log("Registration is pending, calling joinGroup");
                 var params = ReferralHandler.getReferralParams()
                 var groupid = params[0];
                 var userid = params[1];
@@ -116,6 +119,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 ReferralHandler.clearGroupReferral();
             }
         } else {
+            Logger.log("Not yet registered with habitica, showing registration dialog");
             if (ReferralHandler.hasPendingRegistration() == true) {
                 showNeedRegister();
             }
@@ -436,6 +440,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 console.log(response);
             }, function(error){
                 console.log("Error when joining the party");
+                console.log(error);
             });
     };
 
