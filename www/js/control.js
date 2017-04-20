@@ -268,6 +268,10 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    $scope.$on('$ionicView.afterEnter', function() {
+        $scope.refreshScreen();
+    })
+
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
