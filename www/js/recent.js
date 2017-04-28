@@ -241,7 +241,8 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     };
 
     $scope.refreshMap();
-});
+})
+;
 
 
 

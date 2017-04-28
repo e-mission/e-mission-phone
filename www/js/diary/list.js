@@ -1,17 +1,23 @@
+'use strict';
+
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
-                                      'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
-                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage', 'emission.splash.startprefs',
+                                        'emission.splash.updatecheck',
+                                        'emission.main.metrics.factory',
+                                        'emission.stats.clientstats',
+                                        'angularLocalStorage'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
-                                    $ionicActionSheet,
+                                    $ionicActionSheet, $location, storage,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage) {
+                                    Config, PostTripManualMarker, nzTour, StartPrefs, ControlHelper, UpdateCheck,
+               CalorieCal, ClientStats) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -337,7 +343,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from 
+      // Workaround from                                  
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
@@ -361,6 +367,48 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.toDetail = function() {
       $state.go('root.main.detail');
     };
+    
+    // directs to current view
+    $scope.redirect = function(){
+      // $location.path('../templates/main-recent.html');
+      $state.go("root.main.current");
+      // $window.location.href = "/templates/main-recent.html";
+}
+
+    $scope.parseState = function(bool) {
+        // if (state) {
+        return bool;
+        // }
+    }
+    var in_trip;
+
+    $scope.func = function() {window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+      if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
+          in_trip = true;
+      } else {
+          in_trip = false;
+      }
+    });
+  }
+
+    $scope.state = function() {
+
+      $scope.func();
+      return in_trip;
+    
+    } 
+     
+
+
+    $scope.ongoing = function(string) {
+      if (string == "STATE_ONGOING_TRIP") {
+        console.log("in true state", string);
+        return true;
+      }
+      console.log("in flase state", string);
+      return false;
+    }
+
 
     $scope.showModes = DiaryHelper.showModes;
 

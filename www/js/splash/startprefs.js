@@ -170,6 +170,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         });
     }
 
+    
+
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {

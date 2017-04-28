@@ -176,12 +176,9 @@ angular.module('emission.main.common.map',['ionic-datepicker',
         } else if (address["county"]) {
             name = name + ", " + address["county"];
         }
-
        console.log("got response, setting display name to "+name);
        place_feature.properties.displayName = name;
     };
-
-
     var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + place_feature.geometry.coordinates[1]
         + "&lon=" + place_feature.geometry.coordinates[0];
       console.log("About to make call "+url);

@@ -19,7 +19,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     }
   });
 
-  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
+  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
 
   $scope.$on('leafletDirectiveMap.heatmap.resize', function(event, data) {
       Logger.log("heatmap received resize event, invalidating map size");

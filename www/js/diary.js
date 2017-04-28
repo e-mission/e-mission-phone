@@ -1,6 +1,7 @@
 angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.detail',
-                                      'emission.main.diary.services'])
+                                      'emission.main.diary.services'
+                                      ])
 
 .config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
@@ -22,5 +23,17 @@ angular.module('emission.main.diary',['emission.main.diary.list',
             controller: 'DiaryDetailCtrl'
         }
      }
-  });
-})
+  })
+
+  // .state('root.main.diary.current', {
+  //     url: '/diary/current',
+  //     templateUrl: 'templates/diary/current.html',
+  //     controller: 'mapCtrl'
+
+  //     // views: {
+  //     //   'main-current': {
+         
+  //     //   }
+  //     // }
+  // });
+;})

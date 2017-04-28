@@ -556,4 +556,6 @@ angular.module('emission.main.control',['emission.services',
             console.log("Sharing failed with message: " + msg);
         });
     }
+
+    
 });

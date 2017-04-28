@@ -83,6 +83,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     var newScope = $rootScope.$new();
     angular.extend(newScope, notification.data);
     newScope.getFormattedTime = getFormattedTime;
+    console.log("newScope", newScope);
+    console.log("notification", notification.data);
     Logger.log("notification = "+JSON.stringify(notification));
     Logger.log("state = "+JSON.stringify(state));
     Logger.log("data = "+JSON.stringify(data));
