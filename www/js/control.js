@@ -67,49 +67,18 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
-        if ($scope.settings.collect.config == null) {
-            return false; // config not loaded when loading ui, set default as false
+        var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        if (!angular.isDefined(isMediumAccuracy) {
+            // config not loaded when loading ui, set default as false
+            // TODO: Read the value if it is not defined.
+            // Otherwise, don't we have a race with reading?
+            // we don't really $apply on this field... 
+            return false;
         } else {
-            var accuracy = $scope.settings.collect.config.accuracy;
-            var v;
-            for (var k in $scope.settings.collect.accuracyOptions) {
-                if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
-                    v = k;
-                    break;
-                }
-            }
-            if ($scope.isIOS()) {
-                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
-            } else if ($scope.isAndroid()) {
-                return v != "PRIORITY_HIGH_ACCURACY";
-            } else {
-                $ionicPopup.alert("Emission does not supprt this platform");
-            }
-
+            return isMediumAccuracy;
         }
     }
-    $scope.toggleLowAccuracy = function() {
-        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        if ($scope.getLowAccuracy()) {
-            if ($scope.isIOS()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyBest"];
-            } else if ($scope.isAndroid()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
-            }
-        } else {
-            if ($scope.isIOS()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
-            } else if ($scope.isAndroid()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
-            }
-        }
-        ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
-        .then(function(){
-            console.log("setConfig Sucess");
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-    }
+    $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
@@ -141,32 +110,11 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getCollectionSettings = function() {
-        var promiseList = []
-        promiseList.push(ControlHelper.dataCollectionGetConfig());
-        promiseList.push(ControlHelper.getAccuracyOptions());
-        Promise.all(promiseList).then(function(resultList){
-                var config = resultList[0];
-                var accuracyOptions = resultList[1];
-                $scope.settings.collect.config = config;
-                $scope.settings.collect.accuracyOptions = accuracyOptions;
-                var retVal = [];
-                for (var prop in config) {
-                    if (prop == "accuracy") {
-                        for (var name in accuracyOptions) {
-                            if (accuracyOptions[name] == config[prop]) {
-                                retVal.push({'key': prop, 'val': name});
-                            }
-                        }
-                    } else {
-                        retVal.push({'key': prop, 'val': config[prop]});
-                    }
-                }
-                $scope.$apply(function() {
-                    $scope.settings.collect.show_config = retVal;
-                })
-            })
-    };
+    $scope.getCollectionSettings = ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
+        $scope.$apply(function() {
+            $scope.settings.collect.show_config = retVal;
+        })
+    });
 
     $scope.getSyncSettings = function() {
         ControlHelper.serverSyncGetConfig().then(function(response) {
@@ -346,40 +294,13 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
-    $scope.editCollectionConfig = function($event) {
-        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        console.log("settings popup = "+$scope.collectSettingsPopup);
-        $scope.collectSettingsPopup.show($event);
-    }
-
+    $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
+    $scope.setAccuracy = ControlCollectionHelper.setAccuracy;
     $scope.editSyncConfig = function($event) {
         $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
         console.log("settings popup = "+$scope.syncSettingsPopup);
         $scope.syncSettingsPopup.show($event);
     }
-
-    $scope.saveAndReloadSettingsPopup = function(result) {
-        console.log("new config = "+$scope.settings.collect.new_config);
-        if (result == true) {
-            ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
-            .then(function(){
-                $scope.getCollectionSettings()
-            },function(err){
-                console.log("setConfig Error: " + err);
-            });
-        }
-    };
-
-    $scope.saveAndReloadCollectionSettingsPopover = function() {
-        console.log("new config = "+$scope.settings.collect.new_config);
-        ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
-        .then(function(){
-            $scope.getCollectionSettings()
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-        $scope.collectSettingsPopup.hide();
-    };
 
     $scope.saveAndReloadSyncSettingsPopover = function() {
         console.log("new config = "+$scope.settings.sync.new_config);
@@ -406,21 +327,6 @@ angular.module('emission.main.control',['emission.services',
       $scope.syncSettingsPopup.remove();
     });
 
-    $scope.setAccuracy= function() {
-        var accuracyActions = [];
-        for (name in $scope.settings.collect.accuracyOptions) {
-            accuracyActions.push({text: name, value: $scope.settings.collect.accuracyOptions[name]});
-        }
-        $ionicActionSheet.show({
-            buttons: accuracyActions,
-            titleText: "Select accuracy",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                $scope.settings.collect.new_config.accuracy = button.value;
-                return true;
-            }
-        });
-    };
     $scope.setSyncInterval = function() {
         var syncIntervalActions = [];
         syncIntervalActions.push({text: "1 min", value: 60});
@@ -447,11 +353,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.refreshScreen();
-    $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
-        scope: $scope
-    }).then(function(popover) {
-        $scope.collectSettingsPopup = popover;
-    });
+    ControlCollectionHelper.init();
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {

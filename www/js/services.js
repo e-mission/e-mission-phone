@@ -396,13 +396,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
           })
     };
 
-    this.dataCollectionSetConfig = function(config) {
-      return window.cordova.plugins.BEMDataCollection.setConfig(config);
-    };
-
-    this.dataCollectionGetConfig = function() {
-      return window.cordova.plugins.BEMDataCollection.getConfig();
-    };
     this.serverSyncSetConfig = function(config) {
       return window.cordova.plugins.BEMServerSync.setConfig(config);
     };
