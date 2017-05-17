@@ -1,5 +1,7 @@
 angular.module('emission.main.control.collection',['emission.services'])
-.factory("ControlCollectionHelper", function($window, ControlHelper) {
+.factory("ControlCollectionHelper", function($window, 
+        $ionicActionSheet, $ionicPopup, $ionicPopover,
+        ControlHelper) {
     var cch = {};
     cch.new_config = {};
     cch.config = {};
@@ -43,18 +45,24 @@ angular.module('emission.main.control.collection',['emission.services'])
       return $window.cordova.plugins.BEMDataCollection.getConfig();
     };
 
+    cch.getAccuracyOptions = function() {
+      return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
+    };
+
+
     cch.editConfig = function($event) {
         // TODO: replace with angular.clone
-        new_config = JSON.parse(JSON.stringify(config));
-        console.log("settings popup = "+settingsPopup);
+        cch.new_config = JSON.parse(JSON.stringify(cch.config));
+        console.log("settings popup = "+cch.settingsPopup);
         cch.settingsPopup.show($event);
+        return cch.new_config;
     }
 
-    $scope.saveAndReloadCollectionSettingsPopover = function() {
+    cch.saveAndReloadCollectionSettingsPopover = function() {
         console.log("new config = "+cch.new_config);
-        ControlHelper.dataCollectionSetConfig(cch.new_config)
+        cch.setConfig(cch.new_config)
         .then(function(){
-            $scope.getCollectionSettings()
+            cch.getCollectionSettings();
         }, function(err){
             console.log("setConfig Error: " + err);
         });
@@ -63,8 +71,8 @@ angular.module('emission.main.control.collection',['emission.services'])
 
     cch.setAccuracy= function() {
         var accuracyActions = [];
-        for (name in $scope.settings.collect.accuracyOptions) {
-            accuracyActions.push({text: name, value: $scope.settings.collect.accuracyOptions[name]});
+        for (name in cch.accuracyOptions) {
+            accuracyActions.push({text: name, value: cch.accuracyOptions[name]});
         }
         $ionicActionSheet.show({
             buttons: accuracyActions,
@@ -88,7 +96,7 @@ angular.module('emission.main.control.collection',['emission.services'])
     var accuracy2String = function() {
         var accuracy = cch.config.accuracy;
         for (var k in cch.accuracyOptions) {
-            if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
+            if (cch.accuracyOptions[k] == accuracy) {
                 return k;
             }
         }
@@ -98,29 +106,29 @@ angular.module('emission.main.control.collection',['emission.services'])
         if (cch.config == null) {
             return undefined; // config not loaded when loading ui, set default as false
         } else {
-            var accuracyString = accuracy2String();
-            if ($scope.isIOS()) {
+            var v = accuracy2String();
+            if (ionic.Platform.isIOS()) {
                 return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
-            } else if ($scope.isAndroid()) {
+            } else if (ionic.Platform.isAndroid()) {
                 return v != "PRIORITY_HIGH_ACCURACY";
             } else {
-                $ionicPopup.alert("Emission does not supprt this platform");
+                $ionicPopup.alert("Emission does not support this platform");
             }
         }
     }
 
-    $scope.toggleLowAccuracy = function() {
+    cch.toggleLowAccuracy = function() {
         cch.new_config = JSON.parse(JSON.stringify(cch.config));
-        if ($scope.getLowAccuracy()) {
-            if ($scope.isIOS()) {
+        if (cch.isMediumAccuracy()) {
+            if (ionic.Platform.isIOS()) {
                 cch.new_config.accuracy = cch.accuracyOptions["kCLLocationAccuracyBest"];
-            } else if ($scope.isAndroid()) {
+            } else if (ionic.Platform.isAndroid()) {
                 accuracy = cch.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
             }
         } else {
-            if ($scope.isIOS()) {
+            if (ionic.Platform.isIOS()) {
                 cch.new_config.accuracy = cch.accuracyOptions["kCLLocationAccuracyHundredMeters"];
-            } else if ($scope.isAndroid()) {
+            } else if (ionic.Platform.isAndroid()) {
                 cch.new_config.accuracy = cch.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
             }
         }

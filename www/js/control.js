@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
+                                        'emission.main.control.collection',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -12,7 +13,8 @@ angular.module('emission.main.control',['emission.services',
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, storage, ionicDatePicker,
-               StartPrefs, ControlHelper, UpdateCheck,
+               StartPrefs, ControlHelper, ControlCollectionHelper,
+               UpdateCheck,
                CalorieCal, ClientStats, CommHelper) {
 
     var datepickerObject = {
@@ -68,7 +70,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
-        if (!angular.isDefined(isMediumAccuracy) {
+        if (!angular.isDefined(isMediumAccuracy)) {
             // config not loaded when loading ui, set default as false
             // TODO: Read the value if it is not defined.
             // Otherwise, don't we have a race with reading?
@@ -110,11 +112,13 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getCollectionSettings = ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
-        $scope.$apply(function() {
-            $scope.settings.collect.show_config = retVal;
-        })
-    });
+    $scope.getCollectionSettings = function() {
+        ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
+            $scope.$apply(function() {
+                $scope.settings.collect.show_config = showConfig;
+            })
+        });
+    };
 
     $scope.getSyncSettings = function() {
         ControlHelper.serverSyncGetConfig().then(function(response) {
@@ -294,8 +298,12 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
-    $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
+    $scope.editCollectionConfig = function($event) {
+        $scope.settings.collect.new_config = ControlCollectionHelper.editConfig($event);
+    }
     $scope.setAccuracy = ControlCollectionHelper.setAccuracy;
+    $scope.saveAndReloadCollectionSettingsPopover = 
+        ControlCollectionHelper.saveAndReloadCollectionSettingsPopover;
     $scope.editSyncConfig = function($event) {
         $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
         console.log("settings popup = "+$scope.syncSettingsPopup);
@@ -353,7 +361,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.refreshScreen();
-    ControlCollectionHelper.init();
+    ControlCollectionHelper.init($scope); 
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {

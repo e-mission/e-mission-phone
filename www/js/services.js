@@ -404,10 +404,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
       return window.cordova.plugins.BEMServerSync.getConfig();
     };
 
-    this.getAccuracyOptions = function() {
-      return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
-    };
-
     this.getUserEmail = function() {
       return window.cordova.plugins.BEMJWTAuth.getUserEmail();
     };
