@@ -53,8 +53,15 @@ angular.module('emission.main.control.collection',['emission.services'])
     cch.editConfig = function($event) {
         // TODO: replace with angular.clone
         cch.new_config = JSON.parse(JSON.stringify(cch.config));
-        console.log("settings popup = "+cch.settingsPopup);
-        cch.settingsPopup.show($event);
+        $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
+            scope: {
+                settings: {collect: {new_config: cch.new_config}}
+            }
+        }).then(function(popover) {
+            cch.settingsPopup = popover;
+            console.log("settings popup = "+cch.settingsPopup);
+            cch.settingsPopup.show($event);
+        });
         return cch.new_config;
     }
 
@@ -82,14 +89,6 @@ angular.module('emission.main.control.collection',['emission.services'])
                 cch.new_config.accuracy = button.value;
                 return true;
             }
-        });
-    };
-
-    cch.init = function($scope) {
-        $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
-            scope: $scope
-        }).then(function(popover) {
-            cch.settingsPopup = popover;
         });
     };
 

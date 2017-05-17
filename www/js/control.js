@@ -298,10 +298,10 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
-    $scope.editCollectionConfig = function($event) {
-        $scope.settings.collect.new_config = ControlCollectionHelper.editConfig($event);
-    }
+
+    $scope.editCollectionConfig = ControlCollectionHelper.editConfig($event);
     $scope.setAccuracy = ControlCollectionHelper.setAccuracy;
+
     $scope.saveAndReloadCollectionSettingsPopover = 
         ControlCollectionHelper.saveAndReloadCollectionSettingsPopover;
     $scope.editSyncConfig = function($event) {
@@ -361,7 +361,6 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.refreshScreen();
-    ControlCollectionHelper.init($scope); 
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {
