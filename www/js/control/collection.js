@@ -1,6 +1,6 @@
 angular.module('emission.main.control.collection',['emission.services'])
 .factory("ControlCollectionHelper", function($window, 
-        $ionicActionSheet, $ionicPopup, $ionicPopover,
+        $ionicActionSheet, $ionicPopup, $ionicPopover, $rootScope,
         ControlHelper) {
     var cch = {};
     cch.new_config = {};
@@ -49,14 +49,21 @@ angular.module('emission.main.control.collection',['emission.services'])
       return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
     };
 
+    var getPopoverScope = function() {
+        var new_scope = $rootScope.$new();
+        new_scope.saveAndReload = cch.saveAndReload;
+        new_scope.isIOS = ionic.Platform.isIOS;
+        new_scope.isAndroid = ionic.Platform.isAndroid;
+        return new_scope;
+    }
 
     cch.editConfig = function($event) {
         // TODO: replace with angular.clone
         cch.new_config = JSON.parse(JSON.stringify(cch.config));
+        var popover_scope = getPopoverScope();
+        popover_scope.new_config = cch.new_config;
         $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
-            scope: {
-                settings: {collect: {new_config: cch.new_config}}
-            }
+            scope: popover_scope
         }).then(function(popover) {
             cch.settingsPopup = popover;
             console.log("settings popup = "+cch.settingsPopup);
@@ -65,7 +72,7 @@ angular.module('emission.main.control.collection',['emission.services'])
         return cch.new_config;
     }
 
-    cch.saveAndReloadCollectionSettingsPopover = function() {
+    cch.saveAndReload = function() {
         console.log("new config = "+cch.new_config);
         cch.setConfig(cch.new_config)
         .then(function(){
@@ -74,6 +81,7 @@ angular.module('emission.main.control.collection',['emission.services'])
             console.log("setConfig Error: " + err);
         });
         cch.settingsPopup.hide();
+        cch.settingsPopup.remove();
     };
 
     cch.setAccuracy= function() {

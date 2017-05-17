@@ -299,7 +299,7 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.editCollectionConfig = ControlCollectionHelper.editConfig($event);
+    $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
     $scope.setAccuracy = ControlCollectionHelper.setAccuracy;
 
     $scope.saveAndReloadCollectionSettingsPopover = 
