@@ -2,11 +2,16 @@ angular.module('emission.main.control.collection',['emission.services'])
 .factory("ControlCollectionHelper", function($window, 
         $ionicActionSheet, $ionicPopup, $ionicPopover, $rootScope,
         ControlHelper) {
+
     var cch = {};
     cch.new_config = {};
     cch.config = {};
     cch.accuracyOptions = {};
     cch.settingsPopup = {};
+
+    /* 
+     * Functions to read and format values for display
+     */
 
     cch.getCollectionSettings = function() {
         var promiseList = []
@@ -37,23 +42,16 @@ angular.module('emission.main.control.collection',['emission.services'])
         return retVal;
     }
 
-    cch.setConfig = function(config) {
-      return $window.cordova.plugins.BEMDataCollection.setConfig(config);
-    };
-
-    cch.getConfig = function() {
-      return $window.cordova.plugins.BEMDataCollection.getConfig();
-    };
-
-    cch.getAccuracyOptions = function() {
-      return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
-    };
+    /* 
+     * Functions to edit and save values
+     */
 
     var getPopoverScope = function() {
         var new_scope = $rootScope.$new();
         new_scope.saveAndReload = cch.saveAndReload;
         new_scope.isIOS = ionic.Platform.isIOS;
         new_scope.isAndroid = ionic.Platform.isAndroid;
+        new_scope.setAccuracy = cch.setAccuracy;
         return new_scope;
     }
 
@@ -84,6 +82,10 @@ angular.module('emission.main.control.collection',['emission.services'])
         cch.settingsPopup.remove();
     };
 
+    /* 
+     * Edit helpers for values that selected from actionSheets
+     */
+
     cch.setAccuracy= function() {
         var accuracyActions = [];
         for (name in cch.accuracyOptions) {
@@ -99,6 +101,44 @@ angular.module('emission.main.control.collection',['emission.services'])
             }
         });
     };
+
+    cch.forceState = function() {
+        var forceStateActions = [{text: "Initialize",
+                                  transition: "INITIALIZE"},
+                                 {text: 'Start trip',
+                                  transition: "EXITED_GEOFENCE"},
+                                 {text: 'End trip',
+                                  transition: "STOPPED_MOVING"},
+                                 {text: 'Visit ended',
+                                  transition: "VISIT_ENDED"},
+                                 {text: 'Visit started',
+                                  transition: "VISIT_STARTED"},
+                                 {text: 'Remote push',
+                                  transition: "RECEIVED_SILENT_PUSH"}];
+        $ionicActionSheet.show({
+            buttons: forceStateActions,
+            titleText: "Force state",
+            cancelText: "Cancel",
+            buttonClicked: function(index, button) {
+                cch.forceTransition(button.transition);
+                return true;
+            }
+        });
+    };
+
+    cch.forceTransition = function(transition) {
+        ControlHelper.forceTransition(transition).then(function(result) {
+            $ionicPopup.alert({template: 'success -> '+result});
+        }, function(error) {
+            $ionicPopup.alert({template: 'error -> '+error});
+        });
+    };
+
+
+
+    /* 
+     * Functions for the separate accuracy toggle 
+     */
 
     var accuracy2String = function() {
         var accuracy = cch.config.accuracy;
@@ -146,6 +186,23 @@ angular.module('emission.main.control.collection',['emission.services'])
             console.log("setConfig Error: " + err);
         });
     }
+
+    /*
+     * BEGIN: Simple read/write wrappers
+     */
+
+    cch.setConfig = function(config) {
+      return $window.cordova.plugins.BEMDataCollection.setConfig(config);
+    };
+
+    cch.getConfig = function() {
+      return $window.cordova.plugins.BEMDataCollection.getConfig();
+    };
+
+    cch.getAccuracyOptions = function() {
+      return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
+    };
+
 
     return cch;
 });

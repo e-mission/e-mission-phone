@@ -251,18 +251,6 @@ angular.module('emission.main.control',['emission.services',
       }
     };
 
-    $scope.forceTransition = function(transition) {
-        ControlHelper.forceTransition(transition).then(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
-        });
-    };
-
     $scope.forceSync = function() {
         ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
             function() {
@@ -275,35 +263,9 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.forceState = function() {
-        var forceStateActions = [{text: "Initialize",
-                                  transition: "INITIALIZE"},
-                                 {text: 'Start trip',
-                                  transition: "EXITED_GEOFENCE"},
-                                 {text: 'End trip',
-                                  transition: "STOPPED_MOVING"},
-                                 {text: 'Visit ended',
-                                  transition: "VISIT_ENDED"},
-                                 {text: 'Visit started',
-                                  transition: "VISIT_STARTED"},
-                                 {text: 'Remote push',
-                                  transition: "RECEIVED_SILENT_PUSH"}];
-        $ionicActionSheet.show({
-            buttons: forceStateActions,
-            titleText: "Force state",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                $scope.forceTransition(button.transition);
-                return true;
-            }
-        });
-    };
-
+    $scope.forceState = ControlCollectionHelper.forceState;
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
-    $scope.setAccuracy = ControlCollectionHelper.setAccuracy;
 
-    $scope.saveAndReloadCollectionSettingsPopover = 
-        ControlCollectionHelper.saveAndReloadCollectionSettingsPopover;
     $scope.editSyncConfig = function($event) {
         $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
         console.log("settings popup = "+$scope.syncSettingsPopup);
@@ -371,10 +333,10 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){
-            $scope.forceTransition('STOP_TRACKING');
+            cch.forceTransition('STOP_TRACKING');
             $scope.startStopBtnToggle = false;
         } else {
-            $scope.forceTransition('START_TRACKING');
+            cch.forceTransition('START_TRACKING');
             $scope.startStopBtnToggle = true;
         }
     }
