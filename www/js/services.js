@@ -396,44 +396,14 @@ angular.module('emission.services', ['emission.plugin.logger'])
           })
     };
 
-    this.dataCollectionSetConfig = function(config) {
-      return window.cordova.plugins.BEMDataCollection.setConfig(config);
-    };
-
-    this.dataCollectionGetConfig = function() {
-      return window.cordova.plugins.BEMDataCollection.getConfig();
-    };
-    this.serverSyncSetConfig = function(config) {
-      return window.cordova.plugins.BEMServerSync.setConfig(config);
-    };
-
-    this.serverSyncGetConfig = function() {
-      return window.cordova.plugins.BEMServerSync.getConfig();
-    };
-
-    this.getAccuracyOptions = function() {
-      return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
-    };
-
     this.getUserEmail = function() {
       return window.cordova.plugins.BEMJWTAuth.getUserEmail();
-    };
-
-    this.getState = function() {
-      return window.cordova.plugins.BEMDataCollection.getState();
     };
 
     this.getSettings = function() {
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
 
-    this.forceTransition = function(transition) {
-      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
-    };
-
-    this.forceSync = function() {
-      return window.cordova.plugins.BEMServerSync.forceSync();
-    };
 })
 
 // common configuration methods across all screens
