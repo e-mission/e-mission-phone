@@ -739,9 +739,13 @@ ion-header-bar {
   background-color: #CCCCCC !important;
 }
 
-.toggle-color{
+.toggle-on-ourcolor-bg{
   border-color: #01D0A7 !important;
   background-color: #01D0A7 !important;
+}
+
+.toggle-color{
+  @include toggle-small-style($toggle-on-ourcolor-bg);
 }
 
 .control-info{
