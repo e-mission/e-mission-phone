@@ -75,67 +75,14 @@
   var resolvedData;
   var otherVar;
 
-  // angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
 
   $scope.go = function() {db.getAllSensorData($scope.config.key_data_mapping.Locations.key).then(function(result) {
       both = [result[0].data.latitude, result[0].data.longitude];
-      // resolvedData = both[0];
-      // otherVar = both[1];
-  //     angular.extend($scope.mapCtrl, {
-  //     defaults : {
-  //     center: {
-  //       lat: result[0].data.latitude,
-  //       lng:  result[0].data.longitude,
-  //       zoom: 15
-  //     }
-  //   }
-  // });
-  //     angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
-      // console.log("defaults", result[0].data);
-      // console.log("defaults", result[0].data);
-      // return result;
+      $scope.refresh();
   });
-  //   angular.extend($scope.mapCtrl, {
-  //     defaults : {
-  //     center: {
-  //       lat: resolvedData,
-  //       lng:  otherVar,
-  //       zoom: 15
-  //     }
-  //   }
-  // });
   }
   $scope.go();
   
-
-  // }).then(function(res) {
-  //     angular.extend($scope.mapCtrl, {
-  //     defaults : {
-  //     center: {
-  //       lat: res[0].data.longitude,
-  //       lng:  res[0].data.latitude,
-  //       zoom: 15
-  //     }
-  //   }
-  // });
-  //       angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
-  //       console.log("defaults", $scope.mapCtrl.defaults);
-  // });
-
-  
-  
-  // console.log("extending", true);
-  // angular.extend($scope.mapCtrl, {
-  // defaults : {
-  //     center: {
-  //       lat: both[0],
-  //       lng:  both[1],
-  //       zoom: 15
-  //     }
-  //   }
-  // });
-
-  // angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {
           console.log("current/map received resize event, invalidating map size");
@@ -159,20 +106,7 @@
         });
   };
      
-
-
-    // $scope.start_ts = $stateParams.start_ts;
-    // $scope.end_ts = $stateParams.end_ts;
-    // $scope.refreshMap($scope.start_ts, $scope.end_ts);
   $scope.refreshMap();
-
-//     $scope.back = function(){
-//       // $location.path('../templates/main-recent.html');
-//       // $rootScope.$viewHistory.backView = null;
-//       //$ionicHistory.clearCache();
-//       $state.go("^", null, { reload: true });
-//       // $window.location.href = "/templates/main-recent.html";
-// }
 
   var currentStart = 0;
 
@@ -199,21 +133,7 @@
       }
   };
 
-  $scope.runTrip(Timeline.data.currDayTrips);
-  // $scope.func();
-
-  // $scope.lat_long = function() {
-  //   $scope.func();
-  //   both = [latitude, longitude];
-  // }
-  // $scope.long = function() {
-  //   $scope.func();
-  //   return longitude;
-  // }
-  
-  // var llong = L.latLng(both);
-  // var marker = L.marker(llong);
-  // marker.addto()
+  // $scope.runTrip(Timeline.data.currDayTrips);
 
   var initSelect = function() {
     var now = moment();
@@ -295,21 +215,6 @@
   $scope.getIncidents();
   
   var _map;
-//   $scope.addfeature = function() {
-//     // $scope.lat_long();
-//     // var newFeature = L.GeoJSON.asFeature(both);
-//     // newFeature.properties.feature_type = "incident";
-//     var geojsonFeature = {
-//     "type": "Feature",
-//     "properties": {
-//         "name": "incident",
-//     },
-//     "geometry": {
-//         "type": "Point",
-//         "coordinates": both
-//     }
-// }; 
-// } 
    
   var addSafe = function(marker, map) {
       marker.setStyle({color: 'green'});
@@ -325,15 +230,17 @@
   var addSuck = function(marker, map) {
     marker.setStyle({color: 'red'});
     map.addLayer(marker);
+    console.log("marker", marker);
   };
 
-    $scope.addmarker = function(map) {
-      console.log("both", both);
+    $scope.addmarker = function(map, llng) {
+      console.log("both", llng);
     //   db.getAllSensorData($scope.config.key_data_mapping.Locations.key).then(function(result) {
     //     both = [result[0].data.latitude, result[0].data.longitude];
     // });
+      
       console.log("called addmarker with map = "+map);
-      var latlng = L.latLng(both);
+      var latlng = L.latLng(llng);
       var m = L.circleMarker(latlng);
       var safe_suck_cancel_actions = [{text: "<font size='+5'>&#x263B;</font>",
                                      action: addSafe},
@@ -376,10 +283,16 @@
   
   
   $scope.parse = function() {
-    console.log("About to get map");
+    console.log("About to get map"); 
+    var _map;
     leafletData.getMap('current').then(function(map) {
-      console.log("success, got map "+map);
-      $scope.addmarker(map);
+      console.log("success, got map "+ map);
+      _map = map;
+      return db.getAllSensorData($scope.config.key_data_mapping.Locations.key);
+    }).then(function(result) {
+            both = [result[result.length - 1].data.latitude, result[result.length - 1].data.longitude];
+            $scope.addmarker(_map, both);
+
     })
     .catch(function(error) {
       console.log("error while getting map current from leafletData");
