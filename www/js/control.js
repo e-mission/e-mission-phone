@@ -2,6 +2,7 @@
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.main.control.collection',
+                                        'emission.main.control.sync',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -13,7 +14,8 @@ angular.module('emission.main.control',['emission.services',
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, storage, ionicDatePicker,
-               StartPrefs, ControlHelper, ControlCollectionHelper,
+               StartPrefs, ControlHelper,
+               ControlCollectionHelper, ControlSyncHelper,
                UpdateCheck,
                CalorieCal, ClientStats, CommHelper) {
 
@@ -121,18 +123,13 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.getSyncSettings = function() {
-        ControlHelper.serverSyncGetConfig().then(function(response) {
-            var config = response;
-            $scope.settings.sync.config = config;
-            var retVal = [];
-            for (var prop in config) {
-                retVal.push({'key': prop, 'val': config[prop]});
-            }
+        ControlSyncHelper.getSyncSettings().then(function(showConfig) {
             $scope.$apply(function() {
-                $scope.settings.sync.show_config = retVal;
-            });
+                $scope.settings.sync.show_config = showConfig;
+            })
         });
     };
+
     $scope.getEmail = function() {
         ControlHelper.getUserEmail().then(function(response) {
            console.log("user email = "+response);
@@ -157,7 +154,7 @@ angular.module('emission.main.control',['emission.services',
         $state.go("root.main.map");
     }
     $scope.getState = function() {
-        ControlHelper.getState().then(function(response) {
+        ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
             });
@@ -224,6 +221,15 @@ angular.module('emission.main.control',['emission.services',
         $scope.refreshScreen();
     })
 
+    // Execute action on hidden popover
+    $scope.$on('control.update.complete', function() {
+        $scope.refreshScreen();
+    });
+
+    $scope.$on('popover.hidden', function() {
+        $scope.refreshScreen();
+    });
+
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
@@ -256,7 +262,7 @@ angular.module('emission.main.control',['emission.services',
             function() {
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
-        ControlHelper.forceSync().then(function(response) {
+        ControlSyncHelper.forceSync().then(function(response) {
             $ionicPopup.alert({template: 'success -> '+response});
         }, function(error) {
             $ionicPopup.alert({template: 'error -> '+error});
@@ -265,54 +271,8 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.forceState = ControlCollectionHelper.forceState;
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
+    $scope.editSyncConfig = ControlSyncHelper.editConfig;
 
-    $scope.editSyncConfig = function($event) {
-        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
-        console.log("settings popup = "+$scope.syncSettingsPopup);
-        $scope.syncSettingsPopup.show($event);
-    }
-
-    $scope.saveAndReloadSyncSettingsPopover = function() {
-        console.log("new config = "+$scope.settings.sync.new_config);
-        ControlHelper.serverSyncSetConfig($scope.settings.sync.new_config)
-        .then(function(){
-            CommHelper.updateUser({
-                // TODO: worth thinking about where best to set this
-                // Currently happens in native code. Now that we are switching
-                // away from parse, we can store this from javascript here. 
-                // or continue to store from native
-                // this is easier for people to see, but means that calls to
-                // native, even through the javascript interface are not complete
-                curr_sync_interval: $scope.settings.sync.new_config.sync_interval
-            });
-            $scope.getSyncSettings();
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-        $scope.syncSettingsPopup.hide();
-    };
-    // Execute action on hide popover
-    $scope.$on('$destroy', function() {
-      $scope.collectSettingsPopup.remove();
-      $scope.syncSettingsPopup.remove();
-    });
-
-    $scope.setSyncInterval = function() {
-        var syncIntervalActions = [];
-        syncIntervalActions.push({text: "1 min", value: 60});
-        syncIntervalActions.push({text: "10 min", value: 10 * 60});
-        syncIntervalActions.push({text: "30 min", value: 30 * 60});
-        syncIntervalActions.push({text: "1 hr", value: 60 * 60});
-        $ionicActionSheet.show({
-            buttons: syncIntervalActions,
-            titleText: "Select sync interval",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                $scope.settings.sync.new_config.sync_interval = button.value;
-                return true;
-            }
-        });
-    };
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
@@ -333,10 +293,10 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){
-            cch.forceTransition('STOP_TRACKING');
+            ControlCollectionHelper.forceTransition('STOP_TRACKING');
             $scope.startStopBtnToggle = false;
         } else {
-            cch.forceTransition('START_TRACKING');
+            ControlCollectionHelper.forceTransition('START_TRACKING');
             $scope.startStopBtnToggle = true;
         }
     }

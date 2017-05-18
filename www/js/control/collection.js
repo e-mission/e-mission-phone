@@ -1,7 +1,6 @@
-angular.module('emission.main.control.collection',['emission.services'])
+angular.module('emission.main.control.collection', [])
 .factory("ControlCollectionHelper", function($window, 
-        $ionicActionSheet, $ionicPopup, $ionicPopover, $rootScope,
-        ControlHelper) {
+        $ionicActionSheet, $ionicPopup, $ionicPopover, $rootScope) {
 
     var cch = {};
     cch.new_config = {};
@@ -74,7 +73,8 @@ angular.module('emission.main.control.collection',['emission.services'])
         console.log("new config = "+cch.new_config);
         cch.setConfig(cch.new_config)
         .then(function(){
-            cch.getCollectionSettings();
+            cch.config = cch.new_config;
+            $rootScope.$broadcast('control.update.complete', 'collection config');
         }, function(err){
             console.log("setConfig Error: " + err);
         });
@@ -127,13 +127,14 @@ angular.module('emission.main.control.collection',['emission.services'])
     };
 
     cch.forceTransition = function(transition) {
-        ControlHelper.forceTransition(transition).then(function(result) {
+        cch.forceTransitionWrapper(transition).then(function(result) {
+            $rootScope.$broadcast('control.update.complete', 'forceTransition');
             $ionicPopup.alert({template: 'success -> '+result});
         }, function(error) {
+            $rootScope.$broadcast('control.update.complete', 'forceTransition');
             $ionicPopup.alert({template: 'error -> '+error});
         });
     };
-
 
 
     /* 
@@ -191,6 +192,10 @@ angular.module('emission.main.control.collection',['emission.services'])
      * BEGIN: Simple read/write wrappers
      */
 
+    cch.getState = function() {
+      return window.cordova.plugins.BEMDataCollection.getState();
+    };
+
     cch.setConfig = function(config) {
       return $window.cordova.plugins.BEMDataCollection.setConfig(config);
     };
@@ -203,6 +208,9 @@ angular.module('emission.main.control.collection',['emission.services'])
       return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
     };
 
+    cch.forceTransitionWrapper = function(transition) {
+      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
+    };
 
     return cch;
 });
