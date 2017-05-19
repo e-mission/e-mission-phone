@@ -3,6 +3,7 @@
 angular.module('emission.main.control',['emission.services',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
+                                        'emission.main.control.tnotify',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -16,6 +17,7 @@ angular.module('emission.main.control',['emission.services',
                $rootScope, storage, ionicDatePicker,
                StartPrefs, ControlHelper,
                ControlCollectionHelper, ControlSyncHelper,
+               ControlTransitionNotifyHelper,
                UpdateCheck,
                CalorieCal, ClientStats, CommHelper) {
 
@@ -126,6 +128,14 @@ angular.module('emission.main.control',['emission.services',
         ControlSyncHelper.getSyncSettings().then(function(showConfig) {
             $scope.$apply(function() {
                 $scope.settings.sync.show_config = showConfig;
+            })
+        });
+    };
+
+    $scope.getTNotifySettings = function() {
+        ControlTransitionNotifyHelper.getTNotifySettings().then(function(showConfig) {
+            $scope.$apply(function() {
+                $scope.settings.tnotify.show_config = showConfig;
             })
         });
     };
@@ -272,6 +282,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.forceState = ControlCollectionHelper.forceState;
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
     $scope.editSyncConfig = ControlSyncHelper.editConfig;
+    $scope.editTNotifyConfig = ControlTransitionNotifyHelper.editConfig;
 
 
     $scope.isAndroid = function() {

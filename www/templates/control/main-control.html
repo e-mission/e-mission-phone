@@ -140,15 +140,29 @@
       <div class="control-list-item">
         <div class="control-list-text">Sync</div>
         <div ng-click="editSyncConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
-          <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
-                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
-                <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
-          </ion-item>
-          <ion-item class="row">
-                <div class="col timestamp item-text-wrap control-info">host</div>
-                <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
-          </ion-item>
       </div>
+      <ion-list>
+        <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
+              <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
+              <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
+        </ion-item>
+        <ion-item class="row">
+              <div class="col timestamp item-text-wrap control-info">host</div>
+              <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
+        </ion-item>
+      </ion-list>
+
+      <div class="control-list-item">
+        <div class="control-list-text">Transition Notify</div>
+        <div ng-click="editTNotifyConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+      </div>
+      <ion-list>
+        <ion-item class="row" ng-repeat="entry in settings.tnotify.show_config">
+              <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
+              <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
+        </ion-item>
+      </ion-list>
+
     </div>
   </ion-content>
 </ion-view>
