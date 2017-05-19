@@ -157,9 +157,8 @@
         <div ng-click="editTNotifyConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
-        <ion-item class="row" ng-repeat="entry in settings.tnotify.show_config">
-              <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
-              <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
+        <ion-item ng-repeat="entry in settings.tnotify.show_config">
+            <div class="row" ng-include="'templates/control/transition-notify-display-detail.html'"></div>
         </ion-item>
       </ion-list>
 
