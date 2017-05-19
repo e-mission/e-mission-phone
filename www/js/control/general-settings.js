@@ -244,6 +244,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
+        $scope.settings.tnotify = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
@@ -253,6 +254,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
+        $scope.getTNotifySettings();
         $scope.getEmail();
         $scope.getState();
     };
