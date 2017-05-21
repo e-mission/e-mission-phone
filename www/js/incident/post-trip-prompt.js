@@ -32,14 +32,14 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
        identifier: 'SNOOZE',
        title: 'Snooze',
        icon: 'res://ic_moreoptions',
-       activationMode: 'foreground',
+       activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
         identifier: 'REPORT',
         title: 'Yes',
         icon: 'res://ic_signin',
-        activationMode: 'background',
+        activationMode: 'foreground',
         destructive: false,
         authenticationRequired: false
     }];
@@ -53,8 +53,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       sound: null,
       actions: actions,
       category: REPORT_INCIDENT_TEXT,
-      autoClear: true,
-      transition: TRIP_END_EVENT
+      autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
     return reportNotifyConfig;
