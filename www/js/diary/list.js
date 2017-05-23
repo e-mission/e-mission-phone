@@ -308,7 +308,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
       },
       steps: [{
-        target: '.date-picker-button',
+        target: '#date-picker-button',
         content: 'Use this to select the day you want to see.'
       },
       {
