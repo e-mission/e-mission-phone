@@ -1056,3 +1056,4 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     return timeline;
   })
+

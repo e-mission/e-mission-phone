@@ -18,12 +18,12 @@
          </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
-    <ion-content class="diary-entry">
+        <ion-content class="diary-entry">
         <ion-refresher
         pulling-text="Pull to refresh"
         on-refresh="refresh()">
         </ion-refresher>
-        <ion-list>
+            <ion-list>
         <!--
         This needs to be collection-repeat instead of ng-repeat on android.
         Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
@@ -35,11 +35,11 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-        <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
+                <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
            <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>
             <div  style="padding-left: 19%;">
 
-             <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
+                         <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
                 <div ng-class="listExpandClass()" ng-if="differentCommon(tripgj)" id="hidden-{{tripgj.data.id}}">
                     {{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}
                 </div>
@@ -96,8 +96,8 @@
             </div>
             <div ng-class="stopTimeTagClass(tripgj)">{{localTimeString (tripgj.data.properties.end_local_dt)}}</div>
         </div>
-        </ion-list>
-    </ion-content>
+                </ion-list>
+        </ion-content>
 
 
 </ion-view>
