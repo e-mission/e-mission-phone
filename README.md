@@ -47,20 +47,27 @@ Generate your App ID
 $ ionic io init
 ``
 
-Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
+Setup cocoapods. For all versions > 1.9, we need https://cocoapods.org/ support. This is used by the push plugin for the GCM pod, and by the auth plugin to install the GTMOAuth framework. This is a good time to get a cup of your favourite beverage.
+
+```
+$ sudo gem install cocoapods
+$ pod setup
+```
+
+To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
+https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
+
+Next, restore platforms and plugins. This is a good time to get a second cup of your favorite beverage
 
 ``
 $ ionic state restore
 ``
 
-Setup cocoapods. For all versions > 1.9, we need https://cocoapods.org/ support. This is used by the push plugin for the GCM pod, and by the auth plugin to install the GTMOAuth framework - e.g.
+Finally, make sure to install the other node modules required for the setup scripts.
 
 ```
-sudo gem install cocoapods
+npm install
 ```
-
-To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
-https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
 
 Installation is now complete. You can view the current state of the application in the emulator
 
@@ -92,7 +99,7 @@ Sometimes the IOS emulator doesn't work when called from command line. If so, yo
 the project:
 
 ``
-      /e-mission-phone/platforms/ios/emission.xcodeproj
+      /e-mission-phone/platforms/ios/emission.xcworkspace
 ``
 
 and then run the project with IOS emulator.
