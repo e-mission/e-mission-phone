@@ -7,6 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.incident.posttrip.map',
                                  'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
@@ -69,6 +70,7 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
+
   .state('root.main.sensed', {
     url: "/sensed",
     views: {
@@ -78,6 +80,7 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
+
   .state('root.main.map', {
       url: "/map",
       views: {
@@ -87,15 +90,29 @@ angular.module('emission.main', ['emission.main.recent',
         }
       }
   })
+
+  .state('root.main.incident', {
+      url: "/incident",
+      params: {
+        start_ts: null,
+        end_ts: null
+      },
+      views: {
+        'main-control': {
+          templateUrl: "templates/incident/map.html",
+          controller: 'PostTripMapCtrl'
+        }
+      }
+  })
+
   .state('root.main.log', {
     url: '/log',
     views: {
-        'main-control': {
-          templateUrl: 'templates/recent/log.html',
-          controller: 'logCtrl'
-        }
+      'main-control': {
+        templateUrl: 'templates/recent/log.html',
+        controller: 'logCtrl'
+      }
     }
-
   });
 
   $ionicConfigProvider.tabs.style('standard')

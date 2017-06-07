@@ -1,12 +1,13 @@
 'use strict';
 
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
+                'emission.survey.launch',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger){
+                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -23,7 +24,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
     //var challengeMembersId = [];
-
+    
+    // THIS BLOCK FOR inAppBrowser
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
       if ($state.$current.name == 'root.main.goals') {
@@ -149,6 +151,36 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
+    $scope.toBrowser = function() {     
+            var options = {       
+              location: 'no',     
+              clearcache: 'no',       
+              toolbar: 'yes'      
+            };        
+      
+            var settings = localStorage.getItem("habit-mobile-settings");     
+      
+          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){     
+            // insert Javascript via code / file      
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||      
+                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {       
+                $cordovaInAppBrowser.executeScript({      
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');"      
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"     
+                });       
+            } else {      
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");     
+            }     
+          });     
+        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)     
+          .then(function(event) {     
+            // success        
+          })      
+          .catch(function(event) {        
+            // error      
+          });
+       
+    };
 
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
@@ -221,6 +253,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                                 okType: "button-assertive"});
             console.log("Not signed up");
         });
+        checkSurveyDone();
     };
 
 
@@ -233,6 +266,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                         'method_args': null};
 
         CommHelper.habiticaProxy(callOpts).then(function(response){
+            localStorage.setItem("habit-mobile-settings", JSON.stringify({'auth': response.auth}));
             $scope.screen = response.success;
             $scope.$apply(function() {
                 $scope.profile = response.data;
@@ -857,6 +891,32 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         });
     }
 
+    $scope.startSurvey = function () {
+      // (URL, elementID)
+      SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
+      // startSurvey();
+    }
+
+    var checkSurveyDone = function () {
+      console.log("Checking if user already completed survey");
+      var SURVEY_DONE_KEY = 'survey_done';
+      var surveyDone = storage.get(SURVEY_DONE_KEY);
+      if (!surveyDone) {
+        $ionicPopup.show({
+          title: 'Bic2Cal Survey: Please take this 15-minute survey to provide feedback for our research.',
+          scope: $scope,
+            buttons: [{
+              text: 'Ok',
+              type: 'button-positive',
+              onTap: function(e) {
+                 $scope.startSurvey();
+              }
+            }]
+        });
+        storage.set(SURVEY_DONE_KEY, true);
+      }
+    };
+
     // Tour steps
     var tour = {
       config: {
@@ -872,7 +932,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       },
       {
         target: '.invite-friends',
-        content: 'Grow your party by invite friends to join you!'
+        content: 'Grow your party by inviting friends to join you!'
       },
       {
         target: '.habit-list',
@@ -884,20 +944,22 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       nzTour.start(tour);
     };
 
+    $scope.startWalkthrough = function () {
+      startWalkthrough();
+    }
+
     /*
     * Checks if it is the first time the user has loaded the goals tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
     */
-    var checkGoalsTutorialDone = function () {
+    /*var checkGoalsTutorialDone = function () {
       var GOALS_DONE_KEY = 'goals_tutorial_done';
       var goalsTutorialDone = storage.get(GOALS_DONE_KEY);
       if (!goalsTutorialDone) {
         startWalkthrough();
         storage.set(GOALS_DONE_KEY, true);
       }
-    };
+    };*/
 
-    $scope.startWalkthrough = function () {
-      startWalkthrough();
-    }
+    checkSurveyDone();
 });
