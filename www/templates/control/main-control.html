@@ -6,18 +6,18 @@
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Tracking</div>
-      <label ng-click="userStartStopTracking()" class="toggle control-list-toggle">
+      <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="trackingOn()">
-        <div class="track toggle-color">
+        <div class="track">
           <div class="handle"></div>
         </div>
       </label>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Medium accuracy</div>
-      <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle">
+      <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
-        <div class="track toggle-color">
+        <div class="track">
           <div class="handle"></div>
         </div>
       </label>
@@ -26,9 +26,9 @@
 
     <div class="control-list-item">
       <div class="control-list-text">Dark theme</div>
-      <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle">
+      <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getDarkTheme()">
-        <div class="track toggle-color">
+        <div class="track">
           <div class="handle"></div>
         </div>
       </label>
@@ -130,15 +130,28 @@
       <div class="control-list-item">
         <div class="control-list-text">Sync</div>
         <div ng-click="editSyncConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
-          <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
-                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
-                <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
-          </ion-item>
-          <ion-item class="row">
-                <div class="col timestamp item-text-wrap control-info">host</div>
-                <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
-          </ion-item>
       </div>
+      <ion-list>
+        <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
+              <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
+              <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
+        </ion-item>
+        <ion-item class="row">
+              <div class="col timestamp item-text-wrap control-info">host</div>
+              <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
+        </ion-item>
+      </ion-list>
+
+      <div class="control-list-item">
+        <div class="control-list-text">Transition Notify</div>
+        <div ng-click="editTNotifyConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+      </div>
+      <ion-list>
+        <ion-item ng-repeat="entry in settings.tnotify.show_config">
+            <div class="row" ng-include="'templates/control/transition-notify-display-detail.html'"></div>
+        </ion-item>
+      </ion-list>
+
     </div>
   </ion-content>
 </ion-view>

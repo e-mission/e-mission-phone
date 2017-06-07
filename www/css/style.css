@@ -746,9 +746,13 @@ ion-header-bar {
   background-color: #CCCCCC !important;
 }
 
-.toggle-color{
+.toggle-on-ourcolor-bg{
   border-color: #01D0A7 !important;
   background-color: #01D0A7 !important;
+}
+
+.toggle-color{
+  @include toggle-small-style($toggle-on-ourcolor-bg);
 }
 
 .control-info{
@@ -931,11 +935,17 @@ button.button.back-button.buttons.button-clear.header-item {
   right: 16px;
   top: 16px;
 }
-.list-card-dark {
-  margin: 16px 0; background-color: #424242; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-}
 .list-card {
-  margin: 16px 0; background-color: #fff; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  margin: 16px 0; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+.bg-dark {
+  background-color: #424242; 
+}
+.bg-light {
+  background-color: #ffffff; 
+}
+.bg-unprocessed {
+  background-color: #9eb2aa; 
 }
 .list-card-sm {
   width: 95%;

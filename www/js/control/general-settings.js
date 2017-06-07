@@ -1,6 +1,11 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
+                                        'emission.main.control.collection',
+                                        'emission.main.control.sync',
+                                        'emission.main.control.tnotify',
+                                        'ionic-datepicker',
+                                        'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
@@ -9,8 +14,38 @@ angular.module('emission.main.control',['emission.services',
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, StartPrefs, ControlHelper, UpdateCheck,
-               CalorieCal, ClientStats) {
+               $rootScope, storage, ionicDatePicker,
+               StartPrefs, ControlHelper,
+               ControlCollectionHelper, ControlSyncHelper,
+               ControlTransitionNotifyHelper,
+               UpdateCheck,
+               CalorieCal, ClientStats, CommHelper) {
+
+    var datepickerObject = {
+      todayLabel: 'Today',  //Optional
+      closeLabel: 'Close',  //Optional
+      setLabel: 'Set',  //Optional
+      titleLabel: 'Choose date to download data',
+      setButtonType : 'button-positive',  //Optional
+      todayButtonType : 'button-stable',  //Optional
+      closeButtonType : 'button-stable',  //Optional
+      inputDate: moment().subtract(1, 'week').toDate(),  //Optional
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      mondayFirst: true,  //Optional
+      templateType: 'popup', //Optional
+      showTodayButton: 'true', //Optional
+      modalHeaderColor: 'bar-positive', //Optional
+      modalFooterColor: 'bar-positive', //Optional
+      callback: ControlHelper.getMyData, //Mandatory
+      dateFormat: 'dd MMM yyyy', //Optional
+      closeOnSelect: true //Optional
+    }
+
+    $scope.openDatePicker = function(){
+      ionicDatePicker.openDatePicker(datepickerObject);
+    };
+
     $scope.emailLog = ControlHelper.emailLog;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
@@ -38,49 +73,18 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
-        if ($scope.settings.collect.config == null) {
-            return false; // config not loaded when loading ui, set default as false
+        var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        if (!angular.isDefined(isMediumAccuracy)) {
+            // config not loaded when loading ui, set default as false
+            // TODO: Read the value if it is not defined.
+            // Otherwise, don't we have a race with reading?
+            // we don't really $apply on this field... 
+            return false;
         } else {
-            var accuracy = $scope.settings.collect.config.accuracy;
-            var v;
-            for (var k in $scope.settings.collect.accuracyOptions) {
-                if ($scope.settings.collect.accuracyOptions[k] == accuracy) {
-                    v = k;
-                    break;
-                }
-            }
-            if ($scope.isIOS()) {
-                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
-            } else if ($scope.isAndroid()) {
-                return v != "PRIORITY_HIGH_ACCURACY";
-            } else {
-                $ionicPopup.alert("Emission does not supprt this platform");
-            }
-
+            return isMediumAccuracy;
         }
     }
-    $scope.toggleLowAccuracy = function() {
-        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        if ($scope.getLowAccuracy()) {
-            if ($scope.isIOS()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyBest"];
-            } else if ($scope.isAndroid()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
-            }
-        } else {
-            if ($scope.isIOS()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["kCLLocationAccuracyHundredMeters"];
-            } else if ($scope.isAndroid()) {
-                $scope.settings.collect.new_config.accuracy = $scope.settings.collect.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
-            }
-        }
-        ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
-        .then(function(){
-            console.log("setConfig Sucess");
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-    }
+    $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
     $scope.ionViewBackgroundClass = function() {
         return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
     }
@@ -113,45 +117,29 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.getCollectionSettings = function() {
-        var promiseList = []
-        promiseList.push(ControlHelper.dataCollectionGetConfig());
-        promiseList.push(ControlHelper.getAccuracyOptions());
-        Promise.all(promiseList).then(function(resultList){
-                var config = resultList[0];
-                var accuracyOptions = resultList[1];
-                $scope.settings.collect.config = config;
-                $scope.settings.collect.accuracyOptions = accuracyOptions;
-                var retVal = [];
-                for (var prop in config) {
-                    if (prop == "accuracy") {
-                        for (var name in accuracyOptions) {
-                            if (accuracyOptions[name] == config[prop]) {
-                                retVal.push({'key': prop, 'val': name});
-                            }
-                        }
-                    } else {
-                        retVal.push({'key': prop, 'val': config[prop]});
-                    }
-                }
-                $scope.$apply(function() {
-                    $scope.settings.collect.show_config = retVal;
-                })
+        ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
+            $scope.$apply(function() {
+                $scope.settings.collect.show_config = showConfig;
             })
+        });
     };
 
     $scope.getSyncSettings = function() {
-        ControlHelper.serverSyncGetConfig().then(function(response) {
-            var config = response;
-            $scope.settings.sync.config = config;
-            var retVal = [];
-            for (var prop in config) {
-                retVal.push({'key': prop, 'val': config[prop]});
-            }
+        ControlSyncHelper.getSyncSettings().then(function(showConfig) {
             $scope.$apply(function() {
-                $scope.settings.sync.show_config = retVal;
-            });
+                $scope.settings.sync.show_config = showConfig;
+            })
         });
     };
+
+    $scope.getTNotifySettings = function() {
+        ControlTransitionNotifyHelper.getTNotifySettings().then(function(showConfig) {
+            $scope.$apply(function() {
+                $scope.settings.tnotify.show_config = showConfig;
+            })
+        });
+    };
+
     $scope.getEmail = function() {
         ControlHelper.getUserEmail().then(function(response) {
            console.log("user email = "+response);
@@ -176,7 +164,7 @@ angular.module('emission.main.control',['emission.services',
         $state.go("root.main.map");
     }
     $scope.getState = function() {
-        ControlHelper.getState().then(function(response) {
+        ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
             });
@@ -239,10 +227,24 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    $scope.$on('$ionicView.afterEnter', function() {
+        $scope.refreshScreen();
+    })
+
+    // Execute action on hidden popover
+    $scope.$on('control.update.complete', function() {
+        $scope.refreshScreen();
+    });
+
+    $scope.$on('popover.hidden', function() {
+        $scope.refreshScreen();
+    });
+
     $scope.refreshScreen = function() {
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
+        $scope.settings.tnotify = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
@@ -252,6 +254,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
+        $scope.getTNotifySettings();
         $scope.getEmail();
         $scope.getState();
     };
@@ -266,135 +269,23 @@ angular.module('emission.main.control',['emission.services',
       }
     };
 
-    $scope.forceTransition = function(transition) {
-        ControlHelper.forceTransition(transition).then(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
-        });
-    };
-
     $scope.forceSync = function() {
         ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
             function() {
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
-        ControlHelper.forceSync().then(function(response) {
+        ControlSyncHelper.forceSync().then(function(response) {
             $ionicPopup.alert({template: 'success -> '+response});
         }, function(error) {
             $ionicPopup.alert({template: 'error -> '+error});
         });
     };
 
-    $scope.forceState = function() {
-        var forceStateActions = [{text: "Initialize",
-                                  transition: "INITIALIZE"},
-                                 {text: 'Start trip',
-                                  transition: "EXITED_GEOFENCE"},
-                                 {text: 'End trip',
-                                  transition: "STOPPED_MOVING"},
-                                 {text: 'Visit ended',
-                                  transition: "VISIT_ENDED"},
-                                 {text: 'Visit started',
-                                  transition: "VISIT_STARTED"},
-                                 {text: 'Remote push',
-                                  transition: "RECEIVED_SILENT_PUSH"}];
-        $ionicActionSheet.show({
-            buttons: forceStateActions,
-            titleText: "Force state",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                $scope.forceTransition(button.transition);
-                return true;
-            }
-        });
-    };
-    $scope.editCollectionConfig = function($event) {
-        $scope.settings.collect.new_config = JSON.parse(JSON.stringify($scope.settings.collect.config));
-        console.log("settings popup = "+$scope.collectSettingsPopup);
-        $scope.collectSettingsPopup.show($event);
-    }
+    $scope.forceState = ControlCollectionHelper.forceState;
+    $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
+    $scope.editSyncConfig = ControlSyncHelper.editConfig;
+    $scope.editTNotifyConfig = ControlTransitionNotifyHelper.editConfig;
 
-    $scope.editSyncConfig = function($event) {
-        $scope.settings.sync.new_config = JSON.parse(JSON.stringify($scope.settings.sync.config));
-        console.log("settings popup = "+$scope.syncSettingsPopup);
-        $scope.syncSettingsPopup.show($event);
-    }
-
-    $scope.saveAndReloadSettingsPopup = function(result) {
-        console.log("new config = "+$scope.settings.collect.new_config);
-        if (result == true) {
-            ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
-            .then(function(){
-                $scope.getCollectionSettings()
-            },function(err){
-                console.log("setConfig Error: " + err);
-            });
-        }
-    };
-
-    $scope.saveAndReloadCollectionSettingsPopover = function() {
-        console.log("new config = "+$scope.settings.collect.new_config);
-        ControlHelper.dataCollectionSetConfig($scope.settings.collect.new_config)
-        .then(function(){
-            $scope.getCollectionSettings()
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-        $scope.collectSettingsPopup.hide();
-    };
-
-    $scope.saveAndReloadSyncSettingsPopover = function() {
-        console.log("new config = "+$scope.settings.sync.new_config);
-        ControlHelper.serverSyncSetConfig($scope.settings.sync.new_config)
-        .then(function(){
-            $scope.getSyncSettings()
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-        $scope.syncSettingsPopup.hide();
-    };
-    // Execute action on hide popover
-    $scope.$on('$destroy', function() {
-      $scope.collectSettingsPopup.remove();
-      $scope.syncSettingsPopup.remove();
-    });
-
-    $scope.setAccuracy= function() {
-        var accuracyActions = [];
-        for (name in $scope.settings.collect.accuracyOptions) {
-            accuracyActions.push({text: name, value: $scope.settings.collect.accuracyOptions[name]});
-        }
-        $ionicActionSheet.show({
-            buttons: accuracyActions,
-            titleText: "Select accuracy",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                $scope.settings.collect.new_config.accuracy = button.value;
-                return true;
-            }
-        });
-    };
-    $scope.setSyncInterval = function() {
-        var syncIntervalActions = [];
-        syncIntervalActions.push({text: "1 min", value: 60});
-        syncIntervalActions.push({text: "10 min", value: 10 * 60});
-        syncIntervalActions.push({text: "30 min", value: 30 * 60});
-        syncIntervalActions.push({text: "1 hr", value: 60 * 60});
-        $ionicActionSheet.show({
-            buttons: syncIntervalActions,
-            titleText: "Select sync interval",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                $scope.settings.sync.new_config.sync_interval = button.value;
-                return true;
-            }
-        });
-    };
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
@@ -405,11 +296,6 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.refreshScreen();
-    $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
-        scope: $scope
-    }).then(function(popover) {
-        $scope.collectSettingsPopup = popover;
-    });
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {
@@ -420,10 +306,10 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){
-            $scope.forceTransition('STOP_TRACKING');
+            ControlCollectionHelper.forceTransition('STOP_TRACKING');
             $scope.startStopBtnToggle = false;
         } else {
-            $scope.forceTransition('START_TRACKING');
+            ControlCollectionHelper.forceTransition('START_TRACKING');
             $scope.startStopBtnToggle = true;
         }
     }
@@ -491,7 +377,7 @@ angular.module('emission.main.control',['emission.services',
             template: 'Consented to protocol {{consentDoc.protocol_id}}, {{consentDoc.approval_date}}',
             scope: $scope,
             title: "Consent found!",
-            buttons: [ 
+            buttons: [
             // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
             //  type: 'button-calm'},
             {text: "<b>OK</b>",

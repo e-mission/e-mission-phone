@@ -2,11 +2,19 @@
 
 angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   'emission.main.diary.services'])
-.factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, Logger, Timeline) {
+.factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, $ionicPlatform,
+                                          Logger, Timeline) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
   var MANUAL_INCIDENT = "manual/incident";
+  var DISTANCE_THRESHOLD = function() {
+    if ($ionicPlatform.is("android")) {
+      return 200;
+    } else {
+      return 50;
+    }
+  };
 
   // BEGIN: Adding incidents
 
@@ -14,20 +22,38 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * INTERNAL FUNCTION, not part of factory
    *
    * Returns objects of the form: {
-   * gj: geojson representation,
+   * loc: geojson representation,
    * latlng: latlng representation,
    * ts: timestamp
    * }
    */
 
   var getSectionPoints = function(section) {
+    Logger.log("Called getSection points with list of size "+section.geometry.coordinates.length);
     var mappedPoints = section.geometry.coordinates.map(function(currCoords, index) {
-      var currMappedPoint = {gj: currCoords,
+      if (index % 100 == 0) {
+        Logger.log("About to map point"+ JSON.stringify(currCoords)+" at index "+index);
+      }
+      var currMappedPoint = {loc: currCoords,
         latlng: L.GeoJSON.coordsToLatLng(currCoords),
         ts: section.properties.times[index]}
       if (index % 100 == 0) {
         Logger.log("Mapped point "+ JSON.stringify(currCoords)+" to "+currMappedPoint);
       }
+      return currMappedPoint;
+    });
+    return mappedPoints;
+  }
+
+  ptmm.addLatLng = function(locEntryList) {
+    Logger.log("called addLatLng with list of length "+locEntryList.length);
+    var mappedPoints = locEntryList.map(function(currEntry) {
+      var currMappedPoint = {loc: currEntry.data.loc,
+        latlng: L.GeoJSON.coordsToLatLng(currEntry.data.loc),
+        ts: currEntry.data.ts}
+      // if (index % 100 == 0) {
+        Logger.log("Mapped point "+ JSON.stringify(currEntry)+" to "+currMappedPoint);
+      // }
       return currMappedPoint;
     });
     return mappedPoints;
@@ -193,33 +219,47 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    *
    */
 
-  var showSheet = function(section, latlng, ts, marker, e, map) {
-    var safe_suck_cancel_actions = [{text: "Safe",
+  var showSheet = function(featureArray, latlng, ts, marker, e, map) {
+    /*
+    var safe_suck_cancel_actions = [{text: "<i class='ion-heart icon-action'></i>",
                                      action: addSafeEntry},
-                                    {text: "Suck",
-                                     action: addSuckEntry}]
+                                    {text: "<i class='ion-heart-broken icon-action'></i>",
+                                     action: addSuckEntry},
+                                    {text: "Cancel",
+                                     action: cancelTempEntry}]
+                                     */
+    Logger.log("About to show sheet for latlng = "+latlng+" ts = "+ ts);
+    var safe_suck_cancel_actions = [{text: "<font size='+5'>&#x263B;</font>",
+                                     action: addSafeEntry},
+                                    {text: "<font size='+5'>&#x2639;</font>",
+                                     action: addSuckEntry},
+                                    {text: "Cancel",
+                                     action: cancelTempEntry}]
 
+    Logger.log("About to call ionicActionSheet.show");
     $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
               +", lng: " + latlng.lng.toFixed(6)
               + " at " + getFormattedTime(ts),
-          cancelText: 'Cancel',
+          // cancelText: 'Cancel',
           cancel: function() {
             cancelTempEntry(latlng, ts, marker, e, map);
           },
           buttons: safe_suck_cancel_actions,
           buttonClicked: function(index, button) {
               var newEntry = button.action(latlng, ts, marker, e, map);
+              Logger.log("Clicked button "+button.text+" at index "+index);
               /*
                * The markers are now displayed using the trip geojson. If we only
                * store the incidents to the usercache and don't add it to the geojson
                * it will look like the incident is deleted until we refresh the trip
                * information by pulling to refresh. So let's add to the geojson as well.
                */
-              var newFeature = ptmm.toGeoJSONFeature(newEntry);
-              var trip = Timeline.getTrip(section.properties.trip_id.$oid);
-              trip.features.push(newFeature);
-              // And one that is done, let's remove the temporary marker
-              cancelTempEntry(latlng, ts, marker, e, map);
+              if (button.text != "Cancel") {
+                var newFeature = ptmm.toGeoJSONFeature(newEntry);
+                featureArray.push(newFeature);
+                // And one that is done, let's remove the temporary marker
+                cancelTempEntry(latlng, ts, marker, e, map);
+              }
               return true;
           }
     });
@@ -234,26 +274,87 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * an incident on it. Note that this is a function that takes in the feature,
    * but it needs to return a curried function that takes in the event.
    */
-
-  ptmm.startAddingIncident = function(feature, layer) {
+  ptmm.startAddingIncidentToSection = function(feature, layer) {
       Logger.log("section "+feature.properties.start_fmt_time
                   + " -> "+feature.properties.end_fmt_time
-                  + " bound incident addition ")
+                  + " bound incident addition ");
+      var allPoints = getSectionPoints(feature);
+      var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
+      var featureArray = trip.features;
+      return ptmm.startAddingIncidentToPoints(layer, allPoints, featureArray);
+  }
+
+  var getAllPointsForTrip = function(trip) {
+    var allPoints = [];
+    trip.sections.forEach(function(s) {
+      Array.prototype.push.apply(allPoints, getSectionPoints(s));
+    });
+    return allPoints;
+  }
+
+  /*
+   * EXTERNAL FUNCTION, part of factory, bound to the map to report
+   * an incident on the trip displayed in the map. Note that this is a function
+   * that takes in the feature,
+   * but it needs to return a curried function that takes in the event.
+   */
+
+  ptmm.startAddingIncidentToTrip = function(trip, map) {
+      Logger.log("section "+trip.properties.start_fmt_time
+                  + " -> "+trip.properties.end_fmt_time
+                  + " bound incident addition ");
+      var allPoints = getAllPointsForTrip(trip);
+      var featureArray = trip.features;
+      return ptmm.startAddingIncidentToPoints(map, allPoints, featureArray);
+  }
+
+  /*
+   * EXTERNAL FUNCTION, part of factory, bound to a set of points to report
+   * an incident on it. It turns out that on actual devices (not the emulator),
+   * the target for a touch method is frequently off. This is particularly true
+   * for sections - the target is the parent svg, which means that this is not
+   * triggered correctly.
+   *
+   * If we do zoom down to the maximum zoom and then click multiple times,
+   * it does sometimes trigger, and I can now get it to work fairly reliably,
+   * but it is unclear how to signal that.
+   *
+   * Therefore, we refactor this to support a set of points instead. Note that
+   * this also makes it easier to support uncleaned trips, so it is not a total
+   * loss.
+   *
+   * We could also replace this with a popup saying that the point needs to be
+   * closer or sth.
+   */
+
+  ptmm.startAddingIncidentToPoints = function(layer, allPoints, geojsonFeatureArray) {
+      Logger.log("points "+getFormattedTime(allPoints[0].ts)
+                  + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
+                  + " bound incident addition ");
 
       return function(e) {
-          Logger.log("section "+feature.properties.start_fmt_time
-                      + " -> "+feature.properties.end_fmt_time
+          Logger.log("points "+getFormattedTime(allPoints[0].ts)
+                      + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
                       + " received click event, adding stress popup at "
                       + e.latlng);
           if ($state.$current == "root.main.diary") {
             Logger.log("skipping incident addition in list view");
             return;
           }
-          var map = layer._map;
+          var map = layer;
+          if (!(layer instanceof L.Map)) {
+            map = layer._map;
+          }
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
 
-          var sortedPoints = getClosestPoints(marker.toGeoJSON(), getSectionPoints(feature));
+          var sortedPoints = getClosestPoints(marker.toGeoJSON(), allPoints);
+          if (sortedPoints[0].selDistance > DISTANCE_THRESHOLD()) {
+            Logger.log("skipping incident addition because closest distance "
+              + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + DISTANCE_THRESHOLD());
+            cancelTempEntry(latlng, ts, marker, e, map);
+            return;
+          };
           var closestPoints = sortedPoints.slice(0,10);
           Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
 
@@ -264,8 +365,9 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
           if (timeBins.length == 1) {
             // Common case: find the first item in the first time bin, no need to
             // prompt
+            Logger.log("About to retrieve ts from first bin of "+timeBins);
             var ts = timeBins[0][0].ts;
-            showSheet(feature, latlng, ts, marker, e, map);
+            showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
           } else {
             // Uncommon case: multiple passes - get the closest point in each bin
             // Note that this may not be the point with the smallest time diff
@@ -278,6 +380,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
             // which will be a max of 5 * 30 secs = 2.5 minutes
             // Let's accept the error for now and fix later.
             // Example: 8:06 - 8:48 on 16 Nov on iPhone3, around 3pm on 16 Nov on
+            Logger.log("About to retrieve first ts from each bin of "+timeBins);
             var tsOptions = timeBins.map(function(bin) {
               return bin[0].ts;
             });
@@ -290,7 +393,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
-                showSheet(feature, latlng, ts, marker, e, map);
+                showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
                 return true;
               }
             });

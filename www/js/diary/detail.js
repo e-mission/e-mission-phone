@@ -1,11 +1,13 @@
 'use strict';
-angular.module('emission.main.diary.detail',['ui-leaflet',
-                                      'ionic-datepicker', 'nvd3',
-                                      'emission.services', 'emission.plugin.logger'])
+angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
+                                      'ionic-datepicker', 'nvd3', 'angularLocalStorage',
+                                      'emission.services', 'emission.plugin.logger',
+                                      'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $window, $stateParams, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, Logger,
-                                        Timeline, DiaryHelper, Config, CommHelper) {
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
+                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        Logger, Timeline, DiaryHelper, Config,
+                                        CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -29,12 +31,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   }
 
   /*
-  leafletData.getMap('detail').then(function(map) {
-    map.on('click', function(ev) {
-      alert("click" + ev.latlng); // ev is an event object (MouseEvent in this case)
-    });
-  });
-
   leafletData.getMap('detail').then(function(map) {
     map.on('touch', function(ev) {
       alert("touch" + ev.latlng); // ev is an event object (MouseEvent in this case)
@@ -70,10 +66,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
+  $scope.getTripBackground = function() {
+     var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
+     return ret_val;
+  }
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
-  
+  leafletData.getMap('detail').then(function(map) {
+    map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
+  });
 
   var data  = [];
   var start_ts = $scope.trip.properties.start_ts;
@@ -113,4 +115,56 @@ angular.module('emission.main.diary.detail',['ui-leaflet',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
+
+  /* START: ng-walkthrough code */
+  // Tour steps
+  var tour = {
+    config: {
+      mask: {
+        visibleOnNoTarget: true,
+        clickExit: true
+      }
+    },
+    steps: [{
+      target: '#detail',
+      content: 'To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
+    }, {
+      target: '#sectionList',
+      content: 'Trip sections, along with times and modes'
+    }, {
+      target: '#sectionPct',
+      content: '% of time spent in each mode for this trip'
+    }]
+  };
+
+  var startWalkthrough = function () {
+    nzTour.start(tour).then(function(result) {
+      Logger.log("detail walkthrough start completed, no error");
+    }).catch(function(err) {
+      Logger.log("detail walkthrough start errored" + err);
+    });
+  };
+
+
+  var checkDetailTutorialDone = function () {
+    var DETAIL_DONE_KEY = 'detail_tutorial_done';
+    var detailTutorialDone = storage.get(DETAIL_DONE_KEY);
+    if (!detailTutorialDone) {
+      startWalkthrough();
+      storage.set(DETAIL_DONE_KEY, true);
+    }
+  };
+
+  $scope.startWalkthrough = function () {
+    startWalkthrough();
+  }
+
+  $scope.$on('$ionicView.afterEnter', function(ev) {
+    // Workaround from 
+    // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+    if(ev.targetScope !== $scope)
+      return;
+    checkDetailTutorialDone();
+  });
+  /* END: ng-walkthrough code */
 })

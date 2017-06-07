@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <widget id="edu.berkeley.eecs.emission" 
-        version="1.5.0" 
-        android-versionCode="19"
-        ios-CFBundleVersion="19"
+        version="2.1.0" 
+        android-versionCode="26"
+        ios-CFBundleVersion="26"
         xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>emission</name>
   <description>
@@ -13,6 +13,7 @@
   </author>
   <content src="index.html"/>
   <access origin="*"/>
+  <allow-navigation href="https://em-game.eecs.berkeley.edu/*" />
   <hook type="after_prepare" src="package-hooks/ios9_allow_http.sh"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
@@ -80,4 +81,7 @@
     <splash src="resources/android/splash/drawable-port-xxxhdpi-screen.png" density="port-xxxhdpi"/>
   </platform>
   <icon src="resources/android/icon/drawable-xhdpi-icon.png"/>
+  <plugin name="phonegap-plugin-push" spec="~1.9.2">
+    <variable name="SENDER_ID" value="97387382925" />
+  </plugin>
 </widget>

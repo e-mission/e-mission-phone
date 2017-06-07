@@ -9,6 +9,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
+                                    ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     Config, PostTripManualMarker, nzTour, storage) {
   console.log("controller DiaryListCtrl called");
@@ -27,14 +28,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
     Timeline.updateForDay(day);
-    CommonGraph.updateCurrent();
+    // CommonGraph.updateCurrent();
   };
 
-  $scope.$on('$ionicView.enter', function() {
+  $scope.$on('$ionicView.afterEnter', function() {
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
     };
+    if($rootScope.displayingIncident == true) {
+      if (angular.isDefined(Timeline.data.currDay)) {
+          // page was already loaded, reload it automatically
+          readAndUpdateForDay(Timeline.data.currDay);
+      } else {
+         Logger.log("currDay is not defined, load not complete");
+      }
+      $rootScope.displayingIncident = false;
+    }
   });
 
   readAndUpdateForDay(moment().startOf('day'));
@@ -90,13 +100,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
     $scope.datePickerClass = function() {
     }
-    $scope.listCardClass = function() {
+    $scope.listCardClass = function(tripgj) {
+      var background = DiaryHelper.getTripBackground($scope.dark_theme, tripgj);
       if ($window.screen.width <= 320) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-sm" : "list card list-card list-card-sm";
+        return "list card list-card "+ background +" list-card-sm";
       } else if ($window.screen.width <= 375) {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-md" : "list card list-card list-card-md";
+        return "list card list-card "+ background +" list-card-md";
       } else {
-        return ($scope.dark_theme)? "list card list-card-dark list-card-lg" : "list card list-card list-card-lg";
+        return "list card list-card "+background+" list-card-lg";
       }
 
     }
@@ -148,12 +159,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       modalHeaderColor: 'bar-positive', //Optional
       modalFooterColor: 'bar-positive', //Optional
       callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'dd MMMM yyyy', //Optional
+      dateFormat: 'dd MMM yyyy', //Optional
       closeOnSelect: true //Optional
     };
 
+    $scope.pickDay = function() {
+      ionicDatePicker.openDatePicker($scope.datepickerObject);
+    }
+
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
-      console.log("Got event with args "+JSON.stringify(args));
+      console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
@@ -167,7 +182,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
-      console.log("Got event with args "+JSON.stringify(args));
+      console.log("Got common graph update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           // If we don't have the trip wrappers yet, then we can just bail because
           // the counts will be filled in when that is done. If the currDayTripWrappers
@@ -178,7 +193,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                 DiaryHelper.fillCommonTripCount(tripWrapper);
              });
           };
-          checkDiaryTutorialDone();
       });
     });
 
@@ -264,9 +278,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.arrowColor = DiaryHelper.arrowColor;
     $scope.getArrowClass = DiaryHelper.getArrowClass;
     $scope.isCommon = DiaryHelper.isCommon;
+    $scope.isDraft = DiaryHelper.isDraft;
     // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
     // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
 
+    $scope.makeCurrent = function() {
+        $ionicPopup.alert({template: "Coming soon, after Shankari's quals in early March!"});
+    }
 
     $scope.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
@@ -284,10 +302,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // Tour steps
     var tour = {
       config: {
-
+        mask: {
+          visibleOnNoTarget: true,
+          clickExit: true
+        }
       },
       steps: [{
-        target: '.nav-bar-block[nav-bar="active"] .pickerdate',
+        target: '#date-picker-button',
         content: 'Use this to select the day you want to see.'
       },
       {
@@ -301,7 +322,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     var startWalkthrough = function () {
-      nzTour.start(tour);
+      nzTour.start(tour).then(function(result) {
+        Logger.log("list walkthrough start completed, no error");
+      }).catch(function(err) {
+        Logger.log("list walkthrough start errored" + err);
+      });
     };
 
     $scope.refreshTiles = function() {
@@ -324,6 +349,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.startWalkthrough = function () {
       startWalkthrough();
     }
+
+    $scope.$on('$ionicView.enter', function(ev) {
+      // Workaround from 
+      // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+      if(ev.targetScope !== $scope)
+        return;
+      checkDiaryTutorialDone();
+    });
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));

@@ -1,31 +1,29 @@
 <ion-view ng-class="ionViewBackgroundClass()">
     <ion-nav-bar class="bar-stable">
-        <ion-nav-title class="dark-color">
-                <div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
-                    <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-                    </button>
-                    <ionic-datepicker class="pickerdate" input-obj="datepickerObject" style="color: white;">
-                      <button class="button date-picker-button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-                    </ionic-datepicker>
-
-                    <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-                    </button>
-                </div>
-         </ion-nav-title>
-         <ion-nav-buttons side="right">
-             <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-         </ion-nav-buttons>
-         <ion-nav-buttons side="left">
-             <button class="button refresh-tiles" ng-click="refreshTiles()">Fix Map</button>
-         </ion-nav-buttons>
     </ion-nav-bar>
+    <ion-nav-buttons side="right">
+         <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="left">
+         <button class="button refresh-tiles" ng-click="refreshTiles()">Fix Map</button>
+         <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
+            <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+            </button>
+            <!-- <ionic-datepicker class="pickerdate" input-obj="datepickerObject" style="color: white;"> -->
+            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+            <!-- </ionic-datepicker> -->
+
+            <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
+            </button>
+         </div>
+    </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
-	<ion-content class="diary-entry">
+    <ion-content class="diary-entry">
         <ion-refresher
         pulling-text="Pull to refresh"
         on-refresh="refresh()">
         </ion-refresher>
-		<ion-list>
+        <ion-list>
         <!--
         This needs to be collection-repeat instead of ng-repeat on android.
         Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
@@ -37,17 +35,17 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
+        <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
            <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>
             <div  style="padding-left: 19%;">
 
-			 <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
+             <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
                 <div ng-class="listExpandClass()" ng-if="differentCommon(tripgj)" id="hidden-{{tripgj.data.id}}">
                     {{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}
                 </div>
 
 
-                <div ng-class="listCardClass()">
+                <div ng-class="listCardClass(tripgj)">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i> -->
 
                 <div class="row">
@@ -61,6 +59,9 @@
                     <div ng-class="listColRightClass()">
                         <div>
                             <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="setColor(mode)"></i>
+                            <div ng-if="isDraft(tripgj)" ng-class="listTextClass()" style="font-size: 0.6em; margin-right: 0.4em;"> (draft) 
+                              <button ng-click="makeCurrent()" style="font-size: 0.6em;"> Update now </button>
+                            </div>
                         </div>
                         <div style="margin-top: -5px;">
                             <a ng-class="listTextClass()" ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
@@ -95,8 +96,8 @@
             </div>
             <div ng-class="stopTimeTagClass(tripgj)">{{localTimeString (tripgj.data.properties.end_local_dt)}}</div>
         </div>
-		</ion-list>
-	</ion-content>
+        </ion-list>
+    </ion-content>
 
 
 </ion-view>
