@@ -184,6 +184,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
+        allUsersForLeaderBoard();
     };
     $scope.closeLeaderboard = function() {
         $scope.leaderboardModal.hide();
@@ -310,7 +311,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.joinedChallenges = $scope.profile.challenges;
             getParty();
             getChallenges();
-            allUsersForLeaderBoard();
             console.log($scope.profile);
             prepopulateMessage = {
                 message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
@@ -570,6 +570,9 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var allUsersForLeaderBoard = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/members/all",
                     'method_args': null};
+        $ionicLoading.show({
+            template: '<ion-spinner icon="bubbles"></ion-spinner>'
+        });
         CommHelper.habiticaProxy(callOpts).then(function(response){
             console.log("Sucessfully got all the users");
             var allUsers = response.data;
@@ -594,6 +597,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.usersUnderTopThree = users.slice(3);
             getPartyForAllUsers(users);
             setRank(partyList);
+            $ionicLoading.hide();
         }, function(error){
             console.log("Error getting all the users");
             console.log(error);
