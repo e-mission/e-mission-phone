@@ -99,7 +99,7 @@ Sometimes the IOS emulator doesn't work when called from command line. If so, yo
 the project:
 
 ``
-      /e-mission-phone/platforms/ios/emission.xcodeproj
+      /e-mission-phone/platforms/ios/emission.xcworkspace
 ``
 
 and then run the project with IOS emulator.
