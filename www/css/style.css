@@ -4,6 +4,10 @@
   display: none !important;
 }
 
+.popup-title {
+    color: #6e6e6e;
+}
+
 .pull-right {
   float: right
 }
@@ -313,6 +317,9 @@ img.center {
   color: #ededed !important;
 }
 #webkey:active {
+  color: #ededed !important;
+}
+#challenge:active {
   color: #ededed !important;
 }
 
