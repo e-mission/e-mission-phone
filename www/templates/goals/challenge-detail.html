@@ -10,15 +10,12 @@
           <h4 style="font-weight: 700;color:#6e6e6e;margin: 0px;">{{challengeToView.name}}</h4>
             <p style="font-weight: 700;">Prize: {{challengeToView.prize}} gems</p>
         </div>
-        <!--button ng-if="!(joinedChallenges.includes(challengeToView._id))" class="button" ng-click="joinChallenge(challengeToView._id)" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display: inline;float: right;line-height: 30px !important;min-height: 25px !important;">
-        			Join
-        </button-->
-        <button ng-if="joinedChallenges.includes(challengeToView._id)" class="button" ng-click="leaveChallenge(challengeToView._id)" style="background:#F75F74;font-weight:700;border-radius:4px;color:#fff;display: inline;float: right;line-height: 30px !important;min-height: 25px !important;">
+        <button ng-if="joinedChallenges.indexOf(challengeToView._id) > -1" class="button" ng-click="leaveChallenge(challengeToView._id)" style="background:#F75F74;font-weight:700;border-radius:4px;color:#fff;display: inline;float: right;line-height: 30px !important;min-height: 25px !important;">
                   Leave
         </button>
       </div> 
         <p style="display: inline-block;padding-left: 10px;padding-right: 10px;">{{challengeToView.description}} </p>
-      		<div ng-if="joinedChallenges.includes(challengeToView._id)" class="list">
+      		<div ng-if="joinedChallenges.indexOf(challengeToView._id) > -1" class="list">
         		<div ng-if="challengeInfoArray.length != 0" ng-repeat="user in challengeInfoArray" 
            class="card leaderboard-card" id="avatar" style="padding-top: 10px !important;height: 85px !important;">
           			<div id="group-leaderboard" style="color: #6e6e6e; padding-top: 10px;">

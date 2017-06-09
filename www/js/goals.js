@@ -228,7 +228,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     $scope.viewChallenge = function(challenge) {
         $scope.challengeToView = challenge;
         $scope.challengeInfoArray = [];
-        if($scope.profile.challenges.includes(challenge.id))
+        if($scope.profile.challenges.indexOf(challenge.id) > -1)
             challengeLeaderboard(challenge.id);
         openChallengeDetail();
     }

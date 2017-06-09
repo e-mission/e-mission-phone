@@ -8,14 +8,14 @@
    	     	<div class="item item-divider" ng-if="joinedChallenges.length > 0" style="color:#6e6e6e;">
     				Joined Challenges
  			</div>
-   	     	<ion-item id="goal-content" class="habit-list-border" ng-repeat="challenge in challenges" ng-if="(joinedChallenges.includes(challenge._id))" ng-click="viewChallenge(challenge)">
+   	     	<ion-item id="goal-content" class="habit-list-border" ng-repeat="challenge in challenges" ng-if="(joinedChallenges.indexOf(challenge._id) > -1)" ng-click="viewChallenge(challenge)">
    	     		<h2 style="font-weight: 700;color:#6e6e6e;">{{challenge.name}}</h2>
                 <p style="color:#6e6e6e;"> Prize: {{challenge.prize}} gems</p>
    	     	</ion-item>
    	     	<div class="item item-divider" style="color:#6e6e6e;">
     			More Challenges
  			</div>
-            <ion-item id="goal-content" class="habit-list-border" ng-repeat="challenge in challenges" ng-if="!(joinedChallenges.includes(challenge._id))" ng-click="showChallenge(challenge)">
+            <ion-item id="goal-content" class="habit-list-border" ng-repeat="challenge in challenges" ng-if="!(joinedChallenges.indexOf(challenge._id) > -1)" ng-click="showChallenge(challenge)">
                 	<h2 style="font-weight: 700;color:#6e6e6e;">{{challenge.name}}</h2>
                 	<p style="color:#6e6e6e;"> Prize: {{challenge.prize}} gems</p>
             </ion-item>
