@@ -7,7 +7,8 @@ Installing
 ---
 We are using the ionic v2.2.1 platform, which is a toolchain on top of the apache
 cordova project. So the first step is to install ionic using their instructions.
-http://ionicframework.com/getting-started/
+http://ionicframework.com/docs/v1/getting-started/
+NOTE: we are still on ionic v1. Please do not install v2 or v3, the current codebase will not work with it.
 i.e.
 ``
 $ npm install -g cordova@6.5.0
@@ -108,6 +109,8 @@ the project:
 ``
 
 and then run the project with IOS emulator.
+Make sure you use the most recent version of Xcode - older versions may not support some newer functionality.
+
 ---
 
 Some versions of Gradle create unnecessary files that may result in errors while building the app. Gradle 2.14.1 has proven to work without any issues.
