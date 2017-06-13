@@ -5,10 +5,15 @@ This is the phone component of the e-mission system.
 
 Installing
 ---
-We are using the ionic platform, which is a toolchain on top of the apache
+We are using the ionic v2.2.1 platform, which is a toolchain on top of the apache
 cordova project. So the first step is to install ionic using their instructions.
 http://ionicframework.com/docs/v1/getting-started/
 NOTE: we are still on ionic v1. Please do not install v2 or v3, the current codebase will not work with it.
+i.e.
+``
+$ npm install -g cordova@6.5.0
+$ npm install -g ionic@2.2.1
+``
 
 Then, get the current version of our code
 
@@ -105,6 +110,25 @@ the project:
 
 and then run the project with IOS emulator.
 Make sure you use the most recent version of Xcode - older versions may not support some newer functionality.
+
+---
+
+Some versions of Gradle create unnecessary files that may result in errors while building the app. Gradle 2.14.1 has proven to work without any issues.
+If errors persist, make sure 
+``
+	  /e-mission-phone/platforms/android/gradle/wrapper/gradle-wrapper.properties
+``
+looks like this:
+```
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-2.14.1-all.zip
+```
+---
+
+The Android platform requires API levels 18-21, make sure you have installed them in the SDK manager.
 
 Debugging
 ---
