@@ -2,22 +2,18 @@
 
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
+                                      'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
-                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage', 'emission.splash.startprefs',
-                                        'emission.splash.updatecheck',
-                                        'emission.main.metrics.factory',
-                                        'emission.stats.clientstats',
-                                        'angularLocalStorage'])
+                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
-                                    $ionicActionSheet, $location, storage,
+                                    $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, StartPrefs, ControlHelper, UpdateCheck,
-               CalorieCal, ClientStats) {
+                                    Config, PostTripManualMarker, nzTour, storage) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
