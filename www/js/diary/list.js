@@ -381,48 +381,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.toDetail = function() {
       $state.go('root.main.detail');
     };
-    
     // directs to current view
     $scope.redirect = function(){
-      // $location.path('../templates/main-recent.html');
       $state.go("root.main.current");
-      // $window.location.href = "/templates/main-recent.html";
-}
+    };
 
-    $scope.parseState = function(bool) {
-        // if (state) {
-        return bool;
-        // }
-    }
     var in_trip;
-
-    $scope.func = function() {window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-      if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
+    $scope.func = function() {
+      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
           in_trip = true;
-      } else {
+        } else {
           in_trip = false;
-      }
-    });
-  }
+        }
+      });
+    };
 
     $scope.state = function() {
-
       $scope.func();
       return in_trip;
-    
-    } 
-     
-
-
-    $scope.ongoing = function(string) {
-      if (string == "STATE_ONGOING_TRIP") {
-        console.log("in true state", string);
-        return true;
-      }
-      console.log("in flase state", string);
-      return false;
-    }
-
+    };
 
     $scope.showModes = DiaryHelper.showModes;
 

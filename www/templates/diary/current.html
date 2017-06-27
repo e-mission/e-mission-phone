@@ -1,4 +1,3 @@
-<!-- <script type="text/javascript" src="file:///Users/AnnaMarie/e-mission-phone/www/js/diary/current.js"></script> -->
 <ion-view ng-class="ionViewBackgroundClass()" title="Current Trip">
   <ion-nav-bar class="bar-stable">
   
@@ -7,131 +6,23 @@
     </button>
 </ion-nav-buttons>
  </ion-nav-bar>
-     <!--  <a ui-sref="root.main.diary">rrrr</a>
-<!-  <ion-nav-view></ion-nav-view>
- -->    <ion-content class="has-header" overflow-scroll="true" padding="true">
-
-      <!--   <div style="" class="button-bar">
-            <button class="button button-stable button-block icon ion-refresh"
-                ng-click="refreshMap()">Refresh</button>
-            <!
-            <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
-            -->
-       <!--  </div> -->
-<!-- <a ui-sref="root.main.diary">
-        <button  class="btn btn-danger navbar-btn">
-      back
-    </button>
-    </a> -->
-<!--     <div ng-class="listCardClass()">
- -->
-        <div class="row" style="margin-top: 20px;">
-
-            <div ng-class="listColLeftClass()">
-                <p style="font-size: 1.2em; line-height: 1em; margin-left: 20px;">Began: {{getdate()}}</p>
-                
-               <!--  <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(mapCtrl.geojson.data.properties.start_ts, mapCtrl.geojson.data.id) == ''? 'none':'block';  }}">
-
-                <img src="{{ getEarlierOrLater(mapCtrl.data.properties.start_ts, mapCtrl.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;"> 
-
-                {{parseEarlierOrLater(getEarlierOrLater(mapCtrl.geojson.data.properties.start_ts, mapCtrl.geojson.data.id))}} 
-
-                </div> -->
-
-                <!-- <p style="font-size: 1.2em; line-height: 0.6em; margin-left: 20px; margin-top: 5px">{{lat_long()}}</p>
-                <p style="font-size: 1.2em; line-height: 0.6em; margin-left: 20px; margin-top: 5px">{{refresh()}}</p> -->
-                <!-- <script>$scope.refresh(lat(), long());</script>
-                {{refresh(lat(), long())}} -->
-            </div>
-
-            <div ng-class="listColRightClass()">
-
-                <div >
-                            <i class="ion-android-walk" ng-style="brown" style="margin-left: 150px; font-size: 3em"></i>
-                        </div>
-
-                <div >
-                            <a ng-class="listTextClass()" style="font-size: 1.2em; margin-left: 138px; margin-top:30px">0km/hr</a>
-                        </div>
-
-                
-
-             <!--    <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(mapCtrl.geojson.data.properties.start_ts, mapCtrl.geojson.data.id) == ''? '0':'20px'}};">
-                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
-            {{mapCtrl.geojson.start_place.properties.displayName.split(',')[0]}}
-
-                </div>
-                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-            {{mapCtrl.geojson.end_place.properties.displayName.split(',')[0]}}
-                </div> -->
-            </div>
+        <ion-content class="has-header" overflow-scroll="true">
+        <div id="current-start-time">
+            <p id="current-start-time-text">Began: {{startTime}}</p>
         </div>
-         <div class="buttons" style="text-align:center; background-color: transparent !important; margin-top:-40px;" id="toget">
-                    <button ng-click="parse()" class="report-button" >Report Incident
-                    </button>
-                    </div>
-        <leaflet geojson="mapCtrl.geojson" id="current" defaults="mapCtrl.defaults" height="80%" width="100%">
-            
+        <div id="speed-and-direction">
+            <div id="current-speed">
+                <div >
+                    <p id="speed-value">{{currSpeedInMph}}</p>
+                    <p id="speed-unit">Mph</p>
+                </div>
+            </div>
+            <p id="current-direction-text">{{currentDirection}}</p>
+        </div>
+        <button ng-click="parse()" class="report-button" >Report Incident
+        </button>
+        </div>
+        <leaflet geojson="mapCtrl.geojson" id="current" defaults="mapCtrl.defaults" markers="mapCtrl.markers" height="100%" width="100%">     
         </leaflet>
-       
-<!--         </div>
- -->
-        
-       <!--  <div id='map'></div>
-<a href='#' id='geolocate' class='ui-button'>Find me</a>
-
-<script>
-L.mapbox.accessToken = '<your access token here>';
-var geolocate = document.getElementById('geolocate');
-var map = L.mapbox.map('map', 'mapbox.streets');
-
-var myLayer = L.mapbox.featureLayer().addTo(map);
-
-// This uses the HTML5 geolocation API, which is available on
-// most mobile browsers and modern browsers, but not in Internet Explorer
-//
-// See this chart of compatibility for details:
-// http://caniuse.com/#feat=geolocation
-if (!navigator.geolocation) {
-    geolocate.innerHTML = 'Geolocation is not available';
-} else {
-    geolocate.onclick = function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        map.locate();
-    };
-}
-
-// Once we've got a position, zoom and center the map
-// on it, and add a single marker.
-map.on('locationfound', function(e) {
-    map.fitBounds(e.bounds);
-
-    myLayer.setGeoJSON({
-        type: 'Feature',
-        geometry: {
-            type: 'Point',
-            coordinates: [e.latlng.lng, e.latlng.lat]
-        },
-        properties: {
-            'title': 'Here I am!',
-            'marker-color': '#ff8888',
-            'marker-symbol': 'star'
-        }
-    });
-
-    // And hide the geolocation button
-    geolocate.parentNode.removeChild(geolocate);
-});
-
-// If the user chooses not to allow their location
-// to be shared, display an error message.
-map.on('locationerror', function() {
-    geolocate.innerHTML = 'Position could not be found';
-});
-</script> -->
-<!--  <ion-nav-back-button>
-      </ion-nav-back-button> -->
     </ion-content>
 </ion-view>

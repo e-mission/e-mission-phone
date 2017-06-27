@@ -6,7 +6,6 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.goals',
                                  'emission.main.common',
                                  'emission.main.heatmap',
-                                 'emission.main.current',
                                  'emission.main.metrics',
                                  'emission.incident.posttrip.map',
                                  'emission.services'])
@@ -91,20 +90,6 @@ angular.module('emission.main', ['emission.main.recent',
         }
       }
   })
-
-  .state('root.main.current', {
-      url: "/current/:tripId",
-      views: {
-        'main-diary': {
-        // abstract: true,
-          templateUrl: "templates/diary/current.html",
-          controller: 'CurrMapCtrl'
-        },
-      }
-      
-  })
-
-
 
   .state('root.main.incident', {
       url: "/incident",

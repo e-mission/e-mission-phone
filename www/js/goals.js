@@ -706,7 +706,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         var obj = {
             'id':array[0],
             'username':array[1],
-            'value':array[2],
+            'value':isNaN(array[2])?0:array[2],
             'rank':array[3]
         };
         return obj;
