@@ -1,0 +1,28 @@
+<ion-view ng-class="ionViewBackgroundClass()" title="Current Trip">
+  <ion-nav-bar class="bar-stable">
+  
+  <ion-nav-buttons side="right">
+<button ng-click="diary()" class="button refresh-tiles" >History
+    </button>
+</ion-nav-buttons>
+ </ion-nav-bar>
+        <ion-content class="has-header" overflow-scroll="true">
+        <div id="current-start-time">
+            <p id="current-start-time-text">Began: {{startTime}}</p>
+        </div>
+        <div id="speed-and-direction">
+            <div id="current-speed">
+                <div >
+                    <p id="speed-value">{{currSpeedInMph}}</p>
+                    <p id="speed-unit">Mph</p>
+                </div>
+            </div>
+            <p id="current-direction-text">{{currentDirection}}</p>
+        </div>
+        <button ng-click="parse()" class="report-button" >Report Incident
+        </button>
+        </div>
+        <leaflet geojson="mapCtrl.geojson" id="current" defaults="mapCtrl.defaults" markers="mapCtrl.markers" height="100%" width="100%">     
+        </leaflet>
+    </ion-content>
+</ion-view>

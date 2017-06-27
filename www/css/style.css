@@ -1,5 +1,6 @@
 /* Empty. Add your own CSS if you like */
 
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
@@ -738,6 +739,7 @@ ion-header-bar {
   font-size:20px;
 }
 
+
 #switch-user.control-icon-button{
   background-color: #E0A1A1 !important;
 }
@@ -1198,7 +1200,105 @@ html, body, #chart2, svg {
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #01D0A7;
   height: 35px;
+  
 }
+
+.current-mode-button {
+  border: none;
+  background-color:#2D9CDB;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  opacity: 0.4;
+  font-size:28px;
+  width: 100%;
+  text-decoration:none;
+  height: 80px;
+  z-index: 1;
+  position: relative;
+  top: 65px;
+}
+
+#current-start-time {
+  z-index: 1;
+  position: absolute;
+  top: 5%;
+  display: block;
+  width: 40%;
+  height: 25px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  color: #666;
+  left: 30%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+#current-start-time-text {
+  font-size: 15px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+#speed-and-direction {
+  z-index: 1;
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  text-align: center;
+}
+
+#current-speed {
+  background-color: #999;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.05);
+  opacity: 0.9;
+  color: white;
+  width: 60px;
+  text-align: center;
+  height: 60px;
+  border-style: solid;
+  border-radius: 50%;
+  border-color: #666;
+  border-width: 4px;
+}
+
+#speed-value {
+  font-size: 25px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+#speed-unit {
+  font-size: 12px;
+  margin-top: -3px;
+}
+
+#current-direction-text {
+  color:#666; 
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 5px;
+}
+
+.report-button {
+  border-radius: 10px;
+  border: none;
+  background-color: #E34949;
+  color: #ffffff;
+  font-size: 20px;
+  width: 60%;
+  height: 35px;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: absolute;
+  display: block;
+  top: 80%;
+  left: 20%;
+}
+
+.report-button:active{
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
 .metric-freq-button {
   float: right;
   width: 100%;
