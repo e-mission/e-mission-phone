@@ -377,13 +377,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.toDetail = function() {
       $state.go('root.main.detail');
     };
-    // directs to current view
+
     $scope.redirect = function(){
       $state.go("root.main.current");
     };
 
     var in_trip;
-    $scope.func = function() {
+    $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
           in_trip = true;
@@ -393,8 +393,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
-    $scope.state = function() {
-      $scope.func();
+    // storing boolean to in_trip and return it in inTrip function
+    // work because ng-show is watching the inTrip function.
+    // Returning a promise to ng-show did not work.
+    // Changing in_trip = bool value; in checkTripState function 
+    // to return bool value and using checkTripState function in ng-show
+    // did not work.
+    $scope.inTrip = function() {
+      $scope.checkTripState();
       return in_trip;
     };
 

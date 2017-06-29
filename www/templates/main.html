@@ -4,7 +4,6 @@ Each tab's child <ion-nav-view> directive will have its own
 navigation history that also transitions its views in and out.
 -->
 <ion-view>
-<ion-nav-view name="main-current"></ion-nav-view>
 <ion-tabs ng-class="tabsCustomClass()">
 
   <!-- Diary Tab -->
@@ -41,10 +40,6 @@ navigation history that also transitions its views in and out.
   <ion-tab title="Profile" icon="ion-person" href="#/root/main/control">
     <ion-nav-view name="main-control"></ion-nav-view>
   </ion-tab>
-  
-
-  <!-- <div ui-view="current"></div> -->
-
 
 </ion-tabs>
 

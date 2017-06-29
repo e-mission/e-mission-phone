@@ -8,6 +8,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
 
   var MULTI_PASS_THRESHOLD = 90;
   var MANUAL_INCIDENT = "manual/incident";
+  var theFeatureArray =[];
   var DISTANCE_THRESHOLD = function() {
     if ($ionicPlatform.is("android")) {
       return 200;
@@ -155,7 +156,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * Add a safe (green, stress = 0) entry.
    */
 
-  var addSafeEntry = function(latlng, ts, marker, event, map) {
+  var addSafeEntry = function(latlng, ts, marker, map) {
     // marker.setStyle({color: 'green'});
     return addEntry(MANUAL_INCIDENT, "green", latlng, ts, 0, marker)
   };
@@ -166,7 +167,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * Add a suck (red, stress = 100) entry.
    */
 
-  var addSuckEntry = function(latlng, ts, marker, event, map) {
+  var addSuckEntry = function(latlng, ts, marker, map) {
     return addEntry(MANUAL_INCIDENT, "red", latlng, ts, 100, marker)
   };
 
@@ -193,7 +194,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * Allow the user to cancel the insertion of the marker
    */
 
-  var cancelTempEntry = function(latlng, ts, marker, event, map) {
+  var cancelTempEntry = function(latlng, ts, marker, map) {
     map.removeLayer(marker);
   }
 
@@ -219,7 +220,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    *
    */
 
-  var showSheet = function(featureArray, latlng, ts, marker, e, map) {
+  ptmm.showSheet = function(featureArray, latlng, ts, marker, map) {
     /*
     var safe_suck_cancel_actions = [{text: "<i class='ion-heart icon-action'></i>",
                                      action: addSafeEntry},
@@ -242,11 +243,11 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               + " at " + getFormattedTime(ts),
           // cancelText: 'Cancel',
           cancel: function() {
-            cancelTempEntry(latlng, ts, marker, e, map);
+            cancelTempEntry(latlng, ts, marker, map);
           },
           buttons: safe_suck_cancel_actions,
           buttonClicked: function(index, button) {
-              var newEntry = button.action(latlng, ts, marker, e, map);
+              var newEntry = button.action(latlng, ts, marker, map);
               Logger.log("Clicked button "+button.text+" at index "+index);
               /*
                * The markers are now displayed using the trip geojson. If we only
@@ -258,12 +259,12 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                 var newFeature = ptmm.toGeoJSONFeature(newEntry);
                 featureArray.push(newFeature);
                 // And one that is done, let's remove the temporary marker
-                cancelTempEntry(latlng, ts, marker, e, map);
+                cancelTempEntry(latlng, ts, marker, map);
               }
               return true;
           }
     });
-  }
+  };
 
   var getFormattedTime = function(ts_sec) {
     return moment(ts_sec * 1000).format('LT');
@@ -352,7 +353,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
           if (sortedPoints[0].selDistance > DISTANCE_THRESHOLD()) {
             Logger.log("skipping incident addition because closest distance "
               + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + DISTANCE_THRESHOLD());
-            cancelTempEntry(latlng, ts, marker, e, map);
+            cancelTempEntry(latlng, ts, marker, map);
             return;
           };
           var closestPoints = sortedPoints.slice(0,10);
@@ -367,7 +368,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
             // prompt
             Logger.log("About to retrieve ts from first bin of "+timeBins);
             var ts = timeBins[0][0].ts;
-            showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
+            ptmm.showSheet(geojsonFeatureArray, latlng, ts, marker, map);
           } else {
             // Uncommon case: multiple passes - get the closest point in each bin
             // Note that this may not be the point with the smallest time diff
@@ -393,7 +394,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
-                showSheet(geojsonFeatureArray, latlng, ts, marker, e, map);
+                ptmm.showSheet(geojsonFeatureArray, latlng, ts, marker, map);
                 return true;
               }
             });

@@ -23,12 +23,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
          if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
-            // is_curr = true;
             console.log("result", result);
             $state.go("root.main.current");
         }
-    });
-  }  
+      });
+    };
+
     $scope.onCurrentTrip();
 
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
