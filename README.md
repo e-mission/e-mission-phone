@@ -8,12 +8,14 @@ Installing
 We are using the ionic v2.2.1 platform, which is a toolchain on top of the apache
 cordova project. So the first step is to install ionic using their instructions.
 http://ionicframework.com/docs/v1/getting-started/
-NOTE: we are still on ionic v1. Please do not install v2 or v3, the current codebase will not work with it.
-i.e.
-``
+
+NOTE: Since we are still on ionic v1, please do not install v2 or v3, as the current codebase will not work with it.
+Issue the following commands to install Cordova and Ionic instead of the ones provided in the instruction above.
+
+```
 $ npm install -g cordova@6.5.0
 $ npm install -g ionic@2.2.1
-``
+```
 
 Then, get the current version of our code
 
