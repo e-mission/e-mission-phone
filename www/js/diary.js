@@ -1,6 +1,7 @@
 angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.detail',
-                                      'emission.main.diary.services'])
+                                      'emission.main.diary.services',
+                                      'emission.main.diary.current',])
 
 .config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
@@ -22,5 +23,16 @@ angular.module('emission.main.diary',['emission.main.diary.list',
             controller: 'DiaryDetailCtrl'
         }
      }
+  })
+
+  .state('root.main.current', {
+      url: "/current",
+      views: {
+        'main-diary': {
+          templateUrl: "templates/diary/current.html",
+          controller: 'CurrMapCtrl'
+        },
+      }
+      
   });
-})
+});

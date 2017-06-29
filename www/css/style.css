@@ -1,5 +1,6 @@
 /* Empty. Add your own CSS if you like */
 
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
@@ -738,6 +739,7 @@ ion-header-bar {
   font-size:20px;
 }
 
+
 #switch-user.control-icon-button{
   background-color: #E0A1A1 !important;
 }
@@ -1198,7 +1200,159 @@ html, body, #chart2, svg {
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #01D0A7;
   height: 35px;
+  
 }
+
+.current-mode-button {
+  border: none;
+  background-color:#2D9CDB;
+  display:inline-block;
+  cursor:pointer;
+  color:#ffffff;
+  opacity: 0.4;
+  font-size:28px;
+  width: 100%;
+  text-decoration:none;
+  height: 80px;
+  z-index: 1;
+  position: relative;
+  top: 65px;
+}
+
+#current-start-time {
+  z-index: 1;
+  position: absolute;
+  top: 5%;
+  display: block;
+  width: 40%;
+  height: 25px;
+  background-color: #f5f5f5;;
+  border-radius: 10px;
+  color: #6A6A6A;
+  left: 30%;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+#current-start-time-text {
+  font-size: 15px;
+  text-align: center;
+  margin-top: 2px;
+}
+
+#speed-and-direction {
+  z-index: 1;
+  position: absolute;
+  top: 2%;
+  right: 2%;
+  text-align: center;
+}
+
+#current-speed {
+  background-color: #8F8F8F;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.05);
+  opacity: 0.9;
+  color: white;
+  width: 60px;
+  text-align: center;
+  height: 60px;
+  border-style: solid;
+  border-radius: 50%;
+  border-color: #6A6A6A;
+  border-width: 4px;
+}
+
+#speed-value {
+  font-size: 25px;
+  font-weight: 600;
+  margin-top: 10px;
+}
+
+#speed-unit {
+  font-size: 12px;
+  margin-top: -3px;
+}
+
+#current-direction-text {
+  color:#6A6A6A; 
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 5px;
+  opacity: 0.9;
+}
+
+#slider_background {
+  z-index: 2;
+  position: absolute;
+  left: -4px;
+}
+
+/*
+Algularjs-slider custom css
+ */
+span.rz-bar-wrapper {
+    background-color: #f5f5f5;
+    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.rzslider.rz-vertical .rz-bar-wrapper {
+    width: 36px !important;
+}
+
+.rzslider .rz-bar {
+    background: #B3B3B3 !important;
+}
+
+.rzslider .rz-selection {
+    background: #8F8F8F !important;
+}
+
+.rzslider .rz-pointer.rz-active::after {
+    background-color: #8F8F8F !important;
+}
+
+.rzslider .rz-pointer {
+    background-color: #8F8F8F !important;
+}
+
+.rzslider .rz-pointer::after {
+    background: #8F8F8F !important;
+}
+
+.rzslider .rz-tick.rz-selected {
+    background: #8F8F8F !important;
+}
+
+.rzslider .rz-tick {
+    background: #B3B3B3 !important;
+}
+
+.rzslider .rz-bubble {
+    color: #6A6A6A !important;
+    background-color: #f5f5f5;
+    z-index: 3;
+    border-radius: 0 10px 10px 0;
+}
+
+.report-button {
+  border-radius: 10px;
+  border: none;
+  background-color: #E34949;
+  color: #ffffff;
+  font-size: 20px;
+  width: 60%;
+  height: 35px;
+  z-index: 1;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: absolute;
+  display: block;
+  bottom: 40px;
+  left: 20%;
+}
+
+.report-button:active{
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+}
+
 .metric-freq-button {
   float: right;
   width: 100%;

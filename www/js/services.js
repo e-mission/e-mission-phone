@@ -95,13 +95,13 @@ angular.module('emission.services', ['emission.plugin.logger'])
      * start_time = beginning timestamp for range
      * end_time = ending timestamp for rangeA
      */
-    var moment2Localdate = function(momentObj) {
+    this.moment2Localdate = function(momentObj) {
        return {
          year: momentObj.year(),
          month: momentObj.month() + 1,
          day: momentObj.date(),
        };
-    }
+    };
 
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
