@@ -114,6 +114,11 @@
     return directions[index];
   };
 
+  leafletData.getMap('current').then(function(map) {
+    _map = map;
+    _map.removeControl(_map.zoomControl);
+  });
+
   var refreshTrip = function() {
     db.getAllSensorData(BACKGROUND_LOCATION).then(function(result) {
       console.log(result);
@@ -249,10 +254,7 @@
     gettingIncidents = setTimeout(getIncidentsLoop, 1000*60); //refresh every minute
   };
 
-  leafletData.getMap('current').then(function(map) {
-    _map = map;
-    _map.removeControl(_map.zoomControl);
-    $scope.$on('$ionicView.enter', function() {
+  $scope.$on('$ionicView.enter', function() {
       refreshTripLoop();
       getIncidentsLoop();
     });
@@ -262,6 +264,5 @@
       clearTimeout(gettingIncidents);
     });
     getLocalIncidents();
-  });
 
 });
