@@ -113,12 +113,7 @@
       var last_ts = result[1].data.ts;
       var bearing = Math.round(result[0].data.bearing);
       $scope.startTime = startTimeFn(result[result.length - 1].data.ts);
-      //if(angular.isDefined(result[0].data.sensed_speed)){
-        //$scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6); // mps to kmph
-      //} else {
-        // This speed is and average (not accurate) of current point and last point so it is not instantaneous rate of change
       $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
-      //}
       $scope.currentDirection = degreeToDirection(bearing);
       angular.extend($scope.mapCtrl, { 
         defaults : {
