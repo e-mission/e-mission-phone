@@ -219,8 +219,10 @@
   };
 
   $scope.$watch('features', function(newVal, oldVal){
-    if(newVal.length === 1) {
-      addIncidentLayer(newVal[0].properties.stress, marker, _map);
+    if(angular.isDefined(newVal)) {
+      if(newVal.length === 1) {
+        addIncidentLayer(newVal[0].properties.stress, marker, _map);
+      }
     }
   }, true);
 
