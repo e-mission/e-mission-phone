@@ -1866,6 +1866,12 @@ span.rz-bar-wrapper {
 #no-border.item {
   border-width: 0 !important;
 }
+#goal-signup-field{
+  width: 50%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 10px;
+}
 .item.item-input.item-select {
   border-width: 1px !important;
 }
