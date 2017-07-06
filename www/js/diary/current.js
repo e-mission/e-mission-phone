@@ -88,7 +88,7 @@
     var meters = curr_latlng.distanceTo(last_latlng);
     console.log("Distance To", meters);
     time = moment(curr_ts).diff(moment(last_ts));
-    return Math.round(distance / time * 3.6); // mps to kmph
+    return Math.round(meters / time * 3.6); // mps to kmph
   };
 
   var degreeToDirection = function(degree) {
