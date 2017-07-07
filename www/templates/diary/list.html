@@ -9,7 +9,7 @@
         <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
             <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
             </button>
-            <button class="button date-picker-button" ng-click="pickDay()"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
             <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
             </button>
         </div>
