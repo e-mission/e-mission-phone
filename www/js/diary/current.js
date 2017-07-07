@@ -246,12 +246,14 @@
   var gettingIncidents;
   var refreshTripLoop = function() {
     refreshTrip();
-    mapRunning = setTimeout(refreshTripLoop, 1000); //refresh every second
+    mapRunning = setTimeout(refreshTripLoop, 30 * 1000); //refresh every 30 secs
+    // on android, we read the location points every 30 secs by default
   };
 
   var getIncidentsLoop = function() {
     getServerIncidents();
-    gettingIncidents = setTimeout(getIncidentsLoop, 1000*60); //refresh every minute
+    gettingIncidents = setTimeout(getIncidentsLoop, 5 * 60 * 1000); //refresh 5 minutes
+    // refreshing more frequently would put a big load on the server
   };
 
   $scope.$on('$ionicView.enter', function() {
