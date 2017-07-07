@@ -82,31 +82,13 @@
     return hours + ':' + minutes + ' ' + amOrPm;
   };
 
-  var deg2rad = function(deg) {
-    return deg * (Math.PI/180);
-  };
-
-  // Haversine formula
-  var getMeterfromLglat = function(curr_lglat, last_lglat) {
-    lat1 = curr_lglat[1];
-    lg1 = curr_lglat[0];
-    lat2 = last_lglat[1];
-    lg2 = last_lglat[0];
-    var R = 6371e3; // earth radius in metres
-    var dLat = deg2rad(lat2-lat1); 
-    var dLg = deg2rad(lg2-lg1); 
-    var a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-            Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * 
-            Math.sin(dLg/2) * Math.sin(dLg/2); 
-    var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
-    var d = R * c;
-    return d;
-  };
-
   var getSpeed = function(curr_lglat, last_lglat, curr_ts, last_ts) {
-    distance = getMeterfromLglat(curr_lglat, last_lglat);
+    var curr_latlng = L.latLng(curr_lglat[1],curr_lglat[0]);
+    var last_latlng = L.latLng(last_lglat[1],last_lglat[0]);
+    var meters = curr_latlng.distanceTo(last_latlng);
+    console.log("Distance To", meters);
     time = moment(curr_ts).diff(moment(last_ts));
-    return Math.round(distance / time * 3.6); // mps to kmph
+    return Math.round(meters / time * 3.6); // mps to kmph
   };
 
   var degreeToDirection = function(degree) {
@@ -131,12 +113,7 @@
       var last_ts = result[1].data.ts;
       var bearing = Math.round(result[0].data.bearing);
       $scope.startTime = startTimeFn(result[result.length - 1].data.ts);
-      if(angular.isDefined(result[0].data.sensed_speed)){
-        $scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6); // mps to kmph
-      } else {
-        // This speed is and average (not accurate) of current point and last point so it is not instantaneous rate of change
-        $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
-      }
+      $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
       $scope.currentDirection = degreeToDirection(bearing);
       angular.extend($scope.mapCtrl, { 
         defaults : {
@@ -237,8 +214,10 @@
   };
 
   $scope.$watch('features', function(newVal, oldVal){
-    if(newVal.length === 1) {
-      addIncidentLayer(newVal[0].properties.stress, marker, _map);
+    if(angular.isDefined(newVal)) {
+      if(newVal.length === 1) {
+        addIncidentLayer(newVal[0].properties.stress, marker, _map);
+      }
     }
   }, true);
 

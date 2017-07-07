@@ -318,7 +318,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         content: 'Click on the map to see more details about each trip.'
       },
       {
-        target: '.refresh-tiles',
+        target: '#map-fix-button',
         content: 'Use this to fix the map tiles if they have not loaded properly.'
       }]
     };
