@@ -4,7 +4,8 @@
                                                 'ionic',
                                                 'emission.incident.posttrip.manual',
                                                 'rzModule',
-                                                'angularLocalStorage'])
+                                                'angularLocalStorage',
+                                                'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
                                     Logger, $window, PostTripManualMarker, CommHelper, $http, storage) {
@@ -86,9 +87,10 @@
     var curr_latlng = L.latLng(curr_lglat[1],curr_lglat[0]);
     var last_latlng = L.latLng(last_lglat[1],last_lglat[0]);
     var meters = curr_latlng.distanceTo(last_latlng);
-    console.log("Distance To", meters);
     time = moment(curr_ts).diff(moment(last_ts));
-    return Math.round(meters / time * 3.6); // mps to kmph
+    var speed = Math.round(meters / time * 3.6); // mps to kmph
+    Logger.log("Current Speed: ", speed);
+    return speed;
   };
 
   var degreeToDirection = function(degree) {
@@ -103,49 +105,55 @@
 
   var refreshTrip = function() {
     db.getAllSensorData(BACKGROUND_LOCATION).then(function(result) {
-      console.log(result);
-      var coordinates = result.map(function(locWrapper, index, locList) {
-        return [locWrapper.data.longitude, locWrapper.data.latitude];
-      });
-      var both = [result[0].data.longitude, result[0].data.latitude];
-      var last_both = [result[1].data.longitude, result[1].data.latitude];
-      var curr_ts = result[0].data.ts;
-      var last_ts = result[1].data.ts;
-      var bearing = Math.round(result[0].data.bearing);
-      $scope.startTime = startTimeFn(result[result.length - 1].data.ts);
-      $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
-      $scope.currentDirection = degreeToDirection(bearing);
-      angular.extend($scope.mapCtrl, { 
-        defaults : {
-          center: {
-            lat: both[1],
-            lng: both[0],
-            zoom: 15
-          }
-        },
-        markers: {
-          hereMarker: {
-            lat: both[1],
-            lng: both[0],
-            icon: {
-              iconUrl: 'img/pacman.gif',
-              iconSize: [20, 20],
-              iconAnchor: [10, 10],
-              popupAnchor: [0, 0],
-              shadowSize: [0, 0],
-              shadowAnchor: [0, 0]
-            },
-            iconAngle: bearing,
-          }
-        },
-        geojson: {
-          data: [
-            {
-              type: "LineString",
-              coordinates: coordinates
-            },
-          ],
-        },
+      $scope.$apply(function() {
+        Logger.log("current location data", result[0].data);
+        var coordinates = result.map(function(locWrapper, index, locList) {
+          return [locWrapper.data.longitude, locWrapper.data.latitude];
+        });
+        var both = [result[0].data.longitude, result[0].data.latitude];
+        var last_both = [result[1].data.longitude, result[1].data.latitude];
+        var curr_ts = result[0].data.ts;
+        var last_ts = result[1].data.ts;
+        var bearing = Math.round(result[0].data.bearing);
+        $scope.startTime = startTimeFn(result[result.length - 1].data.ts);
+        if(angular.isDefined(result[0].data.sensed_speed)) {
+          $scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6);
+        } else {
+          $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
+        }
+        $scope.currentDirection = degreeToDirection(bearing);
+        angular.extend($scope.mapCtrl, { 
+          defaults : {
+            center: {
+              lat: both[1],
+              lng: both[0],
+              zoom: 15
+            }
+          },
+          markers: {
+            hereMarker: {
+              lat: both[1],
+              lng: both[0],
+              icon: {
+                iconUrl: 'img/point.png',
+                iconSize: [40, 40],
+                iconAnchor: [20, 20],
+                popupAnchor: [0, 0],
+                shadowSize: [0, 0],
+                shadowAnchor: [0, 0]
+              },
+              iconAngle: bearing,
+            }
+          },
+          geojson: {
+            data: [
+              {
+                type: "LineString",
+                coordinates: coordinates
+              },
+            ],
+          },
+        });  
       });
     });
     console.log($scope.mapCtrl);
@@ -167,7 +175,7 @@
 
   var addIncidents = function(incidents, _map) {
     incidents.forEach(function(incident) {
-        console.log(incident);
+        Logger.log(incident);
         latlng = {
             lat: incident.data.loc.coordinates[1],
             lng: incident.data.loc.coordinates[0]
@@ -234,14 +242,14 @@
   };
 
   $scope.$on('$ionicView.enter', function() {
-      refreshTripLoop();
-      getIncidentsLoop();
-    });
+    refreshTripLoop();
+    getIncidentsLoop();
+  });
 
-    $scope.$on('$ionicView.leave', function() {
-      clearTimeout(mapRunning);
-      clearTimeout(gettingIncidents);
-    });
-    getLocalIncidents();
+  $scope.$on('$ionicView.leave', function() {
+    clearTimeout(mapRunning);
+    clearTimeout(gettingIncidents);
+  });
+  getLocalIncidents();
 
 });
