@@ -135,7 +135,7 @@
               lat: both[1],
               lng: both[0],
               icon: {
-                iconUrl: 'img/point.png',
+                iconUrl: 'img/ic_navigation_black_24dp.png',
                 iconSize: [40, 40],
                 iconAnchor: [20, 20],
                 popupAnchor: [0, 0],
