@@ -254,7 +254,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                                 okType: "button-assertive"});
             console.log("Not signed up");
         });
-        checkSurveyDone();
     };
 
 
@@ -901,26 +900,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       // startSurvey();
     }
 
-    var checkSurveyDone = function () {
-      console.log("Checking if user already completed survey");
-      var SURVEY_DONE_KEY = 'survey_done';
-      var surveyDone = storage.get(SURVEY_DONE_KEY);
-      if (!surveyDone) {
-        $ionicPopup.show({
-          title: 'Bic2Cal Survey: Please take this 15-minute survey to provide feedback for our research.',
-          scope: $scope,
-            buttons: [{
-              text: 'Ok',
-              type: 'button-positive',
-              onTap: function(e) {
-                 $scope.startSurvey();
-              }
-            }]
-        });
-        storage.set(SURVEY_DONE_KEY, true);
-      }
-    };
-
     // Tour steps
     var tour = {
       config: {
@@ -965,5 +944,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       }
     };*/
 
-    checkSurveyDone();
+    /*
+     * Just to clean everything up.
+     * TODO: Remove after a few releases.
+     */
+    var SURVEY_DONE_KEY = 'survey_done';
+    storage.remove(SURVEY_DONE_KEY);
 });
