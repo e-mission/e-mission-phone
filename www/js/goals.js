@@ -11,6 +11,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
+    $scope.challengeInfoArray = [];
+    $scope.challengeToView = {};
     var partyId;
     var userId;
     $scope.joinedChallenges = [];
@@ -22,7 +24,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
     //var challengeMembersId = [];
-
+    
     // THIS BLOCK FOR inAppBrowser
     $rootScope.$on("RELOAD_GOAL_PAGE_FOR_REFERRAL", function(event) {
       Logger.log("Received referral event, current state is "+$state.$current.name);
@@ -52,6 +54,20 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.leaderboardModal = modal;
     });
 
+    $ionicModal.fromTemplateUrl('templates/goals/challenge-modal.html', {
+        scope: $scope,
+        animation: 'slide-in-up'
+    }).then(function(modal) {
+        $scope.challengeModal = modal;
+    });
+
+    $ionicModal.fromTemplateUrl('templates/goals/challenge-detail.html', {
+        scope: $scope,
+        animation: 'slide-in-left'
+    }).then(function(modal) {
+        $scope.challengeDetailModal = modal;
+    });
+
     var joinGroupSuccess = function() {
        refreshInfo();
        var alertPopup = $ionicPopup.alert({
@@ -65,10 +81,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     var joinGroupFail = function(error) {
        var displayMsg = error;
-       if (error.indexOf("Code=400") != -1) {
+       if ((error.indexOf("error 400") != -1) || (error.indexOf("400 Bad Request"))) {
           displayMsg = "You are already part of a group! If you want to accept "+
-           "this invite, please leave this group using the website and then "+
-           "click on this link again to join"
+           "this invite, please leave your current group using the Advanced tab "+
+            "and then click on this link again to join"
        }
 
        var alertPopup = $ionicPopup.alert({
@@ -105,8 +121,11 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
      * not registered & not referred => do nothing
      */
     var handlePendingRefer = function() {
+        Logger.log("About to handle pending referral");
         if (storage.get(HABITICA_REGISTERED_KEY) == true) {
+            Logger.log("Registered with habitica - checking pending registration");
             if (ReferralHandler.hasPendingRegistration() == true) {
+                Logger.log("Registration is pending, calling joinGroup");
                 var params = ReferralHandler.getReferralParams()
                 var groupid = params[0];
                 var userid = params[1];
@@ -116,6 +135,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 ReferralHandler.clearGroupReferral();
             }
         } else {
+            Logger.log("Not yet registered with habitica, showing registration dialog");
             if (ReferralHandler.hasPendingRegistration() == true) {
                 showNeedRegister();
             }
@@ -131,43 +151,56 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
-    $scope.toBrowser = function() {
-            var options = {
-              location: 'no',
-              clearcache: 'no',
-              toolbar: 'yes'
-            };
-
-            var settings = localStorage.getItem("habit-mobile-settings");
-
-          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){
-            // insert Javascript via code / file
-            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||
-                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
-                $cordovaInAppBrowser.executeScript({
-                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');" 
-                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
-                });
-            } else {
-                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");
-            }
+    $scope.toBrowser = function() {     
+            var options = {       
+              location: 'no',     
+              clearcache: 'no',       
+              toolbar: 'yes'      
+            };        
+      
+            var settings = localStorage.getItem("habit-mobile-settings");     
+      
+          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){     
+            // insert Javascript via code / file      
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||      
+                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {       
+                $cordovaInAppBrowser.executeScript({      
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');"      
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"     
+                });       
+            } else {      
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");     
+            }     
+          });     
+        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)     
+          .then(function(event) {     
+            // success        
+          })      
+          .catch(function(event) {        
+            // error      
           });
-        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)
-          .then(function(event) {
-            // success
-          })
-          .catch(function(event) {
-            // error
-          });
-
+       
     };
+
     $scope.openLeaderboard = function() {
         $scope.leaderboardModal.show();
+        allUsersForLeaderBoard();
     };
     $scope.closeLeaderboard = function() {
         $scope.leaderboardModal.hide();
     };
-
+    $scope.openChallenge = function() {
+        $scope.challengeModal.show();
+    };
+    $scope.closeChallenge = function() {
+        $scope.challengeModal.hide();
+    };
+    var openChallengeDetail = function() {
+        $scope.challengeDetailModal.show();
+    };
+    $scope.closeChallengeDetail = function() {
+        $scope.challengeDetailModal.hide();
+    };
     $scope.openPartyModal = function() {
         $scope.partyModal.show();
     };
@@ -192,13 +225,21 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         $scope.goals.splice($scope.goals.indexOf(goal), 1);
     };
 
+    $scope.viewChallenge = function(challenge) {
+        $scope.challengeToView = challenge;
+        $scope.challengeInfoArray = [];
+        if($scope.profile.challenges.indexOf(challenge.id) > -1)
+            challengeLeaderboard(challenge.id);
+        openChallengeDetail();
+    }
+
     $scope.theUser = {};
     $scope.signup = function(){
         console.log($scope.theUser.username);
         var regConfig = {'username': $scope.theUser.username};
         console.log(regConfig);
         $ionicLoading.show({
-            template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
+            template: '<ion-spinner icon="bubbles"></ion-spinner>'
         });
         CommHelper.habiticaRegister(regConfig).then(function(response) {
             console.log("Success!");
@@ -213,12 +254,11 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                                 okType: "button-assertive"});
             console.log("Not signed up");
         });
-        checkSurveyDone();
     };
 
 
     $ionicLoading.show({
-            template: '<ion-spinner icon="bubbles" class="costume"></ion-spinner>'
+            template: '<ion-spinner icon="bubbles"></ion-spinner>'
     });
 
     var getUserInfo = function(){
@@ -269,11 +309,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             }
             $scope.joinedChallenges = $scope.profile.challenges;
             getParty();
-            allUsersForLeaderBoard();
-            /*if($scope.joinedChallenges.length > 0){
-                getUserChallenges();
-                getUserChallengeMembers();
-            }*/
+            getChallenges();
             console.log($scope.profile);
             prepopulateMessage = {
                 message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
@@ -286,7 +322,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 $ionicLoading.hide();
                 console.log("User profile error");
             });
-
     };
 
     var getUserTask = function(){
@@ -436,6 +471,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 console.log(response);
             }, function(error){
                 console.log("Error when joining the party");
+                console.log(error);
             });
     };
 
@@ -533,6 +569,9 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var allUsersForLeaderBoard = function(){
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/members/all",
                     'method_args': null};
+        $ionicLoading.show({
+            template: '<ion-spinner icon="bubbles"></ion-spinner>'
+        });
         CommHelper.habiticaProxy(callOpts).then(function(response){
             console.log("Sucessfully got all the users");
             var allUsers = response.data;
@@ -557,6 +596,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             $scope.usersUnderTopThree = users.slice(3);
             getPartyForAllUsers(users);
             setRank(partyList);
+            $ionicLoading.hide();
         }, function(error){
             console.log("Error getting all the users");
             console.log(error);
@@ -629,7 +669,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var getChallenges = function() {
         var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/user', 
                     'method_args': null};
-        $scope.challenges=[];
         CommHelper.habiticaProxy(callOpts).then(function(response){
             console.log("Got challenges");
             $scope.challenges = response.data;
@@ -655,6 +694,31 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             return b.stats.exp - a.stats.exp;
         });
     };
+
+    var sortForChallenge = function(list) {
+        list.sort(function(a,b) {
+            return b[2] - a[2];
+        })
+    }
+
+    function toObject(array) {
+        var obj = {
+            'id':array[0],
+            'username':array[1],
+            'value':isNaN(array[2])?0:array[2],
+            'rank':array[3]
+        };
+        return obj;
+    }
+
+    var toObjectsForChallenge = function(list) {
+        for (var i = 0; i < list.length; i++) {
+           list[i][2] = Math.round(list[i][2]);
+           list[i][3] = i+1;
+           list[i] = toObject(list[i])
+        }
+        return list;
+    }
 
     var addRank = function(list){
         for (var i = 0; i < list.length; i++) {
@@ -684,117 +748,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       $scope.uictrl.showGroup = false;
     };
 
-    /*var getUserChallenges = function(){
-        for(var challenge in $scope.joinedChallenges){
-            var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/' + $scope.joinedChallenges[challenge], 
-                        'method_args': null};
-            CommHelper.habiticaProxy(callOpts).then(function(response){
-                console.log("Got user's challenges");
-                console.log(response.data);
-            }, function(error){
-                console.log("Error getting user's challenges");
-                console.log(error);
-            });
-        }
-    };
-
-    var getUserChallengeMembers = function() {
-        for(var challenge in $scope.joinedChallenges){
-                var callOpts = {'method': 'GET', 'method_url': '/api/v3/challenges/' + $scope.joinedChallenges[challenge]+'/members?includeAllMembers=true',
-                            'method_args': null};
-                CommHelper.habiticaProxy(callOpts).then(function(response){
-                console.log("Got joined challenges' members");
-                var members = response.data;
-                members.forEach(function(user){
-                    challengeMembersId.push(user.id);
-                });
-                console.log(challengeMembersId);
-                getchallengeMemberProfile();
-            }, function(error){
-                console.log("Error getting joined challenges' member");
-                console.log(error);
-            });
-        }
-    };
-
-    var getchallengeMemberProfile = function() {
-        for(var memberId in challengeMembersId){
-            var callOpts = {'method': 'GET', 'method_url': '/api/v3/members/' + challengeMembersId[memberId],
-                            'method_args': null};
-                CommHelper.habiticaProxy(callOpts).then(function(response){
-                console.log("Got challenge members' profile");
-                console.log(response.data);
-            }, function(error){
-                console.log("Error getting challenge members' profile");
-                console.log(error);
-            });
-        }
-    };*/
-
-    /*var getMembers = function() {
-        var callOpts = {'method': 'GET', 'method_url': "/api/v3/groups/"+partyId+"/members?includeAllPublicFields=true",
-                    'method_args': null};
-
-        CommHelper.habiticaProxy(callOpts).then(function(response){
-            $scope.membersName=[];
-            console.log("Sucessfully got the members");
-            var members = response.data;
-            console.log(response.data);
-            members.forEach(function(user){
-                $scope.membersName.push(user.profile.name);
-            });
-        }, function(error){
-            console.log("Error when fetching members");
-            console.log(error);
-        });
-    };*/
-
-    /*var bikeChallenge = function() {
-        var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/8a8134d6-066d-424d-8f3d-0b559c2c1e78",
-                            'method_args': null};
-
-                CommHelper.habiticaProxy(callOpts).then(function(response){
-                    console.log("Sucessfully got bike challenge");
-                    console.log(response);
-                    $scope.challenges.push(response.data);
-                }, function(error){
-                    console.log("Error when getting bike challenge");
-                });
-    };
-
-    var carpoolChallenge = function() {
-        var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/d3e0ee13-8922-47ef-86a0-2c2f662585e1",
-                            'method_args': null};
-
-                CommHelper.habiticaProxy(callOpts).then(function(response){
-                    console.log("Sucessfully got carpool challenge");
-                    console.log(response);
-                    $scope.challenges.push(response.data);
-                }, function(error){
-                    console.log("Error when getting carpool challenge");
-                });
-    };
-
-    var publicTransChallenge = function() {
-        var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/581aea56-8f1f-42fa-ae1c-c6608bc780d5",
-                            'method_args': null};
-
-                CommHelper.habiticaProxy(callOpts).then(function(response){
-                    console.log("Sucessfully got public transport challenge");
-                    console.log(response);
-                    $scope.challenges.push(response.data);
-                }, function(error){
-                    console.log("Error when getting public transport challenge");
-                });
-    };
-
-    var getChallenges = function(){
-        $scope.challenges=[];
-        bikeChallenge();
-        carpoolChallenge();
-        publicTransChallenge();
-    };*/
-
     $scope.joinChallenge = function(challengeId) {
         var callOpts = {'method': 'POST', 'method_url': "/api/v3/challenges/"+challengeId+"/join",
                             'method_args': null};
@@ -804,6 +757,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                     getUserInfo();
                     getUserTask();
                     console.log(response);
+                    $scope.challengeDetailModal.hide();
                 }, function(error){
                     console.log("Error when joining the challenge");
                 });
@@ -812,16 +766,58 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     $scope.leaveChallenge = function(challengeId) {
         var callOpts = {'method': 'POST', 'method_url': "/api/v3/challenges/"+challengeId+"/leave",
-                            'method_args': null};
+                            'method_args': {'keep': 'remove-all'}};
 
                 CommHelper.habiticaProxy(callOpts).then(function(response){
                     console.log("Sucessfully left the challenge");
                     getUserInfo();
                     getUserTask();
+                    $scope.challengeDetailModal.hide();
                 }, function(error){
                     console.log("Error when leaveing the challenge");
                 });
     };
+
+    var challengeLeaderboard = function(challengeId) {
+        var callOpts = {'method': 'GET', 'method_url': "/api/v3/challenges/"+challengeId+"/leaderboard",
+                            'method_args': null};
+        $ionicLoading.show({
+            template: '<ion-spinner icon="bubbles"></ion-spinner>'
+        });
+            CommHelper.habiticaProxy(callOpts).then(function(response) {
+                console.log("Got challenge leaderboard")
+                var res = response.data;
+                sortForChallenge(res);
+                $scope.challengeInfoArray = toObjectsForChallenge(res);
+                console.log($scope.challengeInfoArray);
+                $ionicLoading.hide();
+            }, function(error) {
+                $ionicLoading.hide();
+                console.log("challenge leaderboard error")
+                console.log(error);
+            })
+    }
+
+    $scope.showChallenge = function(challenge) {
+        $scope.challengeToView = challenge;
+        console.log("Showing login challenge");
+        $ionicPopup.show({
+          title: 'Join Challenge',
+          templateUrl: 'templates/goals/challenge-join-detail.html', 
+          scope: $scope,
+            buttons: [{
+              text: 'Cancel',
+              type: 'button-stable',
+            }, {
+              text: 'Join',
+              type: 'button-positive',
+              onTap: function(e) {
+                $scope.joinChallenge(challenge.id)
+              }
+            }]
+        });
+    };
+
 
     //Tab switch
     $scope.isActive = false;
@@ -864,9 +860,9 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         handlePendingRefer();
     };
 
-    if (storage.get(HABITICA_REGISTERED_KEY) == true) {
-        getChallenges();
-    }
+    //if (storage.get(HABITICA_REGISTERED_KEY) == true) {
+       // getChallenges();
+    //}
     refreshInfo();
 
     $scope.refreshPage = function() {
@@ -903,26 +899,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
       // startSurvey();
     }
-
-    var checkSurveyDone = function () {
-      console.log("Checking if user already completed survey");
-      var SURVEY_DONE_KEY = 'survey_done';
-      var surveyDone = storage.get(SURVEY_DONE_KEY);
-      if (!surveyDone) {
-        $ionicPopup.show({
-          title: 'Bic2Cal Survey: Please take this 15-minute survey to provide feedback for our research.',
-          scope: $scope,
-            buttons: [{
-              text: 'Ok',
-              type: 'button-positive',
-              onTap: function(e) {
-                 $scope.startSurvey();
-              }
-            }]
-        });
-        storage.set(SURVEY_DONE_KEY, true);
-      }
-    };
 
     // Tour steps
     var tour = {
@@ -968,5 +944,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       }
     };*/
 
-    checkSurveyDone();
+    /*
+     * Just to clean everything up.
+     * TODO: Remove after a few releases.
+     */
+    var SURVEY_DONE_KEY = 'survey_done';
+    storage.remove(SURVEY_DONE_KEY);
 });

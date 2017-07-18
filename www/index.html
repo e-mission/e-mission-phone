@@ -24,6 +24,8 @@
     <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
     <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
+    <link href="lib/angularjs-slider/dist/rzslider.css"/ rel="stylesheet">
+
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
@@ -47,6 +49,7 @@
     <script src="manual_lib/ui-leaflet/dist/ui-leaflet.js"></script>
     <!-- Made a copy to deal with proper directives -->
     <script src="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
+    <script src="lib/leaflet-plugins/layer/Marker.Rotate.js"></script>
     <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
     <script src="non-bower-lib/simple-leaflet-plugins/leaflet-heat.js"></script>
     <script src="lib/d3/d3.js"></script>
@@ -55,8 +58,9 @@
     <script src="lib/string.startsWith/src/string.startsWith.js"></script>
     <script src="lib/angular-cookies/angular-cookies.min.js"></script>
     <script src="lib/angularLocalStorage/dist/angularLocalStorage.min.js"></script>
-    <!-- Manually installed javascript for libraries that are not published through bower -->
     <script src="manual_lib/leaflet-plugins/leaflet.textpath.js"></script>
+    <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
+    <!-- Manually installed javascript for libraries that are not published through bower -->
     <!-- cordova script (this will be a 404 during development) -->
     <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
 <!-- <script src="cordova.js"></script> -->
@@ -69,6 +73,7 @@
     <script src="js/splash/updatecheck.js"></script>
     <script src="js/splash/startprefs.js"></script>
     <script src="js/splash/pushnotify.js"></script>
+    <script src="js/splash/localnotify.js"></script>
     <script src="js/controllers.js"></script>
     <script src="js/services.js"></script>
     <script src="js/intro.js"></script>
@@ -79,6 +84,7 @@
     <script src="js/incident/post-trip-map-display.js"></script>
     <script src="js/diary.js"></script>
     <script src="js/diary/list.js"></script>
+    <script src="js/diary/current.js"></script>
     <script src="js/diary/detail.js"></script>
     <script src="js/diary/services.js"></script>
     <script src="js/common.js"></script>
@@ -92,7 +98,10 @@
     <script src="js/heatmap.js"></script>
     <script src="js/metrics.js"></script>
     <script src="js/goals.js"></script>
-    <script src="js/control.js"></script>
+    <script src="js/control/general-settings.js"></script>
+    <script src="js/control/collect-settings.js"></script>
+    <script src="js/control/sync-settings.js"></script>
+    <script src="js/control/transition-notify-settings.js"></script>
     <script src="js/metrics-factory.js"></script>
     <!--script src="js/goals/party.js"></script-->
     <script src="js/goals/signup.js"></script>

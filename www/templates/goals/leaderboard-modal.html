@@ -1,7 +1,7 @@
 <ion-modal-view>
    <ion-header-bar>
       <button side="left" class="button" ng-click="closeLeaderboard()">Close</button>
-      <h1 class = "title">Leaderboard</h1>
+      <h1 class = "title" style="color:#6e6e6e;">Leaderboard</h1>
    </ion-header-bar>
    <ion-content style="background-color: #ededed;">
      <div style="height: 40px; width: 100%; padding: 10px; background-color: #ededed;" ng-if="uictrl.showVis"> 
@@ -109,10 +109,10 @@
       <div class="list" style="background-color: #ededed;">
         <div ng-repeat="user in usersUnderTopThree" 
            class="card item-thumbnail-left-avatar leaderboard-card" id="avatar" style="padding-top: 10px !important;height: 117px !important;">
-          <figure class="herobox background_{{user.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; user.items.currentPet), hasMount: (true &amp;&amp; user.items.currentMount), noBackgroundImage: !user.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==user._id}" style="top: -10px !important; left: 0px !important;width: 0px;">
+          <figure class="herobox background_{{user.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; user.items.currentPet), noBackgroundImage: !user.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==user._id}" style="top: -10px !important; left: 0px !important;width: 0px;">
             <div class="character-sprites">
               <!-- Mount Body-->
-              <span ng-if="user.items.currentMount" class="Mount_Body_{{user.items.currentMount}}"></span>
+              <!--span ng-if="user.items.currentMount" class="Mount_Body_{{user.items.currentMount}}"></span-->
               <!-- Buffs that cause visual changes to avatar: Snowman, Ghost, Flower, etc-->
               <span ng-if="user.stats.buffs.snowball" class="snowman"></span>
               <span ng-if="user.stats.buffs.spookySparkles" class="ghost"></span>
@@ -142,7 +142,7 @@
                 <span ng-class="user.preferences.costume ? user.items.gear.costume.weapon : user.items.gear.equipped.weapon"></span>
               </span>
               <!-- Mount Head-->
-              <span ng-if="user.items.currentMount" class="current-mount Mount_Head_{{user.items.currentMount}}"></span>
+              <!--span ng-if="user.items.currentMount" class="current-mount Mount_Head_{{user.items.currentMount}}"></span-->
               <!-- Resting-->
               <span ng-class="{zzz:user.preferences.sleep}"></span>
               <!-- Pet-->

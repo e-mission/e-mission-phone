@@ -1,3 +1,5 @@
+'use strict';
+
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
@@ -308,7 +310,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
       },
       steps: [{
-        target: '.date-picker-button',
+        target: '#date-picker-button',
         content: 'Use this to select the day you want to see.'
       },
       {
@@ -316,7 +318,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         content: 'Click on the map to see more details about each trip.'
       },
       {
-        target: '.refresh-tiles',
+        target: '#map-fix-button',
         content: 'Use this to fix the map tiles if they have not loaded properly.'
       }]
     };
@@ -351,7 +353,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from 
+      // Workaround from                                  
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
@@ -374,6 +376,32 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.toDetail = function() {
       $state.go('root.main.detail');
+    };
+
+    $scope.redirect = function(){
+      $state.go("root.main.current");
+    };
+
+    var in_trip;
+    $scope.checkTripState = function() {
+      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
+          in_trip = true;
+        } else {
+          in_trip = false;
+        }
+      });
+    };
+
+    // storing boolean to in_trip and return it in inTrip function
+    // work because ng-show is watching the inTrip function.
+    // Returning a promise to ng-show did not work.
+    // Changing in_trip = bool value; in checkTripState function 
+    // to return bool value and using checkTripState function in ng-show
+    // did not work.
+    $scope.inTrip = function() {
+      $scope.checkTripState();
+      return in_trip;
     };
 
     $scope.showModes = DiaryHelper.showModes;

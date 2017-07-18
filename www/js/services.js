@@ -95,13 +95,13 @@ angular.module('emission.services', ['emission.plugin.logger'])
      * start_time = beginning timestamp for range
      * end_time = ending timestamp for rangeA
      */
-    var moment2Localdate = function(momentObj) {
+    this.moment2Localdate = function(momentObj) {
        return {
          year: momentObj.year(),
          month: momentObj.month() + 1,
          day: momentObj.date(),
        };
-    }
+    };
 
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
@@ -396,44 +396,14 @@ angular.module('emission.services', ['emission.plugin.logger'])
           })
     };
 
-    this.dataCollectionSetConfig = function(config) {
-      return window.cordova.plugins.BEMDataCollection.setConfig(config);
-    };
-
-    this.dataCollectionGetConfig = function() {
-      return window.cordova.plugins.BEMDataCollection.getConfig();
-    };
-    this.serverSyncSetConfig = function(config) {
-      return window.cordova.plugins.BEMServerSync.setConfig(config);
-    };
-
-    this.serverSyncGetConfig = function() {
-      return window.cordova.plugins.BEMServerSync.getConfig();
-    };
-
-    this.getAccuracyOptions = function() {
-      return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
-    };
-
     this.getUserEmail = function() {
       return window.cordova.plugins.BEMJWTAuth.getUserEmail();
-    };
-
-    this.getState = function() {
-      return window.cordova.plugins.BEMDataCollection.getState();
     };
 
     this.getSettings = function() {
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
 
-    this.forceTransition = function(transition) {
-      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
-    };
-
-    this.forceSync = function() {
-      return window.cordova.plugins.BEMServerSync.forceSync();
-    };
 })
 
 // common configuration methods across all screens

@@ -792,6 +792,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         .then(function(transitionList) {
           if (transitionList.length == 0) {
             Logger.log("No unprocessed trips. yay!");
+            $ionicLoading.hide();
             return [];
           } else {
             Logger.log("Found "+transitionList.length+" transitions. yay!");

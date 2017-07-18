@@ -61,6 +61,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
+      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY, 
+        {INTRO_DONE_KEY: moment().format()});
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
 
@@ -185,6 +187,10 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           } else if ($rootScope.displayingIncident == true) {
             $rootScope.displayingIncident = false;
             return 'root.main.diary';
+          } else if (angular.isDefined($rootScope.redirectTo)) {
+            var redirState = $rootScope.redirectTo;
+            $rootScope.redirectTo = undefined;
+            return redirState;
           } else {
             return 'root.main.metrics';
           }

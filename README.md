@@ -5,9 +5,17 @@ This is the phone component of the e-mission system.
 
 Installing
 ---
-We are using the ionic platform, which is a toolchain on top of the apache
+We are using the ionic v2.2.1 platform, which is a toolchain on top of the apache
 cordova project. So the first step is to install ionic using their instructions.
-http://ionicframework.com/getting-started/
+http://ionicframework.com/docs/v1/getting-started/
+
+NOTE: Since we are still on ionic v1, please do not install v2 or v3, as the current codebase will not work with it.
+Issue the following commands to install Cordova and Ionic instead of the ones provided in the instruction above.
+
+```
+$ npm install -g cordova@6.5.0
+$ npm install -g ionic@2.2.1
+```
 
 Then, get the current version of our code
 
@@ -47,11 +55,27 @@ Generate your App ID
 $ ionic io init
 ``
 
-Restore platforms and plugins. This is a good time to get a cup of your favorite beverage
+Setup cocoapods. For all versions > 1.9, we need https://cocoapods.org/ support. This is used by the push plugin for the GCM pod, and by the auth plugin to install the GTMOAuth framework. This is a good time to get a cup of your favourite beverage.
+
+```
+$ sudo gem install cocoapods
+$ pod setup
+```
+
+To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
+https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
+
+Next, restore platforms and plugins. This is a good time to get a second cup of your favorite beverage
 
 ``
 $ ionic state restore
 ``
+
+Finally, make sure to install the other node modules required for the setup scripts.
+
+```
+npm install
+```
 
 Installation is now complete. You can view the current state of the application in the emulator
 
@@ -83,10 +107,30 @@ Sometimes the IOS emulator doesn't work when called from command line. If so, yo
 the project:
 
 ``
-      /e-mission-phone/platforms/ios/emission.xcodeproj
+      /e-mission-phone/platforms/ios/emission.xcworkspace
 ``
 
 and then run the project with IOS emulator.
+Make sure you use the most recent version of Xcode - older versions may not support some newer functionality.
+
+---
+
+Some versions of Gradle create unnecessary files that may result in errors while building the app. Gradle 2.14.1 has proven to work without any issues.
+If errors persist, make sure 
+``
+	  /e-mission-phone/platforms/android/gradle/wrapper/gradle-wrapper.properties
+``
+looks like this:
+```
+distributionBase=GRADLE_USER_HOME
+distributionPath=wrapper/dists
+zipStoreBase=GRADLE_USER_HOME
+zipStorePath=wrapper/dists
+distributionUrl=https\://services.gradle.org/distributions/gradle-2.14.1-all.zip
+```
+---
+
+The Android platform requires API levels 18-21, make sure you have installed them in the SDK manager.
 
 Debugging
 ---
