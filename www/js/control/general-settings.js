@@ -4,6 +4,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
                                         'emission.main.control.tnotify',
+                                        'emission.main.control.sdetect',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -17,7 +18,7 @@ angular.module('emission.main.control',['emission.services',
                $rootScope, storage, ionicDatePicker,
                StartPrefs, ControlHelper,
                ControlCollectionHelper, ControlSyncHelper,
-               ControlTransitionNotifyHelper,
+               ControlTransitionNotifyHelper, ControlShakeDetectHelper,
                UpdateCheck,
                CalorieCal, ClientStats, CommHelper) {
 
@@ -140,6 +141,14 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
+    $scope.getSDetectSettings = function() {
+        ControlShakeDetectHelper.getSDetectSettings().then(function(showConfig) {
+            $scope.$apply(function() {
+                $scope.settings.sdetect.show_config = showConfig;
+            })
+        });
+    };
+
     $scope.getEmail = function() {
         ControlHelper.getUserEmail().then(function(response) {
            console.log("user email = "+response);
@@ -245,6 +254,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.collect = {};
         $scope.settings.sync = {};
         $scope.settings.tnotify = {};
+        $scope.settings.sdetect = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
@@ -255,6 +265,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
         $scope.getTNotifySettings();
+        $scope.getSDetectSettings();
         $scope.getEmail();
         $scope.getState();
     };
@@ -285,6 +296,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
     $scope.editSyncConfig = ControlSyncHelper.editConfig;
     $scope.editTNotifyConfig = ControlTransitionNotifyHelper.editConfig;
+    $scope.editSDetectConfig = ControlShakeDetectHelper.editConfig;
 
 
     $scope.isAndroid = function() {

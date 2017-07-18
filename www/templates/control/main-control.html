@@ -162,6 +162,16 @@
         </ion-item>
       </ion-list>
 
+      <div class="control-list-item">
+        <div class="control-list-text">Shake Detect</div>
+        <div ng-click="editSDetectConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+      </div>
+      <ion-list>
+        <ion-item ng-repeat="entry in settings.sdetect.show_config">
+            <div class="row" ng-include="'templates/control/shake-detect-display-detail.html'"></div>
+        </ion-item>
+      </ion-list>
+
     </div>
   </ion-content>
 </ion-view>
