@@ -8,7 +8,7 @@
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, storage) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, $http, storage, $ionicPlatform) {
     
   console.log("controller CurrMapCtrl called from current.js");
   var _map;
@@ -89,7 +89,7 @@
     var meters = curr_latlng.distanceTo(last_latlng);
     time = moment(curr_ts).diff(moment(last_ts));
     var speed = Math.round(meters / time * 3.6); // mps to kmph
-    Logger.log("Current Speed: ", speed);
+    Logger.log("Current Speed: " + speed);
     return speed;
   };
 
@@ -106,7 +106,7 @@
   var refreshTrip = function() {
     db.getAllSensorData(BACKGROUND_LOCATION).then(function(result) {
       $scope.$apply(function() {
-        Logger.log("current location data", result[0].data);
+        Logger.log("current location data" + JSON.stringify(result[0].data));
         var coordinates = result.map(function(locWrapper, index, locList) {
           return [locWrapper.data.longitude, locWrapper.data.latitude];
         });
@@ -119,7 +119,9 @@
         if(angular.isDefined(result[0].data.sensed_speed)) {
           $scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6);
         } else {
-          $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
+          if(curr_ts !== last_ts){
+            $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
+          }
         }
         $scope.currentDirection = degreeToDirection(bearing);
         angular.extend($scope.mapCtrl, { 
@@ -175,7 +177,6 @@
 
   var addIncidents = function(incidents, _map) {
     incidents.forEach(function(incident) {
-        Logger.log(incident);
         latlng = {
             lat: incident.data.loc.coordinates[1],
             lng: incident.data.loc.coordinates[0]
@@ -252,6 +253,16 @@
     clearTimeout(mapRunning);
     clearTimeout(gettingIncidents);
   });
+
+  $ionicPlatform.on("resume", function(event) {
+    refreshTripLoop();
+    getIncidentsLoop();
+  });
+
+  $ionicPlatform.on("pause", function(event) {
+    clearTimeout(mapRunning);
+    clearTimeout(gettingIncidents);
+  }); 
   getLocalIncidents();
 
 });
