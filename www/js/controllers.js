@@ -8,7 +8,8 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.survey.launch',
                                         'emission.stats.clientstats',
                                         'emission.incident.posttrip.prompt',
-                                        'customURLScheme'])
+                                        'customURLScheme',
+                                        'emission.splash.ionicNotification'])
 
 .controller('RootCtrl', function($scope) {})
 
@@ -16,10 +17,11 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, PushNotify,
-    LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
+    LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch, ionicNotification)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
+  ionicNotification.redirectNotification();
   CustomURLScheme.onLaunch(function(event, url){
     console.log("GOT URL:"+url);
 
