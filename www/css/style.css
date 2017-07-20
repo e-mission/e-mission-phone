@@ -1872,6 +1872,13 @@ span.rz-bar-wrapper {
   margin-right: auto;
   margin-bottom: 10px;
 }
+#channel-field{
+  margin-right: 1.5px;
+  margin-top: auto;
+}
+#channel-field-padding{
+  padding-top: 1.5px;
+}
 .item.item-input.item-select {
   border-width: 1px !important;
 }
