@@ -26,7 +26,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   //   .setAttribute('style', 'width: '+oldVal2);
   // }
   dh.getFormattedDate = function(ts) {
-    var d = moment(ts * 1000).format("DD MMMM YYYY");
+    var d = moment(ts * 1000).format("MMMM DD, YYYY");
     return d;
   }
   dh.isCommon = function(id) {
@@ -62,6 +62,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   dh.getPercentages = function(trip) {
     var rtn0 = []; // icons
     var rtn1 = []; //percentages
+    var rtn2 = []; //mode names
+
 
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
@@ -71,6 +73,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
+    var names = {"BICYCLING":"Biking",
+    "WALKING":"Walking",
+    // "RUNNING":" ion-android-walk",
+    //  RUNNING has been filtered in function above
+         "IN_VEHICLE":"In Vehicle",
+         "UNKNOWN": "Unknown",
+         "UNPROCESSED": "Unprocessed",
+         "AIR_OR_HSR": "Airplane or HSR"
+         };
+
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
       if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
@@ -83,11 +95,23 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }
     }
     for (var i=0; i<rtn0.length; i++) {
-      rtn0[i] = "icon " + icons[rtn0[i]];
-      rtn1[i] = Math.floor((rtn1[i] / total) * 100);
+         //var res ={};
+         /*res.m= names[rtn0[i]];
+         res.p= Math.floor((rtn1[i] / total) * 100);
+         rtn2.push(res);*/
+         rtn0[i] = names[rtn0[i]];
+         rtn1[i] = Math.floor((rtn1[i] / total) * 100);
+         rtn2.push(i);
     }
-    return [rtn0, rtn1];
-  }
+         var res = [];
+         for (var i=0; i<rtn0.length; i++) {
+         var dic={};
+            dic.mode = rtn0[i];
+            dic.per = rtn1[i];
+            res.push(dic);
+         }
+    return [res,rtn2];
+         };
   dh.starColor = function(num) {
     if (num >= 3) {
       return 'yellow';

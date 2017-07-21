@@ -7,7 +7,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, $cordovaInAppBrowser, $rootScope) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -145,6 +145,42 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     });
   };
 
+
+  var options = {
+    location: 'no',
+    clearcache: 'no',
+    toolbar: 'yes'
+  };
+
+  var startSurvey = function () {
+    // THIS LINE FOR inAppBrowser
+    $cordovaInAppBrowser.open('https://berkeley.qualtrics.com/jfe/form/SV_0pK9b9CvXoNxiZL', '_blank', options)
+      .then(function(event) {
+        console.log("successfully opened page with result "+JSON.stringify(event));
+        // success
+      })
+      .catch(function(event) {
+        // error
+      });
+    $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+      console.log("started loading, event = "+JSON.stringify(event));
+      if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
+        $cordovaInAppBrowser.close();
+      }
+    });
+    $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+      console.log("stopped loading, event = "+JSON.stringify(event));
+      $cordovaInAppBrowser.executeScript({ code: "document.getElementById('QR~QID2').value += '" + userId + "';" });
+      console.log("inserting user id into qualtrics survey. userId = "+ userId);
+    });
+    $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+      console.log("exiting, event = "+JSON.stringify(event));
+    });
+  };
+
+  $scope.startSurvey = function () {
+    startSurvey();
+  };
 
   var checkDetailTutorialDone = function () {
     var DETAIL_DONE_KEY = 'detail_tutorial_done';

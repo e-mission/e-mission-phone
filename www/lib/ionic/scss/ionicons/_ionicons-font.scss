@@ -1,17 +1,46 @@
 // Ionicons Font Path
 // --------------------------
 
-@font-face {
+/*@font-face {
  font-family: $ionicons-font-family;
  src:url("#{$ionicons-font-path}/ionicons.eot?v=#{$ionicons-version}");
  src:url("#{$ionicons-font-path}/ionicons.eot?v=#{$ionicons-version}#iefix") format("embedded-opentype"),
   url("#{$ionicons-font-path}/ionicons.ttf?v=#{$ionicons-version}") format("truetype"),
   url("#{$ionicons-font-path}/ionicons.woff?v=#{$ionicons-version}") format("woff"),
-  url("#{$ionicons-font-path}/ionicons.woff") format("woff"), /* for WP8 */
+  url("#{$ionicons-font-path}/ionicons.woff") format("woff"), !* for WP8 *!
   url("#{$ionicons-font-path}/ionicons.svg?v=#{$ionicons-version}#Ionicons") format("svg");
  font-weight: normal;
  font-style: normal;
+}*/
+
+
+@font-face {
+  font-family: 'Exo 2';
+  font-weight: 400;
+  font-style: normal;
+  src: url('#{$ionicons-font-path}/Exo-2-regular/Exo-2-regular.eot');
+  src: url('#{$ionicons-font-path}/Exo-2-regular/Exo-2-regular.eot?#iefix') format('embedded-opentype'),
+  local('Exo 2'),
+  local('Exo-2-regular'),
+  url('#{$ionicons-font-path}/Exo-2-regular/Exo-2-regular.woff2') format('woff2'),
+  url('#{$ionicons-font-path}/Exo-2-regular/Exo-2-regular.woff') format('woff'),
+  url('#{$ionicons-font-path}/Exo-2-regular/Exo-2-regular.ttf') format('truetype'),
+  url('#{$ionicons-font-path}/Exo-2-regular/Exo-2-regular.svg#Exo2') format('svg');
 }
+
+/*@font-face {
+  font-family: 'Exo 2';
+  font-weight: 700;
+  font-style: normal;
+  src: url('#{$ionicons-font-path}/fonts/Exo-2-700/Exo-2-700.eot');
+  src: url('#{$ionicons-font-path}/fonts/Exo-2-700/Exo-2-700.eot?#iefix') format('embedded-opentype'),
+  local('Exo 2 Bold'),
+  local('Exo-2-700'),
+  url('#{$ionicons-font-path}/fonts/Exo-2-700/Exo-2-700.woff2') format('woff2'),
+  url('#{$ionicons-font-path}/fonts/Exo-2-700/Exo-2-700.woff') format('woff'),
+  url('#{$ionicons-font-path}/fonts/Exo-2-700/Exo-2-700.ttf') format('truetype'),
+  url('#{$ionicons-font-path}/fonts/Exo-2-700/Exo-2-700.svg#Exo2') format('svg');*/
+//}
 
 .ion {
   display: inline-block;

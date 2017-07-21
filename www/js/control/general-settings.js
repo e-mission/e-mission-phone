@@ -218,11 +218,13 @@ angular.module('emission.main.control',['emission.services',
     $scope.invalidateCache = function() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
             $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
+              return result;
+              //$ionicPopup.alert({template: 'success -> '+result}); //Alert of changing state
             });
         }, function(error) {
             $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
+              return error;
+              //$ionicPopup.alert({template: 'error -> '+error});
             });
         });
     }
@@ -302,7 +304,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.syncSettingsPopup = popover;
     });
     $scope.trackingOn = function() {
-        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+        return $scope.settings.collect.state = "STATE_TRACKING_STOPPED";
     }
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){

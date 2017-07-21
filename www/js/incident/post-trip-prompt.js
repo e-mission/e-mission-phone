@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
-.factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
+.factory("PostTripAutoPrompt", function($window, $stateParams, $ionicPlatform, $rootScope, $state, storage,
     $ionicPopup, Logger) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
@@ -46,8 +46,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "Incident to report?",
-      text: reportMessage(ionic.Platform.platform()),
+      title: "Trip just ended",
+      text: "Survey ready to complete.",
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
       sound: null,
@@ -118,6 +118,12 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       Logger.log("About to parse "+notification.data);
       notification.data = JSON.parse(notification.data);
     }
+
+  };
+
+  var storeTripData = function(notification, state, data) {
+    console.log("About to save data for trip");
+    window.localStorage.setItem("start", start_ts);
   };
 
   var displayCompletedTrip = function(notification, state, data) {
@@ -252,7 +258,40 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       cleanDataIfNecessary(notification, state, data);
       displayCompletedTrip(notification, state, data);
     });
+    $window.cordova.plugins.notification.local.on('schedule', function (notification, state, data, name, trip) {
+      // add this trip to local storage. you can use storage.set and storage.get
+      // or $window.cordova.plugins.BEMUserCache.putLocalStorage and
+      // $window.cordova.plugins.BEMUserCache.getLocalStorage
+      //trip = JSON.stringify(notification.data);
+      name = "trip";
+      //appendToStorage (name, trip);
+      //localStorage.setItem("start", JSON.stringify(notification.data));
+      //localStorage.setItem("end", JSON.stringify(data));
+      //localStorage.setItem("end", JSON.stringify($stateParams));
+      SaveDataToLocalStorage(name,notification.data);
+    });
+  };
+
+  var a = [];
+  a.push(JSON.parse(localStorage.getItem('trip')));
+  localStorage.setItem('trip', JSON.stringify(a));
+
+  function SaveDataToLocalStorage(name, data)
+  {
+    // Parse the serialized data back into an aray of objects
+    a = JSON.parse(localStorage.getItem(name));
+    // Push the new data (whether it be an object or anything else) onto the array
+    a.push(data);
+    // Alert the array value
+    alert(a);  // Should be something like [Object array]
+    // Re-serialize the array back into a string and store it in localStorage
+    localStorage.setItem(name, JSON.stringify(a));
   }
+  var appendToStorage = function(name, data){
+    var old = localStorage.getItem(name);
+    if(old === null) old = "";
+    localStorage.setItem(name, old + data);
+  };
 
   $ionicPlatform.ready().then(function() {
     ptap.registerTripEnd();
