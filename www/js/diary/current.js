@@ -10,7 +10,7 @@
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
                                     Logger, $window, PostTripManualMarker, CommHelper, $http, storage, $ionicPlatform) {
     
-  console.log("controller CurrMapCtrl called from current.js");
+  Logger.log("controller CurrMapCtrl called from current.js");
   var _map;
   var db = window.cordova.plugins.BEMUserCache;
   MANUAL_INCIDENT = "manual/incident";
@@ -30,7 +30,7 @@
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
-  console.log("mapCtrl", $scope.mapCtrl);
+  Logger.log("mapCtrl", $scope.mapCtrl);
 
   $scope.verticalSlider = {
     options: {
@@ -111,19 +111,26 @@
           return [locWrapper.data.longitude, locWrapper.data.latitude];
         });
         var both = [result[0].data.longitude, result[0].data.latitude];
-        var last_both = [result[1].data.longitude, result[1].data.latitude];
-        var curr_ts = result[0].data.ts;
-        var last_ts = result[1].data.ts;
-        var bearing = Math.round(result[0].data.bearing);
         $scope.startTime = startTimeFn(result[result.length - 1].data.ts);
-        if(angular.isDefined(result[0].data.sensed_speed)) {
-          $scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6);
+        var bearing = Math.round(result[0].data.bearing);
+
+        Logger.log("last location data " + JSON.stringify(result[1]));
+        if (angular.isDefined(result[1])) {
+            var last_both = [result[1].data.longitude, result[1].data.latitude];
+            var curr_ts = result[0].data.ts;
+            var last_ts = result[1].data.ts;
+            if(angular.isDefined(result[0].data.sensed_speed)) {
+              $scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6);
+            } else {
+              if(curr_ts !== last_ts){
+                $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
+              }
+            }
+            $scope.currentDirection = degreeToDirection(bearing);
         } else {
-          if(curr_ts !== last_ts){
-            $scope.currSpeedInKmh = getSpeed(both, last_both, curr_ts, last_ts);
-          }
+            Logger.log("last location is not defined, returning defaults");
+            $scope.currSpeedInKmh = 0;
         }
-        $scope.currentDirection = degreeToDirection(bearing);
         angular.extend($scope.mapCtrl, { 
           defaults : {
             center: {
@@ -162,7 +169,7 @@
   };
 
   $scope.$on('leafletDirectiveMap.current.resize', function(event, data) {
-        console.log("current/map received resize event, invalidating map size");
+        Logger.log("current/map received resize event, invalidating map size");
         data.leafletObject.invalidateSize();
   });
 
@@ -177,32 +184,36 @@
 
   var addIncidents = function(incidents, _map) {
     incidents.forEach(function(incident) {
-        latlng = {
-            lat: incident.data.loc.coordinates[1],
-            lng: incident.data.loc.coordinates[0]
-        };
-        var marker = L.circleMarker(latlng);
-        addIncidentLayer(incident.data.stress, marker, _map);
+        Logger.log("Processing incident "+JSON.stringify(incident));
+        if (angular.isDefined(incident) && angular.isDefined(incident.loc)) {
+            latlng = {
+                lat: incident.loc.coordinates[1],
+                lng: incident.loc.coordinates[0]
+            };
+            Logger.log("Displaying incident report at "+JSON.stringify(latlng)+" on map");
+            var marker = L.circleMarker(latlng);
+            addIncidentLayer(incident.stress, marker, _map);
+        }
       });  
   };
 
   var getLocalIncidents = function() {
     db.getAllMessages(MANUAL_INCIDENT).then(function(incidents) {
-      console.log("Incidents stored locally", incidents);
+      Logger.log("Incidents stored locally", incidents);
       addIncidents(incidents, _map);
     });
   };
 
   var getServerIncidents = function() {
-      console.log(incidentServerCalldata);
+      Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
       $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", incidentServerCalldata).then(function(res){
-      console.log(res);
+      Logger.log("Result is "+JSON.stringify(res));
       if(res.data.incidents.length > 0) {
         addIncidents(res.data.incidents, _map);
       }
     }, function(error){
-      console.log("Error when getting incidents");
-      console.log(error);
+      Logger.log("Error when getting incidents");
+      Logger.log(error);
     });
   };
 
@@ -214,11 +225,11 @@
             var latlng = L.latLng(both);
             $scope.features = [];
             marker = L.circleMarker(latlng);
-            console.log(marker);
+            Logger.log(marker);
             PostTripManualMarker.showSheet($scope.features, latlng, ts, marker, _map);
     })
     .catch(function(error) {
-      console.log("error while getting map current from leafletData");
+      Logger.log("error while getting map current from leafletData");
     });
   };
 
@@ -245,21 +256,25 @@
   };
 
   $scope.$on('$ionicView.enter', function() {
+    Logger.log("entered current screen, starting incident refresh");
     refreshTripLoop();
     getIncidentsLoop();
   });
 
   $scope.$on('$ionicView.leave', function() {
+    Logger.log("exited current screen, stopping incident refresh");
     clearTimeout(mapRunning);
     clearTimeout(gettingIncidents);
   });
 
   $ionicPlatform.on("resume", function(event) {
+    Logger.log("resumed current screen, starting incident refresh");
     refreshTripLoop();
     getIncidentsLoop();
   });
 
   $ionicPlatform.on("pause", function(event) {
+    Logger.log("paused current screen, stopping incident refresh");
     clearTimeout(mapRunning);
     clearTimeout(gettingIncidents);
   }); 
