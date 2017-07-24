@@ -51,7 +51,7 @@
   };
 
   var incident_value = storage.get(INCIDENT_CONFIG);
-  if(incident_value !== null) {
+  if(incident_value != null) {
     $scope.verticalSlider.value = incident_value;
   } else {
     $scope.verticalSlider.value = 1;
@@ -180,7 +180,9 @@
   var getLocalIncidents = function() {
     db.getAllMessages(MANUAL_INCIDENT).then(function(incidents) {
       console.log("Incidents stored locally", incidents);
-      addIncidents(incidents, _map);
+      if(incidents.length > 0) {
+        addIncidents(incidents, _map);
+      }
     });
   };
 
