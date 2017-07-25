@@ -20,13 +20,4 @@ angular.module('emission.main.cci-about', ['emission.plugin.logger'])
                "CCI email cancel reported, seems to be an error on android");
         });
     };
-
-    $scope.callCCI = function(){ 
-    	var number = '15106439103' ; 
-    	window.plugins.CallNumber.callNumber(function(result){
-     	console.log("Call Sucess: " + result)
-    	}, function(error){
-    		console.log("Call Fail: " + error)
-    	}, number) 
-  	};
 })
