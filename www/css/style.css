@@ -1349,6 +1349,40 @@ span.rz-bar-wrapper {
   left: 20%;
 }
 
+.cci-contact-button{
+  border-radius: 25px;
+  border: none;
+  color: #fff;
+  font-size: 15px;
+  width: 50%;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.05);
+  display: block;
+  margin-bottom: 10px;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top: 5px;
+  min-height: 0px;
+  height: 40px;
+  line-height: 40px;
+}
+
+.cci-contact-button:active{
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05) !important;
+  color: #fff;
+}
+
+.cci-contact-button:hover{
+  color: #fff;
+}
+
+#email-cci{
+  background-color: #341B44;
+}
+
+#call-cci{
+  background-color: #2E814D;
+}
+
 .report-button:active{
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05) !important;
 }

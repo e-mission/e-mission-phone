@@ -84,4 +84,5 @@
   <plugin name="phonegap-plugin-push" spec="~1.9.2">
     <variable name="SENDER_ID" value="97387382925" />
   </plugin>
+  <plugin name="call-number" spec="https://github.com/Rohfosho/CordovaCallNumberPlugin.git" />
 </widget>
