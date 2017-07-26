@@ -1354,7 +1354,7 @@ span.rz-bar-wrapper {
   border: none;
   color: #fff;
   font-size: 15px;
-  width: 50%;
+  width: 180px;
   display: block;
   margin-bottom: 10px;
   margin-left: auto;
@@ -1376,7 +1376,7 @@ span.rz-bar-wrapper {
 #call-cci{
   background-color: #fff;
   color: black;
-  width: 40%;
+  width: 150px;
   margin-bottom: 0;
   margin-top: 0;
 }
