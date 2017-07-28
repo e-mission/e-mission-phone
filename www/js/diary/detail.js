@@ -178,21 +178,21 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $scope.modePopover.show($event);
    };
 
-   $ionicPopover.fromTemplateUrl('templates/diary/destination-popover.html', {
+   $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
       scope: $scope
    }).then(function(popover) {
-      $scope.destinationPopover = popover;
+      $scope.purposePopover = popover;
    });
 
-   $scope.openDestinationPopover = function($event) {
-      $scope.destinationPopover.show($event);
+   $scope.openPurposePopover = function($event) {
+      $scope.purposePopover.show($event);
    };
 
-  $scope.chosen = {mode:'',destination:'',other:''};
+  $scope.chosen = {mode:'',purpose:'',other:''};
 
    var checkOtherOption = function(choice) {
-    if(choice == 'other_mode' || choice == 'other_destination') {
-      var text = choice == 'other_mode' ? "mode" : "destination"
+    if(choice == 'other_mode' || choice == 'other_purpose') {
+      var text = choice == 'other_mode' ? "mode" : "purpose";
       $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
         scope: $scope,
         template: '<input type = "text" ng-model = "chosen.other">',        
@@ -205,10 +205,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                            e.preventDefault();
                      } else {
                         if(choice == 'other_mode') {
-                          alert(choice + " " +$scope.chosen.other);  // store mode here
+                          // store mode here
                           $scope.chosen.other = '';
                         } else {
-                          alert(choice + " " +$scope.chosen.other);  // store destination here
+                          // store purpose here
                           $scope.chosen.other = '';
                         }
                         return $scope.chosen.other;
@@ -221,17 +221,17 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     }
    };
 
-  $scope.chooseDestination = function() {
-    if($scope.chosen.destination != "other_destination"){
-      alert($scope.chosen.destination); // store mode here
+  $scope.choosePurpose = function() {
+    if($scope.chosen.purpose != "other_purpose"){
+      // store purpose here
     } else {
-      checkOtherOption($scope.chosen.destination);
+      checkOtherOption($scope.chosen.purpose);
     }
   };
 
   $scope.chooseMode = function (){
     if($scope.chosen.mode != "other_mode"){
-      alert($scope.chosen.mode); // store Destination here
+      // store mode here
     } else {
       checkOtherOption($scope.chosen.mode);
     }
@@ -242,23 +242,23 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
    {text:'Bike',value:'bike'},
    {text:'Drove Alone',value:'drove_alone'},
    {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi',value:'taxi'},
+   {text:'Taxi/Uber/Lyft',value:'taxi'},
    {text:'Bus',value:'bus'},
    {text:'Train',value:'train'},
    {text:'Free Shuttle',value:'free_shuttle'},
    {text:'Other',value:'other_mode'}];
 
-   $scope.destinationOptions = [
+   $scope.purposeOptions = [
    {text:'Home', value:'home'},
    {text:'Work',value:'work'},
    {text:'School',value:'school'},
    {text:'Shopping',value:'shopping'},
    {text:'Meal',value:'meal'},
-   {text:'Pick-up/drop off',value:'pick_drop'},
-   {text:'Personal/medical',value:'personal_med'},
-   {text:'Recreation/exercise',value:'exercise'},
-   {text:'Entertainment/social',value:'entertainment'},
+   {text:'Pick-up/Drop off',value:'pick_drop'},
+   {text:'Personal/Medical',value:'personal_med'},
+   {text:'Recreation/Exercise',value:'exercise'},
+   {text:'Entertainment/Social',value:'entertainment'},
    {text:'Religious', value:'religious'},
-   {text:'Other',value:'other_destination'}];
+   {text:'Other',value:'other_purpose'}];
 
 });
