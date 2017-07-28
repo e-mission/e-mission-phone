@@ -7,7 +7,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, $ionicPopover, $ionicPopup) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -167,4 +167,98 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     checkDetailTutorialDone();
   });
   /* END: ng-walkthrough code */
-})
+
+  $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.modePopover = popover;
+   });
+
+   $scope.openModePopover = function($event) {
+      $scope.modePopover.show($event);
+   };
+
+   $ionicPopover.fromTemplateUrl('templates/diary/destination-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.destinationPopover = popover;
+   });
+
+   $scope.openDestinationPopover = function($event) {
+      $scope.destinationPopover.show($event);
+   };
+
+  $scope.chosen = {mode:'',destination:'',other:''};
+
+   var checkOtherOption = function(choice) {
+    if(choice == 'other_mode' || choice == 'other_destination') {
+      var text = choice == 'other_mode' ? "mode" : "destination"
+      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',        
+        buttons: [
+            { text: 'Cancel' }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        if(choice == 'other_mode') {
+                          alert(choice + " " +$scope.chosen.other);  // store mode here
+                          $scope.chosen.other = '';
+                        } else {
+                          alert(choice + " " +$scope.chosen.other);  // store destination here
+                          $scope.chosen.other = '';
+                        }
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+
+    }
+   };
+
+  $scope.chooseDestination = function() {
+    if($scope.chosen.destination != "other_destination"){
+      alert($scope.chosen.destination); // store mode here
+    } else {
+      checkOtherOption($scope.chosen.destination);
+    }
+  };
+
+  $scope.chooseMode = function (){
+    if($scope.chosen.mode != "other_mode"){
+      alert($scope.chosen.mode); // store Destination here
+    } else {
+      checkOtherOption($scope.chosen.mode);
+    }
+  };
+
+   $scope.modeOptions = [
+   {text:'Walk', value:'walk'},
+   {text:'Bike',value:'bike'},
+   {text:'Drove Alone',value:'drove_alone'},
+   {text:'Shared Ride',value:'shared_ride'},
+   {text:'Taxi',value:'taxi'},
+   {text:'Bus',value:'bus'},
+   {text:'Train',value:'train'},
+   {text:'Free Shuttle',value:'free_shuttle'},
+   {text:'Other',value:'other_mode'}];
+
+   $scope.destinationOptions = [
+   {text:'Home', value:'home'},
+   {text:'Work',value:'work'},
+   {text:'School',value:'school'},
+   {text:'Shopping',value:'shopping'},
+   {text:'Meal',value:'meal'},
+   {text:'Pick-up/drop off',value:'pick_drop'},
+   {text:'Personal/medical',value:'personal_med'},
+   {text:'Recreation/exercise',value:'exercise'},
+   {text:'Entertainment/social',value:'entertainment'},
+   {text:'Religious', value:'religious'},
+   {text:'Other',value:'other_destination'}];
+
+});
