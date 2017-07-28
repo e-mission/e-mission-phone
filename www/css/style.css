@@ -1929,3 +1929,7 @@ span.rz-bar-wrapper {
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
 }
+
+.popover {
+  height: 297px;
+}
