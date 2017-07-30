@@ -1,10 +1,11 @@
 <ion-popover-view>
    <ion-header-bar>
-      <h2 class = "title">How did you get here?</h2>
+      <p style="font-style: 12px;margin: auto;color: #444;font-weight:">How did you get here?</p>
+      <button ng-click="doneChoosingModes()" class="button" style="background-color: #ddd;">Confirm</button>
    </ion-header-bar>
    <ion-content>
-      	<ion-list ng-repeat="mode in modeOptions">
-		    <ion-radio ng-click="chooseMode()" ng-model="chosen.mode" ng-value="mode.value">{{mode.text}}</ion-radio>
+      	<ion-list>
+		    <ion-checkbox ng-repeat="mode in modeOptions" ng-click="chooseMode()" ng-model="mode.checked">{{mode.text}}</ion-checkbox>
 		</ion-list>
    </ion-content>
 </ion-popover-view>
