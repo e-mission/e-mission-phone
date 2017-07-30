@@ -494,16 +494,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    {text:'Other',value:'other_mode', checked:false}];
 
    $scope.purposeOptions = [
-   {text:'Home', value:'home', checked:false},
-   {text:'Work',value:'work', checked:false},
-   {text:'School',value:'school', checked:false},
-   {text:'Shopping',value:'shopping', checked:false},
-   {text:'Meal',value:'meal', checked:false},
-   {text:'Pick-up/Drop off',value:'pick_drop', checked:false},
-   {text:'Personal/Medical',value:'personal_med', checked:false},
-   {text:'Recreation/Exercise',value:'exercise', checked:false},
-   {text:'Entertainment/Social',value:'entertainment', checked:false},
-   {text:'Religious', value:'religious', checked:false},
-   {text:'Other',value:'other_purpose', checked:false}];
+   {text:'Home', value:'home'},
+   {text:'Work',value:'work'},
+   {text:'School',value:'school'},
+   {text:'Shopping',value:'shopping'},
+   {text:'Meal',value:'meal'},
+   {text:'Pick-up/Drop off',value:'pick_drop'},
+   {text:'Personal/Medical',value:'personal_med'},
+   {text:'Recreation/Exercise',value:'exercise'},
+   {text:'Entertainment/Social',value:'entertainment'},
+   {text:'Religious', value:'religious'},
+   {text:'Other',value:'other_purpose'}];
 
 });
