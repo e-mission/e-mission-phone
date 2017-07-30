@@ -411,7 +411,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   $scope.chosen = {modes:[],purpose:'',other:''};
    var checkOtherOption = function(choice) {
     if(choice == 'other_mode' || choice == 'other_purpose') {
-      var text = choice == 'other_mode' ? "mode" : "purpose";
+      var text = choice == 'other_mode' ? "list of modes" : "purpose";
       $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
         scope: $scope,
         template: '<input type = "text" ng-model = "chosen.other">',        
