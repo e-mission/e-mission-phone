@@ -408,11 +408,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover.hide($event);
    };
 
-  $scope.chosen = {mode:'',purpose:'',other:''};
-
+  $scope.chosen = {modes:[],purpose:'',other:''};
    var checkOtherOption = function(choice) {
     if(choice == 'other_mode' || choice == 'other_purpose') {
-      var text = choice == 'other_mode' ? "mode" : "purpose";
+      var text = choice == 'other_mode' ? "list of modes" : "purpose";
       $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
         scope: $scope,
         template: '<input type = "text" ng-model = "chosen.other">',        
@@ -425,10 +424,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                            e.preventDefault();
                      } else {
                         if(choice == 'other_mode') {
-                          // store mode here
+                          $scope.chosen.modes.push($scope.chosen.other);
                           $scope.chosen.other = '';
                         } else {
                           // store purpose here
+                          console.log($scope.chosen.other)
                           $scope.chosen.other = '';
                         }
                         return $scope.chosen.other;
@@ -444,6 +444,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   $scope.choosePurpose = function() {
     if($scope.chosen.purpose != "other_purpose"){
       // store purpose here
+      console.log($scope.chosen.purpose)
     } else {
       checkOtherOption($scope.chosen.purpose);
     }
@@ -451,24 +452,46 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   $scope.chooseMode = function (){
-    if($scope.chosen.mode != "other_mode"){
-      // store mode here
-    } else {
-      checkOtherOption($scope.chosen.mode);
-    }
-    closeModePopover();
+    angular.forEach($scope.modeOptions,function(mode){
+      if(mode.checked && $scope.chosen.modes.indexOf(mode.value) == -1){
+        if(mode.value != "other_mode"){
+          $scope.chosen.modes.push(mode.value);
+        } else {
+          checkOtherOption(mode.value);
+        }
+      } else if(!mode.checked && $scope.chosen.modes.indexOf(mode.value) != -1){
+        $scope.chosen.modes.splice($scope.chosen.modes.indexOf(mode.value), 1);
+      } else if(!mode.checked && mode.value == "other_mode"){
+        var listed_modes = []
+        $scope.modeOptions.forEach(function(mode) {
+          listed_modes.push(mode.value);
+        });
+        $scope.chosen.modes.forEach(function(mode) {
+          if(listed_modes.indexOf(mode) == -1){
+            $scope.chosen.modes.splice($scope.chosen.modes.indexOf(mode), 1);
+          };
+        });
+      } 
+    });
   };
 
+  $scope.doneChoosingModes = function() {
+    //store modes here
+    console.log($scope.chosen.modes)
+    closeModePopover();
+  }
+
    $scope.modeOptions = [
-   {text:'Walk', value:'walk'},
-   {text:'Bike',value:'bike'},
-   {text:'Drove Alone',value:'drove_alone'},
-   {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi/Uber/Lyft',value:'taxi'},
-   {text:'Bus',value:'bus'},
-   {text:'Train',value:'train'},
-   {text:'Free Shuttle',value:'free_shuttle'},
-   {text:'Other',value:'other_mode'}];
+   {text:'Walk', value:'walk', checked:false},
+   {text:'Bike',value:'bike', checked:false},
+   {text:'Drove Alone',value:'drove_alone', checked:false},
+   {text:'Shared Ride',value:'shared_ride', checked:false},
+   {text:'Taxi',value:'taxi', checked:false},
+   {text:'Uber/Lyft', value: 'uber_lyft', checked:false},
+   {text:'Bus',value:'bus', checked:false},
+   {text:'Train',value:'train', checked:false},
+   {text:'Subway',value:'Subway', checked:false},
+   {text:'Other',value:'other_mode', checked:false}];
 
    $scope.purposeOptions = [
    {text:'Home', value:'home'},
