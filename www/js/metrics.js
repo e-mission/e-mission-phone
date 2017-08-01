@@ -20,17 +20,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var COUNT = "count";
     var DISTANCE = "distance";
 
-    $scope.onCurrentTrip = function() {
-      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-         if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
-            console.log("result", result);
-            $state.go("root.main.current");
-        }
-      });
-    };
-
-    $scope.onCurrentTrip();
-
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {

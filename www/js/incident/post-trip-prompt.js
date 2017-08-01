@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
+angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger',
+    'emission.survey.launch'])
 .factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
-    $ionicPopup, Logger) {
+    $ionicPopup, Logger, SurveyLaunch) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
   var CHOOSE_MODE_TEXT = 'CHOOSE_MODE';
@@ -10,12 +11,12 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe left or tap to pick the mode of transportation.",
-      "android": "See options or tap to pick the mode of transportation."
+       "ios": "Swipe right to provide ground truth about this trip. Swipe left for more - Busy? Snooze 30 mins. Annoyed? Mute.",
+       "android": "Touch to provide ground truth about this trip. See options for more - Busy? Snooze 30 mins. Annoyed? Mute."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Tap to pick the mode of transportation.";
+       selMessage = "Select to provide ground truth about this trip. More options - Busy? Snooze 30 mins. Annoyed? Mute.";
     }
     return selMessage;
   };
@@ -134,9 +135,15 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     */
 
-    Logger.log("About to go to diary, which now displays draft information");
+    Logger.log("About to display survey for trip "+
+        moment.unix(notification.data.start_ts).format()+
+        " -> "+moment.unix(notification.data.end_ts).format());
     $rootScope.displayingIncident = true;
-    $state.go("root.main.diary");
+    SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
+       "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
+       notification.data.start_ts, notification.data.end_ts);
+    
+    // $state.go("root.main.diary");
   };
 
   var checkCategory = function(notification) {

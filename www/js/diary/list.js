@@ -5,6 +5,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
+                                      'emission.survey.launch', 
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
@@ -13,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, $ionicPopover) {
+                                    Config, SurveyLaunch, PostTripManualMarker, nzTour, storage, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -379,6 +380,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.showModes = DiaryHelper.showModes;
+
+   $scope.openSurvey= function($event, trip_gj) {
+      SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
+       "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
+       trip_gj.data.properties.start_ts, trip_gj.data.properties.end_ts);
+   };
 
    $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
       scope: $scope
