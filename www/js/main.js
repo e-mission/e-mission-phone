@@ -109,7 +109,7 @@ angular.module('emission.main', ['emission.main.recent',
         end_ts: null
       },
       views: {
-        'main-control': {
+        'main-cci-about': {
           templateUrl: "templates/incident/map.html",
           controller: 'PostTripMapCtrl'
         }

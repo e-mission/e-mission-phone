@@ -195,7 +195,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   }
 
   $scope.closeView = function () {
-    $state.go('root.main.control');
+    $state.go('root.main.cci-about');
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
