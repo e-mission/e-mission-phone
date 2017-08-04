@@ -207,7 +207,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   });
   /* END: ng-walkthrough code */
 
-   $scope.chosen = {mode:'',purpose:'',other:''};
+   $scope.chosen = {mode:'',purpose:'',other:'', other_to_store:''};
 
    var checkOtherOption = function(choice) {
     if(choice == 'other_mode' || choice == 'other_purpose') {
@@ -229,10 +229,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                            e.preventDefault();
                      } else {
                         if(choice == 'other_mode') {
-                          $scope.chosen.mode = $scope.chosen.other;
+                          $scope.chosen.other_to_store = $scope.chosen.other;
                           $scope.chosen.other = '';
                         } else {
-                          $scope.chosen.purpose = $scope.chosen.other;
+                          $scope.chosen.other_to_store = $scope.chosen.other;
                           $scope.chosen.other = '';
                         }
                         return $scope.chosen.other;
@@ -260,7 +260,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   $scope.secondSlide = false;
 
   $scope.nextSlide = function() {
-    if($scope.chosen.mode.length > 0){
+    if($scope.chosen.mode == "other_mode" && $scope.chosen.other_to_store.length > 0) {
+      $scope.secondSlide = true;
+      console.log($scope.chosen.other_to_store);
+      // store other_to_store here
+      $ionicSlideBoxDelegate.next();
+    } else if ($scope.chosen.mode != "other_mode" && $scope.chosen.mode.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.chosen.mode);
       // store mode here
@@ -269,7 +274,11 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   };
 
   $scope.doneSlide = function() {
-    if($scope.chosen.purpose.length > 0){
+    if($scope.chosen.purpose == "other_purpose" && $scope.chosen.other_to_store.length > 0) {
+      console.log($scope.chosen.other_to_store);
+      // store other_to_store here
+      $scope.closeView();
+    } else if ($scope.chosen.purpose != "other_purpose" && $scope.chosen.purpose.length > 0) {
       console.log($scope.chosen.purpose);
       // store purpose here
       $scope.closeView();
