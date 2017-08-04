@@ -122,18 +122,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var displayCompletedTrip = function(notification, state, data) {
     Logger.log("About to display completed trip");
-
-    
-    promptReport(notification, state, data).then(function(res) {
-      if (res == true) {
-        console.log("About to go to incident map page");
-        $state.go("root.main.incident", notification.data);
-      } else {
-        console.log("Skipped incident reporting");
-      }
-    });
-    
-
+    $state.go("root.main.incident", notification.data);
     /*Logger.log("About to go to diary, which now displays draft information");
     $rootScope.displayingIncident = true;
     $state.go("root.main.diary");*/
