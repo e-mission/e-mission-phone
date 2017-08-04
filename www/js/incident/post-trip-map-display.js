@@ -9,7 +9,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                         $stateParams, $ionicActionSheet, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker) {
+                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   $scope.mapCtrl = {};
@@ -167,26 +167,26 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       }
     },
     steps: [{
-      target: '#incident',
-      content: 'Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size="+3">&#x263B;</font> or <font size="+3">&#x2639;</font> incident'
+      target: '#mode_list',
+      content: 'Scroll for more options'
     }]
   };
 
   var startWalkthrough = function () {
     nzTour.start(tour).then(function(result) {
-      Logger.log("list walkthrough start completed, no error");
+      Logger.log("post trip mode walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("incident walkthrough start errored" + err);
+      Logger.log("post trip mode walkthrough start errored" + err);
     });
   };
 
 
   var checkIncidentTutorialDone = function () {
-    var INCIDENT_DONE_KEY = 'incident_tutorial_done';
-    var incidentTutorialDone = storage.get(INCIDENT_DONE_KEY);
+    var POST_TRIP_MODE_DONE_KEY = 'post_trip_mode_tutorial_done';
+    var incidentTutorialDone = storage.get(POST_TRIP_MODE_DONE_KEY);
     if (!incidentTutorialDone) {
       startWalkthrough();
-      storage.set(INCIDENT_DONE_KEY, true);
+      storage.set(POST_TRIP_MODE_DONE_KEY, true);
     }
   };
 
@@ -206,4 +206,102 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     checkIncidentTutorialDone();
   });
   /* END: ng-walkthrough code */
+
+   $scope.chosen = {mode:'',purpose:'',other:''};
+
+   var checkOtherOption = function(choice) {
+    if(choice == 'other_mode' || choice == 'other_purpose') {
+      var text = choice == 'other_mode' ? "mode" : "purpose";
+      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',        
+        buttons: [
+            { text: 'Cancel',
+              onTap: function(e) {
+                $scope.chosen.mode = '';
+                $scope.chosen.purpose = '';
+              }
+            }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        if(choice == 'other_mode') {
+                          $scope.chosen.mode = $scope.chosen.other;
+                          $scope.chosen.other = '';
+                        } else {
+                          $scope.chosen.purpose = $scope.chosen.other;
+                          $scope.chosen.other = '';
+                        }
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+
+    }
+   };
+
+  $scope.choosePurpose = function() {
+    if($scope.chosen.purpose == "other_purpose"){
+      checkOtherOption($scope.chosen.purpose);
+    }
+  };
+
+  $scope.chooseMode = function (){
+    if($scope.chosen.mode == "other_mode"){
+      checkOtherOption($scope.chosen.mode);
+    }
+  };
+
+  $scope.secondSlide = false;
+
+  $scope.nextSlide = function() {
+    if($scope.chosen.mode.length > 0){
+      $scope.secondSlide = true;
+      console.log($scope.chosen.mode);
+      // store mode here
+      $ionicSlideBoxDelegate.next();
+    }
+  };
+
+  $scope.doneSlide = function() {
+    if($scope.chosen.purpose.length > 0){
+      console.log($scope.chosen.purpose);
+      // store purpose here
+      $scope.closeView();
+    }
+  };
+
+  $scope.disableSwipe = function() {
+   $ionicSlideBoxDelegate.enableSlide(false);
+  };
+
+  $scope.modeOptions = [
+   {text:'Walk', value:'walk'},
+   {text:'Bike',value:'bike'},
+   {text:'Drove Alone',value:'drove_alone'},
+   {text:'Shared Ride',value:'shared_ride'},
+   {text:'Taxi/Uber/Lyft',value:'taxi'},
+   {text:'Bus',value:'bus'},
+   {text:'Train',value:'train'},
+   {text:'Free Shuttle',value:'free_shuttle'},
+   {text:'Other',value:'other_mode'}];
+
+   $scope.purposeOptions = [
+   {text:'Home', value:'home'},
+   {text:'Work',value:'work'},
+   {text:'School',value:'school'},
+   {text:'Shopping',value:'shopping'},
+   {text:'Meal',value:'meal'},
+   {text:'Pick-up/Drop off',value:'pick_drop'},
+   {text:'Personal/Medical',value:'personal_med'},
+   {text:'Recreation/Exercise',value:'exercise'},
+   {text:'Entertainment/Social',value:'entertainment'},
+   {text:'Religious', value:'religious'},
+   {text:'Other',value:'other_purpose'}];
+
 });
