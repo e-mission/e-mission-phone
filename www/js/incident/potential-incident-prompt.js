@@ -4,49 +4,54 @@ angular.module('emission.incident.potentialincident.prompt', ['emission.plugin.l
 .factory("PotentialIncidentAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
     $ionicPopup, Logger) {
   var piap = {};
-  var REPORT = 737679; // REPORT on the phone keypad
+  var REPORT = 74253; //Shake on the phone keypad
   var REPORT_INCIDENT_TEXT = 'REPORT_INCIDENT';
   var POTENTIAL_INCIDENT_EVENT = "potential_incident";
+  var SHAKE_INCIDENT = "shake/incident";
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe right to report any positive or negative experiences. Swipe left for more - Busy? Snooze 30 mins. Annoyed? Mute.",
-      "android": "Touch to report any positive or negative experiences. See options for more - Busy? Snooze 30 mins. Annoyed? Mute."
+      "ios": "Swipe right to report any positive or negative experiences. Select 'Neither' for an unintended incident report. Swipe left for more.",
+      "android": "Touch to report any positive or negative experiences. Select 'Neither' for an unintended incident report."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Select to report any positive or negative experiences on this trip. More options - Busy? Snooze 30 mins. Annoyed? Mute.";
+      selMessage = "Select to report any positive or negative experiences on this trip.";
     }
     return selMessage;
   };
 
   var getPotentialIncidentReportNotification = function() {
+    Logger.log("getPotentialIncidentReportNotification start");
+
     var actions = [{
-       identifier: 'MUTE',
-       title: 'Mute',
+       identifier: 'FALSE_POSITIVE',
+       title: 'Neither',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-       identifier: 'SNOOZE',
-       title: 'Snooze',
+       identifier: 'NEGATIVE_INCIDENT',
+       title: 'Negative',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-        identifier: 'REPORT',
-        title: 'Yes',
-        icon: 'res://ic_signin',
-        activationMode: 'foreground',
+        identifier: 'POSITIVE_INCIDENT',
+        title: 'Positive',
+        icon: 'res://ic_moreoptions',
+        activationMode: 'background',
         destructive: false,
         authenticationRequired: false
     }];
 
+    Logger.log("reportNotifyConfig start");
+
     var reportNotifyConfig = {
       id: REPORT,
-      title: "Incident to report?",
+      title: "Incident Detected",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
@@ -62,6 +67,7 @@ angular.module('emission.incident.potentialincident.prompt', ['emission.plugin.l
   piap.registerPotentialIncident = function() {
     Logger.log( "registerPotentialIncident received!" );
     // iOS
+
     var notifyPlugin = $window.cordova.plugins.BEMShakeNotification;
     notifyPlugin.addEventListener(notifyPlugin.POTENTIAL_INCIDENT, getPotentialIncidentReportNotification())
         .then(function(result) {
@@ -120,25 +126,7 @@ angular.module('emission.incident.potentialincident.prompt', ['emission.plugin.l
     }
   };
 
-  var displayCompletedTrip = function(notification, state, data) {
-    Logger.log("About to display completed trip");
 
-    /*
-    promptReport(notification, state, data).then(function(res) {
-      if (res == true) {
-        console.log("About to go to incident map page");
-        $state.go("root.main.incident", notification.data);
-      } else {
-        console.log("Skipped incident reporting");
-      }
-    });
-    */
-
-    Logger.log("About to go to diary, which now displays draft information");
-    $rootScope.displayingIncident = true;
-    $state.go("root.main.diary");
-  };
-piap
   var checkCategory = function(notification) {
     if (notification.category == REPORT_INCIDENT_TEXT) {
         return true;
@@ -154,66 +142,66 @@ piap
           Logger.log("notification "+notification+" is not an incident report, returning...");
           return;
       }
-      if (data.identifier === 'REPORT') {
-          // alert("About to report");
-          cleanDataIfNecessary(notification, state, data);
-          displayCompletedTrip(notification, state, data);
-      } else if (data.identifier == 'SNOOZE') {
-        var now = new Date().getTime(),
-            _30_mins_from_now = new Date(now + 30 * 60 * 1000);
-        var after_30_mins_prompt = getPotentialIncidentReportNotification();
-        after_30_mins_prompt.at = _30_mins_from_now;
-        $window.cordova.plugins.notification.local.schedule([after_30_mins_prompt]);
-        if ($ionicPlatform.is('android')) {
-            $ionicPopup.alert({
-                title: "Snoozed reminder",
-                template: "Will reappear in 30 mins"
-            });
-        }
-      } else if (data.identifier === 'MUTE') {
-        var now = new Date().getTime(),
-            _1_min_from_now = new Date(now + 60 * 1000);
-        var notifyPlugin = $window.cordova.plugins.BEMShakeNotification;
-        notifyPlugin.disableEventListener(notifyPlugin.POTENTIAL_INCIDENT, notification).then(function() {
-            if ($ionicPlatform.is('ios')) {
-                $window.cordova.plugins.notification.local.schedule([{
-                    id: REPORT,
-                    title: "Notifications for POTENTIAL_INCIDENT incident report muted",
-                    text: "Can be re-enabled from the Profile -> Developer Zone screen. Select to re-enable now, clear to ignore",
-                    at: _1_min_from_now,
-                    data: {redirectTo: "root.main.control"}
-                }]);
-            } else if ($ionicPlatform.is('android')) {
-                $ionicPopup.show({
-                    title: "Muted",
-                    template: "Notifications for POTENTIAL_INCIDENT incident report muted",
-                    buttons: [{
-                      text: 'Unmute',
-                      type: 'button-positive',
-                      onTap: function(e) {
-                        return true;
-                      }
-                    }, {
-                      text: 'Keep muted',
-                      type: 'button-positive',
-                      onTap: function(e) {
-                        return false;
-                      }
-                    }]
-                }).then(function(res) {
-                    if(res == true) {
-                        notifyPlugin.enableEventListener(notifyPlugin.POTENTIAL_INCIDENT, notification);
-                    } else {
-                        Logger.log("User chose to keep the transition muted");
-                    }
-                });
-            }
-        }).catch(function(error) {
-            $ionicPopup.alert({
-                title: "Error while muting notifications for trip end. Try again later.",
-                template: JSON.stringify(error)
-            });
-        });
+
+      Logger.log("notification = "+JSON.stringify(notification));
+
+      if (data.identifier == 'POSITIVE_INCIDENT') {
+          Logger.log("Positive incident detected");
+
+          var value = {
+            latitude: notification.inc_latitude,
+            longitude: notification.inc_longitude,
+            altitude: notification.inc_altitude,
+            bearing: notification.inc_bearing,
+            xAccel: notification.inc_xAccel,
+            yAccel: notification.inc_yAccel,
+            zAccel: notification.inc_zAccel,
+            combAccel: notification.inc_combAccel,
+            accuracy: notification.inc_accuracy,
+            speed: notification.inc_speed,
+            ts: notification.inc_ts,
+            incidentType: "POSITIVE_INCIDENT"
+          }
+
+          $window.cordova.plugins.BEMUserCache.putMessage(SHAKE_INCIDENT, value)
+
+
+      } else if (data.identifier == 'NEGATIVE_INCIDENT') {
+          Logger.log("Negative incident detected");  
+           var value = {
+             latitude: notification.inc_latitude,
+             longitude: notification.inc_longitude,
+             altitude: notification.inc_altitude,
+             bearing: notification.inc_bearing,
+             xAccel: notification.inc_xAccel,
+             yAccel: notification.inc_yAccel,
+             zAccel: notification.inc_zAccel,
+             combAccel: notification.inc_combAccel,
+             accuracy: notification.inc_accuracy,
+             speed: notification.inc_speed,
+             ts: notification.inc_ts,
+             incidentType: "NEGATIVE_INCIDENT"
+           }
+
+           $window.cordova.plugins.BEMUserCache.putMessage(SHAKE_INCIDENT, value)
+      } else if (data.identifier == 'FALSE_POSITIVE') {
+          Logger.log("false positive detected");
+           var value = {
+             latitude: notification.inc_latitude,
+             longitude: notification.inc_longitude,
+             altitude: notification.inc_altitude,
+             bearing: notification.inc_bearing,
+             xAccel: notification.inc_xAccel,
+             yAccel: notification.inc_yAccel,
+             zAccel: notification.inc_zAccel,
+             combAccel: notification.inc_combAccel,
+             accuracy: notification.inc_accuracy,
+             speed: notification.inc_speed,
+             ts: notification.inc_ts,
+             incidentType: "FALSE_POSITIVE"
+           }
+
+           $window.cordova.plugins.BEMUserCache.putMessage(SHAKE_INCIDENT, value)
       }
     });
     $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
@@ -236,8 +224,7 @@ piap
         cleanDataIfNecessary(notification, state, data);
         promptReport(notification, state, data).then(function(res) {
           if (res == true) {
-            Logger.log("About to go to incident map page");
-            displayCompletedTrip(notification, state, data);
+            Logger.log("About to go to incident map page? deleted map call");
           } else {
             Logger.log("Skipped incident reporting");
           }
@@ -250,7 +237,6 @@ piap
           return;
       }
       cleanDataIfNecessary(notification, state, data);
-      displayCompletedTrip(notification, state, data);
     });
   }
 
