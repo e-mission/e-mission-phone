@@ -7,9 +7,17 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, $ionicNavBarDelegate) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
+
+  var showBackButton = function() {
+    $ionicNavBarDelegate.showBackButton(true);
+  };
+
+  $scope.$on('$ionicView.enter', function() {
+      showBackButton();
+  });
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {

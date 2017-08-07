@@ -49,7 +49,7 @@
 
                 <div class="row">
                     <div ng-class="listColLeftClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])">
-                        <p ng-class="listTextClass()" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;">{{getFormattedDistance(tripgj.data.properties.distance)}} km in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
+                        <p ng-class="listTextClass()" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;">{{getFormattedDistance(tripgj.data.properties.distance)}} mi in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
                            tripgj.data.properties.end_ts)}}</p>
 
                         <a style="font-size: 0.6em; line-height: 0.6em; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"><i class="{{ getArrowClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0]) }}" style="font-size: 1em; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"></i>{{ getLongerOrShorter(tripgj.data, tripgj.data.id)[1] }}</a>

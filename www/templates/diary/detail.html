@@ -33,7 +33,7 @@
         <div style="height: 15px;"></div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
-          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} km</div>
+          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} mi</div>
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Time</p>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
           <div id="sectionPct" class="col">
             <i class="{{mode}}" ng-repeat="mode in getPercentages(trip)[0]" style="margin-left: 15px; margin-right: 15px; font-size: 15px;"></i>
@@ -51,7 +51,7 @@
                   </div>
 
 
-                  <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} km</div>
+                  <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} mi</div>
                   <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
 
               </div>
