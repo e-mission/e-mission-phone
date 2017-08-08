@@ -2,12 +2,8 @@
 
 angular.module('emission.main.cci-about', ['emission.plugin.logger'])
 
-.controller('CCIAboutCtrl', function($scope, $state, $cordovaEmailComposer, $ionicPopup, $ionicNavBarDelegate) {
+.controller('CCIAboutCtrl', function($scope, $state, $cordovaEmailComposer, $ionicPopup) {
 
-  $scope.hideBackButton = function() {
-    $ionicNavBarDelegate.showBackButton(false);
-  };
-  
 	$scope.emailCCI = function() {
         var email = {
             to: ['cci@berkeley.edu'],
