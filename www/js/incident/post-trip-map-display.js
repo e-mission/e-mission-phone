@@ -125,12 +125,6 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
             $scope.mapCtrl.geojson.data = $scope.mapCtrl.cache.data;
           });
 
-          leafletData.getMap('incident').then(function(map) {
-            Logger.log("registered click receiver");
-            map.on('click', PostTripManualMarker.startAddingIncidentToPoints(map,
-                $scope.mapCtrl.cache.points,
-                $scope.mapCtrl.cache.features));
-          });
         }
         $ionicLoading.hide();
     })
@@ -304,6 +298,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
    {text:'Home', value:'home'},
    {text:'Work',value:'work'},
    {text:'School',value:'school'},
+   {text:'Transit transfer', value:'transit_transfer'},
    {text:'Shopping',value:'shopping'},
    {text:'Meal',value:'meal'},
    {text:'Pick-up/Drop off',value:'pick_drop'},
