@@ -186,7 +186,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             return 'root.main.goals';
           } else if ($rootScope.displayingIncident == true) {
             $rootScope.displayingIncident = false;
-            return 'root.main.diary';
+            return 'root.main.incident';
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             $rootScope.redirectTo = undefined;
