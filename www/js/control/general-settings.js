@@ -47,6 +47,7 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.emailLog = ControlHelper.emailLog;
+    $scope.exportUserCacheDB = ControlHelper.exportUserCacheDB;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
@@ -78,7 +79,7 @@ angular.module('emission.main.control',['emission.services',
             // config not loaded when loading ui, set default as false
             // TODO: Read the value if it is not defined.
             // Otherwise, don't we have a race with reading?
-            // we don't really $apply on this field... 
+            // we don't really $apply on this field...
             return false;
         } else {
             return isMediumAccuracy;

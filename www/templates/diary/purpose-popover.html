@@ -1,0 +1,10 @@
+<ion-popover-view>
+  <ion-header-bar>
+    <h2 class = "title">Why did you come here?</h2>
+  </ion-header-bar>
+  <ion-content>
+    <ion-list ng-repeat="purpose in purposeOptions">
+      <ion-radio ng-click="choosePurpose()" ng-value="purpose.value" ng-model="chosen.purpose">{{purpose.text}}</ion-radio>
+    </ion-list>
+  </ion-content>
+</ion-popover-view>
