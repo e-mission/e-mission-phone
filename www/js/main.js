@@ -98,7 +98,7 @@ angular.module('emission.main', ['emission.main.recent',
         end_ts: null
       },
       views: {
-        'main-control': {
+        'main-diary': {
           templateUrl: "templates/incident/map.html",
           controller: 'PostTripMapCtrl'
         }

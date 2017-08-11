@@ -29,44 +29,36 @@
     </div>
     <!-- Slide Box -->
     <div style="height: 10px;"></div>
-    <ion-slide-box show-pager="false" ng-init="disableSwipe()"
-                   style="width: 100%;margin: auto;background: transparent !important;">
-      <ion-slide id="surveyQ" ng-repeat="question in surveyQuestions">
+    <ion-slide-box id="surveyQ" show-pager="false" ng-init="disableSwipe()"
+                   style="background: transparent !important;">
+      <ion-slide ng-repeat="question in surveyQuestions">
         <div
           style="margin-top: 5px; margin-left: auto; margin-right:auto; font-size: 1.25em;color: #303030; opacity: 0.7;">
           {{question.title}}
         </div>
         <div style="height: 100%; padding-top: 5px;">
-          <ion-scroll style="height: 40%;" id=mode_list>
             <ion-list ng-repeat="option in question.options">
               <ion-radio ng-model="question.response" ng-value="option.value"
-                         style="color: #585858 !important ;">{{option.text}}
+                         style="text-align: center; color: #585858 !important ;">
+                {{option.text}}
               </ion-radio>
             </ion-list>
-          </ion-scroll>
+          <!-- Button -->
+          <div style="height: 10px;"></div>
+          <button
+            style="width: 100%;color: #585858;border: 2px;"
+            class="button"
+            ng-if="curSlide < surveyQuestions.length - 1" ng-click="nextSlide(question.response)">
+            Continue
+          </button>
+          <button
+            style="width: 100%;color: #585858;border: 2px;"
+            class="button"
+            ng-if="curSlide >= surveyQuestions.length - 1" ng-click="doneSlide(question.response)">
+            Done
+          </button>
         </div>
       </ion-slide>
     </ion-slide-box>
-    <!-- Button -->
-    <div
-      style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;"
-      ng-if="curSlide < surveyQuestions.length - 1">
-      <button style="width: 100%;color: #585858;border: 0px;" class="button"
-              ng-click="nextSlide()">Continue
-      </button>
-    </div>
-    <div
-      style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;"
-      ng-if="curSlide >= surveyQuestions.length - 1">
-      <button style="width: 100%;color: #585858;border: 0px;" class="button"
-              ng-click="doneSlide()">Done
-      </button>
-    </div>
-    <!--div style="" class="button-bar">
-        <button class="button button-stable button-block icon ion-refresh"
-            ng-click="refreshWholeMap()">Refresh</button>
-        <button class="button button-stable button-block"
-            ng-click="refreshTiles()">Fix Map</button>
-    </div-->
   </ion-content>
 </ion-view>

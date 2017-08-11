@@ -197,7 +197,7 @@ angular.module('emission.incident.posttrip.map', [
     };
 
     $scope.closeView = function () {
-      $state.go('root.main.control');
+      $state.go('root.main.diary');
     };
 
     $scope.$on('$ionicView.afterEnter', function (ev) {
@@ -209,14 +209,30 @@ angular.module('emission.incident.posttrip.map', [
     });
     /* END: ng-walkthrough code */
 
+    var noSelectPopup = function () {
+      var noSelectedPopup = $ionicPopup.alert({
+        title: 'Selection Required',
+        template: 'Please select an option to proceed.'
+      });
+
+      return noSelectedPopup;
+    }
+
     $scope.curSlide = 0;
-    $scope.nextSlide = function () {
+    $scope.nextSlide = function (response) {
+      if (response == null) {
+        return noSelectPopup();
+      }
+
       $scope.curSlide += 1;
       $ionicSlideBoxDelegate.next();
     };
 
-    $scope.doneSlide = function () {
-      // Custom popup
+    $scope.doneSlide = function (response) {
+      if (response == null) {
+        return noSelectPopup();
+      }
+
       var myPopup = $ionicPopup.alert({
         template: angular.toJson($scope.surveyQuestions, null, 4),
         title: 'Response',
@@ -255,6 +271,7 @@ angular.module('emission.incident.posttrip.map', [
       {
         title: 'If yes, how difficult was your trip?',
         options: [
+          {text: 'Not Applicable', value: 0},
           {text: 'Easy', value: 1},
           {text: 'Medium', value: 2},
           {text: 'Difficult', value: 3},
@@ -291,6 +308,7 @@ angular.module('emission.incident.posttrip.map', [
       {
         title: 'If no, would you like to add them?',
         options: [
+          {text: 'Not Applicable', value: 2},
           {text: 'Yes', value: 1},
           {text: 'No', value: 0},
         ],
