@@ -198,8 +198,9 @@
   };
 
   var getLocalIncidents = function() {
-    db.getAllMessages(MANUAL_INCIDENT).then(function(incidents) {
-      Logger.log("Incidents stored locally", incidents);
+    // No metadata, to make it consistent with the server incidents
+    db.getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
+      Logger.log("Incidents stored locally" + JSON.stringify(incidents));
       addIncidents(incidents, _map);
     });
   };
@@ -207,7 +208,7 @@
   var getServerIncidents = function() {
       Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
       $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", incidentServerCalldata).then(function(res){
-      Logger.log("Result is "+JSON.stringify(res));
+      Logger.log("Server incidents result is "+JSON.stringify(res));
       if(res.data.incidents.length > 0) {
         addIncidents(res.data.incidents, _map);
       }
