@@ -108,7 +108,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
             $scope.$apply(function() {
-                $scope.settings.connect.url = response.connectURL;
+                $scope.settings.connect.url = response.connectUrl;
                 console.log(response);
             });
         }, function(error) {

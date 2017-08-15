@@ -6,7 +6,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
-                successCallback(settings.connectURL);
+                successCallback(settings.connectUrl);
             }, errorCallback);
     };
 
