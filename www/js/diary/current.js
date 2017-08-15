@@ -104,7 +104,7 @@
   });
 
   var refreshTrip = function() {
-    db.getAllSensorData(BACKGROUND_LOCATION).then(function(result) {
+    db.getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
       $scope.$apply(function() {
         Logger.log("current location data" + JSON.stringify(result[0].data));
         var coordinates = result.map(function(locWrapper, index, locList) {
@@ -164,6 +164,9 @@
           },
         });  
       });
+    }).catch(function(error) {
+        Logger.log("While loading location data, error "+JSON.stringify(error));
+        $ionicPopup.alert({"template": "While loading location data, error = "+ JSON.stringify(error)})
     });
     console.log($scope.mapCtrl);
   };
@@ -222,7 +225,7 @@
 
   var marker;
   $scope.showIncidentSheet = function() {
-    db.getAllSensorData(BACKGROUND_LOCATION).then(function(result) {
+    db.getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
             both = [result[0].data.latitude, result[0].data.longitude];
             var ts = result[0].data.ts;
             var latlng = L.latLng(both);
