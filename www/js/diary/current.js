@@ -52,7 +52,7 @@
   };
 
   var incident_value = storage.get(INCIDENT_CONFIG);
-  if(incident_value !== null) {
+  if(incident_value != null) {
     $scope.verticalSlider.value = incident_value;
   } else {
     $scope.verticalSlider.value = 1;
@@ -201,7 +201,9 @@
     // No metadata, to make it consistent with the server incidents
     db.getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
       Logger.log("Incidents stored locally" + JSON.stringify(incidents));
-      addIncidents(incidents, _map);
+      if(incidents.length > 0) {
+        addIncidents(incidents, _map);
+      }
     });
   };
 

@@ -77,6 +77,15 @@ Finally, make sure to install the other node modules required for the setup scri
 npm install
 ```
 
+Copy the sample json config files and fill in real values if you have them.
+
+```
+ls www/json/*.sample
+cp www/json/setupConfig.json.sample www/json/setupConfig.json
+cp www/json/connectionConfig.json.sample www/json/connectionConfig.json
+...
+```
+
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ ionic emulate ios --target="iPhone-6"

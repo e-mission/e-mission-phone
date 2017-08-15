@@ -8,15 +8,16 @@
 'use strict';
 
 angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
-    'emission.controllers','emission.services',
+    'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.intro', 'emission.main'])
 
-.run(function($ionicPlatform, $rootScope) {
+.run(function($ionicPlatform, $rootScope, $http, Logger) {
   console.log("Starting run");
   // alert("Starting run");
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
+    Logger.log("ionicPlatform is ready");
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
@@ -26,6 +27,13 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+    Logger.log("about to get connection config");
+    $http.get("json/connectionConfig.json").then(function(connectionConfigString) {
+        Logger.log("connectionConfigString = "+connectionConfigString);
+        // window.cordova.plugins.BEMConnectionSettings.setConfig(connectionConfigString);
+    });
+    // Configure the connection settings
   });
   console.log("Ending run");
 })
