@@ -103,6 +103,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
        };
     };
 
+    this.moment2Timestamp = function(momentObj) {
+      return momentObj.unix();
+    }
+
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
