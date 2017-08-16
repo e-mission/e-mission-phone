@@ -63,12 +63,12 @@
 
   $scope.$watch('verticalSlider.value', function(newVal, oldVal){
     storage.set(INCIDENT_CONFIG, newVal);
-    incidentServerCalldata.from_local_date = CommHelper.moment2Localdate(moment().subtract(newVal, 'd'));
+    incidentServerCalldata.start_time = CommHelper.moment2Timestamp(moment().subtract(newVal, 'd'));
   }, true);
 
   var incidentServerCalldata = {
-      from_local_date: CommHelper.moment2Localdate(fromIncidentDate),
-      to_local_date: CommHelper.moment2Localdate(moment()),
+      start_time: CommHelper.moment2Timestamp(fromIncidentDate),
+      end_time: CommHelper.moment2Timestamp(moment()),
       sel_region: null
   };
 
@@ -212,7 +212,7 @@
 
   var getServerIncidents = function() {
       Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
-      $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", incidentServerCalldata).then(function(res){
+      $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/timestamp", incidentServerCalldata).then(function(res){
       Logger.log("Server incidents result is "+JSON.stringify(res));
       if(res.data.incidents.length > 0) {
         addIncidents(res.data.incidents, _map);
