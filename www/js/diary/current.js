@@ -12,6 +12,8 @@
     
   Logger.log("controller CurrMapCtrl called from current.js");
   var _map;
+  var _localIncidentMarkers = [];
+  var _serverIncidentMarkers = [];
   var db = window.cordova.plugins.BEMUserCache;
   MANUAL_INCIDENT = "manual/incident";
   BACKGROUND_LOCATION = "background/location";
@@ -185,7 +187,7 @@
     map.addLayer(marker);
   };
 
-  var addIncidents = function(incidents, _map) {
+  var addIncidents = function(incidents, map, markerList) {
     incidents.forEach(function(incident) {
         Logger.log("Processing incident "+JSON.stringify(incident));
         if (angular.isDefined(incident) && angular.isDefined(incident.loc)) {
@@ -195,9 +197,21 @@
             };
             Logger.log("Displaying incident report at "+JSON.stringify(latlng)+" on map");
             var marker = L.circleMarker(latlng);
-            addIncidentLayer(incident.stress, marker, _map);
+            markerList.push(marker);
+            addIncidentLayer(incident.stress, marker, map);
         }
       });  
+  };
+
+  var removeExistingIncidentMarkers = function(map, markerList) {
+    markerList.forEach(function(marker) {
+        map.removeLayer(marker);
+        var remainingLayers = [];
+        map.eachLayer(function(layer) {
+            remainingLayers.push(layer);
+        });
+        Logger.log("After removing marker "+JSON.stringify(marker)+" new list size = "+remainingLayers.length);
+    });
   };
 
   var getLocalIncidents = function() {
@@ -205,7 +219,7 @@
     db.getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
       Logger.log("Incidents stored locally" + JSON.stringify(incidents));
       if(incidents.length > 0) {
-        addIncidents(incidents, _map);
+        addIncidents(incidents, _map, _localIncidentMarkers);
       }
     });
   };
@@ -213,13 +227,16 @@
   var getServerIncidents = function() {
       Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
       $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/timestamp", incidentServerCalldata).then(function(res){
-      Logger.log("Server incidents result is "+JSON.stringify(res));
-      if(res.data.incidents.length > 0) {
-        addIncidents(res.data.incidents, _map);
-      }
-    }, function(error){
-      Logger.log("Error when getting incidents");
-      Logger.log(error);
+          Logger.log("Server incidents result is "+JSON.stringify(res));
+          // Need to remove existing markers before adding new ones
+          // https://github.com/e-mission/e-mission-phone/pull/263#issuecomment-322669042
+          removeExistingIncidentMarkers(_map, _serverIncidentMarkers);
+          if(res.data.incidents.length > 0) {
+            addIncidents(res.data.incidents, _map, _serverIncidentMarkers);
+          }
+      }, function(error){
+          Logger.log("Error when getting incidents");
+          Logger.log(error);
     });
   };
 
