@@ -121,7 +121,8 @@
             var last_both = [result[1].data.longitude, result[1].data.latitude];
             var curr_ts = result[0].data.ts;
             var last_ts = result[1].data.ts;
-            if(angular.isDefined(result[0].data.sensed_speed)) {
+            var last_sensed_speed = result[0].data.sensed_speed;
+            if(angular.isDefined(last_sensed_speed) && last_sensed_speed != 0) {
               $scope.currSpeedInKmh = Math.round(result[0].data.sensed_speed * 3.6);
             } else {
               if(curr_ts !== last_ts){
@@ -231,6 +232,7 @@
           // Need to remove existing markers before adding new ones
           // https://github.com/e-mission/e-mission-phone/pull/263#issuecomment-322669042
           removeExistingIncidentMarkers(_map, _serverIncidentMarkers);
+          _serverIncidentMarkers = [];
           if(res.data.incidents.length > 0) {
             addIncidents(res.data.incidents, _map, _serverIncidentMarkers);
           }
