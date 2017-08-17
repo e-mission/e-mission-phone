@@ -6,7 +6,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
-                successCallback(settings.connectURL);
+                successCallback(settings.connectUrl);
             }, errorCallback);
     };
 
@@ -102,6 +102,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
          day: momentObj.date(),
        };
     };
+
+    this.moment2Timestamp = function(momentObj) {
+      return momentObj.unix();
+    }
 
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {

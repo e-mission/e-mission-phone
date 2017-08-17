@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -20,7 +20,19 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var COUNT = "count";
     var DISTANCE = "distance";
 
-    // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
+    $scope.onCurrentTrip = function() {
+      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+        Logger.log("Current trip state" + JSON.stringify(result));
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+          $state.go("root.main.current");
+        }
+      });
+    };
+
+    $scope.onCurrentTrip();
+
+  // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)

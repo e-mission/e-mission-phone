@@ -6,7 +6,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
                                       'emission.survey.launch', 
-                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage',
+                                      'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
@@ -14,7 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, SurveyLaunch, PostTripManualMarker, nzTour, storage, $ionicPopover) {
+                                    Config, SurveyLaunch, PostTripManualMarker, nzTour, storage, Logger, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -380,7 +381,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.showModes = DiaryHelper.showModes;
-
+  
+    var in_trip;
+    $scope.checkTripState = function() {
+      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+        Logger.log("Current trip state" + JSON.stringify(result));
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+          in_trip = true;
+        } else {
+          in_trip = false;
+        }
+        
    $scope.openSurvey= function($event, trip_gj) {
       SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
        "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
