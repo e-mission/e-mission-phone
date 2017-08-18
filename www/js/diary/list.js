@@ -392,6 +392,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         } else {
           in_trip = false;
         }
+      });
+   };
         
    $scope.openSurvey= function($event, trip_gj) {
       SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
@@ -524,5 +526,4 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    {text:'Entertainment/Social',value:'entertainment'},
    {text:'Religious', value:'religious'},
    {text:'Other',value:'other_purpose'}];
-
 });
