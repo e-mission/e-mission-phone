@@ -32,7 +32,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.onCurrentTrip();
 
-  // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
+    // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
