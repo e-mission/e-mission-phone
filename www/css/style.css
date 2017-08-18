@@ -1001,7 +1001,7 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 9px;
         position: absolute;
         left: 1%;
-        bottom:15px;
+        top: 275px;
         line-height: 16px;
 }
 .stop-time-tag-lower {
@@ -1347,38 +1347,6 @@ span.rz-bar-wrapper {
   display: block;
   bottom: 40px;
   left: 20%;
-}
-
-.cci-contact-button{
-  border-radius: 25px;
-  border: none;
-  color: #fff;
-  font-size: 15px;
-  width: 180px;
-  display: block;
-  margin-bottom: 10px;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top: 5px;
-  min-height: 0px;
-  height: 40px;
-  line-height: 40px;
-}
-
-.cci-contact-button:hover{
-  color: #fff;
-}
-
-#email-cci{
-  background-color: #341B44;
-}
-
-#call-cci{
-  background-color: #fff;
-  color: black;
-  width: 150px;
-  margin-bottom: 0;
-  margin-top: 0;
 }
 
 .report-button:active{
@@ -1904,13 +1872,6 @@ span.rz-bar-wrapper {
   margin-right: auto;
   margin-bottom: 10px;
 }
-#channel-field{
-  margin-right: 1.5px;
-  margin-top: auto;
-}
-#channel-field-padding{
-  padding-top: 1.5px;
-}
 .item.item-input.item-select {
   border-width: 1px !important;
 }
@@ -1928,18 +1889,4 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
-}
-
-.popover {
-  height: 297px;
-  width: 230px;
-}
-
-#diary-card{
-  height: 335px;
-}
-
-#diary-item {
-  padding: 0;
-  border-width: 0;
 }
