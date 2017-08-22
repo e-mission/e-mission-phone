@@ -77,18 +77,42 @@ Finally, make sure to install the other node modules required for the setup scri
 npm install
 ```
 
-Copy the sample json config files and fill in real values if you have them.
+Configure values if necessary - e.g.
 
 ```
 ls www/json/*.sample
 cp www/json/setupConfig.json.sample www/json/setupConfig.json
-cp www/json/connectionConfig.json.sample www/json/connectionConfig.json
-...
+cp ..... www/json/connectionConfig.json
 ```
 
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ ionic emulate ios --target="iPhone-6"
+
+End to end testing
+---
+A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
+
+1. installing a local server,
+2. running it, 
+3. loading it with test data, and
+4. running analysis on it
+
+are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
+
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
+
+By default, the phone app connects to the local server (localhost on iOS,
+[10.0.2.2 on
+android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips))
+by default. To connect to a different server, or to use a different
+authentication method, you need to create a `www/json/connectionConfig.json`
+file. You can find sample files for connecting physical devices to the local
+server (`www/json/connectionConfig.physical_device2localhost.json.sample`), and
+to production (www/json/connectionConfig.production.json.sample).
+
+So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+
 
 JS Testing
 ---
@@ -156,21 +180,6 @@ $ pwd
 $ python bin/csv_export_add_date.py /tmp/loggerDB.<issue>
 $ less /tmp/loggerDB.<issue>.withdate.log
 ```
-
-End to end testing
----
-A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
-
-1. installing a local server,
-2. running it, 
-3. loading it with test data, and
-4. running analysis on it
-
-are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
-
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
-
-So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
 Contributing
 ---

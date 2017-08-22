@@ -1,10 +1,15 @@
 {
-    "connectUrl": "http://localhost:8080",
-    "isSkipAuth": true,
+    "connectUrl": "https://<your-production-host>:8080",
     "android": {
-        "googleWebAppClientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+        "auth": {
+            "method": "google-authutil",
+            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+        }
     },
     "ios": {
-        "googleClientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+        "auth": {
+            "method": "google-signin-lib",
+            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+        }
     }
 }
