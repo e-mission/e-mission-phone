@@ -29,9 +29,9 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
     }
 
     Logger.log("about to get connection config");
-    $http.get("json/connectionConfig.json").then(function(connectionConfigString) {
-        Logger.log("connectionConfigString = "+connectionConfigString);
-        // window.cordova.plugins.BEMConnectionSettings.setConfig(connectionConfigString);
+    $http.get("json/connectionConfig.json").then(function(connectionConfig) {
+        Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
+        window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     });
     // Configure the connection settings
   });
