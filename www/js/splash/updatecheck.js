@@ -114,21 +114,21 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
             }]
           }).then(function(res){
             if(res) {
-              Logger.log(LEVEL_INFO, 'Ionic Deploy: User accepted deploy update');
+              Logger.log('Ionic Deploy: User accepted deploy update');
               applyUpdate();
             } else {
-              Logger.log(Logger.LEVEL_INFO, 'User skipped deploy update');
+              Logger.log('User skipped deploy update');
             }
           });
         }, function(err) {
-          Logger.log(Logger.LEVEL_DEBUG, 'Ionic Deploy: Unable to read metadata: '+err);
+          Logger.log('Ionic Deploy: Unable to read metadata: '+err);
         }, function() {});
       } else {
         // TODO: Figure out a better way to do this using promises
         // $ionicPopup.alert({title: "Up to date!"});
       }
     }, function(err) {
-      Logger.log(Logger.LEVEL_ERROR, 'Ionic Deploy: Unable to check for updates'+err);
+      Logger.log('Ionic Deploy: Unable to check for updates'+err);
       console.error('Ionic Deploy: Unable to check for updates',err)
     });
   }
