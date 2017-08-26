@@ -9,11 +9,30 @@
 
 angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
     'emission.controllers','emission.services', 'emission.plugin.logger',
+    'emission.splash.customURLScheme', 'emission.splash.referral',
+    'emission.splash.updatecheck',
     'emission.intro', 'emission.main'])
 
-.run(function($ionicPlatform, $rootScope, $http, Logger) {
+.run(function($ionicPlatform, $rootScope, $http, Logger,
+    CustomURLScheme, ReferralHandler, UpdateCheck) {
   console.log("Starting run");
   // alert("Starting run");
+  // BEGIN: Global listeners, no need to wait for the platform
+  // TODO: Although the onLaunch call doesn't need to wait for the platform the
+  // handlers do. Can we rely on the fact that the event is generated from
+  // native code, so will only be launched after the platform is ready?
+  CustomURLScheme.onLaunch(function(event, url, urlComponents){
+    console.log("GOT URL:"+url);
+    // alert("GOT URL:"+url);
+
+    if (urlComponents.route == 'join') {
+      ReferralHandler.setupGroupReferral(urlComponents);
+      StartPrefs.loadWithPrefs();
+    } else if (urlComponents.route == 'change_client') {
+      UpdateCheck.handleClientChangeURL(urlComponents);
+    }
+  });
+  // END: Global listeners
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -28,12 +47,20 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
       StatusBar.styleDefault();
     }
 
-    Logger.log("about to get connection config");
-    $http.get("json/connectionConfig.json").then(function(connectionConfigString) {
-        Logger.log("connectionConfigString = "+connectionConfigString);
-        // window.cordova.plugins.BEMConnectionSettings.setConfig(connectionConfigString);
-    });
     // Configure the connection settings
+    Logger.log("about to get connection config");
+    $http.get("json/connectionConfig.json").then(function(connectionConfig) {
+        Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
+        window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
+    }).catch(function(err) {
+        Logger.log("error "+err+" while reading connection config, reverting to defaults");
+        window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
+            Logger.log("defaultConfig = "+defaultConfig);
+            window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
+        }).catch(function(err) {
+            Logger.log("error "+err+" reading or setting defaults, giving up");
+        });
+    });
   });
   console.log("Ending run");
 })

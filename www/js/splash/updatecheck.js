@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
+angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
+                                               'angularLocalStorage'])
 
-.factory('UpdateCheck', function($ionicPopup, $rootScope, storage) {
+.factory('UpdateCheck', function($ionicPopup, $rootScope, Logger, storage) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
@@ -16,6 +17,20 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
 
   uc.setChannel = function(channelName) {
     storage.set(CHANNEL_KEY, channelName);
+  };
+
+  uc.handleClientChangeURL = function(urlComponents) {
+    Logger.log("handleClientChangeURL = "+JSON.stringify(urlComponents));
+    if (urlComponents['clear_local_storage'] == "true") {
+        Logger.log("About to clear all local storage");
+        storage.clearAll();
+    }
+    if (urlComponents['clear_usercache'] == "true") {
+        Logger.log("About to clear usercache");
+        window.cordova.plugins.BEMUserCache.clearAll();
+    }
+    uc.setChannel(urlComponents['new_client']);
+    uc.checkForUpdates();
   };
 
   // Default to dev
@@ -42,16 +57,14 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
       return;
     }
     deploy.update().then(function(res) {
-      window.Logger.log(window.Logger.LEVEL_INFO,
-       'Ionic Deploy: Update Success! ', res);
+      Logger.log('Ionic Deploy: Update Success! ' + res);
       var reloadAlert = $ionicPopup.alert("Update done, reloading...");
       reloadAlert.then(function(res) {
         deploy.load();
       });
     }, function(err) {
        console.log('Ionic Deploy: Update error! ', err);
-       window.Logger.log(window.Logger.LEVEL_ERROR,
-         'Ionic Deploy: Update error! '+ res);
+       Logger.log('Ionic Deploy: Update error! '+ err);
        $rootScope.isDownloading = false;
        $ionicPopup.alert({template: 'Error during update'});
     }, function(prog) {
@@ -72,9 +85,9 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
     console.log('Ionic Deploy: Checking for updates');
     deploy.setChannel(getChannelToUse());
     deploy.check().then(function(hasUpdate) {
-      window.Logger.log(window.Logger.LEVEL_DEBUG, 'Ionic Deploy: Update available: ' + hasUpdate);
+      Logger.log('Ionic Deploy: Update available: ' + hasUpdate);
       if (hasUpdate) {
-        window.Logger.log(window.Logger.LEVEL_INFO, 'Ionic Deploy: found update, asking user: ');
+        Logger.log('Ionic Deploy: found update, asking user: ');
 
         $rootScope.rn_list = [];
         deploy.getMetadata().then(function(metadata) {
@@ -101,23 +114,21 @@ angular.module('emission.splash.updatecheck', ['angularLocalStorage'])
             }]
           }).then(function(res){
             if(res) {
-              window.Logger.log(window.Logger.LEVEL_INFO,
-                             'Ionic Deploy: User accepted deploy update');
+              Logger.log('Ionic Deploy: User accepted deploy update');
               applyUpdate();
             } else {
-              window.Logger.log(window.Logger.LEVEL_INFO,
-                'User skipped deploy update');
+              Logger.log('User skipped deploy update');
             }
           });
         }, function(err) {
-          window.Logger.log(window.Logger.LEVEL_DEBUG, 'Ionic Deploy: Unable to read metadata: '+err);
+          Logger.log('Ionic Deploy: Unable to read metadata: '+err);
         }, function() {});
       } else {
         // TODO: Figure out a better way to do this using promises
         // $ionicPopup.alert({title: "Up to date!"});
       }
     }, function(err) {
-      window.Logger.log(window.Logger.LEVEL_ERROR, 'Ionic Deploy: Unable to check for updates'+err);
+      Logger.log('Ionic Deploy: Unable to check for updates'+err);
       console.error('Ionic Deploy: Unable to check for updates',err)
     });
   }
