@@ -29,7 +29,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         Logger.log("About to clear usercache");
         window.cordova.plugins.BEMUserCache.clearAll();
     }
-    uc.setChannel(urlComponents['channel']);
+    uc.setChannel(urlComponents['new_client']);
     uc.checkForUpdates();
   };
 
