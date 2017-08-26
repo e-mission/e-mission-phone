@@ -47,11 +47,21 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
       StatusBar.styleDefault();
     }
 
+    /*
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
+    }).catch(function(err) {
+        Logger.log("error "+err+" while reading connection config, reverting to defaults");
+        window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
+            Logger.log("defaultConfig = "+defaultConfig);
+            window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
+        }).catch(function(err) {
+            Logger.log("error "+err+" reading or setting defaults, giving up");
+        });
     });
+    */
     // Configure the connection settings
   });
   console.log("Ending run");
