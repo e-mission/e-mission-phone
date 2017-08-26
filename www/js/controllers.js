@@ -2,35 +2,22 @@
 
 angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.startprefs',
-                                        'emission.splash.referral',
                                         'emission.splash.pushnotify',
                                         'emission.splash.localnotify',
                                         'emission.survey.launch',
                                         'emission.stats.clientstats',
-                                        'emission.incident.posttrip.prompt',
-                                        'emission.splash.customURLScheme'])
+                                        'emission.incident.posttrip.prompt'])
 
 .controller('RootCtrl', function($scope) {})
 
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
-    CustomURLScheme, UpdateCheck, StartPrefs, ReferralHandler, PushNotify,
+    UpdateCheck, StartPrefs, PushNotify,
     LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
-  CustomURLScheme.onLaunch(function(event, url, urlComponents){
-    console.log("GOT URL:"+url);
-
-    // There are 3 types of users in total
-    if (urlComponents.route == 'join') {
-      ReferralHandler.setupGroupReferral(urlComponents);
-    } else if (urlComponents.route == 'change_client') {
-      UpdateCheck.handleClientChangeURL(urlComponents);
-    }
-    StartPrefs.loadWithPrefs();
-  });
   UpdateCheck.checkForUpdates();
 
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
