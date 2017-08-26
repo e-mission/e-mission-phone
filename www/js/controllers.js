@@ -8,7 +8,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.survey.launch',
                                         'emission.stats.clientstats',
                                         'emission.incident.posttrip.prompt',
-                                        'customURLScheme'])
+                                        'emission.splash.customURLScheme'])
 
 .controller('RootCtrl', function($scope) {})
 
@@ -20,14 +20,15 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
-  CustomURLScheme.onLaunch(function(event, url){
+  CustomURLScheme.onLaunch(function(event, url, urlComponents){
     console.log("GOT URL:"+url);
 
-    var kvList = ReferralHandler.parseURL(url);
     // There are 3 types of users in total
-    if (kvList.route == 'join') {
-      ReferralHandler.setupGroupReferral(kvList);
-    } // can add other routes here if needed
+    if (urlComponents.route == 'join') {
+      ReferralHandler.setupGroupReferral(urlComponents);
+    } else if (urlComponents.route == 'change_client') {
+      UpdateCheck.handleClientChangeURL(urlComponents);
+    }
     StartPrefs.loadWithPrefs();
   });
   UpdateCheck.checkForUpdates();
