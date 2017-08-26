@@ -47,7 +47,7 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
       StatusBar.styleDefault();
     }
 
-    /*
+    // Configure the connection settings
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
@@ -61,8 +61,6 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
             Logger.log("error "+err+" reading or setting defaults, giving up");
         });
     });
-    */
-    // Configure the connection settings
   });
   console.log("Ending run");
 })
