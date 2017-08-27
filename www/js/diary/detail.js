@@ -169,4 +169,5 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     checkDetailTutorialDone();
   });
   /* END: ng-walkthrough code */
-})
+
+});

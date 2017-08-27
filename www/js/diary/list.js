@@ -14,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger) {
+                                    Config, PostTripManualMarker, nzTour, storage, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -366,9 +366,116 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         readAndUpdateForDay(nextDay);
     };
 
-    $scope.toDetail = function() {
-      $state.go('root.main.detail');
+    $scope.toDetail = function(param) {
+      $state.go('root.main.diary-detail', {tripId: param});
     };
+
+    $scope.showModes = DiaryHelper.showModes;
+
+   $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.modePopover = popover;
+   });
+
+   $scope.openModePopover = function($event) {
+      $scope.modePopover.show($event);
+   };
+
+   var closeModePopover = function($event) {
+      $scope.modePopover.hide($event);
+   };
+
+   $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.purposePopover = popover;
+   });
+
+   $scope.openPurposePopover = function($event) {
+      $scope.purposePopover.show($event);
+   };
+
+  var closePurposePopover = function($event) {
+      $scope.purposePopover.hide($event);
+   };
+
+  $scope.chosen = {mode:'',purpose:'',other:''};
+
+   var checkOtherOption = function(choice) {
+    if(choice == 'other_mode' || choice == 'other_purpose') {
+      var text = choice == 'other_mode' ? "mode" : "purpose";
+      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',        
+        buttons: [
+            { text: 'Cancel' }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        if(choice == 'other_mode') {
+                          // store mode here
+                          $scope.chosen.other = '';
+                        } else {
+                          // store purpose here
+                          $scope.chosen.other = '';
+                        }
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+
+    }
+   };
+
+  $scope.choosePurpose = function() {
+    if($scope.chosen.purpose != "other_purpose"){
+      // store purpose here
+    } else {
+      checkOtherOption($scope.chosen.purpose);
+    }
+    closePurposePopover();
+  };
+
+  $scope.chooseMode = function (){
+    if($scope.chosen.mode != "other_mode"){
+      // store mode here
+    } else {
+      checkOtherOption($scope.chosen.mode);
+    }
+    closeModePopover();
+  };
+
+   $scope.modeOptions = [
+   {text:'Walk', value:'walk'},
+   {text:'Bike',value:'bike'},
+   {text:'Drove Alone',value:'drove_alone'},
+   {text:'Shared Ride',value:'shared_ride'},
+   {text:'Taxi/Uber/Lyft',value:'taxi'},
+   {text:'Bus',value:'bus'},
+   {text:'Train',value:'train'},
+   {text:'Free Shuttle',value:'free_shuttle'},
+   {text:'Other',value:'other_mode'}];
+
+   $scope.purposeOptions = [
+   {text:'Home', value:'home'},
+   {text:'Work',value:'work'},
+   {text:'School',value:'school'},
+   {text:'Transit transfer', value:'transit_transfer'},
+   {text:'Shopping',value:'shopping'},
+   {text:'Meal',value:'meal'},
+   {text:'Pick-up/Drop off',value:'pick_drop'},
+   {text:'Personal/Medical',value:'personal_med'},
+   {text:'Recreation/Exercise',value:'exercise'},
+   {text:'Entertainment/Social',value:'entertainment'},
+   {text:'Religious', value:'religious'},
+   {text:'Other',value:'other_purpose'}];
+
 
     $scope.redirect = function(){
       $state.go("root.main.current");
@@ -397,31 +504,4 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.checkTripState();
       return in_trip;
     };
-
-   $scope.modeOptions = [
-   {text:'Walk', value:'walk'},
-   {text:'Bike',value:'bike'},
-   {text:'Drove Alone',value:'drove_alone'},
-   {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi/Uber/Lyft',value:'taxi'},
-   {text:'Bus',value:'bus'},
-   {text:'Train',value:'train'},
-   {text:'Free Shuttle',value:'free_shuttle'},
-   {text:'Other',value:'other_mode'}];
-
-   $scope.purposeOptions = [
-   {text:'Home', value:'home'},
-   {text:'Work',value:'work'},
-   {text:'School',value:'school'},
-   {text:'Transit transfer', value:'transit_transfer'},
-   {text:'Shopping',value:'shopping'},
-   {text:'Meal',value:'meal'},
-   {text:'Pick-up/Drop off',value:'pick_drop'},
-   {text:'Personal/Medical',value:'personal_med'},
-   {text:'Recreation/Exercise',value:'exercise'},
-   {text:'Entertainment/Social',value:'entertainment'},
-   {text:'Religious', value:'religious'},
-   {text:'Other',value:'other_purpose'}];
-
-    $scope.showModes = DiaryHelper.showModes;
 });
