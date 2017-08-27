@@ -6,7 +6,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
-                successCallback(settings.connectURL);
+                successCallback(settings.connectUrl);
             }, errorCallback);
     };
 
@@ -102,6 +102,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
          day: momentObj.date(),
        };
     };
+
+    this.moment2Timestamp = function(momentObj) {
+      return momentObj.unix();
+    }
 
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
@@ -284,42 +288,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
            window.Logger.log(window.Logger.LEVEL_INFO,
                "Email cancel reported, seems to be an error on android");
         });
-    };
-
-    var error = function(error){
-      console.log(error);
-    };
-
-    this.exportUserCacheDB = function() {
-      var parentDir = "unknown";
-
-      if (ionic.Platform.isAndroid()) {
-        parentDir = cordova.file.dataDirectory+"../databases";
-      }
-      if (parentDir == "unknown") {
-        alert("Cannot export user cache from this device.");
-      } else {
-        var userCache = parentDir+ "/userCacheDB";
-        alert("About to copy userCache from "+parentDir+"/userCacheDB");
-        window.resolveLocalFileSystemURL(userCache, function(fileEntry) {
-          console.log(userCache);
-          var copyTo = cordova.file.externalDataDirectory;
-          window.resolveLocalFileSystemURL(copyTo, function(dirEntry){
-            console.log(copyTo);
-            fileEntry.copyTo(dirEntry, "userCacheDB", 
-              function(success){
-                console.log("Copied userCacheDB");
-              }, 
-              function(error){
-                console.log(error);
-              });
-          },  function(error){
-                console.log(error);
-              });
-        },  function(error){
-              console.log(error);
-            });
-      }
     };
 
     this.writeFile = function(fileEntry, resultList) {

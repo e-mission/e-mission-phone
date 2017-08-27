@@ -700,6 +700,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         + moment.unix(tripStartTransition.data.ts).toString() + " -> " 
         + moment.unix(tripEndTransition.data.ts).toString());
       return UnifiedDataLoader.getUnifiedSensorDataForInterval("background/filtered_location", tq).then(function(locationList) {
+          if (locationList.length == 0) {
+            return undefined;
+          }
           var sortedLocationList = locationList.sort(tsEntrySort);
           var tripStartPoint = sortedLocationList[0];
           var tripEndPoint = sortedLocationList[sortedLocationList.length-1];
@@ -717,8 +720,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             properties: angular.copy(section_gj.features[0].properties)
           }
 
-          Logger.log("section_gj.properties = "+section_gj.features[0].properties+
-            " trip_gj.properties = "+trip_gj.properties);
+          Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
+            " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
           // customize to trip versus section properties
           trip_gj.properties.feature_type = "trip";
           trip_gj.properties.start_loc = features[0].geometry;
@@ -809,7 +812,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 console.log(JSON.stringify(trip));
             });
             var tripFillPromises = tripsList.map(trip2Geojson);
-            return Promise.all(tripFillPromises).then(function(trip_gj_list) {
+            return Promise.all(tripFillPromises).then(function(raw_trip_gj_list) {
                 // Now we need to link up the trips. linking unprocessed trips
                 // to one another is fairly simple, but we need to link the
                 // first unprocessed trip to the last processed trip.
@@ -819,16 +822,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 // new chain for now, since this is with unprocessed data
                 // anyway.
 
+                Logger.log("mapped trips to trip_gj_list of size "+raw_trip_gj_list.length);
+                var trip_gj_list = raw_trip_gj_list.filter(angular.isDefined);
+                Logger.log("after filtering undefined, trip_gj_list size = "+raw_trip_gj_list.length);
                 // Link 0th trip to first, first to second, ...
                 for (var i = 0; i < trip_gj_list.length-1; i++) {
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
                 }
+                Logger.log("finished linking trips for list of size "+trip_gj_list.length);
                 if (tripListForDay.length != 0 && trip_gj_list.length != 0) {
                     // Need to link the entire chain above to the processed data
+                    Logger.log("linking unprocessed and processed trip chains");
                     var last_processed_trip = tripListForDay[tripListForDay.length - 1]
                     linkTrips(last_processed_trip, trip_gj_list[0]);
                 }
                 $ionicLoading.hide();
+                Logger.log("Returning final list of size "+trip_gj_list.length);
                 return trip_gj_list;
             });
           }

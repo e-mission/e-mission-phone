@@ -193,7 +193,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectTo = undefined;
             return redirState;
           } else {
-            return 'root.main.cci-about';
+            return 'root.main.metrics';
           }
         } else {
           return result;
