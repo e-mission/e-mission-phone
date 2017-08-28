@@ -16,6 +16,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     Config, PostTripManualMarker, nzTour, storage, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
+  var MODE_CONFIRM_KEY = "manual/mode_confirm";
+  var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+
   // Add option
   // StatusBar.styleBlackOpaque()
   $scope.dark_theme = $rootScope.dark_theme;
@@ -378,11 +381,15 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover = popover;
    });
 
-   $scope.openModePopover = function($event) {
+   $scope.openModePopover = function($event, start_ts, end_ts) {
+      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts}
+      Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
       $scope.modePopover.show($event);
    };
 
    var closeModePopover = function($event) {
+      $scope.draftMode = angular.undefined;
+      Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
       $scope.modePopover.hide($event);
    };
 
@@ -392,11 +399,15 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover = popover;
    });
 
-   $scope.openPurposePopover = function($event) {
+   $scope.openPurposePopover = function($event, start_ts, end_ts) {
+      $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts}
+      Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.show($event);
    };
 
   var closePurposePopover = function($event) {
+      $scope.draftPurpose = angular.undefined;
+      Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.hide($event);
    };
 
@@ -417,10 +428,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                            e.preventDefault();
                      } else {
                         if(choice == 'other_mode') {
-                          // store mode here
+                          $scope.storeMode($scope.chosen.other);
                           $scope.chosen.other = '';
                         } else {
-                          // store purpose here
+                          $scope.storePurpose($scope.chosen.other);
                           $scope.chosen.other = '';
                         }
                         return $scope.chosen.other;
@@ -435,7 +446,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
   $scope.choosePurpose = function() {
     if($scope.chosen.purpose != "other_purpose"){
-      // store purpose here
+      $scope.storePurpose($scope.chosen.purpose);
     } else {
       checkOtherOption($scope.chosen.purpose);
     }
@@ -444,7 +455,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
   $scope.chooseMode = function (){
     if($scope.chosen.mode != "other_mode"){
-      // store mode here
+      $scope.storeMode($scope.chosen.mode);
     } else {
       checkOtherOption($scope.chosen.mode);
     }
@@ -476,6 +487,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    {text:'Religious', value:'religious'},
    {text:'Other',value:'other_purpose'}];
 
+   $scope.storeMode = function(mode_val) {
+      $scope.draftMode.label = mode_val;
+      Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
+      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
+   }
+
+   $scope.storePurpose = function(purpose_val) {
+      $scope.draftPurpose.label = purpose_val;
+      Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
+      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
+   }
 
     $scope.redirect = function(){
       $state.go("root.main.current");

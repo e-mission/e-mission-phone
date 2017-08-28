@@ -88,10 +88,10 @@
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;">
                 <div class="col-50" style="text-align: center;">
-                    <button ng-click = "openModePopover($event)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Mode</button>  
+                    <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Mode</button>  
                 </div>
                 <div class="col-50" style="text-align: center;">
-                    <button ng-click="openPurposePopover($event)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Purpose</button>
+                    <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Purpose</button>
                 </div>
              </div>   
             </div>
