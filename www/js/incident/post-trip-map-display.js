@@ -12,6 +12,9 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                         UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
+  var MODE_CONFIRM_KEY = "manual/mode_confirm";
+  var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
     defaults: {}
@@ -21,6 +24,22 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
   $scope.mapCtrl.start_ts = $stateParams.start_ts;
   $scope.mapCtrl.end_ts = $stateParams.end_ts;
+
+  $scope.$on('$ionicView.enter', function() {
+    // we want to initialize these while entering the screen instead of while 
+    // creating the controller, because the app may stick around for a while,
+    // and then when the user clicks on a notification, they will re-enter this
+    // screen.
+    Logger.log("entered post-trip map screen, prompting for values");
+    $scope.draftMode = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
+    $scope.draftPurpose = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
+  });
+
+  $scope.$on('$ionicView.leave', function() {
+    Logger.log("entered post-trip map screen, prompting for values");
+    $scope.draftMode = angular.undefined;
+    $scope.draftPurpose = angular.undefined;
+  });
 
   /*
   var mapEvents = leafletMapEvents.getAvailableMapEvents();
@@ -258,11 +277,13 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       $scope.secondSlide = true;
       console.log($scope.chosen.other_to_store);
       // store other_to_store here
+      $scope.storeMode($scope.chosen.other_to_store);
       $ionicSlideBoxDelegate.next();
     } else if ($scope.chosen.mode != "other_mode" && $scope.chosen.mode.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.chosen.mode);
       // store mode here
+      $scope.storeMode($scope.chosen.mode);
       $ionicSlideBoxDelegate.next();
     }
   };
@@ -271,10 +292,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     if($scope.chosen.purpose == "other_purpose" && $scope.chosen.other_to_store.length > 0) {
       console.log($scope.chosen.other_to_store);
       // store other_to_store here
+      $scope.storePurpose($scope.chosen.other_to_store);
       $scope.closeView();
     } else if ($scope.chosen.purpose != "other_purpose" && $scope.chosen.purpose.length > 0) {
       console.log($scope.chosen.purpose);
       // store purpose here
+      $scope.storePurpose($scope.chosen.purpose);
       $scope.closeView();
     }
   };
@@ -307,5 +330,18 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
    {text:'Entertainment/Social',value:'entertainment'},
    {text:'Religious', value:'religious'},
    {text:'Other',value:'other_purpose'}];
+
+   $scope.storeMode = function(mode_val) {
+      $scope.draftMode.label = mode_val;
+      Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
+      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
+   }
+
+   $scope.storePurpose = function(purpose_val) {
+      $scope.draftPurpose.label = purpose_val;
+      Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
+      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
+   }
+
 
 });
