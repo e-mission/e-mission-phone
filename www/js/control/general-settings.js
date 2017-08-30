@@ -10,7 +10,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
-                                        'angularLocalStorage'])
+                                        'angularLocalStorage',
+                                        'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
@@ -19,7 +20,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
-               CalorieCal, ClientStats, CommHelper) {
+               CalorieCal, ClientStats, CommHelper, Logger) {
 
     var datepickerObject = {
       todayLabel: 'Today',  //Optional
@@ -109,7 +110,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
             $scope.$apply(function() {
-                $scope.settings.connect.url = response.connectURL;
+                $scope.settings.connect.url = response.connectUrl;
                 console.log(response);
             });
         }, function(error) {
@@ -303,8 +304,12 @@ angular.module('emission.main.control',['emission.services',
         $scope.syncSettingsPopup = popover;
     });
     $scope.trackingOn = function() {
-        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-    }
+        if($scope.isAndroid()){
+            return $scope.settings.collect.state != "local.state.tracking_stopped";
+        } else if ($scope.isIOS()) {
+            return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+        }
+    };
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){
             ControlCollectionHelper.forceTransition('STOP_TRACKING');
@@ -328,7 +333,11 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.parseState = function(state) {
         if (state) {
-            return state.substring(6);
+            if($scope.isAndroid()){
+                return state.substring(12);
+            } else if ($scope.isIOS()) {
+                return state.substring(6);
+            }
         }
     }
     $scope.expandDeveloperZone = function() {
