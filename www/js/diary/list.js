@@ -409,4 +409,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
       $scope.showModes = DiaryHelper.showModes;
 
+  $scope.takeSurvey = function(start_ts, end_ts) {
+    console.log("About to display survey: ", 'start_ts: ', start_ts, ' end_ts: ', end_ts);
+    $state.go("root.main.incident", {
+      start_ts: start_ts,
+      end_ts: end_ts,
+    });
+  };
 });
