@@ -8,6 +8,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
                                  'emission.incident.posttrip.map',
+                                 'emission.main.accessmap',
                                  'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
@@ -18,6 +19,16 @@ angular.module('emission.main', ['emission.main.recent',
     abstract: true,
     templateUrl: 'templates/main.html',
     controller: 'MainCtrl'
+  })
+
+    .state('root.main.accessmap', {
+    url: '/accessmap',
+    views: {
+      'main-accessmap': {
+        templateUrl: 'templates/accessmap/accessmap.html',
+        controller: 'AccessMapCtrl'
+      }
+    },
   })
 
   .state('root.main.common', {
