@@ -14,19 +14,6 @@ angular.module('emission.splash.referral', ['angularLocalStorage'])
       return toReturn;
     }
 
-    referralHandler.parseURL = function(url) {
-        var addr = url.split('//')[1];
-        var route = addr.split('?')[0];
-        var params = addr.split('?')[1];
-        var paramsList = params.split('&');
-        var rtn = {route: route};
-        for (var i = 0; i < paramsList.length; i++) {
-          var splitList = paramsList[i].split('=');
-          rtn[splitList[0]] = splitList[1];
-        }
-        return rtn;
-    };
-
     referralHandler.setupGroupReferral = function(kvList) {
         storage.set(REFERRED_KEY, true);
         storage.set(REFERRED_GROUP_ID, kvList['groupid']);

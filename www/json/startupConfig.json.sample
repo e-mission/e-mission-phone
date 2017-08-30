@@ -1,0 +1,6 @@
+{
+    "emSensorDataCollectionProtocol": {
+        "protocol_id": "YYYY-MM-PROTOCOL-NUMBER",
+        "approval_date": "YYYY-MM-DD"
+    }
+}

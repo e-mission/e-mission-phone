@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -22,9 +22,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-         if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
-            console.log("result", result);
-            $state.go("root.main.current");
+        Logger.log("Current trip state" + JSON.stringify(result));
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+          $state.go("root.main.current");
         }
       });
     };
