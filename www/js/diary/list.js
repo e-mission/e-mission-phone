@@ -39,15 +39,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
     };
-    if($rootScope.displayingIncident == true) {
-      if (angular.isDefined(Timeline.data.currDay)) {
-          // page was already loaded, reload it automatically
-          readAndUpdateForDay(Timeline.data.currDay);
-      } else {
-         Logger.log("currDay is not defined, load not complete");
-      }
-      $rootScope.displayingIncident = false;
-    }
   });
 
   readAndUpdateForDay(moment().startOf('day'));

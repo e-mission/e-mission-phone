@@ -123,12 +123,9 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   };
 
   var displayCompletedTrip = function(notification, state, data) {
-    Logger.log("About to display completed trip");
-    $state.go('root.main.diary');
-    // $state.go("root.main.incident", notification.data);
-    /*Logger.log("About to go to diary, which now displays draft information");
     $rootScope.displayingIncident = true;
-    $state.go("root.main.diary");*/
+    Logger.log("About to display completed trip from Notification");
+    $state.go("root.main.incident", notification.data);
   };
 
   var checkCategory = function(notification) {
