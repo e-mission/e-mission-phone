@@ -228,18 +228,32 @@ angular.module('emission.incident.posttrip.map', [
       $ionicSlideBoxDelegate.next();
     };
 
+    var saveSurvey = function(trip_start_ts, trip_end_ts, survey_content) {
+      var value = {
+        trip_start_ts: trip_start_ts,
+        trip_end_ts: trip_end_ts,
+        survey: survey_content
+      }
+      $window.cordova.plugins.BEMUserCache.putMessage('manual/survey', value);
+      return value;
+    }
+
     $scope.doneSlide = function (response) {
       if (response == null) {
         return noSelectPopup();
       }
 
-      var myPopup = $ionicPopup.alert({
-        template: angular.toJson($scope.surveyQuestions, null, 4),
-        title: 'Response',
-      });
+      var survey_content = JSON.parse(angular.toJson($scope.surveyQuestions, null, 4));
+      saveSurvey($scope.mapCtrl.start_ts,     // Trip start ts
+                 $scope.mapCtrl.end_ts,       // Trip end ts
+                 survey_content);
 
+      var myPopup = $ionicPopup.alert({
+        template: 'Thank you for your input!',
+        title: 'Response saved',
+      });
       myPopup.then(function(res) {
-        console.log('Tapped!', res);
+        Logger.log('Survey response saved to user cache: ' + JSON.stringify(survey_content, null, 4));
       });
 
       $scope.closeView();

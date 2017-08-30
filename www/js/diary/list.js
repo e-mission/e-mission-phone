@@ -192,6 +192,14 @@ angular.module('emission.main.diary.list', [
         ionicDatePicker.openDatePicker($scope.datepickerObject);
       };
 
+      $scope.$on('$stateChangeSuccess',
+        function onStateSuccess (event, toState, toParams, fromState) {
+          if(toState.name == 'emission.main.diary') {
+            $scope.refresh();
+          }
+        }
+      );
+
       $scope.$on(Timeline.UPDATE_DONE, function (event, args) {
         console.log('Got timeline update done event with args ' +
           JSON.stringify(args));

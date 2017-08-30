@@ -10,12 +10,12 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe left or tap to pick the mode of transportation.",
-      "android": "See options or tap to pick the mode of transportation."
+      "ios": "Tap to rate your experience.",
+      "android": "Tap to rate your experience."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Tap to pick the mode of transportation.";
+      selMessage = "Tap to rate your experience.";
     }
     return selMessage;
   };
@@ -46,7 +46,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "How did you get here?",
+      title: "Did you use AccessMap to get your there?",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
@@ -93,17 +93,19 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     Logger.log("notification = "+JSON.stringify(notification));
     Logger.log("state = "+JSON.stringify(state));
     Logger.log("data = "+JSON.stringify(data));
-    return $ionicPopup.show({title: "Choose the transportation mode you took on trip",
+    return $ionicPopup.show({title: "Rate your trip",
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
-        buttons: [{
-          text: 'Choose Mode',
-          type: 'button-positive',
-          onTap: function(e) {
+        buttons: [
+          {
+            text: 'Go to trip',
+            type: 'button-positive',
+            onTap: function(e) {
             // e.preventDefault() will stop the popup from closing when tapped.
             return true;
-          }
-        }, {
+            }
+          },
+          {
           text: 'Skip',
           type: 'button-positive',
           onTap: function(e) {
@@ -122,7 +124,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var displayCompletedTrip = function(notification, state, data) {
     Logger.log("About to display completed trip");
-    $state.go("root.main.incident", notification.data);
+    $state.go('root.main.diary');
+    // $state.go("root.main.incident", notification.data);
     /*Logger.log("About to go to diary, which now displays draft information");
     $rootScope.displayingIncident = true;
     $state.go("root.main.diary");*/
@@ -193,7 +196,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   $ionicPlatform.ready().then(function() {
     ptap.registerTripEnd();
-    ptap.registerUserResponse();
+    // ptap.registerUserResponse();
   });
 
   return ptap;
