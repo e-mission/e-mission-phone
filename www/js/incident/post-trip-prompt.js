@@ -144,7 +144,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
           return;
       }
       if (data.identifier === 'MORE') {
-          // alert("About to report");
+          Logger.log("Notification, action event");
           cleanDataIfNecessary(notification, state, data);
           displayCompletedTrip(notification, state, data);
       } else if (data.identifier == 'BIKE') {
@@ -161,27 +161,29 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
         // alert("triggered, no action");
-        Logger.log("triggered, no action");
-        if (!$ionicPlatform.is('ios')) {
-            Logger.log("notification is displayed even when app is in foreground, ignoring trigger");
-            return;
-        }
+        Logger.log("Notification triggered");
         if (!checkCategory(notification)) {
             Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
         }
         cleanDataIfNecessary(notification, state, data);
-        promptReport(notification, state, data).then(function(res) {
-          if (res == true) {
-            Logger.log("About to go to incident map page");
-            displayCompletedTrip(notification, state, data);
-          } else {
-            Logger.log("Skipped incident reporting");
-          }
-        });
+        if ($ionicPlatform.is('ios')) {
+          promptReport(notification, state, data).then(function (res) {
+            if (res == true) {
+              Logger.log('About to go to prompt page');
+              displayCompletedTrip(notification, state, data);
+            } else {
+              Logger.log('Skipped incident reporting');
+            }
+          });
+        } else {
+          Logger.log('About to go to prompt page');
+          displayCompletedTrip(notification, state, data);
+        }
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");
+      Logger.log("Notification, click event");
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
