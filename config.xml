@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="edu.berkeley.eecs.emission" 
+<widget id="edu.berkeley.eecs.emission"
         version="2.4.0"
         android-versionCode="29"
         ios-CFBundleVersion="29"
@@ -84,4 +84,5 @@
   <plugin name="phonegap-plugin-push" spec="~1.9.2">
     <variable name="SENDER_ID" value="97387382925" />
   </plugin>
+  <allow-navigation href="https://accessmap.io/*" />
 </widget>

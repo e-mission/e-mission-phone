@@ -18,5 +18,5 @@ var populateId = function(userId) {
 };
 
 // alert("executing script");
-populateId('SCRIPT_REPLACE_VALUE');
+populateId('SCRIPT_REPLACE_UUID');
 // alert("done executing script");
