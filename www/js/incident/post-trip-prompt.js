@@ -5,7 +5,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $ionicPopup, Logger) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
-  var CHOOSE_MODE_TEXT = 'CHOOSE_MODE';
+  var CHOOSE_MODE_TEXT = "Did you use AccessMap to get your there?";
   var TRIP_END_EVENT = "trip_ended";
 
   var reportMessage = function(platform) {
@@ -51,8 +51,9 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
       sound: null,
-      actions: actions,
-      category: CHOOSE_MODE_TEXT,
+      // actions: actions,
+      actions: [],
+      // category: CHOOSE_MODE_TEXT,
       autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
@@ -128,8 +129,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $state.go("root.main.incident", notification.data);
   };
 
-  var checkCategory = function(notification) {
-    if (notification.category == CHOOSE_MODE_TEXT) {
+  var checkID = function(notification) {
+    if (notification.id == REPORT) {
         return true;
     } else {
         return false;
@@ -139,7 +140,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   ptap.registerUserResponse = function() {
     Logger.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
-      if (!checkCategory(notification)) {
+      if (!checkID(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
@@ -162,7 +163,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
         // alert("triggered, no action");
         Logger.log("Notification triggered");
-        if (!checkCategory(notification)) {
+        if (!checkID(notification)) {
             Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
         }
@@ -184,7 +185,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");
       Logger.log("Notification, click event");
-      if (!checkCategory(notification)) {
+      if (!checkID(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
@@ -195,7 +196,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   $ionicPlatform.ready().then(function() {
     ptap.registerTripEnd();
-    // ptap.registerUserResponse();
+    ptap.registerUserResponse();
   });
 
   return ptap;
