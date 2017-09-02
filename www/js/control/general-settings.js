@@ -276,9 +276,35 @@ angular.module('emission.main.control',['emission.services',
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
         ControlSyncHelper.forceSync().then(function(response) {
-            $ionicPopup.alert({template: 'success -> '+response});
-        }, function(error) {
-            $ionicPopup.alert({template: 'error -> '+error});
+            Logger.log("response = "+response);
+            /*
+             * Change to sensorKey to "background/location" after fixing issues
+             * with getLastSensorData and getLastMessages in the usercache
+             */
+            var sensorKey = "key.usercache.location";
+            return window.cordova.plugins.BEMUserCache.getLastSensorData(sensorKey, 5, true);
+        }).then(function(sensorDataList) {
+            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+            var pendingData = (sensorDataList.length > 5);
+            Logger.log("sensorDataList.length = "+sensorDataList.length+
+                       " pendingData? = "+pendingData);
+            return pendingData;
+        }).then(function(pendingData) {
+            Logger.log("pending data = "+pendingData);
+            if (pendingData) {
+                Logger.log("data is pending, showing confirm dialog");
+                $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
+                    if (res) {
+                        $scope.forceSync();
+                    } else {
+                        Logger.log("user refused to re-sync");
+                    }
+                });
+            } else {
+                $ionicPopup.alert({template: 'all data pushed!'});
+            }
+        }).catch(function(error) {
+            $ionicPopup.alert({template: 'error -> '+JSON.stringify(error)});
         });
     };
 
