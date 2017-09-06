@@ -280,18 +280,33 @@ angular.module('emission.main.control',['emission.services',
             /*
              * Change to sensorKey to "background/location" after fixing issues
              * with getLastSensorData and getLastMessages in the usercache
+             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
              */
-            var sensorKey = "key.usercache.location";
-            return window.cordova.plugins.BEMUserCache.getLastSensorData(sensorKey, 5, true);
+            var sensorKey = "background/battery";
+            return window.cordova.plugins.BEMUserCache.getAllSensorData(sensorKey, true);
         }).then(function(sensorDataList) {
             Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
-            var pendingData = (sensorDataList.length > 5);
+            // If everything has been pushed, we should
+            // only have one entry for the battery, which is the one that was
+            // inserted on the last successful push.
+            /*
+            var isSyncLaunched = function(entry) {
+                if (entry.metadata.key == "sync_launched") {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            */
+            var syncLaunchedCalls = sensorDataList;
+            var syncPending = (syncLaunchedCalls.length > 1);
             Logger.log("sensorDataList.length = "+sensorDataList.length+
-                       " pendingData? = "+pendingData);
-            return pendingData;
-        }).then(function(pendingData) {
-            Logger.log("pending data = "+pendingData);
-            if (pendingData) {
+                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+                       ", syncPending? = "+syncPending);
+            return syncPending;
+        }).then(function(syncPending) {
+            Logger.log("sync launched = "+syncPending);
+            if (syncPending) {
                 Logger.log("data is pending, showing confirm dialog");
                 $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
                     if (res) {
