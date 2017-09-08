@@ -46,16 +46,10 @@
           <!-- Button -->
           <div style="height: 10px;"></div>
           <button
-            style="width: 100%;color: #585858;border: 2px;"
+            style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;"
             class="button"
-            ng-if="curSlide < surveyQuestions.length - 1" ng-click="nextSlide(question.response)">
+            ng-click="nextSlide(question.response)">
             Continue
-          </button>
-          <button
-            style="width: 100%;color: #585858;border: 2px;"
-            class="button"
-            ng-if="curSlide >= surveyQuestions.length - 1" ng-click="doneSlide(question.response)">
-            Done
           </button>
         </div>
       </ion-slide>

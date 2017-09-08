@@ -224,8 +224,18 @@ angular.module('emission.incident.posttrip.map', [
         return noSelectPopup();
       }
 
-      $scope.curSlide += 1;
-      $ionicSlideBoxDelegate.next();
+      var nextSlideOffset = $scope.surveyQuestions[$scope.curSlide]['options'][response]['nextSlideOffset'];
+      if (nextSlideOffset < 0) {
+        $scope.curSlide = $scope.surveyQuestions.length;
+        $scope.doneSlide(response);
+        return;
+      }
+
+      var targetSlide = $scope.curSlide + nextSlideOffset;
+      while ($scope.curSlide < targetSlide) {
+        $scope.curSlide += 1;
+        $ionicSlideBoxDelegate.next();
+      }
     };
 
     var saveSurvey = function(trip_start_ts, trip_end_ts, survey_content) {
@@ -245,8 +255,8 @@ angular.module('emission.incident.posttrip.map', [
 
       var survey_content = JSON.parse(angular.toJson($scope.surveyQuestions, null, 4));
       saveSurvey($scope.mapCtrl.start_ts,     // Trip start ts
-                 $scope.mapCtrl.end_ts,       // Trip end ts
-                 survey_content);
+        $scope.mapCtrl.end_ts,       // Trip end ts
+        survey_content);
 
       var myPopup = $ionicPopup.alert({
         template: 'Thank you for your input!',
@@ -263,68 +273,68 @@ angular.module('emission.incident.posttrip.map', [
       $ionicSlideBoxDelegate.enableSlide(false);
     };
 
+    // Note: nextSlideOffset: the offset to walk counting from current slide.
+    //       For example, next slide is 1, jump one slide is 2, jump 2 slides is 3...
     $scope.surveyQuestions = [
-      {
-        title: 'How would you rate your trip?',
-        options: [
-          {text: 'Bad', value: 1},
-          {text: 'OK', value: 2},
-          {text: 'Good', value: 3},
-          {text: 'Excellent', value: 4},
-        ],
-        response: null,
-      },
       {
         title: 'Were you able to complete your trip exactly as the route showed in AccessMap?',
         options: [
-          {text: 'Yes', value: 1},
-          {text: 'No', value: 0},
+          {text: 'Yes', value: 0, nextSlideOffset: 1},
+          {text: 'No', value: 1, nextSlideOffset: -1},
         ],
         response: null,
       },
       {
-        title: 'If yes, how difficult was your trip?',
+        title: 'How difficult was your trip?',
         options: [
-          {text: 'Not Applicable', value: 0},
-          {text: 'Easy', value: 1},
-          {text: 'Medium', value: 2},
-          {text: 'Difficult', value: 3},
-          {text: 'Very Difficult', value: 4},
+          {text: 'Easy', value: 0, nextSlideOffset: 1},
+          {text: 'Medium', value: 1, nextSlideOffset: 1},
+          {text: 'Difficult', value: 2, nextSlideOffset: 1},
+          {text: 'Very Difficult', value: 3, nextSlideOffset: 1},
+        ],
+        response: null,
+      },
+      {
+        title: 'How would you rate your trip?',
+        options: [
+          {text: 'Bad', value: 0, nextSlideOffset: 1},
+          {text: 'OK', value: 1, nextSlideOffset: 1},
+          {text: 'Good', value: 2, nextSlideOffset: 1},
+          {text: 'Excellent', value: 3},
         ],
         response: null,
       },
       {
         title: 'How would you rate the sidewalk quality along your trip?',
         options: [
-          {text: 'Poor', value: 1},
-          {text: 'OK', value: 2},
-          {text: 'Good', value: 3},
-          {text: 'Great', value: 4},
+          {text: 'Poor', value: 0, nextSlideOffset: 1},
+          {text: 'OK', value: 1, nextSlideOffset: 1},
+          {text: 'Good', value: 2, nextSlideOffset: 1},
+          {text: 'Great', value: 3, nextSlideOffset: 1},
         ],
         response: null,
       },
       {
         title: 'Did you have obstacles along your trip that you didn’t anticipate?',
         options: [
-          {text: 'Yes', value: 1},
-          {text: 'No', value: 0},
+          {text: 'Yes', value: 0, nextSlideOffset: 1},
+          {text: 'No', value: 1, nextSlideOffset: -1},
         ],
         response: null,
       },
       {
         title: 'Were these obstacles in AccessMap?',
         options: [
-          {text: 'Yes', value: 1},
-          {text: 'No', value: 0},
+          {text: 'Yes', value: 0, nextSlideOffset: -1},
+          {text: 'No', value: 1, nextSlideOffset: 1},
         ],
         response: null,
       },
       {
-        title: 'If no, would you like to add them?',
+        title: 'Would you like to add them to AccessMap?',
         options: [
-          {text: 'Not Applicable', value: 2},
-          {text: 'Yes', value: 1},
-          {text: 'No', value: 0},
+          {text: 'Yes', value: 0, nextSlideOffset: -1},
+          {text: 'No', value: 1, nextSlideOffset: -1},
         ],
         response: null,
       },
