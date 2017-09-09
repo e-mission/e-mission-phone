@@ -282,24 +282,23 @@ angular.module('emission.main.control',['emission.services',
              * with getLastSensorData and getLastMessages in the usercache
              * See https://github.com/e-mission/e-mission-phone/issues/279 for details
              */
-            var sensorKey = "background/battery";
-            return window.cordova.plugins.BEMUserCache.getAllSensorData(sensorKey, true);
+            var sensorKey = "statemachine/transition";
+            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
         }).then(function(sensorDataList) {
             Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
             // If everything has been pushed, we should
             // only have one entry for the battery, which is the one that was
             // inserted on the last successful push.
-            /*
-            var isSyncLaunched = function(entry) {
-                if (entry.metadata.key == "sync_launched") {
+            var isTripEnd = function(entry) {
+                if (entry.metadata.key == "local.transition.stopped_moving" ||
+                    entry.metadata.key == "T_TRIP_ENDED") {
                     return true;
                 } else {
                     return false;
                 }
             };
-            */
-            var syncLaunchedCalls = sensorDataList;
-            var syncPending = (syncLaunchedCalls.length > 1);
+            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+            var syncPending = (syncLaunchedCalls.length > 0);
             Logger.log("sensorDataList.length = "+sensorDataList.length+
                        ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
                        ", syncPending? = "+syncPending);
