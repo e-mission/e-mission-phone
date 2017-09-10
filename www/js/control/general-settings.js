@@ -276,9 +276,49 @@ angular.module('emission.main.control',['emission.services',
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
         ControlSyncHelper.forceSync().then(function(response) {
-            $ionicPopup.alert({template: 'success -> '+response});
-        }, function(error) {
-            $ionicPopup.alert({template: 'error -> '+error});
+            Logger.log("response = "+response);
+            /*
+             * Change to sensorKey to "background/location" after fixing issues
+             * with getLastSensorData and getLastMessages in the usercache
+             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+             */
+            var sensorKey = "statemachine/transition";
+            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+        }).then(function(sensorDataList) {
+            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+            // If everything has been pushed, we should
+            // only have one entry for the battery, which is the one that was
+            // inserted on the last successful push.
+            var isTripEnd = function(entry) {
+                if (entry.metadata.key == "local.transition.stopped_moving" ||
+                    entry.metadata.key == "T_TRIP_ENDED") {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+            var syncPending = (syncLaunchedCalls.length > 0);
+            Logger.log("sensorDataList.length = "+sensorDataList.length+
+                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+                       ", syncPending? = "+syncPending);
+            return syncPending;
+        }).then(function(syncPending) {
+            Logger.log("sync launched = "+syncPending);
+            if (syncPending) {
+                Logger.log("data is pending, showing confirm dialog");
+                $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
+                    if (res) {
+                        $scope.forceSync();
+                    } else {
+                        Logger.log("user refused to re-sync");
+                    }
+                });
+            } else {
+                $ionicPopup.alert({template: 'all data pushed!'});
+            }
+        }).catch(function(error) {
+            $ionicPopup.alert({template: 'error -> '+JSON.stringify(error)});
         });
     };
 
