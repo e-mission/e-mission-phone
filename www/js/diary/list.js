@@ -310,6 +310,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         content: 'Click on the map to see more details about each trip.'
       },
       {
+        target: '#take-survey',
+        content: 'Click to rate your experience for each trip and contribute to AccessMap'
+      },
+      {
         target: '#map-fix-button',
         content: 'Use this to fix the map tiles if they have not loaded properly.'
       }]
