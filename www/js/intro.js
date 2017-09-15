@@ -45,7 +45,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    $state.go('intro.refuse');
   };
 
   $scope.agree = function() {
