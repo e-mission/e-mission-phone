@@ -115,6 +115,16 @@ angular.module('emission.main', ['emission.main.recent',
     }
   });
 
+  .state('root.main.refuse', {
+    url: '/heatmap',
+    views: {
+      'main-heatmap': {
+        templateUrl: 'templates/main-heatmap.html',
+        controller: 'HeatmapCtrl'
+      }
+    }
+  })
+
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
 })
