@@ -116,11 +116,11 @@ angular.module('emission.main', ['emission.main.recent',
   });
 
   .state('root.main.refuse', {
-    url: '/heatmap',
+    url: '/refuse',
     views: {
-      'main-heatmap': {
-        templateUrl: 'templates/main-heatmap.html',
-        controller: 'HeatmapCtrl'
+      'refuse': {
+        templateUrl: 'templates/intro/refuse.html',
+        controller: 'refuseCtrl'
       }
     }
   })
