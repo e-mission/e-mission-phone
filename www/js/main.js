@@ -126,16 +126,6 @@ angular.module('emission.main', ['emission.main.recent',
     }
   });
 
-  .state('root.main.refuse', {
-    url: '/refuse',
-    views: {
-      'refuse': {
-        templateUrl: 'templates/intro/refuse.html',
-        controller: 'refuseCtrl'
-      }
-    }
-  })
-
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
 })
