@@ -45,7 +45,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.intro');
+    $state.go('root.main.refuse');
   };
 
   $scope.agree = function() {
