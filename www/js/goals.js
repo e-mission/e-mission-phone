@@ -897,7 +897,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     $scope.startSurvey = function () {
       // (URL, elementID)
       SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/jfe/form/SV_eQBjPXx10yaAScl', 'QR~QID3');
-      startSurvey();
+      //startSurvey();
     }
 
     // Tour steps
