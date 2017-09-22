@@ -124,17 +124,17 @@ angular.module('emission.main', ['emission.main.recent',
         controller: 'logCtrl'
       }
     }
-  });
+  })
 
   .state('root.main.refuse', {
     url: '/refuse',
     views: {
-      'refuse': {
+      'main-cci-about': {
         templateUrl: 'templates/intro/refuse.html',
-        controller: 'Controlctrl'
+        controller: 'CCIAboutCtrl'
       }
     }
-  })
+  });
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
