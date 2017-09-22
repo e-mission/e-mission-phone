@@ -2,9 +2,14 @@
 
 angular.module('emission.main.cci-about', ['emission.plugin.logger'])
 
-.controller('CCIAboutCtrl', function($scope, $state, $cordovaEmailComposer, $ionicPopup) {
+.controller('CCIAboutCtrl', function($scope, $state, $cordovaEmailComposer, $ionicPopup, SurveyLaunch) {
 
-	$scope.emailCCI = function() {
+  $scope.startSurvey = function () {
+      SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/jfe/form/SV_eQBjPXx10yaAScl', 'QR~QID3');
+      startSurvey();
+  };
+	
+  $scope.emailCCI = function() {
         var email = {
             to: ['cci@berkeley.edu'],
             subject: 'Question from Emission User',
@@ -19,5 +24,7 @@ angular.module('emission.main.cci-about', ['emission.plugin.logger'])
            window.Logger.log(window.Logger.LEVEL_INFO,
                "CCI email cancel reported, seems to be an error on android");
         });
-    };
+  };
+  var SURVEY_DONE_KEY = 'survey_done';
+  storage.remove(SURVEY_DONE_KEY);
 })
