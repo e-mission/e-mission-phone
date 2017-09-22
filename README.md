@@ -1,6 +1,8 @@
 e-mission phone app
 --------------------
 
+[![Join the chat at https://gitter.im/e-mission/e-mission-phone](https://badges.gitter.im/e-mission/e-mission-phone.svg)](https://gitter.im/e-mission/e-mission-phone?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the phone component of the e-mission system.
 
 Installing
