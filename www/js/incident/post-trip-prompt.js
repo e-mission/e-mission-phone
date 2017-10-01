@@ -191,10 +191,14 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
   };
 
+  /*
+   * Commenting out the post-trip notification for cci-berkeley
+   * because they want to make it opt-in
   $ionicPlatform.ready().then(function() {
     ptap.registerTripEnd();
     ptap.registerUserResponse();
   });
+  */
 
   return ptap;
 
