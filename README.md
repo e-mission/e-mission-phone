@@ -1,6 +1,8 @@
 e-mission phone app
 --------------------
 
+[![Join the chat at https://gitter.im/e-mission/e-mission-phone](https://badges.gitter.im/e-mission/e-mission-phone.svg)](https://gitter.im/e-mission/e-mission-phone?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the phone component of the e-mission system.
 
 Installing
@@ -136,34 +138,8 @@ in the root directory
 Troubleshooting
 ---
 
-Sometimes the IOS emulator doesn't work when called from command line. If so, you can use Xcode to load
-the project:
-
-``
-      /e-mission-phone/platforms/ios/emission.xcworkspace
-``
-
-and then run the project with IOS emulator.
-Make sure you use the most recent version of Xcode - older versions may not support some newer functionality.
-
----
-
-Some versions of Gradle create unnecessary files that may result in errors while building the app. Gradle 2.14.1 has proven to work without any issues.
-If errors persist, make sure 
-``
-	  /e-mission-phone/platforms/android/gradle/wrapper/gradle-wrapper.properties
-``
-looks like this:
-```
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-2.14.1-all.zip
-```
----
-
-The Android platform requires API levels 18-21, make sure you have installed them in the SDK manager.
+Troubleshooting tips have now been moved to their own wiki page
+https://github.com/e-mission/e-mission-phone/wiki/Troubleshooting-tips-(FAQ)
 
 Debugging
 ---
