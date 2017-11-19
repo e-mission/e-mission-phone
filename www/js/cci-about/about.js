@@ -4,6 +4,8 @@ angular.module('emission.main.cci-about', ['emission.plugin.logger'])
 
 .controller('CCIAboutCtrl', function($scope, $state, $cordovaEmailComposer, $ionicPopup, SurveyLaunch) {
 
+  $scope.studyEmail = "cci.vmt@gmail.com";
+
   $scope.startSurvey = function () {
       SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/jfe/form/SV_eQBjPXx10yaAScl', 'QR~QID3');
       startSurvey();
@@ -11,7 +13,7 @@ angular.module('emission.main.cci-about', ['emission.plugin.logger'])
 	
   $scope.emailCCI = function() {
         var email = {
-            to: ['cci@berkeley.edu'],
+            to: [$scope.studyEmail],
             subject: 'Question from Emission User',
             body: ''
         }
