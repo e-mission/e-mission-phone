@@ -307,11 +307,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       },
       {
         target: '.diary-entry',
-        content: 'Click on the map to see more details about each trip.'
-      },
-      {
-        target: '#take-survey',
-        content: 'Click to rate your experience for each trip and contribute to AccessMap'
+        content: 'Click on ">" button to see more details about each trip and take our survey'
       },
       {
         target: '#map-fix-button',

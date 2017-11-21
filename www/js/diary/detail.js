@@ -127,13 +127,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     },
     steps: [{
       target: '#detail',
-      content: 'To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
+      content: 'Confirm your foot track here.'
     }, {
       target: '#sectionList',
-      content: 'Trip sections, along with times and modes'
+      content: 'Review trip sections, along with times and modes'
     }, {
       target: '#sectionPct',
       content: '% of time spent in each mode for this trip'
+    }, {
+      target: '#survey-button',
+      content: 'Take our survey to tell us your experience of this trip.'
     }]
   };
 

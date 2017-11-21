@@ -61,12 +61,12 @@
     <div style="" class="button-bar">
       <button class="button button-stable button-block icon ion-refresh"
               ng-click="refreshMap()">Refresh</button>
-      <button class="button button-stable button-block"
-              ng-click="refreshTiles()">Fix Map</button>
+      <!-- button class="button button-stable button-block"
+              ng-click="refreshTiles()">Fix Map</button -->
       <!--
       <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
       -->
-      <button class="button button-stable button-block"
+      <button class="button button-stable button-block" id="survey-button"
               ng-click="takeSurvey(tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)">
         Survey
       </button>

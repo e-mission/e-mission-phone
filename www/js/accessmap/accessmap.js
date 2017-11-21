@@ -23,11 +23,11 @@ angular.module('emission.main.accessmap', [
           },
           {
             target: '#accessmap-webframe',
-            content: 'When a trip ends, wait for prompt, then find the trip in diary',
+            content: 'When a trip ends, wait for prompt, then find your trip in diary',
           },
           {
             target: '#accessmap-webframe',
-            content: 'You can see the detail or take survey for a particular trip in diary',
+            content: 'Click ">" button of a particular trip to expand the trip detail, and click take survey',
           },
           {
             target: '#accessmap-webframe',

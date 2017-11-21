@@ -240,8 +240,9 @@ angular.module('emission.incident.posttrip.map', [
 
     var saveSurvey = function(trip_start_ts, trip_end_ts, survey_content) {
       var value = {
-        trip_start_ts: trip_start_ts,
-        trip_end_ts: trip_end_ts,
+        ts: new Date().getTime(),
+        start_ts: trip_start_ts,
+        end_ts: trip_end_ts,
         survey: survey_content
       }
       $window.cordova.plugins.BEMUserCache.putMessage('manual/survey', value);
