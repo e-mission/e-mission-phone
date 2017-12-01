@@ -5,6 +5,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
+                                      'emission.survey.launch', 
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
                                       'emission.plugin.logger'])
 
@@ -14,7 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger) {
+                                    Config, SurveyLaunch, PostTripManualMarker, nzTour, storage, Logger) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -375,13 +376,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         readAndUpdateForDay(nextDay);
     };
 
-    $scope.toDetail = function() {
-      $state.go('root.main.detail');
+    $scope.toDetail = function(param) {
+      $state.go('root.main.diary-detail', {tripId: param});
     };
 
-    $scope.redirect = function(){
-      $state.go("root.main.current");
-    };
+    $scope.showModes = DiaryHelper.showModes;
 
     var in_trip;
     $scope.checkTripState = function() {
@@ -396,17 +395,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
-    // storing boolean to in_trip and return it in inTrip function
-    // work because ng-show is watching the inTrip function.
-    // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
-    // to return bool value and using checkTripState function in ng-show
-    // did not work.
-    $scope.inTrip = function() {
-      $scope.checkTripState();
-      return in_trip;
+   $scope.openSurvey= function($event, trip_gj) {
+      SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
+       "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
+       trip_gj.data.properties.start_ts, trip_gj.data.properties.end_ts);
     };
-
-    $scope.showModes = DiaryHelper.showModes;
-
 });
