@@ -5,6 +5,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
+                                      'emission.survey.launch', 
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
                                       'emission.plugin.logger'])
 
@@ -14,7 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger) {
+                                    Config, SurveyLaunch, PostTripManualMarker, nzTour, storage, Logger, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -375,13 +376,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         readAndUpdateForDay(nextDay);
     };
 
-    $scope.toDetail = function() {
-      $state.go('root.main.detail');
+    $scope.toDetail = function(param) {
+      $state.go('root.main.diary-detail', {tripId: param});
     };
 
-    $scope.redirect = function(){
-      $state.go("root.main.current");
-    };
+    $scope.showModes = DiaryHelper.showModes;
 
     var in_trip;
     $scope.checkTripState = function() {
@@ -396,17 +395,135 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
-    // storing boolean to in_trip and return it in inTrip function
-    // work because ng-show is watching the inTrip function.
-    // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
-    // to return bool value and using checkTripState function in ng-show
-    // did not work.
-    $scope.inTrip = function() {
-      $scope.checkTripState();
-      return in_trip;
+   $scope.openSurvey= function($event, trip_gj) {
+      SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
+       "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
+       trip_gj.data.properties.start_ts, trip_gj.data.properties.end_ts);
     };
 
-    $scope.showModes = DiaryHelper.showModes;
+   $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.modePopover = popover;
+   });
 
+   $scope.openModePopover = function($event) {
+      $scope.modePopover.show($event);
+   };
+
+   var closeModePopover = function($event) {
+      $scope.modePopover.hide($event);
+   };
+
+   $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.purposePopover = popover;
+   });
+
+   $scope.openPurposePopover = function($event) {
+      $scope.purposePopover.show($event);
+   };
+
+  var closePurposePopover = function($event) {
+      $scope.purposePopover.hide($event);
+   };
+
+  $scope.chosen = {modes:[],purpose:'',other:''};
+   var checkOtherOption = function(choice) {
+    if(choice == 'other_mode' || choice == 'other_purpose') {
+      var text = choice == 'other_mode' ? "list of modes" : "purpose";
+      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',        
+        buttons: [
+            { text: 'Cancel' }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        if(choice == 'other_mode') {
+                          $scope.chosen.modes.push($scope.chosen.other);
+                          $scope.chosen.other = '';
+                        } else {
+                          // store purpose here
+                          console.log($scope.chosen.other)
+                          $scope.chosen.other = '';
+                        }
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+
+    }
+   };
+
+  $scope.choosePurpose = function() {
+    if($scope.chosen.purpose != "other_purpose"){
+      // store purpose here
+      console.log($scope.chosen.purpose)
+    } else {
+      checkOtherOption($scope.chosen.purpose);
+    }
+    closePurposePopover();
+  };
+
+  $scope.chooseMode = function (){
+    angular.forEach($scope.modeOptions,function(mode){
+      if(mode.checked && $scope.chosen.modes.indexOf(mode.value) == -1){
+        if(mode.value != "other_mode"){
+          $scope.chosen.modes.push(mode.value);
+        } else {
+          checkOtherOption(mode.value);
+        }
+      } else if(!mode.checked && $scope.chosen.modes.indexOf(mode.value) != -1){
+        $scope.chosen.modes.splice($scope.chosen.modes.indexOf(mode.value), 1);
+      } else if(!mode.checked && mode.value == "other_mode"){
+        var listed_modes = []
+        $scope.modeOptions.forEach(function(mode) {
+          listed_modes.push(mode.value);
+        });
+        $scope.chosen.modes.forEach(function(mode) {
+          if(listed_modes.indexOf(mode) == -1){
+            $scope.chosen.modes.splice($scope.chosen.modes.indexOf(mode), 1);
+          };
+        });
+      } 
+    });
+  };
+
+  $scope.doneChoosingModes = function() {
+    //store modes here
+    console.log($scope.chosen.modes)
+    closeModePopover();
+  }
+
+   $scope.modeOptions = [
+   {text:'Walk', value:'walk', checked:false},
+   {text:'Bike',value:'bike', checked:false},
+   {text:'Drove Alone',value:'drove_alone', checked:false},
+   {text:'Shared Ride',value:'shared_ride', checked:false},
+   {text:'Taxi',value:'taxi', checked:false},
+   {text:'Uber/Lyft', value: 'uber_lyft', checked:false},
+   {text:'Bus',value:'bus', checked:false},
+   {text:'Train',value:'train', checked:false},
+   {text:'Subway',value:'Subway', checked:false},
+   {text:'Other',value:'other_mode', checked:false}];
+
+   $scope.purposeOptions = [
+   {text:'Home', value:'home'},
+   {text:'Work',value:'work'},
+   {text:'School',value:'school'},
+   {text:'Shopping',value:'shopping'},
+   {text:'Meal',value:'meal'},
+   {text:'Pick-up/Drop off',value:'pick_drop'},
+   {text:'Personal/Medical',value:'personal_med'},
+   {text:'Recreation/Exercise',value:'exercise'},
+   {text:'Entertainment/Social',value:'entertainment'},
+   {text:'Religious', value:'religious'},
+   {text:'Other',value:'other_purpose'}];
 });
