@@ -5,9 +5,11 @@ angular.module('emission.main.accessmap', [
   'ng-walkthrough',
   'nzTour',
   'angularLocalStorage',
+  'emission.services'
 ]).
   controller('AccessMapCtrl',
-    function ($scope, $state, $ionicPopup, nzTour, $ionicPopover, storage) {
+    function ($scope, $state, $ionicPopup, nzTour, $ionicPopover, storage,
+              CommHelper, $sce) {
       // Tour steps
       var tour = {
         config: {
@@ -69,5 +71,19 @@ angular.module('emission.main.accessmap', [
         }
 
         checkTutorialDone();
+
+        // Load AccessMap with uuid
+        CommHelper.getUser().then(function(userProfile) {
+          var uuidRaw = userProfile.user_id['$uuid'];
+          var parts = [];
+          parts.push(uuidRaw.slice(0,8));
+          parts.push(uuidRaw.slice(8,12));
+          parts.push(uuidRaw.slice(12,16));
+          parts.push(uuidRaw.slice(16,20));
+          parts.push(uuidRaw.slice(20,32));
+          var uuid = parts.join('-');
+          $scope.currentProjectUrl = $sce.trustAsResourceUrl('https://emission-accessmap.open-to-all.com/?emissionId=' + uuid);
+          console.log("ACCESSMAP URL: " + $scope.currentProjectUrl);
+        });
       });
     });
