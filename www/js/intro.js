@@ -15,6 +15,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     url: '/reconsent',
     templateUrl: 'templates/intro/reconsent.html',
     controller: 'IntroCtrl'
+  })
+  .state('root.refuse', {
+    url: '/refuse',
+    templateUrl: 'templates/intro/refuse.html',
+    controller: 'IntroCtrl'
   });
 })
 
@@ -45,7 +50,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    $state.go('root.refuse');
   };
 
   $scope.agree = function() {
