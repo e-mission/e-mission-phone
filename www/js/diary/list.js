@@ -498,7 +498,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.draftMode.label = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
-      if(isOther = true) 
+      if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
 
@@ -506,7 +506,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.draftPurpose.label = purpose_val;
       Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
-      if(isOther = true) 
+      if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
 
