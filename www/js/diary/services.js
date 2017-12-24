@@ -5,6 +5,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.incident.posttrip.manual'])
 .factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker){
   var dh = {};
+  var METERS_TO_MILES = 1609.344;
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
   //   dh.increaseRestElementsTranslate3d(id);
@@ -141,10 +142,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     return (metersPerSec * 3.6).toFixed(2);
   };
   dh.getFormattedDistance = function(dist_in_meters) {
-    if (dist_in_meters > 1000) {
-      return (dist_in_meters/1000).toFixed(0);
+    if (dist_in_meters > METERS_TO_MILES) {
+      return (dist_in_meters/METERS_TO_MILES).toFixed(0);
     } else {
-      return (dist_in_meters/1000).toFixed(3);
+      return (dist_in_meters/METERS_TO_MILES).toFixed(3);
     }
   }
   dh.getSectionDetails = function(section) {
