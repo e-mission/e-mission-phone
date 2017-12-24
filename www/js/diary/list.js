@@ -387,8 +387,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover.show($event);
    };
 
-   var closeModePopover = function($event) {
-      $scope.draftMode = angular.undefined;
+   var closeModePopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftMode = angular.undefined;
       Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
       $scope.modePopover.hide($event);
    };
@@ -405,15 +406,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover.show($event);
    };
 
-  var closePurposePopover = function($event) {
-      $scope.draftPurpose = angular.undefined;
+  var closePurposePopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftPurpose = angular.undefined;
       Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.hide($event);
    };
 
-  $scope.chosen = {mode:'',purpose:'',other:''};
+  $scope.chosen = {mode:'',purpose:''};
 
-   var checkOtherOption = function(choice) {
+   var checkOtherOption = function(choice, isOther) {
     if(choice == 'other_mode' || choice == 'other_purpose') {
       var text = choice == 'other_mode' ? "mode" : "purpose";
       $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
@@ -427,11 +429,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                      if (!$scope.chosen.other) {
                            e.preventDefault();
                      } else {
+                        Logger.log("in choose other, other = "+JSON.stringify($scope.chosen));
                         if(choice == 'other_mode') {
-                          $scope.storeMode($scope.chosen.other);
+                          $scope.storeMode($scope.chosen.other, isOther);
                           $scope.chosen.other = '';
                         } else {
-                          $scope.storePurpose($scope.chosen.other);
+                          $scope.storePurpose($scope.chosen.other, isOther);
                           $scope.chosen.other = '';
                         }
                         return $scope.chosen.other;
@@ -445,19 +448,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    };
 
   $scope.choosePurpose = function() {
+    var isOther = false
     if($scope.chosen.purpose != "other_purpose"){
-      $scope.storePurpose($scope.chosen.purpose);
+      $scope.storePurpose($scope.chosen.purpose, isOther);
     } else {
-      checkOtherOption($scope.chosen.purpose);
+      isOther = true
+      checkOtherOption($scope.chosen.purpose, isOther);
     }
     closePurposePopover();
   };
 
   $scope.chooseMode = function (){
+    var isOther = false
     if($scope.chosen.mode != "other_mode"){
-      $scope.storeMode($scope.chosen.mode);
+      $scope.storeMode($scope.chosen.mode, isOther);
     } else {
-      checkOtherOption($scope.chosen.mode);
+      isOther = true
+      checkOtherOption($scope.chosen.mode, isOther);
     }
     closeModePopover();
   };
@@ -487,16 +494,20 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    {text:'Religious', value:'religious'},
    {text:'Other',value:'other_purpose'}];
 
-   $scope.storeMode = function(mode_val) {
+   $scope.storeMode = function(mode_val, isOther) {
       $scope.draftMode.label = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
+      if(isOther = true) 
+        $scope.draftPurpose = angular.undefined;
    }
 
-   $scope.storePurpose = function(purpose_val) {
+   $scope.storePurpose = function(purpose_val, isOther) {
       $scope.draftPurpose.label = purpose_val;
       Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
+      if(isOther = true) 
+        $scope.draftPurpose = angular.undefined;
    }
 
     $scope.redirect = function(){
