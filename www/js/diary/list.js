@@ -14,8 +14,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger) {
+                                    Config, PostTripManualMarker, nzTour, storage, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
+  var MODE_CONFIRM_KEY = "manual/mode_confirm";
+  var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+
   // Add option
   // StatusBar.styleBlackOpaque()
   $scope.dark_theme = $rootScope.dark_theme;
@@ -39,15 +42,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
     };
-    if($rootScope.displayingIncident == true) {
-      if (angular.isDefined(Timeline.data.currDay)) {
-          // page was already loaded, reload it automatically
-          readAndUpdateForDay(Timeline.data.currDay);
-      } else {
-         Logger.log("currDay is not defined, load not complete");
-      }
-      $rootScope.displayingIncident = false;
-    }
   });
 
   readAndUpdateForDay(moment().startOf('day'));
@@ -375,9 +369,146 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         readAndUpdateForDay(nextDay);
     };
 
-    $scope.toDetail = function() {
-      $state.go('root.main.detail');
+    $scope.toDetail = function(param) {
+      $state.go('root.main.diary-detail', {tripId: param});
     };
+
+    $scope.showModes = DiaryHelper.showModes;
+
+   $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.modePopover = popover;
+   });
+
+   $scope.openModePopover = function($event, start_ts, end_ts) {
+      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts}
+      Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
+      $scope.modePopover.show($event);
+   };
+
+   var closeModePopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftMode = angular.undefined;
+      Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
+      $scope.modePopover.hide($event);
+   };
+
+   $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.purposePopover = popover;
+   });
+
+   $scope.openPurposePopover = function($event, start_ts, end_ts) {
+      $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts}
+      Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
+      $scope.purposePopover.show($event);
+   };
+
+  var closePurposePopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftPurpose = angular.undefined;
+      Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
+      $scope.purposePopover.hide($event);
+   };
+
+  $scope.chosen = {mode:'',purpose:''};
+
+   var checkOtherOption = function(choice, isOther) {
+    if(choice == 'other_mode' || choice == 'other_purpose') {
+      var text = choice == 'other_mode' ? "mode" : "purpose";
+      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',        
+        buttons: [
+            { text: 'Cancel' }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        Logger.log("in choose other, other = "+JSON.stringify($scope.chosen));
+                        if(choice == 'other_mode') {
+                          $scope.storeMode($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        } else {
+                          $scope.storePurpose($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+
+    }
+   };
+
+  $scope.choosePurpose = function() {
+    var isOther = false
+    if($scope.chosen.purpose != "other_purpose"){
+      $scope.storePurpose($scope.chosen.purpose, isOther);
+    } else {
+      isOther = true
+      checkOtherOption($scope.chosen.purpose, isOther);
+    }
+    closePurposePopover();
+  };
+
+  $scope.chooseMode = function (){
+    var isOther = false
+    if($scope.chosen.mode != "other_mode"){
+      $scope.storeMode($scope.chosen.mode, isOther);
+    } else {
+      isOther = true
+      checkOtherOption($scope.chosen.mode, isOther);
+    }
+    closeModePopover();
+  };
+
+   $scope.modeOptions = [
+   {text:'Walk', value:'walk'},
+   {text:'Bike',value:'bike'},
+   {text:'Drove Alone',value:'drove_alone'},
+   {text:'Shared Ride',value:'shared_ride'},
+   {text:'Taxi/Uber/Lyft',value:'taxi'},
+   {text:'Bus',value:'bus'},
+   {text:'Train',value:'train'},
+   {text:'Free Shuttle',value:'free_shuttle'},
+   {text:'Other',value:'other_mode'}];
+
+   $scope.purposeOptions = [
+   {text:'Home', value:'home'},
+   {text:'Work',value:'work'},
+   {text:'School',value:'school'},
+   {text:'Transit transfer', value:'transit_transfer'},
+   {text:'Shopping',value:'shopping'},
+   {text:'Meal',value:'meal'},
+   {text:'Pick-up/Drop off',value:'pick_drop'},
+   {text:'Personal/Medical',value:'personal_med'},
+   {text:'Recreation/Exercise',value:'exercise'},
+   {text:'Entertainment/Social',value:'entertainment'},
+   {text:'Religious', value:'religious'},
+   {text:'Other',value:'other_purpose'}];
+
+   $scope.storeMode = function(mode_val, isOther) {
+      $scope.draftMode.label = mode_val;
+      Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
+      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
+      if(isOther = true) 
+        $scope.draftPurpose = angular.undefined;
+   }
+
+   $scope.storePurpose = function(purpose_val, isOther) {
+      $scope.draftPurpose.label = purpose_val;
+      Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
+      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
+      if(isOther = true) 
+        $scope.draftPurpose = angular.undefined;
+   }
 
     $scope.redirect = function(){
       $state.go("root.main.current");
@@ -406,7 +537,4 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.checkTripState();
       return in_trip;
     };
-
-    $scope.showModes = DiaryHelper.showModes;
-
 });
