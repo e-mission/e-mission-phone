@@ -199,19 +199,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     var addModeFeature = function(trip, mode) {
-      var modeFeature = mode;
-      modeFeature.feature_type = "mode";
-      Logger.log("Created mode feature" + JSON.stringify(modeFeature) + "for" + JSON.stringify(trip));
-      trip.features.push(modeFeature);
-      $scope.modeTripgj = angular.undefined;
+      $scope.$apply(function() {
+        var modeFeature = mode;
+        modeFeature.feature_type = "mode";
+        Logger.log("Created mode feature" + JSON.stringify(modeFeature) + "for" + JSON.stringify(trip));
+        trip.features.push(modeFeature);
+        $scope.modeTripgj = angular.undefined;
+      });
     }
 
     var addPurposeFeature = function(trip, purpose) {
-      var purposeFeature = purpose;
-      purposeFeature.feature_type = "purpose";
-      Logger.log("Created purpose feature" + JSON.stringify(purposeFeature) + "for" + JSON.stringify(trip));
-      trip.features.push(purposeFeature);
-      $scope.purposeTripgj = angular.undefined;
+      $scope.$apply(function() {
+        var purposeFeature = purpose;
+        purposeFeature.feature_type = "purpose";
+        Logger.log("Created purpose feature" + JSON.stringify(purposeFeature) + "for" + JSON.stringify(trip));
+        trip.features.push(purposeFeature);
+        $scope.purposeTripgj = angular.undefined;
+      });
     }
 
     var isNotEmpty = function(obj) {
@@ -632,7 +636,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         console.log($scope.modeTripgj);
         addUnpushedMode($scope.modeTripgj.data);
       });
-      if(isOther = true) 
+      if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
 
@@ -643,7 +647,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         console.log($scope.purposeTripgj);
         addUnpushedPurpose($scope.purposeTripgj.data);
       });
-      if(isOther = true) 
+      if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
 
