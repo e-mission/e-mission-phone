@@ -1,7 +1,8 @@
 angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.detail',
                                       'emission.main.diary.services',
-                                      'emission.main.diary.current',])
+                                      'emission.main.diary.current',
+                                      'emission.main.diary.editMode',])
 
 .config(function($stateProvider, $ionicConfigProvider) {
   $stateProvider
@@ -34,5 +35,15 @@ angular.module('emission.main.diary',['emission.main.diary.list',
         },
       }
       
+  })
+
+  .state('root.main.diary-edit-mode', {
+    url: '/diary/:tripId/:tripId2',
+    views: {
+        'main-diary': {
+            templateUrl: 'templates/diary/edit-mode.html',
+            controller: 'EditModeCtrl'
+        }
+     }
   });
 });

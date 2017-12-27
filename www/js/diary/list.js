@@ -232,8 +232,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               addUnpushedMode(trip);
               PostTripManualMarker.addUnpushedIncidents(trip);
           });
-          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-            DiaryHelper.directiveForTrip);
+          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map( 
+            function(trip) { return DiaryHelper.directiveForTrip(trip, false);});
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -498,12 +498,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    };
 
   $scope.chooseMode = function (){
+    var modeChosen = $scope.chosen.mode
+    $scope.chosen.mode = ''
     var isOther = false
-    if($scope.chosen.mode != "other_mode"){
-      $scope.storeMode($scope.chosen.mode, isOther);
+    if(modeChosen != "other_mode"){
+      $scope.storeMode(modeChosen, isOther);
     } else {
       isOther = true
-      checkOtherOption($scope.chosen.mode, isOther);
+      checkOtherOption(modeChosen, isOther);
     }
     closeModePopover();
   };

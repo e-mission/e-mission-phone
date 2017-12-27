@@ -20,7 +20,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   // BEGIN: Adding incidents
 
   /*
-   * INTERNAL FUNCTION, not part of factory
+   * EXTERNAL FUNCTION
    *
    * Returns objects of the form: {
    * loc: geojson representation,
@@ -29,7 +29,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * }
    */
 
-  var getSectionPoints = function(section) {
+  ptmm.getSectionPoints = function(section) {
     Logger.log("Called getSection points with list of size "+section.geometry.coordinates.length);
     var mappedPoints = section.geometry.coordinates.map(function(currCoords, index) {
       if (index % 100 == 0) {
@@ -279,7 +279,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
       Logger.log("section "+feature.properties.start_fmt_time
                   + " -> "+feature.properties.end_fmt_time
                   + " bound incident addition ");
-      var allPoints = getSectionPoints(feature);
+      var allPoints = ptmm.getSectionPoints(feature);
       var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
       var featureArray = trip.features;
       return ptmm.startAddingIncidentToPoints(layer, allPoints, featureArray);
@@ -288,7 +288,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   var getAllPointsForTrip = function(trip) {
     var allPoints = [];
     trip.sections.forEach(function(s) {
-      Array.prototype.push.apply(allPoints, getSectionPoints(s));
+      Array.prototype.push.apply(allPoints, ptmm.getSectionPoints(s));
     });
     return allPoints;
   }
