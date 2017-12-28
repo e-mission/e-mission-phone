@@ -246,13 +246,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       var hasMode = false;
       trip.data.features.forEach(function(feature) {
         if(feature.feature_type == "mode") {
-          $scope.modeOptions.forEach(function(mode) {
-            if(feature.label == mode.value) {
-              $scope.mode = mode.text;
-            } else {
-              $scope.mode = feature.label;
-            }
-          });
+          var modes = $scope.modeOptions.map(a => a.value);
+          if(modes.indexOf(feature.label) > -1) {
+            $scope.modeOptions.forEach(function(mode) {
+              if(feature.label == mode.value) {
+                  $scope.mode = mode.text;
+                }
+              });
+          } else {
+            $scope.mode = feature.label;
+          } 
           hasMode =  true;
         }
       });
@@ -263,13 +266,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       var hasPurpose = false;
       trip.data.features.forEach(function(feature) {
         if(feature.feature_type == "purpose") {
-          $scope.purposeOptions.forEach(function(purpose) {
-            if(feature.label == purpose.value) {
-              $scope.purpose = purpose.text;
-            } else {
-              $scope.purpose = feature.label;
-            }
-          });
+          var purposes = $scope.purposeOptions.map(a => a.value);
+          if(purposes.indexOf(feature.label) > -1) {
+            $scope.purposeOptions.forEach(function(purpose) {
+              if(feature.label == purpose.value) {
+                $scope.purpose = purpose.text;
+              }
+            });
+          } else {
+            $scope.purpose = feature.label;
+          }
           hasPurpose = true;
         }
       });
