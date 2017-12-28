@@ -1102,16 +1102,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   edm.chosenModeAndSection = []
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
 
-  var addModeToSectionDisplay = function(modeObj, section, layer) {
+  var addModeToSectionDisplay = function(modeObj, trip) {
       //Get trip from cache here?
       //feature.properties.mode_confirm = modeObj;
-      var trip = Timeline.getTrip(section.properties.trip_id.$oid);
-      trip.features.forEach(function(feature) {
+      var tripReturn = trip;
+      tripReturn.features.forEach(function(feature) {
         if(feature.type == "FeatureCollection") {
-          if(feature.features[0].id == section.id) feature.features[0].properties.mode_confirm = modeObj;
+          if(feature.features[0].id == modeObj.id) feature.features[0].properties.mode_confirm = modeObj;
         }
       })
-      console.log(trip);
+      console.log(tripReturn);
   }
 
   var modeOptions = [
@@ -1141,14 +1141,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       modeObjReturn.tripId = feature.properties.trip_id.$oid;
       modeObjReturn.id = feature.id;
       modeObjReturn.ts = new Date().getTime();
+      modeObjReturn.trip_mode = false
       return modeObjReturn;
     }
 
     var addModeToSection = function(modeText, feature, layer) {
+      var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
       var modeObj = modeTextToValue(modeText, feature);
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, modeObj).then(function() {
         console.log(modeObj);
-        addModeToSectionDisplay(modeObj, feature, layer);
+        addModeToSectionDisplay(modeObj, trip);
       });
     }
 
@@ -1180,6 +1182,39 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             }
       })
     };
+
+    var getTripMode = function(trip) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
+        Logger.log("Modes stored locally" + JSON.stringify(modes));
+        var tripMode = {};
+        if(modes.length > 0) {
+          modes.forEach(function(mode) {
+            if (mode.trip_mode == false && mode.tripId == trip.id) {
+              tripMode = mode;
+              Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+            }
+          });
+        }
+          return tripMode;
+      });
+    }
+
+    var isNotEmpty = function(obj) {
+      for(var prop in obj) {
+          if(obj.hasOwnProperty(prop))
+              return true;
+      }
+      return false;
+    };
+
+    edm.addUnpushedSectionMode = function(trip) {
+      getTripMode(trip).then(function(mode) {
+        if(isNotEmpty(mode)){
+          addModeToSectionDisplay(mode, trip);
+        }
+      });
+    }
+
     return edm;
 })
 
