@@ -209,17 +209,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       var hasMode = false;
       trip.data.features.forEach(function(feature) {
         if(feature.feature_type == "mode") {
-          $scope.modeOptions.forEach(function(mode) {
-            if(feature.value == mode.value) {
-              $scope.mode = mode.text;
-            } else {
-              $scope.mode = feature.value;
-            }
-          });
+          var modes = $scope.modeOptions.map(a => a.value);
+          if(modes.indexOf(feature.value) > -1) {
+            $scope.modeOptions.forEach(function(mode) {
+              if(feature.value == mode.value) {
+                  $scope.mode = mode.text;
+                }
+              });
+          } else {
+            $scope.mode = feature.value;
+          } 
           hasMode =  true;
         }
       });
       return hasMode;
+    }
+
+    $scope.isSingleModeTrip = function(trip) {
+      var singleModeTrip = false;
+      if(trip.sections.length == 1) singleModeTrip = true
+      return singleModeTrip;
     }
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {

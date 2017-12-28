@@ -1187,13 +1187,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
         Logger.log("Modes stored locally" + JSON.stringify(modes));
         var tripMode = {};
+        var modeHistory = []
         if(modes.length > 0) {
           modes.forEach(function(mode) {
             if (mode.trip_mode == false && mode.tripId == trip.id) {
-              tripMode = mode;
+              modeHistory.push(mode)
               Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
             }
           });
+        }
+        if(modeHistory.length > 0) {
+           modeHistory.sort(function(x, y){
+            return x.ts - y.ts;
+          })
+          tripMode = modeHistory[modeHistory.length-1]
         }
           return tripMode;
       });
