@@ -7,7 +7,7 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
 .controller("EditModeCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, EditModeFactory) {
   console.log("controller editMode called with params = "+
     JSON.stringify($stateParams));
 
@@ -46,6 +46,7 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip, true);
+  $scope.editModeObj = EditModeFactory.chosenModeAndSection
   console.log($scope.tripgj);
   console.log($scope.trip);
 
@@ -58,6 +59,10 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
 
   leafletData.getMap('detail').then(function(map) {
     map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
+  });
+
+  $scope.$watch(function() { 
+    $scope.editModeObj;
   });
 
   $scope.editMode = function(param) {

@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker, $ionicActionSheet){
+.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker, $ionicActionSheet, EditModeFactory){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -357,7 +357,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       case "stop": layer.bindPopup(""+feature.properties.duration); break;
       case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
       case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
-      case "section": layer.on('click', () => {editMode(feature, layer)}); break;
+      case "section": layer.on('click', EditModeFactory.editMode(feature, layer)); break;
       case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
     }
   };
@@ -390,50 +390,34 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 weight: 5,
                 opacity: 1,
         };
-        var mode_string = dh.getHumanReadable(feature.properties.sensed_mode);
-        switch(mode_string) {
-            case "WALKING": return getColoredStyle(baseDict, 'brown');
-            case "RUNNING": return getColoredStyle(baseDict, 'brown');
-            case "BICYCLING": return getColoredStyle(baseDict, 'green');
-            case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
-            case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
-            case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
-            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
-            default: return getColoredStyle(baseDict, 'black');
+        if('mode_confirm' in feature.properties) {
+          var mode_string = feature.properties.mode_confirm.value;
+          switch(mode_string) {
+              case "walk": return getColoredStyle(baseDict, 'brown');
+              case "bike": return getColoredStyle(baseDict, 'green');
+              case "drove_alone": return getColoredStyle(baseDict, 'purple');
+              case "shared_ride": return getColoredStyle(baseDict, 'purple');
+              case "taxi": return getColoredStyle(baseDict, 'purple');
+              case "bus": return getColoredStyle(baseDict, 'purple');
+              case "train": return getColoredStyle(baseDict, 'purple');
+              case "free_shuttle": return getColoredStyle(baseDict, 'purple');
+              case "other_mode": return getColoredStyle(baseDict, 'orange');
+              default: return getColoredStyle(baseDict, 'black');
+          }
+        } else {
+          var mode_string = dh.getHumanReadable(feature.properties.sensed_mode);
+          switch(mode_string) {
+              case "WALKING": return getColoredStyle(baseDict, 'brown');
+              case "RUNNING": return getColoredStyle(baseDict, 'brown');
+              case "BICYCLING": return getColoredStyle(baseDict, 'green');
+              case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
+              case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
+              case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
+              case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
+              default: return getColoredStyle(baseDict, 'black');
+          }
         }
-      };
-
-    var editMode = function(feature, layer) {
-      layer.bindPopup(""+dh.getHumanReadable(feature.properties.sensed_mode));
-      console.log("EDIT MODE SHEET!!!")
-    }
-
-    /*var incidentOrModeSheet = function(feature, layer) {
-      Logger.log("About to show sheet to choose incident or edit trip");
-      var incident_or_mode = [{text: "Incident"},
-                              {text: "Mode"},
-                              {text: "Cancel"}]
-
-      Logger.log("About to call ionicActionSheet.show");
-      $ionicActionSheet.show({titleText: "Edit Mode or Incident",
-            cancel: function() {
-              Logger.log("Canceled incident or edit trip");
-            },
-            buttons: incident_or_mode,
-            buttonClicked: function(index, button) {
-                Logger.log("Clicked button "+button.text+" at index "+index);
-                if (button.text != "Cancel") {
-                  Logger.log("Editing" + button.text);
-                  if(button.text == "Incident") {
-                    PostTripManualMarker.startAddingIncidentToSection(feature, layer)
-                  } else {
-                    editMode(feature, layer)
-                  }
-                }
-                return true;
-            }
-      });
-    };*/
+    };
 
   return dh;
 
@@ -1111,4 +1095,91 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     return timeline;
   })
+.factory('EditModeFactory', function($window, $state, $ionicActionSheet,
+                                          Logger, Timeline, PostTripManualMarker) {
+
+  var edm = {}
+  edm.chosenModeAndSection = []
+  var MODE_CONFIRM_KEY = "manual/mode_confirm";
+
+  var addModeToSectionDisplay = function(modeObj, section, layer) {
+      //Get trip from cache here?
+      //feature.properties.mode_confirm = modeObj;
+      var trip = Timeline.getTrip(section.properties.trip_id.$oid);
+      trip.features.forEach(function(feature) {
+        if(feature.type == "FeatureCollection") {
+          if(feature.features[0].id == section.id) feature.features[0].properties.mode_confirm = modeObj;
+        }
+      })
+      console.log(trip);
+  }
+
+  var modeOptions = [
+     {text:'Walk', value:'walk'},
+     {text:'Bike',value:'bike'},
+     {text:'Drove Alone',value:'drove_alone'},
+     {text:'Shared Ride',value:'shared_ride'},
+     {text:'Taxi/Uber/Lyft',value:'taxi'},
+     {text:'Bus',value:'bus'},
+     {text:'Train',value:'train'},
+     {text:'Free Shuttle',value:'free_shuttle'},
+     {text:'Other',value:'other_mode'}];
+
+    var toModeTextArray = function(modeOptions) {
+      var modeTextArray = modeOptions.map(function(item) { return {text: item["text"]} });
+      modeTextArray.push( {text:"Cancel"});
+      return modeTextArray;
+    }
+
+     var modeTextToValue = function(modeText, feature) {
+      var modeObjReturn = {}
+      var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
+      modeOptions.forEach(function (modeObj) { 
+        if(modeText == "Other") modeObjReturn = {text:'Other',value:'other_mode'} //Change this to have users own mode value
+        else if(modeObj.text == modeText) modeObjReturn = modeObj;
+      });
+      modeObjReturn.tripId = feature.properties.trip_id.$oid;
+      modeObjReturn.id = feature.id;
+      modeObjReturn.ts = new Date().getTime();
+      return modeObjReturn;
+    }
+
+    var addModeToSection = function(modeText, feature, layer) {
+      var modeObj = modeTextToValue(modeText, feature);
+      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, modeObj).then(function() {
+        console.log(modeObj);
+        addModeToSectionDisplay(modeObj, feature, layer);
+      });
+    }
+
+    edm.editMode = function(feature, layer) {
+      //layer.bindPopup(""+dh.getHumanReadable(feature.properties.sensed_mode));
+      return function(e) {
+        console.log("Edit mode sheet")
+        incidentOrModeSheet(feature, layer)
+      }
+    }
+
+    var incidentOrModeSheet = function(feature, layer) {
+      Logger.log("About to show sheet to edit section mode");
+      var modesText = toModeTextArray(modeOptions)
+
+      Logger.log("About to call ionicActionSheet.show");
+      $ionicActionSheet.show({titleText: "Edit Mode",
+            cancel: function() {
+              Logger.log("Canceled incident or edit trip");
+            },
+            buttons: modesText,
+            buttonClicked: function(index, button) {
+                Logger.log("Clicked button "+button.text+" at index "+index);
+                if (button.text != "Cancel") {
+                  Logger.log("Choose " + button.text);
+                  addModeToSection(button.text, feature, layer)
+                }
+                return true;
+            }
+      })
+    };
+    return edm;
+})
 
