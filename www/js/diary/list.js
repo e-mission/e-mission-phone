@@ -14,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, $ionicPopover) {
+                                    Config, PostTripManualMarker, nzTour, storage, $ionicPopover, EditModeFactory) {
   console.log("controller DiaryListCtrl called");
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
 
@@ -169,8 +169,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         var tripMode = {};
         if(modes.length > 0) {
           modes.forEach(function(mode) {
-            if ((trip.properties.start_ts == mode.start_ts) &&
-                 (trip.properties.end_ts == mode.end_ts)) {
+            if (trip.id == mode.tripId && mode.trip_mode == true) {
               tripMode = mode;
               Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
             }
@@ -211,10 +210,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       trip.data.features.forEach(function(feature) {
         if(feature.feature_type == "mode") {
           $scope.modeOptions.forEach(function(mode) {
-            if(feature.label == mode.value) {
+            if(feature.value == mode.value) {
               $scope.mode = mode.text;
             } else {
-              $scope.mode = feature.label;
+              $scope.mode = feature.value;
             }
           });
           hasMode =  true;
@@ -231,6 +230,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.data.currDayTrips.forEach(function(trip, index, array) {
               addUnpushedMode(trip);
               PostTripManualMarker.addUnpushedIncidents(trip);
+              EditModeFactory.addUnpushedSectionMode(trip);
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map( 
             function(trip) { return DiaryHelper.directiveForTrip(trip, false);});
@@ -453,7 +453,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    });
 
    $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
-      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts};
+      $scope.draftMode = {"tripId": tripgj.data.id, "trip_mode": true};
       $scope.modeTripgj = tripgj;
       Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
       $scope.modePopover.show($event);
@@ -522,7 +522,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    {text:'Other',value:'other_mode'}];
 
    $scope.storeMode = function(mode_val, isOther) {
-      $scope.draftMode.label = mode_val;
+      $scope.draftMode.value = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function() {
         console.log($scope.modeTripgj);
