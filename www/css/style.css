@@ -1001,6 +1001,7 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 9px;
         position: absolute;
         left: 1%;
+        bottom:15px;
         top: 275px;
         line-height: 16px;
 }
@@ -1889,4 +1890,19 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+
+.popover {
+  height: 297px;
+  width: 230px;
+}
+
+#diary-card{
+  height: 335px;
+}
+
+#diary-item {
+  padding: 0;
+  border-width: 0;
 }

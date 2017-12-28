@@ -15,16 +15,12 @@
         </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
-	<ion-content class="diary-entry">
+    <ion-content class="diary-entry">
         <ion-refresher
         pulling-text="Pull to refresh"
         on-refresh="refresh()">
         </ion-refresher>
-        <div  ng-if="inTrip()" class="control-list-item">
-            <div class="control-list-text">Current Trip</div>
-            <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
-        </div>
-		<ion-list>
+        <ion-list>
         <ion-nav-view ></ion-nav-view>
         <!--
         This needs to be collection-repeat instead of ng-repeat on android.
@@ -37,22 +33,23 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
+        <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '413px':'365px'">
            <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>
             <div  style="padding-left: 19%;">
 
-			 <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{tripgj.data.id}}">
+             <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
                 <div ng-class="listExpandClass()" ng-if="differentCommon(tripgj)" id="hidden-{{tripgj.data.id}}">
                     {{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}
                 </div>
 
 
-                <div ng-class="listCardClass(tripgj)">
+                <div id="diary-card" ng-class="listCardClass(tripgj)">
+                <div ng-click="toDetail(tripgj.data.id)">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common_count) }};"></i> -->
 
                 <div class="row">
                     <div ng-class="listColLeftClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])">
-                        <p ng-class="listTextClass()" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;">{{getFormattedDistance(tripgj.data.properties.distance)}} km in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
+                        <p ng-class="listTextClass()" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;">{{getFormattedDistance(tripgj.data.properties.distance)}} mi in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
                            tripgj.data.properties.end_ts)}}</p>
 
                         <a style="font-size: 0.6em; line-height: 0.6em; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"><i class="{{ getArrowClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0]) }}" style="font-size: 1em; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"></i>{{ getLongerOrShorter(tripgj.data, tripgj.data.id)[1] }}</a>
@@ -88,18 +85,28 @@
                         <i class="ion-ios-arrow-right"></i>
                     </div>
                 </div>
-
-
-
-
+             </div>
+             <div class="row" style="text-align: center;">   
+             <div style="text-align: center;font-size: 14px;font-weight: 600;margin-left: auto;margin-right: auto;" ng-if="checkMode(tripgj)">
+             Mode
+             </div>
+             </div>
+             <div class="row" style="text-align: center;">   
+                <div style="text-align: center;margin-left: auto;margin-right: auto;">
+                    <div ng-if="checkMode(tripgj)" style="font-size: 14px; margin-top: 5px;">
+                    {{mode}}
+                    </div>
+                    <button ng-if="!checkMode(tripgj)" ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Mode</button>  
+                </div>
+             </div>   
             </div>
             </ion-item>
 
             </div>
             <div ng-class="stopTimeTagClass(tripgj)">{{localTimeString (tripgj.data.properties.end_local_dt)}}</div>
         </div>
-		</ion-list>    
-	</ion-content>
+        </ion-list>    
+    </ion-content>
 
 
 </ion-view>
