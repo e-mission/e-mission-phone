@@ -9,7 +9,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   var MULTI_PASS_THRESHOLD = 90;
   var MANUAL_INCIDENT = "manual/incident";
   var theFeatureArray =[];
-  var DISTANCE_THRESHOLD = function() {
+  ptmm.DISTANCE_THRESHOLD = function() {
     if ($ionicPlatform.is("android")) {
       return 200;
     } else {
@@ -90,7 +90,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * Uses sortPointsByDistance.
    */
 
-  var getClosestPoints = function(selPoint, allPoints)  {
+  ptmm.getClosestPoints = function(selPoint, allPoints)  {
     var selPointLatLng = L.GeoJSON.coordsToLatLng(selPoint.geometry.coordinates);
     // Add distance to the selected point to the properties
     var sortedPoints = angular.copy(allPoints);
@@ -119,7 +119,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    * This uses sortPointsByTime
    */
 
-  var getTimeBins = function(closestPoints) {
+  ptmm.getTimeBins = function(closestPoints) {
       var sortedTsList = angular.copy(closestPoints).sort(sortPointsByTime);
       sortedTsList.forEach(function(currItem, i) {
         if (i == 0) {
@@ -240,7 +240,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
     Logger.log("About to call ionicActionSheet.show");
     $ionicActionSheet.show({titleText: "lat: "+latlng.lat.toFixed(6)
               +", lng: " + latlng.lng.toFixed(6)
-              + " at " + getFormattedTime(ts),
+              + " at " + ptmm.getFormattedTime(ts),
           // cancelText: 'Cancel',
           cancel: function() {
             cancelTempEntry(latlng, ts, marker, map);
@@ -266,7 +266,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
     });
   };
 
-  var getFormattedTime = function(ts_sec) {
+  ptmm.getFormattedTime = function(ts_sec) {
     return moment(ts_sec * 1000).format('LT');
   }
 
@@ -329,13 +329,13 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    */
 
   ptmm.startAddingIncidentToPoints = function(layer, allPoints, geojsonFeatureArray) {
-      Logger.log("points "+getFormattedTime(allPoints[0].ts)
-                  + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
+      Logger.log("points "+ptmm.getFormattedTime(allPoints[0].ts)
+                  + " -> "+ptmm.getFormattedTime(allPoints[allPoints.length -1].ts)
                   + " bound incident addition ");
 
       return function(e) {
-          Logger.log("points "+getFormattedTime(allPoints[0].ts)
-                      + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
+          Logger.log("points "+ptmm.getFormattedTime(allPoints[0].ts)
+                      + " -> "+ptmm.getFormattedTime(allPoints[allPoints.length -1].ts)
                       + " received click event, adding stress popup at "
                       + e.latlng);
           if ($state.$current == "root.main.diary") {
@@ -349,17 +349,17 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
           var latlng = e.latlng;
           var marker = L.circleMarker(latlng).addTo(map);
 
-          var sortedPoints = getClosestPoints(marker.toGeoJSON(), allPoints);
-          if (sortedPoints[0].selDistance > DISTANCE_THRESHOLD()) {
+          var sortedPoints = ptmm.getClosestPoints(marker.toGeoJSON(), allPoints);
+          if (sortedPoints[0].selDistance > ptmm.DISTANCE_THRESHOLD()) {
             Logger.log("skipping incident addition because closest distance "
-              + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + DISTANCE_THRESHOLD());
+              + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + ptmm.DISTANCE_THRESHOLD());
             cancelTempEntry(latlng, ts, marker, map);
             return;
           };
           var closestPoints = sortedPoints.slice(0,10);
           Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
 
-          var timeBins = getTimeBins(closestPoints);
+          var timeBins = ptmm.getTimeBins(closestPoints);
           Logger.log("number of bins = " + timeBins.length);
 
 
@@ -387,7 +387,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
             });
             Logger.log("tsOptions = " + tsOptions);
             var timeSelActions = tsOptions.map(function(ts) {
-              return {text: getFormattedTime(ts),
+              return {text: ptmm.getFormattedTime(ts),
                       selValue: ts};
             });
             $ionicActionSheet.show({titleText: "Choose incident time",
@@ -472,7 +472,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
    */
 
   ptmm.displayIncident = function(feature, layer) {
-    return layer.bindPopup(""+getFormattedTime(feature.properties.ts));
+    return layer.bindPopup(""+ptmm.getFormattedTime(feature.properties.ts));
   };
 
   /*
