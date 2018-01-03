@@ -53,12 +53,13 @@
       </div>
       <div ng-if="uictrl.showSummary" overflow-scroll="true">
         <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
+          <!--
           <div>
             <div class="circle">
               <div id="green-leaf" class="icon ion-leaf">
               </div>
-            </div>
-              <h4 class="dashboard-headers">Footprint</h4>
+            </div> -->
+              <h4 class="dashboard-headers">Weekly Stats</h4>
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
                   <div class="user-carbon">{{carbonData.userCarbon}}</div>
@@ -82,6 +83,7 @@
             <i ng-class="checkFootprintCardExpanded()"></i>
           </div>
         </div>
+        <!--
         <div ng-class="changeCalorieCardHeight()" id="dashboard-calorie" class="card">
           <div>
             <div class="circle" ng-if="foodCompare == 'cookie'">
@@ -130,6 +132,7 @@
         </div>
         <ion-slide-box show-pager="false" id="modes">
           <ion-slide id="modes">
+          -->
             <div id="dashboard-bottom" class="card">
               <h4 class="dashboard-headers">Distance</h4>
                 <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;">No summary data</div>
