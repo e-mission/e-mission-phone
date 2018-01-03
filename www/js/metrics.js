@@ -23,7 +23,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           $state.go("root.main.current");
         }
@@ -409,6 +409,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.uictrl.showResult = true;
       $scope.uictrl.hasAggr = false;
 
+      $scope.suggestionData = {}; //New for URAP-2017-information
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
@@ -418,6 +419,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = " change";
 
+      $scope.suggestionData.suggestion = "Try biking to the gym tomorrow";
+      $scope.sugggestionData.savings = "0 kg CO₂";
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -1157,5 +1160,5 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  
+
 });
