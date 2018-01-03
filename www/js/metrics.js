@@ -23,7 +23,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           $state.go("root.main.current");
         }
@@ -76,7 +76,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       scope: $scope,
       animation: 'slide-in-up'
     }).then(function(modal) {
-      $scope.modal = modal;
+      $scope.modal = modal; 
     });
     $scope.openModal = function(){
       $scope.modal.show();
@@ -1157,5 +1157,5 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  
+
 });
