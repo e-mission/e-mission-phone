@@ -398,7 +398,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    var getMetrics = function() {
       $ionicLoading.show({
-        template: 'Loading...'
+        template: '<ion-spinner icon="spiral"></ion-spinner>'
       });
       if(!first){
         $scope.uictrl.current = "Custom";
