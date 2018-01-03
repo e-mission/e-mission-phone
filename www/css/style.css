@@ -99,7 +99,7 @@
 .item-thumbnail-left-avatar.activated {
   background-color: transparent;
   box-shadow: none;
-  color: #fff; 
+  color: #fff;
 }
 
 .signup-title{
@@ -428,6 +428,12 @@ img.center {
   font-size: 25px !important;
 }
 
+#suggestion-header{
+  background-color: white;
+  color: #54DCC1;
+  width: 100%;
+}
+
 h4.dashboard-headers{
   color: #fff;
   background: #54DCC1;
@@ -606,7 +612,7 @@ h4.dashboard-headers{
   background-color: #4BC3AB;
 }
 #up_value_positive{
-  background-color: #2CAC93;  
+  background-color: #2CAC93;
 }
 #up_value_positive_big{
   background-color: #0D9C80;
@@ -621,7 +627,7 @@ h4.dashboard-headers{
   background-color: #F75F74;
 }
 #down_value_positive{
-  background-color: #FA8595;  
+  background-color: #FA8595;
 }
 #down_value_positive_big{
   background-color: #FDB3BD;
@@ -851,12 +857,12 @@ ion-header-bar {
 }
 .list-location-dark {
   color: white;
-  background-color: transparent; 
-  font-size: 0.8em; 
-  padding-top: 5px; 
-  padding-bottom: 5px; 
-  padding-left: 30px; 
-  margin-top: 0; 
+  background-color: transparent;
+  font-size: 0.8em;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  padding-left: 30px;
+  margin-top: 0;
   margin-bottom: 0;
 }
 p.list-text-dark {
@@ -941,13 +947,13 @@ button.button.back-button.buttons.button-clear.header-item {
   margin: 16px 0; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .bg-dark {
-  background-color: #424242; 
+  background-color: #424242;
 }
 .bg-light {
-  background-color: #ffffff; 
+  background-color: #ffffff;
 }
 .bg-unprocessed {
-  background-color: #9eb2aa; 
+  background-color: #9eb2aa;
 }
 .list-card-sm {
   width: 95%;
@@ -1200,7 +1206,7 @@ html, body, #chart2, svg {
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #01D0A7;
   height: 35px;
-  
+
 }
 
 .current-mode-button {
@@ -1273,7 +1279,7 @@ html, body, #chart2, svg {
 }
 
 #current-direction-text {
-  color:#6A6A6A; 
+  color:#6A6A6A;
   font-size: 20px;
   font-weight: 600;
   margin-top: 5px;

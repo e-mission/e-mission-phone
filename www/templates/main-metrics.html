@@ -11,8 +11,9 @@
         <i class="icon ion-refresh"></i>
       </button>
   </ion-nav-buttons>
+  <!--
   <ion-content class="has-header">
-    <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control -->
+    <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control
       <div class="metric-half">
         <div ng-class="summaryButtonClass()" ng-click="showSummary()">Summary</div>
         <div ng-class="chartButtonClass()" ng-click="showChart()">Chart</div>
@@ -28,7 +29,7 @@
       <div class="metric-second-half">
           <i class="icon ion-ios-person metric-icon"></i>
           <label ng-click="toggle()" class="toggle metric-me-toggle">
-            <input type="checkbox" ng-checked="!uictrl.showMe" ng-disabled="!uictrl.hasAggr"> <!-- me on left, off -->
+            <input type="checkbox" ng-checked="!uictrl.showMe" ng-disabled="!uictrl.hasAggr"> <!-- me on left, off
             <div class="track toggle-color">
               <div class="handle"></div>
             </div>
@@ -51,7 +52,21 @@
         <nvd3 ng-if="uictrl.showDuration" options="durationOptions" data="data.duration" style="padding: 10px;"></nvd3>
         <nvd3 ng-if="uictrl.showSpeed" options="speedOptions" data="data.speed" style="padding: 10px;"></nvd3>
       </div>
-      <div ng-if="uictrl.showSummary" overflow-scroll="true">
+              -->
+              <!--
+      <div ng-if="uictrl.showSummary" overflow-scroll="true"> -->
+      <div id="suggestion-header">
+        <div class="user-carbon">
+          <b>Most Relevant Suggestion:</b> {{suggestionData.suggestion}}
+        </div>
+        <div class="percentage-change">
+          You can save: {{suggestionData.savings}}
+        </div>
+      </div>
+
+
+
+
         <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
           <!--
           <div>
@@ -83,18 +98,19 @@
           <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
             <i ng-class="checkFootprintCardExpanded()"></i>
           </div>
-        </div>
+          <!--
+        </div> -->
         <!--
         <div ng-class="changeCalorieCardHeight()" id="dashboard-calorie" class="card">
           <div>
             <div class="circle" ng-if="foodCompare == 'cookie'">
-              <img src="img/cookie.png" id="food"> 
+              <img src="img/cookie.png" id="food">
             </div>
             <div class="circle" ng-if="foodCompare == 'iceCream'">
-              <img src="img/icecream.png" id="food"> 
+              <img src="img/icecream.png" id="food">
             </div>
             <div class="circle" ng-if="foodCompare == 'banana'">
-              <img src="img/banana.png" id="foodB"> 
+              <img src="img/banana.png" id="foodB">
             </div>
             <h4 class="dashboard-headers">Calories</h4>
           </div>
@@ -117,13 +133,13 @@
               <div class="card dashboard-list"><b>Last Week:</b> {{caloriesData.lastWeekUserCalories}}</div>
               <div style="align:center;">
                  <div class="circle" id="circle-food" ng-click="setCookie()">
-                  <img src="img/cookie.png" id="food"> 
+                  <img src="img/cookie.png" id="food">
                 </div>
                 <div class="circle" id="circle-food" ng-click="setIceCream()">
-                  <img src="img/icecream.png" id="food"> 
+                  <img src="img/icecream.png" id="food">
                 </div>
                 <div class="circle" id="circle-food" ng-click="setBanana()">
-                  <img src="img/banana.png" id="foodB"> 
+                  <img src="img/banana.png" id="foodB">
                 </div>
               </div>
             </div>
@@ -138,7 +154,7 @@
                 <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;">No summary data</div>
                 <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
                   <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
-                    
+
                     <div class="metric-summary-left">
                       <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
                     </div>
@@ -150,10 +166,10 @@
                         {{ summaryData.defaultSummary.distance[dIndex + i].values }}
                       </div>
                     </div>
-                  </div> 
+                  </div>
                 </div>
             </div>
         </div>
-    </div> 
+    </div>
   </ion-content>
 </ion-view>
