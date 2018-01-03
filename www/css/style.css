@@ -432,6 +432,11 @@ img.center {
   background-color: white;
   color: #54DCC1;
   width: 100%;
+  background: #fff;
+  border-radius: 2px;
+  display: inline-block;
+  height: 150px;
+  position: relative;
 }
 
 h4.dashboard-headers{
