@@ -31,7 +31,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
     }
   }
   return fh;
-})
+});
 /**
 .factory('CalorieCal', function(storage){
 
@@ -184,4 +184,4 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
   }
   return cc;
 **/
-});
+/*});
