@@ -76,7 +76,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       scope: $scope,
       animation: 'slide-in-up'
     }).then(function(modal) {
-      $scope.modal = modal;
+      $scope.modal = modal; 
     });
     $scope.openModal = function(){
       $scope.modal.show();
