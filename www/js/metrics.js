@@ -76,7 +76,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       scope: $scope,
       animation: 'slide-in-up'
     }).then(function(modal) {
-      $scope.modal = modal; 
+      $scope.modal = modal;
     });
     $scope.openModal = function(){
       $scope.modal.show();
@@ -420,7 +420,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.change = " change";
 
       $scope.suggestionData.suggestion = "Try biking to the gym tomorrow";
-      $scope.sugggestionData.savings = "0 kg CO₂";
+      $scope.suggestionData.savings = "0 kg CO₂";
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
