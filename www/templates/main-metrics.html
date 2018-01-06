@@ -57,8 +57,11 @@
               -->
               <!--
       <div ng-if="uictrl.showSummary" overflow-scroll="true"> -->
-      <div id="suggestion-header">
-          <b>Most Relevant Suggestion:</b> {{suggestionData.suggestion}}
+      <div class="card" id="suggestion-card">
+        <h4 class="dashboard-headers">Suggestion</h4>
+        <div class="user-carbon">
+          Current Suggestion: {{suggestionData.suggestion}}
+        </div>
         <div class="percentage-change">
           You can save: {{suggestionData.savings}} in a month
         </div>
