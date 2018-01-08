@@ -396,7 +396,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
    $scope.openSurvey= function($event, trip_gj) {
-      SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_80Sj1xdMHDrV4vX",
+      SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_cCvQMh6Jg0jyZ8x",
        "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
        trip_gj.data.properties.start_ts, trip_gj.data.properties.end_ts);
     };
