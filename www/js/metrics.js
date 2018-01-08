@@ -419,7 +419,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = " change";
 
-      $scope.suggestionData.suggestion = "Try biking to the gym tomorrow";
+      $scope.suggestionData.suggestion = "No recent suggestion to show";
       $scope.suggestionData.savings = "0 kg CO₂";
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
