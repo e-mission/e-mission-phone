@@ -1,3 +1,22 @@
+<head>
+  <!-- Header is in file for testing purposes (easier to preview html)
+      (scripts copied from index.html) (can delete later)-->
+  <link href="../lib/ionic/css/ionic.css" rel="stylesheet">
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="css/intro.css" rel="stylesheet">
+  <link href="css/main.recent.css" rel="stylesheet">
+  <link href="css/main.diary.css" rel="stylesheet">
+  <link href="lib/animate.css/animate.min.css" rel="stylesheet">
+  <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
+  <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
+  <link href="lib/nz-tour/dist/nz-tour.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
+  <link href="build/app.css" rel="stylesheet">
+  <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
+  <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
+  <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
+  <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
+</head>
 <ion-view view-title="Dashboard" class="ion-view-background">
   <ion-nav-bar class="bar-stable">
   </ion-nav-bar>
@@ -11,8 +30,9 @@
         <i class="icon ion-refresh"></i>
       </button>
   </ion-nav-buttons>
-  <!--
+
   <ion-content class="has-header">
+    <!--
     <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control
       <div class="metric-half">
         <div ng-class="summaryButtonClass()" ng-click="showSummary()">Summary</div>
@@ -38,7 +58,8 @@
           <i class="icon ion-ios-people metric-icon"></i>
         </div>
     </div>
-    <!--
+    -->
+  	<!--
     <div ng-if="uictrl.showChart" style="width:100%; padding:10px;padding-top: 50px;">
       <div class="metric-half">
         <div ng-class="distanceButtonClass()" ng-click="showDistance()">Distance</div>
@@ -54,15 +75,13 @@
         <nvd3 ng-if="uictrl.showDuration" options="durationOptions" data="data.duration" style="padding: 10px;"></nvd3>
         <nvd3 ng-if="uictrl.showSpeed" options="speedOptions" data="data.speed" style="padding: 10px;"></nvd3>
       </div>
-              -->
-              <!--
-      <div ng-if="uictrl.showSummary" overflow-scroll="true"> -->
+      <div ng-if="uictrl.showSummary" overflow-scroll="true">-->
       <div class="card" id="suggestion-card">
         <h4 class="dashboard-headers">Suggestion</h4>
         <div class="user-carbon">
-          Current Suggestion: {{suggestionData.suggestion}}
+          {{suggestionData.suggestion}}
         </div>
-        <div class="percentage-change">
+        <div id="percentage-change">
           You can save: {{suggestionData.savings}} in a month
         </div>
       </div>
@@ -75,32 +94,33 @@
               </div>
             </div> -->
               <h4 class="dashboard-headers">Weekly Stats</h4>
-              <div ng-if="uictrl.showContent">
-                <div ng-class="currentQueryForCarbon()">
-                  <div class="user-carbon">{{carbonData.userCarbon}}</div>
-                  <div class="user-carbon"><b>Last Week:</b> {{carbonData.lastWeekUserCarbon}}</div>
+              <!--<div ng-if="uictrl.showContent">
+                <div ng-class="currentQueryForCarbon()">-->
+                  <div class="user-carbon"><b>CO2 Consumption:</b> {{carbonData.userCarbon}}</div>
+                  <div class="user-carbon"><b>Change from Last Week:</b> {{carbonData.lastWeekUserCarbon}}</div>
                   <div ng-if="uictrl.current == 'Last week'">
                     <div id="arrow-color" ng-if="carbonUp" class="icon ion-arrow-up-a"></div>
                     <div id="arrow-color" ng-if="carbonDown" class="icon ion-arrow-down-a"></div>
                     <div class="percentage-change">{{carbonData.changeInPercentage}}{{carbonData.change}}</div>
                   </div>
-                </div>
-              </div>
+                  <div class="user-carbon"><b>Total Distance:</b> {{carbonData.lastWeekUserCarbon}}</div>
+                  <div class="user-carbon"><b>Favorite Mode of Transport:</b> {{carbonData.lastWeekUserCarbon}}</div>
+                <!--</div>
+              </div>-->
               <!-- Toggle total stats results in this -->
               <div style="margin-top: 110px;">
-                <div class="card dashboard-list"><b>Optimal:</b> {{carbonData.optimalCarbon}}</div>
-                <div class="card dashboard-list"><b>Average:</b> {{carbonData.aggrCarbon}}</div>
-                <div class="card dashboard-list"><b>Worst:</b> {{carbonData.worstCarbon}}</div>
-                <div class="card dashboard-list"><b>Last Week:</b> {{carbonData.lastWeekUserCarbon}}</div>
-                <div class="card dashboard-list"><b>CA 2035:</b> {{carbonData.ca2035}}</div>
-                <div class="card dashboard-list"><b>CA 2050:</b> {{carbonData.ca2050}}</div>
+                <h4 class="dashboard-headers">Lifetime Stats</h4>
+                <div class="card dashboard-list"><b>CO2 Consumption:</b> {{carbonData.optimalCarbon}}</div>
+                <div class="card dashboard-list"><b>Total Distance:</b> {{carbonData.optimalCarbon}}</div>
+                <div class="card dashboard-list"><b>Favorite Mode of Transport:</b> {{carbonData.optimalCarbon}}</div>
+              </div>
+              <!-- Expand card button -->
+              <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
+                <i ng-class="checkFootprintCardExpanded()"></i>
               </div>
           </div>
-          <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
-            <i ng-class="checkFootprintCardExpanded()"></i>
-          </div>
-          <!--
-        </div> -->
+        <!--
+        </div>-->
         <!--
         <div ng-class="changeCalorieCardHeight()" id="dashboard-calorie" class="card">
           <div>
@@ -128,51 +148,55 @@
                 <div class="percentage-change">{{caloriesData.changeInPercentage}}{{caloriesData.change}}</div>
               </div>
             </div>
-            </div>
-            <div style="margin-top: 120px;">
-              <div class="card dashboard-list"><b>Average:</b> {{caloriesData.aggrCalories}}</div>
-              <div class="card dashboard-list"><b>Last Week:</b> {{caloriesData.lastWeekUserCalories}}</div>
-              <div style="align:center;">
-                 <div class="circle" id="circle-food" ng-click="setCookie()">
-                  <img src="img/cookie.png" id="food">
-                </div>
-                <div class="circle" id="circle-food" ng-click="setIceCream()">
-                  <img src="img/icecream.png" id="food">
-                </div>
-                <div class="circle" id="circle-food" ng-click="setBanana()">
-                  <img src="img/banana.png" id="foodB">
-                </div>
+          </div>
+          <div style="margin-top: 120px;">
+            <div class="card dashboard-list"><b>Average:</b> {{caloriesData.aggrCalories}}</div>
+            <div class="card dashboard-list"><b>Last Week:</b> {{caloriesData.lastWeekUserCalories}}</div>
+            <div style="align:center;">
+              <div class="circle" id="circle-food" ng-click="setCookie()">
+                <img src="img/cookie.png" id="food">
+              </div>
+              <div class="circle" id="circle-food" ng-click="setIceCream()">
+                <img src="img/icecream.png" id="food">
+              </div>
+              <div class="circle" id="circle-food" ng-click="setBanana()">
+                <img src="img/banana.png" id="foodB">
               </div>
             </div>
+          </div>
           <div ng-click="extendCalorieCard()" class="arrow-position">
             <i ng-class="checkCalorieCardExpanded()"></i>
           </div>
         </div>
-        -->
+      -->
 
-            <div id="dashboard-bottom" class="card">
-              <h4 class="dashboard-headers">Recent Trips</h4>
-                <div class="trip-card">Trip 1
+        <div id="dashboard-bottom" class="card">
+          <h4 class="dashboard-headers">Recent Trips</h4>
+            <div class="trip-card">Trip 1
+            </div>
+            <div class="trip-card">Trip 2
+            </div>
+            <div class="trip-card">Trip 3
+            </div>
+            <!-- What is this section below??-->
+            <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;"summary data</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" st"padding-top: 5px !important;">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" stymargin-bottom: 10px
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !import color: #54DCC1;"></i>
                 </div>
-                <!--<div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;">No summary data</div>
-                <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
-                  <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
-
-                    <div class="metric-summary-left">
-                      <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
-                    </div>
-                    <div class="metric-summary-right">
-                      <div class="metric-summary-title">
-                        {{ summaryData.defaultSummary.distance[dIndex + i].key }}
-                      </div>
-                      <div class="metric-summary-content">
-                        {{ summaryData.defaultSummary.distance[dIndex + i].values }}
-                      </div>
-                    </div>
-                  </div>-->
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title">
+                    {{ summaryData.defaultSummary.distance[dIndex + i].key }}
+                  </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.distance[dIndex + i].values }}
+                  </div>
                 </div>
+              </div>
             </div>
         </div>
-    </div>
+        <!--</div>
+    </div>-->
   </ion-content>
 </ion-view>

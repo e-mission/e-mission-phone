@@ -334,7 +334,6 @@ img.center {
   border-radius: 5px;
   display: block;
   margin: 10px;
-  margin-top: 55px;
   position: relative;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
   /*background: rgba(40,218,183,1);
@@ -1911,4 +1910,19 @@ span.rz-bar-wrapper {
     text-align: center;
     transition: height 0.3s ease-out;
     overflow: hidden;
+}
+
+/*URAP 2017 STYLE*/
+.card#suggestion-card {
+  height: auto;
+  text-align: center;
+  display: block;
+}
+
+#percent-change {
+  color: gray;
+}
+
+.card {
+  margin: 10px;
 }
