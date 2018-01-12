@@ -1,0 +1,15 @@
+{
+    "connectUrl": "https://<your-production-host>:8080",
+    "android": {
+        "auth": {
+            "method": "google-authutil",
+            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "google-signin-lib",
+            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+        }
+    }
+}
