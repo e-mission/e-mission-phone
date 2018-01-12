@@ -172,13 +172,35 @@
 
         <div id="dashboard-bottom" class="card">
           <h4 class="dashboard-headers">Recent Trips</h4>
-            <div class="trip-card">Trip 1
+            <!-- Links to trip detail page -->
+            <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
+              <div class="trip-summary-left">
+                <img alt="MODE">
+                Trip 1: {{LOCATION}} to {{LOCATION}}
+              </div>
+              <div class="trip-summary-right">
+                {{DISTANCE}}
+              </div>
             </div>
-            <div class="trip-card">Trip 2
+            <div class="trip-card">
+              <div class="trip-summary-left">
+                <img alt="MODE">
+                Trip 2: {{LOCATION}} to {{LOCATION}}
+              </div>
+              <div class="trip-summary-right">
+                {{DISTANCE}}
+              </div>
             </div>
-            <div class="trip-card">Trip 3
+            <div class="trip-card" style="border-bottom-width: 2px;">
+              <div class="trip-summary-left">
+                <img alt="MODE">
+                Trip 3: {{LOCATION}} to {{LOCATION}}
+              </div>
+              <div class="trip-summary-right">
+                {{DISTANCE}}
+              </div>
             </div>
-            <!-- What is this section below??-->
+            <!-- Distance breakdown per mode
             <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;"summary data</div>
             <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" st"padding-top: 5px !important;">
               <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" stymargin-bottom: 10px
@@ -194,7 +216,7 @@
                   </div>
                 </div>
               </div>
-            </div>
+            </div>-->
         </div>
         <!--</div>
     </div>-->

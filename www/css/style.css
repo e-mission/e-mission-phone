@@ -1926,3 +1926,30 @@ span.rz-bar-wrapper {
 .card {
   margin: 10px;
 }
+
+#dashboard-bottom {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.trip-card {
+  height: 30px;
+  border: 2px solid lightgray;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+}
+
+.trip-summary-left {
+  float: left;
+  width: 75%;
+  text-align: left;
+  padding-left: 5px;
+}
+
+.trip-summary-right {
+  float: right;
+  width: 25%;
+  text-align: right;
+  padding-right: 5px;
+}
