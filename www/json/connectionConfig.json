@@ -1,15 +1,16 @@
 {
-    "connectUrl": "https://<your-production-host>:8080",
+    "connectUrl": "http://184.73.51.202",
+    "isSkipAuth": false,
     "android": {
         "auth": {
-            "method": "google-authutil",
-            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+            "method": "dummy-dev",
+            "clientID": "ignored"
         }
     },
     "ios": {
         "auth": {
-            "method": "google-signin-lib",
-            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
+            "method": "dummy-dev",
+            "clientID": "ignored"
         }
     }
 }
