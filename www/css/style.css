@@ -1923,7 +1923,7 @@ div.bear-wrapper {
   background-color: rgb(49, 123, 217);
   height: 100%;
 }
-<<<<<<< HEAD
+
 div.bear-wrapper div.bear-char p {
   color: white;
   font-weight: bold;
@@ -1931,19 +1931,21 @@ div.bear-wrapper div.bear-char p {
   text-align: center;
   background-color: rgba(0, 0, 0, 0.5);
   margin-bottom: 5px;
-=======
+}
 
 .card {
   margin: 10px;
   margin-bottom: 0px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
->>>>>>> e72b51f... cleaned up dashboard ui
 }
+
 div.bear-wrapper div.bear-char {
   width: 40px;
   position: absolute;
   top: 640px;
   left: 280px;
+=======
+>>>>>>> e72b51f... cleaned up dashboard ui
 }
 
 div.bear-wrapper img {
@@ -1951,7 +1953,6 @@ div.bear-wrapper img {
   height: 100%;
 }
 
-<<<<<<< HEAD
 div.bear-wrapper h3 {
   position:absolute;
   top:50%;
@@ -1965,7 +1966,8 @@ div.bear-wrapper button {
   margin-top: 30px;
   position:absolute;
   top: 50px;
-=======
+}
+
 .col-left-75 {
   float: left;
   width: 75%;
@@ -1978,7 +1980,15 @@ div.bear-wrapper button {
   width: 25%;
   text-align: right;
   padding-right: 5px;
->>>>>>> e72b51f... cleaned up dashboard ui
+}
+
+.row {
+  margin-top: 5px !important;
+}
+
+#dashboard-stats {
+  font-size: 15px;
+  display: block;
 }
 
 .row {
