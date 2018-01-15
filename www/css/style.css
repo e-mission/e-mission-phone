@@ -406,8 +406,6 @@ img.center {
   border-radius: 5px;
   display: block;
   height: 140px;
-  margin: 10px;
-  margin-top:0px;
   position: relative;
   margin-bottom: 5px !important;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -436,6 +434,7 @@ h4.dashboard-headers{
   font-weight: 700;
   font-size: 20px;
   margin-bottom: 0px !important;
+  text-align: center;
 }
 
 .user-carbon-no-percentage{
@@ -1925,6 +1924,8 @@ span.rz-bar-wrapper {
 
 .card {
   margin: 10px;
+  margin-bottom: 0px;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 #dashboard-bottom {
@@ -1940,16 +1941,25 @@ span.rz-bar-wrapper {
   border-bottom-width: 1px;
 }
 
-.trip-summary-left {
+.col-left-75 {
   float: left;
   width: 75%;
   text-align: left;
   padding-left: 5px;
 }
 
-.trip-summary-right {
+.col-right-25 {
   float: right;
   width: 25%;
   text-align: right;
   padding-right: 5px;
+}
+
+.row {
+  margin-top: 5px !important;
+}
+
+#dashboard-stats {
+  font-size: 15px;
+  display: block;
 }

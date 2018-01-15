@@ -1,24 +1,5 @@
-<head>
-  <!-- Header is in file for testing purposes (easier to preview html)
-      (scripts copied from index.html) (can delete later)-->
-  <link href="../lib/ionic/css/ionic.css" rel="stylesheet">
-  <link rel="stylesheet" href="../css/style.css">
-  <link href="css/intro.css" rel="stylesheet">
-  <link href="css/main.recent.css" rel="stylesheet">
-  <link href="css/main.diary.css" rel="stylesheet">
-  <link href="lib/animate.css/animate.min.css" rel="stylesheet">
-  <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
-  <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
-  <link href="lib/nz-tour/dist/nz-tour.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
-  <link href="build/app.css" rel="stylesheet">
-  <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
-  <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
-  <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
-  <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
-</head>
 <ion-view view-title="Dashboard" class="ion-view-background">
-  <ion-nav-bar class="bar-stable">
+  <!--<ion-nav-bar class="bar-stable">
   </ion-nav-bar>
   <ion-nav-buttons side="primary">
       <button class="button button-icon" ng-click="share()">
@@ -29,9 +10,9 @@
       <button class="button button-icon" ng-click="doRefresh()">
         <i class="icon ion-refresh"></i>
       </button>
-  </ion-nav-buttons>
+  </ion-nav-buttons>-->
 
-  <ion-content class="has-header">
+  <ion-content>
     <!--
     <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control
       <div class="metric-half">
@@ -86,38 +67,50 @@
         </div>
       </div>
 
-        <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
+        <div ng-class="changeFootprintCardHeight()" id="dashboard-stats" class="card">
           <!--
           <div>
-            <div class="circle">
+            <div class="circle">Ó
               <div id="green-leaf" class="icon ion-leaf">
               </div>
             </div> -->
               <h4 class="dashboard-headers">Weekly Stats</h4>
               <!--<div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">-->
-                  <div class="user-carbon"><b>CO2 Consumption:</b> {{carbonData.userCarbon}}</div>
-                  <div class="user-carbon"><b>Change from Last Week:</b> {{carbonData.lastWeekUserCarbon}}</div>
-                  <div ng-if="uictrl.current == 'Last week'">
+                <div class="row">
+                  <div class="col-left-75"><b>CO2 Consumption: </b></div>
+                  <div class="col-right-25">{{carbonData.userCarbon}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-left-75"><b>Change from Last Week: </b></div>
+                  <div class="col-right-25">{{carbonData.lastWeekUserCarbon}}</div>
+                </div>
+                  <!--<div ng-if="uictrl.current == 'Last week'">
                     <div id="arrow-color" ng-if="carbonUp" class="icon ion-arrow-up-a"></div>
                     <div id="arrow-color" ng-if="carbonDown" class="icon ion-arrow-down-a"></div>
                     <div class="percentage-change">{{carbonData.changeInPercentage}}{{carbonData.change}}</div>
-                  </div>
-                  <div class="user-carbon"><b>Total Distance:</b> {{carbonData.lastWeekUserCarbon}}</div>
-                  <div class="user-carbon"><b>Favorite Mode of Transport:</b> {{carbonData.lastWeekUserCarbon}}</div>
+                  </div>-->
+                <div class="row">
+                  <div class="col-left-75"><b>Total Distance: </b></div>
+                  <div class="col-right-25">{{carbonData.userCarbon}}</div>
+                </div>
+                <div class="row">
+                  <div class="col-left-75"><b>Favorite Mode: </b></div>
+                  <div class="col-right-25">{{carbonData.userCarbon}}</div>
+                </div>
                 <!--</div>
               </div>-->
-              <!-- Toggle total stats results in this -->
+              <!-- Toggle total stats results in this
               <div style="margin-top: 110px;">
                 <h4 class="dashboard-headers">Lifetime Stats</h4>
                 <div class="card dashboard-list"><b>CO2 Consumption:</b> {{carbonData.optimalCarbon}}</div>
                 <div class="card dashboard-list"><b>Total Distance:</b> {{carbonData.optimalCarbon}}</div>
                 <div class="card dashboard-list"><b>Favorite Mode of Transport:</b> {{carbonData.optimalCarbon}}</div>
-              </div>
-              <!-- Expand card button -->
+              </div>-->
+              <!-- Expand card button
               <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
                 <i ng-class="checkFootprintCardExpanded()"></i>
-              </div>
+              </div>-->
           </div>
         <!--
         </div>-->
@@ -174,29 +167,29 @@
           <h4 class="dashboard-headers">Recent Trips</h4>
             <!-- Links to trip detail page -->
             <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-              <div class="trip-summary-left">
+              <div class="col-left-75">
                 <img alt="MODE">
                 Trip 1: {{LOCATION}} to {{LOCATION}}
               </div>
-              <div class="trip-summary-right">
+              <div class="col-right-25">
                 {{DISTANCE}}
               </div>
             </div>
             <div class="trip-card">
-              <div class="trip-summary-left">
+              <div class="col-left-75">
                 <img alt="MODE">
                 Trip 2: {{LOCATION}} to {{LOCATION}}
               </div>
-              <div class="trip-summary-right">
+              <div class="col-right-25">
                 {{DISTANCE}}
               </div>
             </div>
             <div class="trip-card" style="border-bottom-width: 2px;">
-              <div class="trip-summary-left">
+              <div class="col-left-75">
                 <img alt="MODE">
                 Trip 3: {{LOCATION}} to {{LOCATION}}
               </div>
-              <div class="trip-summary-right">
+              <div class="col-right-25">
                 {{DISTANCE}}
               </div>
             </div>
