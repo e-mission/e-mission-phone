@@ -6,7 +6,6 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
 .factory('UpdateCheck', function($ionicPopup, $rootScope, $window, Logger, storage) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
-  var deploy = $window.IonicCordova;
 
 
   /*
@@ -21,13 +20,20 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     storage.set(CHANNEL_KEY, channelName);
   };
 
-  uc.setChannelPromise = function(channel) {
-    return new Promise(function(resolve, reject) {
-        deploy.init({
-            appId: "e0d8cdec",
-            channel: getChannelToUse()
-        }, resolve, reject);
-    });
+  uc.setChannelPromise = function(currChannel) {
+    var deploy = $window.IonicCordova.deploy;
+    if (currChannel == null) {
+        Logger.log("currChannel == null, skipping deploy init");
+        return Promise.resolve(null);
+    } else {
+        return new Promise(function(resolve, reject) {
+            var config = {
+                appId: "e0d8cdec",
+                channel: currChannel
+            }
+            deploy.init(config, resolve, reject);
+        });
+    }
   };
 
   var updateProgress = function(prog) {
@@ -39,12 +45,14 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   }
 
   uc.checkPromise = function() {
+    var deploy = $window.IonicCordova.deploy;
     return new Promise(function(resolve, reject) {
         deploy.check(resolve, reject);
     });
   };
 
   uc.downloadPromise = function() {
+    var deploy = $window.IonicCordova.deploy;
     return new Promise(function(resolve, reject) {
         deploy.download(function(res) {
             if(res == 'true') {
@@ -57,6 +65,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   };
 
   uc.extractPromise = function() {
+    var deploy = $window.IonicCordova.deploy;
     return new Promise(function(resolve, reject) {
         deploy.extract(function(res) {
             if(res = 'true') {
@@ -69,6 +78,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   };
 
   uc.redirectPromise = function() {
+    var deploy = $window.IonicCordova.deploy;
     return new Promise(function(resolve, reject) {
         deploy.redirect(resolve, reject);
     });
@@ -92,8 +102,8 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   var getChannelToUse = function() {
       var channel = uc.getChannel();
       if (channel == null || channel == "") {
-        console.log("No saved channel found, using prod")
-        channel = 'prod';
+        console.log("No saved channel found, skipping channel config")
+        channel = null;
       };
       console.log("Returning channel "+channel)
       return channel;
@@ -131,11 +141,12 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     // Check Ionic Deploy for new code
   uc.checkForUpdates = function() {
     console.log('Ionic Deploy: Checking for updates');
-    uc.setChannelPromise(getChannelToUse()).then(function(result) {
-    Logger.log("deploy init result = "+result);
+    var currChannel = getChannelToUse();
+    uc.setChannelPromise(currChannel).then(function() {
+    Logger.log("deploy init complete ");
     uc.checkPromise().then(function(hasUpdate) {
       Logger.log('Ionic Deploy: Update available: ' + hasUpdate);
-      if (hasUpdate) {
+      if (hasUpdate == 'true') {
         Logger.log('Ionic Deploy: found update, asking user: ');
 
         $ionicPopup.show({
@@ -165,7 +176,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         // $ionicPopup.alert({title: "Up to date!"});
       }
     })
-    }).finally(function(err) {
+    }).catch(function(err) {
       Logger.log('Ionic Deploy: Unable to check for updates'+err);
       console.error('Ionic Deploy: Unable to check for updates',err)
     })
