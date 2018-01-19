@@ -3,9 +3,11 @@
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
                                                'angularLocalStorage'])
 
-.factory('UpdateCheck', function($ionicPopup, $rootScope, Logger, storage) {
+.factory('UpdateCheck', function($ionicPopup, $rootScope, $window, Logger, storage) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
+  var deploy = $window.IonicCordova;
+
 
   /*
    * Returns a promise that resolves to the name of the channel
@@ -17,6 +19,59 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
 
   uc.setChannel = function(channelName) {
     storage.set(CHANNEL_KEY, channelName);
+  };
+
+  uc.setChannelPromise = function(channel) {
+    return new Promise(function(resolve, reject) {
+        deploy.init({
+            appId: "e0d8cdec",
+            channel: getChannelToUse()
+        }, resolve, reject);
+    });
+  };
+
+  var updateProgress = function(prog) {
+      $rootScope.progress = prog;
+      $rootScope.isDownloading = true;
+      if(prog==100) {
+        $rootScope.isDownloading = false;
+      }
+  }
+
+  uc.checkPromise = function() {
+    return new Promise(function(resolve, reject) {
+        deploy.check(resolve, reject);
+    });
+  };
+
+  uc.downloadPromise = function() {
+    return new Promise(function(resolve, reject) {
+        deploy.download(function(res) {
+            if(res == 'true') {
+                resolve(res);
+            } else {
+                updateProgress(res);
+            }
+        }, reject);
+    });
+  };
+
+  uc.extractPromise = function() {
+    return new Promise(function(resolve, reject) {
+        deploy.extract(function(res) {
+            if(res = 'true') {
+                resolve(res);
+            } else {
+                updateProgress(res);
+            }
+        }, reject);
+    });
+  };
+
+  uc.redirectPromise = function() {
+    return new Promise(function(resolve, reject) {
+        deploy.redirect(resolve, reject);
+    });
   };
 
   uc.handleClientChangeURL = function(urlComponents) {
@@ -44,75 +99,60 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       return channel;
   }
 
-  var deploy = new Ionic.Deploy();
-
-  var applyUpdate = function() {
+  var showProgressDialog = function(title) {
     $ionicPopup.show({
-      title: 'Downloading UI-only update',
+      title: title,
       template: '<progress class="download" value="{{progress}}" max="100"></progress>',
       scope: $rootScope,
       buttons: []
     });
+  }
+
+  var applyUpdate = function() {
     if ($rootScope.isDownloading) {
       return;
     }
-    deploy.update().then(function(res) {
-      Logger.log('Ionic Deploy: Update Success! ' + res);
-      var reloadAlert = $ionicPopup.alert("Update done, reloading...");
-      reloadAlert.then(function(res) {
-        deploy.load();
+    $rootScope.progress = 0;
+    showProgressDialog("Downloading UI-only update");
+    uc.downloadPromise().then(function() {
+      $rootScope.progress = 0;
+      showProgressDialog("Extracting UI-only update");
+      uc.extractPromise().then(function(res) {
+          Logger.log('Ionic Deploy: Update Success! ' + res);
+          var reloadAlert = $ionicPopup.alert("Update done, reloading...");
+          reloadAlert.then(function(res) {
+            uc.redirectPromise();
+          });
       });
-    }, function(err) {
-       console.log('Ionic Deploy: Update error! ', err);
-       Logger.log('Ionic Deploy: Update error! '+ err);
-       $rootScope.isDownloading = false;
-       $ionicPopup.alert({template: 'Error during update'});
-    }, function(prog) {
-      console.log('Ionic Deploy: Progress... ', prog);
-      $rootScope.$apply(function(){
-          $rootScope.progress = prog;
-          $rootScope.isDownloading = true;
-          if(prog==100) {
-            $rootScope.isDownloading = false;
-          }
-      });
-    })
+    });
   };
 
 
     // Check Ionic Deploy for new code
   uc.checkForUpdates = function() {
     console.log('Ionic Deploy: Checking for updates');
-    deploy.setChannel(getChannelToUse());
-    deploy.check().then(function(hasUpdate) {
+    uc.setChannelPromise(getChannelToUse()).then(function(result) {
+    Logger.log("deploy init result = "+result);
+    uc.checkPromise().then(function(hasUpdate) {
       Logger.log('Ionic Deploy: Update available: ' + hasUpdate);
       if (hasUpdate) {
         Logger.log('Ionic Deploy: found update, asking user: ');
 
-        $rootScope.rn_list = [];
-        deploy.getMetadata().then(function(metadata) {
-          for (var key in metadata) {
-            if (key.startsWith('release_note')) {
-              $rootScope.rn_list.push(metadata[key]);
-            }
-          }
-          console.log("About to ask for update with release notes"+
-            $rootScope.rn_list);
-          $ionicPopup.show({
+        $ionicPopup.show({
             title: "Download new UI-only update?",
             templateUrl: 'templates/splash/release-notes.html',
             scope: $rootScope,
             buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
               text: 'Not now',
               type: 'button-default',
-            }, {
+        }, {
               text: 'Apply',
               type: 'button-positive',
               onTap: function(e) {
                 return true;
               }
             }]
-          }).then(function(res){
+        }).then(function(res){
             if(res) {
               Logger.log('Ionic Deploy: User accepted deploy update');
               applyUpdate();
@@ -120,17 +160,15 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
               Logger.log('User skipped deploy update');
             }
           });
-        }, function(err) {
-          Logger.log('Ionic Deploy: Unable to read metadata: '+err);
-        }, function() {});
       } else {
         // TODO: Figure out a better way to do this using promises
         // $ionicPopup.alert({title: "Up to date!"});
       }
-    }, function(err) {
+    })
+    }).finally(function(err) {
       Logger.log('Ionic Deploy: Unable to check for updates'+err);
       console.error('Ionic Deploy: Unable to check for updates',err)
-    });
+    })
   }
 
   return uc;
