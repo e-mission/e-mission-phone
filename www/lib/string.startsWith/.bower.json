@@ -1,0 +1,16 @@
+{
+  "name": "string.startsWith",
+  "dependencies": {},
+  "devDependencies": {},
+  "homepage": "https://github.com/MathRobin/string.startsWith",
+  "_release": "bf85d79ccb",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "bf85d79ccb817833d27502dc6e28ca97e6c1ef64"
+  },
+  "_source": "https://github.com/MathRobin/string.startsWith.git",
+  "_target": "*",
+  "_originalSource": "string.startsWith",
+  "_direct": true
+}
