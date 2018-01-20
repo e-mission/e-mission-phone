@@ -37,11 +37,13 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   };
 
   var updateProgress = function(prog) {
+    $rootScope.$apply(function(){ 
       $rootScope.progress = prog;
       $rootScope.isDownloading = true;
       if(prog==100) {
         $rootScope.isDownloading = false;
       }
+    });
   }
 
   uc.checkPromise = function() {
@@ -110,12 +112,6 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   }
 
   var showProgressDialog = function(title) {
-    $ionicPopup.show({
-      title: title,
-      template: '<progress class="download" value="{{progress}}" max="100"></progress>',
-      scope: $rootScope,
-      buttons: []
-    });
   }
 
   var applyUpdate = function() {
@@ -123,13 +119,29 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       return;
     }
     $rootScope.progress = 0;
-    showProgressDialog("Downloading UI-only update");
+    var downloadPop = $ionicPopup.show({
+      title: "Downloading UI-only update",
+      template: '<progress class="download" value="{{progress}}" max="100"></progress>',
+      scope: $rootScope,
+      buttons: []
+    });
     uc.downloadPromise().then(function() {
       $rootScope.progress = 0;
-      showProgressDialog("Extracting UI-only update");
+      downloadPop.close();
+      alert("download -> extract");
+      var extractPop = $ionicPopup.show({
+        title: "Extracting UI-only update",
+        template: '<progress class="download" value="{{progress}}" max="100"></progress>',
+        scope: $rootScope,
+        buttons: []
+      });
       uc.extractPromise().then(function(res) {
+          extractPop.close();
+          alert("extract -> reload");
           Logger.log('Ionic Deploy: Update Success! ' + res);
-          var reloadAlert = $ionicPopup.alert("Update done, reloading...");
+          var reloadAlert = $ionicPopup.alert({
+            title: "Update done, reloading..."
+          });
           reloadAlert.then(function(res) {
             uc.redirectPromise();
           });
