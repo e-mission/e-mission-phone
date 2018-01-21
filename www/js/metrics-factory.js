@@ -6,6 +6,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
   var fh = {};
   var footprint = {
     train: 92/1609,
+    //TODO: USE car footprint of exactly 0.2889 kg co2/km
     car: 287/1609,
     ON_FOOT: 0,
     BICYCLING: 0
