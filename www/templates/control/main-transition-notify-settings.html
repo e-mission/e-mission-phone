@@ -1,0 +1,16 @@
+<ion-popover-view style="width: 75%;">
+<ion-content style="margin: 0; padding: 0;">
+<ion-button-bar>
+
+    <button class="button button-active button-block" ng-click="saveAndReload()" style="margin: 0; color: #fff; background-color: #95BCA2; border-bottom-left-radius: 0; border-bottom-right-radius: 0;">Save</button>
+</ion-button-bar> 
+<ion-list>
+  <ion-item class="row" ng-repeat="entry in display_config">
+    <div class="col timestamp item-text-wrap control-info">{{entry.transitionName}}</div>
+    <div class="col detail item-text-wrap control-info"> {{entry.notifyOptions.id}}</div>
+    <div class="col timestamp item-text-wrap control-info">{{entry.notifyOptions.title}}</div>
+    <ion-toggle ng-model="entry.enabled" ng-change="toggleEnable(entry)"></ion-toggle>
+  </ion-item>
+</ion-list>
+</ion-content>
+</ion-popover-view>
