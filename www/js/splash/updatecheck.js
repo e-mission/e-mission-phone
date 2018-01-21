@@ -71,7 +71,8 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     return new Promise(function(resolve, reject) {
         deploy.extract(function(res) {
             console.log("extract progress = "+res);
-            if(res == 'done') {
+            var expectedResult = $window.cordova.platformId == "ios"? "done": "true";
+            if(res == expectedResult) {
                 resolve(res);
             } else {
                 updateProgress(res);
@@ -129,7 +130,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     uc.downloadPromise().then(function() {
       $rootScope.progress = 0;
       downloadPop.close();
-      alert("download -> extract");
+      // alert("download -> extract");
       var extractPop = $ionicPopup.show({
         title: "Extracting UI-only update",
         template: '<progress class="download" value="{{progress}}" max="100"></progress>',
@@ -138,7 +139,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       });
       uc.extractPromise().then(function(res) {
           extractPop.close();
-          alert("extract -> reload");
+          // alert("extract -> reload");
           Logger.log('Ionic Deploy: Update Success! ' + res);
           var reloadAlert = $ionicPopup.alert({
             title: "Update done, reloading..."
