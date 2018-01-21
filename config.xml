@@ -90,7 +90,7 @@
     </plugin>
     <plugin name="cordova-plugin-email-composer" spec="~0.8.12" />
     <plugin name="cordova-plugin-x-socialsharing" spec="~5.2.1" />
-    <plugin name="cordova-plugin-inappbrowser" spec="~2.0.1" />
+    <plugin name="cordova-plugin-inappbrowser" spec="https://github.com/shankari/cordova-plugin-inappbrowser.git" />
     <plugin name="de.appplant.cordova.plugin.local-notification-ios9-fix" spec="https://github.com/shankari/cordova-plugin-local-notifications.git" />
     <plugin name="edu.berkeley.eecs.emission.cordova.settings" spec="https://github.com/e-mission/cordova-connection-settings.git" />
     <plugin name="edu.berkeley.eecs.emission.cordova.unifiedlogger" spec="https://github.com/e-mission/cordova-unified-logger.git" />
@@ -105,8 +105,6 @@
         <variable name="UPDATE_METHOD" value="none" />
     </plugin>
     <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git" />
-    <engine name="ios" spec="~4.5.4" />
-    <engine name="android" spec="^6.4.0" />
     <plugin name="cordova-plugin-crosswalk-webview" spec="^2.3.0">
         <variable name="XWALK_VERSION" value="23+" />
         <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" />
@@ -114,4 +112,6 @@
         <variable name="XWALK_MODE" value="embedded" />
         <variable name="XWALK_MULTIPLEAPK" value="true" />
     </plugin>
+    <engine name="ios" spec="~4.5.4" />
+    <engine name="android" spec="^6.4.0" />
 </widget>
