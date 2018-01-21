@@ -537,6 +537,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.summaryData.userSummary.median_speed = getSummaryData(userMedianSpeed, "median_speed");
         $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
         $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
+        $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
+        $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
         $scope.chartDataUser.duration = userDuration? userDuration : [];
         $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
         $scope.chartDataUser.count = userCount? userCount : [];
@@ -921,6 +923,29 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
         }
         return data;
+    }
+
+    var getTotalDistance = function(distances) {
+        var totalDist = 0;
+        for (var i = 0; i < distances.length; i++) {
+          var distVal = parseInt(distances[i].values);
+          totalDist += distVal;
+        }
+        return totalDist + " km";
+    }
+
+    var getFavoriteMode = function(tripCounts) {
+        var maxTripCount = 0;
+        var maxTripMethod = "UNKNOWN";
+
+        for (var i = 0; i < tripCounts.length; i++) {
+          var currTripCount = parseInt(tripCounts[i].values);
+          if (maxTripCount < currTripCount) {
+            maxTripCount = currTripCount;
+            maxTripMethod = tripCounts[i].key;
+          }
+        }
+        return maxTripMethod;
     }
 
     $scope.changeFromWeekday = function() {
