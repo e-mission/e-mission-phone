@@ -65,7 +65,7 @@ angular.module('emission.survey.launch', ['emission.services',
                                                          startTs,
                                                          endTs) {
       var options = {
-        location: 'yes',
+        location: window.cordova.platformId == 'ios'? 'no' : 'yes',
         clearcache: 'no',
         toolbar: 'yes',
         hideurlbar: 'yes'
