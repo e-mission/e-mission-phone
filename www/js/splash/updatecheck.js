@@ -70,7 +70,8 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     var deploy = $window.IonicCordova.deploy;
     return new Promise(function(resolve, reject) {
         deploy.extract(function(res) {
-            if(res = 'true') {
+            console.log("extract progress = "+res);
+            if(res == 'done') {
                 resolve(res);
             } else {
                 updateProgress(res);
