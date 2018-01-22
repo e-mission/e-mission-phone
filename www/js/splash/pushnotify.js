@@ -31,15 +31,17 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
 
     pushnotify.registerPromise = function() {
         return new Promise(function(resolve, reject) {
-            pushnotify.startupInit();
-            console.log("push notify = "+push);
             push.on("registration", (data) => {
+                console.log("Got registration " + registration);
                 resolve({token: data.registrationId,
                          type: data.registrationType});
             });
             push.on("error", (error) => {
-                resolve(error);
+                console.log("Got push error " + error);
+                reject(error);
             });
+            pushnotify.startupInit();
+            console.log("push notify = "+push);
         });
     }
 
