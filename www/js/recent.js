@@ -1,7 +1,7 @@
 angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
 
-.controller('appCtrl', function($scope, $ionicModal, $timeout) {
+.controller('appCtrl', function($scope, $timeout) {
     $scope.openNativeSettings = function() {
         window.Logger.log(window.Logger.LEVEL_DEBUG, "about to open native settings");
         window.cordova.plugins.BEMLaunchNative.launch("NativeSettings", function(result) {
