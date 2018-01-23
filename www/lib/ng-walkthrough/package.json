@@ -1,0 +1,54 @@
+{
+  "name": "ng-walkthrough",
+  "version": "1.0.4",
+  "homepage": "https://github.com/souly1/ng-walkthrough",
+  "authors": [
+    "Ophir Stern <souly01@gmail.com>"
+  ],
+  "description": "One of the most common design challenges emerging in mobile design is that of 'invitation' - creating an explanation walk through during user first interaction with the app so to engage the customer. Following Theresa Neil's design pattern from Mobile Design Pattern Gallery",
+  "dependencies": {},
+  "devDependencies": {
+    "jasmine-core": "^2.4.1",
+    "karma": "~0.12.0",
+    "karma-jasmine": "^0.2.0",
+    "karma-chrome-launcher": "^0.1.4",
+    "karma-cli": "~0.0.4",
+    "karma-phantomjs-launcher": "~0.1",
+    "karma-firefox-launcher": "^0.1.4",
+    "karma-ng-html2js-preprocessor": "^0.1.0"
+  },
+  "scripts": {
+    "test": "karma start karma.conf.js --single-run"
+  },
+  "keywords": [
+    "angularjs",
+    "directive",
+    "walkthrough",
+    "onboarding",
+    "walk-through",
+    "on-boarding",
+    "tour guide"
+  ],
+  "author": "Ophir Stern",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/souly1/ng-walkthrough.git"
+  },
+  "bugs": {
+    "url": "https://github.com/souly1/ng-walkthrough/issues"
+  },
+  "main": "karma.conf.js",
+  "directories": {
+    "test": "test"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "screenshots",
+    "icons",
+    "test",
+    "tests"
+  ]
+}
