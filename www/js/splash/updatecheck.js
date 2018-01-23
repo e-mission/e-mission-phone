@@ -3,7 +3,7 @@
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
                                                'angularLocalStorage'])
 
-.factory('UpdateCheck', function($ionicPopup, $rootScope, $window, Logger, storage) {
+.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, storage) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
@@ -195,6 +195,10 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       console.error('Ionic Deploy: Unable to check for updates',err)
     })
   }
+
+  $ionicPlatform.ready().then(function() {
+    uc.checkForUpdates();
+  });
 
   return uc;
 });
