@@ -1,14 +1,16 @@
-angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.logger',
+angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services',
                                               'emission.splash.startprefs',
                                               'angularLocalStorage'])
-.factory('PushNotify', function($window, $state, $rootScope, $ionicPush, $ionicPlatform,        $ionicPopup, storage, Logger, CommHelper, StartPrefs) {
+.factory('PushNotify', function($window, $state, $rootScope, $ionicPlatform,
+    $ionicPopup, storage, Logger, CommHelper, StartPrefs) {
 
     var pushnotify = {};
     var push = null;
+    pushnotify.CLOUD_NOTIFICATION_EVENT = 'cloud:push:notification';
 
     pushnotify.startupInit = function() {
-      var push = $window.PushNotification.init({
+      push = $window.PushNotification.init({
         "ios": {
           "badge": true,
           "sound": true,
@@ -17,14 +19,34 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
         },
         "android": {
           "senderID": "97387382925",
-          "iconColor": "#343434",
+          "iconColor": "#54DCC1",
+          "icon": "ic_question_answer",
           "clearNotifications": true
         }
       });
+      push.on('notification', (data) => {
+        $rootScope.$emit(pushnotify.CLOUD_NOTIFICATION_EVENT, data);
+      });
+    }
+
+    pushnotify.registerPromise = function() {
+        return new Promise(function(resolve, reject) {
+            push.on("registration", (data) => {
+                console.log("Got registration " + registration);
+                resolve({token: data.registrationId,
+                         type: data.registrationType});
+            });
+            push.on("error", (error) => {
+                console.log("Got push error " + error);
+                reject(error);
+            });
+            pushnotify.startupInit();
+            console.log("push notify = "+push);
+        });
     }
 
     pushnotify.registerPush = function() {
-      $ionicPush.register().then(function(t) {
+      pushnotify.registerPromise().then(function(t) {
          // alert("Token = "+JSON.stringify(t));
          Logger.log("Token = "+JSON.stringify(t));
          return $window.cordova.plugins.BEMServerSync.getConfig().then(function(config) {
@@ -39,9 +61,6 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
                 curr_sync_interval: sync_interval
              });
              return t;
-         }).then(function(t) {
-            // TODO: Figure out if we need this if we are going to invoke manually with tokens...
-            return $ionicPush.saveToken(t);
          });
       }).then(function(t) {
          // alert("Finished saving token = "+JSON.stringify(t.token));
@@ -60,6 +79,9 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
         }
         Logger.log("Platform is ios, calling handleSilentPush on DataCollection");
         var notId = data.message.payload.notId;
+        var finishErrFn = function(error) {
+            Logger.log("in push.finish, error = "+error);
+        };
 
         pushnotify.datacollect.getConfig().then(function(config) {
           if(config.ios_use_remote_push_for_sync) {
@@ -67,15 +89,15 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
             .then(function() {
                Logger.log("silent push finished successfully, calling push.finish");
                showDebugLocalNotification("silent push finished, calling push.finish"); 
-               $ionicPush.plugin.finish(function(){}, function(){}, notId);
+               push.finish(function(){}, finishErrFn, notId);
             })
           } else {
             Logger.log("Using background fetch for sync, no need to redirect push");
-            $ionicPush.plugin.finish(function(){}, function(){}, notId);
+            push.finish(function(){}, finishErrFn, notId);
           };
         })
         .catch(function(error) {
-            $ionicPush.plugin.finish(function(){}, function(){}, notId);
+            push.finish(function(){}, finishErrFn, notId);
             $ionicPopup.alert({template: JSON.stringify(error)});
         });
     }
@@ -95,7 +117,7 @@ angular.module('emission.splash.pushnotify', ['ionic.cloud', 'emission.plugin.lo
     }
 
     pushnotify.registerNotificationHandler = function() {
-      $rootScope.$on('cloud:push:notification', function(event, data) {
+      $rootScope.$on(pushnotify.CLOUD_NOTIFICATION_EVENT, function(event, data) {
         var msg = data.message;
         Logger.log("data = "+JSON.stringify(data));
         if (data.raw.additionalData["content-available"] == 1) {
