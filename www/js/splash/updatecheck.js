@@ -1,9 +1,10 @@
 'use strict';
 
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
+                                               'emission.services',
                                                'angularLocalStorage'])
 
-.factory('UpdateCheck', function($ionicPopup, $rootScope, $window, Logger, storage) {
+.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, CommHelper, Logger, storage) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
@@ -18,6 +19,9 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
 
   uc.setChannel = function(channelName) {
     storage.set(CHANNEL_KEY, channelName);
+    CommHelper.updateUser({
+        client: channelName
+    });
   };
 
   uc.setChannelPromise = function(currChannel) {
@@ -195,6 +199,10 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       console.error('Ionic Deploy: Unable to check for updates',err)
     })
   }
+
+  $ionicPlatform.ready().then(function() {
+    uc.checkForUpdates();
+  });
 
   return uc;
 });
