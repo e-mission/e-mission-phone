@@ -18,7 +18,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
           "clearBadge": true
         },
         "android": {
-          "senderID": "97387382925",
+          "senderID": "1096592179912",
           "iconColor": "#54DCC1",
           "icon": "ic_question_answer",
           "clearNotifications": true
@@ -31,8 +31,9 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
 
     pushnotify.registerPromise = function() {
         return new Promise(function(resolve, reject) {
+            pushnotify.startupInit();
             push.on("registration", (data) => {
-                console.log("Got registration " + registration);
+                console.log("Got registration " + data);
                 resolve({token: data.registrationId,
                          type: data.registrationType});
             });
@@ -40,7 +41,6 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                 console.log("Got push error " + error);
                 reject(error);
             });
-            pushnotify.startupInit();
             console.log("push notify = "+push);
         });
     }
@@ -66,8 +66,10 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
          // alert("Finished saving token = "+JSON.stringify(t.token));
          Logger.log("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {
+         var display_msg = error.message + "\n" + error.stack;
          $ionicPopup.alert({title: "Error in registering push notifications",
-            template: JSON.stringify(error)});
+            template: display_msg});
+         Logger.log("Error in registering push notifications "+display_msg);
       });
     }
 
