@@ -7,7 +7,7 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
 .controller("EditModeCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker, EditModeFactory) {
+                                        CommHelper, PostTripManualMarker, EditModeFactory, $ionicHistory) {
   console.log("controller editMode called with params = "+
     JSON.stringify($stateParams));
 
@@ -49,6 +49,16 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
   $scope.editModeObj = EditModeFactory.chosenModeAndSection
   console.log($scope.tripgj);
   console.log($scope.trip);
+
+  $scope.save = function() {
+    EditModeFactory.save($scope.trip)
+    $ionicHistory.goBack()
+  }
+
+  $scope.cancel = function() {
+    EditModeFactory.clear()
+    $ionicHistory.goBack()
+  }
 
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
