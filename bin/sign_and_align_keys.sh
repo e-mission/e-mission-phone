@@ -19,7 +19,7 @@ rm -r www/common
 cp www/templates/main.html.nogame www/templates/main.html
 
 # Rebuild the backup generic apk
-cordova build android --release
+cordova build android --release -- --gradleArg=-PcdvVersionCode=${1}0
 
 # Sign and release generic pre-L+ version
 cp platforms/android/build/outputs/apk/release/android-release-unsigned.apk platforms/android/build/outputs/apk/android-pre-L-release-signed-unaligned.apk
