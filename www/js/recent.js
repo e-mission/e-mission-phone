@@ -201,7 +201,8 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
       // This should really be within a try/catch/finally block
       $scope.$broadcast('scroll.refreshComplete');
     }, function(error) {
-        $ionicPopup.alert({template: JSON.stringify(error)})
+        $ionicPopup.alert({title: "Error updating entries",
+            template: JSON.stringify(error)})
             .then(function(res) {console.log("finished showing alert");});
     })
   }

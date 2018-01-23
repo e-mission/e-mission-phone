@@ -66,7 +66,8 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
          // alert("Finished saving token = "+JSON.stringify(t.token));
          Logger.log("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {
-         $ionicPopup.alert({template: JSON.stringify(error)});
+         $ionicPopup.alert({title: "Error in registering push notifications",
+            template: JSON.stringify(error)});
       });
     }
 
@@ -98,7 +99,8 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
         })
         .catch(function(error) {
             push.finish(function(){}, finishErrFn, notId);
-            $ionicPopup.alert({template: JSON.stringify(error)});
+            $ionicPopup.alert({title: "Error while handling silent push notifications",
+                template: JSON.stringify(error)});
         });
     }
 

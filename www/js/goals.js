@@ -88,7 +88,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
        }
 
        var alertPopup = $ionicPopup.alert({
-         title: 'Err!',
+         title: 'Error while joining group!',
          template: displayMsg
        });
 
