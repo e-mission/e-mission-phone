@@ -444,7 +444,8 @@ angular.module('emission.main.control',['emission.services',
                 handleConsent(resultDoc);
             }
         }, function(error) {
-            $ionicPopup.alert({template: error});
+            $ionicPopup.alert({title: "Error reading consent document from cache",
+                template: error});
         });
     }
 
