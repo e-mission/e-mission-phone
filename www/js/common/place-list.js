@@ -1,5 +1,4 @@
 angular.module('emission.main.common.place-list',['ui-leaflet',
-                                      'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.services'])
 
