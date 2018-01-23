@@ -1,10 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="edu.berkeley.eecs.emission"
-        version="2.5.0"
-        android-versionCode="30"
-        ios-CFBundleVersion="30"
-        xmlns="http://www.w3.org/ns/widgets"
-        xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="30" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="30" version="2.5.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>emission</name>
     <description>
         A commute pattern tracker and carbon footprint estimator.
@@ -110,13 +105,6 @@
         <variable name="UPDATE_METHOD" value="none" />
     </plugin>
     <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git" />
-    <plugin name="cordova-plugin-crosswalk-webview" spec="^2.3.0">
-        <variable name="XWALK_VERSION" value="23+" />
-        <variable name="XWALK_LITEVERSION" value="xwalk_core_library_canary:17+" />
-        <variable name="XWALK_COMMANDLINE" value="--disable-pull-to-refresh-effect" />
-        <variable name="XWALK_MODE" value="embedded" />
-        <variable name="XWALK_MULTIPLEAPK" value="true" />
-    </plugin>
     <engine name="ios" spec="~4.5.4" />
     <engine name="android" spec="^6.4.0" />
 </widget>
