@@ -377,7 +377,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
                       }
                       reader.readAsText(file);
                     }, function(error) {
-                      $ionicPopup.alert({template: error});
+                      $ionicPopup.alert({title: "Error while downloading JSON dump",
+                        template: error});
                       reject(error);
                     });
                   });
@@ -396,7 +397,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
           .catch(function(error) {
              window.Logger.log(window.Logger.LEVEL_INFO,
                  "Email cancel reported, seems to be an error on android");
-            $ionicPopup.alert({'template': JSON.stringify(error)});
+            $ionicPopup.alert({'title': "Error sending email",
+                'template': JSON.stringify(error)});
           })
     };
 

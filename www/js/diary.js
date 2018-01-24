@@ -4,7 +4,7 @@ angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.current',
                                       'emission.main.diary.editMode',])
 
-.config(function($stateProvider, $ionicConfigProvider) {
+.config(function($stateProvider) {
   $stateProvider
   .state('root.main.diary', {
     url: '/diary',

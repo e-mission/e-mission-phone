@@ -40,21 +40,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "IN_VEHICLE":"ion-speedometer",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane",
-    "bike":"ion-android-bicycle",
-    "walk":"ion-android-walk",
-    "bus":"ion-android-bus",
-    "drove_alone":"ion-speedometer",
-    "shared_ride":"ion-ios-people",
-    "train":"ion-android-train",
-    "taxi":"ion-android-car",
-    "free_shuttle":"ion-android-bus",
-    "other_mode":"ion-ios-help"}
-    var mode = dh.getHumanReadable(section.properties.sensed_mode)
-    if(mode == 'Edited') {
-      mode = section.properties.user_edited_mode
-    }
-    return icons[mode];
+    "AIR_OR_HSR": "ion-plane"}
+    return icons[dh.getHumanReadable(section.properties.sensed_mode)];
   }
   dh.getHumanReadable = function(sensed_mode) {
     var ret_string = sensed_mode.split('.')[1];
@@ -76,17 +63,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var rtn0 = []; // icons
     var rtn1 = []; //percentages
 
-    var icons = {"bike":"ion-android-bicycle",
-    "BICYCLING":"ion-android-bicycle",
+    var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
-    "walk":"ion-android-walk",
-    "bus":"ion-android-bus",
-    "drove_alone":"ion-speedometer",
-    "shared_ride":"ion-ios-people",
-    "train":"ion-android-train",
-    "taxi":"ion-android-car",
-    "free_shuttle":"ion-android-bus",
-    "other_mode":"ion-ios-help",
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-speedometer",
@@ -95,16 +73,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "AIR_OR_HSR": "ion-plane"}
     var total = 0;
     for (var i=0; i<trip.sections.length; i++) {
-      var mode = filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))
-      if(mode == 'Edited') {
-        mode = trip.sections[i].properties.user_edited_mode
-      }
-      if (rtn0.indexOf(mode) == -1) {
-        rtn0.push(mode);
+      if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
+        rtn0.push(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)));
         rtn1.push(trip.sections[i].properties.distance);
         total += trip.sections[i].properties.distance;
       } else {
-        rtn1[rtn0.indexOf(mode)] += trip.sections[i].properties.distance;
+        rtn1[rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)))] += trip.sections[i].properties.distance;
         total += trip.sections[i].properties.distance;
       }
     }
@@ -479,7 +453,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup,
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -807,8 +781,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return undefined;
           }
           var sortedLocationList = locationList.sort(tsEntrySort);
-          var tripStartPoint = sortedLocationList[0];
-          var tripEndPoint = sortedLocationList[sortedLocationList.length-1];
+          var retainInRange = function(loc) {
+            return (tripStartTransition.data.ts <= loc.data.ts) && 
+                    (loc.data.ts <= tripEndTransition.data.ts)
+          }
+
+          var filteredLocationList = sortedLocationList.filter(retainInRange);
+
+          var tripStartPoint = filteredLocationList[0];
+          var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
@@ -1173,6 +1154,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                           Logger, Timeline, PostTripManualMarker) {
 
   var edm = {}
+  edm.chosenModeAndSection = []
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
   var modeSoFarList = [];
   var splitCount = 0;
@@ -1337,26 +1319,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     edm.splitTrip = function(feature, layer) {
       return function(e) {
-        var map = layer;
-        if (!(layer instanceof L.Map)) {
-            map = layer._map;
-        }
         var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
         if(feature.properties.source == 'user' && (feature.properties.end_ts != trip.properties.end_ts)) {
            Logger.log("skipping trip split because clicked edited section")
         } else {
           console.log("Split trip")
           var latlng = e.latlng
-          var sectionsPoints = PostTripManualMarker.getSectionPoints(feature)
           var marker = L.circleMarker(latlng)
+          var sectionsPoints = PostTripManualMarker.getSectionPoints(feature)
           var sortedPoints = PostTripManualMarker.getClosestPoints(marker.toGeoJSON(), sectionsPoints);
           if (sortedPoints[0].selDistance > PostTripManualMarker.DISTANCE_THRESHOLD()) {
             Logger.log("skipping trip split because closest distance "
               + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + PostTripManualMarker.DISTANCE_THRESHOLD());
             return;
-          } else {
-            marker.addTo(map);
-          }
+          };
           var closestPoints = sortedPoints.slice(0,10);
           Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
 
@@ -1367,7 +1343,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           if (timeBins.length == 1) {
             Logger.log("About to retrieve ts from first bin of "+timeBins);
             var ts = timeBins[0][0].ts;
-            splitSheet(latlng, ts, feature, map, marker)
+            splitSheet(latlng, ts, feature, layer)
           } else {
             Logger.log("About to retrieve first ts from each bin of "+timeBins);
               var tsOptions = timeBins.map(function(bin) {
@@ -1382,7 +1358,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 buttons: timeSelActions,
                 buttonClicked: function(index, button) {
                   var ts = button.selValue;
-                  splitSheet(latlng, ts, feature, map, marker);
+                  splitSheet(latlng, ts, feature, layer);
                   return true;
                 }
             });
@@ -1391,13 +1367,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }
     }
 
-    var splitTripAt = function(latlng, ts, feature, map) {
+    var splitTripAt = function(latlng, ts, feature, layer) {
       console.log(latlng)
       console.log(ts)
-      edm.editMode(latlng, ts, feature, map)
+      edm.editMode(latlng, ts, feature, layer)
     }
 
-    var splitSheet = function(latlng, ts, feature, map, marker) {
+    var splitSheet = function(latlng, ts, feature, layer) {
       Logger.log("About to show sheet to split trip");
       var modesText = [{text:'Split'},
                       {text:'Cancel'}]
@@ -1412,16 +1388,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 Logger.log("Clicked button "+button.text+" at index "+index);
                 if (button.text != "Cancel") {
                   Logger.log("Choose " + button.text);
-                  splitTripAt(latlng, ts, feature, map)
-                } else {
-                  map.removeLayer(marker);
+                  splitTripAt(latlng, ts, feature, layer)
                 }
                 return true;
             }
       })
     };
 
-    var modeSheet = function(latlng, ts, feature, map) {
+    var modeSheet = function(latlng, ts, feature, layer) {
       Logger.log("About to show sheet to edit section mode");
       var modesText = toModeTextArray(modeOptions)
 
@@ -1435,7 +1409,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 Logger.log("Clicked button "+button.text+" at index "+index);
                 if (button.text != "Cancel") {
                   Logger.log("Choose " + button.text);
-                  addToModesSoFarList(button.text, ts, feature, map)
+                  addToModesSoFarList(button.text, ts, feature, layer)
                 }
                 return true;
             }

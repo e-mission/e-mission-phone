@@ -26,6 +26,8 @@ var copyAllIcons = function(iconDir) {
 };
 
 var copyIconsFromAllDirs = function() {
+  // Ensure that the res directory exists
+  fs.mkdirsSync(androidPlatformsDir);
   copyAllIcons(androidPlatformsDir);
 }
 
