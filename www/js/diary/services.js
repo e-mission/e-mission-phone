@@ -393,7 +393,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup,
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
