@@ -37,12 +37,30 @@
           {{question.title}}
         </div>
         <div style="height: 100%; padding-top: 5px;">
-            <ion-list ng-repeat="option in question.options">
-              <ion-radio ng-model="question.response" ng-value="option.value"
-                         style="text-align: center; color: #585858 !important ;">
-                {{option.text}}
-              </ion-radio>
-            </ion-list>
+
+          <div ng-switch on="question.type">
+            <div ng-switch-when="single_choice">
+              <ion-list ng-repeat="option in question.options">
+                <ion-radio ng-model="question.response" ng-value="option.value"
+                           style="text-align: center; color: #585858 !important ;">
+                  {{option.text}}
+                </ion-radio>
+              </ion-list>
+            </div>
+            <div ng-switch-when="text_input">
+              <ion-list>
+                <ion-item>
+                      <textarea ng-model="question.response"
+                                placeholder="Enter your answer"
+                                style="left: 10px; right: 10px;"></textarea>
+                </ion-item>
+              </ion-list>
+            </div>
+            <div ng-switch-default>
+              <p>Error Question Type</p>
+            </div>
+          </div>
+
           <!-- Button -->
           <div style="height: 10px;"></div>
           <button

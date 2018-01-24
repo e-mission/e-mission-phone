@@ -211,8 +211,8 @@ angular.module('emission.incident.posttrip.map', [
 
     var noSelectPopup = function () {
       var noSelectedPopup = $ionicPopup.alert({
-        title: 'Selection Required',
-        template: 'Please select an option to proceed.'
+        title: 'Answer Required',
+        template: 'Please answer the current question before proceeding'
       });
 
       return noSelectedPopup;
@@ -224,7 +224,18 @@ angular.module('emission.incident.posttrip.map', [
         return noSelectPopup();
       }
 
-      var nextSlideOffset = $scope.surveyQuestions[$scope.curSlide]['options'][response]['nextSlideOffset'];
+      var nextSlideOffset;
+      switch ($scope.surveyQuestions[$scope.curSlide]['type']) {
+        case 'single_choice':
+          nextSlideOffset = $scope.surveyQuestions[$scope.curSlide]['options'][response]['nextSlideOffset'];
+          break;
+        case 'text_input':
+          nextSlideOffset = 1;
+          break;
+        default:
+          nextSlideOffset = 1;
+      }
+
       if (nextSlideOffset < 0) {
         $scope.curSlide = $scope.surveyQuestions.length;
         $scope.doneSlide(response);
@@ -241,6 +252,7 @@ angular.module('emission.incident.posttrip.map', [
     var saveSurvey = function(trip_start_ts, trip_end_ts, survey_content) {
       var value = {
         ts: new Date().getTime(),
+        geo_trace: $scope.mapCtrl.cache.data,
         start_ts: trip_start_ts,
         end_ts: trip_end_ts,
         survey: survey_content
@@ -250,7 +262,7 @@ angular.module('emission.incident.posttrip.map', [
     }
 
     $scope.doneSlide = function (response) {
-      if (response == null) {
+      if (response == null || response == "") {
         return noSelectPopup();
       }
 
@@ -279,7 +291,34 @@ angular.module('emission.incident.posttrip.map', [
     //       -1 is a specially value, which would end the survey immediately.
     $scope.surveyQuestions = [
       {
+        title: 'Test Input Box',
+        type: 'text_input',
+        response: null,
+      },
+      {
+        title: 'I used a routing application to plan the walking portion of my trip',
+        type: 'single_choice',
+        options: [
+          {text: 'No, I didn’t plan my trip with a routing application', value: 0, nextSlideOffset: -1},
+          {text: 'Yes, I used google Directions',                        value: 1, nextSlideOffset: 1},
+          {text: 'Yes, I used Apple Maps',                               value: 2, nextSlideOffset: 1},
+          {text: 'Yes, I used AccessMap',                                value: 3, nextSlideOffset: 1},
+          {text: 'Yes, I used a different routing algorithm',            value: 4, nextSlideOffset: 1},
+        ],
+        response: null,
+      },
+      {
+        title: 'I followed the route suggested to me by the planner fairly closely',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True',  value: 1, nextSlideOffset: 1},
+        ],
+        response: null,
+      },
+      {
         title: 'I was able to complete my trip exactly as the route showed in AccessMap',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: -1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
@@ -291,6 +330,7 @@ angular.module('emission.incident.posttrip.map', [
       },
       {
         title: 'The walking segment of my trip was easy',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
@@ -302,6 +342,7 @@ angular.module('emission.incident.posttrip.map', [
       },
       {
         title: 'Overall, my trip was pleasant',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
@@ -313,6 +354,7 @@ angular.module('emission.incident.posttrip.map', [
       },
       {
         title: 'The sidewalk quality along my trip was good',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
@@ -324,6 +366,7 @@ angular.module('emission.incident.posttrip.map', [
       },
       {
         title: 'There were obstacles along my trip that I did not anticipate',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: -1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
@@ -335,6 +378,7 @@ angular.module('emission.incident.posttrip.map', [
       },
       {
         title: 'All of these obstacles were in AccessMap',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
@@ -346,6 +390,7 @@ angular.module('emission.incident.posttrip.map', [
       },
       {
         title: 'I Would like to add them to AccessMap if they are not in',
+        type: 'single_choice',
         options: [
           {text: 'Strongly disagree',          value: 0, nextSlideOffset: -1},
           {text: 'Disagree',                   value: 1, nextSlideOffset: -1},

@@ -85,4 +85,5 @@
     <variable name="SENDER_ID" value="97387382925" />
   </plugin>
   <allow-navigation href="https://accessmap.io/*" />
+  <allow-navigation href="https://emission-accessmap.open-to-all.com/*" />
 </widget>
