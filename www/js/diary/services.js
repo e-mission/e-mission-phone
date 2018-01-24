@@ -1209,32 +1209,18 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
       var tripPoints = tripPointsData(trip);
       tripPoints.sort(function(x, y){return x.data.ts - y.data.ts;});
-      //var sectionsAddedSoFar = []
       modeOptions.forEach(function (modeObj) { 
         if(modeText == "Other") modeObjReturn.label = 'other_mode'; //Change this to have users own mode value
         else if(modeObj.text == modeText) modeObjReturn.label = modeObj.value;
       });
-      /*trip.features.forEach(function(feature) {
-        if(feature.hasOwnProperty('label')) {
-          if(feature.trip_mode == false) {
-            sectionsAddedSoFar.push(feature)
-          }
-        }
-      })*/
       if(lastSection) {
-        //var index = tripPoints.findIndex(x => x.data.ts == ts);
         if(splitCount != 0) {
           modeSoFarList[modeSoFarList.length-1].end_ts = ts
         }
         modeObjReturn.start_ts = modeSoFarList[modeSoFarList.length-1].end_ts;
         modeObjReturn.end_ts = trip.properties.end_ts;
       } else {
-        /*if(modeSoFarList.length > 0) {
-          modeSoFarList.sort(function(x, y){return x.start_ts - y.start_ts;});
-          modeObjReturn.start_ts = modeSoFarList[modeSoFarList.length-1].start_ts;
-        } else {*/
         modeObjReturn.start_ts = trip.properties.start_ts;
-        //}
         if(ts != modeObjReturn.start_ts) {
           modeObjReturn.end_ts = ts;
         } else {
@@ -1242,9 +1228,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           modeObjReturn.end_ts = tripPoints[index+2].data.ts;
         }
       }
-      //modeObjReturn.tripId = feature.properties.trip_id.$oid;
-      //modeObjReturn.id = feature.id;
-      //modeObjReturn.ts = new Date().getTime();
       modeObjReturn.trip_mode = false;
       return modeObjReturn;
     }
@@ -1297,7 +1280,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }
       modeSoFarList.push(modeObj);
       console.log(modeSoFarList);
-      //addModeToSectionDisplay(modeObj, trip)
       if(splitCount == 0) {
         Logger.log("About to show sheet to edit section mode again for second half");
         var modesText = toModeTextArray(modeOptions)
@@ -1312,33 +1294,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                   Logger.log("Clicked button "+button.text+" at index "+index);
                   if (button.text != "Cancel") {
                     Logger.log("Choose " + button.text);
-                    //addModeToSection(button.text, ts, feature, layer)
                     var modeObj2 = modeTextToValue(button.text, ts, feature, true);
                     modeSoFarList.push(modeObj2);
-                    //addModeToSectionDisplay(modeObj2, trip)
                     console.log(modeSoFarList);
-                    
-                      /*var sectionsSource = trip.features.map(function(section){
-                      var aSectionsSource;
-                      if(section.type == "FeatureCollection"){
-                          aSectionsSource = section.features[0].properties.source;
-                        }
-                      return aSectionsSource;
-                      })
-                      var removeSensedSections = []
-                      if(sectionsSource.indexOf('user') > -1) {
-                        trip.features.forEach(function(section, index) {
-                          if(section.type == "FeatureCollection" && 
-                            section.features[0].properties.source != 'user') {
-                              removeSensedSections.push(index)
-                          }
-                        });
-                        removeSensedSections.forEach(function(index){
-                          trip.features.splice(index, 1);
-                        })
-                      };
-                      var tc = Timeline.getTripComponents(trip)
-                      trip.sections = tc[3]*/
                   return true;
               }
           }
@@ -1347,65 +1305,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         splitCount += 1;
     }
 
-    var addModeToSection = function(modeText, ts, feature, layer) {
-      var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
-      var modeObj = modeTextToValue(modeText, ts, feature, false);
-      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, modeObj).then(function() {
-        //console.log(modeObj);
-        addModeToSectionDisplay(modeObj, trip);
-        Logger.log("About to show sheet to edit section mode");
-        var modesText = toModeTextArray(modeOptions)
-
-        Logger.log("About to call ionicActionSheet.show");
-        $ionicActionSheet.show({titleText: "Edit Mode",
-              cancel: function() {
-                Logger.log("Canceled incident or edit trip");
-              },
-              buttons: modesText,
-              buttonClicked: function(index, button) {
-                  Logger.log("Clicked button "+button.text+" at index "+index);
-                  if (button.text != "Cancel") {
-                    Logger.log("Choose " + button.text);
-                    //addModeToSection(button.text, ts, feature, layer)
-                    var modeObj2 = modeTextToValue(button.text, ts, feature, true);
-                    $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, modeObj2).then(function() {
-                      addModeToSectionDisplay(modeObj2, trip);
-                    }).then(function(res) {
-                      var sectionsSource = trip.features.map(function(section){
-                      var aSectionsSource;
-                      if(section.type == "FeatureCollection"){
-                          aSectionsSource = section.features[0].properties.source;
-                        }
-                      return aSectionsSource;
-                      })
-                      var removeSensedSections = []
-                      if(sectionsSource.indexOf('user') > -1) {
-                        trip.features.forEach(function(section, index) {
-                          if(section.type == "FeatureCollection" && 
-                            section.features[0].properties.source != 'user') {
-                              removeSensedSections.push(index)
-                          }
-                        });
-                        removeSensedSections.forEach(function(index){
-                          trip.features.splice(index, 1);
-                        })
-                      };
-                      var tc = Timeline.getTripComponents(trip)
-                      trip.sections = tc[3]
-                  });
-                  return true;
-              }
-          }
-        });
-      });
-    }
-
     edm.editMode = function(latlng, ts, feature, layer) {
-      //layer.bindPopup(""+dh.getHumanReadable(feature.properties.sensed_mode));
-      //return function(e) {
       console.log("Edit mode sheet")
       modeSheet(latlng, ts, feature, layer)
-      //}
     }
 
     edm.splitTrip = function(feature, layer) {
@@ -1432,8 +1334,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
 
           if (timeBins.length == 1) {
-            // Common case: find the first item in the first time bin, no need to
-            // prompt
             Logger.log("About to retrieve ts from first bin of "+timeBins);
             var ts = timeBins[0][0].ts;
             splitSheet(latlng, ts, feature, layer)
@@ -1502,7 +1402,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 Logger.log("Clicked button "+button.text+" at index "+index);
                 if (button.text != "Cancel") {
                   Logger.log("Choose " + button.text);
-                  //addModeToSection(button.text, ts, feature, layer)
                   addToModesSoFarList(button.text, ts, feature, layer)
                 }
                 return true;
@@ -1537,12 +1436,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             }
           });
         }
-        /*if(modeHistory.length > 0) {
-           modeHistory.sort(function(x, y){
-            return x.ts - y.ts;
-          })
-          tripMode = modeHistory[modeHistory.length-1]
-        }*/
         var modeHistoryReturn = filterOutOldModes(modeHistory)
         return modeHistory;
       });
@@ -1563,7 +1456,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             addModeToSectionDisplay(mode, trip);
           }
         });
-          //console.log(trip);
         return trip;
       }).then(function(trip) {
         var sectionsSource = trip.features.map(function(section){

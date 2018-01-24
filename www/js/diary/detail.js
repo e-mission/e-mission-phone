@@ -67,7 +67,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip, false);
-  console.log($scope.tripgj);
   console.log($scope.trip);
 
   $scope.getTripBackground = function() {
