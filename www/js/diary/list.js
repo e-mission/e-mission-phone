@@ -241,7 +241,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.data.currDayTrips.forEach(function(trip, index, array) {
               addUnpushedMode(trip);
               PostTripManualMarker.addUnpushedIncidents(trip);
-              EditModeFactory.addUnpushedSectionMode(trip);
+              EditModeFactory.addUnpushedSectionMode(trip)
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map( 
             function(trip) { return DiaryHelper.directiveForTrip(trip, false);});
@@ -263,6 +263,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           };
       });
     });
+
 
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
@@ -303,8 +304,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     */
    
 
-
-  // TEST CODE REMOVE BEFORE PUSH
     var printModes = function() {
       $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
         console.log("Modes list");

@@ -25,8 +25,11 @@
             {{tripgj.end_place.properties.displayName.split(',')[0]}}
                 </div>
             </div>
-            <div class="col-40" style="text-align: center;margin: auto;">
+            <div ng-if="!userEdit(trip)" class="col-40" style="text-align: center;margin: auto;">
                 <button ng-click ="editMode(tripgj.data.id)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Edit Mode</button> 
+            </div>
+            <div ng-if="userEdit(trip)" class="col-40" style="text-align: center;margin: auto;">
+                Edited
             </div>
         </div>
         <div style="height: 10px;"></div>

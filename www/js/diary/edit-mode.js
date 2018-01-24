@@ -46,7 +46,6 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip, true);
-  $scope.editModeObj = EditModeFactory.chosenModeAndSection
   console.log($scope.tripgj);
   console.log($scope.trip);
 
@@ -71,9 +70,6 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
     map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
   });
 
-  $scope.$watch(function() { 
-    $scope.editModeObj;
-  });
 
   $scope.editMode = function(param) {
     $state.go('root.main.diary-edit-mode', {tripId: param});

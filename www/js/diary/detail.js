@@ -74,6 +74,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
      return ret_val;
   }
 
+  $scope.userEdit = function(trip) {
+    var edited = false
+    trip.sections.forEach(function(section) {
+      if(section.id.split('_')[0] == 'edited') {
+        edited = true
+      }
+    })
+    return edited
+  }
+
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
   leafletData.getMap('detail').then(function(map) {
