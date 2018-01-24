@@ -1,10 +1,10 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
-                                      'ionic-datepicker', 'nvd3', 'angularLocalStorage',
+                                      'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {

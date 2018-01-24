@@ -6,7 +6,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.incident.posttrip.manual'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
-                                        $stateParams, $ionicActionSheet, $ionicLoading,
+                                        $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
                                         UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {

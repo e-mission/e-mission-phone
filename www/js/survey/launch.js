@@ -65,9 +65,10 @@ angular.module('emission.survey.launch', ['emission.services',
                                                          startTs,
                                                          endTs) {
       var options = {
-        location: 'no',
+        location: window.cordova.platformId == 'ios'? 'no' : 'yes',
         clearcache: 'no',
-        toolbar: 'yes'
+        toolbar: 'yes',
+        hideurlbar: 'yes'
       };
 
       // THIS LINE FOR inAppBrowser
