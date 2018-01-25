@@ -7,7 +7,7 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
+angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.splash.updatecheck',
@@ -147,38 +147,8 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicCloudProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
   console.log("Starting config");
-
-  var waitFn = function($q) {
-      var deferred = $q.defer();
-      ionic.Platform.ready(function() {
-         deferred.resolve();
-      });
-      return deferred.promise;
-  };
-
-  $ionicCloudProvider.init({
-    "core": {
-      "app_id": "9a6e5f95"
-    },
-    "push": {
-      "sender_id": "97387382925",
-      "pluginConfig": {
-        "ios": {
-          "badge": true,
-          "sound": true,
-          "vibration": true,
-          "clearBadge": true
-        },
-        "android": {
-          "icon": "ic_question_answer",
-          "iconColor": "#54DCC1",
-          "clearNotifications": true
-        }
-      }
-    }
-  });
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
