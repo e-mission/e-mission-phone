@@ -1,16 +1,16 @@
 {
-    "connectUrl": "http://184.73.51.202",
+    "connectUrl": "https://e-mission.eecs.berkeley.edu",
     "isSkipAuth": false,
     "android": {
         "auth": {
-            "method": "dummy-dev",
-            "clientID": "ignored"
+            "method": "google-authutil",
+            "clientID": "97387382925-ibqg2pk62k3jjbeiu0j1vdg6h1p3jh99.apps.googleusercontent.com"
         }
     },
     "ios": {
         "auth": {
-            "method": "dummy-dev",
-            "clientID": "ignored"
+            "method": "google-signin-lib",
+            "clientID": "97387382925-caup6t5g8fho7d7ctf78d8l9f4avre4p.apps.googleusercontent.com"
         }
     }
 }
