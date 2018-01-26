@@ -1,5 +1,5 @@
 {
-    "connectUrl": "https://e-mission.eecs.berkeley.edu",
+    "connectUrl": "http://184.73.51.202",
     "isSkipAuth": false,
     "android": {
         "auth": {
