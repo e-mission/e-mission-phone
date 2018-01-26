@@ -3,14 +3,14 @@
     "isSkipAuth": false,
     "android": {
         "auth": {
-            "method": "google-authutil",
-            "clientID": "97387382925-ibqg2pk62k3jjbeiu0j1vdg6h1p3jh99.apps.googleusercontent.com"
+            "method": "dummy-dev",
+            "clientID": "ignored"
         }
     },
     "ios": {
         "auth": {
-            "method": "google-signin-lib",
-            "clientID": "97387382925-caup6t5g8fho7d7ctf78d8l9f4avre4p.apps.googleusercontent.com"
+            "method": "dummy-dev",
+            "clientID": "ignored"
         }
     }
 }
