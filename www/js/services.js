@@ -77,6 +77,12 @@ angular.module('emission.services', ['emission.plugin.logger'])
       })
     };
 
+    this.getSuggestion = function() {
+      return new Promise(function(resolve, reject) {
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion")
+      });
+    };
+
     this.getIncidents = function(start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
@@ -177,7 +183,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
           var remoteResult = [];
           var remoteError = null;
-      
+
           var localPromiseDone = false;
           var remotePromiseDone = false;
 
