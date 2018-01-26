@@ -539,6 +539,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
         $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
         $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
+        getRecentTrips()
         $scope.chartDataUser.duration = userDuration? userDuration : [];
         $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
         $scope.chartDataUser.count = userCount? userCount : [];
@@ -946,6 +947,20 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
         return maxTripMethod;
+    }
+
+    var getRecentTrips = function() {
+      var now = moment().utc();
+      var weekAgoFromNow = moment().utc().subtract(7, 'd');
+      CommHelper.getRawEntries(['analysis/cleaned_trip'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
+        .then(function(tripData) {saveRecentTrips(tripData);})
+        .catch(function(err) {console.log(err)});
+    }
+
+    var saveRecentTrips = function(tripsList) {
+      for (var i = 0; i < tripsList['phone_data'].length; i++) {
+        $scope.summaryData.userSummary.recentTrips.push(tripsList['phone_data'][i]);
+      }
     }
 
     $scope.changeFromWeekday = function() {
