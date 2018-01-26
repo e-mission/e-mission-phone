@@ -539,6 +539,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
         $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
         $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
+        $scope.summaryData.userSummary.recentTrips = [];
         getRecentTrips()
         $scope.chartDataUser.duration = userDuration? userDuration : [];
         $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
@@ -949,18 +950,47 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return maxTripMethod;
     }
 
-    var getRecentTrips = function() {
+    var getRecentTrips = function(numTrips = 3) {
       var now = moment().utc();
       var weekAgoFromNow = moment().utc().subtract(7, 'd');
-      CommHelper.getRawEntries(['analysis/cleaned_trip'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
-        .then(function(tripData) {saveRecentTrips(tripData);})
+      CommHelper.getRawEntries(['analysis/cleaned_section'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
+        .then(function(tripData) {saveRecentTrips(numTrips, tripData);})
         .catch(function(err) {console.log(err)});
     }
 
-    var saveRecentTrips = function(tripsList) {
-      for (var i = 0; i < tripsList['phone_data'].length; i++) {
-        $scope.summaryData.userSummary.recentTrips.push(tripsList['phone_data'][i]);
+    var saveRecentTrips = function(numTrips, tripsList) {
+      var trips = [];
+      var listLength = tripsList['phone_data'].length;
+      for (var i = listLength - 1; i >= 0 && i >= listLength - numTrips; i--) {
+        var currentTrip = tripsList['phone_data'][i];
+        var data = []; //tripId, mode, startTime, endTime, distance, CO2
+        data.push(currentTrip._id.$oid);
+        data.push("img/mode" + currentTrip.data.sensed_mode + ".png");
+        data.push(getFormattedTime(currentTrip.data.start_ts)); //Convert to moment
+        data.push(getFormattedTime(currentTrip.data.end_ts));
+        data.push(mtomiles(currentTrip.data.distance) + " miles");
+        switch(data[1]) {
+          case 0:
+            data.push(FootprintHelper.getFootprint(data[4], "IN_VEHICLE"));
+            break;
+          default: //If trip is not vehicle, then no CO2
+            data.push('0 kg CO₂');
+        }
+        $scope.summaryData.userSummary.recentTrips.push(data);
       }
+
+    }
+
+    var getFormattedTime = function(ts_in_secs) { //found in diary/services.js
+      if (angular.isDefined(ts_in_secs)) {
+        return moment(ts_in_secs * 1000).format('LT');
+      } else {
+        return "---";
+      }
+    };
+
+    var mtomiles = function(v) {
+      return Math.round(v / 1609.34 * 100) / 100;
     }
 
     $scope.changeFromWeekday = function() {
