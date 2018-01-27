@@ -1,0 +1,21 @@
+<ion-view view-title="Dashboard" class="ion-view-background">
+  <ion-nav-bar class="bar-stable">
+  </ion-nav-bar>
+  <ion-content class="has-header">
+    <div ng-if="uictrl.showResult">
+      <div ng-if="uictrl.showSummary" overflow-scroll="true">
+        <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
+          <div>
+              <h4 class="dashboard-headers">Oski Bear</h4>
+              Oski Bear Picture
+          </div>
+        </div>
+        <h4>Happiness Bar</h4>
+        <div id="dashboard-bottom" class="card">
+          <h4 class="dashboard-headers">Map</h4>
+            Map
+        </div>
+      </div>
+    </div>
+  </ion-content>
+</ion-view>
