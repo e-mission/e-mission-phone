@@ -169,7 +169,7 @@
             <div ng-repeat="i in [0,1,2]">
               <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
                 <div class="col-left-75" style="width:60%">
-                  <img alt="MODE" src={{summaryData.userSummary.recentTrips[i][1]}}>
+                  <img alt="MODE" src={{summaryData.userSummary.recentTrips[i][1]}} onerror="this.src='img/mode4.png'" style="height:50px">
                   {{summaryData.userSummary.recentTrips[i][2]}} to {{summaryData.userSummary.recentTrips[i][3]}}
                 </div>
                 <div class="col-right-25" style="width:40%">
