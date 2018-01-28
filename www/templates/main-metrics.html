@@ -166,14 +166,19 @@
         <div id="dashboard-bottom" class="card">
           <h4 class="dashboard-headers">Recent Trips</h4>
             <!-- Links to trip detail page -->
-            <div ng-repeat="i in [0,1,2]">
-              <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-                <div class="col-left-75" style="width:60%">
-                  <img alt="MODE" src={{summaryData.userSummary.recentTrips[i][1]}} onerror="this.src='img/mode4.png'" style="height:50px">
-                  {{summaryData.userSummary.recentTrips[i][2]}} to {{summaryData.userSummary.recentTrips[i][3]}}
-                </div>
-                <div class="col-right-25" style="width:40%">
-                  {{summaryData.userSummary.recentTrips[i][4]}} {{summaryData.userSummary.recentTrips[i][5]}}
+            <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;">
+              No available recent trips
+            </div>
+            <div ng-if="summaryData.userSummary.recentTrips.length > 0">
+              <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
+                <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
+                  <div class="col-left-75" style="width:60%">
+                    <img alt="MODE" ng-src = "recentTrip[1]" onerror="this.src='img/mode4.png'" style="height:50px">
+                    {{recentTrip[2]}} to {{recentTrip[3]}}
+                  </div>
+                  <div class="col-right-25" style="width:40%">
+                    {{recentTrip[4]}} {{recentTrip[5]}}
+                  </div>
                 </div>
               </div>
             </div>
