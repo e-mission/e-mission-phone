@@ -33,7 +33,7 @@
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin; display: flex; justify-content: space-around">
             <div>{{getFormattedDistance(trip.properties.distance)}} km</div>
             <div>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
-            <div>INSERT_C02_FOOTPRINT</div>
+            <div>{{getTripFootprint(trip)}}</div>
           </div>
           <!-- Breakdown of mode of transport for trip
           <div id="sectionPct" class="col">
