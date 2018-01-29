@@ -471,7 +471,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.tierRank = result;
       })
 
-      getUserUsername().then(function(results) {
+      getUsername().then(function(results) {
         $scope.username = result;
       })
 
