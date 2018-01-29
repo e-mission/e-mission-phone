@@ -90,7 +90,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
         $scope.finish();
-        $scope.showPopup();
+        $scope.showUsernamePopup();
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
@@ -100,11 +100,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.finish();
     });
   };
-  $scope.showPopup = function() {
+  $scope.showUsernamePopup = function() {
   $scope.data = {};
 
-  // An elaborate, custom popup
-  var myPopup = $ionicPopup.show({
+  var usernamePopup = $ionicPopup.show({
     template: '<input type="userEmail" ng-model="data.wifi">',
     title: 'Create a new username/Edit your username',
     scope: $scope,
@@ -123,7 +122,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       }
     ]
   });
-  myPopup.then(function(res) {
+  usernamePopup.then(function(res) {
     console.log('Tapped!', res);
     $scope.startSurvey();
   });
