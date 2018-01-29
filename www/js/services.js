@@ -33,6 +33,12 @@ angular.module('emission.services', ['emission.plugin.logger'])
         });
     };
 
+    this.getHappiness = function() {
+      return new Promise(function(resolve, reject) {
+          window.cordova.plugins.BEMServerComm.getUserPersonalData("/happiness", resolve, reject);
+      });
+    }
+
     /*
      * var regConfig = {'username': ....}
      * Other fields can be added easily and the server can be modified at the same time.
@@ -213,7 +219,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
           var remoteResult = [];
           var remoteError = null;
-      
+
           var localPromiseDone = false;
           var remotePromiseDone = false;
 
