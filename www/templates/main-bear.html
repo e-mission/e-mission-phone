@@ -1,19 +1,7 @@
 <ion-view view-title="Dashboard" class="ion-view-background">
-  <ion-nav-bar class="bar-stable">
-  </ion-nav-bar>
-  <ion-content class="has-header">
-    <div>
-      <div>
-        <div id="dashboard-footprint" class="card">
-          <div>
-              <h4 class="dashboard-headers">Oski Bear</h4>
-              Oski Bear Picture
-              <img ng-src="img/giphy.gif" alt="Description" />
-          </div>
-        </div>
-        <h4>Happiness Bar</h4>
-        <p></p>
-      </div>
-    </div>
-  </ion-content>
+  <div class="bear-wrapper">
+    <img ng-src="img/giphy.gif" alt="Description" />
+    <h3>Happiness Value:</h3>
+		<button side="right" class="button" ng-click="onLoad()">Refresh</button>
+  </div>
 </ion-view>
