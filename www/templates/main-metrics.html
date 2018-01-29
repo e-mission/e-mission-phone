@@ -173,7 +173,7 @@
               <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
                 <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
                   <div class="col-left-75" style="width:60%">
-                    <img alt="MODE" ng-src = "recentTrip[1]" onerror="this.src='img/mode4.png'" style="height:50px">
+                    <img alt="MODE" ng-src = "{{recentTrip[1]}}" onerror="this.src='img/mode4.png'" style="height:50px">
                     {{recentTrip[2]}} to {{recentTrip[3]}}
                   </div>
                   <div class="col-right-25" style="width:40%">
