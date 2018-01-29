@@ -369,6 +369,26 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
+    var getHappiness = function() {
+      var happinessResult = CommHelper.getHappiness();
+      return happinessResult;
+    }
+
+    var getTier = function() {
+      var tierResult = CommHelper.getUserTier();
+      return tierResult;
+    }
+
+    var getTierRank = function() {
+      var tierRankResult = CommHelper.getTierRank();
+      return tierRankResult;
+    }
+
+    var getUsername = function() {
+      var usernameResult = CommHelper.getUsername();
+      return usernameResult;
+    }
+
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
@@ -409,6 +429,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.uictrl.showResult = true;
       $scope.uictrl.hasAggr = false;
 
+      $scope.username = "GenericUsername";
+      $scope.tierRank = 0;
+      $scope.tier = 0;
+      $scope.happiness = 0; 
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
@@ -434,6 +458,22 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
+
+      getHappiness().then(function(results) {
+        $scope.happiness = result;
+      })
+
+      getTier().then(function(results) {
+        $scope.tier = result;
+      })
+
+      getTierRank().then(function(results) {
+        $scope.tierRank = result;
+      })
+
+      getUserUsername().then(function(results) {
+        $scope.username = result;
+      })
 
       getUserMetricsFromServer().then(function(results) {
           $ionicLoading.hide();

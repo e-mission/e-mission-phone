@@ -86,6 +86,33 @@ angular.module('emission.services', ['emission.plugin.logger'])
       });
     };
 
+    this.getUserTier = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/tier", msgFiller, resolve, reject);
+      });
+    };
+
+    this.getTierRank = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/tierRank", msgFiller, resolve, reject);
+      });
+    };
+
+    this.getUsername = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/getUsername", msgFiller, resolve, reject);
+      });
+    };
+
     this.getIncidents = function(start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
