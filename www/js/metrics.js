@@ -1140,6 +1140,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
   }
 
+  $scope.linkToDiary = function(trip_id) {
+    window.location.href = "#/root/main/diary/" + trip_id;
+  }
+
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",

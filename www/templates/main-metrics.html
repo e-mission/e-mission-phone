@@ -78,12 +78,12 @@
               <!--<div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">-->
                 <div class="row">
-                  <div class="col-left-75"><b>CO2 Consumption: </b></div>
-                  <div class="col-right-25">{{carbonData.userCarbon}}</div>
+                  <div class="col-left-60"><b>CO2 Consumption: </b></div>
+                  <div class="col-right-40">{{carbonData.userCarbon}}</div>
                 </div>
                 <div class="row">
-                  <div class="col-left-75"><b>Change from Last Week: </b></div>
-                  <div class="col-right-25">{{carbonData.lastWeekUserCarbon}}</div>
+                  <div class="col-left-60"><b>Change from Last Week: </b></div>
+                  <div class="col-right-40">{{carbonData.lastWeekUserCarbon}}</div>
                 </div>
                   <!--<div ng-if="uictrl.current == 'Last week'">
                     <div id="arrow-color" ng-if="carbonUp" class="icon ion-arrow-up-a"></div>
@@ -171,7 +171,7 @@
             </div>
             <div ng-if="summaryData.userSummary.recentTrips.length > 0">
               <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
-                <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
+                <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;" ng-click="linkToDiary({{recentTrip[0]}})">
                   <div class="col-left-75" style="width:60%">
                     <img alt="MODE" ng-src = "{{recentTrip[1]}}" onerror="this.src='img/mode4.png'" style="height:50px">
                     {{recentTrip[2]}} to {{recentTrip[3]}}
