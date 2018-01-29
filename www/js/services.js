@@ -77,6 +77,15 @@ angular.module('emission.services', ['emission.plugin.logger'])
       })
     };
 
+    this.getHappiness = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/happiness", msgFiller, resolve, reject);
+      });
+    };
+
     this.getIncidents = function(start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
