@@ -19,7 +19,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -58,6 +58,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       }
     });
   };
+  $scope.startSurvey = function () {
+      SurveyLaunch.startSurvey('https://docs.google.com/forms/d/e/1FAIpQLSd47sf_0bieu81-HtXO5PV3EmOdUfDjWE5xrLSzQ-1hVrgLgQ/viewform?usp=sf_link', 'QR~QID3');
+      startSurvey();
+  };
 
   $scope.next = function() {
     $scope.getIntroBox().next();
@@ -86,6 +90,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
         $scope.finish();
+        $scope.startSurvey()
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
