@@ -460,15 +460,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       };
 
       getHappiness().then(function(results) {
-        $scope.happiness = result;
+        $scope.happiness = result['happiness'];
       })
 
       getTier().then(function(results) {
-        $scope.tier = result;
+        $scope.tier = result['tier'];
       })
 
       getTierRank().then(function(results) {
-        $scope.tierRank = result;
+        $scope.tierRank = result['tierRank'];
       })
 
       getUsername().then(function(results) {
