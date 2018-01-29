@@ -80,7 +80,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     this.getSuggestion = function() {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(mesage) {
-          #donothing
+          // donothing
         }
         window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion", msgFiller, resolve, reject);
       });

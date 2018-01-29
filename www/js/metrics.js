@@ -977,7 +977,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         var currentTrip = tripsList['phone_data'][i];
         var data = []; //tripId, mode, startTime, endTime, distance, CO2
         data.push(currentTrip._id.$oid);
-        data.push("img/mode" + currentTrip.data.sensed_mode + ".png");
+        var sensed_mode = currentTrip.data.sensed_mode;
+        if ((sensed_mode == 7) || (sensed_mode == 8)) {
+          sensed_mode = 2;
+        }
+        data.push("img/mode" + sensed_mode + ".png");
         data.push(getFormattedTime(currentTrip.data.start_ts)); //Convert to moment
         data.push(getFormattedTime(currentTrip.data.end_ts));
         data.push(mtomiles(currentTrip.data.distance) + " miles");
