@@ -369,6 +369,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
+   var getSuggestion = function() {
+     var getSuggestionResult = CommHelper.getSuggestion();
+     return getSuggestionResult;
+   }
+
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
@@ -421,6 +426,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
       $scope.suggestionData.suggestion = "No recent suggestion to show";
       $scope.suggestionData.savings = "0 kg CO₂";
+      $scope.suggestionData.startCoordinates = ["0.0", "0.0"];
+      $scope.suggestionData.endCoordinates = ["0.0", "0.0"];
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -437,6 +444,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
+
+      getSuggestion().then(function(results) {
+        $scope.suggestionData.suggestion = results['message'];
+        $scope.suggestionData.savings = results['savings'] + " kg CO₂";
+      })
 
       getUserMetricsFromServer().then(function(results) {
           $ionicLoading.hide();
