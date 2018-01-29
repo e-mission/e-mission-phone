@@ -79,7 +79,7 @@ angular.module('emission.main.control',['emission.services',
             // config not loaded when loading ui, set default as false
             // TODO: Read the value if it is not defined.
             // Otherwise, don't we have a race with reading?
-            // we don't really $apply on this field... 
+            // we don't really $apply on this field...
             return false;
         } else {
             return isMediumAccuracy;
@@ -105,6 +105,38 @@ angular.module('emission.main.control',['emission.services',
             $state.reload();
         }
     }
+    $scope.showUsernamePopup = function() {
+    $scope.data = {};
+
+    var usernamePopup = $ionicPopup.show({
+      template: '<input type="userEmail" ng-model="data.wifi">',
+      title: 'Create a new username/Edit your username',
+      scope: $scope,
+      buttons: [
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            if (!$scope.data.wifi) {
+              //don't allow the user to close unless he enters a username
+              e.preventDefault();
+            } else {
+              return $scope.data.wifi;
+            }
+          }
+        }
+      ]
+    });
+    usernamePopup.then(function(res) {
+      console.log('Tapped!', res);
+      CommHelper.setUsername(res);
+      var delayInMilliseconds = 1000; //1 second
+
+      setTimeout(function() {
+        $scope.getUsername();
+      }, delayInMilliseconds);
+    });
+  }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
@@ -247,6 +279,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.sync = {};
         $scope.settings.tnotify = {};
         $scope.settings.auth = {};
+        $scope.settings.username = "";
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
           return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
@@ -258,8 +291,11 @@ angular.module('emission.main.control',['emission.services',
         $scope.getTNotifySettings();
         $scope.getEmail();
         $scope.getState();
+        $scope.getUsername();
     };
-
+    $scope.getUsername = function() {
+      $scope.settings.username = CommHelper.getUsername()['username'];
+    }
     $scope.returnToIntro = function() {
       var testReconsent = false
       if (testReconsent) {

@@ -75,6 +75,16 @@ angular.module('emission.services', ['emission.plugin.logger'])
       })
     };
 
+    this.getUsername = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/getUsername", msgFiller, resolve, reject);
+      })
+    };
+
+
     this.getMetrics = function(timeType, metrics_query) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
