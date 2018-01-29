@@ -57,7 +57,7 @@
         <nvd3 ng-if="uictrl.showSpeed" options="speedOptions" data="data.speed" style="padding: 10px;"></nvd3>
       </div>
       <div ng-if="uictrl.showSummary" overflow-scroll="true">-->
-      <div class="card" id="suggestion-card">
+      <div class="card" id="suggestion-card" ng-click="linkToMaps()">
         <h4 class="dashboard-headers">Suggestion</h4>
         <div class="user-carbon">
           {{suggestionData.suggestion}}

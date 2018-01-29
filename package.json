@@ -3,6 +3,7 @@
   "version": "1.1.1",
   "description": "Automatic tracker",
   "dependencies": {
+    "@ionic-native/launch-navigator": "^4.5.3",
     "@ionic/cloud": "^0.15.1",
     "fs-extra": "^2.0.0",
     "gulp": "^3.5.6",
