@@ -737,7 +737,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
                         / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
                         * 100 - 100;
-
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
