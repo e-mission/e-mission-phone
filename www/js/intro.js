@@ -124,6 +124,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
   usernamePopup.then(function(res) {
     console.log('Tapped!', res);
+    CommHelper.setUsername(res);
     $scope.startSurvey();
   });
 }
