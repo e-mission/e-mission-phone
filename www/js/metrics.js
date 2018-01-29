@@ -1135,7 +1135,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
      } else {
 	     let label = encodeURI('My Label');
        window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination, '_system');
-	     //window.open('geo:0,0?q=' + destination + '(' + label + ')', '_system');
     }
   }
 

@@ -1,5 +1,6 @@
 'use strict';
 
+
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'ionic-toast'])
 
@@ -17,7 +18,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     controller: 'IntroCtrl'
   });
 })
-
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch) {
   $scope.getIntroBox = function() {
@@ -90,7 +90,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
         $scope.finish();
-        $scope.startSurvey()
+        $scope.showPopup();
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
@@ -100,6 +100,35 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.finish();
     });
   };
+  $scope.showPopup = function() {
+  $scope.data = {};
+
+  // An elaborate, custom popup
+  var myPopup = $ionicPopup.show({
+    template: '<input type="userEmail" ng-model="data.wifi">',
+    title: 'Create a new username/Edit your username',
+    scope: $scope,
+    buttons: [
+      {
+        text: '<b>Save</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.wifi) {
+            //don't allow the user to close unless he enters a username
+            e.preventDefault();
+          } else {
+            return $scope.data.wifi;
+          }
+        }
+      }
+    ]
+  });
+  myPopup.then(function(res) {
+    console.log('Tapped!', res);
+    $scope.startSurvey();
+  });
+}
+
 
   // Called each time the slide changes
   $scope.slideChanged = function(index) {
