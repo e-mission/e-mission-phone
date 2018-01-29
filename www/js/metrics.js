@@ -3,7 +3,7 @@
 angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, $ionicPopup,
+                                    CommHelper, $window, $ionicPopup, $ionicPlatform
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
@@ -1127,13 +1127,23 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[0] + ',' + $scope.suggestionData.startCoordinates[1];
     let destination = $scope.suggestionData.endCoordinates[0] + ',' + $scope.suggestionData.endCoordinates[1];
+    $ionicPlatform.ready(function() {
+    if ( $ionicPlatform.is('android') ) {
+      let label = encodeURI('My Label');
+      window.open('geo:0,0?q=' + destination + '(' + label + ')', '_system');
+    }
 
+    if ( $ionicPlatform.is('ios') ) {
+      window.open('maps://maps.apple.com/?saddr=' + start + '&daddr=' + destination, '_system');
+    }
+	});
+  /*
     if(this.platform.is('ios')){
 	     window.open('maps://maps.apple.com/?saddr=' + start + '&daddr=' + destination, '_system');
      } else {
 	     let label = encodeURI('My Label');
 	     window.open('geo:0,0?q=' + destination + '(' + label + ')', '_system');
-    }
+    }*/
   }
 
   $scope.modeIcon = function(key) {
