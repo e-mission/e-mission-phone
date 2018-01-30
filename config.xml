@@ -21,7 +21,7 @@
     <preference name="xwalkVersion" value="19+" />
     <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
     <preference name="xwalkMode" value="embedded" />
-    <preference name="xwalkMultipleApk" value="false" />
+    <preference name="xwalkMultipleApk" value="true" />
     <preference name="emSensorDataCollectionProtocolApprovalDate" value="2016-07-14" />
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
