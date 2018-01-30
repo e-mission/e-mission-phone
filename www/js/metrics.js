@@ -453,7 +453,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.suggestionData.startCoordinates[1] = results['start_lon']
         $scope.suggestionData.endCoordinates[0] = results['end_lat']
         $scope.suggestionData.endCoordinates[1] = results['end_lon']
-        $scope.suggestionData.mode = results['mode']
+        $scope.suggestionData.mode = results['method']
       })
 
       getUserMetricsFromServer().then(function(results) {
@@ -1132,22 +1132,22 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
-    let mode = $scope.suggestionData.mode
+    var mode = $scope.suggestionData.mode
     if(ionic.Platform.isIOS()){
-      if (mode == 'bike') {
+      if (mode === 'bike') {
         mode = 'b';
-      } else if (mode == 'public') {
+      } else if (mode === 'public') {
         mode = 'r';
-      } else if (mode == 'walk') {
+      } else if (mode === 'walk') {
         mode = 'w';
       }
 	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
      } else {
-       if (mode == 'bike') {
+       if (mode === 'bike') {
          mode = 'b';
-       } else if (mode == 'public') {
+       } else if (mode === 'public') {
          mode = 'r';
-       } else if (mode == 'walk') {
+       } else if (mode === 'walk') {
          mode = 'w';
        }
        window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
