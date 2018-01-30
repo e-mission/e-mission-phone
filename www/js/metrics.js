@@ -967,37 +967,54 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getRecentTrips = function(numTrips = 3) {
       var now = moment().utc();
-      var weekAgoFromNow = moment().utc().subtract(7, 'd');
-      CommHelper.getRawEntries(['analysis/cleaned_section'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
-        .then(function(tripData) {saveRecentTrips(numTrips, tripData);})
+      var twoDaysAgo = moment().utc().subtract(2, 'd');
+      CommHelper.getRawEntries(['analysis/cleaned_section', 'analysis/cleaned_trip'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
+        .then(function(data) {saveRecentTrips(numTrips, data['phone_data'])})
         .catch(function(err) {console.log(err)});
+      /*CommHelper.getRawEntries(['analysis/cleaned_section'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
+        .then(function(tripData) {saveRecentTrips(numTrips, tripData);})
+        .catch(function(err) {console.log(err)});*/
     }
 
     var saveRecentTrips = function(numTrips, tripsList) {
       var trips = [];
-      var listLength = tripsList['phone_data'].length;
-      for (var i = listLength - 1; i >= 0 && i >= listLength - numTrips; i--) {
-        var currentTrip = tripsList['phone_data'][i];
-        var data = []; //tripId, mode, startTime, endTime, distance, CO2
-        data.push(currentTrip._id.$oid);
-        var sensed_mode = currentTrip.data.sensed_mode;
+      var data = [null, null, {}, null, null, 0]; //tripId, distance, mode, startTime, endTime, CO2
+
+      while (trips.length < numTrips && tripsList.length > 0) {
+        var currentSeg = tripsList.pop();
+        if (currentSeg.metadata.key == "analysis/cleaned_section") {
+          data[0] = currentSeg.data.trip_id.$oid;
+          (data[2][currentSeg.data.sensed_mode]) ? data[2][currentSeg.data.sensed_mode] += currentSeg.data.distance : data[2][currentSeg.data.sensed_mode] = currentSeg.data.distance;
+        } else { 
+          data[1] = currentSeg.data.distance;
+          data[3] = getFormattedTime(currentSeg.data.start_ts);
+          data[4] = getFormattedTime(currentSeg.data.end_ts);
+          // Trip is complete, save to `trips` variable
+          trips.push(data);
+          data = [null, null, {}, null, null, 0];
+        }
+      }
+
+      for (var i = 0; i < trips.length; i++) {
+        //Find mode with max distance
+        var sensed_mode = trips[i][2];
+        var smkeys = Object.keys(sensed_mode);
+        sensed_mode = smkeys.reduce(function(a, b){ return sensed_mode[a] > sensed_mode[b] ? a : b });
         if ((sensed_mode == 7) || (sensed_mode == 8)) {
           sensed_mode = 2;
         }
-        data.push("img/mode" + sensed_mode + ".png");
-        data.push(getFormattedTime(currentTrip.data.start_ts)); //Convert to moment
-        data.push(getFormattedTime(currentTrip.data.end_ts));
-        data.push(mtomiles(currentTrip.data.distance) + " miles");
-        switch(data[1]) {
-          case 0:
-            data.push(FootprintHelper.getFootprint(data[4], "IN_VEHICLE"));
-            break;
-          default: //If trip is not vehicle, then no CO2
-            data.push('0 kg CO₂');
+        // Calculate footprint of trip
+        for (var j = 0; j < smkeys.length; j++) {
+          if (smkeys[j] == 0) {
+            trips[i][5] += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "IN_VEHICLE");
+          }
         }
-        $scope.summaryData.userSummary.recentTrips.push(data);
+        // Formatting for display
+        trips[i][1] = mtomiles(trips[i][1]) + " miles";
+        trips[i][2] = "img/mode" + sensed_mode + ".png";
+        trips[i][5] = trips[i][5] + ' kg CO₂';
       }
-
+      $scope.summaryData.userSummary.recentTrips = trips;
     }
 
     var getFormattedTime = function(ts_in_secs) { //found in diary/services.js
@@ -1140,6 +1157,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   }
 
   $scope.linkToDiary = function(trip_id) {
+    console.log("Loading trip "+trip_id);
     window.location.href = "#/root/main/diary/" + trip_id;
   }
 
