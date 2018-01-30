@@ -428,6 +428,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.suggestionData.savings = "0 kg CO₂";
       $scope.suggestionData.startCoordinates = ["0.0", "0.0"];
       $scope.suggestionData.endCoordinates = ["0.0", "0.0"];
+      $scope.suggestionData.mode = "bike";
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -452,6 +453,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.suggestionData.startCoordinates[1] = results['start_lon']
         $scope.suggestionData.endCoordinates[0] = results['end_lat']
         $scope.suggestionData.endCoordinates[1] = results['end_lon']
+        $scope.suggestionData.mode = results['method']
       })
 
       getUserMetricsFromServer().then(function(results) {
@@ -1147,12 +1149,25 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
+    var mode = $scope.suggestionData.mode
     if(ionic.Platform.isIOS()){
-	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination, '_system');
+      if (mode === 'bike') {
+        mode = 'b';
+      } else if (mode === 'public') {
+        mode = 'r';
+      } else if (mode === 'walk') {
+        mode = 'w';
+      }
+	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
      } else {
-	     let label = encodeURI('My Label');
-       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination, '_system');
-	     //window.open('geo:0,0?q=' + destination + '(' + label + ')', '_system');
+       if (mode === 'bike') {
+         mode = 'b';
+       } else if (mode === 'public') {
+         mode = 'r';
+       } else if (mode === 'walk') {
+         mode = 'w';
+       }
+       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
     }
   }
 
