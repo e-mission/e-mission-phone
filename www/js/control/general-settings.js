@@ -130,13 +130,9 @@ angular.module('emission.main.control',['emission.services',
     usernamePopup.then(function(res) {
       console.log('Tapped!', res);
       CommHelper.setUsername(res);
-      var delayInMilliseconds = 1000; //1 second
-
-      setTimeout(function() {
-        $scope.getUsername();
-      }, delayInMilliseconds);
+      $scope.refreshScreen();
     });
-  }
+  };
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
@@ -294,8 +290,10 @@ angular.module('emission.main.control',['emission.services',
         $scope.getUsername();
     };
     $scope.getUsername = function() {
-      $scope.settings.username = CommHelper.getUsername()['username'];
-    }
+      CommHelper.getUsername().then(function(results){
+        $scope.settings.username = results['username']
+      })
+    };
     $scope.returnToIntro = function() {
       var testReconsent = false
       if (testReconsent) {
