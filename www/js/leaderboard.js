@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.leaderboard',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
@@ -288,6 +288,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
     };
 
+    var getLeaderboardUsers = function() {
+      var getLeaderBoard = CommHelper.getLeaderBoard();
+      return getLeaderBoard;
+    }
+
     var moment2Localdate = function(momentObj) {
       return {
         year: momentObj.year(),
@@ -369,16 +374,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
-   var getSuggestion = function() {
-     var getSuggestionResult = CommHelper.getSuggestion();
-     return getSuggestionResult;
-   }
-
-   var getLeaderboardUsers = function() {
-     var getLeaderBoard = CommHelper.getLeaderBoard();
-     return getLeaderBoard;
-   }
-
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
@@ -423,18 +418,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
-      $scope.leaderboard = {};
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = " change";
 
-      $scope.leaderboard.users = []
-      $scope.suggestionData.suggestion = "No recent suggestion to show";
-      $scope.suggestionData.savings = "0 kg CO₂";
-      $scope.suggestionData.startCoordinates = ["0.0", "0.0"];
-      $scope.suggestionData.endCoordinates = ["0.0", "0.0"];
+      $scope.leaderboard.users = [];
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -451,15 +441,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
-
-      getSuggestion().then(function(results) {
-        $scope.suggestionData.suggestion = results['message'];
-        $scope.suggestionData.savings = results['savings'] + " kg CO₂";
-        $scope.suggestionData.startCoordinates[0] = results['start_lat']
-        $scope.suggestionData.startCoordinates[1] = results['start_lon']
-        $scope.suggestionData.endCoordinates[0] = results['end_lat']
-        $scope.suggestionData.endCoordinates[1] = results['end_lon']
-      })
 
       getLeaderboardUsers().then(function(results) {
         $scope.leaderboard.users = results;
@@ -748,6 +729,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
                         / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
                         * 100 - 100;
+
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
@@ -991,11 +973,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         var currentTrip = tripsList['phone_data'][i];
         var data = []; //tripId, mode, startTime, endTime, distance, CO2
         data.push(currentTrip._id.$oid);
-        var sensed_mode = currentTrip.data.sensed_mode;
-        if ((sensed_mode == 7) || (sensed_mode == 8)) {
-          sensed_mode = 2;
-        }
-        data.push("img/mode" + sensed_mode + ".png");
+        data.push("img/mode" + currentTrip.data.sensed_mode + ".png");
         data.push(getFormattedTime(currentTrip.data.start_ts)); //Convert to moment
         data.push(getFormattedTime(currentTrip.data.end_ts));
         data.push(mtomiles(currentTrip.data.distance) + " miles");
@@ -1136,22 +1114,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.doRefresh = function() {
     first = true;
     getMetrics();
-  }
-
-  $scope.linkToMaps = function() {
-    let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
-    let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
-    if(ionic.Platform.isIOS()){
-	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination, '_system');
-     } else {
-	     let label = encodeURI('My Label');
-       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination, '_system');
-	     //window.open('geo:0,0?q=' + destination + '(' + label + ')', '_system');
-    }
-  }
-
-  $scope.linkToDiary = function(trip_id) {
-    window.location.href = "#/root/main/diary/" + trip_id;
   }
 
   $scope.modeIcon = function(key) {
