@@ -465,6 +465,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
       getLeaderboardUsers().then(function(results) {
         $scope.leaderboard.users = results;
+      }).catch(function(error) {
+        console.error(error);
       })
 
       getUserMetricsFromServer().then(function(results) {
@@ -998,7 +1000,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         if (currentSeg.metadata.key == "analysis/cleaned_section") {
           data[0] = currentSeg.data.trip_id.$oid;
           (data[2][currentSeg.data.sensed_mode]) ? data[2][currentSeg.data.sensed_mode] += currentSeg.data.distance : data[2][currentSeg.data.sensed_mode] = currentSeg.data.distance;
-        } else { 
+        } else {
           data[1] = currentSeg.data.distance;
           data[3] = getFormattedTime(currentSeg.data.start_ts);
           data[4] = getFormattedTime(currentSeg.data.end_ts);
