@@ -27,7 +27,7 @@
     <div ng-class="changeFootprintCardHeight()" id="dashboard-stats" class="card">
       <h4 class="dashboard-headers">Weekly Stats</h4>
       <div class="row">
-        <div class="col-left"><b>CO2 Consumption: </b></div>
+        <div class="col-left"><b>CO₂ Consumption: </b></div>
         <div class="col-right">{{carbonData.userCarbon}}</div>
       </div>
       <div class="row">
@@ -52,14 +52,20 @@
       </div>
       <div ng-if="summaryData.userSummary.recentTrips.length > 0">
         <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
-          <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;" ng-click="linkToDiary({{recentTrip[0]}})">
-            <div style="flex-grow:1;display:flex;align-items: center;">
-              <img alt="MODE" ng-src = "{{recentTrip[1]}}" onerror="this.src='img/mode4.png'" style="height:30px;">
-            </div>
+          <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{recentTrip[0]}}">
+          <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
             <div style="flex-grow:2;display:flex;align-items: center;">
-              {{recentTrip[2]}} to {{recentTrip[3]}} | {{recentTrip[4]}} | {{recentTrip[5]}}
+              <img alt="MODE" ng-src = "{{recentTrip[2]}}" onerror="this.src='img/mode4.png'" style="height:30px;">
+            </div>
+            <div style="flex-grow:4;display:flex;align-items: center;">
+              {{recentTrip[3]}} to {{recentTrip[4]}}<br>
+              {{recentTrip[1]}} | {{recentTrip[5]}}
+            </div>
+            <div style="flex-grow:1;display:flex;align-items:center;" href="#">
+              <i class="ion-ios-arrow-right"></i>
             </div>
           </div>
+          </ion-item>
         </div>
       </div>
     </div>
