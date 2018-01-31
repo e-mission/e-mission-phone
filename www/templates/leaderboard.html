@@ -107,68 +107,20 @@
           </div>
         </div>
       -->
-
+      <div ng-repeat="tier in leaderboard.tiers">
         <div id="dashboard-bottom" class="card">
-          <h4 class="dashboard-headers">Tier 1</h4>
+          <h4 class="dashboard-headers">Tier {{ $index }}</h4>
             <!-- Links to trip detail page -->
-            <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;">
-              No available recent trips
-            </div>
-            <div ng-if="summaryData.userSummary.recentTrips.length > 0">
-              <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
+              <div ng-repeat="user in tier">
                 <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-                  <div class="col-left-75" style="width:60%">
-                    <img alt="MODE" ng-src = "recentTrip[1]" onerror="this.src='img/mode4.png'" style="height:50px">
-                  </div>
                   <div class="col-right-25" style="width:40%">
-                    {{leaderboard.users}}
+                    {{user.username}}
                   </div>
                 </div>
               </div>
             </div>
           </div>
 
-            <div id="dashboard-bottom" class="card">
-              <h4 class="dashboard-headers">Tier 2</h4>
-                <!-- Links to trip detail page -->
-                <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;">
-                  No available recent trips
-                </div>
-                <div ng-if="summaryData.userSummary.recentTrips.length > 0">
-                  <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
-                    <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-                      <div class="col-left-75" style="width:60%">
-                        <img alt="MODE" ng-src = "recentTrip[1]" onerror="this.src='img/mode4.png'" style="height:50px">
-                        {{leaderboard.users}}
-                      </div>
-                      <div class="col-right-25" style="width:40%">
-                        {{leaderboard.users}}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-                <div id="dashboard-bottom" class="card">
-                  <h4 class="dashboard-headers">Tier 3</h4>
-                    <!-- Links to trip detail page -->
-                    <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;">
-                      No available recent trips
-                    </div>
-                    <div ng-if="summaryData.userSummary.recentTrips.length > 0">
-                      <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
-                        <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-                          <div class="col-left-75" style="width:60%">
-                            <img alt="MODE" ng-src = "recentTrip[1]" onerror="this.src='img/mode4.png'" style="height:50px">
-                            {{recentTrip[2]}} to {{recentTrip[3]}}
-                          </div>
-                          <div class="col-right-25" style="width:40%">
-                            {{recentTrip[4]}} {{recentTrip[5]}}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
             <!-- Distance breakdown per mode
             <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;"summary data</div>
             <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" st"padding-top: 5px !important;">

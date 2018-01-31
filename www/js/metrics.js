@@ -430,7 +430,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = " change";
 
-      $scope.leaderboard.users = []
+      $scope.leaderboard.tiers = []
       $scope.suggestionData.suggestion = "No recent suggestion to show";
       $scope.suggestionData.savings = "0 kg CO₂";
       $scope.suggestionData.startCoordinates = ["0.0", "0.0"];
@@ -464,7 +464,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       })
 
       getLeaderboardUsers().then(function(results) {
-        $scope.leaderboard.users = results;
+        $scope.leaderboard.tiers = results['tiers'];
       }).catch(function(error) {
         console.error(error);
       })
