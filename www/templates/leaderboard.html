@@ -6,14 +6,12 @@
           <h4 class="dashboard-headers">Tier {{ $index + 1}}</h4>
             <!-- Links to trip detail page -->
               <div ng-repeat="user in tier">
-                <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-                  <div class="col-right-25" style="width:40%">
-                    <div ng-if="hasUsername(user)">
-                      {{user.username}}
-                    </div>
-                    <div ng-if="hasUsername(user) == false">
-                      Anon User
-                    </div>
+                <div id="leaderboard" class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
+                  <div ng-if="hasUsername(user)">
+                    {{$index + 1}}.   <b>{{user.username}}</b>
+                  </div>
+                  <div ng-if="hasUsername(user) == false">
+                    {{$index + 1}}.   <b>Anon User</b>
                   </div>
                 </div>
               </div>

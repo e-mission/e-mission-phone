@@ -417,7 +417,7 @@ img.center {
   color: #54DCC1;
   border-radius: 5px;
   display: block;
-  height: 140px;
+  height: auto;
   position: relative;
   margin-bottom: 5px !important;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
@@ -1940,7 +1940,7 @@ span.rz-bar-wrapper {
 #leaderboard.card {
   display: flex;
   flex-direction: column;
-  height: 200px !important;
+  height: auto !important;
 }
 
 .trip-card {
@@ -1949,6 +1949,18 @@ span.rz-bar-wrapper {
   border-top-width: 1px;
   border-bottom-width: 1px;
   display: flex;
+}
+
+#leaderboard.trip-card {
+  height: 50px;
+  border: 2px solid lightgray;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  /*font-weight: bold;*/
+  padding-left: 5px;
 }
 
 .col-left-75 {
