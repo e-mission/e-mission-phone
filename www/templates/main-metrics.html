@@ -52,7 +52,7 @@
       </div>
       <div ng-if="summaryData.userSummary.recentTrips.length > 0">
         <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
-          <ion-item style="background-color: transparent;" id="no-border" class="list-item" href="#/root/main/diary/{{recentTrip[0]}}">
+          <ion-item style="background-color: transparent;padding: 0px;" id="no-border" class="list-item" ng-click="openRecentTrip(recentTrip[0], recentTrip[3])">
           <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
             <div style="flex-grow:2;display:flex;align-items: center;">
               <img alt="MODE" ng-src = "{{recentTrip[2]}}" onerror="this.src='img/mode4.png'" style="height:30px;">

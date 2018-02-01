@@ -5,7 +5,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger, Timeline) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -1315,5 +1315,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
+  $scope.openRecentTrip = function(tripId, startTs) {
+      Timeline.updateForDay(moment(startTs).startOf('day'));
+      window.location.href = "#/root/main/diary/" + tripId;
+  }
 
 });

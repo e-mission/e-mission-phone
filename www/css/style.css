@@ -1929,6 +1929,7 @@ span.rz-bar-wrapper {
   margin: 10px;
   margin-bottom: 0px;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
+  height: auto !important;
 }
 
 #dashboard-bottom.card {

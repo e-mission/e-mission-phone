@@ -29,10 +29,12 @@ angular.module('emission.main.diary',['emission.main.diary.list',
       url: "/current",
       views: {
         'main-diary': {
-          templateUrl: "templates/diary/current.html",
-          controller: 'CurrMapCtrl'
+          //templateUrl: "templates/diary/current.html",
+          //controller: 'CurrMapCtrl'
+          templateUrl: "templates/diary/list.html",
+          controller: 'DiaryListCtrl'
         },
       }
-      
+
   });
 });
