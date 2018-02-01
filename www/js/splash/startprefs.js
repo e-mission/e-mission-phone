@@ -61,8 +61,13 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
-      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY, 
-        {INTRO_DONE_KEY: moment().format()});
+      // Need to initialize this first because if we try to
+      // create it inlike with {key: value}, the key becomes the
+      // word "INTRO_DONE_KEY" and the stored object is 
+      // {"INTRO_DONE_KEY":"2018-01-31T06:26:02+00:00"}
+      var to_store = {};
+      to_store[INTRO_DONE_KEY] = moment().format();
+      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY, to_store);
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
 
