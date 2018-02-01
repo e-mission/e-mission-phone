@@ -2,9 +2,16 @@
   <div class="bear-wrapper">
     <h3>Happiness Value: {{bear.happiness}}</h3>
 		<button side="right" class="button" ng-click="onLoad()">Refresh</button>
-    <ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%" zooming="true" locking="false" has-bouncing="false" overflow-scroll="false">
+    <ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%" zooming="true" locking="false" has-bouncing="false" overflow-scroll="false" max-zoom="5" minZoom="0.8">
       <div style="width: 1369.8px; height: 975px; background: url('img/background.png'); background-repeat: no-repeat; background-size: cover;">
-        <img ng-src="img/alfredexe.gif" alt="Description" />
+        <div class="bear-char">
+          <p>You</p>
+          <img ng-src="img/sadbear.gif" alt="Description" />
+        </div>
+        <div class="bear-char big">
+          <p>jesbu1</p>
+          <img ng-src="img/happybear.gif" alt="Description" />
+        </div>
     </div>
  </ion-scroll>
 </div>
