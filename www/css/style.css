@@ -1892,15 +1892,13 @@ span.rz-bar-wrapper {
 }
 div.bear-wrapper {
   background-color: black;
-  padding: 20px;
   height: 100%;
 }
 div.bear-wrapper img {
-  position:absolute;
-  top:50%;
-  left:50%;
-  transform: translate(-50%, -50%);
-  width: 100px;
+  width: 40px;
+  position: absolute;
+  top: 660px;
+  left: 280px;
 }
 
 div.bear-wrapper h3 {
@@ -1914,4 +1912,6 @@ div.bear-wrapper h3 {
 
 div.bear-wrapper button {
   margin-top: 30px;
+  position:absolute;
+  top: 50px;
 }

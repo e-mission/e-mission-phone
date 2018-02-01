@@ -432,7 +432,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.username = "GenericUsername";
       $scope.tierRank = 0;
       $scope.tier = 0;
-      $scope.happiness = 0; 
+      $scope.happiness = 0;
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};

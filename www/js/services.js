@@ -83,15 +83,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
       })
     };
 
-    this.getHappiness = function() {
-      return new Promise(function(resolve, reject) {
-        var msgFiller = function(mesage) {
-          // donothing
-        }
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/happiness", msgFiller, resolve, reject);
-      });
-    };
-
     this.getUserTier = function() {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(mesage) {
@@ -110,13 +101,23 @@ angular.module('emission.services', ['emission.plugin.logger'])
       });
     };
 
+    this.setUsername = function(username) {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        console.log("sent set username w/ " + username);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/setUsername/"+username, msgFiller, resolve, reject);
+      })
+    };
+
     this.getUsername = function() {
       return new Promise(function(resolve, reject) {
-        var msgFiller = function(mesage) {
-          // donothing
-        }
+        var msgFiller = function(message) {
+            //do nothing
+        };
         window.cordova.plugins.BEMServerComm.pushGetJSON("/getUsername", msgFiller, resolve, reject);
-      });
+      })
     };
 
     this.getIncidents = function(start_ts, end_ts) {
@@ -131,6 +132,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
       })
     };
+
+
 
     /*
      * key_list = list of keys to retrieve or None for all keys
