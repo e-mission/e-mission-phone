@@ -18,7 +18,6 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
-  UpdateCheck.checkForUpdates();
 
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)

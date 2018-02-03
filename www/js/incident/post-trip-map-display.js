@@ -1,4 +1,5 @@
 'use strict';
+<<<<<<< HEAD
 angular.module('emission.incident.posttrip.map', [
   'ui-leaflet', 'ng-walkthrough',
   'angularLocalStorage',
@@ -6,7 +7,7 @@ angular.module('emission.incident.posttrip.map', [
   'emission.main.diary.services',
   'emission.incident.posttrip.manual']).
   controller('PostTripMapCtrl', function ($scope, $window, $state,
-                                          $stateParams, $ionicActionSheet,
+                                          $stateParams,
                                           $ionicLoading,
                                           leafletData, leafletMapEvents, nzTour,
                                           storage,

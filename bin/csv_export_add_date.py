@@ -23,11 +23,11 @@ if __name__ == '__main__':
         out_path = args.output
 
     fp = open(exported_csv_filename, "w")
-    print "exporting csv to "+exported_csv_filename
+    print("exporting csv to "+exported_csv_filename)
     subprocess.call(['sqlite3', '-header', '-csv', db_path, "select * from logTable;"], stdout=fp)
-    print "adding dates to the dataframe"
+    print("adding dates to the dataframe")
     log_df = pd.read_csv(exported_csv_filename)
     log_df['dt'] = log_df.ts.apply(lambda ts: 
             str(pydt.datetime.fromtimestamp(ts).replace(tzinfo=pytz.timezone("America/Los_Angeles"))))
-    print "exporting csv with date to "+out_path
+    print("exporting csv with date to "+out_path)
     log_df[["ts", "dt", "message"]].to_csv(out_path)
