@@ -1,5 +1,4 @@
 'use strict';
-<<<<<<< HEAD
 angular.module('emission.incident.posttrip.map', [
   'ui-leaflet', 'ng-walkthrough',
   'angularLocalStorage',
