@@ -5,7 +5,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $rootScope, $location,  $state, ReferHelper, $http, Logger) {
+                                    $rootScope, $cordovaInAppBrowser, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -47,6 +47,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }, function(msg) {
             console.log("Sharing failed with message: " + msg);
         });
+    }
+
+    $scope.openAccessMap = function() {
+      var options = {
+        location: 'no',
+        clearcache: 'no',
+        toolbar: 'yes'
+      };
+      $cordovaInAppBrowser.open("https://accessmap.io/", "_blank", options);
     }
 
     $scope.setCookie = function(){
