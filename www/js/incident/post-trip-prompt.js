@@ -1,21 +1,22 @@
 'use strict';
 
-angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
+angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger',
+    'emission.survey.launch'])
 .factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
-    $ionicPopup, Logger) {
+    $ionicPopup, Logger, SurveyLaunch) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
-  var REPORT_INCIDENT_TEXT = 'REPORT_INCIDENT';
+  var CHOOSE_MODE_TEXT = 'CHOOSE_MODE';
   var TRIP_END_EVENT = "trip_ended";
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe right to report any positive or negative experiences on this trip. Swipe left for more - Busy? Snooze 30 mins. Annoyed? Mute.",
-      "android": "Touch to report any positive or negative experiences on this trip. See options for more - Busy? Snooze 30 mins. Annoyed? Mute."
+       "ios": "Swipe right to provide ground truth about this trip. Swipe left for more - Busy? Snooze 30 mins. Annoyed? Mute.",
+       "android": "Touch to provide ground truth about this trip. See options for more - Busy? Snooze 30 mins. Annoyed? Mute."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Select to report any positive or negative experiences on this trip. More options - Busy? Snooze 30 mins. Annoyed? Mute.";
+       selMessage = "Select to provide ground truth about this trip. More options - Busy? Snooze 30 mins. Annoyed? Mute.";
     }
     return selMessage;
   };
@@ -36,8 +37,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
        destructive: false,
        authenticationRequired: false
     }, {
-        identifier: 'REPORT',
-        title: 'Yes',
+        identifier: 'CHOOSE',
+        title: 'Choose',
         icon: 'res://ic_signin',
         activationMode: 'foreground',
         destructive: false,
@@ -46,13 +47,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "Incident to report?",
+      title: "How did you get here?",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
       sound: null,
       actions: actions,
-      category: REPORT_INCIDENT_TEXT,
+      category: CHOOSE_MODE_TEXT,
       autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
@@ -86,18 +87,18 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   };
 
   var promptReport = function(notification, state, data) {
-    Logger.log("About to prompt whether to report a trip");
+    Logger.log("About to prompt choose the mode for the trip");
     var newScope = $rootScope.$new();
     angular.extend(newScope, notification.data);
     newScope.getFormattedTime = getFormattedTime;
     Logger.log("notification = "+JSON.stringify(notification));
     Logger.log("state = "+JSON.stringify(state));
     Logger.log("data = "+JSON.stringify(data));
-    return $ionicPopup.show({title: "Report incident for trip",
+    return $ionicPopup.show({title: "Choose the transportation mode you took on trip",
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
         buttons: [{
-          text: 'Report',
+          text: 'Choose Mode',
           type: 'button-positive',
           onTap: function(e) {
             // e.preventDefault() will stop the popup from closing when tapped.
@@ -134,13 +135,19 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     */
 
-    Logger.log("About to go to diary, which now displays draft information");
+    Logger.log("About to display survey for trip "+
+        moment.unix(notification.data.start_ts).format()+
+        " -> "+moment.unix(notification.data.end_ts).format());
     $rootScope.displayingIncident = true;
-    $state.go("root.main.diary");
+    SurveyLaunch.startSurveyForCompletedTrip("https://berkeley.qualtrics.com/jfe/form/SV_cCvQMh6Jg0jyZ8x",
+       "QR~QID12", "QR~QID13~1", "QR~QID13~2", "QR~QID13~3", "QR~QID13~4",
+       notification.data.start_ts, notification.data.end_ts);
+    
+    // $state.go("root.main.diary");
   };
 
   var checkCategory = function(notification) {
-    if (notification.category == REPORT_INCIDENT_TEXT) {
+    if (notification.category == CHOOSE_MODE_TEXT) {
         return true;
     } else {
         return false;
@@ -151,10 +158,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     Logger.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (!checkCategory(notification)) {
-          Logger.log("notification "+notification+" is not an incident report, returning...");
+          Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
-      if (data.identifier === 'REPORT') {
+      if (data.identifier === 'CHOOSE') {
           // alert("About to report");
           cleanDataIfNecessary(notification, state, data);
           displayCompletedTrip(notification, state, data);
@@ -214,7 +221,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
                 template: JSON.stringify(error)
             });
         });
-      }
+      };
     });
     $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
         // alert("notification cleared, no report");
@@ -230,7 +237,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
             return;
         }
         if (!checkCategory(notification)) {
-            Logger.log("notification "+notification+" is not an incident report, returning...");
+            Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
         }
         cleanDataIfNecessary(notification, state, data);
@@ -246,13 +253,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");
       if (!checkCategory(notification)) {
-          Logger.log("notification "+notification+" is not an incident report, returning...");
+          Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
       cleanDataIfNecessary(notification, state, data);
       displayCompletedTrip(notification, state, data);
     });
-  }
+  };
 
   $ionicPlatform.ready().then(function() {
     ptap.registerTripEnd();
