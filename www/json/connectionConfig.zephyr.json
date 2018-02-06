@@ -1,0 +1,15 @@
+{
+    "connectUrl": "http://34.204.93.200",
+    "android": {
+        "auth": {
+            "method": "dummy-dev",
+            "clientID": "ignored"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "dummy-dev",
+            "clientID": "ignored"
+        }
+    }
+}
