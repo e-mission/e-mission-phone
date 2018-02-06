@@ -172,16 +172,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
-      $scope.$apply(function() {
-          $scope.data = Timeline.data;
-          $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
-          $scope.data.currDayTrips.forEach(function(trip, index, array) {
-              PostTripManualMarker.addUnpushedIncidents(trip);
-          });
-          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-            DiaryHelper.directiveForTrip);
-          $ionicScrollDelegate.scrollTop(true);
-      });
+      if ($rootScope.tripTimelineUpdate == true) {
+        Timeline.updateForDay($rootScope.recentTripDate.startOf('day'));
+        $rootScope.tripTimelineUpdate = false;
+        $rootScope.recentTripDetailLoad = true;
+      } else {
+        $scope.$apply(function() {
+            $scope.data = Timeline.data;
+            $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
+            $scope.data.currDayTrips.forEach(function(trip, index, array) {
+                PostTripManualMarker.addUnpushedIncidents(trip);
+            });
+            $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
+              DiaryHelper.directiveForTrip);
+            $ionicScrollDelegate.scrollTop(true);
+        });
+        if ($rootScope.recentTripDetailLoad == true) {
+            $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
+            $rootScope.recentTripDetailLoad = false;
+        }
+      }
     });
 
     $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
@@ -354,7 +364,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from                                  
+      // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
@@ -387,7 +397,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -399,7 +409,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {

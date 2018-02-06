@@ -982,57 +982,55 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getRecentTrips = function(numTrips = 3) {
       var now = moment().utc();
-      var twoDaysAgo = moment().utc().subtract(2, 'd');
+      var twoDaysAgo = moment().utc().subtract(7, 'd');
       CommHelper.getRawEntries(['analysis/cleaned_section', 'analysis/cleaned_trip'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
         .then(function(data) {saveRecentTrips(numTrips, data['phone_data'])})
         .catch(function(err) {console.log(err)});
-      /*CommHelper.getRawEntries(['analysis/cleaned_section'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
-        .then(function(tripData) {saveRecentTrips(numTrips, tripData);})
-        .catch(function(err) {console.log(err)});*/
     }
 
     var saveRecentTrips = function(numTrips, tripsList) {
       var trips = [];
-      var data = [null, null, {}, null, null, 0]; //tripId, distance, mode, startTime, endTime, CO2
+      var data = {mode: {}}; //tripId, distance, mode, startTime, endTime, CO2
 
       while (trips.length < numTrips && tripsList.length > 0) {
         var currentSeg = tripsList.pop();
         if (currentSeg.metadata.key == "analysis/cleaned_section") {
-          data[0] = currentSeg.data.trip_id.$oid;
-          (data[2][currentSeg.data.sensed_mode]) ? data[2][currentSeg.data.sensed_mode] += currentSeg.data.distance : data[2][currentSeg.data.sensed_mode] = currentSeg.data.distance;
+          data.id = currentSeg.data.trip_id.$oid;
+          (data.mode[currentSeg.data.sensed_mode]) ? data.mode[currentSeg.data.sensed_mode] += currentSeg.data.distance : data.mode[currentSeg.data.sensed_mode] = currentSeg.data.distance;
         } else {
-          data[1] = currentSeg.data.distance;
-          data[3] = getFormattedTime(currentSeg.data.start_ts);
-          data[4] = getFormattedTime(currentSeg.data.end_ts);
+          data.distance = currentSeg.data.distance;
+          data.startTime = currentSeg.data.start_ts;
+          data.endTime = currentSeg.data.end_ts;
           // Trip is complete, save to `trips` variable
           trips.push(data);
-          data = [null, null, {}, null, null, 0];
+          data = {mode: {}};
         }
       }
 
       for (var i = 0; i < trips.length; i++) {
         //Find mode with max distance
-        var sensed_mode = trips[i][2];
+        var sensed_mode = trips[i].mode;
         var smkeys = Object.keys(sensed_mode);
         sensed_mode = smkeys.reduce(function(a, b){ return sensed_mode[a] > sensed_mode[b] ? a : b });
         if ((sensed_mode == 7) || (sensed_mode == 8)) {
           sensed_mode = 2;
         }
         // Calculate footprint of trip
+        trips[i].co2 = 0;
         for (var j = 0; j < smkeys.length; j++) {
           if (smkeys[j] == 0) {
-            trips[i][5] += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "IN_VEHICLE");
+            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "IN_VEHICLE");
           }
         }
         // Formatting for display
-        trips[i][1] = mtomiles(trips[i][1]) + " miles";
-        trips[i][2] = "img/mode" + sensed_mode + ".png";
-        trips[i][5] = trips[i][5] + ' kg CO₂';
+        trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        trips[i].mode = "img/mode" + sensed_mode + ".png";
+        trips[i].co2 = trips[i].co2 + ' kg CO₂';
       }
       $scope.summaryData.userSummary.recentTrips = trips;
     }
 
-    var getFormattedTime = function(ts_in_secs) { //found in diary/services.js
+    $scope.getFormattedTime = function(ts_in_secs) { //found in diary/services.js
       if (angular.isDefined(ts_in_secs)) {
         return moment(ts_in_secs * 1000).format('LT');
       } else {
@@ -1315,9 +1313,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  $scope.openRecentTrip = function(tripId, startTs) {
-      Timeline.updateForDay(moment(startTs).startOf('day'));
-      window.location.href = "#/root/main/diary/" + tripId;
+  $scope.openRecentTrip = function(tripId, trip_ts) {
+    $rootScope.recentTripID = tripId;
+    $rootScope.recentTripDate = moment(trip_ts * 1000);
+    $rootScope.tripTimelineUpdate = true;
+    $state.go('root.main.diary').then(function() {
+      console.log("finished going to the list view, moving to the detail view now");
+    });
   }
 
 });
