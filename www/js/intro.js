@@ -2,7 +2,7 @@
 
 
 angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'ionic-toast'])
+                                  'ionic-toast', 'angularLocalStorage'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -90,7 +90,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
         $scope.finish();
-        $scope.showUsernamePopup();
+        if (localStorage.getItem('username') != null) {
+          $scope.startSurvey();
+        } else {
+          $scope.showUsernamePopup();
+        }
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
@@ -104,8 +108,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $scope.data = {};
 
   var usernamePopup = $ionicPopup.show({
-    template: '<input type="userEmail" ng-model="data.wifi">',
-    title: 'Create a new username/Edit your username',
+    template: '<input type="userEmail" ng-model="data.wifi">', //This is wifi because i copoied pasted code, afraid to change it (dont fix what ain't broke!)
+    title: 'Create a new username/Edit your username (no spaces allowed)',
     scope: $scope,
     buttons: [
       {
@@ -114,8 +118,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         onTap: function(e) {
           if (!$scope.data.wifi) {
             //don't allow the user to close unless he enters a username
+
             e.preventDefault();
           } else {
+            if ($scope.data.wifi.indexOf(' ') >= 0) {
+              e.preventDefault();
+            }
             return $scope.data.wifi;
           }
         }
@@ -124,13 +132,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
   usernamePopup.then(function(res) {
     console.log('Tapped!', res);
-    CommHelper.setUsername(res).then(function(response) {
-        console.log("Success!");
-        console.log(response);
-    }, function(error) {
-        console.log(error);
-        console.log("Failed");
-    });
+    CommHelper.setUsername(res);
+    localStorage.setItem("username", res);
     $scope.startSurvey();
   });
 }
