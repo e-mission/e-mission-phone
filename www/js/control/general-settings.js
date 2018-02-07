@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('emission.main.control',['emission.services',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
@@ -110,7 +109,7 @@ angular.module('emission.main.control',['emission.services',
 
     var usernamePopup = $ionicPopup.show({
       template: '<input type="userEmail" ng-model="data.wifi">',
-      title: 'Create a new username/Edit your username',
+      title: 'Create a new username/Edit your username (no spaces allowed)',
       scope: $scope,
       buttons: [
         {
@@ -121,6 +120,9 @@ angular.module('emission.main.control',['emission.services',
               //don't allow the user to close unless he enters a username
               e.preventDefault();
             } else {
+              if ($scope.data.wifi.indexOf(' ') >= 0) {
+                e.preventDefault();
+              }
               return $scope.data.wifi;
             }
           }
@@ -129,6 +131,7 @@ angular.module('emission.main.control',['emission.services',
     });
     usernamePopup.then(function(res) {
       console.log('Tapped!', res);
+      localStorage.setItem("username", res);
       CommHelper.setUsername(res);
       $scope.refreshScreen();
     });
@@ -290,9 +293,18 @@ angular.module('emission.main.control',['emission.services',
         $scope.getUsername();
     };
     $scope.getUsername = function() {
-      CommHelper.getUsername().then(function(results){
-        $scope.settings.username = results['username']
-      })
+      var username = localStorage.getItem('username');
+      if (username != null) {
+        $scope.settings.username = username;
+      } else {
+        CommHelper.getUsername().then(function(results){
+          ionic.show
+          $scope.settings.username = results['username'];
+          localStorage.setItem("username", results['username']);
+        });
+      }
+
+
     };
     $scope.returnToIntro = function() {
       var testReconsent = false
