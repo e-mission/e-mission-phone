@@ -298,7 +298,6 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.username = username;
       } else {
         CommHelper.getUsername().then(function(results){
-          ionic.show
           $scope.settings.username = results['username'];
           localStorage.setItem("username", results['username']);
         });

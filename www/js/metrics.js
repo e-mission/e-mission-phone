@@ -781,10 +781,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data.count = getDataFromMetrics(agg_metrics.count);
-      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
-      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
-      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.chartData.count = getDataFromMetrics(agg_metrics.count);
+      $scope.chartData.distance = getDataFromMetrics(agg_metrics.distance);
+      $scope.chartData.duration = getDataFromMetrics(agg_metrics.duration);
+      $scope.chartData.speed = getDataFromMetrics(agg_metrics.speed);
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = 'Number';
       $scope.distanceOptions = angular.copy($scope.options)
@@ -1220,7 +1220,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   };
 
 
-  $scope.data = {};
+  $scope.chartData = {};
 
   $scope.userData = {
     gender: -1,

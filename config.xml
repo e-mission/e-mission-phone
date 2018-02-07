@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<widget id="edu.berkeley.eecs.emission" 
-        version="2.4.0"
-        android-versionCode="29"
-        ios-CFBundleVersion="29"
-        xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="edu.berkeley.eecs.emission" version="2.4.0" android-versionCode="29" ios-CFBundleVersion="29" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
   <name>emission</name>
   <description>
         A commute pattern tracker and carbon footprint estimator.
@@ -13,7 +9,9 @@
   </author>
   <content src="index.html"/>
   <access origin="*"/>
-  <allow-navigation href="https://em-game.eecs.berkeley.edu/*" />
+  <allow-navigation href="https://em-game.eecs.berkeley.edu/*"/>
+  <allow-navigation href="http://10.142.36.203:8100"/>
+  <allow-navigation href="http://192.168.1.70:8100"/>
   <hook type="after_prepare" src="package-hooks/ios9_allow_http.sh"/>
   <preference name="webviewbounce" value="false"/>
   <preference name="UIWebViewBounce" value="false"/>
@@ -22,11 +20,11 @@
   <preference name="BackupWebStorage" value="none"/>
   <preference name="SplashScreen" value="screen"/>
   <preference name="SplashScreenDelay" value="100"/>
-  <preference name="xwalkVersion" value="19+" />
-  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
-  <preference name="xwalkMode" value="embedded" />
-  <preference name="xwalkMultipleApk" value="true" />
-  <preference name="emSensorDataCollectionProtocolApprovalDate" value="2016-07-14" />
+  <preference name="xwalkVersion" value="19+"/>
+  <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect"/>
+  <preference name="xwalkMode" value="embedded"/>
+  <preference name="xwalkMultipleApk" value="true"/>
+  <preference name="emSensorDataCollectionProtocolApprovalDate" value="2016-07-14"/>
   <feature name="StatusBar">
     <param name="ios-package" onload="true" value="CDVStatusBar"/>
   </feature>
@@ -82,6 +80,6 @@
   </platform>
   <icon src="resources/android/icon/drawable-xhdpi-icon.png"/>
   <plugin name="phonegap-plugin-push" spec="~1.9.2">
-    <variable name="SENDER_ID" value="97387382925" />
+    <variable name="SENDER_ID" value="97387382925"/>
   </plugin>
 </widget>
