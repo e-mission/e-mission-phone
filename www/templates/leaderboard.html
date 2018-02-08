@@ -8,10 +8,10 @@
               <div ng-repeat="user in tier">
                 <div id="leaderboard" class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
                   <div ng-if="hasUsername(user)">
-                    {{$index + 1}}.   <b>{{user.username.username}}</b> {{user.carbonLastWeek}} g CO2/km
+                    {{$index + 1}}.   <b>{{user.username.username}}</b> {{roundCarbon(user.carbonLastWeek)}} g CO2/km
                   </div>
                   <div ng-if="hasUsername(user) == false">
-                    {{$index + 1}}.   <b>Anon User</b> {{user.carbonLastWeek}} g CO2/km
+                    {{$index + 1}}.   <b>Anon User</b> {{roundCarbon(user.carbonLastWeek)}} g CO2/km
                   </div>
                 </div>
               </div>
