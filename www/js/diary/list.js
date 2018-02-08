@@ -8,7 +8,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
                                       'emission.plugin.logger'])
 
-.controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
+.controller("DiaryListCtrl", function($window, $scope, $stateParams, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
@@ -50,7 +50,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
   });
 
-  readAndUpdateForDay(moment().startOf('day'));
+  if ($stateParams.date) {
+    readAndUpdateForDay($stateParams.date);
+  } else {
+    readAndUpdateForDay(moment().startOf('day'));
+  }
 
   angular.extend($scope, {
       defaults: {
@@ -172,26 +176,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
-      if ($rootScope.tripTimelineUpdate == true) {
-        Timeline.updateForDay($rootScope.recentTripDate.startOf('day'));
-        $rootScope.tripTimelineUpdate = false;
-        $rootScope.recentTripDetailLoad = true;
-      } else {
-        $scope.$apply(function() {
-            $scope.data = Timeline.data;
-            $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
-            $scope.data.currDayTrips.forEach(function(trip, index, array) {
-                PostTripManualMarker.addUnpushedIncidents(trip);
-            });
-            $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-              DiaryHelper.directiveForTrip);
-            $ionicScrollDelegate.scrollTop(true);
-        });
-        if ($rootScope.recentTripDetailLoad == true) {
-            $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
-            $rootScope.recentTripDetailLoad = false;
-        }
-      }
+      $scope.$apply(function() {
+          $scope.data = Timeline.data;
+          $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
+          $scope.data.currDayTrips.forEach(function(trip, index, array) {
+              PostTripManualMarker.addUnpushedIncidents(trip);
+          });
+          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
+            DiaryHelper.directiveForTrip);
+          $ionicScrollDelegate.scrollTop(true);
+      });
     });
 
     $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {

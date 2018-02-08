@@ -2,7 +2,7 @@
 
 angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
 
-.controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
+.controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger, Timeline) {
@@ -1316,10 +1316,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.openRecentTrip = function(tripId, trip_ts) {
     $rootScope.recentTripID = tripId;
     $rootScope.recentTripDate = moment(trip_ts * 1000);
-    $rootScope.tripTimelineUpdate = true;
-    $state.go('root.main.diary').then(function() {
+    $rootScope.recentTripDetailLoad = true;
+    $state.go('root.main.diary', {'date': moment(trip_ts * 1000).startOf('day'), "trip_id": tripId}).then(function() {
       console.log("finished going to the list view, moving to the detail view now");
     });
   }
+
+  $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
+    if ($rootScope.recentTripDetailLoad == true) {
+      $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
+      $rootScope.recentTripDetailLoad = false;
+    }
+  });
 
 });
