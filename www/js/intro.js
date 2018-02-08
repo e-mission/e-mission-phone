@@ -60,7 +60,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
   $scope.startSurvey = function () {
       SurveyLaunch.startSurvey('https://docs.google.com/forms/d/e/1FAIpQLSd47sf_0bieu81-HtXO5PV3EmOdUfDjWE5xrLSzQ-1hVrgLgQ/viewform?usp=sf_link', 'QR~QID3');
-      startSurvey();
   };
 
   $scope.next = function() {
@@ -108,7 +107,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $scope.data = {};
 
   var usernamePopup = $ionicPopup.show({
-    template: '<input type="userEmail" ng-model="data.wifi">', //This is wifi because i copoied pasted code, afraid to change it (dont fix what ain't broke!)
+    template: '<input type="userEmail" ng-model="data.wifi">', //This is wifi because i copied pasted code, afraid to change it (dont fix what ain't broke!)
     title: 'Create a new username/Edit your username (no spaces allowed)',
     scope: $scope,
     buttons: [
@@ -122,6 +121,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
             e.preventDefault();
           } else {
             if ($scope.data.wifi.indexOf(' ') >= 0) {
+              //Don't allow spaces because server doesn't like them for some reason
               e.preventDefault();
             }
             return $scope.data.wifi;
