@@ -60,7 +60,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
   $scope.startSurvey = function () {
       SurveyLaunch.startSurvey('https://docs.google.com/forms/d/e/1FAIpQLSd47sf_0bieu81-HtXO5PV3EmOdUfDjWE5xrLSzQ-1hVrgLgQ/viewform?usp=sf_link', 'QR~QID3');
-      startSurvey();
   };
 
   $scope.next = function() {
