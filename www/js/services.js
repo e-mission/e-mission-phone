@@ -101,6 +101,15 @@ angular.module('emission.services', ['emission.plugin.logger'])
       });
     };
 
+    this.getLeaderBoard = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/listOfUsers", msgFiller, resolve, reject)
+      });
+    };
+
     this.setUsername = function(username) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {

@@ -314,9 +314,9 @@ img.center {
 #add-goal:active {
   color: #ededed !important;
 }
-#leaderboard:active {
+/*#leaderboard:active {
   color: #ededed !important;
-}
+}*/
 #webkey:active {
   color: #ededed !important;
 }
@@ -400,6 +400,18 @@ img.center {
   max-height: 500px;
   transition: max-height 0.3s ease-out;
 }*/
+
+#leaderboard.card {
+  background-color: #fff;
+  color: #54DCC1;
+  border-radius: 5px;
+  display: block;
+  height: auto;
+  position: relative;
+  margin-bottom: 5px !important;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
+  text-align: center;
+}
 
 #dashboard-bottom.card {
   background-color: #fff;
@@ -1884,6 +1896,24 @@ span.rz-bar-wrapper {
 .full-toggle-right:active {
   opacity: 0.7;
 }
+#leaderboard.card {
+  display: flex;
+  flex-direction: column;
+  height: auto !important;
+}
+
+#leaderboard.trip-card {
+  height: 50px;
+  border: 2px solid lightgray;
+  border-top-width: 1px;
+  border-bottom-width: 1px;
+  display: flex;
+  align-items: center;
+  font-size: 20px;
+  /*font-weight: bold;*/
+  padding-left: 5px;
+}
+
 #iframe {
     /*width: 375px !important;*/
     height: 100%;
