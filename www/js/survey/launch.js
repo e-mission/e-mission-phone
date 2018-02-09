@@ -64,14 +64,8 @@ angular.module('emission.survey.launch', ['emission.services',
                                                          endFmtTimeElementId,
                                                          startTs,
                                                          endTs) {
-      var options = {
-        location: 'no',
-        clearcache: 'no',
-        toolbar: 'yes'
-      };
-
       // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open(url, '_blank', options)
+      $cordovaInAppBrowser.open(url, '_blank', surveylaunch.options)
           .then(function(event) {
             console.log("successfully opened page with result "+JSON.stringify(event));
             // success
@@ -108,14 +102,8 @@ angular.module('emission.survey.launch', ['emission.services',
     // END: startSurveyForCompletedTrip
 
     surveylaunch.startSurvey = function (url, uuidElementId) {
-      var options = {
-        location: 'no',
-        clearcache: 'no',
-        toolbar: 'yes'
-      };
-
       // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open(url, '_blank', options)
+      $cordovaInAppBrowser.open(url, '_blank', surveylaunch.options)
           .then(function(event) {
             console.log("successfully opened page with result "+JSON.stringify(event));
             // success
@@ -148,11 +136,11 @@ angular.module('emission.survey.launch', ['emission.services',
     surveylaunch.init = function() {
       $rootScope.$on('cloud:push:notification', function(event, data) {
         Logger.log("data = "+JSON.stringify(data));
-        if (angular.isDefined(data.message) &&
-            angular.isDefined(data.message.payload) &&
-            angular.isDefined(data.message.payload.alert_type) &&
-            data.message.payload.alert_type == "survey") {
-            var survey_spec = data.message.payload.spec;
+        if (angular.isDefined(data.additionalData) &&
+            angular.isDefined(data.additionalData.payload) &&
+            angular.isDefined(data.additionalData.payload.alert_type) &&
+            data.additionalData.payload.alert_type == "survey") {
+            var survey_spec = data.additionalData.payload.spec;
             if (angular.isDefined(survey_spec) &&
                 angular.isDefined(survey_spec.url) &&
                 angular.isDefined(survey_spec.uuidElementId)) {

@@ -1,6 +1,6 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
-                                      'ionic-datepicker', 'nvd3', 'angularLocalStorage',
+                                      'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 

@@ -3,7 +3,7 @@ angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.services',
                                       'emission.main.diary.current',])
 
-.config(function($stateProvider, $ionicConfigProvider) {
+.config(function($stateProvider) {
   $stateProvider
   .state('root.main.diary', {
     url: '/diary',

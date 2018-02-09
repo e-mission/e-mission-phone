@@ -4,7 +4,7 @@
   <description>
         A commute pattern tracker and carbon footprint estimator.
     </description>
-  <author email="shankari@eecs.berkeley.edu" href="https://e-mission.eecs.berkeley.edu">
+    <author email="shankari@eecs.berkeley.edu" href="https://e-mission.eecs.berkeley.edu">
         E-Mission Team
   </author>
   <content src="index.html"/>
