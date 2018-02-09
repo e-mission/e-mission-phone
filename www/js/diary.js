@@ -7,6 +7,7 @@ angular.module('emission.main.diary',['emission.main.diary.list',
   $stateProvider
   .state('root.main.diary', {
     url: '/diary',
+    params: { date: null },
     views: {
       'main-diary': {
         templateUrl: 'templates/diary/list.html',
