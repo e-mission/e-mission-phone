@@ -1,5 +1,4 @@
 angular.module('emission.main.common',['ui-leaflet',
-                                      'ionic-datepicker',
                                       'emission.main.common.map',
                                       'emission.main.common.trip-list',
                                       'emission.main.common.place-list',
@@ -7,9 +6,9 @@ angular.module('emission.main.common',['ui-leaflet',
                                       'emission.main.common.place-detail',
                                       'emission.main.common.services',
                                       'emission.services'])
-.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
-  $stateProvider
+.config(function($stateProvider, $urlRouterProvider) {
 
+  $stateProvider
   .state('root.main.common.map', {
     url: '/map',
     views: {

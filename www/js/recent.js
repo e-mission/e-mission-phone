@@ -1,7 +1,7 @@
 angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
 
 
-.controller('appCtrl', function($scope, $ionicModal, $timeout) {
+.controller('appCtrl', function($scope, $timeout) {
     $scope.openNativeSettings = function() {
         window.Logger.log(window.Logger.LEVEL_DEBUG, "about to open native settings");
         window.cordova.plugins.BEMLaunchNative.launch("NativeSettings", function(result) {
@@ -201,7 +201,8 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
       // This should really be within a try/catch/finally block
       $scope.$broadcast('scroll.refreshComplete');
     }, function(error) {
-        $ionicPopup.alert({template: JSON.stringify(error)})
+        $ionicPopup.alert({title: "Error updating entries",
+            template: JSON.stringify(error)})
             .then(function(res) {console.log("finished showing alert");});
     })
   }

@@ -7,7 +7,7 @@ This is the phone component of the e-mission system.
 
 Installing
 ---
-We are using the ionic v2.2.1 platform, which is a toolchain on top of the apache
+We are using the ionic v3.19.1 platform, which is a toolchain on top of the apache
 cordova project. So the first step is to install ionic using their instructions.
 http://ionicframework.com/docs/v1/getting-started/
 
@@ -15,9 +15,11 @@ NOTE: Since we are still on ionic v1, please do not install v2 or v3, as the cur
 Issue the following commands to install Cordova and Ionic instead of the ones provided in the instruction above.
 
 ```
-$ npm install -g cordova@6.5.0
-$ npm install -g ionic@2.2.1
+$ npm install -g cordova@8.0.0
+$ npm install -g ionic@3.19.1
 ```
+
+Install gradle (https://gradle.org/install/) for android builds.
 
 Then, get the current version of our code
 
@@ -25,37 +27,37 @@ Fork this repo using the github UI
 
 Clone your fork
 
-``
+```
 $ git clone <your repo URL>
-``
+```
 
-``
+```
 $ cd e-mission-phone
-``
+```
 
 Enable platform hooks, including http on iOS9
 
-``
+```
 $ git clone https://github.com/driftyco/ionic-package-hooks.git ./package-hooks
-``
+```
 
 Install all javascript components using bower
 
-``
+```
 $ bower update
-``
+```
+
+Make sure to install the other node modules required for the setup scripts.
+
+```
+npm install
+```
 
 Create a remote to pull updates from upstream
 
-``
+```
 $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
-``
-
-Generate your App ID
-
-``
-$ ionic io init
-``
+```
 
 Setup cocoapods. For all versions > 1.9, we need https://cocoapods.org/ support. This is used by the push plugin for the GCM pod, and by the auth plugin to install the GTMOAuth framework. This is a good time to get a cup of your favourite beverage.
 
@@ -67,18 +69,6 @@ $ pod setup
 To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
 https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
 
-Next, restore platforms and plugins. This is a good time to get a second cup of your favorite beverage
-
-``
-$ ionic state restore
-``
-
-Finally, make sure to install the other node modules required for the setup scripts.
-
-```
-npm install
-```
-
 Configure values if necessary - e.g.
 
 ```
@@ -89,7 +79,17 @@ cp ..... www/json/connectionConfig.json
 
 Installation is now complete. You can view the current state of the application in the emulator
 
-    $ ionic emulate ios --target="iPhone-6"
+    $ cordova emulate ios
+
+    OR 
+
+    $ cordova emulate android
+
+The android build and emulator have improved significantly in the last release
+of Android Studio (3.0.1).  The build is significantly faster than iOS, the
+emulator is just as snappy, and the debugger is better since chrome saves logs
+from startup, so you don't have to use tricks like adding alerts to see errors
+in startup.
 
 End to end testing
 ---
