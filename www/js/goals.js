@@ -7,7 +7,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicGesture, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
+                                $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -88,7 +88,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
        }
 
        var alertPopup = $ionicPopup.alert({
-         title: 'Err!',
+         title: 'Error while joining group!',
          template: displayMsg
        });
 
@@ -141,10 +141,6 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             }
         }
     }
-
-    /*$scope.onGesture = function(gesture) {
-        console.log(gesture);
-    }*/
 
     //var element = angular.element(document.querySelector('#todo'));
 
