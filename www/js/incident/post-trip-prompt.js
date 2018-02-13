@@ -59,19 +59,19 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     return reportNotifyConfig;
   }
 
-  ptap.registerTripEnd = function() {
-    Logger.log( "registertripEnd received!" );
+  ptap.unregisterTripEnd = function() {
+    Logger.log( "unregistertripEnd received!" );
     // iOS
     var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
-    notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
+    notifyPlugin.removeEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
         .then(function(result) {
             // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
-            Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
+            Logger.log("Finished unregistering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
         })
         .catch(function(error) {
             Logger.log(JSON.stringify(error));
             $ionicPopup.alert({
-                title: "Unable to register notifications for trip end",
+                title: "Unable to unregister notifications for trip end",
                 template: JSON.stringify(error)
             });
         });;
@@ -147,8 +147,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     }
   }
 
-  ptap.registerUserResponse = function() {
-    Logger.log( "registerUserResponse received!" );
+  ptap.unregisterUserResponse = function() {
+    Logger.log( "unregisterUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an incident report, returning...");
@@ -255,8 +255,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   }
 
   $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
+    ptap.unregisterTripEnd();
+    ptap.unregisterUserResponse();
   });
 
   return ptap;

@@ -50,6 +50,16 @@ angular.module('emission.main', ['emission.main.recent',
       }
     }
   })
+  
+  .state('root.main.leaderboard', {
+    url: '/leaderboard',
+    views: {
+      'leaderboard': {
+        templateUrl: 'templates/leaderboard.html',
+        controller: 'MetricsCtrl'
+      }
+    }
+  })
 
   .state('root.main.control', {
     url: '/control',

@@ -1,15 +1,11 @@
 {
   "name": "e-mission-phone",
-  "app_id": "e0d8cdec",
+  "app_id": "77869e99",
   "browsers": [
     {
       "platform": "android",
       "browser": "crosswalk",
       "version": "12.41.296.5"
     }
-  ],
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "ionic1"
+  ]
 }

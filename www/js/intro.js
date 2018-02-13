@@ -1,7 +1,8 @@
 'use strict';
 
+
 angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'ionic-toast'])
+                                  'ionic-toast', 'angularLocalStorage'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -17,9 +18,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     controller: 'IntroCtrl'
   });
 })
-
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -58,6 +58,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       }
     });
   };
+  $scope.startSurvey = function () {
+      SurveyLaunch.startSurvey('https://docs.google.com/forms/d/e/1FAIpQLSd47sf_0bieu81-HtXO5PV3EmOdUfDjWE5xrLSzQ-1hVrgLgQ/viewform?usp=sf_link', 'QR~QID3');
+  };
 
   $scope.next = function() {
     $scope.getIntroBox().next();
@@ -86,6 +89,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
         $scope.finish();
+        if (localStorage.getItem('username') != null) {
+          $scope.startSurvey();
+        } else {
+          $scope.showUsernamePopup();
+        }
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
@@ -95,6 +103,41 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.finish();
     });
   };
+  $scope.showUsernamePopup = function() {
+  $scope.data = {};
+
+  var usernamePopup = $ionicPopup.show({
+    template: '<input type="userEmail" ng-model="data.wifi">', //This is wifi because i copied pasted code, afraid to change it (dont fix what ain't broke!)
+    title: 'Create a new username/Edit your username (no spaces allowed)',
+    scope: $scope,
+    buttons: [
+      {
+        text: '<b>Save</b>',
+        type: 'button-positive',
+        onTap: function(e) {
+          if (!$scope.data.wifi) {
+            //don't allow the user to close unless he enters a username
+
+            e.preventDefault();
+          } else {
+            if ($scope.data.wifi.indexOf(' ') >= 0) {
+              //Don't allow spaces because server doesn't like them for some reason
+              e.preventDefault();
+            }
+            return $scope.data.wifi;
+          }
+        }
+      }
+    ]
+  });
+  usernamePopup.then(function(res) {
+    console.log('Tapped!', res);
+    CommHelper.setUsername(res);
+    localStorage.setItem("username", res);
+    $scope.startSurvey();
+  });
+}
+
 
   // Called each time the slide changes
   $scope.slideChanged = function(index) {
@@ -120,4 +163,3 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     StartPrefs.loadPreferredScreen();
   }
 });
-

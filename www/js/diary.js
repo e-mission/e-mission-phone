@@ -7,6 +7,7 @@ angular.module('emission.main.diary',['emission.main.diary.list',
   $stateProvider
   .state('root.main.diary', {
     url: '/diary',
+    params: { date: null },
     views: {
       'main-diary': {
         templateUrl: 'templates/diary/list.html',
@@ -29,10 +30,12 @@ angular.module('emission.main.diary',['emission.main.diary.list',
       url: "/current",
       views: {
         'main-diary': {
-          templateUrl: "templates/diary/current.html",
-          controller: 'CurrMapCtrl'
+          //templateUrl: "templates/diary/current.html",
+          //controller: 'CurrMapCtrl'
+          templateUrl: "templates/diary/list.html",
+          controller: 'DiaryListCtrl'
         },
       }
-      
+
   });
 });
