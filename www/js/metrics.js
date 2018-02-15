@@ -1324,8 +1324,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $rootScope.recentTripID = tripId;
     $rootScope.recentTripDate = moment(trip_ts * 1000);
     $rootScope.recentTripDetailLoad = true;
-    $state.go('root.main.diary', {'date': moment(trip_ts * 1000).startOf('day'), "trip_id": tripId}).then(function() {
-      console.log("finished going to the list view, moving to the detail view now");
+    var recentDayStart = moment(trip_ts * 1000).startOf('day');
+    $state.go('root.main.diary', {'date': recentDayStart}).then(function() {
+      console.log("finished going to the list view, checking to see if we should move to the detail view now");
+      if(Timeline.data.currDay.isSame(recentDayStart)) {
+        console.log("diary.currDay is already current, won't get UPDATE_DONE, move directly");
+        $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
+      } else {
+        console.log("waiting for UPDATE_DONE event, deferring switch to detail view");
+      }
     });
   }
 
