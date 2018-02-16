@@ -371,7 +371,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   var getPolarBear = function() {
     var allPolarBears = CommHelper.getPolarBears();
-    return getPolarBearResult;
+    return allPolarBears;
   }
 
    var getLeaderboardUsers = function() {
