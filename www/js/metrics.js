@@ -1023,9 +1023,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
         // Formatting for display
-        trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        trips[i].distance = Math.round(trips[i].distance) / 1000 + " km";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
-        trips[i].co2 = trips[i].co2 + ' kg CO₂';
+        if (typeof trips[i].co2 == "number") {
+          trips[i].co2 = trips[i].co2 + ' kg CO₂';
+        }
       }
       $scope.summaryData.userSummary.recentTrips = trips;
     }
