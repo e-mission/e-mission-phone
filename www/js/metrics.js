@@ -374,11 +374,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     return getPolarBearResult;
   }
 
-   var getSuggestion = function() {
-     var getSuggestionResult = CommHelper.getSuggestion();
-     return getSuggestionResult;
-   }
-
    var getLeaderboardUsers = function() {
      var getLeaderBoard = CommHelper.getLeaderBoard();
      return getLeaderBoard;
@@ -424,7 +419,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.uictrl.showResult = true;
       $scope.uictrl.hasAggr = false;
 
-      $scope.suggestionData = {}; //New for URAP-2017-information
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
@@ -436,11 +430,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.change = " change";
 
       $scope.leaderboard.tiers = []
-      $scope.suggestionData.suggestion = "No recent suggestion to show";
-      $scope.suggestionData.savings = "0 kg CO₂";
-      $scope.suggestionData.startCoordinates = ["0.0", "0.0"];
-      $scope.suggestionData.endCoordinates = ["0.0", "0.0"];
-      $scope.suggestionData.mode = "bike";
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -462,16 +451,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //After the promise is resolved you will receive:
         //{username1: [happiness1, size1], username2: [happiness2, size2]...}
         //for all users in this user's tier
-      })
-
-      getSuggestion().then(function(results) {
-        $scope.suggestionData.suggestion = results['message'];
-        $scope.suggestionData.savings = results['savings'] + " kg CO₂";
-        $scope.suggestionData.startCoordinates[0] = results['start_lat']
-        $scope.suggestionData.startCoordinates[1] = results['start_lon']
-        $scope.suggestionData.endCoordinates[0] = results['end_lat']
-        $scope.suggestionData.endCoordinates[1] = results['end_lon']
-        $scope.suggestionData.mode = results['method']
       })
 
       getLeaderboardUsers().then(function(results) {
