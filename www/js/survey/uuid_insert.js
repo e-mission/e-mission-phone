@@ -6,7 +6,7 @@ var populateId = function(userId) {
 //     alert('document == '+document);
      setTimeout(curriedPI, 1000);
   } else {
-    var el = document.getElementById('SCRIPT_REPLACE_ELEMENT_ID');
+    var el = document.getElementsByClassName('quantumWizTextinputPaperinputInput exportInput')[0];
 //    alert('document = '+document+ ' element = '+ el);
     if (el == null) {
 //      alert('element == null!');

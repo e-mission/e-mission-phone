@@ -1,0 +1,16 @@
+{
+    "connectUrl": "http://184.73.51.202",
+    "isSkipAuth": false,
+    "android": {
+        "auth": {
+            "method": "dummy-dev",
+            "clientID": "ignored"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "dummy-dev",
+            "clientID": "ignored"
+        }
+    }
+}

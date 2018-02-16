@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.leaderboard',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
 
-.controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
+.controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger, Timeline) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -288,6 +288,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
     };
 
+    var getLeaderboardUsers = function() {
+      var getLeaderBoard = CommHelper.getLeaderBoard();
+      return getLeaderBoard;
+    }
+
     var moment2Localdate = function(momentObj) {
       return {
         year: momentObj.year(),
@@ -369,16 +374,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
-   var getSuggestion = function() {
-     var getSuggestionResult = CommHelper.getSuggestion();
-     return getSuggestionResult;
-   }
-
-   var getLeaderboardUsers = function() {
-     var getLeaderBoard = CommHelper.getLeaderBoard();
-     return getLeaderBoard;
-   }
-
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
@@ -423,19 +418,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
-      $scope.leaderboard = {};
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = " change";
 
-      $scope.leaderboard.tiers = []
-      $scope.suggestionData.suggestion = "No recent suggestion to show";
-      $scope.suggestionData.savings = "0 kg CO₂";
-      $scope.suggestionData.startCoordinates = ["0.0", "0.0"];
-      $scope.suggestionData.endCoordinates = ["0.0", "0.0"];
-      $scope.suggestionData.mode = "bike";
+      $scope.leaderboard.users = [];
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -453,20 +442,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'banana' : 105, //medium banana 118g
       };
 
-      getSuggestion().then(function(results) {
-        $scope.suggestionData.suggestion = results['message'];
-        $scope.suggestionData.savings = results['savings'] + " kg CO₂";
-        $scope.suggestionData.startCoordinates[0] = results['start_lat']
-        $scope.suggestionData.startCoordinates[1] = results['start_lon']
-        $scope.suggestionData.endCoordinates[0] = results['end_lat']
-        $scope.suggestionData.endCoordinates[1] = results['end_lon']
-        $scope.suggestionData.mode = results['method']
-      })
-
       getLeaderboardUsers().then(function(results) {
-        $scope.leaderboard.tiers = results['tiers'];
-      }).catch(function(error) {
-        console.error(error);
+        $scope.leaderboard.users = results;
       })
 
       getUserMetricsFromServer().then(function(results) {
@@ -498,7 +475,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $ionicLoading.hide();
         $ionicPopup.alert({
           title: "Error Loading Data",
-          template: JSON.stringify(error)
+          template: ''
         });
         console.log(error);
       })
@@ -526,7 +503,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.caloriesData.aggrCalories = "Unknown...";
         $ionicPopup.alert({
           title: "Error loading aggregate data, averages not available",
-          template: JSON.stringify(error)
+          template: ''
         });
         console.log(error);
       });
@@ -752,6 +729,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
                         / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
                         * 100 - 100;
+
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
@@ -781,10 +759,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.chartData.count = getDataFromMetrics(agg_metrics.count);
-      $scope.chartData.distance = getDataFromMetrics(agg_metrics.distance);
-      $scope.chartData.duration = getDataFromMetrics(agg_metrics.duration);
-      $scope.chartData.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.data.count = getDataFromMetrics(agg_metrics.count);
+      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
+      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
+      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = 'Number';
       $scope.distanceOptions = angular.copy($scope.options)
@@ -982,58 +960,36 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getRecentTrips = function(numTrips = 3) {
       var now = moment().utc();
-      var twoDaysAgo = moment().utc().subtract(7, 'd');
-      CommHelper.getRawEntries(['analysis/cleaned_section', 'analysis/cleaned_trip'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
-        .then(function(data) {saveRecentTrips(numTrips, data['phone_data'])})
+      var weekAgoFromNow = moment().utc().subtract(7, 'd');
+      CommHelper.getRawEntries(['analysis/cleaned_section'], moment2Timestamp(weekAgoFromNow), moment2Timestamp(now))
+        .then(function(tripData) {saveRecentTrips(numTrips, tripData);})
         .catch(function(err) {console.log(err)});
     }
 
     var saveRecentTrips = function(numTrips, tripsList) {
       var trips = [];
-      var data = {mode: {}}; //tripId, distance, mode, startTime, endTime, CO2
-
-      while (trips.length < numTrips && tripsList.length > 0) {
-        var currentSeg = tripsList.pop();
-        if (currentSeg.metadata.key == "analysis/cleaned_section") {
-          data.id = currentSeg.data.trip_id.$oid;
-          (data.mode[currentSeg.data.sensed_mode]) ? data.mode[currentSeg.data.sensed_mode] += currentSeg.data.distance : data.mode[currentSeg.data.sensed_mode] = currentSeg.data.distance;
-        } else {
-          data.distance = currentSeg.data.distance;
-          data.startTime = currentSeg.data.start_ts;
-          data.endTime = currentSeg.data.end_ts;
-          // Trip is complete, save to `trips` variable
-          trips.push(data);
-          data = {mode: {}};
+      var listLength = tripsList['phone_data'].length;
+      for (var i = listLength - 1; i >= 0 && i >= listLength - numTrips; i--) {
+        var currentTrip = tripsList['phone_data'][i];
+        var data = []; //tripId, mode, startTime, endTime, distance, CO2
+        data.push(currentTrip._id.$oid);
+        data.push("img/mode" + currentTrip.data.sensed_mode + ".png");
+        data.push(getFormattedTime(currentTrip.data.start_ts)); //Convert to moment
+        data.push(getFormattedTime(currentTrip.data.end_ts));
+        data.push(mtomiles(currentTrip.data.distance) + " miles");
+        switch(data[1]) {
+          case 0:
+            data.push(FootprintHelper.getFootprint(data[4], "IN_VEHICLE"));
+            break;
+          default: //If trip is not vehicle, then no CO2
+            data.push('0 kg CO₂');
         }
+        $scope.summaryData.userSummary.recentTrips.push(data);
       }
 
-      for (var i = 0; i < trips.length; i++) {
-        //Find mode with max distance
-        var sensed_mode = trips[i].mode;
-        var smkeys = Object.keys(sensed_mode);
-        sensed_mode = smkeys.reduce(function(a, b){ return sensed_mode[a] > sensed_mode[b] ? a : b });
-        if ((sensed_mode == 7) || (sensed_mode == 8)) {
-          sensed_mode = 2;
-        }
-        // Calculate footprint of trip
-        trips[i].co2 = 0;
-        for (var j = 0; j < smkeys.length; j++) {
-          if (smkeys[j] == 0) {
-            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "IN_VEHICLE");
-          }
-        }
-        // Formatting for display
-        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
-        trips[i].distance = Math.round(trips[i].distance) / 1000 + " km";
-        trips[i].mode = "img/mode" + sensed_mode + ".png";
-        if (typeof trips[i].co2 == "number") {
-          trips[i].co2 = trips[i].co2 + ' kg CO₂';
-        }
-      }
-      $scope.summaryData.userSummary.recentTrips = trips;
     }
 
-    $scope.getFormattedTime = function(ts_in_secs) { //found in diary/services.js
+    var getFormattedTime = function(ts_in_secs) { //found in diary/services.js
       if (angular.isDefined(ts_in_secs)) {
         return moment(ts_in_secs * 1000).format('LT');
       } else {
@@ -1043,10 +999,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var mtomiles = function(v) {
       return Math.round(v / 1609.34 * 100) / 100;
-    }
-
-    $scope.roundCarbon = function(val) {
-      return Math.round(val * 10) / 10;
     }
 
     $scope.changeFromWeekday = function() {
@@ -1164,40 +1116,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     getMetrics();
   }
 
-  $scope.linkToMaps = function() {
-    let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
-    let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
-    var mode = $scope.suggestionData.mode
-    if(ionic.Platform.isIOS()){
-      if (mode === 'bike') {
-        mode = 'b';
-      } else if (mode === 'public') {
-        mode = 'r';
-      } else if (mode === 'walk') {
-        mode = 'w';
-      }
-	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
-     } else {
-       if (mode === 'bike') {
-         mode = 'b';
-       } else if (mode === 'public') {
-         mode = 'r';
-       } else if (mode === 'walk') {
-         mode = 'w';
-       }
-       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
-    }
-  }
-
-  $scope.linkToDiary = function(trip_id) {
-    console.log("Loading trip "+trip_id);
-    window.location.href = "#/root/main/diary/" + trip_id;
-  }
-
-  $scope.hasUsername = function(obj) {
-    return (obj.hasOwnProperty('username'));
-  }
-
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
@@ -1227,7 +1145,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   };
 
 
-  $scope.chartData = {};
+  $scope.data = {};
 
   $scope.userData = {
     gender: -1,
@@ -1320,27 +1238,5 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  $scope.openRecentTrip = function(tripId, trip_ts) {
-    $rootScope.recentTripID = tripId;
-    $rootScope.recentTripDate = moment(trip_ts * 1000);
-    $rootScope.recentTripDetailLoad = true;
-    var recentDayStart = moment(trip_ts * 1000).startOf('day');
-    $state.go('root.main.diary', {'date': recentDayStart}).then(function() {
-      console.log("finished going to the list view, checking to see if we should move to the detail view now");
-      if(Timeline.data.currDay.isSame(recentDayStart)) {
-        console.log("diary.currDay is already current, won't get UPDATE_DONE, move directly");
-        $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
-      } else {
-        console.log("waiting for UPDATE_DONE event, deferring switch to detail view");
-      }
-    });
-  }
-
-  $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
-    if ($rootScope.recentTripDetailLoad == true) {
-      $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
-      $rootScope.recentTripDetailLoad = false;
-    }
-  });
 
 });
