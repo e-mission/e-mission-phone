@@ -963,7 +963,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var distVal = parseInt(distances[i].values);
           totalDist += distVal;
         }
-        return totalDist + " km";
+        return mtomiles(totalDist * 1000) + " miles";
     }
 
     var getFavoriteMode = function(tripCounts) {
@@ -977,7 +977,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             maxTripMethod = tripCounts[i].key;
           }
         }
-        return maxTripMethod;
+
+        return getReadableMode(maxTripMethod);
+    }
+
+    var getReadableMode = function(mode) {
+        switch(mode) {
+          case "ON_FOOT":
+            return "Walking";
+          case "BICYCLING":
+            return "Biking";
+          case "IN_VEHICLE":
+            return "Driving";
+          default:
+            return "Unknown";
+        }
     }
 
     var getRecentTrips = function(numTrips = 3) {
@@ -1023,8 +1037,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
         // Formatting for display
-        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
-        trips[i].distance = Math.round(trips[i].distance) / 1000 + " km";
+        trips[i].distance = mtomiles(trips[i].distance) + " miles";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
         if (typeof trips[i].co2 == "number") {
           trips[i].co2 = trips[i].co2 + ' kg CO₂';
