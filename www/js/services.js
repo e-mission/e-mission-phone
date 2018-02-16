@@ -129,6 +129,16 @@ angular.module('emission.services', ['emission.plugin.logger'])
       })
     };
 
+    this.getPolarBears = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        console.log("Getting user's tier's polarbear's attributes ")
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/polarbear", msgFiller, resolve, reject);
+      })
+    };
+
     this.getIncidents = function(start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
