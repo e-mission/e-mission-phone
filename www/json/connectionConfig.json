@@ -1,5 +1,5 @@
 {
-    "connectUrl": "http://184.73.51.202",
+    "connectUrl": "http://tripaware.eecs.berkeley.edu",
     "isSkipAuth": false,
     "android": {
         "auth": {

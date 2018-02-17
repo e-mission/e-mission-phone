@@ -369,6 +369,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
+  var getPolarBear = function() {
+    var allPolarBears = CommHelper.getPolarBears();
+    return allPolarBears;
+  }
+
    var getLeaderboardUsers = function() {
      var getLeaderBoard = CommHelper.getLeaderBoard();
      return getLeaderBoard;
@@ -441,10 +446,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
+
+      getPolarBear().then(function(results) {
+        //After the promise is resolved you will receive:
+        //{username1: [happiness1, size1], username2: [happiness2, size2]...}
+        //for all users in this user's tier
+      })
+
       getLeaderboardUsers().then(function(results) {
         $scope.leaderboard.tiers = results['tiers'];
-        console.log("got leaderboard tiers");
-        console.log($scope.leaderboard.tiers);
       }).catch(function(error) {
         console.error(error);
       })
