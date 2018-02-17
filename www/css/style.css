@@ -1921,7 +1921,7 @@ span.rz-bar-wrapper {
     overflow: scroll !important;
 }
 div.bear-wrapper {
-  background-color: black;
+  background-color: rgb(49, 123, 217);
   height: 100%;
 }
 div.bear-wrapper div.bear-char p {
@@ -1937,13 +1937,6 @@ div.bear-wrapper div.bear-char {
   position: absolute;
   top: 640px;
   left: 280px;
-}
-
-div.bear-wrapper div.bear-char.big {
-  width: 250px;
-  position: absolute;
-  top: 490px;
-  left: 330px;
 }
 
 div.bear-wrapper img {

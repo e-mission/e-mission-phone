@@ -447,12 +447,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'banana' : 105, //medium banana 118g
       };
 
-      getPolarBear().then(function(results) {
-        //After the promise is resolved you will receive:
-        //{username1: [happiness1, size1], username2: [happiness2, size2]...}
-        //for all users in this user's tier
-      })
-
       getLeaderboardUsers().then(function(results) {
         $scope.leaderboard.tiers = results['tiers'];
       }).catch(function(error) {

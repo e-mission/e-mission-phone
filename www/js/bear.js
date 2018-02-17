@@ -6,8 +6,51 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
-  $scope.bear = {};
-  $scope.bear.happiness = "No Data Available!";
+  $scope.myBear = {};
+  $scope.otherBears = {};
+  var totalWidth = 600;
+  var leftPad;
+  var totalSize;
+  CommHelper.getPolarBears().then(function(response) {
+      $scope.myBear = response.myBear;
+      $scope.otherBears = response.otherBears;
+      totalSize = parseFloat($scope.myBear['size']);
+      for (var i = 0; i < $scope.otherBears.length; i++) {
+        totalSize += parseFloat($scope.otherBears[i]['size']);
+      }
+      $scope.myBear['left'] = 280;
+      $scope.myBear['top'] = 640;
+      $scope.myBear['size'] = response.myBear.size * 40;
+      if (parseFloat($scope.myBear['happiness'] > 0.5)) {
+        $scope.myBear['img'] = "happybear.gif";
+      } else if (parseFloat($scope.myBear['happiness'] > -0.5)) {
+        $scope.myBear['img'] = "neutralbear.gif";
+      } else {
+        $scope.myBear['img'] = "sadbear.gif";
+      }
+      leftPad = $scope.myBear['left'] + $scope.myBear['size'];
+
+      for (var i = 0; i < $scope.otherBears.length(); i++) {
+        $scope.otherBears[i]['left'] = leftPad + $scope.otherBears[i]['size'] * 40;
+        leftPad = leftPad + $scope.otherBears[i]['size'] * 40;
+        $scope.otherBears[i]['top'] = 640 - $scope.otherBears[i]['size'] * 40 / 2;
+        if (parseFloat($scope.otherBears[i]['happiness'] > 0.5)) {
+          $scope.otherBears[i]['img'] = "happybear.gif";
+        } else if (parseFloat($scope.myBear['happiness'] > -0.5)) {
+          $scope.otherBears[i]['img'] = "neutralbear.gif";
+        } else {
+          $scope.otherBears[i]['img'] = "sadbear.gif";
+        }
+      }
+  }, function(error) {
+      console.log(error);
+      console.log("Failed");
+  });
+
+  var initZoom=0.75;
+  $scope.$on('$ionicView.enter',function(){
+    $ionicScrollDelegate.$getByHandle('bearScroller').zoomBy(initZoom);
+  });
 
   $scope.onLoad = function(){
       CommHelper.getHappiness().then(function(response) {
@@ -18,5 +61,10 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           console.log(error);
           console.log("Failed");
       });
+  };
+
+  $scope.getPolarBears = function(){
+      console.log($scope.myBear);
+      console.log($scope.otherBears);
   };
 });

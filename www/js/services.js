@@ -32,13 +32,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, resolve, reject);
         });
     };
-
-    this.getHappiness = function() {
-      return new Promise(function(resolve, reject) {
-          window.cordova.plugins.BEMServerComm.getUserPersonalData("/happiness", resolve, reject);
-      });
-    }
-
     /*
      * var regConfig = {'username': ....}
      * Other fields can be added easily and the server can be modified at the same time.
