@@ -18,9 +18,16 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
       for (var i = 0; i < $scope.otherBears.length; i++) {
         totalSize += parseFloat($scope.otherBears[i]['size']);
       }
+      var scale = totalWidth/totalSize; //or 40 maximum
+      if (scale > 40) {
+        scale = 40;
+      }
       $scope.myBear['left'] = 280;
       $scope.myBear['top'] = 640;
-      $scope.myBear['size'] = response.myBear.size * 40;
+      console.log(totalWidth);
+      console.log(totalSize);
+      console.log(scale);
+      $scope.myBear['size'] = response.myBear.size * scale;
       if (parseFloat($scope.myBear['happiness'] > 0.5)) {
         $scope.myBear['img'] = "happybear.gif";
       } else if (parseFloat($scope.myBear['happiness'] > -0.5)) {
@@ -31,9 +38,9 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
       leftPad = $scope.myBear['left'] + $scope.myBear['size'];
 
       for (var i = 0; i < $scope.otherBears.length(); i++) {
-        $scope.otherBears[i]['left'] = leftPad + $scope.otherBears[i]['size'] * 40;
-        leftPad = leftPad + $scope.otherBears[i]['size'] * 40;
-        $scope.otherBears[i]['top'] = 640 - $scope.otherBears[i]['size'] * 40 / 2;
+        $scope.otherBears[i]['left'] = leftPad + $scope.otherBears[i]['size'] * scale;
+        leftPad = leftPad + $scope.otherBears[i]['size'] * scale;
+        $scope.otherBears[i]['top'] = 640 - $scope.otherBears[i]['size'] * scale / 2;
         if (parseFloat($scope.otherBears[i]['happiness'] > 0.5)) {
           $scope.otherBears[i]['img'] = "happybear.gif";
         } else if (parseFloat($scope.myBear['happiness'] > -0.5)) {
@@ -66,5 +73,11 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
   $scope.getPolarBears = function(){
       console.log($scope.myBear);
       console.log($scope.otherBears);
+      CommHelper.getPolarBears().then(function(response) {
+        console.log(response);
+      }, function(error) {
+          console.log(error);
+          console.log("Failed");
+      })
   };
 });
