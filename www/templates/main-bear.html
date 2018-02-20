@@ -7,12 +7,10 @@
           <p>You</p>
           <img ng-src="img/{{myBear.img}}" alt="Description"/>
         </div>
-        <ion-item ng-repeat="bear in otherBears" style="overflow:visible">
-          <div class="bear-char" style="left:{{bear.left}}px; top:{{bear.top}}px; width:{{bear.size}}px">
+          <div ng-repeat="bear in otherBears" class="bear-char" style="left:{{bear.left}}px; top:{{bear.top}}px; width:{{bear.size}}px">
             <p>{{bear.name}}</p>
             <img ng-src="img/{{bear.img}}" alt="Description">
           </div>
-        </ion-item>
     </div>
  </ion-scroll>
 </div>

@@ -20,11 +20,11 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           totalSize += parseFloat(response.otherBears[key]['size']);
         }
         var scale = totalWidth/totalSize; //or 40 maximum
-        if (scale > 40) {
-          scale = 40;
+        if (scale > 80) {
+          scale = 80;
         }
-        $scope.myBear['left'] = 280;
-        $scope.myBear['top'] = 640;
+        $scope.myBear['left'] = 260;
+        $scope.myBear['top'] = 615 - ((response.myBear['size'] - 1) * scale);
         $scope.myBear['size'] = response.myBear.size * scale;
         if (parseFloat($scope.myBear['happiness']) > 0.5) {
           $scope.myBear['img'] = "happybear.gif";
@@ -33,11 +33,11 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
         } else {
           $scope.myBear['img'] = "sadbear.gif";
         }
-        var leftPad = $scope.myBear['left'] + $scope.myBear['size'];
+        var leftPad = $scope.myBear['left'] + $scope.myBear['size'] + 5;
         for (var key in response.otherBears) {
           response.otherBears[key]['left'] = leftPad;
-          leftPad = leftPad + response.otherBears[key]['size'] * scale + 15;
-          response.otherBears[key]['top'] = 640;
+          leftPad = leftPad + response.otherBears[key]['size'] * scale + 5;
+          response.otherBears[key]['top'] = 615 - ((response.otherBears[key]['size'] - 1) * scale);
           if (parseFloat(response.otherBears[key]['happiness']) > 0.5) {
             response.otherBears[key]['img'] = "happybear.gif";
           } else if (parseFloat(response.otherBears[key]['happiness']) > -0.5) {
