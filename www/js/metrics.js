@@ -482,7 +482,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $ionicLoading.hide();
         $ionicPopup.alert({
           title: "Error Loading Data",
-          template: ''
+          template: JSON.stringify(error)
         });
         console.log(error);
       })
@@ -510,7 +510,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.caloriesData.aggrCalories = "Unknown...";
         $ionicPopup.alert({
           title: "Error loading aggregate data, averages not available",
-          template: ''
+          template: JSON.stringify(error)
         });
         console.log(error);
       });

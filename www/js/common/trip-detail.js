@@ -1,6 +1,5 @@
 'use strict';
 angular.module('emission.main.common.trip-detail',['ui-leaflet',
-                                      'ionic-datepicker',
                                       'emission.services',
                                       'emission.main.diary.services', 
                                       'emission.main.common.services',
