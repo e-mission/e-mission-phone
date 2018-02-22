@@ -7,6 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.main.bear',
                                  'emission.incident.posttrip.map',
                                  'emission.services'])
 
@@ -46,6 +47,26 @@ angular.module('emission.main', ['emission.main.recent',
     views: {
       'main-metrics': {
         templateUrl: 'templates/main-metrics.html',
+        controller: 'MetricsCtrl'
+      }
+    }
+  })
+
+  .state('root.main.bear', {
+    url: '/bear',
+    views: {
+      'main-bear': {
+        templateUrl: 'templates/main-bear.html',
+        controller: 'BearCtrl'
+      }
+    }
+  })
+
+  .state('root.main.leaderboard', {
+    url: '/leaderboard',
+    views: {
+      'leaderboard': {
+        templateUrl: 'templates/leaderboard.html',
         controller: 'MetricsCtrl'
       }
     }

@@ -5,7 +5,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $rootScope, $location,  $state, ReferHelper, $http, Logger) {
+                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger, Timeline) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -23,7 +23,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           $state.go("root.main.current");
         }
@@ -369,6 +369,16 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       callback()
     };
 
+  var getPolarBear = function() {
+    var allPolarBears = CommHelper.getPolarBears();
+    return allPolarBears;
+  }
+
+   var getLeaderboardUsers = function() {
+     var getLeaderBoard = CommHelper.getLeaderBoard();
+     return getLeaderBoard;
+   }
+
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
@@ -398,7 +408,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    var getMetrics = function() {
       $ionicLoading.show({
-        template: 'Loading...'
+        template: '<ion-spinner icon="spiral"></ion-spinner>'
       });
       if(!first){
         $scope.uictrl.current = "Custom";
@@ -412,12 +422,14 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
+      $scope.leaderboard = {};
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = " change";
 
+      $scope.leaderboard.tiers = []
       $scope.carbonData.userCarbon = "0 kg CO₂";
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -434,6 +446,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
+
+      getLeaderboardUsers().then(function(results) {
+        $scope.leaderboard.tiers = results['tiers'];
+      }).catch(function(error) {
+        console.error(error);
+      })
 
       getUserMetricsFromServer().then(function(results) {
           $ionicLoading.hide();
@@ -534,6 +552,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.summaryData.userSummary.median_speed = getSummaryData(userMedianSpeed, "median_speed");
         $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
         $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
+        $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
+        $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
+        $scope.summaryData.userSummary.recentTrips = [];
+        getRecentTrips()
         $scope.chartDataUser.duration = userDuration? userDuration : [];
         $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
         $scope.chartDataUser.count = userCount? userCount : [];
@@ -714,7 +736,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
                         / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
                         * 100 - 100;
-
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
@@ -744,10 +765,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data.count = getDataFromMetrics(agg_metrics.count);
-      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
-      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
-      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.chartData.count = getDataFromMetrics(agg_metrics.count);
+      $scope.chartData.distance = getDataFromMetrics(agg_metrics.distance);
+      $scope.chartData.duration = getDataFromMetrics(agg_metrics.duration);
+      $scope.chartData.speed = getDataFromMetrics(agg_metrics.speed);
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = 'Number';
       $scope.distanceOptions = angular.copy($scope.options)
@@ -920,6 +941,98 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return data;
     }
 
+    var getTotalDistance = function(distances) {
+        var totalDist = 0;
+        for (var i = 0; i < distances.length; i++) {
+          var distVal = parseInt(distances[i].values);
+          totalDist += distVal;
+        }
+        return totalDist + " km";
+    }
+
+    var getFavoriteMode = function(tripCounts) {
+        var maxTripCount = 0;
+        var maxTripMethod = "UNKNOWN";
+
+        for (var i = 0; i < tripCounts.length; i++) {
+          var currTripCount = parseInt(tripCounts[i].values);
+          if (maxTripCount < currTripCount) {
+            maxTripCount = currTripCount;
+            maxTripMethod = tripCounts[i].key;
+          }
+        }
+        return maxTripMethod;
+    }
+
+    var getRecentTrips = function(numTrips = 3) {
+      var now = moment().utc();
+      var twoDaysAgo = moment().utc().subtract(7, 'd');
+      CommHelper.getRawEntries(['analysis/cleaned_section', 'analysis/cleaned_trip'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
+        .then(function(data) {saveRecentTrips(numTrips, data['phone_data'])})
+        .catch(function(err) {console.log(err)});
+    }
+
+    var saveRecentTrips = function(numTrips, tripsList) {
+      var trips = [];
+      var data = {mode: {}}; //tripId, distance, mode, startTime, endTime, CO2
+
+      while (trips.length < numTrips && tripsList.length > 0) {
+        var currentSeg = tripsList.pop();
+        if (currentSeg.metadata.key == "analysis/cleaned_section") {
+          data.id = currentSeg.data.trip_id.$oid;
+          (data.mode[currentSeg.data.sensed_mode]) ? data.mode[currentSeg.data.sensed_mode] += currentSeg.data.distance : data.mode[currentSeg.data.sensed_mode] = currentSeg.data.distance;
+        } else {
+          data.distance = currentSeg.data.distance;
+          data.startTime = currentSeg.data.start_ts;
+          data.endTime = currentSeg.data.end_ts;
+          // Trip is complete, save to `trips` variable
+          trips.push(data);
+          data = {mode: {}};
+        }
+      }
+
+      for (var i = 0; i < trips.length; i++) {
+        //Find mode with max distance
+        var sensed_mode = trips[i].mode;
+        var smkeys = Object.keys(sensed_mode);
+        sensed_mode = smkeys.reduce(function(a, b){ return sensed_mode[a] > sensed_mode[b] ? a : b });
+        if ((sensed_mode == 7) || (sensed_mode == 8)) {
+          sensed_mode = 2;
+        }
+        // Calculate footprint of trip
+        trips[i].co2 = 0;
+        for (var j = 0; j < smkeys.length; j++) {
+          if (smkeys[j] == 0) {
+            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "IN_VEHICLE");
+          }
+        }
+        // Formatting for display
+        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        trips[i].distance = Math.round(trips[i].distance) / 1000 + " km";
+        trips[i].mode = "img/mode" + sensed_mode + ".png";
+        if (typeof trips[i].co2 == "number") {
+          trips[i].co2 = trips[i].co2 + ' kg CO₂';
+        }
+      }
+      $scope.summaryData.userSummary.recentTrips = trips;
+    }
+
+    $scope.getFormattedTime = function(ts_in_secs) { //found in diary/services.js
+      if (angular.isDefined(ts_in_secs)) {
+        return moment(ts_in_secs * 1000).format('LT');
+      } else {
+        return "---";
+      }
+    };
+
+    var mtomiles = function(v) {
+      return Math.round(v / 1609.34 * 100) / 100;
+    }
+
+    $scope.roundCarbon = function(val) {
+      return Math.round(val * 10) / 10;
+    }
+
     $scope.changeFromWeekday = function() {
       return $scope.changeWeekday(function(newVal) {
                                     $scope.selectCtrl.fromDateWeekdayString = newVal;
@@ -1035,6 +1148,40 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     getMetrics();
   }
 
+  $scope.linkToMaps = function() {
+    let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
+    let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
+    var mode = $scope.suggestionData.mode
+    if(ionic.Platform.isIOS()){
+      if (mode === 'bike') {
+        mode = 'b';
+      } else if (mode === 'public') {
+        mode = 'r';
+      } else if (mode === 'walk') {
+        mode = 'w';
+      }
+	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
+     } else {
+       if (mode === 'bike') {
+         mode = 'b';
+       } else if (mode === 'public') {
+         mode = 'r';
+       } else if (mode === 'walk') {
+         mode = 'w';
+       }
+       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
+    }
+  }
+
+  $scope.linkToDiary = function(trip_id) {
+    console.log("Loading trip "+trip_id);
+    window.location.href = "#/root/main/diary/" + trip_id;
+  }
+
+  $scope.hasUsername = function(obj) {
+    return (obj.hasOwnProperty('username'));
+  }
+
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
@@ -1064,7 +1211,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   };
 
 
-  $scope.data = {};
+  $scope.chartData = {};
 
   $scope.userData = {
     gender: -1,
@@ -1157,5 +1304,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  
+  $scope.openRecentTrip = function(tripId, trip_ts) {
+    $rootScope.recentTripID = tripId;
+    $rootScope.recentTripDate = moment(trip_ts * 1000);
+    $rootScope.tripTimelineUpdate = true;
+    $state.go('root.main.diary').then(function() {
+      console.log("finished going to the list view, moving to the detail view now");
+    });
+  }
+
 });

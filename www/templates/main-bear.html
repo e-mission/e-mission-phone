@@ -1,0 +1,16 @@
+<ion-view view-title="Dashboard" class="ion-view-background">
+  <div class="bear-wrapper">
+    <ion-scroll zooming="true" direction="xy" style="width: 100%; height: 100%" zooming="true" locking="false" has-bouncing="false" overflow-scroll="false" max-zoom="5" minZoom="0.1" delegate-handle="bearScroller">
+      <div style="width: 1369.8px; height: 975px; background: url('img/background2.png'); background-repeat: no-repeat; background-size: cover;">
+        <div class="bear-char" style="left:{{myBear.left}}px; top:{{myBear.top}}px; width:{{myBear.size}}px">
+          <p>You</p>
+          <img ng-src="img/{{myBear.img}}" alt="Description"/>
+        </div>
+          <div ng-repeat="bear in otherBears" class="bear-char" style="left:{{bear.left}}px; top:{{bear.top}}px; width:{{bear.size}}px">
+            <p>{{bear.name}}</p>
+            <img ng-src="img/{{bear.img}}" alt="Description">
+          </div>
+    </div>
+ </ion-scroll>
+</div>
+</ion-view>

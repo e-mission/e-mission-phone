@@ -32,7 +32,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, resolve, reject);
         });
     };
-
     /*
      * var regConfig = {'username': ....}
      * Other fields can be added easily and the server can be modified at the same time.
@@ -77,6 +76,62 @@ angular.module('emission.services', ['emission.plugin.logger'])
       })
     };
 
+    this.getUserTier = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/tier", msgFiller, resolve, reject);
+      });
+    };
+
+    this.getTierRank = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/tierRank", msgFiller, resolve, reject);
+      });
+    };
+
+    this.getLeaderBoard = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/listOfUsers", msgFiller, resolve, reject)
+      });
+    };
+
+    this.setUsername = function(username) {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        console.log("sent set username w/ " + username);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/setUsername/"+username, msgFiller, resolve, reject);
+      })
+    };
+
+    this.getUsername = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/getUsername", msgFiller, resolve, reject);
+      })
+    };
+
+    this.getPolarBears = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        console.log("Getting user's tier's polarbear's attributes ")
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/polarbear", msgFiller, resolve, reject);
+      })
+    };
+
     this.getIncidents = function(start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
@@ -89,6 +144,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
       })
     };
+
+
 
     /*
      * key_list = list of keys to retrieve or None for all keys
@@ -177,7 +234,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
           var remoteResult = [];
           var remoteError = null;
-      
+
           var localPromiseDone = false;
           var remotePromiseDone = false;
 
