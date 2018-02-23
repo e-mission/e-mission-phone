@@ -57,6 +57,14 @@ angular.module('emission.survey.launch', ['emission.services',
 
 
     // BEGIN: startSurveyForCompletedTrip
+    // Put the launch in one place so that
+    surveylaunch.options = {
+        location: window.cordova.platformId == 'ios'? 'no' : 'yes',
+        clearcache: 'no',
+        toolbar: 'no',
+        hideurlbar: 'yes'
+    };
+
     surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId,
                                                          startTsElementId,
                                                          endTsElementId,
@@ -107,19 +115,23 @@ angular.module('emission.survey.launch', ['emission.services',
           .then(function(event) {
             console.log("successfully opened page with result "+JSON.stringify(event));
             // success
-            replace_uuid(uuidElementId)
-            .catch(function(error) {
-              $ionicPopup.alert({"template": "Relaunching survey - while replacing uuid, got error "+ JSON.stringify(error)})
-              .then(function() {
-                surveylaunch.startSurvey(url, uuidElementId);
-              });
-            });
+            //replace_uuid(uuidElementId)
           })
           .catch(function(event) {
             // error
           });
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));
+
+
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+        console.log("stopped loading, event = "+JSON.stringify(event));
+        if (String(event.url).includes('formResponse')) {
+            $cordovaInAppBrowser.close();
+        }
+        replace_uuid(uuidElementId);
+        console.log("succesfully replaced UUIDs")
         /*
         if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
             $cordovaInAppBrowser.close();
