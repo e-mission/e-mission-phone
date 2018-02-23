@@ -85,15 +85,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $scope.login = function() {
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
       CommHelper.updateUser({
-        client: "urap-2017-control"
+        client: "urap-2017-information"
       });
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
-        $scope.finish();
         if (localStorage.getItem('username') != null) {
-          $scope.startSurvey();
+          $scope.finish();
         } else {
           $scope.showUsernamePopup();
         }
@@ -138,6 +137,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     CommHelper.setUsername(res);
     localStorage.setItem("username", res);
     $scope.startSurvey();
+    $scope.finish();
   });
 }
 
