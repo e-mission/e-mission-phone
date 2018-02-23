@@ -49,13 +49,14 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           response.otherBears[key]['size'] = response.otherBears[key]['size'] * scale;
           $scope.otherBears.push(response.otherBears[key]);
         }
+        $state.reload();
       }, function(error) {
           console.log(error);
           console.log("Failed");
       });
     });
   $scope.$on('$ionicView.enter',function(){
-    $ionicScrollDelegate.$getByHandle('bearScroller').zoomBy(0.9);
+    $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
   });
 
   $scope.getPolarBears = function(){

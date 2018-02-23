@@ -12,7 +12,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
     UpdateCheck, StartPrefs, PushNotify,
     LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
@@ -57,7 +57,8 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                           'root.main.control',
                           'root.main.metrics',
                           'root.main.goals',
-                          'root.main.diary']
+                          'root.main.diary',
+                          'root.main.bear']
       if (isInList(toState.name, personalTabs)) {
         // toState is in the personalTabs list
         StartPrefs.getPendingOnboardingState().then(function(result) {
