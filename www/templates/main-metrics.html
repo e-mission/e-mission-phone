@@ -12,61 +12,19 @@
       </button>
   </ion-nav-buttons>
 
-  <ion-content>
-    <div class="card" id="suggestion-card" ng-click="linkToMaps()">
-      <h4 class="dashboard-headers">Suggestion</h4>
-      <div class="user-carbon">
-        {{suggestionData.suggestion}}
+  <ion-content  style="">
+    <div style="text-align: center;
+      font-weight: bold;
+      font-size: 20px;
+      display: flex;
+      flex-direction: column;
+      font-family: Arial, Helvetica, sans-serif;">
+        <p style="color: 00A896">
+        Thank you for participating in our study conducted at UC Berkeley.
+        </p>
+        <p style="color: 05668d">
+        If you have any questions or concerns, please contact us at tripaware@lists.eecs.berkeley.edu
+        </p>
       </div>
-      <div id="percentage-change">
-        You can save {{suggestionData.savings}} in a month
-      </div>
-    </div>
-
-    <div ng-class="changeFootprintCardHeight()" id="dashboard-stats" class="card">
-      <h4 class="dashboard-headers">Weekly Stats</h4>
-      <div class="row">
-        <div class="col-left"><b>CO₂ Consumption: </b></div>
-        <div class="col-right">{{carbonData.userCarbon}}</div>
-      </div>
-      <div class="row">
-        <div class="col-left"><b>Change from Last Week: </b></div>
-        <div class="col-right">{{carbonData.lastWeekUserCarbon}}</div>
-      </div>
-      <div class="row">
-        <div class="col-left"><b>Total Distance: </b></div>
-        <div class="col-right">{{summaryData.defaultSummary.totalDistance}}</div>
-      </div>
-      <div class="row">
-        <div class="col-left"><b>Favorite Mode: </b></div>
-        <div class="col-right">{{summaryData.defaultSummary.favMode}}</div>
-      </div>
-    </div>
-
-    <div id="dashboard-bottom" class="card">
-      <h4 class="dashboard-headers">Recent Trips</h4>
-      <!-- Links to trip detail page -->
-      <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;">
-        No available recent trips
-      </div>
-      <div ng-if="summaryData.userSummary.recentTrips.length > 0">
-        <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">
-          <ion-item style="background-color: transparent;padding: 0px;" id="no-border" class="list-item" ng-click="openRecentTrip(recentTrip.id, recentTrip.startTime)">
-          <div class="trip-card" style="margin-top: 5px; border-top-width: 2px;">
-            <div style="flex-grow:2;display:flex;align-items: center;">
-              <img alt="MODE" ng-src = "{{recentTrip.mode}}" onerror="this.src='img/mode4.png'" style="height:30px;">
-            </div>
-            <div style="flex-grow:4;display:flex;align-items: center;">
-              {{getFormattedTime(recentTrip.startTime)}} to {{getFormattedTime(recentTrip.endTime)}}<br>
-              {{recentTrip.distance}} | {{recentTrip.co2}}
-            </div>
-            <div style="flex-grow:1;display:flex;align-items:center;" href="#">
-              <i class="ion-ios-arrow-right"></i>
-            </div>
-          </div>
-          </ion-item>
-        </div>
-      </div>
-    </div>
   </ion-content>
 </ion-view>
