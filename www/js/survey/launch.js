@@ -57,6 +57,14 @@ angular.module('emission.survey.launch', ['emission.services',
 
 
     // BEGIN: startSurveyForCompletedTrip
+    // Put the launch in one place so that
+    surveylaunch.options = {
+        location: window.cordova.platformId == 'ios'? 'no' : 'yes',
+        clearcache: 'no',
+        toolbar: 'no',
+        hideurlbar: 'yes'
+    };
+
     surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId,
                                                          startTsElementId,
                                                          endTsElementId,
@@ -64,14 +72,8 @@ angular.module('emission.survey.launch', ['emission.services',
                                                          endFmtTimeElementId,
                                                          startTs,
                                                          endTs) {
-      var options = {
-        location: 'no',
-        clearcache: 'no',
-        toolbar: 'yes'
-      };
-
       // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open(url, '_blank', options)
+      $cordovaInAppBrowser.open(url, '_blank', surveylaunch.options)
           .then(function(event) {
             console.log("successfully opened page with result "+JSON.stringify(event));
             // success
