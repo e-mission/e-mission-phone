@@ -122,8 +122,6 @@ angular.module('emission.survey.launch', ['emission.services',
           });
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));
-
-
       });
       $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
         console.log("stopped loading, event = "+JSON.stringify(event));
