@@ -18,9 +18,9 @@
             <div class="metric-title">From:</div>
           </div>
           <div class="metric-right">
-            <ionic-datepicker input-obj="datepickerObjFrom">
+            <button id="date-picker-button" ng-click="pickFromDay()">
             <div class="metric-datepicker">{{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
-            </ionic-datepicker>
+            </button>
           </div>
        </div>    
     </div>
@@ -33,7 +33,7 @@
             </div>
           </div>
           <div class="metric-right">
-            <ionic-datepicker input-obj="datepickerObjTo">
+            <button id="date-picker-button" ng-click="pickToDay()">
             <div class="metric-datepicker">{{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </ionic-datepicker>
           </div>
