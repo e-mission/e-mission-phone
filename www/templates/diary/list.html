@@ -37,9 +37,11 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-    <div ng-if="data.currDayTripWrappers.length == 0" ng-class="w3-container w3-teal" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
-      <h1>No trips recorded on this day.</h1>
-    </div>
+ <ion-item style="background-color: transparent;" id="no-border" class="list-item">
+        <div ng-if="data.currDayTripWrappers.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
+          <h3>No trips recorded on this day.</h3>
+        </div>
+  </ion-item>
 		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
            <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>
             <div  style="padding-left: 19%;">
