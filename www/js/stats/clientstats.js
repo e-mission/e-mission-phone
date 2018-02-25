@@ -14,6 +14,7 @@ angular.module('emission.stats.clientstats', [])
       STATE_CHANGED: "state_changed",
       BUTTON_FORCE_SYNC: "button_sync_forced",
       OPENED_APP: "opened_app"
+      CHECKED_DIARY: "checked_diary"
     };
   }
 
