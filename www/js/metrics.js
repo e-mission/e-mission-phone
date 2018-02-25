@@ -4,6 +4,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
+                                    ionicDatePicker,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
@@ -1047,7 +1048,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.setCurDayFrom = function(val) {
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
-      $scope.datepickerObjFrom.inputDate = val;
+      $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     } else {
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
@@ -1056,7 +1057,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.setCurDayTo = function(val) {
     if (val) {
       $scope.selectCtrl.toDateTimestamp = moment(val).utc();
-      $scope.datepickerObjTo.inputDate = val;
+      $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
@@ -1106,7 +1107,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMMM dd yyyy',
+      dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
@@ -1123,10 +1124,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMMM dd yyyy',
+      dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
+
+  $scope.pickFromDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObjFrom);
+  }
+
+  $scope.pickToDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObjTo);
+  }
 
   $scope.extendFootprintCard = function() {
     if($scope.expandedf){
