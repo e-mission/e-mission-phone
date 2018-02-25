@@ -495,11 +495,10 @@ angular.module('emission.main.control',['emission.services',
     }
 
     var prepopulateMessage = {
-      message: 'Join me in making transportation greener and healthier \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Emission - UC Berkeley Research Project', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
-
     $scope.share = function() {
         window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
