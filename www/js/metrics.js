@@ -37,8 +37,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
 
     $scope.share = function() {
