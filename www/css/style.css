@@ -2003,3 +2003,6 @@ span.rz-bar-wrapper {
 #percentage-change {
   color: darkgray;
 }
+
+.w3-container,.w3-panel{padding:0.01em 16px}.w3-panel{margin-top:16px;margin-bottom:16px}
+.w3-teal,.w3-hover-teal:hover{color:#fff!important;background-color:#009688!important}
