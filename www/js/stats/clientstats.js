@@ -4,7 +4,7 @@ angular.module('emission.stats.clientstats', [])
 
 .factory('ClientStats', function($window) {
   var clientStat = {};
-  
+
   clientStat.CLIENT_TIME = "stats/client_time";
   clientStat.CLIENT_ERROR = "stats/client_error";
   clientStat.CLIENT_NAV_EVENT = "stats/client_nav_event";
@@ -12,7 +12,8 @@ angular.module('emission.stats.clientstats', [])
   clientStat.getStatKeys = function() {
     return {
       STATE_CHANGED: "state_changed",
-      BUTTON_FORCE_SYNC: "button_sync_forced"
+      BUTTON_FORCE_SYNC: "button_sync_forced",
+      OPENED_APP: "opened_app"
     };
   }
 
@@ -76,4 +77,3 @@ angular.module('emission.stats.clientstats', [])
 
   return clientStat;
 })
-

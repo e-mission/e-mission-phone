@@ -1178,6 +1178,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   }, 1)
 
   $scope.doRefresh = function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+        });
     first = true;
     getMetrics();
   }
