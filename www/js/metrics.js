@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
@@ -1159,6 +1159,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $timeout(function() {
     getData();
   }, 1)
+
+  $scope.sendStats = function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+        });
+  }
 
   $scope.doRefresh = function() {
     first = true;
