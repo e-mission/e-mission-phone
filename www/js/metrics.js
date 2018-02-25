@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
