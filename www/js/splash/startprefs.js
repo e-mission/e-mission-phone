@@ -61,7 +61,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
-      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY, 
+      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY,
         {INTRO_DONE_KEY: moment().format()});
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
@@ -82,7 +82,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.isConsented = function() {
       logger.log("curr_consented = "+$rootScope.curr_consented+
             "isIntroDone = " + startprefs.isIntroDone());
-      if (startprefs.isIntroDone() && 
+      if (startprefs.isIntroDone() &&
             ($rootScope.curr_consented == null || $rootScope.curr_consented == "")) {
         alert("intro is done, but consent not found, re-consenting...");
       }
@@ -192,7 +192,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectTo = undefined;
             return redirState;
           } else {
-            return 'root.main.metrics';
+            return 'root.main.bear';
           }
         } else {
           return result;

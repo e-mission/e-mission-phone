@@ -45,7 +45,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    $state.go('root.main.bear');
   };
 
   $scope.agree = function() {
@@ -91,9 +91,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
-        $scope.finish();
         if (localStorage.getItem('username') != null) {
-          $scope.startSurvey();
+          $scope.finish();
         } else {
           $scope.showUsernamePopup();
         }
@@ -137,6 +136,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     CommHelper.setUsername(res);
     localStorage.setItem("username", res);
     $scope.startSurvey();
+    $scope.finish();
   });
 }
 

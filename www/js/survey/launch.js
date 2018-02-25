@@ -57,15 +57,15 @@ angular.module('emission.survey.launch', ['emission.services',
 
 
     // BEGIN: startSurveyForCompletedTrip
-    // Put the launch in one place so that 
+    // Put the launch in one place so that
     surveylaunch.options = {
         location: window.cordova.platformId == 'ios'? 'no' : 'yes',
         clearcache: 'no',
-        toolbar: 'yes',
+        toolbar: 'no',
         hideurlbar: 'yes'
     };
 
-    surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId, 
+    surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId,
                                                          startTsElementId,
                                                          endTsElementId,
                                                          startFmtTimeElementId,
