@@ -991,7 +991,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           case "IN_VEHICLE":
             return "Driving";
           default:
-            return "Unknown";
+            return mode;
         }
     }
 
