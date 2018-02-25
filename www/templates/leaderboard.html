@@ -24,7 +24,8 @@
                     <div class="col-right-25" style="font-size: 15px;">{{roundCarbon(user.carbonLastWeek)}} g CO2/km</div>
                   </div>
                   <div ng-if="hasUsername(user) == false">
-                    {{$index + 1}}.   <b>Anon User</b> {{roundCarbon(user.carbonLastWeek)}} g CO2/km
+                    <div class="col-left-75" style="font-size: 15px;">{{$index + 1}}.   <b>Anon User</b></div>
+                    <div class="col-right-25" style="font-size: 15px;">{{roundCarbon(user.carbonLastWeek)}} g CO2/km</div>
                   </div>
                 </div>
               </div>
