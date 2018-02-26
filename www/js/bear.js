@@ -12,10 +12,6 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
   var leftPad;
   var totalSize;
   $ionicPlatform.ready(function() {
-    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
-        function() {
-            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
-        });
       CommHelper.getPolarBears().then(function(response) {
         console.log(response)
         $scope.myBear = response.myBear;
@@ -61,6 +57,10 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
     });
   $scope.$on('$ionicView.enter',function(){
     $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+        });
   });
 
   $scope.getPolarBears = function(){
