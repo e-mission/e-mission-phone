@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.stats.clientstats','angularLocalStorage', 'emission.plugin.logger'])
 
 .controller('BearCtrl', function($scope, $ionicPlatform, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
@@ -12,6 +12,10 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
   var leftPad;
   var totalSize;
   $ionicPlatform.ready(function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+        });
       CommHelper.getPolarBears().then(function(response) {
         console.log(response)
         $scope.myBear = response.myBear;
