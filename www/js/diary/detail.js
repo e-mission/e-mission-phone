@@ -2,6 +2,7 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
+                                      'emission.stats.clientstats'
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
@@ -15,6 +16,12 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   angular.extend($scope.mapCtrl, {
     defaults : {
     }
+  });
+  $scope.$on('$ionicView.enter',function(){
+  ClientStats.addEvent(ClientStats.getStatKeys().EXPANDED_TRIP).then(
+      function() {
+          console.log("Added "+ClientStats.getStatKeys().EXPANDED_TRIP+" event");
+      });
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
