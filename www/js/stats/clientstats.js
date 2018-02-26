@@ -19,7 +19,9 @@ angular.module('emission.stats.clientstats', [])
       INF_SCROLL_TIME: "inf_scroll_time",
       VERIFY_TRIP: "verify_trip",
       LABEL_TAB_SWITCH: "label_tab_switch",
-      SELECT_LABEL: "select_label"
+      SELECT_LABEL: "select_label",
+      EXPANDED_TRIP: "expanded_trip",
+      NOTIFICATION_OPEN: "notification_open"
     };
   }
 
