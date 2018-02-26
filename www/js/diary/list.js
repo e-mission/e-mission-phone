@@ -6,6 +6,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
+                                      'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
@@ -35,6 +36,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   $scope.$on('$ionicView.afterEnter', function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(
+       function() {
+           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+       });
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
@@ -202,7 +207,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'red',};
+    "icon ion-speedometer":'purple',
+    "icon ion-android-bus": "purple",
+    "icon ion-android-train": "navy",
+    "icon ion-android-car": "salmon",
+    "icon ion-plane": "red"};
       return { color: colors[mode] };
     }
 
@@ -354,7 +363,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from                                  
+      // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
@@ -387,7 +396,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -399,7 +408,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {

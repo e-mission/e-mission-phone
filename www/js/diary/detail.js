@@ -2,6 +2,7 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
@@ -158,9 +159,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.startWalkthrough = function () {
     startWalkthrough();
   }
+  $scope.$on('$ionicView.enter',function(){
+    ClientStats.addEvent(ClientStats.getStatKeys().EXPANDED_TRIP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().EXPANDED_TRIP+" event");
+        });
+  });
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from 
+
+    // Workaround from
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
