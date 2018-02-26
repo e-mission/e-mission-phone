@@ -15,7 +15,8 @@ angular.module('emission.stats.clientstats', [])
       BUTTON_FORCE_SYNC: "button_sync_forced",
       OPENED_APP: "opened_app",
       CHECKED_DIARY: "checked_diary",
-      EXPANDED_TRIP: "expanded_trip"
+      EXPANDED_TRIP: "expanded_trip",
+      NOTIFICATION_OPEN: "notification_open"
     };
   }
 
