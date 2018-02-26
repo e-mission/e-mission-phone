@@ -1172,6 +1172,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     getMetrics();
   }
 
+  $scope.$on('$ionicView.enter',function(){
+  ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+      function() {
+          console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+      });
+  });
+
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
