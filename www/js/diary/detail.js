@@ -2,6 +2,7 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
+                                      'emission.stats.clientstats'
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
@@ -15,6 +16,12 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   angular.extend($scope.mapCtrl, {
     defaults : {
     }
+  });
+  $scope.$on('$ionicView.enter',function(){
+  ClientStats.addEvent(ClientStats.getStatKeys().EXPANDED_TRIP).then(
+      function() {
+          console.log("Added "+ClientStats.getStatKeys().EXPANDED_TRIP+" event");
+      });
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
@@ -59,8 +66,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.trip = Timeline.getTrip($stateParams.tripId);
   $scope.getKmph = DiaryHelper.getKmph;
   $scope.getFormattedDistance = function(v) { //converts m to miles
-    return Math.round(v / 1609.34 * 100) / 100;
-  };
+      return Math.round(v / 1609.34 * 100) / 100;
+    };
   $scope.getSectionDetails = DiaryHelper.getSectionDetails;
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;

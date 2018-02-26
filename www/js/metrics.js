@@ -414,10 +414,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       if(!first){
         $scope.uictrl.current = "Custom";
       }
-      ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
-          function() {
-              console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
-          });
       //$scope.uictrl.showRange = false;
       //$scope.uictrl.showFilter = false;
       $scope.uictrl.showVis = true;
@@ -1369,6 +1365,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
       $rootScope.recentTripDetailLoad = false;
     }
+  });
+  $scope.$on('$ionicView.enter',function(){
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+      function() {
+          console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+      });
   });
 
 });
