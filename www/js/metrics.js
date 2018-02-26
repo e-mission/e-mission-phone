@@ -414,6 +414,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       if(!first){
         $scope.uictrl.current = "Custom";
       }
+      ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+          function() {
+              console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+          });
       //$scope.uictrl.showRange = false;
       //$scope.uictrl.showFilter = false;
       $scope.uictrl.showVis = true;
@@ -1178,10 +1182,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   }, 1)
 
   $scope.doRefresh = function() {
-    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
-        function() {
-            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
-        });
     first = true;
     getMetrics();
   }
@@ -1191,23 +1191,16 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
     if (start != "0.0,0.0" & destination != "0.0,0.0") {
+      if (mode === 'bike') {
+        mode = 'b';
+      } else if (mode === 'public') {
+        mode = 'r';
+      } else if (mode === 'walk') {
+        mode = 'w';
+      }
       if(ionic.Platform.isIOS()){
-        if (mode === 'bike') {
-          mode = 'b';
-        } else if (mode === 'public') {
-          mode = 'r';
-        } else if (mode === 'walk') {
-          mode = 'w';
-        }
   	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
        } else {
-         if (mode === 'bike') {
-           mode = 'b';
-         } else if (mode === 'public') {
-           mode = 'r';
-         } else if (mode === 'walk') {
-           mode = 'w';
-         }
          window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
       }
     }
