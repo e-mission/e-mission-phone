@@ -67,6 +67,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
+  $scope.getFormattedDistanceInMiles = function(input) {
+    return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
+  }
+
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
      return ret_val;
