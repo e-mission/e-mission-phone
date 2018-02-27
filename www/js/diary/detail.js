@@ -2,7 +2,7 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
-                                      'emission.stats.clientstats'
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
@@ -24,7 +24,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       });
   });
 
-  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
+  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
 
   var mapEvents = leafletMapEvents.getAvailableMapEvents();
   for (var k in mapEvents) {

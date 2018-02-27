@@ -5,9 +5,9 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
 .factory('FootprintHelper', function() {
   var fh = {};
   var footprint = {
-    train: 92/1609,
-    //TODO: USE car footprint of exactly 0.2889 kg co2/km
-    car: 287/1609,
+    TRAIN: 92/1609,
+    CAR: 287/1609,
+    BUS: 3/4 * CAR,
     ON_FOOT: 0,
     BICYCLING: 0
   }
@@ -19,16 +19,14 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
   }
   fh.getFootprintRaw = function(distance, mode) {
     if (mode === "IN_VEHICLE") {
-      //TODO: once given bus, return a number, not a range
-      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
+      return [footprint.TRAIN * mtokm(distance), footprint.CAR * mtokm(distance)];
     } else {
       return footprint[mode] * mtokm(distance);
     }
   }
   fh.getFootprint = function(distance, mode) {
     if (mode === "IN_VEHICLE") {
-      //TODO: once given bus, return a number, not a range
-      return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
+      return readable(footprint.TRAIN * mtokm(distance)) + ' ~ ' + readable(footprint.CAR * mtokm(distance));
     } else {
       return readable(footprint[mode] * mtokm(distance));
     }
