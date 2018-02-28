@@ -964,7 +964,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var distVal = parseInt(distances[i].values);
           totalDist += distVal;
         }
-        return mtomiles(totalDist * 1000) + " miles";
+        return totalDist + " km";
     }
 
     var getFavoriteMode = function(tripCounts) {
@@ -978,21 +978,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             maxTripMethod = tripCounts[i].key;
           }
         }
-
-        return getReadableMode(maxTripMethod);
-    }
-
-    var getReadableMode = function(mode) {
-        switch(mode) {
-          case "ON_FOOT":
-            return "Walking";
-          case "BICYCLING":
-            return "Biking";
-          case "IN_VEHICLE":
-            return "Driving";
-          default:
-            return mode;
-        }
+        return maxTripMethod;
     }
 
     var getRecentTrips = function(numTrips = 3) {
@@ -1038,7 +1024,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
         // Formatting for display
-        trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        trips[i].distance = Math.round(trips[i].distance) / 1000 + " km";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
         if (typeof trips[i].co2 == "number") {
           trips[i].co2 = trips[i].co2 + ' kg CO₂';
@@ -1059,12 +1046,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return Math.round(v / 1609.34 * 100) / 100;
     }
 
-    var roundCarbon = function(val) {
+    $scope.roundCarbon = function(val) {
       return Math.round(val * 10) / 10;
-    }
-
-    $scope.leaderboardDisplay = function(val) {
-      return roundCarbon(val / 0.621371);
     }
 
     $scope.changeFromWeekday = function() {
@@ -1182,11 +1165,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     getMetrics();
   }
 
+  $scope.$on('$ionicView.enter',function(){
+  ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+      function() {
+          console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+      });
+  });
+
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
-    if (start != "0.0,0.0" & destination != "0.0,0.0") {
+    if(ionic.Platform.isIOS()){
       if (mode === 'bike') {
         mode = 'b';
       } else if (mode === 'public') {
@@ -1194,11 +1184,16 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       } else if (mode === 'walk') {
         mode = 'w';
       }
-      if(ionic.Platform.isIOS()){
-  	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
-       } else {
-         window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
-      }
+	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
+     } else {
+       if (mode === 'bike') {
+         mode = 'b';
+       } else if (mode === 'public') {
+         mode = 'r';
+       } else if (mode === 'walk') {
+         mode = 'w';
+       }
+       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
     }
   }
 
@@ -1365,12 +1360,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $state.go('root.main.diary-detail', {tripId: $rootScope.recentTripID})
       $rootScope.recentTripDetailLoad = false;
     }
-  });
-  $scope.$on('$ionicView.enter',function(){
-    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
-      function() {
-          console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
-      });
   });
 
 });

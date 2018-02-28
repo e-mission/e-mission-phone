@@ -21,7 +21,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
     if (mode === "IN_VEHICLE") {
       return [footprint.TRAIN * mtokm(distance), footprint.CAR * mtokm(distance)];
     } else {
-      return footprint[mode] * mtokm(distance);
+      return [footprint[mode] * mtokm(distance), footprint[mode] * mtokm(distance)];
     }
   }
   fh.getFootprint = function(distance, mode) {
