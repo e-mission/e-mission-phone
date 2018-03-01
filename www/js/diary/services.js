@@ -39,6 +39,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "BUS": "ion-android-bus",
+    "TRAIN": "ion-android-train",
+    "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -69,6 +72,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-speedometer",
+    "BUS": "ion-android-bus",
+    "TRAIN": "ion-android-train",
+    "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -123,6 +129,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "CAR": "ion-android-car",
+    "BUS": "ion-android-bus",
+    "TRAIN": "ion-android-train",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -383,6 +392,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
             case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
+            case "TRAIN": return getColoredStyle(baseDict, 'skyblue');
+            case "BUS": return getColoredStyle(baseDict, 'navy');
+            case "CAR": return getColoredStyle(baseDict, 'salmon');
             case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
             case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
             case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
