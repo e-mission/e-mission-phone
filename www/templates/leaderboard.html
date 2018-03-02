@@ -21,10 +21,11 @@
                 <div id="leaderboard" class="trip-card" style="margin-top: 5px; border-top-width: 2px; color: black;padding:0px 5px">
                   <div ng-if="hasUsername(user)" style="width: 100%">
                     <div class="col-left-75" style="font-size: 15px;">{{$index + 1}}.   <b>{{user.username.username}}</b></div>
-                    <div class="col-right-25" style="font-size: 15px;">{{roundCarbon(user.carbonLastWeek)}} g CO2/km</div>
+                    <div class="col-right-25" style="font-size: 15px;">{{leaderboardDisplay(user.carbonLastWeek)}} g CO₂/mi</div>
                   </div>
-                  <div ng-if="hasUsername(user) == false">
-                    {{$index + 1}}.   <b>Anon User</b> {{roundCarbon(user.carbonLastWeek)}} g CO2/km
+                  <div ng-if="hasUsername(user) == false" style="width: 100%">
+                    <div class="col-left-75" style="font-size: 15px;">{{$index + 1}}.   <b>Anon User</b></div>
+                    <div class="col-right-25" style="font-size: 15px;">{{leaderboardDisplay(user.carbonLastWeek)}} g CO₂/mi</div>
                   </div>
                 </div>
               </div>

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
@@ -37,8 +37,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
 
     $scope.share = function() {
@@ -1030,8 +1030,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return Math.round(v / 1609.34 * 100) / 100;
     }
 
-    $scope.roundCarbon = function(val) {
+    var roundCarbon = function(val) {
       return Math.round(val * 10) / 10;
+    }
+
+    $scope.leaderboardDisplay = function(val) {
+      return roundCarbon(val / 0.621371);
     }
 
     $scope.changeFromWeekday = function() {
