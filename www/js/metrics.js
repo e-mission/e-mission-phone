@@ -3,6 +3,7 @@
 angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
+                                    $ionicPlatform,
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, ClientStats,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
