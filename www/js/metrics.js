@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
@@ -37,8 +37,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
 
     $scope.share = function() {
@@ -720,27 +720,23 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //$scope.carbonData.userCarbon = [];
         for (var i in userCarbonData) {
           //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-          if (userCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-            $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
-            $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
-            lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+          $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
+          $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
+          $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
+          lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
           }
         }
-      }
 
       if (first) {
         if (twoWeeksAgoDistance) {
           var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
           for (var i in userCarbonData) {
-            if (userCarbonData[i].key === "IN_VEHICLE") {
               twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
               twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
               if(first){
                 lastWeekCarbon = twoWeeksAgoCarbon;
               }
               $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-            }
           }
         }
       }
@@ -750,8 +746,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                     + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
                     + " and "
                     + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
-      var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
-                        / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
+      var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2) /
+                        ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
                         * 100 - 100;
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
@@ -773,10 +769,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       if (aggDistance) {
         var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
         for (var i in aggrCarbonData) {
-          if (aggrCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
-            $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
-          }
+          $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
+          $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
         }
       }
    };
@@ -964,7 +958,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var distVal = parseInt(distances[i].values);
           totalDist += distVal;
         }
-        return mtomiles(totalDist * 1000) + " miles";
+        return totalDist + " km";
     }
 
     var getFavoriteMode = function(tripCounts) {
@@ -978,21 +972,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             maxTripMethod = tripCounts[i].key;
           }
         }
-
-        return getReadableMode(maxTripMethod);
-    }
-
-    var getReadableMode = function(mode) {
-        switch(mode) {
-          case "ON_FOOT":
-            return "Walking";
-          case "BICYCLING":
-            return "Biking";
-          case "IN_VEHICLE":
-            return "Driving";
-          default:
-            return "Unknown";
-        }
+        return maxTripMethod;
     }
 
     var getRecentTrips = function(numTrips = 3) {
@@ -1038,7 +1018,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
         // Formatting for display
-        trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
+        trips[i].distance = Math.round(trips[i].distance) / 1000 + " km";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
         if (typeof trips[i].co2 == "number") {
           trips[i].co2 = trips[i].co2 + ' kg CO₂';
@@ -1059,12 +1040,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return Math.round(v / 1609.34 * 100) / 100;
     }
 
-    var roundCarbon = function(val) {
+    $scope.roundCarbon = function(val) {
       return Math.round(val * 10) / 10;
-    }
-
-    $scope.leaderboardDisplay = function(val) {
-      return roundCarbon(val / 0.621371);
     }
 
     $scope.changeFromWeekday = function() {
@@ -1181,6 +1158,32 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     first = true;
     getMetrics();
   }
+
+  $scope.$on('$ionicView.enter',function(){
+    $scope.startTime = moment().utc()
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+        });
+  });
+
+  $scope.$on('$ionicView.leave',function() {
+    var timeOnPage = moment().utc() - $scope.startTime;
+    ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+  });
+
+  $ionicPlatform.on("pause", function() {
+    if ($state.$current == "root.main.metrics") {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    }
+  })
+
+  $ionicPlatform.on("resume", function() {
+    if ($state.$current == "root.main.metrics") {
+      $scope.startTime = moment().utc()
+    }
+  })
 
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
