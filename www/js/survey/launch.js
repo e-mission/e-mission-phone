@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('emission.survey.launch', ['emission.services',
-                    'emission.plugin.logger'])
+                    'emission.plugin.logger',
+                    'emission.stats.clientstats'])
 
 .factory('SurveyLaunch', function($http, $cordovaInAppBrowser, $ionicPopup, $rootScope,
     CommHelper, Logger) {
@@ -147,6 +148,10 @@ angular.module('emission.survey.launch', ['emission.services',
 
     surveylaunch.init = function() {
       $rootScope.$on('cloud:push:notification', function(event, data) {
+        ClientStats.addEvent(ClientStats.getStatKeys().NOTIFICATION_OPEN).then(
+            function() {
+                console.log("Added "+ClientStats.getStatKeys().NOTIFICATION_OPEN+" event. Data = " JSON.stringify(data));
+              });
         Logger.log("data = "+JSON.stringify(data));
         if (angular.isDefined(data.additionalData) &&
             angular.isDefined(data.additionalData.payload) &&

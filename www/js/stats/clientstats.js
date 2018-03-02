@@ -12,8 +12,16 @@ angular.module('emission.stats.clientstats', [])
   clientStat.getStatKeys = function() {
     return {
       STATE_CHANGED: "state_changed",
+<<<<<<< HEAD
       BUTTON_FORCE_SYNC: "button_sync_forced"
       DIARY_TIME: "diary_time"
+=======
+      BUTTON_FORCE_SYNC: "button_sync_forced",
+      OPENED_APP: "opened_app",
+      CHECKED_DIARY: "checked_diary",
+      EXPANDED_TRIP: "expanded_trip",
+      NOTIFICATION_OPEN: "notification_open"
+>>>>>>> 0d4276a4c73021251364e5fe050306084c2d0a21
     };
   }
 

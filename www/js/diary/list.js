@@ -6,6 +6,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
+                                      'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
@@ -35,6 +36,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   $scope.$on('$ionicView.afterEnter', function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(
+       function() {
+           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+       });
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
@@ -202,7 +207,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'red',};
+    "icon ion-speedometer":'purple',
+    "icon ion-android-bus": "purple",
+    "icon ion-android-train": "navy",
+    "icon ion-android-car": "salmon",
+    "icon ion-plane": "red"};
       return { color: colors[mode] };
     }
 
@@ -354,7 +363,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
+<<<<<<< HEAD
       $scope.startTime = moment().utc()
+=======
+>>>>>>> 0d4276a4c73021251364e5fe050306084c2d0a21
       // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)

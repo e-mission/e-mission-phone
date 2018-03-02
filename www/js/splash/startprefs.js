@@ -61,8 +61,13 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.markIntroDone = function() {
       storage.set(INTRO_DONE_KEY, true);
-      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY,
-        {INTRO_DONE_KEY: moment().format()});
+      // Need to initialize this first because if we try to
+      // create it inlike with {key: value}, the key becomes the
+      // word "INTRO_DONE_KEY" and the stored object is 
+      // {"INTRO_DONE_KEY":"2018-01-31T06:26:02+00:00"}
+      var to_store = {};
+      to_store[INTRO_DONE_KEY] = moment().format();
+      $window.cordova.plugins.BEMUserCache.putLocalStorage(INTRO_DONE_KEY, to_store);
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, $rootScope.req_consent);
     }
 
@@ -178,6 +183,49 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         });
     }
 
+    startprefs.checkUsercacheStorage = function(key) {
+        // console.log("checkUsercacheStorage called");
+        var ls_stored_val = storage.get(key);
+        $window.cordova.plugins.BEMUserCache.getLocalStorage(key, false).then(function(uc_stored_val) {
+            logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+" ls_stored_val = "+ls_stored_val);
+            if(angular.isDefined(uc_stored_val) && (uc_stored_val != null) 
+                && (key in uc_stored_val) && angular.isDefined(uc_stored_val[key])) {
+                if (ls_stored_val == true) {
+                    logger.log("local intro_done true, remote intro_done "+uc_stored_val[key]+", already synced");
+                } else {
+                    logger.log("local intro_done false, remote intro_done "+uc_stored_val[key]+", setting local");
+                    $ionicPopup.alert({template: "Local "+key+" not found, native "+key+" found, writing "+key+" to local"})
+                    storage.put(key, true);
+                }
+            } else {
+                if (ls_stored_val == true) {
+                    logger.log("local intro_done found, remote intro_done not found, setting remote");
+
+                    // Need to initialize this first because if we try to
+                    // create it inlike with {key: value}, the key becomes the
+                    // word "key" and the stored object is 
+                    // {"key":"2018-01-31T06:26:02+00:00"}
+                    var to_put = {};
+                    to_put[key] = moment().format();
+                    $window.cordova.plugins.BEMUserCache.putLocalStorage(key, to_put);
+                    $ionicPopup.alert({template: "Local "+key+" found, native "+key+" missing, writing "+key+" to native"})
+                } else {
+                    logger.log("local intro_done false, remote intro_done not found, already synced");
+                }
+            }
+        }).catch(function(error) {
+            var display_msg = error.message + "\n" + error.stack;
+            logger.log("error in checkUsercacheStorage = "+display_msg);
+            $ionicPopup.alert({template: display_msg});
+        });
+    }
+
+    startprefs.checkStorageConsistency = function() {
+        // console.log("checkStorageConsistency called");
+        startprefs.checkNativeConsent();
+        startprefs.checkUsercacheStorage(INTRO_DONE_KEY);
+    }
+
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
@@ -247,7 +295,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       Logger.log("ionicPlatform.ready() called " + nTimesCalled+" times!");
       nTimesCalled = nTimesCalled + 1;
       startprefs.startWithPrefs();
-      startprefs.checkNativeConsent();
+      startprefs.checkStorageConsistency();
       Logger.log("startprefs startup done");
     });
 

@@ -1,9 +1,10 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
+                                    ionicDatePicker,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger, Timeline) {
     var lastTwoWeeksQuery = true;
@@ -36,8 +37,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
 
     $scope.share = function() {
@@ -1029,8 +1030,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return Math.round(v / 1609.34 * 100) / 100;
     }
 
-    $scope.roundCarbon = function(val) {
+    var roundCarbon = function(val) {
       return Math.round(val * 10) / 10;
+    }
+
+    $scope.leaderboardDisplay = function(val) {
+      return roundCarbon(val / 0.621371);
     }
 
     $scope.changeFromWeekday = function() {
@@ -1212,6 +1217,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "CAR":"ion-android-car",
+    "BUS":"ion-android-bus",
+    "TRAIN":"ion-android-train",
     "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[key];
@@ -1220,7 +1228,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.setCurDayFrom = function(val) {
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
-      $scope.datepickerObjFrom.inputDate = val;
+      $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     } else {
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
@@ -1229,7 +1237,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.setCurDayTo = function(val) {
     if (val) {
       $scope.selectCtrl.toDateTimestamp = moment(val).utc();
-      $scope.datepickerObjTo.inputDate = val;
+      $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
@@ -1279,7 +1287,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMMM dd yyyy',
+      dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
@@ -1296,10 +1304,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMMM dd yyyy',
+      dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
+
+  $scope.pickFromDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObjFrom);
+  }
+
+  $scope.pickToDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObjTo);
+  }
 
   $scope.extendFootprintCard = function() {
     if($scope.expandedf){

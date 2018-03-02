@@ -2,6 +2,7 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
@@ -65,6 +66,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+
+  $scope.getFormattedDistanceInMiles = function(input) {
+    return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
+  }
 
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
