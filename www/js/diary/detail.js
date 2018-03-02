@@ -2,11 +2,12 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
-                                        Logger, Timeline, FootprintHelper, DiaryHelper, Config,
+                                        Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
@@ -63,33 +64,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-  $scope.getTripDetails = DiaryHelper.getTripDetails;
+  $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+
+  $scope.getFormattedDistanceInMiles = function(input) {
+    return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
+  }
 
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
      return ret_val;
-  }
-
-  // Calculates footprint according to the trip in $scope.trip.
-  $scope.getTripFootprint = function() {
-    var distances = [];
-    var modes = [];
-    var sections = $scope.trip.sections;
-    for (var i = 0; i < sections.length; i++) {
-      var section = sections[i];
-      distances.push(section.properties.distance);
-      modes.push(DiaryHelper.getHumanReadable(section.properties.sensed_mode));
-    }
-    var totalFootprint = 0;
-    for (var i = 0; i < distances.length; i++) {
-      var currFootprint = parseInt(FootprintHelper.getFootprint(distances[i], modes[i]));
-      if (isNaN(currFootprint)) {
-        currFootprint = 0;
-      }
-      totalFootprint += currFootprint;
-    }
-    return totalFootprint + ' kg CO₂';
   }
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
@@ -179,8 +163,15 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.startWalkthrough = function () {
     startWalkthrough();
   }
+  $scope.$on('$ionicView.enter',function(){
+    ClientStats.addEvent(ClientStats.getStatKeys().EXPANDED_TRIP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().EXPANDED_TRIP+" event");
+        });
+  });
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
+
     // Workaround from
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)

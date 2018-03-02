@@ -37,6 +37,11 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
+        <ion-item style="background-color: transparent;" id="no-border" class="list-item">
+               <div ng-if="data.currDayTripWrappers.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
+                 <h3>No trips recorded on this day.</h3>
+               </div>
+         </ion-item>
 
 		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="differentCommon(tripgj)? '348px':'308px'">
            <div class="start-time-tag">{{localTimeString (tripgj.data.properties.start_local_dt)}}</div>
@@ -53,7 +58,7 @@
 
                 <div class="row">
                     <div ng-class="listColLeftClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])">
-                        <p ng-class="listTextClass()" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;">{{getFormattedDistance(tripgj.data.properties.distance)}} km in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
+                        <p ng-class="listTextClass()" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;">{{getFormattedDistance(tripgj.data.properties.distance)}} miles in {{getFormattedTimeRange(tripgj.data.properties.start_ts,
                            tripgj.data.properties.end_ts)}}</p>
 
                         <a style="font-size: 0.6em; line-height: 0.6em; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"><i class="{{ getArrowClass(getLongerOrShorter(tripgj.data, tripgj.data.id)[0]) }}" style="font-size: 1em; color: {{arrowColor(getLongerOrShorter(tripgj.data, tripgj.data.id)[0])}};"></i>{{ getLongerOrShorter(tripgj.data, tripgj.data.id)[1] }}</a>

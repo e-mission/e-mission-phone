@@ -6,6 +6,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
+                                      'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $stateParams, $rootScope, $ionicPlatform, $state,
@@ -35,6 +36,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   $scope.$on('$ionicView.afterEnter', function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+        });
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
@@ -279,7 +284,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
+    $scope.getFormattedDistance = function(v) { //converts m to miles
+      return Math.round(v / 1609.34 * 100) / 100;
+    };
     $scope.getSectionDetails = DiaryHelper.getSectionDetails;
     $scope.getFormattedTime = DiaryHelper.getFormattedTime;
     $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;

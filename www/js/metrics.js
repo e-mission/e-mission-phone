@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
@@ -37,8 +37,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
       message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
 
     $scope.share = function() {
@@ -1164,6 +1164,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     first = true;
     getMetrics();
   }
+
+  $scope.$on('$ionicView.enter',function(){
+  ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+      function() {
+          console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+      });
+  });
 
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
