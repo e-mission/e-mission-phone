@@ -7,6 +7,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
+                                        $ionicPlatform, ClientStats,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
