@@ -1153,6 +1153,32 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     getMetrics();
   }
 
+  $scope.$on('$ionicView.enter',function(){
+    $scope.startTime = moment().utc()
+    ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
+        });
+  });
+
+  $scope.$on('$ionicView.leave',function() {
+    var timeOnPage = moment().utc() - $scope.startTime;
+    ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+  });
+
+  $ionicPlatform.on("pause", function() {
+    if ($state.$current == "root.main.metrics") {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    }
+  })
+
+  $ionicPlatform.on("resume", function() {
+    if ($state.$current == "root.main.metrics") {
+      $scope.startTime = moment().utc()
+    }
+  })
+
   $scope.linkToMaps = function() {
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];

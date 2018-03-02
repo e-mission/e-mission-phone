@@ -363,12 +363,34 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
+<<<<<<< HEAD
+      $scope.startTime = moment().utc()
+=======
+>>>>>>> 0d4276a4c73021251364e5fe050306084c2d0a21
       // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
       checkDiaryTutorialDone();
     });
+
+    $scope.$on('$ionicView.leave',function() {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    });
+
+    $ionicPlatform.on("pause", function() {
+      if ($state.$current == "root.main.diary.list") {
+        var timeOnPage = moment().utc() - $scope.startTime;
+        ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+      }
+    })
+
+    $ionicPlatform.on("resume", function() {
+      if ($state.$current == "root.main.diary.list") {
+        $scope.startTime = moment().utc()
+      }
+    })
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
