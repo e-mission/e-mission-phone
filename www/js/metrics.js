@@ -485,12 +485,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           if (angular.isDefined($scope.chartDataUser)) {
             $scope.$apply(function() {
               if ($scope.uictrl.showMe) {
-                $scope.showCharts($scope.chartDataUser);
+                //$scope.showCharts($scope.chartDataUser);
               }
             })
           } else {
             $scope.$apply(function() {
-              $scope.showCharts([]);
+              //$scope.showCharts([]);
               console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
             });
           }
@@ -511,12 +511,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             // Restore the $apply if/when we go away from $http
             // $scope.$apply(function() {
               if (!$scope.uictrl.showMe) {
-                $scope.showCharts($scope.chartDataAggr);
+                //$scope.showCharts($scope.chartDataAggr);
               }
             // })
           } else {
             // $scope.$apply(function() {
-              $scope.showCharts([]);
+              //$scope.showCharts([]);
               console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
             // });
           }
@@ -1117,11 +1117,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.toggle = function() {
       if (!$scope.uictrl.showMe) {
         $scope.uictrl.showMe = true;
-        $scope.showCharts($scope.chartDataUser);
+        //$scope.showCharts($scope.chartDataUser);
 
       } else {
         $scope.uictrl.showMe = false;
-        $scope.showCharts($scope.chartDataAggr);
+        //$scope.showCharts($scope.chartDataAggr);
       }
     }
     var initSelect = function() {
