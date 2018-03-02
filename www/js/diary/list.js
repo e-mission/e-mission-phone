@@ -10,7 +10,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    $ionicScrollDelegate, $ionicPopup,
+                                    $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     ionicDatePicker,
