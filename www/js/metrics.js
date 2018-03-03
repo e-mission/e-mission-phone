@@ -3,8 +3,9 @@
 angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger', 'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $stateParams, $ionicActionSheet, $ionicLoading,
+                                    $ionicPlatform,
                                     CommHelper, $window, $ionicPopup,
-                                    ionicDatePicker,
+                                    ionicDatePicker, ClientStats,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger, Timeline) {
     var lastTwoWeeksQuery = true;
@@ -485,12 +486,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           if (angular.isDefined($scope.chartDataUser)) {
             $scope.$apply(function() {
               if ($scope.uictrl.showMe) {
-                $scope.showCharts($scope.chartDataUser);
+                //$scope.showCharts($scope.chartDataUser);
               }
             })
           } else {
             $scope.$apply(function() {
-              $scope.showCharts([]);
+              //$scope.showCharts([]);
               console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
             });
           }
@@ -511,12 +512,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             // Restore the $apply if/when we go away from $http
             // $scope.$apply(function() {
               if (!$scope.uictrl.showMe) {
-                $scope.showCharts($scope.chartDataAggr);
+                //$scope.showCharts($scope.chartDataAggr);
               }
             // })
           } else {
             // $scope.$apply(function() {
-              $scope.showCharts([]);
+              //$scope.showCharts([]);
               console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
             // });
           }
@@ -1121,11 +1122,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.toggle = function() {
       if (!$scope.uictrl.showMe) {
         $scope.uictrl.showMe = true;
-        $scope.showCharts($scope.chartDataUser);
+        //$scope.showCharts($scope.chartDataUser);
 
       } else {
         $scope.uictrl.showMe = false;
-        $scope.showCharts($scope.chartDataAggr);
+        //$scope.showCharts($scope.chartDataAggr);
       }
     }
     var initSelect = function() {
@@ -1193,7 +1194,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
-    if(ionic.Platform.isIOS()){
+    if (start != "0.0,0.0" & destination != "0.0,0.0") {
       if (mode === 'bike') {
         mode = 'b';
       } else if (mode === 'public') {
@@ -1201,17 +1202,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       } else if (mode === 'walk') {
         mode = 'w';
       }
-	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
-     } else {
-       if (mode === 'bike') {
-         mode = 'b';
-       } else if (mode === 'public') {
-         mode = 'r';
-       } else if (mode === 'walk') {
-         mode = 'w';
-       }
-       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
+
+      if (ionic.Platform.isIOS()){
+  	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
+       } else {
+         window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
+      }
+      $scope.tappedSuggestion();
     }
+  }
+
+  $scope.tappedSuggestion = function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().TAPPED_SUGGESTION).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().TAPPED_SUGGESTION+" event");
+        });
   }
 
   $scope.linkToDiary = function(trip_id) {
