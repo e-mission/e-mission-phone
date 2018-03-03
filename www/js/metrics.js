@@ -1190,7 +1190,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
     let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
-    if(ionic.Platform.isIOS()){
+    if (start != "0.0,0.0" & destination != "0.0,0.0") {
       if (mode === 'bike') {
         mode = 'b';
       } else if (mode === 'public') {
@@ -1198,17 +1198,21 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       } else if (mode === 'walk') {
         mode = 'w';
       }
-	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
-     } else {
-       if (mode === 'bike') {
-         mode = 'b';
-       } else if (mode === 'public') {
-         mode = 'r';
-       } else if (mode === 'walk') {
-         mode = 'w';
-       }
-       window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
+
+      if (ionic.Platform.isIOS()){
+  	     window.open('https://www.maps.apple.com/?saddr=' + start + '&daddr=' + destination + '&dirflg=' + mode, '_system');
+       } else {
+         window.open('https://www.google.com/maps?saddr=' + start + '&daddr=' + destination +'&dirflg=' + mode, '_system');
+      }
+      $scope.tappedSuggestion();
     }
+  }
+
+  $scope.tappedSuggestion = function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().TAPPED_SUGGESTION).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().TAPPED_SUGGESTION+" event");
+        });
   }
 
   $scope.linkToDiary = function(trip_id) {
