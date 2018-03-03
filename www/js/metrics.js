@@ -1044,6 +1044,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return Math.round(val * 10) / 10;
     }
 
+    $scope.leaderboardDisplay = function(val) {
+      return roundCarbon(val / 0.621371);
+    }
+
     $scope.changeFromWeekday = function() {
       return $scope.changeWeekday(function(newVal) {
                                     $scope.selectCtrl.fromDateWeekdayString = newVal;
