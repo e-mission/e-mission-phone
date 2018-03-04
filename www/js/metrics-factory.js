@@ -18,19 +18,27 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
     return v / 1000;
   }
   fh.getFootprintRaw = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return [footprint.TRAIN * mtokm(distance), footprint.CAR * mtokm(distance)];
+    if (mode === "CAR") {
+      return footprint.CAR * mtokm(distance);
+    } else if (mode === "BUS") {
+      return footprint.BUS * mtokm(distance);
+    } else if (mode === "TRAIN") {
+      return footprint.TRAIN * mtokm(distance);
     } else {
       try {
-        return [footprint[mode] * mtokm(distance), footprint[mode] * mtokm(distance)];
+        return footprint[mode] * mtokm(distance);
       } catch(err) {
         return [0, 0];
       }
     }
   }
   fh.getFootprint = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
+    if (mode === "CAR") {
       return readable(footprint.CAR * mtokm(distance));
+    } else if (mode === "BUS") {
+      return readable(footprint.BUS * mtokm(distance));
+    } else if (mode === "TRAIN") {
+      return readable(footprint.TRAIN * mtokm(distance));
     } else {
       try {
         return readable(footprint[mode] * mtokm(distance));

@@ -568,6 +568,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
         $scope.summaryData.userSummary.median_speed = getSummaryData(userMedianSpeed, "median_speed");
+        // count does NOT distinguish bus and train
         $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
         $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
         $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
@@ -964,7 +965,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getFavoriteMode = function(tripCounts) {
         var maxTripCount = 0;
-        var maxTripMethod = "Unkown";
+        var maxTripMethod = "Unknown";
 
         for (var i = 0; i < tripCounts.length; i++) {
           var currTripCount = parseInt(tripCounts[i].values);
@@ -978,26 +979,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getReadableMode = function(m) {
       switch(m) {
-        case "WALKING":
+        case "ON_FOOT":
           return "Walking";
           break;
         case "BICYCLING":
-          return "Bike";
-          break;
-        case "BUS":
-          return "Bus";
-          break;
-        case "TRAIN":
-          return "Train";
+          return "Biking";
           break;
         case "CAR":
-          return "Car";
-          break;
-        case "AIR_OR_HSR":
-          return "Airplane";
+          return "Driving";
           break;
         default:
-          console.log("In weekly stats, mode not listed as one of preset values");
+          console.log("Unknown mode of transportation: " + m);
           return m;
       }
     }
@@ -1005,7 +997,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var getRecentTrips = function(numTrips = 3) {
       var now = moment().utc();
       var twoDaysAgo = moment().utc().subtract(7, 'd');
-      CommHelper.getRawEntries(['analysis/cleaned_section', 'analysis/cleaned_trip'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
+      CommHelper.getRawEntries(['analysis/cleaned_trip', 'analysis/inferred_section'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
         .then(function(data) {saveRecentTrips(numTrips, data['phone_data'])})
         .catch(function(err) {console.log(err)});
     }
@@ -1016,7 +1008,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
       while (trips.length < numTrips && tripsList.length > 0) {
         var currentSeg = tripsList.pop();
-        if (currentSeg.metadata.key == "analysis/cleaned_section") {
+        if (currentSeg.metadata.key == "analysis/inferred_section") {
           data.id = currentSeg.data.trip_id.$oid;
           (data.mode[currentSeg.data.sensed_mode]) ? data.mode[currentSeg.data.sensed_mode] += currentSeg.data.distance : data.mode[currentSeg.data.sensed_mode] = currentSeg.data.distance;
         } else {
@@ -1034,18 +1026,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         var sensed_mode = trips[i].mode;
         var smkeys = Object.keys(sensed_mode);
         sensed_mode = smkeys.reduce(function(a, b){ return sensed_mode[a] > sensed_mode[b] ? a : b });
-        if ((sensed_mode == 7) || (sensed_mode == 8)) {
-          sensed_mode = 2;
-        }
         // Calculate footprint of trip
         trips[i].co2 = 0;
         for (var j = 0; j < smkeys.length; j++) {
-          if (smkeys[j] == 0) {
-            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "IN_VEHICLE");
+          if (smkeys[j] == 5) {
+            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "CAR");
+          } else if (smkeys[j] == 4) {
+            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "TRAIN");
+          } else if (smkeys[j] == 3) {
+            trips[i].co2 += FootprintHelper.getFootprint(sensed_mode[smkeys[j]], "BUS");
           }
         }
         // Formatting for display
-        //trips[i].distance = mtomiles(trips[i].distance) + " miles";
         trips[i].distance = mtomiles(trips[i].distance) + " miles";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
         if (typeof trips[i].co2 == "number") {
