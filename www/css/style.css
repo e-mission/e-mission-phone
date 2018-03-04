@@ -1931,6 +1931,8 @@ div.bear-wrapper div.bear-char p {
   text-align: center;
   background-color: rgba(0, 0, 0, 0.5);
   margin-bottom: 5px;
+  overflow: hidden;
+  max-height: 20px;
 }
 
 .card {
