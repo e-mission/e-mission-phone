@@ -284,9 +284,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = function(v) { //converts m to miles
-      return Math.round(v / 1609.34 * 100) / 100;
-    };
+    $scope.getFormattedDistance = DiaryHelper.getFormattedDistanceMiles;
     $scope.getSectionDetails = DiaryHelper.getSectionDetails;
     $scope.getFormattedTime = DiaryHelper.getFormattedTime;
     $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
