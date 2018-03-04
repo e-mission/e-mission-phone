@@ -24,7 +24,7 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           scale = 80;
         }
         $scope.myBear['left'] = 260;
-        $scope.myBear['top'] = 616 - ((response.myBear['size'] - 1) * scale) * 0.2;
+        $scope.myBear['top'] = 616 - (0.91 * response.myBear['size'] * scale) + 0.91 * 80;
         $scope.myBear['size'] = response.myBear.size * scale;
         if (parseFloat($scope.myBear['happiness']) > 0.5) {
           $scope.myBear['img'] = "happybear.gif";
@@ -37,7 +37,7 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
         for (var key in response.otherBears) {
           response.otherBears[key]['left'] = leftPad;
           leftPad = leftPad + response.otherBears[key]['size'] * scale + 5;
-          response.otherBears[key]['top'] = 616 - ((response.otherBears[key]['size'] - 1) * scale) * 0.2;
+          response.otherBears[key]['top'] = 616 - (0.91 * response.myBear['size'] * scale) + 0.91 * 80;
           if (parseFloat(response.otherBears[key]['happiness']) > 0.5) {
             response.otherBears[key]['img'] = "happybear.gif";
           } else if (parseFloat(response.otherBears[key]['happiness']) > -0.5) {
