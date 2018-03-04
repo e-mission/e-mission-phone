@@ -1041,7 +1041,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return Math.round(v / 1609.34 * 100) / 100;
     }
 
-    $scope.roundCarbon = function(val) {
+    var roundCarbon = function(val) {
       return Math.round(val * 10) / 10;
     }
 
