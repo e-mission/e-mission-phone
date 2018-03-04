@@ -964,7 +964,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getFavoriteMode = function(tripCounts) {
         var maxTripCount = 0;
-        var maxTripMethod = "UNKNOWN";
+        var maxTripMethod = "Unkown";
 
         for (var i = 0; i < tripCounts.length; i++) {
           var currTripCount = parseInt(tripCounts[i].values);
@@ -973,7 +973,33 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             maxTripMethod = tripCounts[i].key;
           }
         }
-        return maxTripMethod;
+        return getReadableMode(maxTripMethod);
+    }
+
+    var getReadableMode = function(m) {
+      switch(m) {
+        case "WALKING":
+          return "Walking";
+          break;
+        case "BICYCLING":
+          return "Bike";
+          break;
+        case "BUS":
+          return "Bus";
+          break;
+        case "TRAIN":
+          return "Train";
+          break;
+        case "CAR":
+          return "Car";
+          break;
+        case "AIR_OR_HSR":
+          return "Airplane";
+          break;
+        default:
+          console.log("In weekly stats, mode not listed as one of preset values");
+          return m;
+      }
     }
 
     var getRecentTrips = function(numTrips = 3) {
