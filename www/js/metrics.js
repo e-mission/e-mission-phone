@@ -988,6 +988,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         case "CAR":
           return "Driving";
           break;
+        case "BUS":
+          return "Bus";
+          break;
+        case "TRAIN":
+          return "Train";
+          break;
         default:
           console.log("Unknown mode of transportation: " + m);
           return m;
