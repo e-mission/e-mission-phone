@@ -1,6 +1,9 @@
 <ion-view hide-nav-bar="true" class="intro-view">
     <ion-slide-box delegate-handle="intro-box" on-slide-changed="slideChanged(index)" show-pager="false">
       <ion-slide>
+        <ng-include src="'templates/intro/study-text.html'"></ng-include>
+      </ion-slide>
+      <ion-slide>
         <ng-include src="'templates/intro/summary.html'"></ng-include>
       </ion-slide>
       <ion-slide>
