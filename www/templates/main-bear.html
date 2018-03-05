@@ -6,9 +6,9 @@
           <p>You</p>
           <img ng-src="img/{{myBear.img}}" alt="Description"/>
         </div>
-          <div ng-repeat="bear in otherBears" class="bear-char" style="left:{{bear.left}}px; top:{{bear.top}}px; width:{{bear.size}}px">
-            <p>{{bear.name}}</p>
-            <img ng-src="img/{{bear.img}}" alt="Description">
+          <div ng-repeat="bear in otherBears" class="bear-char" style="width:{{bear.size}}px; left:{{bear.left}}px; top:{{bear.top}}px;" ng-click="bear.hidden = !bear.hidden">
+            <p ng-class="{'visibleName' : bear.hidden}">{{bear.name}}</p>
+            <img ng-src="img/{{bear.img}}" style="width:{{bear.size}}px" alt="Description">
           </div>
     </div>
  </ion-scroll>

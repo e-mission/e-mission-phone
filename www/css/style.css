@@ -1927,12 +1927,21 @@ div.bear-wrapper {
 div.bear-wrapper div.bear-char p {
   color: white;
   font-weight: bold;
-  width: 100%;
+  position:absolute;
   text-align: center;
   background-color: rgba(0, 0, 0, 0.5);
   margin-bottom: 5px;
-  overflow: hidden;
   max-height: 20px;
+  left:50%;
+  transform:translateX(-50%);
+  white-space: nowrap;
+  padding-left: 1px;
+  padding-right: 1px;
+  min-width: 100%;
+}
+
+div.bear-wrapper div.bear-char p.visibleName {
+  display:none;
 }
 
 .card {
@@ -1942,7 +1951,6 @@ div.bear-wrapper div.bear-char p {
 }
 
 div.bear-wrapper div.bear-char {
-  width: 40px;
   position: absolute;
   top: 640px;
   left: 280px;
@@ -1951,8 +1959,8 @@ div.bear-wrapper div.bear-char {
 div.bear-wrapper img {
   width: 100%;
   height: 100%;
+  padding-top: 20px;
 }
-
 div.bear-wrapper h3 {
   position:absolute;
   top:50%;
