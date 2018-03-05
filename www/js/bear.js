@@ -13,7 +13,6 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
   var totalSize;
   $ionicPlatform.ready(function() {
       CommHelper.getPolarBears().then(function(response) {
-        console.log(response);
         $scope.myBear = response.myBear;
         totalSize = parseFloat($scope.myBear['size']);
         for (var key in response.otherBears) {
@@ -24,7 +23,7 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           scale = 80;
         }
         $scope.myBear['left'] = 260;
-        $scope.myBear['top'] = 616 - (0.9076 * response.myBear['size'] * scale * 325/400) + 0.9076 * 80 * 325/400;
+        $scope.myBear['top'] = 616 - (0.824 * response.myBear['size'] * scale * 325/400) + 0.824 * 80 * 325/400;
         $scope.myBear['size'] = response.myBear.size * scale;
         if (parseFloat($scope.myBear['happiness']) > 0.5) {
           $scope.myBear['img'] = "happybear.gif";
@@ -37,7 +36,7 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
         for (var key in response.otherBears) {
           response.otherBears[key]['left'] = leftPad;
           leftPad = leftPad + response.otherBears[key]['size'] * scale + 5;
-          response.otherBears[key]['top'] = 616 - (0.9076 * response.otherBears[key]['size'] * scale * 325/400) + 0.9076 * 80 * 325/400;
+          response.otherBears[key]['top'] = 616 - (0.824 * response.otherBears[key]['size'] * scale * 325/400) + 0.824 * 80 * 325/400;
           if (parseFloat(response.otherBears[key]['happiness']) > 0.5) {
             response.otherBears[key]['img'] = "happybear.gif";
           } else if (parseFloat(response.otherBears[key]['happiness']) > -0.5) {
@@ -47,6 +46,11 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           }
           response.otherBears[key]['name'] = key;
           response.otherBears[key]['size'] = response.otherBears[key]['size'] * scale;
+          if (response.otherBears[key]['size'] < 60) {
+            response.otherBears[key]['hidden'] = true;
+          } else {
+            response.otherBears[key]['hidden'] = false;
+          }
           $scope.otherBears.push(response.otherBears[key]);
         }
         $state.reload();
