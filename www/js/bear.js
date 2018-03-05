@@ -46,10 +46,12 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           }
           response.otherBears[key]['name'] = key;
           response.otherBears[key]['size'] = response.otherBears[key]['size'] * scale;
-          if (response.otherBears[key]['size'] < 60) {
+          if (response.otherBears[key]['size'] < 80) {
             response.otherBears[key]['hidden'] = true;
+            response.otherBears[key]['truncate'] = false;
           } else {
             response.otherBears[key]['hidden'] = false;
+            response.otherBears[key]['truncate'] = true;
           }
           $scope.otherBears.push(response.otherBears[key]);
         }

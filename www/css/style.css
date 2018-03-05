@@ -1944,6 +1944,12 @@ div.bear-wrapper div.bear-char p.visibleName {
   display:none;
 }
 
+div.bear-wrapper div.bear-char p.truncate {
+  text-overflow: ellipsis;
+  max-width: 100%;
+  overflow: hidden;
+}
+
 .card {
   margin: 10px;
   margin-bottom: 0px;

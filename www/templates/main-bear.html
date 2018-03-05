@@ -7,7 +7,7 @@
           <img ng-src="img/{{myBear.img}}" alt="Description"/>
         </div>
           <div ng-repeat="bear in otherBears" class="bear-char" style="width:{{bear.size}}px; left:{{bear.left}}px; top:{{bear.top}}px;" ng-click="bear.hidden = !bear.hidden">
-            <p ng-class="{'visibleName' : bear.hidden}">{{bear.name}}</p>
+            <p ng-class="{'visibleName' : bear.hidden, 'truncate' : bear.truncate}">{{bear.name}}</p>
             <img ng-src="img/{{bear.img}}" style="width:{{bear.size}}px" alt="Description">
           </div>
     </div>
