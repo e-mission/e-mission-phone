@@ -728,10 +728,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //$scope.carbonData.userCarbon = [];
         for (var i in userCarbonData) {
           //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-          $scope.carbonData.userCarbon += FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-          $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
-          $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
-          lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+            if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
+              $scope.carbonData.userCarbon += FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+              $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
+              $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
+              lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+            }
           }
         }
         $scope.carbonData.userCarbon = readable($scope.carbonData.userCarbon)
@@ -740,6 +742,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         if (twoWeeksAgoDistance) {
           var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
           for (var i in userCarbonData) {
+            if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
               twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
               twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
               if(first){
@@ -748,6 +751,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                   lastWeekCarbon = "0 kg CO₂";
                 }
               }
+            }
               $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
           }
         }
