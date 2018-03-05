@@ -737,6 +737,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
               twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
               if(first){
                 lastWeekCarbon = twoWeeksAgoCarbon;
+                if (lastWeekCarbon.includes("NaN")) {
+                  lastWeekCarbon = "0 kg CO₂";
+                }
               }
               $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
           }
