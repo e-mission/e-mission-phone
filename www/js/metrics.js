@@ -988,6 +988,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         case "CAR":
           return "Driving";
           break;
+        case "BUS":
+          return "Bus";
+          break;
+        case "TRAIN":
+          return "Train";
+          break;
         default:
           console.log("Unknown mode of transportation: " + m);
           return m;
@@ -1030,17 +1036,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         trips[i].co2 = 0;
         for (var j = 0; j < smkeys.length; j++) {
           if (smkeys[j] == 5) {
-            trips[i].co2 += FootprintHelper.getFootprintRaw(trips[i].mode[smkeys[j]], "CAR");
+            trips[i].co2 += roundCarbon(FootprintHelper.getFootprintRaw(trips[i].mode[smkeys[j]], "CAR"));
           } else if (smkeys[j] == 4) {
-            trips[i].co2 += FootprintHelper.getFootprintRaw(trips[i].mode[smkeys[j]], "TRAIN");
+            trips[i].co2 += roundCarbon(FootprintHelper.getFootprintRaw(trips[i].mode[smkeys[j]], "TRAIN"));
           } else if (smkeys[j] == 3) {
-            trips[i].co2 += FootprintHelper.getFootprintRaw(trips[i].mode[smkeys[j]], "BUS");
+            trips[i].co2 += roundCarbon(FootprintHelper.getFootprintRaw(trips[i].mode[smkeys[j]], "BUS"));
           }
         }
         // Formatting for display
         trips[i].distance = mtomiles(trips[i].distance) + " miles";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
-        trips[i].co2 = trips[i].co2 + ' kg CO₂';
+        trips[i].co2 = trips[i].co2.toFixed(2) + ' kg CO₂';
       }
       $scope.summaryData.userSummary.recentTrips = trips;
     }
