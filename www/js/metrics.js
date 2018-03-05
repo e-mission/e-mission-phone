@@ -988,6 +988,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         case "CAR":
           return "Driving";
           break;
+        case "BUS":
+          return "Bus";
+          break;
+        case "TRAIN":
+          return "Train";
+          break;
         default:
           console.log("Unknown mode of transportation: " + m);
           return m;
@@ -1040,7 +1046,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         // Formatting for display
         trips[i].distance = mtomiles(trips[i].distance) + " miles";
         trips[i].mode = "img/mode" + sensed_mode + ".png";
-        trips[i].co2 = trips[i].co2 + ' kg CO₂';
+        trips[i].co2 = trips[i].co2.toFixed(2) + ' kg CO₂';
       }
       $scope.summaryData.userSummary.recentTrips = trips;
     }
