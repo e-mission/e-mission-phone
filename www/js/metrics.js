@@ -728,6 +728,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //$scope.carbonData.userCarbon = [];
         for (var i in userCarbonData) {
           //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
+          var mode = userCarbonData[i].key;
             if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
               $scope.carbonData.userCarbon += FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
               $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
@@ -742,6 +743,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         if (twoWeeksAgoDistance) {
           var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
           for (var i in userCarbonData) {
+            var mode = userCarbonData[i].key;
             if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
               twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
               twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
