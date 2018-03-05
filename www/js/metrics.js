@@ -572,7 +572,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
         $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
         $scope.summaryData.userSummary.recentTrips = [];
-        getRecentTrips()
+        getRecentTrips(3);
         $scope.chartDataUser.duration = userDuration? userDuration : [];
         $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
         $scope.chartDataUser.count = userCount? userCount : [];
@@ -981,7 +981,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return maxTripMethod;
     }
 
-    var getRecentTrips = function(numTrips = 3) {
+    var getRecentTrips = function(numTrips) {
       var now = moment().utc();
       var twoDaysAgo = moment().utc().subtract(7, 'd');
       CommHelper.getRawEntries(['analysis/cleaned_section', 'analysis/cleaned_trip'], moment2Timestamp(twoDaysAgo), moment2Timestamp(now))
@@ -1192,8 +1192,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   })
 
   $scope.linkToMaps = function() {
-    let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
-    let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
+    var start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
+    var destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
     if(ionic.Platform.isIOS()){
       if (mode === 'bike') {
