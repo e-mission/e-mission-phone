@@ -102,7 +102,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
   dh.isDraft = function(tripgj) {
-    if (tripgj.data.features.length == 3 && 
+    if (tripgj.data.features.length == 3 &&
       tripgj.data.features[2].features[0].properties.feature_type == "section" &&
       tripgj.data.features[2].features[0].properties.sensed_mode == "MotionTypes.UNPROCESSED") {
         return true;
@@ -151,7 +151,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
   dh.getFormattedDistance = function(dist_in_meters) {
     if (dist_in_meters > 1000) {
-      return (dist_in_meters/1000).toFixed(0);
+      return (dist_in_meters/1000).toFixed(3);
     } else {
       return (dist_in_meters/1000).toFixed(3);
     }
@@ -493,12 +493,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
      * (e.g. `T_DATA_PUSHED`), while the remote transitions have an integer
      * (e.g. `2`).
      * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286338606
-     * 
+     *
      * Also, at least on iOS, it is possible for trip end to be detected way
      * after the end of the trip, so the trip end transition of a processed
      * trip may actually show up as an unprocessed transition.
      * See https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-286279163
-     * 
+     *
      * Let's abstract this out into our own minor state machine.
      */
     var transition2Trip = function(transitionList) {
@@ -507,8 +507,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         var currStartTransitionIndex = -1;
         var currEndTransitionIndex = -1;
         var processedUntil = 0;
-       
-        while(processedUntil < transitionList.length) { 
+
+        while(processedUntil < transitionList.length) {
           // Logger.log("searching within list = "+JSON.stringify(transitionList.slice(processedUntil)));
           if(inTrip == false) {
               var foundStartTransitionIndex = transitionList.slice(processedUntil).findIndex(isStartingTransition);
@@ -533,7 +533,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                   Logger.log("currEndTransitionIndex = "+currEndTransitionIndex);
                   Logger.log("Unprocessed trip starting at "+JSON.stringify(transitionList[currStartTransitionIndex])+" ends at "+JSON.stringify(transitionList[currEndTransitionIndex]));
                   tripList.push([transitionList[currStartTransitionIndex],
-                                 transitionList[currEndTransitionIndex]])  
+                                 transitionList[currEndTransitionIndex]])
                   inTrip = false;
               }
           }
@@ -556,7 +556,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var isEndingTransition = function(transWrapper) {
         // Logger.log("isEndingTransition: transWrapper.data.transition = "+transWrapper.data.transition);
         if(transWrapper.data.transition == 'T_TRIP_ENDED' ||
-            transWrapper.data.transition == 'local.transition.stopped_moving' || 
+            transWrapper.data.transition == 'local.transition.stopped_moving' ||
             transWrapper.data.transition == 2) {
             // Logger.log("Returning true");
             return true;
@@ -708,7 +708,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
          endTs: tripEndTransition.data.ts
       }
       Logger.log("About to pull location data for range "
-        + moment.unix(tripStartTransition.data.ts).toString() + " -> " 
+        + moment.unix(tripStartTransition.data.ts).toString() + " -> "
         + moment.unix(tripEndTransition.data.ts).toString());
       return UnifiedDataLoader.getUnifiedSensorDataForInterval("background/filtered_location", tq).then(function(locationList) {
           if (locationList.length == 0) {
@@ -716,7 +716,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           }
           var sortedLocationList = locationList.sort(tsEntrySort);
           var retainInRange = function(loc) {
-            return (tripStartTransition.data.ts <= loc.data.ts) && 
+            return (tripStartTransition.data.ts <= loc.data.ts) &&
                     (loc.data.ts <= tripEndTransition.data.ts)
           }
 
@@ -779,15 +779,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        * from the last processed trip until the end of the day. But now we
        * need to figure out which timezone we need to use for the end of the
        * day.
-       * 
+       *
        * I think that it should be fine to use the current timezone.
-       * 
+       *
        * Details: https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284284382
        * One problem with simply querying for transactions after this is
        * that sometimes we skip trips in the cleaning phase because they are
        * spurious. So if we have already processed this day but had a
        * spurious trip after the last real trip, it would show up again.
-       * 
+       *
        * We deal with this by ensuring that this is called iff we are beyond
        * the end of the processed data.
        *
@@ -835,7 +835,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 // to one another is fairly simple, but we need to link the
                 // first unprocessed trip to the last processed trip.
                 // This might be challenging if we don't have any processed
-                // trips for the day. I don't want to go back forever until 
+                // trips for the day. I don't want to go back forever until
                 // I find a trip. So if this is the first trip, we will start a
                 // new chain for now, since this is with unprocessed data
                 // anyway.
@@ -1084,4 +1084,3 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     return timeline;
   })
-

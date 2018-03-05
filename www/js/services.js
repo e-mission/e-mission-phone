@@ -66,6 +66,25 @@ angular.module('emission.services', ['emission.plugin.logger'])
       });
     };
 
+    this.setUsername = function(username) {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/setUsername/"+username, msgFiller, resolve, reject);
+      })
+    };
+
+    this.getUsername = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            //do nothing
+        };
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/getUsername", msgFiller, resolve, reject);
+      })
+    };
+
+
     this.getMetrics = function(timeType, metrics_query) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
@@ -75,6 +94,24 @@ angular.module('emission.services', ['emission.plugin.logger'])
         };
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
       })
+    };
+
+    this.getSuggestion = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion", msgFiller, resolve, reject);
+      });
+    };
+
+    this.getLeaderBoard = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/listOfUsers", msgFiller, resolve, reject)
+      });
     };
 
     this.getIncidents = function(start_ts, end_ts) {
@@ -177,7 +214,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
           var remoteResult = [];
           var remoteError = null;
-      
+
           var localPromiseDone = false;
           var remotePromiseDone = false;
 

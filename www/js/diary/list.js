@@ -6,10 +6,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'angularLocalStorage',
+                                      'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
-.controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    $ionicScrollDelegate, $ionicPopup,
+.controller("DiaryListCtrl", function($window, $scope, $stateParams, $rootScope, $ionicPlatform, $state,
+                                    $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     ionicDatePicker,
@@ -35,6 +36,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   $scope.$on('$ionicView.afterEnter', function() {
+    ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(
+        function() {
+            console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+        });
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
@@ -50,7 +55,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
   });
 
-  readAndUpdateForDay(moment().startOf('day'));
+  if ($stateParams.date) {
+    readAndUpdateForDay($stateParams.date);
+  } else {
+    readAndUpdateForDay(moment().startOf('day'));
+  }
 
   angular.extend($scope, {
       defaults: {
@@ -275,7 +284,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
+    $scope.getFormattedDistance = function(v) { //converts m to miles
+      return Math.round(v / 1609.34 * 100) / 100;
+    };
     $scope.getSectionDetails = DiaryHelper.getSectionDetails;
     $scope.getFormattedTime = DiaryHelper.getFormattedTime;
     $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
@@ -358,12 +369,31 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from                                  
+      $scope.startTime = moment().utc()
+      // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
       checkDiaryTutorialDone();
     });
+
+    $scope.$on('$ionicView.leave',function() {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    });
+
+    $ionicPlatform.on("pause", function() {
+      if ($state.$current == "root.main.diary.list") {
+        var timeOnPage = moment().utc() - $scope.startTime;
+        ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+      }
+    })
+
+    $ionicPlatform.on("resume", function() {
+      if ($state.$current == "root.main.diary.list") {
+        $scope.startTime = moment().utc()
+      }
+    })
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
@@ -391,7 +421,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -403,7 +433,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {

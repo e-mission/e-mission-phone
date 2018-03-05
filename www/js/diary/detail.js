@@ -2,10 +2,12 @@
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'angularLocalStorage',
                                       'emission.services', 'emission.plugin.logger',
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
+                                        $ionicPlatform, ClientStats,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
@@ -15,6 +17,14 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   angular.extend($scope.mapCtrl, {
     defaults : {
     }
+  });
+  $scope.$on('$ionicView.enter',function(){
+    $scope.startTime = moment().utc()
+    ClientStats.addEvent(ClientStats.getStatKeys().EXPANDED_TRIP).then(
+      function() {
+        console.log("Added "+ClientStats.getStatKeys().EXPANDED_TRIP+" event");
+      }
+    );
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
@@ -65,6 +75,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+
+  $scope.getFormattedDistanceInMiles = function(input) {
+    return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
+  }
 
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
@@ -160,11 +174,29 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from 
+    // Workaround from
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
     checkDetailTutorialDone();
   });
+
+  $scope.$on('$ionicView.leave',function() {
+    var timeOnPage = moment().utc() - $scope.startTime;
+    ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+  });
+
+  $ionicPlatform.on("pause", function() {
+    if ($state.$current == "root.main.diary.detail") {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    }
+  })
+
+  $ionicPlatform.on("resume", function() {
+    if ($state.$current == "root.main.diary.detail") {
+      $scope.startTime = moment().utc()
+    }
+  })
   /* END: ng-walkthrough code */
 })

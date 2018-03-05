@@ -1,7 +1,8 @@
 'use strict';
 
 angular.module('emission.survey.launch', ['emission.services',
-                    'emission.plugin.logger'])
+                    'emission.plugin.logger',
+                    'emission.stats.clientstats'])
 
 .factory('SurveyLaunch', function($http, $cordovaInAppBrowser, $ionicPopup, $rootScope,
     CommHelper, Logger) {
@@ -54,19 +55,18 @@ angular.module('emission.survey.launch', ['emission.services',
             $cordovaInAppBrowser.executeScript({ code: fmtTimeCodeString });
           });
     };
-    
+
 
     // BEGIN: startSurveyForCompletedTrip
-
-    // Put the launch in one place so that 
+    // Put the launch in one place so that
     surveylaunch.options = {
         location: window.cordova.platformId == 'ios'? 'no' : 'yes',
         clearcache: 'no',
-        toolbar: 'yes',
+        toolbar: 'no',
         hideurlbar: 'yes'
     };
 
-    surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId, 
+    surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId,
                                                          startTsElementId,
                                                          endTsElementId,
                                                          startFmtTimeElementId,
@@ -116,19 +116,21 @@ angular.module('emission.survey.launch', ['emission.services',
           .then(function(event) {
             console.log("successfully opened page with result "+JSON.stringify(event));
             // success
-            replace_uuid(uuidElementId)
-            .catch(function(error) {
-              $ionicPopup.alert({"template": "Relaunching survey - while replacing uuid, got error "+ JSON.stringify(error)})
-              .then(function() {
-                surveylaunch.startSurvey(url, uuidElementId);
-              });
-            });
+            //replace_uuid(uuidElementId)
           })
           .catch(function(event) {
             // error
           });
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));
+      });
+      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
+        console.log("stopped loading, event = "+JSON.stringify(event));
+        if (String(event.url).includes('formResponse')) {
+            $cordovaInAppBrowser.close();
+        }
+        replace_uuid(uuidElementId);
+        console.log("succesfully replaced UUIDs")
         /*
         if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
             $cordovaInAppBrowser.close();
@@ -144,6 +146,10 @@ angular.module('emission.survey.launch', ['emission.services',
 
     surveylaunch.init = function() {
       $rootScope.$on('cloud:push:notification', function(event, data) {
+        ClientStats.addEvent(ClientStats.getStatKeys().NOTIFICATION_OPEN).then(
+            function() {
+                console.log("Added "+ClientStats.getStatKeys().NOTIFICATION_OPEN+" event");
+              });
         Logger.log("data = "+JSON.stringify(data));
         if (angular.isDefined(data.additionalData) &&
             angular.isDefined(data.additionalData.payload) &&
@@ -179,7 +185,7 @@ angular.module('emission.survey.launch', ['emission.services',
                     startSurvey();
                 }, function () {
                     // error
-                }); 
+                });
               }
             }]
         });

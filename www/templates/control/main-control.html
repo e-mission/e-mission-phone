@@ -1,8 +1,12 @@
-<ion-view view-title="Profile" ng-class="ionViewBackgroundClass()">
+<ion-view view-title="Settings" ng-class="ionViewBackgroundClass()">
   <ion-content>
     <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text">Username: {{settings.username}}</div>
+      <div ng-click="showUsernamePopup()" id ="switch-user" class="control-icon-button"><i class="icon ion-edit"></i></div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text">Tracking</div>

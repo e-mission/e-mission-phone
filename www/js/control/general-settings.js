@@ -1,5 +1,4 @@
 'use strict';
-
 angular.module('emission.main.control',['emission.services',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
@@ -79,7 +78,7 @@ angular.module('emission.main.control',['emission.services',
             // config not loaded when loading ui, set default as false
             // TODO: Read the value if it is not defined.
             // Otherwise, don't we have a race with reading?
-            // we don't really $apply on this field... 
+            // we don't really $apply on this field...
             return false;
         } else {
             return isMediumAccuracy;
@@ -105,6 +104,38 @@ angular.module('emission.main.control',['emission.services',
             $state.reload();
         }
     }
+    $scope.showUsernamePopup = function() {
+    $scope.data = {};
+
+    var usernamePopup = $ionicPopup.show({
+      template: '<input type="userEmail" ng-model="data.wifi">',
+      title: 'Create a new username/Edit your username (no spaces allowed)',
+      scope: $scope,
+      buttons: [
+        {
+          text: '<b>Save</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            if (!$scope.data.wifi) {
+              //don't allow the user to close unless he enters a username
+              e.preventDefault();
+            } else {
+              if ($scope.data.wifi.indexOf(' ') >= 0) {
+                e.preventDefault();
+              }
+              return $scope.data.wifi;
+            }
+          }
+        }
+      ]
+    });
+    usernamePopup.then(function(res) {
+      console.log('Tapped!', res);
+      localStorage.setItem("username", res);
+      CommHelper.setUsername(res);
+      $scope.refreshScreen();
+    });
+  };
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
@@ -247,6 +278,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.sync = {};
         $scope.settings.tnotify = {};
         $scope.settings.auth = {};
+        $scope.settings.username = "";
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
           return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
@@ -258,8 +290,21 @@ angular.module('emission.main.control',['emission.services',
         $scope.getTNotifySettings();
         $scope.getEmail();
         $scope.getState();
+        $scope.getUsername();
     };
+    $scope.getUsername = function() {
+      var username = localStorage.getItem('username');
+      if (username != null) {
+        $scope.settings.username = username;
+      } else {
+        CommHelper.getUsername().then(function(results){
+          $scope.settings.username = results['username'];
+          localStorage.setItem("username", results['username']);
+        });
+      }
 
+
+    };
     $scope.returnToIntro = function() {
       var testReconsent = false
       if (testReconsent) {
@@ -450,11 +495,10 @@ angular.module('emission.main.control',['emission.services',
     }
 
     var prepopulateMessage = {
-      message: 'Join me in making transportation greener and healthier \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Emission - UC Berkeley Research Project', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
+      subject: 'Join the TripAware study!', // fi. for email
+      url: 'https://tripaware.eecs.berkeley.edu'
     }
-
     $scope.share = function() {
         window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true

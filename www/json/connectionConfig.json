@@ -1,0 +1,16 @@
+{
+    "connectUrl": "http://tripaware.eecs.berkeley.edu",
+    "isSkipAuth": false,
+    "android": {
+        "auth": {
+            "method": "dummy-dev",
+            "clientID": "ignored"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "dummy-dev",
+            "clientID": "ignored"
+        }
+    }
+}

@@ -5,8 +5,9 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
 .factory('FootprintHelper', function() {
   var fh = {};
   var footprint = {
-    train: 92/1609,
-    car: 287/1609,
+    TRAIN: 92/1609,
+    CAR: 287/1609,
+    BUS: 3/4 * 287/1609,
     ON_FOOT: 0,
     BICYCLING: 0
   }
@@ -18,14 +19,14 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
   }
   fh.getFootprintRaw = function(distance, mode) {
     if (mode === "IN_VEHICLE") {
-      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
+      return [footprint.TRAIN * mtokm(distance), footprint.CAR * mtokm(distance)];
     } else {
-      return footprint[mode] * mtokm(distance);
+      return [footprint[mode] * mtokm(distance), footprint[mode] * mtokm(distance)];
     }
   }
   fh.getFootprint = function(distance, mode) {
     if (mode === "IN_VEHICLE") {
-      return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
+      return readable(footprint.TRAIN * mtokm(distance)) + ' ~ ' + readable(footprint.CAR * mtokm(distance));
     } else {
       return readable(footprint[mode] * mtokm(distance));
     }
@@ -35,7 +36,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
 
 .factory('CalorieCal', function(storage){
 
-  var cc = {}; 
+  var cc = {};
   cc.set = function(info) {
     for(var key in info){
       storage.set(key, info[key])
