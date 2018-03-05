@@ -300,6 +300,12 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var moment2Timestamp = function(momentObj) {
       return momentObj.unix();
     }
+    var readable = function(v) {
+      if (typeof v === 'string') {
+        return "0 kg CO₂";
+      }
+      return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
+    }
 
     $scope.data = [];
 
@@ -722,12 +728,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //$scope.carbonData.userCarbon = [];
         for (var i in userCarbonData) {
           //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-          $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
+          $scope.carbonData.userCarbon += FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
           $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
           $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
           lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
           }
         }
+        $scope.carbonData.userCarbon = readable($scope.carbonData.userCarbon)
 
       if (first) {
         if (twoWeeksAgoDistance) {
