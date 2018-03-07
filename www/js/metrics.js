@@ -725,6 +725,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
         $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
+        $scope.carbonData.userCarbon = 0;
         //$scope.carbonData.userCarbon = [];
         for (var i in userCarbonData) {
           //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
@@ -742,19 +743,20 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       if (first) {
         if (twoWeeksAgoDistance) {
           var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
+          twoWeeksAgoCarbon = 0;
           for (var i in userCarbonData) {
             var mode = userCarbonData[i].key;
             if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
-              twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-              twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
+              twoWeeksAgoCarbon += FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
+              //twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
               if(first){
-                lastWeekCarbon = twoWeeksAgoCarbon;
+                lastWeekCarbon = readable(twoWeeksAgoCarbon);
                 if (lastWeekCarbon.includes("NaN")) {
                   lastWeekCarbon = "0 kg CO₂";
                 }
               }
             }
-              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
+              $scope.carbonData.lastWeekUserCarbon = readable(lastWeekCarbon);
           }
         }
       }
