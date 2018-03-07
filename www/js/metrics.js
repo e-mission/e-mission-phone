@@ -300,12 +300,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var moment2Timestamp = function(momentObj) {
       return momentObj.unix();
     }
-    var readable = function(v) {
-      if (typeof v === 'string') {
-        return "0 kg CO₂";
-      }
-      return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
-    }
 
     $scope.data = [];
 
@@ -448,7 +442,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.carbonData.aggrCarbon = "Calculating...";
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
       $scope.carbonData.worstCarbon = "0 kg CO₂";
-      $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
+      $scope.carbonData.changeFromLastWeekCarbon = "0 kg CO₂";
       $scope.carbonData.changeInPercentage = "0%";
       $scope.carbonData.change = " change";
 
@@ -725,8 +719,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
         $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
+        $scope.carbonData.userCarbon = 0;
         //$scope.carbonData.userCarbon = [];
-        for (var i in userCarbonData) {
+        for (var i = 0; i < userCarbonData.length; i++) {
           //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
           var mode = userCarbonData[i].key;
             if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
@@ -737,25 +732,22 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
             }
           }
         }
-        $scope.carbonData.userCarbon = readable($scope.carbonData.userCarbon)
 
       if (first) {
         if (twoWeeksAgoDistance) {
           var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-          for (var i in userCarbonData) {
+          twoWeeksAgoCarbon = 0;
+          for (var i = 0; i < userCarbonData.length; i++) {
             var mode = userCarbonData[i].key;
             if (mode === "CAR" || mode === "IN_VEHICLE" || mode === "BUS" || mode === "TRAIN") {
-              twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-              twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-              if(first){
-                lastWeekCarbon = twoWeeksAgoCarbon;
-                if (lastWeekCarbon.includes("NaN")) {
-                  lastWeekCarbon = "0 kg CO₂";
-                }
-              }
+              twoWeeksAgoCarbon += FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
             }
-              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
           }
+          $scope.carbonData.changeFromLastWeekCarbon = readable($scope.carbonData.userCarbon - twoWeeksAgoCarbon);
+          if (!$scope.carbonData.changeFromLastWeekCarbon.includes("-")) {
+            $scope.carbonData.changeFromLastWeekCarbon = "+" + $scope.carbonData.changeFromLastWeekCarbon;
+          }
+          $scope.carbonData.userCarbon = readable($scope.carbonData.userCarbon);
         }
       }
 
@@ -782,6 +774,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
       }
    };
+
+   var readable = function(v) {
+    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
+    }
 
    $scope.fillFootprintAggVals = function(aggDistance) {
       if (aggDistance) {
@@ -973,10 +969,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var getTotalDistance = function(distances) {
         var totalDist = 0;
         for (var i = 0; i < distances.length; i++) {
-          var distVal = parseInt(distances[i].values);
+          var distVal = parseFloat(distances[i].values);
           totalDist += distVal;
         }
-        return mtomiles(totalDist) + " miles";
+        var totalDist = Math.round(totalDist);
+        return kmtomiles(totalDist) + " miles";
     }
 
     var getFavoriteMode = function(tripCounts) {
@@ -1077,6 +1074,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var mtomiles = function(v) {
       return Math.round(v / 1609.34 * 100) / 100;
+    }
+
+    var kmtomiles = function(v) {
+      return Math.round(v * 0.621371);
     }
 
     var roundCarbon = function(val) {
