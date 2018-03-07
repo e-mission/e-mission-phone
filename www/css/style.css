@@ -1958,7 +1958,7 @@ div.bear-wrapper div.bear-char p.truncate {
 
 div.bear-wrapper div.bear-char {
   position: absolute;
-  top: 640px;
+  top: -1000px;
   left: 280px;
 }
 
