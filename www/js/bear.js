@@ -12,13 +12,12 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
   var leftPad;
   var totalSize;
   $scope.$on('$ionicView.enter', function() {
-    $scope.$apply(function () {
-      $scope.myBear = {};
-      $scope.otherBears = [];
-      $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
-      CommHelper.getPolarBears().then(function(response) {
-        $scope.myBear = response.myBear;
-        totalSize = parseFloat($scope.myBear['size']);
+    var newMyBear = {};
+    var newOtherBears = [];
+    $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
+    CommHelper.getPolarBears().then(function(response) {
+        newMyBear = response.myBear;
+        totalSize = parseFloat(newMyBear['size']);
         for (var key in response.otherBears) {
           totalSize += parseFloat(response.otherBears[key]['size']);
         }
@@ -26,17 +25,17 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
         if (scale > 80) {
           scale = 80;
         }
-        $scope.myBear['left'] = 260;
-        $scope.myBear['top'] = 616 - (0.824 * response.myBear['size'] * scale * 325/400) + 0.824 * 80 * 325/400;
-        $scope.myBear['size'] = response.myBear.size * scale;
-        if (parseFloat($scope.myBear['happiness']) > 0.5) {
-          $scope.myBear['img'] = "happybear.gif";
-        } else if (parseFloat($scope.myBear['happiness']) > -0.5) {
-          $scope.myBear['img'] = "neutralbear.gif";
+        newMyBear['left'] = 260;
+        newMyBear['top'] = 616 - (0.824 * response.myBear['size'] * scale * 325/400) + 0.824 * 80 * 325/400;
+        newMyBear['size'] = response.myBear.size * scale;
+        if (parseFloat(newMyBear['happiness']) > 0.5) {
+          newMyBear['img'] = "happybear.gif";
+        } else if (parseFloat(newMyBear['happiness']) > -0.5) {
+          newMyBear['img'] = "neutralbear.gif";
         } else {
-          $scope.myBear['img'] = "sadbear.gif";
+          newMyBear['img'] = "sadbear.gif";
         }
-        var leftPad = $scope.myBear['left'] + $scope.myBear['size'] + 5;
+        var leftPad = newMyBear['left'] + newMyBear['size'] + 5;
         for (var key in response.otherBears) {
           response.otherBears[key]['left'] = leftPad;
           leftPad = leftPad + response.otherBears[key]['size'] * scale + 5;
@@ -57,13 +56,16 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
             response.otherBears[key]['hidden'] = false;
             response.otherBears[key]['truncate'] = true;
           }
-          $scope.otherBears.push(response.otherBears[key]);
+          newOtherBears.push(response.otherBears[key]);
         }
+        $scope.$apply(function() {
+          $scope.myBear = newMyBear;
+          $scope.otherBears = newOtherBears;
+        })
       }, function(error) {
           console.log(error);
           console.log("Failed");
       });
-    });
     ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
         function() {
             console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
