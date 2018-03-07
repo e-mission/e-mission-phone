@@ -12,11 +12,11 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
   var leftPad;
   var totalSize;
   $scope.$on('$ionicView.enter', function() {
-    $scope.$apply(function () {
-      $scope.myBear = {};
-      $scope.otherBears = [];
-      $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
-      CommHelper.getPolarBears().then(function(response) {
+    $scope.myBear = {};
+    $scope.otherBears = [];
+    $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
+    CommHelper.getPolarBears().then(function(response) {
+      $scope.$apply(function () {
         $scope.myBear = response.myBear;
         totalSize = parseFloat($scope.myBear['size']);
         for (var key in response.otherBears) {
@@ -59,11 +59,11 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepic
           }
           $scope.otherBears.push(response.otherBears[key]);
         }
+      })
       }, function(error) {
           console.log(error);
           console.log("Failed");
       });
-    });
     ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
         function() {
             console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
