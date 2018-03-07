@@ -975,10 +975,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var getTotalDistance = function(distances) {
         var totalDist = 0;
         for (var i = 0; i < distances.length; i++) {
-          var distVal = parseInt(distances[i].values);
+          var distVal = parseFloat(distances[i].values);
           totalDist += distVal;
         }
-        return mtomiles(totalDist) + " miles";
+        var totalDist = Math.round(totalDist);
+        return kmtomiles(totalDist) + " miles";
     }
 
     var getFavoriteMode = function(tripCounts) {
@@ -1079,6 +1080,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var mtomiles = function(v) {
       return Math.round(v / 1609.34 * 100) / 100;
+    }
+
+    var kmtomiles = function(v) {
+      return Math.round(v * 0.621371);
     }
 
     var roundCarbon = function(val) {
