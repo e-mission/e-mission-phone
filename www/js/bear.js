@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('emission.main.bear',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.stats.clientstats','angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.bear',['nvd3', 'emission.services', 'emission.stats.clientstats', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.stats.clientstats','angularLocalStorage', 'emission.plugin.logger'])
 
 .controller('BearCtrl', function($scope, $ionicPlatform, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, $ionicPopup,
+                                    CommHelper, $window, $ionicPopup, ClientStats,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http, Logger) {
   $scope.myBear = {};
