@@ -1167,6 +1167,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   $scope.$on('$ionicView.enter',function(){
     $scope.startTime = moment().utc()
+    CommHelper.updateUser({
+      client: "urap-2017-control"
+    });
     ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
         function() {
             console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
