@@ -12,13 +12,12 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
     UpdateCheck, StartPrefs, PushNotify,
     LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
-
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
         + " to "+JSON.stringify(toState));

@@ -84,13 +84,13 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.login = function() {
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
-      CommHelper.updateUser({
-        client: "urap-2017-information"
-      });
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
+        CommHelper.updateUser({
+          client: "urap-2017-control"
+        });
         if (localStorage.getItem('username') != null) {
           $scope.finish();
         } else {
