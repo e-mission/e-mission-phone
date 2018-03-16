@@ -12,6 +12,9 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'emission.stat
   var leftPad;
   var totalSize;
   $scope.$on('$ionicView.enter', function() {
+    CommHelper.updateUser({
+      client: "urap-2017-emotion"
+    });
     var newMyBear = {};
     var newOtherBears = [];
     $ionicScrollDelegate.$getByHandle('bearScroller').scrollTo(100, 300);
