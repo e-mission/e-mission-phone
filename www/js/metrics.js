@@ -412,6 +412,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $ionicLoading.show({
         template: '<ion-spinner icon="spiral"></ion-spinner>'
       });
+      CommHelper.updateUser({
+        client: "urap-2017-information"
+      });
       if(!first){
         $scope.uictrl.current = "Custom";
       }

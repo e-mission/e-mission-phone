@@ -4,7 +4,7 @@ angular.module('emission.survey.launch', ['emission.services',
                     'emission.plugin.logger',
                      'emission.stats.clientstats'])
 
-.factory('SurveyLaunch', function($http, $cordovaInAppBrowser, $ionicPopup, $rootScope,
+.factory('SurveyLaunch', function($http, $cordovaInAppBrowser, $ionicPopup, $rootScope, ClientStats,
     CommHelper, Logger) {
 
     var surveylaunch = {};
