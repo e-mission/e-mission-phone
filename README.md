@@ -77,6 +77,12 @@ cp www/json/setupConfig.json.sample www/json/setupConfig.json
 cp ..... www/json/connectionConfig.json
 ```
 
+Restore cordova platforms and plugins
+
+```
+$ cordova prepare
+```
+
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ cordova emulate ios
