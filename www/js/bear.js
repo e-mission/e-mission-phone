@@ -86,4 +86,8 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'emission.stat
           console.log("Failed");
       })
   };
+
+  $scope.openFaq = function() {
+    $window.open('https://tripaware.eecs.berkeley.edu/faq/faq2.html', '_blank');
+  }
 });
