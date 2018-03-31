@@ -1206,6 +1206,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     getMetrics();
   }
 
+  $scope.openFaq = function() {
+    $window.open('https://tripaware.eecs.berkeley.edu/faq/faq3.html', '_blank');
+  }
+
   $scope.$on('$ionicView.enter',function(){
     $scope.startTime = moment().utc()
     ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
