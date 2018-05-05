@@ -193,7 +193,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'red',};
+    "icon ion-speedometer":'purple',
+    "icon ion-android-bus": "purple",
+    "icon ion-android-train": "navy",
+    "icon ion-android-car": "salmon",
+    "icon ion-plane": "red"};
       return { color: colors[mode] };
     }
 

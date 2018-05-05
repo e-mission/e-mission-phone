@@ -24,7 +24,21 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
           "clearNotifications": true
         }
       });
-      push.on('notification', (data) => {
+      push.on('notification', function(data) {
+        if ($ionicPlatform.is('ios')) {
+            // Parse the iOS values that are returned as strings
+            if(angular.isDefined(data) &&
+               angular.isDefined(data.additionalData)) {
+               if(angular.isDefined(data.additionalData.payload)) {
+                  data.additionalData.payload = JSON.parse(data.additionalData.payload);
+               }
+               if(angular.isDefined(data.additionalData.data)) {
+                  data.additionalData.data = JSON.parse(data.additionalData.data);
+               }
+            } else {
+                Logger.log("No additional data defined, nothing to parse");
+            }
+        }
         $rootScope.$emit(pushnotify.CLOUD_NOTIFICATION_EVENT, data);
       });
     }
@@ -32,12 +46,12 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
     pushnotify.registerPromise = function() {
         return new Promise(function(resolve, reject) {
             pushnotify.startupInit();
-            push.on("registration", (data) => {
+            push.on("registration", function(data) {
                 console.log("Got registration " + data);
                 resolve({token: data.registrationId,
                          type: data.registrationType});
             });
-            push.on("error", (error) => {
+            push.on("error", function(error) {
                 console.log("Got push error " + error);
                 reject(error);
             });
@@ -81,7 +95,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
           return;
         }
         Logger.log("Platform is ios, calling handleSilentPush on DataCollection");
-        var notId = data.message.payload.notId;
+        var notId = data.additionalData.payload.notId;
         var finishErrFn = function(error) {
             Logger.log("in push.finish, error = "+error);
         };
@@ -122,9 +136,8 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
 
     pushnotify.registerNotificationHandler = function() {
       $rootScope.$on(pushnotify.CLOUD_NOTIFICATION_EVENT, function(event, data) {
-        var msg = data.message;
         Logger.log("data = "+JSON.stringify(data));
-        if (data.raw.additionalData["content-available"] == 1) {
+        if (data.additionalData["content-available"] == 1) {
            redirectSilentPush(event, data);
         }; // else no need to call finish
       });
