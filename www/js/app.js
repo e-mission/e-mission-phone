@@ -50,15 +50,18 @@ angular.module('emission', ['ionic',
     // Configure the connection settings
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
+        if(connectionConfig.data.length == 0) {
+            throw "blank string instead of missing file on dynamically served app";
+        }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
-        Logger.log("error "+err+" while reading connection config, reverting to defaults");
+        Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
-            Logger.log("defaultConfig = "+defaultConfig);
+            Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
-            Logger.log("error "+err+" reading or setting defaults, giving up");
+            Logger.log("error "+JSON.stringify(err)+" reading or setting defaults, giving up");
         });
     });
   });
@@ -67,6 +70,7 @@ angular.module('emission', ['ionic',
 
 .config(function($stateProvider, $urlRouterProvider) {
   console.log("Starting config");
+  // alert("config");
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
