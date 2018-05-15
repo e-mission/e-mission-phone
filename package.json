@@ -2,6 +2,13 @@
   "name": "edu.berkeley.eecs.emission",
   "version": "2.5.0",
   "displayName": "emission",
+  "scripts": {
+    "setup": "./bin/download_settings_controls.js",
+    "serve": "phonegap --verbose serve"
+  },
+  "devDependencies": {
+    "phonegap": "7.1.1"
+  },
   "cordova": {
     "platforms": [
       "ios",

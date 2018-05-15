@@ -5,6 +5,120 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
+Updating the UI only
+---
+If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
+
+### Installation
+1. Install the most recent release of the em-devapp (https://github.com/e-mission/e-mission-devapp)
+
+1. Get the current version of the phone UI code
+
+    1. Fork this repo using the github UI
+
+    1. Clone your fork
+
+    ```
+    $ git clone <your repo URL>
+    ```
+
+    ```
+    $ cd e-mission-phone
+    ```
+    
+1. Create a remote to pull updates from upstream
+
+    ```
+    $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
+    ```
+
+1. Install all required node modules 
+
+    ```
+    $ npm install
+    ```
+ 1. Install javascript dependencies
+ 
+    ```
+    $ bower install
+    ```
+    
+1. Configure values if necessary - e.g.
+
+    ```
+    $ ls www/json/*.sample
+    $ cp www/json/setupConfig.json.sample www/json/setupConfig.json
+    $ cp ..... www/json/connectionConfig.json
+    ```
+  
+1. Run the setup script
+
+    ```
+    $ npm run setup
+    > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
+    > ./bin/download_settings_controls.js
+
+    Sync collection settings updated
+    Data collection settings updated
+    Transition notify settings updated
+    ```
+  
+### Running
+
+1. Start the phonegap deployment server and note the URL(s) that the server is listening to.
+
+    ```
+    $ npm run serve
+    ....
+    [phonegap] listening on 10.0.0.14:3000
+    [phonegap] listening on 192.168.162.1:3000
+    [phonegap]
+    [phonegap] ctrl-c to stop the server
+    [phonegap]
+    ....
+    ```
+  
+1. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
+1. The app will now display the version of e-mission app that is in your local directory
+  1. The console logs will be displayed back in the server window (prefaced by `[console]`)
+  1. Breakpoints can be added by connecting through the browser
+    - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
+    - Chrome: chrome://inspect -> Remote target (emulator)
+    
+**Ta-da!** If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app.
+
+**Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
+
+**Note2**: You see errors about plugins (e.g. `Failed to restore plugin "edu.berkeley.eecs.emission.cordova.transitionnotify" from config.xml. You might need to try adding it again. Error: TypeError: Cannot read property 'fail' of undefined`). This is not an issue, since the plugins are already in the devapp. But if they are bothering you, start the server using `$ ./node_modules/.bin/phonegap serve` instead.
+
+
+End to end testing
+---
+A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
+
+1. installing a local server,
+2. running it, 
+3. loading it with test data, and
+4. running analysis on it
+
+are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
+
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
+
+By default, the phone app connects to the local server (localhost on iOS,
+[10.0.2.2 on
+android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips))
+by default. To connect to a different server, or to use a different
+authentication method, you need to create a `www/json/connectionConfig.json`
+file. You can find sample files for connecting physical devices to the local
+server (`www/json/connectionConfig.physical_device2localhost.json.sample`), and
+to production (www/json/connectionConfig.production.json.sample).
+
+So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+
+Updating the e-mission-* plugins or adding new plugins
+---
+
 Installing
 ---
 We are using the ionic v3.19.1 platform, which is a toolchain on top of the apache
@@ -96,50 +210,6 @@ of Android Studio (3.0.1).  The build is significantly faster than iOS, the
 emulator is just as snappy, and the debugger is better since chrome saves logs
 from startup, so you don't have to use tricks like adding alerts to see errors
 in startup.
-
-End to end testing
----
-A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
-
-1. installing a local server,
-2. running it, 
-3. loading it with test data, and
-4. running analysis on it
-
-are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
-
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
-
-By default, the phone app connects to the local server (localhost on iOS,
-[10.0.2.2 on
-android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips))
-by default. To connect to a different server, or to use a different
-authentication method, you need to create a `www/json/connectionConfig.json`
-file. You can find sample files for connecting physical devices to the local
-server (`www/json/connectionConfig.physical_device2localhost.json.sample`), and
-to production (www/json/connectionConfig.production.json.sample).
-
-So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
-
-
-JS Testing
----
-From the root directory run
-
-    $ npm install karma --save-dev
-    $ npm install karma-jasmine karma-chrome-launcher --save-dev
-
-Write tests in www/js/test
-To run tests if you have karma globally set, run 
-
-    $ karma start my.conf.js 
-    
-in the root directory. If you didn't run the -g command, you can run
-tests with 
-
-    $ ./node_modules/karma/bin/karma start
-    
-in the root directory
 
 Troubleshooting
 ---
