@@ -7,12 +7,12 @@ This is the phone component of the e-mission system.
 
 Updating the UI only
 ---
-If you want to make only UI changes, and not modify the existing plugins, add new plugins, etc, you can use the **new and improved** (as of June 2018) e-mission dev app. 
+If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
 
 ### Installation
 1. Install the most recent release of the em-devapp (https://github.com/e-mission/e-mission-devapp)
 
-1. Get the current version of our code
+1. Get the current version of the phone UI code
 
     1. Fork this repo using the github UI
 
@@ -45,37 +45,38 @@ If you want to make only UI changes, and not modify the existing plugins, add ne
     
 1. Configure values if necessary - e.g.
 
-  ```
-  $ ls www/json/*.sample
-  $ cp www/json/setupConfig.json.sample www/json/setupConfig.json
-  $ cp ..... www/json/connectionConfig.json
-  ```
+    ```
+    $ ls www/json/*.sample
+    $ cp www/json/setupConfig.json.sample www/json/setupConfig.json
+    $ cp ..... www/json/connectionConfig.json
+    ```
+  
 1. Run the setup script
 
-  ```
-  $ npm run setup
-  > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
-  > ./bin/download_settings_controls.js
+    ```
+    $ npm run setup
+    > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
+    > ./bin/download_settings_controls.js
 
-  Sync collection settings updated
-  Data collection settings updated
-  Transition notify settings updated
-  ```
+    Sync collection settings updated
+    Data collection settings updated
+    Transition notify settings updated
+    ```
   
 ### Running
 
 1. Start the phonegap deployment server and note the URL(s) that the server is listening to.
 
-  ```
-  $ npm run serve
-  ....
-  [phonegap] listening on 10.0.0.14:3000
-  [phonegap] listening on 192.168.162.1:3000
-  [phonegap]
-  [phonegap] ctrl-c to stop the server
-  [phonegap]
-  ....
-  ```
+    ```
+    $ npm run serve
+    ....
+    [phonegap] listening on 10.0.0.14:3000
+    [phonegap] listening on 192.168.162.1:3000
+    [phonegap]
+    [phonegap] ctrl-c to stop the server
+    [phonegap]
+    ....
+    ```
   
 1. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
 1. The app will now display the version of e-mission app that is in your local directory
@@ -83,9 +84,11 @@ If you want to make only UI changes, and not modify the existing plugins, add ne
   1. Breakpoints can be added by connecting through the browser
     - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
     - Chrome: chrome://inspect -> Remote target (emulator)
-1. If you change any of the files in the `www` directory, the app will automatically be re-loaded (live reload, very cool!)
+    
+**Ta-da!** If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app.
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
+
 **Note2**: You see errors about plugins (e.g. `Failed to restore plugin "edu.berkeley.eecs.emission.cordova.transitionnotify" from config.xml. You might need to try adding it again. Error: TypeError: Cannot read property 'fail' of undefined`). This is not an issue, since the plugins are already in the devapp. But if they are bothering you, start the server using `$ ./node_modules/.bin/phonegap serve` instead.
 
 
