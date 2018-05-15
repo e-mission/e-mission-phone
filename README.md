@@ -211,25 +211,6 @@ emulator is just as snappy, and the debugger is better since chrome saves logs
 from startup, so you don't have to use tricks like adding alerts to see errors
 in startup.
 
-JS Testing
----
-From the root directory run
-
-    $ npm install karma --save-dev
-    $ npm install karma-jasmine karma-chrome-launcher --save-dev
-
-Write tests in www/js/test
-To run tests if you have karma globally set, run 
-
-    $ karma start my.conf.js 
-    
-in the root directory. If you didn't run the -g command, you can run
-tests with 
-
-    $ ./node_modules/karma/bin/karma start
-    
-in the root directory
-
 Troubleshooting
 ---
 
