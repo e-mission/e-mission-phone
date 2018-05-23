@@ -15,3 +15,5 @@ app-settings.json
 www/js/control/collect-settings.js
 www/js/control/sync-settings.js
 www/js/control/transition-notify-settings.js
+config.xml
+package.json
