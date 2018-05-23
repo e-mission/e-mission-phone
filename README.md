@@ -9,6 +9,33 @@ Updating the UI only
 ---
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
 
+### Dependencies
+1. node.js: You probably want to install this using [nvm](https://github.com/creationix/nvm), to ensure that you can pick a particular [version of node](https://github.com/creationix/nvm#usage).
+    ```
+    $ node -v
+    v9.4.0
+    $ npm -v
+    6.0.0
+    ```
+    
+  Make sure that the permissions are set correctly - npm and node need to be owned by `root` or another admin user.
+
+  ```
+  $ which npm
+  /usr/local/bin/npm
+  $ ls -al /usr/local/bin/npm
+  lrwxr-xr-x  1 root  wheel  38 May  8 10:04 /usr/local/bin/npm -> ../lib/node_modules/npm/bin/npm-cli.js
+  $ ls -al /usr/local/lib/node_modules/npm/bin/npm-cli.js
+  -rwxr-xr-x  1 cusgadmin  staff  4295 Oct 26  1985 /usr/local/lib/node_modules/npm/bin/npm-cli.js
+  ```
+  
+2. [bower](https://bower.io/):
+
+  ```
+  $ bower -v
+  1.8.0
+  ```
+
 ### Installation
 1. Install the most recent release of the em-devapp (https://github.com/e-mission/e-mission-devapp)
 
@@ -30,6 +57,12 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 
     ```
     $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
+    ```
+    
+1. Setup the config
+
+    ```
+    $ ./bin/configure_xml_and_json.js serve
     ```
 
 1. Install all required node modules 
@@ -54,7 +87,7 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 1. Run the setup script
 
     ```
-    $ npm run setup
+    $ npm run setup-serve
     > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
     > ./bin/download_settings_controls.js
 
@@ -88,8 +121,6 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 **Ta-da!** If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app.
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
-
-**Note2**: You see errors about plugins (e.g. `Failed to restore plugin "edu.berkeley.eecs.emission.cordova.transitionnotify" from config.xml. You might need to try adding it again. Error: TypeError: Cannot read property 'fail' of undefined`). This is not an issue, since the plugins are already in the devapp. But if they are bothering you, start the server using `$ ./node_modules/.bin/phonegap serve` instead.
 
 
 End to end testing
@@ -153,6 +184,12 @@ Enable platform hooks, including http on iOS9
 
 ```
 $ git clone https://github.com/driftyco/ionic-package-hooks.git ./package-hooks
+```
+
+Setup the config
+
+```
+$ ./bin/configure_xml_and_json.js cordovabuild
 ```
 
 Install all javascript components using bower
