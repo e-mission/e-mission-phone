@@ -3,7 +3,8 @@
   "version": "2.5.0",
   "displayName": "emission",
   "scripts": {
-    "setup": "./bin/download_settings_controls.js && ./bin/configure_with_no_plugins.js",
+    "setup": "./bin/configure_with_plugins.js",
+    "setup-serve": "./bin/download_settings_controls.js && ./bin/configure_with_no_plugins.js",
     "serve": "phonegap --verbose serve"
   },
   "devDependencies": {
