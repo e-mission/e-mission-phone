@@ -13,7 +13,7 @@
         </div>
       </label>
     </div>
-    <!--div class="control-list-item">
+    <div class="control-list-item">
       <div class="control-list-text">Medium accuracy</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
@@ -21,7 +21,7 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div-->
+    </div>
 
 
     <div class="control-list-item">
@@ -41,48 +41,34 @@
       <div class="control-list-text">Share</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
     </div>
-
-    <!--div class="control-list-item">
-      <div class="control-list-text">Download json dump</div>
-      <div ng-click="openDatePicker()" class="control-icon-button">
-        <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
-      </div>
-      <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div-->
-
-    <div class="control-list-item">
-      <div class="control-list-text">Email log</div>
-      <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
-    </div>
-    <div class="control-list-item">
-      <div class="control-list-text">Export User Cache</div>
-      <div ng-click="exportUserCacheDB()" class="control-icon-button"><i class="ion-ios-copy"></i></div>
-    </div>
     <div class="control-list-item">
       <div class="control-list-text">Check for UI updates</div>
       <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
     </div>
 
     <div class="control-list-item">
-      <div class="control-list-text">Set UI channel</div>
-      <div id="channel-field-padding">
-        <label class="item item-input" id="channel-field">
-          <input type="text" name="userName"
-          ng-model="settings.channel"
-          ng-model-options="{ getterSetter: true }" />
-        </label>
+      <div class="control-list-text">Download json dump</div>
+      <div ng-click="openDatePicker()" class="control-icon-button">
+        <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
       </div>
+      <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div> -->
     </div>
 
-    <!--div class="control-list-item" ng-show="userDataSaved()">
+    <div class="control-list-item">
+      <div class="control-list-text">Email log</div>
+      <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
+    </div>
+
+    <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text">User data</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
-    </div-->
+    </div>
     <!-- Begin user data -->
-    <!--div class="" ng-show="userDataExpanded()">
+    <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Erase data</div>
         <div ng-click="eraseUserData()" id="gray" class=" control-icon-button"><i class="ion-trash-b"></i></div>
-      </div> 
+      </div>
       <ion-list>
 
           <ion-item class="row" ng-repeat="entry in userData">
@@ -90,16 +76,16 @@
                 <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.value}}</div>
           </ion-item>
       </ion-list>
-    </div-->
+    </div>
 
 
-    <!--div class="control-list-item">
+    <div class="control-list-item">
       <div class="control-list-text">Developer zone</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
-    </div-->
+    </div>
 
     <!-- Begin developer zone -->
-    <!--div class="" ng-show="collectionExpanded()">
+    <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Refresh</div>
         <div ng-click="refreshScreen()" class="control-icon-button"><i class="ion-refresh"></i></div>
@@ -115,6 +101,12 @@
       <div class="control-list-item">
         <div class="control-list-text">Nuke all buffers and cache</div>
         <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-trash-a"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text">Set UI channel</div>
+        <input type="text" name="userName"
+          ng-model="settings.channel"
+          ng-model-options="{ getterSetter: true }" />
       </div>
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
@@ -170,6 +162,6 @@
         </ion-item>
       </ion-list>
 
-    </div-->
+    </div>
   </ion-content>
 </ion-view>
