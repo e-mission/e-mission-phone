@@ -8,7 +8,8 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
                                  'emission.incident.posttrip.map',
-                                 'emission.services'])
+                                 'emission.services',
+                                 'emission.main.cci-about'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -18,6 +19,16 @@ angular.module('emission.main', ['emission.main.recent',
     abstract: true,
     templateUrl: 'templates/main.html',
     controller: 'MainCtrl'
+  })
+
+  .state('root.main.cci-about', {
+    url: '/cci-about',
+    views: {
+      'main-cci-about': {
+        templateUrl: 'templates/cci-about/about.html',
+        controller: 'CCIAboutCtrl'
+      }
+    },
   })
 
   .state('root.main.common', {
@@ -98,7 +109,7 @@ angular.module('emission.main', ['emission.main.recent',
         end_ts: null
       },
       views: {
-        'main-control': {
+        'main-cci-about': {
           templateUrl: "templates/incident/map.html",
           controller: 'PostTripMapCtrl'
         }
@@ -111,6 +122,16 @@ angular.module('emission.main', ['emission.main.recent',
       'main-control': {
         templateUrl: 'templates/recent/log.html',
         controller: 'logCtrl'
+      }
+    }
+  })
+
+  .state('root.main.refuse', {
+    url: '/refuse',
+    views: {
+      'main-cci-about': {
+        templateUrl: 'templates/intro/refuse.html',
+        controller: 'CCIAboutCtrl'
       }
     }
   });
