@@ -3,7 +3,12 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com 'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval';
+            style-src 'self' 'unsafe-inline';
+            script-src 'self' 'unsafe-inline' 'unsafe-eval';
+            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com
+            'unsafe-inline'">
+    <meta name="format-detection" content="telephone=no">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -55,7 +60,7 @@
     <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
     <!-- Manually installed javascript for libraries that are not published through bower -->
     <!-- cordova script (this will be a 404 in the browser) -->
-    <script type="text/javascript" src="cordova.js"></script>
+    <script src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
