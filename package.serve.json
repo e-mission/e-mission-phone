@@ -1,0 +1,16 @@
+{
+  "name": "edu.berkeley.eecs.emission",
+  "version": "2.5.0",
+  "displayName": "emission",
+  "scripts": {
+    "setup-serve": "./bin/download_settings_controls.js",
+    "serve": "phonegap --verbose serve"
+  },
+  "devDependencies": {
+    "phonegap": "7.1.1"
+  },
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "klaw-sync": "^3.0.2"
+  }
+}

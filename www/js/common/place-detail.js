@@ -1,6 +1,5 @@
 'use strict';
 angular.module('emission.main.common.place-detail',['ui-leaflet',
-                                      'ionic-datepicker',
                                       'emission.services'])
 
 .controller("CommonPlaceDetailCtrl", function($scope, $stateParams,

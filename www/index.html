@@ -3,11 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval';
-            style-src 'self' 'unsafe-inline';
-            script-src 'self' 'unsafe-inline' 'unsafe-eval';
-            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com
-            'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com 'unsafe-inline'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -33,9 +29,6 @@
     <!-- ionic/angularjs js -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="manual_lib/ionic.cloud.min.js"></script>
-    <script src="lib/ionic-platform-web-client/dist/ionic.io.bundle.min.js"></script>
-
     <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
     <script src="lib/moment/min/moment.min.js"></script>
     <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
@@ -61,9 +54,8 @@
     <script src="manual_lib/leaflet-plugins/leaflet.textpath.js"></script>
     <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
     <!-- Manually installed javascript for libraries that are not published through bower -->
-    <!-- cordova script (this will be a 404 during development) -->
-    <!-- Cordova is bootstrapped by ionic-platform-web-client, uncomment this if you remove ionic-platform-web-client... -->
-<!-- <script src="cordova.js"></script> -->
+    <!-- cordova script (this will be a 404 in the browser) -->
+    <script type="text/javascript" src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
