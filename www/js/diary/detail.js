@@ -11,8 +11,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
-  var MPS_TO_MPH = 2.23694;
-
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
     defaults : {
@@ -86,7 +84,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     // ti = time index
     for (var ti in $scope.tripgj.sections[s].properties.times) {
       totalTime = ($scope.tripgj.sections[s].properties.times[ti] - start_ts);
-      data.push({x: totalTime, y: ($scope.tripgj.sections[s].properties.speeds[ti] * MPS_TO_MPH) });
+      data.push({x: totalTime, y: $scope.tripgj.sections[s].properties.speeds[ti] });
     }
   }
   var dataset = {
@@ -106,7 +104,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     .axisLabel('Time (mins)');
 
   chart.yAxis     //Chart y-axis settings
-      .axisLabel('Speed (mph)')
+      .axisLabel('Speed (m/s)')
       .tickFormat(d3.format('.1f'));
 
   d3.select('#chart svg')    //Select the <svg> element you want to render the chart in.
@@ -169,5 +167,4 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     checkDetailTutorialDone();
   });
   /* END: ng-walkthrough code */
-
-});
+})

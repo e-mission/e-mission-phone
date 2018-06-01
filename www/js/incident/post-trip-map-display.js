@@ -9,12 +9,9 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
+                                        UnifiedDataLoader, PostTripManualMarker) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
-  var MODE_CONFIRM_KEY = "manual/mode_confirm";
-  var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
-
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
     defaults: {}
@@ -24,22 +21,6 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
   $scope.mapCtrl.start_ts = $stateParams.start_ts;
   $scope.mapCtrl.end_ts = $stateParams.end_ts;
-
-  $scope.$on('$ionicView.enter', function() {
-    // we want to initialize these while entering the screen instead of while 
-    // creating the controller, because the app may stick around for a while,
-    // and then when the user clicks on a notification, they will re-enter this
-    // screen.
-    Logger.log("entered post-trip map screen, prompting for values");
-    $scope.draftMode = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
-    $scope.draftPurpose = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
-  });
-
-  $scope.$on('$ionicView.leave', function() {
-    Logger.log("entered post-trip map screen, prompting for values");
-    $scope.draftMode = angular.undefined;
-    $scope.draftPurpose = angular.undefined;
-  });
 
   /*
   var mapEvents = leafletMapEvents.getAvailableMapEvents();
@@ -144,6 +125,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
             $scope.mapCtrl.geojson.data = $scope.mapCtrl.cache.data;
           });
 
+          leafletData.getMap('incident').then(function(map) {
+            Logger.log("registered click receiver");
+            map.on('click', PostTripManualMarker.startAddingIncidentToPoints(map,
+                $scope.mapCtrl.cache.points,
+                $scope.mapCtrl.cache.features));
+          });
         }
         $ionicLoading.hide();
     })
@@ -180,26 +167,26 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       }
     },
     steps: [{
-      target: '#mode_list',
-      content: 'Scroll for more options'
+      target: '#incident',
+      content: 'Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size="+3">&#x263B;</font> or <font size="+3">&#x2639;</font> incident'
     }]
   };
 
   var startWalkthrough = function () {
     nzTour.start(tour).then(function(result) {
-      Logger.log("post trip mode walkthrough start completed, no error");
+      Logger.log("list walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("post trip mode walkthrough start errored" + err);
+      Logger.log("incident walkthrough start errored" + err);
     });
   };
 
 
   var checkIncidentTutorialDone = function () {
-    var POST_TRIP_MODE_DONE_KEY = 'post_trip_mode_tutorial_done';
-    var incidentTutorialDone = storage.get(POST_TRIP_MODE_DONE_KEY);
+    var INCIDENT_DONE_KEY = 'incident_tutorial_done';
+    var incidentTutorialDone = storage.get(INCIDENT_DONE_KEY);
     if (!incidentTutorialDone) {
       startWalkthrough();
-      storage.set(POST_TRIP_MODE_DONE_KEY, true);
+      storage.set(INCIDENT_DONE_KEY, true);
     }
   };
 
@@ -208,7 +195,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   }
 
   $scope.closeView = function () {
-    $state.go('root.main.cci-about');
+    $state.go('root.main.control');
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
@@ -219,129 +206,4 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     checkIncidentTutorialDone();
   });
   /* END: ng-walkthrough code */
-
-   $scope.chosen = {mode:'',purpose:'',other:'', other_to_store:''};
-
-   var checkOtherOption = function(choice) {
-    if(choice == 'other_mode' || choice == 'other_purpose') {
-      var text = choice == 'other_mode' ? "mode" : "purpose";
-      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
-        scope: $scope,
-        template: '<input type = "text" ng-model = "chosen.other">',        
-        buttons: [
-            { text: 'Cancel',
-              onTap: function(e) {
-                $scope.chosen.mode = '';
-                $scope.chosen.purpose = '';
-              }
-            }, {
-               text: '<b>Save</b>',
-               type: 'button-positive',
-                  onTap: function(e) {
-                     if (!$scope.chosen.other) {
-                           e.preventDefault();
-                     } else {
-                        if(choice == 'other_mode') {
-                          $scope.chosen.other_to_store = $scope.chosen.other;
-                          $scope.chosen.other = '';
-                        } else {
-                          $scope.chosen.other_to_store = $scope.chosen.other;
-                          $scope.chosen.other = '';
-                        }
-                        return $scope.chosen.other;
-                     }
-                  }
-            }
-        ]
-      });
-
-    }
-   };
-
-  $scope.choosePurpose = function() {
-    if($scope.chosen.purpose == "other_purpose"){
-      checkOtherOption($scope.chosen.purpose);
-    }
-  };
-
-  $scope.chooseMode = function (){
-    if($scope.chosen.mode == "other_mode"){
-      checkOtherOption($scope.chosen.mode);
-    }
-  };
-
-  $scope.secondSlide = false;
-
-  $scope.nextSlide = function() {
-    if($scope.chosen.mode == "other_mode" && $scope.chosen.other_to_store.length > 0) {
-      $scope.secondSlide = true;
-      console.log($scope.chosen.other_to_store);
-      // store other_to_store here
-      $scope.storeMode($scope.chosen.other_to_store);
-      $ionicSlideBoxDelegate.next();
-    } else if ($scope.chosen.mode != "other_mode" && $scope.chosen.mode.length > 0) {
-      $scope.secondSlide = true;
-      console.log($scope.chosen.mode);
-      // store mode here
-      $scope.storeMode($scope.chosen.mode);
-      $ionicSlideBoxDelegate.next();
-    }
-  };
-
-  $scope.doneSlide = function() {
-    if($scope.chosen.purpose == "other_purpose" && $scope.chosen.other_to_store.length > 0) {
-      console.log($scope.chosen.other_to_store);
-      // store other_to_store here
-      $scope.storePurpose($scope.chosen.other_to_store);
-      $scope.closeView();
-    } else if ($scope.chosen.purpose != "other_purpose" && $scope.chosen.purpose.length > 0) {
-      console.log($scope.chosen.purpose);
-      // store purpose here
-      $scope.storePurpose($scope.chosen.purpose);
-      $scope.closeView();
-    }
-  };
-
-  $scope.disableSwipe = function() {
-   $ionicSlideBoxDelegate.enableSlide(false);
-  };
-
-  $scope.modeOptions = [
-   {text:'Walk', value:'walk'},
-   {text:'Bike',value:'bike'},
-   {text:'Drove Alone',value:'drove_alone'},
-   {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi/Uber/Lyft',value:'taxi'},
-   {text:'Bus',value:'bus'},
-   {text:'Train',value:'train'},
-   {text:'Free Shuttle',value:'free_shuttle'},
-   {text:'Other',value:'other_mode'}];
-
-   $scope.purposeOptions = [
-   {text:'Home', value:'home'},
-   {text:'Work',value:'work'},
-   {text:'School',value:'school'},
-   {text:'Transit transfer', value:'transit_transfer'},
-   {text:'Shopping',value:'shopping'},
-   {text:'Meal',value:'meal'},
-   {text:'Pick-up/Drop off',value:'pick_drop'},
-   {text:'Personal/Medical',value:'personal_med'},
-   {text:'Recreation/Exercise',value:'exercise'},
-   {text:'Entertainment/Social',value:'entertainment'},
-   {text:'Religious', value:'religious'},
-   {text:'Other',value:'other_purpose'}];
-
-   $scope.storeMode = function(mode_val) {
-      $scope.draftMode.label = mode_val;
-      Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
-      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
-   }
-
-   $scope.storePurpose = function(purpose_val) {
-      $scope.draftPurpose.label = purpose_val;
-      Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
-      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
-   }
-
-
 });
