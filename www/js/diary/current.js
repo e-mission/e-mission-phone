@@ -44,9 +44,9 @@
       hideLimitLabels: true,
       translate: function(value) {
           if (value === 1) {
-            return "Yesterday";
+            return "Ayer";
           } else if (value === 7) {
-            return "Week ago";
+            return "Hace una semana";
           }
         return "";
       }

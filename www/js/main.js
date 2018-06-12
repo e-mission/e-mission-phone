@@ -8,7 +8,8 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
                                  'emission.incident.posttrip.map',
-                                 'emission.services'])
+                                 'emission.services',
+                                 'emission.main.survey',])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -113,7 +114,18 @@ angular.module('emission.main', ['emission.main.recent',
         controller: 'logCtrl'
       }
     }
-  });
+  })
+
+.state('root.main.survey', {
+  url: '/survey',
+  views: {
+    'main-survey': {
+      templateUrl: 'templates/main-survey.html',
+      controller: 'SurveyCtrl'
+    }
+  }
+});
+
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');

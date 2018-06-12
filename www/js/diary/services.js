@@ -175,6 +175,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   };
   dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
+    moment.locale('es');
     var startMoment = moment(start_ts_in_secs * 1000);
     var endMoment = moment(end_ts_in_secs * 1000);
     return endMoment.to(startMoment, true);
@@ -419,20 +420,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     };
 
     timeline.updateFromDatabase = function(day) {
-      console.log("About to show 'Reading from cache'");
+      console.log("About to show 'Leyendo datos del cache'");
       $ionicLoading.show({
-        template: 'Reading from cache...'
+        template: 'Leyendo datos del cache...'
       });
       return window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
       .then(function (timelineDoc) {
          if (!window.cordova.plugins.BEMUserCache.isEmptyDoc(timelineDoc)) {
            var tripList = timelineDoc;
-           console.log("About to hide 'Reading from cache'");
+           console.log("About to hide 'Leyendo datos del cache'");
            $ionicLoading.hide();
            return tripList;
          } else {
            console.log("while reading data for "+day+" from database, no records found");
-           console.log("About to hide 'Reading from cache'");
+           console.log("About to hide 'Leyendo datos del cache'");
            $ionicLoading.hide();
            return [];
          }
@@ -440,15 +441,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     };
 
     timeline.updateFromServer = function(day) {
-      console.log("About to show 'Reading from server'");
+      console.log("About to show 'Leyendo datos del servidor'");
       $ionicLoading.show({
-        template: 'Reading from server...'
+        template: 'Leyendo datos del servidor...'
       });
       return CommHelper.getTimelineForDay(day).then(function(response) {
         var tripList = response.timeline;
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "while reading data for "+day+" from server, got nTrips = "+tripList.length);
-        console.log("About to hide 'Reading from server'");
+        console.log("About to hide 'Leyendo datos del servidor'");
         $ionicLoading.hide();
         console.log("Finished hiding ionicLoading, returning list of size "+tripList.length);
         return tripList;
@@ -795,7 +796,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284312004
        */
         $ionicLoading.show({
-          template: 'Reading unprocessed data...'
+          template: 'Leyendo datos no procesados...'
         });
        if (tripListForDay.length == 0) {
          var last_processed_ts = moment(day).startOf("day").unix();
@@ -936,9 +937,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        (either local usercache or the internet). Now, what do we need to process them?
        */
        var processTripsForDay = function(day, tripListForDay) {
-        console.log("About to show 'Processing trips'");
+        console.log("About to show 'Procesando viajes'");
         $ionicLoading.show({
-          template: 'Processing trips...'
+          template: 'Procesando viajes...'
         });
         tripListForDay.forEach(function(item, index, array) {
           console.log(index + ":" + item.properties.start_fmt_time+", "+item.properties.duration);

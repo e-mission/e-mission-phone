@@ -1,0 +1,10 @@
+<ion-popover-view>
+   <ion-header-bar>
+      <p style="font-style: 12px;margin: auto;color: #444;font-weight:">Medio de transporte utilizado</p>
+   </ion-header-bar>
+   <ion-content>
+     <ion-list ng-repeat="mode in modeOptions">
+       <ion-radio ng-click="chooseMode()" ng-model="chosen.mode" ng-value="mode.value">{{mode.text}}</ion-radio> 
+     </ion-list>
+   </ion-content>
+</ion-popover-view>

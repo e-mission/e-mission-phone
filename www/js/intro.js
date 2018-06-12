@@ -45,7 +45,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    $state.go('root.main.diary');
   };
 
   $scope.agree = function() {
@@ -87,11 +87,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       CommHelper.registerUser(function(successResult) {
         $scope.finish();
       }, function(errorResult) {
-        $scope.alertError('User registration error', errorResult);
+        $scope.alertError('Error al registrar usuario', errorResult);
         $scope.finish();
       });
     }, function(error) {
-        $scope.alertError('Sign in error', error);
+        $scope.alertError('Error al ingresar', error);
         $scope.finish();
     });
   };
@@ -117,7 +117,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     // this is not a promise, so we don't need to use .then
     StartPrefs.markIntroDone();
     $scope.getIntroBox().slide(0);
-    StartPrefs.loadPreferredScreen();
+    // StartPrefs.loadPreferredScreen();
+    $state.go('root.main.diary');
   }
-});
+  $scope.openURL = function(URL) {
+     window.open(URL,'_system');
+   }
 
+   $scope.mailTo = function(email) {
+     window.open('mailto:'+email,'_system');
+   }
+});

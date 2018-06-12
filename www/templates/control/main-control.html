@@ -1,11 +1,11 @@
-<ion-view view-title="Profile" ng-class="ionViewBackgroundClass()">
+<ion-view view-title="Perfil" ng-class="ionViewBackgroundClass()">
   <ion-content>
     <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Tracking</div>
+      <div class="control-list-text">Rastreo</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="trackingOn()">
         <div class="track">
@@ -14,7 +14,7 @@
       </label>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Medium accuracy</div>
+      <div class="control-list-text">Bajar nivel de precisión</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
         <div class="track">
@@ -24,7 +24,7 @@
     </div>
 
 
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Dark theme</div>
       <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getDarkTheme()">
@@ -32,39 +32,39 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
-    <div class="control-list-item">
+    </div> -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Force sync</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
-    </div>
-    <div class="control-list-item">
+    </div> -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Share</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
-    </div>
-    <div class="control-list-item">
+    </div> -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Check for UI updates</div>
       <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
-    </div>
+    </div> -->
 
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Download json dump</div>
       <div ng-click="openDatePicker()" class="control-icon-button">
         <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
       </div>
-      <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div> -->
-    </div>
+      <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div>
+    </div> -->
 
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Email log</div>
       <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
-    </div>
+    </div> -->
 
-    <div class="control-list-item" ng-show="userDataSaved()">
+    <!-- <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text">User data</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
-    </div>
+    </div> -->
     <!-- Begin user data -->
-    <div class="" ng-show="userDataExpanded()">
+    <!-- <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text">Erase data</div>
         <div ng-click="eraseUserData()" id="gray" class=" control-icon-button"><i class="ion-trash-b"></i></div>
@@ -76,13 +76,13 @@
                 <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.value}}</div>
           </ion-item>
       </ion-list>
-    </div>
+    </div> -->
 
 
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Developer zone</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
-    </div>
+    </div> -->
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
