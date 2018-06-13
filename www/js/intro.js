@@ -45,7 +45,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.main.diary');
+    $ionicSlideBoxDelegate.previous();
   };
 
   $scope.agree = function() {
@@ -85,6 +85,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
+        CommHelper.updateUser({
+          client: "megumi-brt"
+        });
         $scope.finish();
       }, function(errorResult) {
         $scope.alertError('Error al registrar usuario', errorResult);
@@ -117,8 +120,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     // this is not a promise, so we don't need to use .then
     StartPrefs.markIntroDone();
     $scope.getIntroBox().slide(0);
-    // StartPrefs.loadPreferredScreen();
-    $state.go('root.main.diary');
+    StartPrefs.loadPreferredScreen();
   }
   $scope.openURL = function(URL) {
      window.open(URL,'_system');
