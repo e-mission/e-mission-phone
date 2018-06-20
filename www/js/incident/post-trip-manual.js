@@ -234,7 +234,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                                      action: addSafeEntry},
                                     {text: "<font size='+5'>&#x2639;</font>",
                                      action: addSuckEntry},
-                                    {text: "Cancel",
+                                    {text: "Cancelar",
                                      action: cancelTempEntry}]
 
     Logger.log("About to call ionicActionSheet.show");
@@ -255,7 +255,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                * it will look like the incident is deleted until we refresh the trip
                * information by pulling to refresh. So let's add to the geojson as well.
                */
-              if (button.text != "Cancel") {
+              if (button.text != "Cancelar") {
                 var newFeature = ptmm.toGeoJSONFeature(newEntry);
                 featureArray.push(newFeature);
                 // And one that is done, let's remove the temporary marker

@@ -10,12 +10,12 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe right to report any positive or negative experiences on this trip. Swipe left for more - Busy? Snooze 30 mins. Annoyed? Mute.",
-      "android": "Touch to report any positive or negative experiences on this trip. See options for more - Busy? Snooze 30 mins. Annoyed? Mute."
+      "ios": "Desliza a la derecha para informar el motivo y medio de transporte de tu viaje. ¿Ocupado? Pausar 30 min. ¿Molesto? Silenciar.",
+     "android": "Seleccionar para informar motivo y medio de transporte de tu viaje. ¿Ocupado? Pausar 30 minutos. ¿Molesto? Silenciar"
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Select to report any positive or negative experiences on this trip. More options - Busy? Snooze 30 mins. Annoyed? Mute.";
+      selMessage = "Seleccionar para informar motivo y medio de transporte de tu viaje. ¿Ocupado? Pausar 30 minutos. ¿Molesto? Silenciar.";
     }
     return selMessage;
   };
@@ -23,21 +23,21 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var getTripEndReportNotification = function() {
     var actions = [{
        identifier: 'MUTE',
-       title: 'Mute',
+       title: 'Silenciar',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
        identifier: 'SNOOZE',
-       title: 'Snooze',
+       title: 'Pausar',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
         identifier: 'REPORT',
-        title: 'Yes',
+        title: 'Sí',
         icon: 'res://ic_signin',
         activationMode: 'foreground',
         destructive: false,
@@ -46,7 +46,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "Incident to report?",
+      title: "¿Informar sobre el viaje?",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
@@ -71,7 +71,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
         .catch(function(error) {
             Logger.log(JSON.stringify(error));
             $ionicPopup.alert({
-                title: "Unable to register notifications for trip end",
+                title: "No se pudo registrar la notificación de fin de viaje.",
                 template: JSON.stringify(error)
             });
         });;
@@ -93,7 +93,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     Logger.log("notification = "+JSON.stringify(notification));
     Logger.log("state = "+JSON.stringify(state));
     Logger.log("data = "+JSON.stringify(data));
-    return $ionicPopup.show({title: "Report incident for trip",
+    return $ionicPopup.show({title: "Reportar incidente",
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
         buttons: [{
@@ -123,20 +123,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var displayCompletedTrip = function(notification, state, data) {
     Logger.log("About to display completed trip");
 
-    /*
-    promptReport(notification, state, data).then(function(res) {
-      if (res == true) {
-        console.log("About to go to incident map page");
-        $state.go("root.main.incident", notification.data);
-      } else {
-        console.log("Skipped incident reporting");
-      }
-    });
-    */
-
-    Logger.log("About to go to diary, which now displays draft information");
+    $state.go("root.main.incident", notification.data);
+    /*Logger.log("About to go to diary, which now displays draft information");
     $rootScope.displayingIncident = true;
-    $state.go("root.main.diary");
+    $state.go("root.main.diary");*/
   };
 
   var checkCategory = function(notification) {
@@ -166,8 +156,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
         $window.cordova.plugins.notification.local.schedule([after_30_mins_prompt]);
         if ($ionicPlatform.is('android')) {
             $ionicPopup.alert({
-                title: "Snoozed reminder",
-                template: "Will reappear in 30 mins"
+              title: "Recordatorio",
+              template: "Las notificaciones se activarán e 30 min."
             });
         }
       } else if (data.identifier === 'MUTE') {
@@ -178,23 +168,23 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
             if ($ionicPlatform.is('ios')) {
                 $window.cordova.plugins.notification.local.schedule([{
                     id: REPORT,
-                    title: "Notifications for TRIP_END incident report muted",
-                    text: "Can be re-enabled from the Profile -> Developer Zone screen. Select to re-enable now, clear to ignore",
+                    title: "Desactivar notificiones",
+                    text: "Las notificciones de finalización de vije se han desactivado.",
                     at: _1_min_from_now,
                     data: {redirectTo: "root.main.control"}
                 }]);
             } else if ($ionicPlatform.is('android')) {
                 $ionicPopup.show({
-                    title: "Muted",
-                    template: "Notifications for TRIP_END incident report muted",
+                    title: "Desactivar notificiones",
+                    template: "Las notificciones de finalización de vije se han desactivado.",
                     buttons: [{
-                      text: 'Unmute',
+                      text: 'Activar',
                       type: 'button-positive',
                       onTap: function(e) {
                         return true;
                       }
                     }, {
-                      text: 'Keep muted',
+                      text: 'Dejar desactivado',
                       type: 'button-positive',
                       onTap: function(e) {
                         return false;
@@ -210,7 +200,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
             }
         }).catch(function(error) {
             $ionicPopup.alert({
-                title: "Error while muting notifications for trip end. Try again later.",
+                title: "Error mientras se desactivaban las notificaciones. Intenta de nuevo más tarde.",
                 template: JSON.stringify(error)
             });
         });

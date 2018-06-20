@@ -1890,3 +1890,14 @@ span.rz-bar-wrapper {
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
 }
+.popover {
+  height: 297px;
+  width: 280px;
+}
+#diary-card{
+  height: 335px;
+}
+#diary-item {
+  padding: 0;
+  border-width: 0;
+} 

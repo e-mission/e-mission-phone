@@ -7,14 +7,19 @@ navigation history that also transitions its views in and out.
 <ion-tabs ng-class="tabsCustomClass()">
 
   <!-- Diary Tab -->
-  <ion-tab title="Diary" icon="ion-map" href="#/root/main/diary">
+  <ion-tab title="Viajes" icon="ion-map" href="#/root/main/diary">
     <ion-nav-view name="main-diary"></ion-nav-view>
   </ion-tab>
 
+  <!-- Survey Tab -->
+ <ion-tab title="Encuesta" icon="ion-android-checkbox" ng-click="startSurvey()">
+   <ion-nav-view name="main-survey"></ion-nav-view>
+ </ion-tab>
+
   <!-- Game Tab  -->
-  <ion-tab title="Goals" icon="ion-android-checkbox" href="#/root/main/goals">
+  <!-- <ion-tab title="Goals" icon="ion-android-checkbox" href="#/root/main/goals">
     <ion-nav-view name="main-goals"></ion-nav-view>
-  </ion-tab>
+  </ion-tab> -->
 
   <!-- Common Patterns Tab
   <ion-tab title="Common" icon="ion-star" href="#/root/main/common/map">
@@ -22,14 +27,14 @@ navigation history that also transitions its views in and out.
   </ion-tab> -->
 
   <!-- Dashboard Tab -->
-  <ion-tab title="Dashboard" icon="ion-ios-analytics" href="#/root/main/metrics">
+  <!-- <ion-tab title="Dashboard" icon="ion-ios-analytics" href="#/root/main/metrics">
     <ion-nav-view name="main-metrics"></ion-nav-view>
-  </ion-tab>
+  </ion-tab> -->
 
   <!-- Heatmap Tab -->
-  <ion-tab title="Heatmap" icon="ion-fireball" href="#/root/main/heatmap">
+  <!-- <ion-tab title="Heatmap" icon="ion-fireball" href="#/root/main/heatmap">
     <ion-nav-view name="main-heatmap"></ion-nav-view>
-  </ion-tab>
+  </ion-tab> -->
 
   <!-- Debug Tab -->
 <!--   <ion-tab title="Recent" icon="ion-android-stopwatch" href="#/root/main/recent/log">
@@ -37,7 +42,7 @@ navigation history that also transitions its views in and out.
   </ion-tab> -->
 
   <!-- Controls Tab -->
-  <ion-tab title="Profile" icon="ion-person" href="#/root/main/control">
+  <ion-tab title="Perfil" icon="ion-person" href="#/root/main/control">
     <ion-nav-view name="main-control"></ion-nav-view>
   </ion-tab>
 

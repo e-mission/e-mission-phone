@@ -236,7 +236,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   var setSelData = function(map, selData) {
     if (selData.isLoading == true) {
       $ionicLoading.show({
-          template: 'Loading...'
+          template: 'Cargando...'
       });
       // Don't set any layer - it will be filled in when the load completes
     } else {

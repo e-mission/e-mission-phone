@@ -89,7 +89,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   }
   var dataset = {
       values: data,
-      key: 'Speed',
+      key: 'Velocidad',
       color: '#7777ff',
     }
   var chart = nv.models.lineChart()
@@ -101,10 +101,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                 .showXAxis(true);        //Show the x-axis
   chart.xAxis
     .tickFormat(d3.format(".1f"))
-    .axisLabel('Time (mins)');
+    .axisLabel('Tiempo (mins)');
 
   chart.yAxis     //Chart y-axis settings
-      .axisLabel('Speed (m/s)')
+      .axisLabel('Velocidad (m/s)')
       .tickFormat(d3.format('.1f'));
 
   d3.select('#chart svg')    //Select the <svg> element you want to render the chart in.
@@ -123,17 +123,20 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       mask: {
         visibleOnNoTarget: true,
         clickExit: true
-      }
+      },
+      previousText: 'Anterior',
+      nextText: 'Siguiente',
+      finishText: 'Fin',
     },
     steps: [{
       target: '#detail',
-      content: 'To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
+      content: 'Para reportar un incidente, acerca el zoom del mapa a la zona del mismo.'
     }, {
       target: '#sectionList',
-      content: 'Trip sections, along with times and modes'
+      content: 'Secciones de viaje, junto con tiempos y modos'
     }, {
       target: '#sectionPct',
-      content: '% of time spent in each mode for this trip'
+      content: '% de tiempo en cada medio de transporte'
     }]
   };
 

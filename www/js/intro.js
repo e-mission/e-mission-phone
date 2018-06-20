@@ -45,7 +45,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    $ionicSlideBoxDelegate.previous();
   };
 
   $scope.agree = function() {
@@ -85,13 +85,16 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
+        CommHelper.updateUser({
+          client: "megumi-brt"
+        });
         $scope.finish();
       }, function(errorResult) {
-        $scope.alertError('User registration error', errorResult);
+        $scope.alertError('Error al registrar usuario', errorResult);
         $scope.finish();
       });
     }, function(error) {
-        $scope.alertError('Sign in error', error);
+        $scope.alertError('Error al ingresar', error);
         $scope.finish();
     });
   };
@@ -119,5 +122,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.getIntroBox().slide(0);
     StartPrefs.loadPreferredScreen();
   }
-});
+  $scope.openURL = function(URL) {
+     window.open(URL,'_system');
+   }
 
+   $scope.mailTo = function(email) {
+     window.open('mailto:'+email,'_system');
+   }
+});
