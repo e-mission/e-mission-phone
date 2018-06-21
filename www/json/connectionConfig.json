@@ -9,7 +9,7 @@
     "ios": {
         "auth": {
             "method": "google-signin-lib",
-            "clientID": "1047828012325-nv86fbmhks8h94bdc3bsvid1r48lajor.apps.googleusercontent.com"
+            "clientID": "1047828012325-9npneoo1eaqpe62tdgmdl1agf24i5ut8.apps.googleusercontent.com"
         }
     }
 }
