@@ -3,7 +3,7 @@
     "android": {
         "auth": {
             "method": "google-authutil",
-            "clientID": "1047828012325-o2dhbfqjg1ssip98gcr883bjpuuq28c3.apps.googleusercontent.com"
+            "clientID": "1047828012325-nv86fbmhks8h94bdc3bsvid1r48lajor.apps.googleusercontent.com"
         }
     },
     "ios": {
