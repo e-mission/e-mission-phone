@@ -233,18 +233,18 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
   var checkOtherOption = function(choice) {
    if(choice == 'other_mode' || choice == 'other_purpose') {
-     var text = choice == 'other_mode' ? "mode" : "purpose";
-     $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+     var text = choice == 'other_mode' ? "medio de transporte" : "motivo del viaje";
+     $ionicPopup.show({title: "Favor ingresar el " + text + ".",
        scope: $scope,
        template: '<input type = "text" ng-model = "chosen.other">',
        buttons: [
-           { text: 'Cancel',
+           { text: 'Cancelar',
              onTap: function(e) {
                $scope.chosen.mode = '';
                $scope.chosen.purpose = '';
              }
            }, {
-              text: '<b>Save</b>',
+              text: '<b>Guardar</b>',
               type: 'button-positive',
                  onTap: function(e) {
                     if (!$scope.chosen.other) {

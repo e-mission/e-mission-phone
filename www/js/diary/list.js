@@ -460,13 +460,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
         var checkOtherOption = function(choice) {
          if(choice == 'other_mode' || choice == 'other_purpose') {
-           var text = choice == 'other_mode' ? "list of modes" : "purpose";
-           $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+           var text = choice == 'other_mode' ? "medio de transporte" : "motivo del viaje";
+           $ionicPopup.show({title: "Favor ingresar el " + text + ".",
              scope: $scope,
              template: '<input type = "text" ng-model = "chosen.other">',
              buttons: [
-                 { text: 'Cancel' }, {
-                    text: '<b>Save</b>',
+                 { text: 'Cancelar' }, {
+                    text: '<b>Guardar</b>',
                     type: 'button-positive',
                        onTap: function(e) {
                           if (!$scope.chosen.other) {
@@ -475,10 +475,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                              if(choice == 'other_mode') {
                                $scope.storeMode($scope.chosen.other);
                                $scope.chosen.other = '';
+                               closeModePopover();
                              } else {
                                $scope.storePurpose($scope.chosen.other);
                                $scope.chosen.other = '';
-                             }
+                               closePurposePopover();
+                             }         
                              return $scope.chosen.other;
                           }
                        }
@@ -492,20 +494,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
        $scope.choosePurpose = function() {
          if($scope.chosen.purpose != "other_purpose"){
            $scope.storePurpose($scope.chosen.purpose);
+           closePurposePopover();
          } else {
            checkOtherOption($scope.chosen.purpose);
          }
-         closePurposePopover();
        };
 
        $scope.chooseMode = function (){
          console.log("choose mode: " + $scope.chosen.mode);
          if($scope.chosen.mode != "other_mode"){
            $scope.storeMode($scope.chosen.mode);
+           closeModePopover();
          }else {
            checkOtherOption($scope.chosen.mode);
          }
-         closeModePopover();
+
         }
 
         $scope.modeOptions = [
