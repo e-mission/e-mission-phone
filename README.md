@@ -248,7 +248,7 @@ emulator is just as snappy, and the debugger is better since chrome saves logs
 from startup, so you don't have to use tricks like adding alerts to see errors
 in startup.
 
-**Note:** Sometimes, the last command (`$ npm run phonegap -- run ios`) fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
+**Note:** Sometimes, the last command (`$ cordova prepare`) fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
 
 Troubleshooting
 ---
