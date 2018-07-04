@@ -50,105 +50,27 @@ angular.module('emission', ['ionic',
     // Configure the connection settings
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
+        if(connectionConfig.data.length == 0) {
+            throw "blank string instead of missing file on dynamically served app";
+        }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
-        Logger.log("error "+err+" while reading connection config, reverting to defaults");
+        Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
-            Logger.log("defaultConfig = "+defaultConfig);
+            Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
-            Logger.log("error "+err+" reading or setting defaults, giving up");
+            Logger.log("error "+JSON.stringify(err)+" reading or setting defaults, giving up");
         });
     });
-
-    Logger.log("Setting collection settings to default");
-    var androidDefaultCollectionConfig = {
-        is_duty_cycling: true,
-        simulate_user_interaction: false,
-        accuracy: 100,
-        accuracy_threshold: 200,
-        filter_distance: -1,
-        filter_time: 30 * 1000,
-        geofence_radius: 100,
-        trip_end_stationary_mins: 5,
-        ios_use_visit_notifications_for_detection: false,
-        ios_use_remote_push_for_sync: false,
-        android_geofence_responsiveness: 5 * 1000
-    };
-    var iosDefaultCollectionConfig = {
-        is_duty_cycling: true,
-        simulate_user_interaction: false,
-        accuracy: -1,
-        accuracy_threshold: 200,
-        filter_distance: 50,
-        filter_time: -1,
-        geofence_radius: 100,
-        trip_end_stationary_mins: 10,
-        ios_use_visit_notifications_for_detection: true,
-        ios_use_remote_push_for_sync: true,
-        android_geofence_responsiveness: -1
-    };
-    window.cordova.plugins.BEMDataCollection.getConfig().then(function(currConfig) {
-        Logger.log("for collection, currConfig = "+JSON.stringify(currConfig));
-        if (ionic.Platform.isAndroid()) {
-            if (!angular.equals(currConfig,androidDefaultCollectionConfig)) {
-             /*
-             Re-enable to confirm that the default hardcoded settings here are
-             correct.
-             See: https://github.com/e-mission/cordova-connection-settings/issues/12#issuecomment-325814049
-                alert("mismatch in config at startup, check logs!");
-             */
-                Logger.log("currConfig = "+JSON.stringify(currConfig)+
-                           "defaultConfig = "+JSON.stringify(androidDefaultCollectionConfig));
-            }
-            window.cordova.plugins.BEMDataCollection.setConfig(androidDefaultCollectionConfig);
-        };
-        if (ionic.Platform.isIOS()) {
-            if (!angular.equals(currConfig,iosDefaultCollectionConfig)) {
-            /*
-             Re-enable to confirm that the default hardcoded settings here are
-             correct.
-                alert("mismatch in config at startup, check logs!");
-             */
-                Logger.log("currConfig = "+JSON.stringify(currConfig)+
-                           "defaultConfig = "+JSON.stringify(iosDefaultCollectionConfig));
-            }
-            window.cordova.plugins.BEMDataCollection.setConfig(iosDefaultCollectionConfig);
-        };
-    }).catch(function(err) {
-        alert("Error setting collection defaults "+JSON.stringify(err));
-    });
-
-    Logger.log("Setting sync settings to default");
-    var defaultSyncConfig = {
-        sync_interval: 60 * 60,
-        ios_use_remote_push: ionic.Platform.isIOS() // true for ios, false for android
-    };
-
-    window.cordova.plugins.BEMServerSync.getConfig().then(function(currConfig) {
-        Logger.log("for sync, currConfig = "+JSON.stringify(currConfig));
-        if (!angular.equals(currConfig, defaultSyncConfig)) {
-            /*
-             Re-enable to confirm that the default hardcoded settings here are
-             correct.
-             See: https://github.com/e-mission/cordova-connection-settings/issues/12#issuecomment-325814049
-            alert("mismatch in config at startup, check logs!");
-            */
-            Logger.log("currConfig = "+JSON.stringify(currConfig)+
-                       "defaultConfig = "+JSON.stringify(defaultSyncConfig));
-        }
-        window.cordova.plugins.BEMServerSync.setConfig(defaultSyncConfig);
-    }).catch(function(err) {
-        alert("Error setting sync defaults "+JSON.stringify(err));
-    });
   });
-
   console.log("Ending run");
 })
 
 .config(function($stateProvider, $urlRouterProvider) {
   console.log("Starting config");
+  // alert("config");
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router

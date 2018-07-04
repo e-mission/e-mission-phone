@@ -48,7 +48,6 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.emailLog = ControlHelper.emailLog;
-    $scope.exportUserCacheDB = ControlHelper.exportUserCacheDB;
     $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
