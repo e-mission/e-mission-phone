@@ -70,7 +70,7 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
   }
 
   localNotify.registerRedirectHandler = function() {
-    Logger.log( "registerUserResponse received!" );
+    Logger.log( "registerRedirectHandler received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       localNotify.handleNotification(notification, state, data);
     });
