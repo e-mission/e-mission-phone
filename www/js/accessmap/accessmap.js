@@ -69,7 +69,7 @@ angular.module('emission.main.accessmap', [
         // Load AccessMap with uuid
         CommHelper.getUser().then(function(userProfile) {
           var uuid = sliceUUID(userProfile.user_id['$uuid']);
-          var url = $sce.trustAsResourceUrl('https://emission-accessmap.open-to-all.com/?emissionId=' + uuid);
+          var url = $sce.trustAsResourceUrl('https://emission.accessmap.io/emission?uuid=' + uuid);
           console.log("ACCESSMAP URL: " + url);
 
           $cordovaInAppBrowser.open(url, '_system', {

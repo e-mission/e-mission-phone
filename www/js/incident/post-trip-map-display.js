@@ -291,114 +291,146 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     //       -1 is a specially value, which would end the survey immediately.
     $scope.surveyQuestions = [
       {
-        title: 'Test Input Box',
-        type: 'text_input',
-        response: null,
+        title: 'The non-motorized (walking/wheelchair/hover board, etc) portion of this trip was familiar to me',
+        type: 'single_choice',
+        options: [
+          {text: 'No, it is new to me', value: 0, nextSlideOffset: -1},
+          {text: 'Yes, I’ve taken this trip a number of times', value: 1, nextSlideOffset: 1},
+          {text: 'Yes, this is a regular part of my travel (to work, home, grocery store, etc)', value: 2, nextSlideOffset: 1}
+        ],
+        response: null
       },
       {
-        title: 'I used a routing application to plan the walking portion of my trip',
+        title: 'I used a trip planner (routing application) to plan the non-motorized portion of my trip',
         type: 'single_choice',
         options: [
           {text: 'No, I didn’t plan my trip with a routing application', value: 0, nextSlideOffset: -1},
-          {text: 'Yes, I used google Directions',                        value: 1, nextSlideOffset: 1},
-          {text: 'Yes, I used Apple Maps',                               value: 2, nextSlideOffset: 1},
-          {text: 'Yes, I used AccessMap',                                value: 3, nextSlideOffset: 1},
-          {text: 'Yes, I used a different routing algorithm',            value: 4, nextSlideOffset: 1},
+          {text: 'Yes, I used google Directions', value: 1, nextSlideOffset: 1},
+          {text: 'Yes, I used Apple Maps', value: 2, nextSlideOffset: 1},
+          {text: 'Yes, I used AccessMap', value: 3, nextSlideOffset: 1},
+          {text: 'Yes, I used a different routing algorithm', value: 4, nextSlideOffset: 1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'I followed the route suggested to me by the planner fairly closely',
+        title: 'I was able to complete the non-motorized part of this trip by following the exact route recommended by the trip planner',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I followed the non-motorized route suggested by the trip planner fairly closely',
         type: 'single_choice',
         options: [
           {text: 'False', value: 0, nextSlideOffset: 1},
-          {text: 'True',  value: 1, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'I was able to complete my trip exactly as the route showed in AccessMap',
+        title: 'I was with another person when I completed the non-motorized portion of this trip',
         type: 'single_choice',
         options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: -1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I required help to complete the non-motorized portion of this trip',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'The non-motorized segment of my trip was easy',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'The walking segment of my trip was easy',
+        title: 'Overall, the non-motorized portion of this trip was pleasant',
         type: 'single_choice',
         options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'Overall, my trip was pleasant',
+        title: 'The sidewalk quality along the non-motorized portion of this trip was good',
         type: 'single_choice',
         options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'The sidewalk quality along my trip was good',
+        title: 'There were obstacles along the non-motorized part of this trip',
         type: 'single_choice',
         options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'There were obstacles along my trip that I did not anticipate',
+        title: 'The trip planner had information about all the obstacles I met during the non-motorized part of the trip',
         type: 'single_choice',
         options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: -1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: -1}
         ],
-        response: null,
+        response: null
       },
       {
-        title: 'All of these obstacles were in AccessMap',
+        title: 'I would like to add information about the obstacles I encountered to the trip planner so the planner will route me a different way next time',
         type: 'single_choice',
         options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
-          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: -1},
-        ],
-        response: null,
-      },
-      {
-        title: 'I Would like to add them to AccessMap if they are not in',
-        type: 'single_choice',
-        options: [
-          {text: 'Strongly disagree',          value: 0, nextSlideOffset: -1},
-          {text: 'Disagree',                   value: 1, nextSlideOffset: -1},
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
+          {text: 'Disagree', value: 1, nextSlideOffset: -1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: -1},
-          {text: 'Agree',                      value: 3, nextSlideOffset: -1},
-          {text: 'Strongly agree',             value: 4, nextSlideOffset: -1},
+          {text: 'Agree', value: 3, nextSlideOffset: -1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: -1}
         ],
-        response: null,
+        response: null
       },
+      {
+        title: 'I experienced an unpleasant incident during the non-motorized part of this trip that isn’t related to the sidewalk environment',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      }
     ];
   });
