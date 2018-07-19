@@ -183,7 +183,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               PostTripManualMarker.addUnpushedIncidents(trip);
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-            DiaryHelper.directiveForTrip);
+            function(trip) { return DiaryHelper.directiveForTrip(trip, false);});
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -365,7 +365,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from                                  
+      // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
@@ -398,7 +398,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -410,7 +410,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
@@ -480,7 +480,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                $scope.storePurpose($scope.chosen.other);
                                $scope.chosen.other = '';
                                closePurposePopover();
-                             }         
+                             }
                              return $scope.chosen.other;
                           }
                        }

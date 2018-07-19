@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker){
+.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker, $ionicActionSheet){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -286,11 +286,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           tripWrapper.common_count = cTrip.trips.length;
       }
   };
-  dh.directiveForTrip = function(trip) {
+  dh.directiveForTrip = function(trip, editMode) {
     var retVal = {};
     retVal.data = trip;
     retVal.style = style_feature;
-    retVal.onEachFeature = onEachFeature;
+    if(editMode)
+      retVal.onEachFeature = onEachFeatureForEditMode;
+    else
+      retVal.onEachFeature = onEachFeature;
     retVal.pointToLayer = dh.pointFormat;
     retVal.start_place = trip.start_place;
     retVal.end_place = trip.end_place;
@@ -303,6 +306,18 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // retVal.start_place.properties.displayName = "End";
     return retVal;
   };
+
+  var onEachFeatureForEditMode = function(feature, layer) {
+    // console.log("onEachFeature called with "+JSON.stringify(feature));
+    switch(feature.properties.feature_type) {
+      case "stop": layer.bindPopup(""+feature.properties.duration); break;
+      case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
+      case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
+      case "section": layer.on('click', () => {editMode(feature, layer)}); break;
+      case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
+    }
+  };
+
   dh.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];
@@ -401,6 +416,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             default: return getColoredStyle(baseDict, 'black');
         }
       };
+
+    var editMode = function(feature, layer) {
+      layer.bindPopup(""+dh.getHumanReadable(feature.properties.sensed_mode));
+      console.log("EDIT MODE SHEET!!!")
+    }
 
   return dh;
 
