@@ -3,7 +3,11 @@
   "version": "2.5.0",
   "displayName": "emission",
   "scripts": {
+<<<<<<< HEAD:package.cordovabuild.json
     "setup-serve": "./bin/download_settings_controls.js",
+=======
+    "setup": "./bin/download_settings_controls.js",
+>>>>>>> 7465ff40286d54fbf70b2d254368679f63810ba6:package.json
     "serve": "phonegap --verbose serve"
   },
   "devDependencies": {
