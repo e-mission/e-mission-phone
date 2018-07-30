@@ -33,7 +33,7 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 
   ```
   $ bower -v
-  1.8.0
+  1.8.4
   ```
 
 ### Installation
