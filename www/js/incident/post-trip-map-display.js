@@ -6,10 +6,11 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.incident.posttrip.manual'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
-                                        $stateParams, $ionicLoading,
+                                        $stateParams, $ionicActionSheet, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker) {
+                                        UnifiedDataLoader, PostTripManualMarker,
+                                        $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   $scope.mapCtrl = {};
@@ -157,20 +158,21 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
   $scope.refreshMap($scope.mapCtrl.start_ts, $scope.mapCtrl.end_ts);
 
-  /* START: ng-walkthrough code */
-  // Tour steps
-  var tour = {
-    config: {
-      mask: {
-        visibleOnNoTarget: true,
-        clickExit: true
-      }
-    },
-    steps: [{
-      target: '#incident',
-      content: 'Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size="+3">&#x263B;</font> or <font size="+3">&#x2639;</font> incident'
-    }]
-  };
+    /* START: ng-walkthrough code */
+    // Tour steps
+    var tour = {
+      config: {
+        mask: {
+          visibleOnNoTarget: true,
+          clickExit: true,
+        },
+      },
+      steps: [
+        {
+          target: '#surveyQ',
+          content: 'Scroll for more options',
+        }],
+    };
 
   var startWalkthrough = function () {
     nzTour.start(tour).then(function(result) {
@@ -198,12 +200,237 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     $state.go('root.main.control');
   }
 
-  $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from
-    // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-    if(ev.targetScope !== $scope)
-      return;
-    checkIncidentTutorialDone();
+    $scope.$on('$ionicView.afterEnter', function (ev) {
+      // Workaround from
+      // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+      if (ev.targetScope !== $scope)
+        return;
+      checkIncidentTutorialDone();
+    });
+    /* END: ng-walkthrough code */
+
+    var noSelectPopup = function () {
+      var noSelectedPopup = $ionicPopup.alert({
+        title: 'Answer Required',
+        template: 'Please answer the current question before proceeding'
+      });
+
+      return noSelectedPopup;
+    }
+
+    $scope.curSlide = 0;
+    $scope.nextSlide = function (response) {
+      if (response == null) {
+        return noSelectPopup();
+      }
+
+      var nextSlideOffset;
+      switch ($scope.surveyQuestions[$scope.curSlide]['type']) {
+        case 'single_choice':
+          nextSlideOffset = $scope.surveyQuestions[$scope.curSlide]['options'][response]['nextSlideOffset'];
+          break;
+        case 'text_input':
+          nextSlideOffset = 1;
+          break;
+        default:
+          nextSlideOffset = 1;
+      }
+
+      if (nextSlideOffset < 0) {
+        $scope.curSlide = $scope.surveyQuestions.length;
+        $scope.doneSlide(response);
+        return;
+      }
+
+      var targetSlide = $scope.curSlide + nextSlideOffset;
+      while ($scope.curSlide < targetSlide) {
+        $scope.curSlide += 1;
+        $ionicSlideBoxDelegate.next();
+      }
+    };
+
+    var saveSurvey = function(trip_start_ts, trip_end_ts, survey_content) {
+      var value = {
+        ts: new Date().getTime(),
+        geo_trace: $scope.mapCtrl.cache.data,
+        start_ts: trip_start_ts,
+        end_ts: trip_end_ts,
+        survey: survey_content
+      }
+      $window.cordova.plugins.BEMUserCache.putMessage('manual/survey', value);
+      return value;
+    }
+
+    $scope.doneSlide = function (response) {
+      if (response == null || response == "") {
+        return noSelectPopup();
+      }
+
+      var survey_content = JSON.parse(angular.toJson($scope.surveyQuestions, null, 4));
+      saveSurvey($scope.mapCtrl.start_ts,     // Trip start ts
+        $scope.mapCtrl.end_ts,       // Trip end ts
+        survey_content);
+
+      var myPopup = $ionicPopup.alert({
+        template: 'Thank you for your input!',
+        title: 'Response saved',
+      });
+      myPopup.then(function(res) {
+        Logger.log('Survey response saved to user cache: ' + JSON.stringify(survey_content, null, 4));
+      });
+
+      $scope.closeView();
+    };
+
+    $scope.disableSwipe = function () {
+      $ionicSlideBoxDelegate.enableSlide(false);
+    };
+
+    // Note: nextSlideOffset: the offset to walk counting from current slide.
+    //       For example, next slide is 1, jump one slide is 2, jump 2 slides is 3...
+    //       -1 is a specially value, which would end the survey immediately.
+    $scope.surveyQuestions = [
+      {
+        title: 'The non-motorized (walking/wheelchair/hover board, etc) portion of this trip was familiar to me',
+        type: 'single_choice',
+        options: [
+          {text: 'No, it is new to me', value: 0, nextSlideOffset: -1},
+          {text: 'Yes, I’ve taken this trip a number of times', value: 1, nextSlideOffset: 1},
+          {text: 'Yes, this is a regular part of my travel (to work, home, grocery store, etc)', value: 2, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I used a trip planner (routing application) to plan the non-motorized portion of my trip',
+        type: 'single_choice',
+        options: [
+          {text: 'No, I didn’t plan my trip with a routing application', value: 0, nextSlideOffset: -1},
+          {text: 'Yes, I used google Directions', value: 1, nextSlideOffset: 1},
+          {text: 'Yes, I used Apple Maps', value: 2, nextSlideOffset: 1},
+          {text: 'Yes, I used AccessMap', value: 3, nextSlideOffset: 1},
+          {text: 'Yes, I used a different routing algorithm', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I was able to complete the non-motorized part of this trip by following the exact route recommended by the trip planner',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I followed the non-motorized route suggested by the trip planner fairly closely',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I was with another person when I completed the non-motorized portion of this trip',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'I required help to complete the non-motorized portion of this trip',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'The non-motorized segment of my trip was easy',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'Overall, the non-motorized portion of this trip was pleasant',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'The sidewalk quality along the non-motorized portion of this trip was good',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'There were obstacles along the non-motorized part of this trip',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
+        title: 'The trip planner had information about all the obstacles I met during the non-motorized part of the trip',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
+          {text: 'Disagree', value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree', value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: -1}
+        ],
+        response: null
+      },
+      {
+        title: 'I would like to add information about the obstacles I encountered to the trip planner so the planner will route me a different way next time',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
+          {text: 'Disagree', value: 1, nextSlideOffset: -1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: -1},
+          {text: 'Agree', value: 3, nextSlideOffset: -1},
+          {text: 'Strongly agree', value: 4, nextSlideOffset: -1}
+        ],
+        response: null
+      },
+      {
+        title: 'I experienced an unpleasant incident during the non-motorized part of this trip that isn’t related to the sidewalk environment',
+        type: 'single_choice',
+        options: [
+          {text: 'False', value: 0, nextSlideOffset: 1},
+          {text: 'True', value: 1, nextSlideOffset: 1}
+        ],
+        response: null
+      }
+    ];
   });
-  /* END: ng-walkthrough code */
-});

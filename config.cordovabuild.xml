@@ -112,6 +112,8 @@
     </plugin>
     <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git" />
     <preference name="SplashShowOnlyFirstTime" value="false" />
+    <allow-navigation href="https://accessmap.io/*" />
+    <allow-navigation href="https://emission-accessmap.open-to-all.com/*" />
     <engine name="ios" spec="^4.5.4" />
     <engine name="android" spec="^6.4.0" />
 </widget>

@@ -7,7 +7,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, $state) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -127,13 +127,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     },
     steps: [{
       target: '#detail',
-      content: 'To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
+      content: 'Confirm your foot track here.'
     }, {
       target: '#sectionList',
-      content: 'Trip sections, along with times and modes'
+      content: 'Review trip sections, along with times and modes'
     }, {
       target: '#sectionPct',
       content: '% of time spent in each mode for this trip'
+    }, {
+      target: '#survey-button',
+      content: 'Take our survey to tell us your experience of this trip.'
     }]
   };
 
@@ -160,11 +163,19 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from 
+    // Workaround from
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
     checkDetailTutorialDone();
   });
   /* END: ng-walkthrough code */
+
+  $scope.takeSurvey = function(start_ts, end_ts) {
+    console.log("About to display survey: ", 'start_ts: ', start_ts, ' end_ts: ', end_ts);
+    $state.go("root.main.incident", {
+      start_ts: start_ts,
+      end_ts: end_ts,
+    });
+  };
 })

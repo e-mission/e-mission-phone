@@ -54,11 +54,11 @@ angular.module('emission.survey.launch', ['emission.services',
             $cordovaInAppBrowser.executeScript({ code: fmtTimeCodeString });
           });
     };
-    
+
 
     // BEGIN: startSurveyForCompletedTrip
 
-    // Put the launch in one place so that 
+    // Put the launch in one place so that
     surveylaunch.options = {
         location: window.cordova.platformId == 'ios'? 'no' : 'yes',
         clearcache: 'no',
@@ -66,7 +66,7 @@ angular.module('emission.survey.launch', ['emission.services',
         hideurlbar: 'yes'
     };
 
-    surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId, 
+    surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId,
                                                          startTsElementId,
                                                          endTsElementId,
                                                          startFmtTimeElementId,
@@ -179,7 +179,7 @@ angular.module('emission.survey.launch', ['emission.services',
                     startSurvey();
                 }, function () {
                     // error
-                }); 
+                });
               }
             }]
         });

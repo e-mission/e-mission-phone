@@ -14,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger) {
+                                    Config, PostTripManualMarker, nzTour, storage, Logger, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
   // Add option
   // StatusBar.styleBlackOpaque()
@@ -38,13 +38,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     if($rootScope.barDetail){
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
-    };
+    }
+
     if($rootScope.displayingIncident == true) {
       if (angular.isDefined(Timeline.data.currDay)) {
-          // page was already loaded, reload it automatically
-          readAndUpdateForDay(Timeline.data.currDay);
+        // page was already loaded, reload it automatically
+        readAndUpdateForDay(Timeline.data.currDay);
       } else {
-         Logger.log("currDay is not defined, load not complete");
+        Logger.log("currDay is not defined, load not complete");
       }
       $rootScope.displayingIncident = false;
     }
@@ -320,7 +321,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       },
       {
         target: '.diary-entry',
-        content: 'Click on the map to see more details about each trip.'
+        content: 'Click on ">" button to see more details about each trip and take our survey'
       },
       {
         target: '#map-fix-button',
@@ -358,7 +359,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from                                  
+      // Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;
@@ -391,7 +392,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -403,7 +404,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
@@ -411,6 +412,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return in_trip;
     };
 
-    $scope.showModes = DiaryHelper.showModes;
+      $scope.showModes = DiaryHelper.showModes;
 
+  $scope.takeSurvey = function(start_ts, end_ts) {
+    console.log("About to display survey: ", 'start_ts: ', start_ts, ' end_ts: ', end_ts);
+    $state.go("root.main.incident", {
+      start_ts: start_ts,
+      end_ts: end_ts,
+    });
+  };
 });

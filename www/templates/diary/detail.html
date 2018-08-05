@@ -1,71 +1,75 @@
 <ion-view ng-class="getTripBackground()">
-    <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title> 
-    <ion-nav-buttons side="right">
-         <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-    </ion-nav-buttons>
-    <ion-content class="has-header" ng-class="getTripBackground" overflow-scroll="true" padding="true">
-        <div class="row" style="">
+  <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title>
+  <ion-nav-buttons side="right">
+    <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header" ng-class="getTripBackground" overflow-scroll="true" padding="true">
+    <div class="row" style="">
 
-            <div class="col-30">
-                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
-                <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
-                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
-                </div>
-            </div>
-
-            <div class="col-70">
-
-                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
-                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
-            {{tripgj.start_place.properties.displayName.split(',')[0]}}
-
-                </div>
-                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-            {{tripgj.end_place.properties.displayName.split(',')[0]}}
-                </div>
-            </div>
+      <div class="col-20">
+        <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.start_ts)}}</div>
+        <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? 'none':'block';  }}"><img src="{{ getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id)[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{parseEarlierOrLater(getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id))}}</div>
+        <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(tripgj.data.properties.end_ts)}}
         </div>
-        <div style="height: 10px;"></div>
-        <leaflet geojson="tripgj" id="detail" defaults="mapCtrl.defaults" 
-            height="50%" width="100%" data-tap-disabled="true">
-        </leaflet>
-        <div style="height: 15px;"></div>
-        <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
-          <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
-          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} km</div>
-          <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Time</p>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
-          <div id="sectionPct" class="col">
-            <i class="{{mode}}" ng-repeat="mode in getPercentages(trip)[0]" style="margin-left: 15px; margin-right: 15px; font-size: 15px;"></i>
-            <br>
-            <a ng-repeat="percentage in getPercentages(trip)[1]" style="font-size: 10px; margin-left: 10px; margin-right: 10px;">{{percentage}}%</a>
+      </div>
 
-          </div>
+      <div class="col-30">
+
+        <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; color: black; background: transparent; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+          <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+          {{tripgj.start_place.properties.displayName.split(',')[0]}}
+
         </div>
-        <div style="height: 20px;"></div>
-         <div id="sectionList" class="col button-small">
-
-              <div class="row" ng-repeat="section in trip.sections" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
-                  <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getFormattedTime(section.properties.start_ts)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p>
-
-                  </div>
-
-
-                  <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} km</div>
-                  <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
-
-              </div>
-          </div>
-
-        <div id="chart"><svg></svg></div>
-        <div style="" class="button-bar">
-            <button class="button button-stable button-block icon ion-refresh"
-                ng-click="refreshMap()">Refresh</button>
-            <button class="button button-stable button-block"
-                ng-click="refreshTiles()">Fix Map</button>
-            <!--
-            <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
-            -->
+        <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0; color: black; background: transparent;">
+          <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+          {{tripgj.end_place.properties.displayName.split(',')[0]}}
         </div>
-    </ion-content>
+      </div>
+    </div>
+    <div style="height: 10px;"></div>
+    <leaflet geojson="tripgj" id="detail" defaults="mapCtrl.defaults"
+             height="50%" width="100%" data-tap-disabled="true">
+    </leaflet>
+    <div style="height: 15px;"></div>
+    <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
+      <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
+        <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Distance</p>{{getFormattedDistance(trip.properties.distance)}} mi</div>
+      <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Time</p>{{getFormattedTimeRange(trip.properties.end_ts, trip.properties.start_ts)}}</div>
+      <div id="sectionPct" class="col">
+        <i class="{{mode}}" ng-repeat="mode in getPercentages(trip)[0]" style="margin-left: 15px; margin-right: 15px; font-size: 15px;"></i>
+        <br>
+        <a ng-repeat="percentage in getPercentages(trip)[1]" style="font-size: 10px; margin-left: 10px; margin-right: 10px;">{{percentage}}%</a>
+
+      </div>
+    </div>
+    <div style="height: 20px;"></div>
+    <div id="sectionList" class="col button-small">
+
+      <div class="row" ng-repeat="section in trip.sections" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
+        <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getFormattedTime(section.properties.start_ts)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p>
+
+        </div>
+
+
+        <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} mi</div>
+        <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
+
+      </div>
+    </div>
+
+    <div id="chart"><svg></svg></div>
+    <div style="" class="button-bar">
+      <button class="button button-stable button-block icon ion-refresh"
+              ng-click="refreshMap()">Refresh</button>
+      <!-- button class="button button-stable button-block"
+              ng-click="refreshTiles()">Fix Map</button -->
+      <!--
+      <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
+      -->
+      <button class="button button-stable button-block" id="survey-button"
+              ng-click="takeSurvey(tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)">
+        Survey
+      </button>
+    </div>
+  </ion-content>
 </ion-view>
