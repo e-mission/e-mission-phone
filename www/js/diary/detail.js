@@ -7,7 +7,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker, $state) {
+                                        CommHelper, PostTripManualMarker, $state, EditModeFactory) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -66,8 +66,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip, false);
 
-  console.log($scope.tripgj);
-  console.log($scope.trip);
+  console.log("TRIP");
+  console.log(JSON.stringify($scope.trip));
 
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
@@ -167,6 +167,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 
   $scope.editMode = function(param) {
     $state.go('root.main.diary-edit-mode', {tripId: param});
+  }
+
+  $scope.userEdit = function(trip) {
+    var edited = false
+    trip.sections.forEach(function(section) {
+      if(section.id.split('_')[0] == 'edited') {
+        edited = true
+      }
+    })
+    return edited
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {

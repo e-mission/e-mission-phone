@@ -15,16 +15,12 @@
         </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
-	<ion-content class="diary-entry">
+    <ion-content class="diary-entry">
         <ion-refresher
         pulling-text="Pull to refresh"
         on-refresh="refresh()">
         </ion-refresher>
-        <div  ng-if="inTrip()" class="control-list-item">
-            <div class="control-list-text">Viaje actual</div>
-            <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
-        </div>
-		<ion-list>
+        <ion-list>
         <ion-nav-view ></ion-nav-view>
         <!--
         This needs to be collection-repeat instead of ng-repeat on android.
@@ -89,15 +85,33 @@
                         <i class="ion-ios-arrow-right"></i>
                     </div>
                 </div>
-              </div>
-              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-50" style="text-align: center;">
-                  <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 130px;padding: 0;">Medio de transporte</button>
+             </div>
+             <div class="row" style="text-align: center;">
+                <div ng-if="isSingleModeTrip(tripgj)" class="col-50" style="text-align: center;">
+                  <div ng-if="checkMode(tripgj)" style="text-align: center;font-size: 14px;font-weight: 600;margin-left: auto;margin-right: auto;">
+                    Modo
+                  </div>
+                  <button ng-if="!checkMode(tripgj)" ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 130px;padding: 0;">Medio de transporte</button>
+                  <div ng-if="checkMode(tripgj)" style="font-size: 14px; margin-top: 5px;">
+                    {{mode}}
+                  </div>
+                </div>
+                <div ng-if="!isSingleModeTrip(tripgj)" class="col-50" style="text-align: center;">
+                  <div style="text-align: center;font-size: 14px;font-weight: 600;margin-left: auto;margin-right: auto;" ng-if="checkMode(tripgj)">
+                    Modo
+                  </div>
+                  Multiples modos
                 </div>
                 <div class="col-50" style="text-align: center;">
-                  <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 130px;padding: 0;">Motivo del viaje</button>
+                  <div ng-if="checkPurpose(tripgj)" style="text-align: center;font-size: 14px;font-weight: 600;margin-left: auto;margin-right: auto;">
+                    Propósito
+                  </div>
+                  <button ng-if="!checkPurpose(tripgj)" ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 130px;padding: 0;">Motivo del viaje</button>
+                  <div ng-if="checkPurpose(tripgj)" style="font-size: 14px; margin-top: 5px;">
+                    {{purpose}}
+                  </div>
                 </div>
-              </div>
+             </div>
             </div>
             </ion-item>
 

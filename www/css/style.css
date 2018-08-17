@@ -1900,4 +1900,8 @@ span.rz-bar-wrapper {
 #diary-item {
   padding: 0;
   border-width: 0;
-} 
+}
+.action-sheet-group{
+  overflow: scroll;
+  max-height: 400px;
+}

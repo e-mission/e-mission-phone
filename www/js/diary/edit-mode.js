@@ -7,7 +7,7 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
 .controller("EditModeCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, storage,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, EditModeFactory, $ionicHistory) {
   console.log("controller editMode called with params = "+
     JSON.stringify($stateParams));
 
@@ -49,6 +49,16 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
   console.log($scope.tripgj);
   console.log($scope.trip);
 
+  $scope.save = function() {
+    EditModeFactory.save($scope.trip)
+    $ionicHistory.goBack()
+  }
+
+  $scope.cancel = function() {
+    EditModeFactory.clear()
+    $ionicHistory.goBack()
+  }
+
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
      return ret_val;
@@ -56,9 +66,10 @@ angular.module('emission.main.diary.editMode',['ui-leaflet', 'ng-walkthrough',
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
-  leafletData.getMap('detail').then(function(map) {
-    map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
-  });
+  // leafletData.getMap('detail').then(function(map) {
+  //   map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
+  // });
+
 
   $scope.editMode = function(param) {
     $state.go('root.main.diary-edit-mode', {tripId: param});

@@ -15,15 +15,23 @@
 
             <div class="col-80">
 
-                 <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; color: black; background: transparent; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}}; background: transparent;">
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
             {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
                 </div>
-                 <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0; color: black; background: transparent;">
+                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0; background: transparent;">
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
             {{tripgj.end_place.properties.displayName.split(',')[0]}}
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div ng-if="!userEdit(trip)" style="text-align: center;margin: auto;">
+                <button ng-click ="editMode(tripgj.data.id)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 160px;padding: 0; margin-top:3px;">Editar medio de transporte</button>
+            </div>
+            <div ng-if="userEdit(trip)" style="text-align: center;margin: auto;">
+                Editado
             </div>
         </div>
         <div style="height: 10px;"></div>
@@ -31,11 +39,6 @@
             height="50%" width="100%" data-tap-disabled="true">
         </leaflet>
         <div style="height: 15px;"></div>
-        <div class="row" style="padding: 0px 0px 15px 0px">
-          <div class="col-50" style="text-align: center;margin: auto;">
-              <button ng-click ="editMode(tripgj.data.id)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd; padding: 0px 10px 0px 10px;">Editar medio de transporte</button>
-          </div>
-        </div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
             <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;">Distancia</p>{{getFormattedDistance(trip.properties.distance)}} km</div>

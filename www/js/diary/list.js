@@ -14,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger, $ionicPopover) {
+                                    Config, PostTripManualMarker, nzTour, storage, $ionicPopover, EditModeFactory) {
   console.log("controller DiaryListCtrl called");
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
   var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
@@ -41,15 +41,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       readAndUpdateForDay($rootScope.barDetailDate);
       $rootScope.barDetail = false;
     };
-    if($rootScope.displayingIncident == true) {
-      if (angular.isDefined(Timeline.data.currDay)) {
-          // page was already loaded, reload it automatically
-          readAndUpdateForDay(Timeline.data.currDay);
-      } else {
-         Logger.log("currDay is not defined, load not complete");
-      }
-      $rootScope.displayingIncident = false;
-    }
   });
 
   readAndUpdateForDay(moment().startOf('day'));
@@ -174,13 +165,140 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
+    var getTripModes = function(trip) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
+        Logger.log("Modes stored locally" + JSON.stringify(modes));
+        var tripMode = {};
+        if(modes.length > 0) {
+          modes.forEach(function(mode) {
+            if ((trip.properties.start_ts == mode.start_ts &&
+                 trip.properties.end_ts == mode.end_ts) && mode.trip_mode == true) {
+              tripMode = mode;
+              Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+            }
+          });
+        }
+          return tripMode;
+      });
+    }
+    var getTripPurposes = function(trip) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function(purposes) {
+        var tripPurpose = {};
+        if(purposes.length > 0) {
+          console.log("getTripPurposes: " + JSON.stringify(purposes))
+          purposes.forEach(function(purpose) {
+            if ((trip.properties.start_ts == purpose.start_ts &&
+                 trip.properties.end_ts == purpose.end_ts) && purpose.trip_purpose == true) {
+              tripPurpose = purpose;
+            }
+          });
+        }
+        console.log("tripPurpose" + JSON.stringify(tripPurpose));
+          return tripPurpose;
+      });
+    }
+
+    var addModeFeature = function(trip, mode) {
+      $scope.$apply(function() {
+        var modeFeature = mode;
+        Logger.log("Created mode feature" + JSON.stringify(modeFeature) + "for" + JSON.stringify(trip));
+        trip.features.push(modeFeature);
+        $scope.modeTripgj = angular.undefined;
+      });
+    }
+    var addPurposeFeature = function(trip, purpose) {
+      $scope.$apply(function() {
+        var purposeFeature = purpose;
+        trip.features.push(purposeFeature);
+        $scope.purposeTripgj = angular.undefined;
+      });
+    }
+
+    var isNotEmpty = function(obj) {
+      for(var prop in obj) {
+          if(obj.hasOwnProperty(prop))
+              return true;
+      }
+      return false;
+    };
+
+    var addUnpushedMode = function(trip) {
+      getTripModes(trip).then(function(mode) {
+        if(isNotEmpty(mode)){
+          addModeFeature(trip, mode);
+        }
+      });
+    }
+    var addUnpushedPurpose = function(trip) {
+      getTripPurposes(trip).then(function(purpose) {
+        if(isNotEmpty(purpose)){
+          addPurposeFeature(trip, purpose);
+        }
+      });
+    }
+
+    $scope.checkMode = function(trip) {
+      var hasMode = false;
+      trip.data.features.forEach(function(feature) {
+        if(feature.hasOwnProperty('label') && feature.hasOwnProperty('trip_mode')) {
+          if(feature.trip_mode == true) {
+            var modes = $scope.modeOptions.map(a => a.value);
+            if(modes.indexOf(feature.label) > -1) {
+              $scope.modeOptions.forEach(function(mode) {
+                if(feature.label == mode.value) {
+                    $scope.mode = mode.text;
+                  }
+                });
+            } else {
+              $scope.mode = feature.label;
+            }
+            hasMode =  true;
+          }
+        }
+      });
+      return hasMode;
+    }
+    $scope.checkPurpose = function(trip) {
+      // console.log("checkPurpose" + trip)
+      var hasPurpose = false;
+      trip.data.features.forEach(function(feature) {
+        if(feature.hasOwnProperty('label') && feature.hasOwnProperty('trip_purpose')) {
+          if(feature.trip_purpose == true) {
+            var purposes = $scope.purposeOptions.map(a => a.value);
+            if(purposes.indexOf(feature.label) > -1) {
+              $scope.purposeOptions.forEach(function(purpose) {
+                if(feature.label == purpose.value) {
+                    $scope.purpose = purpose.text;
+                  }
+                });
+            } else {
+              $scope.purpose = feature.label;
+            }
+            hasPurpose =  true;
+          }
+        }
+      });
+      return hasPurpose;
+    }
+
+    $scope.isSingleModeTrip = function(trip) {
+      var trip2 = Timeline.getTrip(trip.data.id);
+      var singleModeTrip = false;
+      if(trip2.sections.length == 1) singleModeTrip = true
+      // if(trip.sections.length == 1) singleModeTrip = true
+      return singleModeTrip;
+    }
+
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
           $scope.data.currDayTrips.forEach(function(trip, index, array) {
+              addUnpushedMode(trip);
+              addUnpushedPurpose(trip);
               PostTripManualMarker.addUnpushedIncidents(trip);
+              EditModeFactory.addUnpushedSectionMode(trip)
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
             function(trip) { return DiaryHelper.directiveForTrip(trip, false);});
@@ -203,14 +321,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
+
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'purple',
-    "icon ion-android-bus": "purple",
-    "icon ion-android-train": "navy",
-    "icon ion-android-car": "salmon",
-    "icon ion-plane": "red"};
+    "icon ion-speedometer":'red',};
       return { color: colors[mode] };
     }
 
@@ -245,12 +360,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
     */
 
+
+    var printModes = function() {
+      $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
+        console.log("Modes list");
+        console.log(modes);
+      });
+    };
+
     $scope.refresh = function() {
       if ($ionicScrollDelegate.getScrollPosition().top < 5) {
        readAndUpdateForDay(Timeline.data.currDay);
        $scope.$broadcast('invalidateSize');
       }
-    }
+      printModes();
+    };
 
     /* For UI control */
     $scope.groups = [];
@@ -390,6 +514,152 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $state.go('root.main.diary-detail', {tripId: param});
     };
 
+    $scope.showModes = DiaryHelper.showModes;
+
+   $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.modePopover = popover;
+   });
+
+   $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
+      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts, "trip_mode": true};
+      $scope.modeTripgj = tripgj;
+      Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
+      $scope.modePopover.show($event);
+   };
+
+   var closeModePopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftMode = angular.undefined;
+      Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
+      $scope.modePopover.hide($event);
+   };
+
+   $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
+       scope: $scope
+    }).then(function(popover) {
+       $scope.purposePopover = popover;
+    });
+
+    $scope.openPurposePopover = function($event, start_ts, end_ts, tripgj) {
+     $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts, "trip_purpose": true}
+     $scope.purposeTripgj = tripgj;
+     Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
+     $scope.purposePopover.show($event);
+    };
+
+    var closePurposePopover = function($event) {
+       $scope.draftPurpose = angular.undefined;
+       Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
+       $scope.purposePopover.hide($event);
+    };
+
+    $scope.chosen = {mode:''};
+
+   var checkOtherOption = function(choice, isOther) {
+    if(choice == 'other_mode') {
+      var text = "mode";
+      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',
+        buttons: [
+            { text: 'Cancel' }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        Logger.log("in choose other, other = "+JSON.stringify($scope.chosen));
+                        if(choice == 'other_mode') {
+                          $scope.storeMode($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+
+    }
+   };
+
+   $scope.choosePurpose = function() {
+    var purposeChosen = $scope.chosen.purpose
+    var isOther = false
+    if($scope.chosen.purpose != "other_purpose"){
+       $scope.storePurpose(purposeChosen, isOther);
+    } else {
+      isOther = true
+      checkOtherOption(purposeChosen, isOther);
+    }
+    closePurposePopover();
+  };
+
+  $scope.chooseMode = function (){
+    var modeChosen = $scope.chosen.mode
+    $scope.chosen.mode = ''
+    var isOther = false
+    if(modeChosen != "other_mode"){
+      $scope.storeMode(modeChosen, isOther);
+    } else {
+      isOther = true
+      checkOtherOption(modeChosen, isOther);
+    }
+    closeModePopover();
+  };
+
+  $scope.modeOptions = [
+    {text:'Caminando', value:'walk'},
+    {text:'Bicicleta',value:'bike'},
+    {text:'Auto - como conductor',value:'car_driver'},
+    {text:'Auto - como acompañante',value:'car_companion'},
+    {text:'Moto - como conductor',value:'moto_driver'},
+    {text:'Moto - como acompañante',value:'moto_companion'},
+    {text:'Ómnibus',value:'bus'},
+    {text:'Taxi',value:'taxi'},
+    {text:'Muv', value: 'muv'},
+    {text:'Tren',value:'train'},
+    {text:'Transporte laboral',value:'employees_customers_transport'},
+    {text:'Otro',value:'other_mode'}
+  ];
+  $scope.purposeOptions = [
+    {text:'Casa', value:'home'},
+    {text:'Trabajo',value:'work'},
+    {text:'Colegio/Universidad',value:'school'},
+    {text:'Trámites',value:'procedures'},
+    {text:'Recreación, deporte',value:'exercise'},
+    {text:'Encuentro social',value:'entertainment'},
+    {text:'Atención de salud',value:'personal_med'},
+    {text:'Compras y mercado',value:'shopping'},
+    {text:'Buscar/Llevar a alguien',value:'pick_drop'},
+    {text:'Religioso', value:'religious'},
+    {text:'Otro',value:'other_purpose'}
+  ];
+
+   $scope.storeMode = function(mode_val, isOther) {
+      $scope.draftMode.label = mode_val;
+      Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
+      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function() {
+        console.log($scope.modeTripgj);
+        addUnpushedMode($scope.modeTripgj.data);
+      });
+      if(isOther == true)
+        $scope.draftMode = angular.undefined;
+   }
+
+   $scope.storePurpose = function(purpose_val, isOther) {
+      $scope.draftPurpose.label = purpose_val;
+      Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
+      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function() {
+        addUnpushedPurpose($scope.purposeTripgj.data);
+      });
+      if(isOther == true)
+        $scope.draftMode = angular.undefined;
+    }
+
     $scope.redirect = function(){
       $state.go("root.main.current");
     };
@@ -417,137 +687,5 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.checkTripState();
       return in_trip;
     };
-
-    $scope.showModes = DiaryHelper.showModes;
-
-    $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
-           scope: $scope
-        }).then(function(popover) {
-           $scope.modePopover = popover;
-        });
-
-        $scope.openModePopover = function($event, start_ts, end_ts) {
-            $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts}
-            Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
-           $scope.modePopover.show($event);
-        };
-
-        var closeModePopover = function($event) {
-          $scope.draftMode = angular.undefined;
-          Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
-           $scope.modePopover.hide($event);
-        };
-
-        $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
-           scope: $scope
-        }).then(function(popover) {
-           $scope.purposePopover = popover;
-        });
-
-        $scope.openPurposePopover = function($event, start_ts, end_ts) {
-           $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts}
-           Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
-           $scope.purposePopover.show($event);
-        };
-
-       var closePurposePopover = function($event) {
-           $scope.draftPurpose = angular.undefined;
-           Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
-           $scope.purposePopover.hide($event);
-        };
-
-         $scope.chosen = {mode:'',purpose:'',other:''};
-
-        var checkOtherOption = function(choice) {
-         if(choice == 'other_mode' || choice == 'other_purpose') {
-           var text = choice == 'other_mode' ? "medio de transporte" : "motivo del viaje";
-           $ionicPopup.show({title: "Favor ingresar el " + text + ".",
-             scope: $scope,
-             template: '<input type = "text" ng-model = "chosen.other">',
-             buttons: [
-                 { text: 'Cancelar' }, {
-                    text: '<b>Guardar</b>',
-                    type: 'button-positive',
-                       onTap: function(e) {
-                          if (!$scope.chosen.other) {
-                                e.preventDefault();
-                          } else {
-                             if(choice == 'other_mode') {
-                               $scope.storeMode($scope.chosen.other);
-                               $scope.chosen.other = '';
-                               closeModePopover();
-                             } else {
-                               $scope.storePurpose($scope.chosen.other);
-                               $scope.chosen.other = '';
-                               closePurposePopover();
-                             }
-                             return $scope.chosen.other;
-                          }
-                       }
-                 }
-             ]
-           });
-
-         }
-        };
-
-       $scope.choosePurpose = function() {
-         if($scope.chosen.purpose != "other_purpose"){
-           $scope.storePurpose($scope.chosen.purpose);
-           closePurposePopover();
-         } else {
-           checkOtherOption($scope.chosen.purpose);
-         }
-       };
-
-       $scope.chooseMode = function (){
-         console.log("choose mode: " + $scope.chosen.mode);
-         if($scope.chosen.mode != "other_mode"){
-           $scope.storeMode($scope.chosen.mode);
-           closeModePopover();
-         }else {
-           checkOtherOption($scope.chosen.mode);
-         }
-
-        }
-
-        $scope.modeOptions = [
-        {text:'Caminando', value:'walk'},
-        {text:'Bicicleta',value:'bike'},
-        {text:'Auto - como conductor',value:'car_driver'},
-        {text:'Auto - como acompañante',value:'car_companion'},
-        {text:'Moto - como conductor',value:'moto_driver'},
-        {text:'Moto - como acompañante',value:'moto_companion'},
-        {text:'Ómnibus',value:'bus'},
-        {text:'Taxi',value:'taxi'},
-        {text:'Muv', value: 'muv'},
-        {text:'Tren',value:'train'},
-        {text:'Transporte laboral',value:'employees_customers_transport'},
-        {text:'Otro',value:'other_mode'}];
-
-        $scope.purposeOptions = [
-        {text:'Casa', value:'home'},
-        {text:'Trabajo',value:'work'},
-        {text:'Colegio/Universidad',value:'school'},
-        {text:'Trámites',value:'procedures'},
-        {text:'Recreación, deporte',value:'exercise'},
-        {text:'Encuentro social',value:'entertainment'},
-        {text:'Atención de salud',value:'personal_med'},
-        {text:'Compras y mercado',value:'shopping'},
-        {text:'Buscar/Llevar a alguien',value:'pick_drop'},
-        {text:'Religioso', value:'religious'},
-        {text:'Otro',value:'other_purpose'}];
-
-        $scope.storeMode = function(mode_val) {
-          $scope.draftMode.label = mode_val;
-          Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
-          $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
-        }
-
-        $scope.storePurpose = function(purpose_val) {
-          $scope.draftPurpose.label = purpose_val;
-          Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
-          $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
-        }
 
 });
