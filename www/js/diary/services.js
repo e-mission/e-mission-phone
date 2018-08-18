@@ -38,6 +38,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "BUS": "ion-android-bus",
+    "TRAIN": "ion-android-train",
+    "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -68,6 +71,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // "RUNNING":" ion-android-walk",
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-speedometer",
+    "BUS": "ion-android-bus",
+    "TRAIN": "ion-android-train",
+    "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -122,6 +128,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "WALKING":"ion-android-walk",
     "RUNNING":"ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "CAR": "ion-android-car",
+    "BUS": "ion-android-bus",
+    "TRAIN": "ion-android-train",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -382,6 +391,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
             case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
+            case "TRAIN": return getColoredStyle(baseDict, 'skyblue');
+            case "BUS": return getColoredStyle(baseDict, 'navy');
+            case "CAR": return getColoredStyle(baseDict, 'salmon');
             case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
             case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
             case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
@@ -392,7 +404,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window, $ionicPopup,
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
   var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -703,13 +715,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return undefined;
           }
           var sortedLocationList = locationList.sort(tsEntrySort);
-          var tripStartPoint = sortedLocationList[0];
-          var tripEndPoint = sortedLocationList[sortedLocationList.length-1];
+          var retainInRange = function(loc) {
+            return (tripStartTransition.data.ts <= loc.data.ts) && 
+                    (loc.data.ts <= tripEndTransition.data.ts)
+          }
+
+          var filteredLocationList = sortedLocationList.filter(retainInRange);
+
+          var tripStartPoint = filteredLocationList[0];
+          var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
             place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
-            points2Geojson(trip, sortedLocationList)
+            points2Geojson(trip, filteredLocationList)
           ];
           var section_gj = features[2];
           var trip_gj = {
