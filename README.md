@@ -253,8 +253,8 @@ in startup.
 Troubleshooting
 ---
 
-Troubleshooting tips have now been moved to their own wiki page
-https://github.com/e-mission/e-mission-phone/wiki/Troubleshooting-tips-(FAQ)
+Troubleshooting tips have been moved to the e-mission-phone section of the e-mission-docs repo:
+https://github.com/e-mission/e-mission-docs/blob/master/docs/e-mission-phone/troubleshooting_tips_faq.md
 
 Debugging
 ---
@@ -298,3 +298,8 @@ $ git pull upstream master
 $ git push origin master
 $ git branch -d mybranch
 ```
+
+## Wiki: ##
+----------
+All wikis have been moved to their own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). E-mission phone specific wikis can be found here:
+https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
