@@ -5,6 +5,11 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
+Additional Documentation
+---
+Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
+https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
+
 Updating the UI only
 ---
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
@@ -298,8 +303,3 @@ $ git pull upstream master
 $ git push origin master
 $ git branch -d mybranch
 ```
-
-## Wiki: ##
-----------
-All wikis have been moved to their own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). E-mission phone specific wikis can be found here:
-https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
