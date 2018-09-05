@@ -42,8 +42,10 @@
             <div ng-switch-when="single_choice">
               <ion-list ng-repeat="option in question.options">
                 <ion-radio ng-model="question.response" ng-value="option.value"
-                           style="text-align: center; color: #585858 !important ;">
-                  {{option.text}}
+                           style="text-align: center; color: #585858 !important;">
+                  <label text-wrap>
+                    {{option.text}}
+                  </label>
                 </ion-radio>
               </ion-list>
             </div>
