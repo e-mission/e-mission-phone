@@ -220,7 +220,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
     $scope.curSlide = 0;
     $scope.nextSlide = function (response) {
-      if (response == null) {
+      if (response === null || response === undefined) {
         return noSelectPopup();
       }
 
@@ -262,7 +262,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     }
 
     $scope.doneSlide = function (response) {
-      if (response == null || response == "") {
+      if (response === null || response === undefined || response === "") {
         return noSelectPopup();
       }
 
