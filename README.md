@@ -5,6 +5,11 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
+Additional Documentation
+---
+Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
+https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
+
 Updating the UI only
 ---
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
@@ -253,8 +258,8 @@ in startup.
 Troubleshooting
 ---
 
-Troubleshooting tips have now been moved to their own wiki page
-https://github.com/e-mission/e-mission-phone/wiki/Troubleshooting-tips-(FAQ)
+Troubleshooting tips have been moved to the e-mission-phone section of the e-mission-docs repo:
+https://github.com/e-mission/e-mission-docs/blob/master/docs/e-mission-phone/troubleshooting_tips_faq.md
 
 Debugging
 ---
