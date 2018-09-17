@@ -1,0 +1,292 @@
+<ion-view view-title="Goals">
+     <ion-nav-buttons side="left">
+      <button ng-if="screen" class="button button-icon" ng-click="refreshPage()">
+        <i class="icon ion-android-refresh"></i>
+      </button>
+     </ion-nav-buttons>
+    <div ng-if="screen">
+      <div id="message" class="has-header" ng-if="reward" style="position: fixed;width: 100px;height: 20px;background-color: #6e6e6e;;border-top-right-radius: 10px;border-bottom-right-radius: 10px;z-index:1;">
+          <i class="icon ion-arrow-up-b" style="font-size: 15px; color:#4BC3AB; float:left; margin: 0 8px 0 8px;"></i>
+          <img src="img/ic_header_gold.png" style="height:13px; width:13px;float: left;margin-top:3px">
+          <p style="font-size: 10px; color:#fff; float: left; margin: 0 8px 0 2px;">{{gainedGold}}</p>
+          <i class="icon ion-android-star" style="font-size:15px; color: #ffbe5d;float:left;"></i>
+          <p style="font-size: 10px; color:#fff; float: left; margin-left: 2px;">{{gainedExp}}</p>
+      </div>
+      <div id="message" class="has-header" ng-if="loss" style="position: fixed;width: 100px;height: 20px;background-color: #6e6e6e;;border-top-right-radius: 10px;border-bottom-right-radius: 10px;z-index:1;">
+          <i class="icon ion-arrow-down-b" style="font-size: 15px; color:#ff6064; float:left; margin: 0 20px 0 8px;"></i>
+          <i class="icon ion-heart" style="font-size:15px; color: #ff6064;float:left;"></i>
+          <p style="font-size: 10px; color:#fff; float: left; margin-left: 2px;">{{lossHp}}</p>
+      </div>
+    </div>
+  <ion-content class="has-header" overflow-scroll="true" padding="false">
+    <!--div>
+        <img ng-src="https://habitica-assets.s3.amazonaws.com/avatars/4f369eef-aed4-4408-bcbf-b34896daf7e3.png">
+    </div-->
+    <div ng-if="screen">
+      <div style="height:157px; position:relative;">
+        <a class="item item-thumbnail-left-avatar" id="avatar">
+        <!--Habitica jade to html code starts here-->
+          <figure class="herobox background_{{profile.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; profile.items.currentPet), hasMount: (true &amp;&amp; profile.items.currentMount), noBackgroundImage: !profile.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==profile._id}">
+            <div class="character-sprites">
+              <!-- Mount Body-->
+              <span ng-if="profile.items.currentMount" class="Mount_Body_{{profile.items.currentMount}}"></span>
+              <!-- Buffs that cause visual changes to avatar: Snowman, Ghost, Flower, etc-->
+              <span ng-if="profile.stats.buffs.snowball" class="snowman"></span>
+              <span ng-if="profile.stats.buffs.spookySparkles" class="ghost"></span>
+              <span ng-if="profile.stats.buffs.shinySeed" class="avatar_floral_{{profile.stats.class}}"></span>
+              <span ng-if="profile.stats.buffs.seafoam" class="seafoam_star"></span>
+              <!-- Show flower ALL THE TIME!!!--><!-- See https://github.com/HabitRPG/habitrpg/issues/7133-->
+              <span class="hair_flower_{{profile.preferences.hair.flower}}"></span>
+              <!-- Show avatar only if not currently affected by visual buff-->
+              <span ng-if="!profile.stats.buffs.snowball &amp;&amp; !profile.stats.buffs.spookySparkles &amp;&amp; !profile.stats.buffs.shinySeed &amp;&amp; !profile.stats.buffs.seafoam">
+                <span class="chair_{{profile.preferences.chair}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.back : profile.items.gear.equipped.back"></span>
+                <span ng-class="profile.preferences.sleep ? 'skin_' + profile.preferences.skin + '_sleep' : 'skin_' + profile.preferences.skin"></span>
+                <span class="{{profile.preferences.size}}_shirt_{{profile.preferences.shirt}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.preferences.size + '_' + profile.items.gear.costume.armor : profile.preferences.size + '_' + profile.items.gear.equipped.armor"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.back + '_collar' : profile.items.gear.equipped.back + '_collar'"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.body : profile.items.gear.equipped.body"></span>
+                <span class="head_0"></span>
+                <span class="hair_base_{{profile.preferences.hair.base}}_{{profile.preferences.hair.color}}"></span>
+                <span class="hair_bangs_{{profile.preferences.hair.bangs}}_{{profile.preferences.hair.color}}"></span>
+                <span class="hair_mustache_{{profile.preferences.hair.mustache}}_{{profile.preferences.hair.color}}"></span>
+                <span class="hair_beard_{{profile.preferences.hair.beard}}_{{profile.preferences.hair.color}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.eyewear : profile.items.gear.equipped.eyewear"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.head : profile.items.gear.equipped.head"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.headAccessory : profile.items.gear.equipped.headAccessory"></span>
+                <span class="hair_flower_{{profile.preferences.hair.flower}}"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.shield : profile.items.gear.equipped.shield"></span>
+                <span ng-class="profile.preferences.costume ? profile.items.gear.costume.weapon : profile.items.gear.equipped.weapon"></span>
+              </span>
+              <!-- Mount Head-->
+              <span ng-if="profile.items.currentMount" class="current-mount Mount_Head_{{profile.items.currentMount}}"></span>
+              <!-- Resting-->
+              <span ng-class="{zzz:profile.preferences.sleep}"></span>
+              <!-- Pet-->
+              <span ng-show="profile.items.currentPet" class="current-pet Pet-{{profile.items.currentPet}}"></span>
+            </div>
+          </figure>
+          <!--Habitica jade to html code ends here-->
+          <div id="stats-wrapper">
+            <i id="habitica-heart-icon" class="icon ion-heart"></i>
+            <progress value="{{hp}}" max="{{profile.stats.maxHealth}}"></progress>
+            <div class="stats-value-wrapper">
+              <p class="stats-value">{{hp}}/{{profile.stats.maxHealth}}</p>
+              <p class="stats-name">Health</p>
+            </div>
+          </div>
+          <div id="stats-wrapper">
+            <i id="habitica-star-icon" class="icon ion-android-star"></i>
+            <progress class="golden" value="{{profile.stats.exp}}" max="{{profile.stats.toNextLevel}}"></progress>
+            <div class="stats-value-wrapper">
+              <p class="stats-value">{{profile.stats.exp}}/{{profile.stats.toNextLevel}}</p>
+              <p class="stats-name" style="margin-top: 1.5px;">Experience</p>
+            </div>
+          </div>
+          <div class="col" style="margin: auto; margin-top: 5px;margin-left: 10%;">
+            <img src="img/ic_header_gold.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{gold}}</p>
+            <img src="img/ic_header_silver.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 15px 0 2px;">{{silver}}</p>
+            <img src="img/ic_header_gem.png" style="height:15px; width:15px;float: left;"><p style="font-size: 10px; float: left; margin: 0 0 0 2px;">{{gem}}</p>
+          </div>
+          <div class="col" style="margin-left: 10%; float:left;">
+            <div style="text-align:center; padding-top:6px">
+                <img in-if="profile.stats.class == 'warrior'" src="img/ic_header_warrior.png" style="height:20px; width:20px; float:left;">
+                <!--img in-if="profile.stats.class == 'healer'" src="img/ic_header_healer.png" style="height:20px; width:20px; float:left;">
+                <img in-if="profile.stats.class == 'mage'" src="img/ic_header_mage.png" style="height:20px; width:20px; float:left;">
+                <img in-if="profile.stats.class == 'rogue'" src="img/ic_header_rogue.png" style="height:20px; width:20px; float:left;"-->
+              <p style="font-size:12px; float:left;padding-left:5px ">{{profile.profile.name}}</p>
+            </div>
+              <p style="font-size:12px; margin:0px; float:right;margin-right: 10%;">Level: <b>{{profile.stats.lvl}}</b></p>
+          </div>
+        </a>
+      </div>
+      <div class="row" id="costume-tab">
+        <div class="col">
+         <!--
+          <button id="challenge" class="button" ng-class="{'active': isActive}" ng-click="activeButton()" type="button">Challenges</button>
+         -->
+          <button class="button invite-friends" ng-disabled="!hasParty" ng-click="inviteToParty()" type="Button">Invite friends</button>
+          <button id="party" class="button party" ng-class="{'active': isActiveP}" ng-click="partyButton()" type="button">Party</button> 
+        </div>
+      </div>
+      <div>
+        <div ng-if="isActive" ng-cloak>
+          <ion-scroll style="background:#fff;color:#6e6e6e;font-weight: 700;height:200px; text-align:center;">
+
+            <ion-list>
+              <div style="height: 200px;padding: 25px 10px 10px 10px;" ng-repeat="challenge in challenges">
+                <p style="font-size:18px">{{challenge.name}}</p>
+                <p>{{challenge.description}} </p>
+                <p> Prize: {{challenge.prize}} gems</p>
+                <button ng-if="!(joinedChallenges.includes(challenge._id))" class="button" ng-click="joinChallenge(challenge._id)" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                  Join Challenge
+                </button>
+                <button ng-if="joinedChallenges.includes(challenge._id)" class="button" ng-click="leaveChallenge(challenge._id)" style="background:#F75F74;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                  Leave
+                </button>
+                <div id="scroll-message" ng-if="scrollMessage" class="icon ion-arrow-down-c" style="font-size:12px; margin-top:12px"><p style="font-size:10px; margin-top:-8px">Scroll down</p>
+                </div>
+              </div>
+            </ion-list>
+          </ion-scroll>
+        </div>
+        <div ng-if="isActiveP" ng-cloak>
+          <!--div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 15px;">
+            Join the party and battle monsters with E-mission members!
+            <button class="button" ng-click="joinParty()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+            Join Party
+            </button>
+          </div-->
+           <div ng-if="!hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top:60px; text-align:center;font-size: 18px;">
+            Create a party
+            <label class="item item-input" id="no-border">
+              <input type="text" placeholder="Party name" ng-model="party.name" style="text-align: center;">
+            </label>
+            <button class="button" ng-click="createParty()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+            Create
+            </button>
+          </div>
+          <ion-scroll ng-if="hasParty" style="background:#fff;color:#6e6e6e; font-weight: 700;height:200px;padding-top: 10px; text-align:center;" ng-cloak>
+            <div ng-if="hasQuestRequest " ng-cloak style="font-size: 15px; padding-top:50px">
+              Your group leader has requested you to join a quest.
+              <br>
+              <button class="button" ng-click="joinQuest()" style="background:#4BC3AB;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
+              Join Quest
+              </button>
+              <button class="button" ng-click="rejectQuest()" style="background:#F75F74;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;display: inline;">
+              Reject Quest
+              </button>
+            </div>
+            <div ng-if="!hasQuestRequest &amp;&amp; !inQuest">
+              <button class="button button-icon" style="float:right;padding-right:15px;color:#6e6e6e;" ng-click="refreshPage()">
+            <i class="icon ion-android-refresh"></i>
+            </button>
+              <div style="padding-top:50px;font-size:15px;">
+                Please wait for the next quest to start...
+                <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                  Members
+                </button>
+                <button class="button" ng-click="inviteToParty()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 20px;">
+            Invite Friends
+            </button>
+              </div>
+            </div>
+              <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; !questActive">
+              <button class="button button-icon" style="float:right;padding-right:15px;" ng-click="refreshPage()">
+              <i class="icon ion-android-refresh"></i>
+              </button>
+              <div style="font-size: 15px; padding-top:50px">
+                Please wait for your members to accept the quest.
+                <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                  Members
+                </button>
+              </div>
+            </div>
+            <div ng-if="!hasQuestRequest &amp;&amp; inQuest &amp;&amp; questActive" style="position:relative;" ng-cloak>
+              <button class="button button-icon" style="position: absolute;right:10px;color:#6e6e6e;" ng-click="refreshPage()">
+              <i class="icon ion-android-refresh"></i>
+              </button>
+              <h4 style="text-align: center; color:#6e6e6e;margin-top: 0px;font-weight:700;">{{partyName}}</h4>
+              <div class="col col-50">
+                <img id="boss_{{monster}}" class="boss_png" src="common/img/sprites/spritesmith/quests/bosses/quest_TEMPLATE_FOR_MISSING_IMAGE.png"></img>
+              </div>
+              <div class="col col-50" style="float:right;padding-right:2%!important">
+                <h5 style="font-weight:700;color:#6e6e6e;">{{bossName}}</h5>
+                <progress class="purple quest-boss-bar" value="{{bossHp}}" max="{{bossMaxHealth}}"></progress>
+                <p style="text-align:center font-weight: 700;color:#6e6e6e;">{{bossHp}}/{{bossMaxHealth}}</p>
+                <button class="button" ng-click="openPartyModal()" style="background:#3D3240;font-weight:700;border-radius:4px;color:#fff;display:block;margin:auto;padding: 1;line-height: 25px !important;min-height: 25px !important;top: 10px;">
+                Members
+                </button>
+              </div>
+              <div style="padding: 0px 10px 20px 10px !important; position: absolute; top: 160px;">
+                <p style="text-align:center font-weight: 700;color:#6e6e6e;">{{questNote}}</p>
+              </div>
+            </div>
+          </ion-scroll>
+        </div>
+      <div>
+      <div class="row" style="border-top-style: solid;border-top-color: #ddd;border-top-width: 0.5px;border-bottom-style: solid;border-bottom-color: #ddd;border-bottom-width: 0.5px;">
+       <a id="leaderboard" class="col col-25" style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="openLeaderboard()">
+          <i class="icon ion-podium" style="display: block;font-size: 20px;"></i>
+          <span style="font-size: 12px">
+            Leaderboard
+          </span>
+        </a>
+        <a id="webkey" class="col col-25 retrieve-pw" style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="showCreds()">
+          <i class="icon ion-key" style="display: block;font-size: 20px;"></i>
+          <span style="font-size: 12px">
+            Website Key
+          </span>
+        </a>
+        <a id="challenge" class="col col-25 " style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="openChallenge()">
+          <i class="icon ion-person-stalker" style="display: block;font-size: 20px;"></i>
+          <span style="font-size: 12px">
+            Challenge
+          </span>
+        </a>
+        <a id="add-goal" class="col col-25" style="text-align: center;color:#6e6e6e;margin-top: 5px;margin-bottom: 5px;" ng-click="toBrowser()">
+          <i class="icon ion-more" style="display: block;font-size: 20px;"></i>
+          <span style="font-size: 12px">
+            Advanced
+          </span>
+        </a>
+      </div>
+      <ion-list class="habit-list">
+        <ion-item id="goal-content" class="habit-list-border" ng-repeat="goal in goals">
+          <!--div class="row">
+           <lable class="checkbox">
+               <input type="checkbox" ng-click="completeGoal()">
+           </lable-->
+           <!--div class="col col-20" style="display:flex; justify-content:flex-end; align-items:center;">
+           <button class="button button-clear" style="font-size:2rem !important">
+             <i icon="ion-checkmark-circled"></i>
+           </button>
+           </div-->
+           <div class="col col-25" style="float: left; padding-right: 10px !important;">
+              <div ng-if="goal.up &amp;&amp; !goal.down" class="row row-center" id="up_value_{{goal.value}}" style="padding-top: 10px;padding-bottom: 10px">
+                <button class="button button-icon" ng-click="scoreUp(goal._id)" ng-disabled="plusInProcess[goal._id]" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
+               <i class="icon ion-plus" style="color:#fff;"></i>
+               </button>
+              </div>
+              <div ng-if="!goal.up &amp;&amp; goal.down" class="row row-center" id="down_value_{{goal.value}}" style="padding-top: 10px;padding-bottom: 10px">
+                <button class="button button-icon" ng-click="scoreDown(goal._id)" ng-disabled="minusInProcess[goal._id]" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
+               <i class="icon ion-minus" style="color:#fff;"></i>
+               </button>
+              </div>
+            </div>
+            <div class="col col-25" style="float:left;padding-right:10px!important;">
+            <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" id="up_value_{{goal.value}}">
+              <button class="button button-icon" ng-click="scoreUp(goal._id)" ng-disabled="plusInProcess[goal._id]"style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
+               <i class="icon ion-plus" style="color:#fff;"></i>
+               </button>
+              </div>
+              <div ng-if="goal.up &amp;&amp; goal.down" class="row row-center" id="down_value_{{goal.value}}" style="margin-top: 0;">
+                <button class="button button-icon" ng-click="scoreDown(goal._id)" ng-disabled="minusInProcess[goal._id]" style="margin-left: auto;margin-right: auto;display: block;min-height: 0;min-width: 100%;">
+                <i class="icon ion-minus" style="color:#fff;">
+                </i>
+                </button>
+              </div>
+            </div>
+          <div style="padding-top:15px">
+           <h2 style="font-weight: 700;color:#6e6e6e;">{{goal.name}}</h2>
+           <p style="font-size: 10px;color:#6e6e6e;">{{goal.note}}</p>
+           </div>
+          <!--ion-option-button class="button-calm">Edit</ion-option-button-->
+          <ion-option-button class="button-assertive" ng-click="deleteGoal(goal._id, goal)">Delete</ion-option-button>
+         </ion-item>
+       </ion-list>
+       </div>
+    </div>
+    </div>
+        <div ng-if="!screen">
+        <h1 class="signup-title" style="text-align:center">Signup</h1>
+
+          <label class="item item-input" id="goal-signup-field">
+            <input type="text" placeholder="Choose a display name" ng-model="theUser.username" style="text-align:center">
+          </label>
+
+        <button class="button signup-button button-light-green" ng-click="signup()">Submit</button>
+    </div>
+</ion-content>
+</ion-view>
+
