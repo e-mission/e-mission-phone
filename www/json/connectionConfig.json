@@ -1,0 +1,15 @@
+{
+    "connectUrl": "http://52.91.65.149:8080",
+    "android": {
+        "auth": {
+            "method": "token_list",
+            "clientID": "8QU4GCAZ"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "token_list",
+            "clientID": "8QU4GCAZ"
+        }
+    }
+}
