@@ -13,17 +13,25 @@
                 </div>
             </div>
 
-            <div class="col-30">
+            <div class="col-80">
 
-                 <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; color: black; background: transparent; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}};">
+                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: {{getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == ''? '0':'20px'}}; background: transparent;">
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
             {{tripgj.start_place.properties.displayName.split(',')[0]}}
 
                 </div>
-                 <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0; color: black; background: transparent;"> 
+                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0; background: transparent;">
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
             {{tripgj.end_place.properties.displayName.split(',')[0]}}
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div ng-if="!userEdit(trip)" style="text-align: center;margin: auto;">
+                <button ng-click ="editMode(tripgj.data.id)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 160px;padding: 0; margin-top:3px;">Editar medio de transporte</button>
+            </div>
+            <div ng-if="userEdit(trip)" style="text-align: center;margin: auto;">
+                Editado
             </div>
         </div>
         <div style="height: 10px;"></div>

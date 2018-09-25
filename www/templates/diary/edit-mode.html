@@ -1,0 +1,15 @@
+<ion-view ng-class="getTripBackground()" hide-back-button="true">
+    <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title>
+    <ion-nav-buttons side="right">
+         <button class="button" ng-click="save()">Guardar</button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="left">
+         <button class="button" ng-click="cancel()">Cancelar</button>
+    </ion-nav-buttons>
+    <ion-content class="has-header" ng-class="getTripBackground" overflow-scroll="true" padding="true">
+        <div style="height: 10px;"></div>
+        <leaflet geojson="tripgj" id="detail" defaults="mapCtrl.defaults"
+            height="80%" width="100%" data-tap-disabled="true">
+        </leaflet>
+    </ion-content>
+</ion-view>
