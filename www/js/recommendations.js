@@ -1,12 +1,12 @@
 'use strict';
 
-angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
+angular.module('emission.main.recommendations',['emission.services', 'emission.plugin.logger',
                 'emission.survey.launch',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral', 'angularLocalStorage',
                 'ng-walkthrough', 'nzTour'])
 
-.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
+.controller('RecommendationsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
     $scope.cSF = 1000;
     var map = document.getElementById('mapModal');

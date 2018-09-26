@@ -12,7 +12,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
     UpdateCheck, StartPrefs, PushNotify,
     LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
@@ -56,7 +56,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
       var personalTabs = ['root.main.common.map',
                           'root.main.control',
                           'root.main.metrics',
-                          'root.main.goals',
+                          'root.main.recommendations',
                           'root.main.diary']
       if (isInList(toState.name, personalTabs)) {
         // toState is in the personalTabs list
