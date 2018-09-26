@@ -1,0 +1,96 @@
+<ion-view view-title="Recommendations" class="ion-view-background">
+     <ion-nav-buttons side="left">
+      <button ng-if="screen" class="button button-icon" ng-click="refreshPage()">
+        <i class="icon ion-android-refresh"></i>
+      </button>
+     </ion-nav-buttons>
+     <style>
+      .recommendbox {
+        width : 300px;
+        height : 300px;
+        padding: 20px;
+        background-color: #DEDDDD;
+        margin: 20px;
+      }
+      .modal {
+        display : none;
+        position : sticky;
+        z-index : 1;
+        bottom : 0;
+        width : 100%;
+        height : 100vh;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.3);
+      }
+      .modal-content {
+        background-color : #DEDEDE;
+        position: -webkit-sticky;
+        position: sticky;
+        top : 0;
+        margin : 20px;
+        padding : 20px;
+        width : 300px;
+      }
+      .close {
+        color : black;
+        float : right;
+        font-size : 28px;
+      }
+    </style>
+  <ion-content class="has-header" overflow-scroll="true" padding="false">
+     <center><div class="recommendbox">
+       <h3>Cafes and Beverage ☕</h3>
+       <h4>
+       <p> Ernie's Espressx
+         <p>1234 Sesame St.
+           <p> 0.2 Miles Away
+             <p><img src="img/regular/regular_4_half.png" width="100" />
+             <button class="button button-block button-balanced button-outline" ng-click="clickDirections()">Drections</button>
+             <button class="button button-block button-balanced button-outline" ng-click="clickReview()">Review</button>
+         </h4>
+     </div></center>
+     <center><div class="recommendbox">
+       <h3>Education 🏫</h3>
+       <h4>
+         <p>UC Berkeley</p>
+         <p>1 Telegraph Ave.
+           <p>1 Mile Away
+             <p><img src="img/regular/regular_5.png" width="100" />
+               <button class="button button-block button-balanced button-outline" ng-click="clickDirections()">Drections</button>
+               <button class="button button-block button-balanced button-outline" ng-click="clickReview()">Review</button>
+       </h4>
+     </div></center>
+     <center>
+     <div id="mapModal" class="modal">
+     <div class="modal-content">
+         <h3>Directions</h3>
+       <p>1. Walk South on 100th Street
+         <p>2. Turn left on E. 45th Blvd
+           <p>3. Walk West on E. 45th Blvd
+             <p>4. Turn right on Sesame St.
+               <iframe width="250" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-122.26986058987679%2C37.86591047772012%2C-122.25990423001352%2C37.87693742783586&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/#map=16/37.8714/-122.2649">View Larger Map</a></small>
+               <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
+       </center>
+     </div>
+   </div>
+   <center>
+   <div id="reviewModal" class="modal">
+     <div class="modal-content">
+       <div align="left">
+       <h3>Reviews</h3>
+       <p><img src="img/regular/regular_4_half.png" width="100" />
+       <p>I really like this cafe! It has great vibes!
+         <p><img src="img/small/small_5.png" width="50" /> - Jane, San Francisco
+           <p>I really like their espresso! It goes great with their
+             freshly baked rolls!
+             <p><img src="img/small/small_5.png" width="50" /> - John, Atlanta
+               <p>The drinks are ok but the service is kind of slow.
+                 <p><img src="img/small/small_4.png" width="50" /> - Sam, Boston
+         </div>
+         </right>
+         <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
+     </div>
+   </div>
+ </center>
+</ion-content>
+</ion-view>

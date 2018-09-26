@@ -63,7 +63,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       storage.set(INTRO_DONE_KEY, true);
       // Need to initialize this first because if we try to
       // create it inlike with {key: value}, the key becomes the
-      // word "INTRO_DONE_KEY" and the stored object is 
+      // word "INTRO_DONE_KEY" and the stored object is
       // {"INTRO_DONE_KEY":"2018-01-31T06:26:02+00:00"}
       var to_store = {};
       to_store[INTRO_DONE_KEY] = moment().format();
@@ -87,7 +87,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.isConsented = function() {
       logger.log("curr_consented = "+$rootScope.curr_consented+
             "isIntroDone = " + startprefs.isIntroDone());
-      if (startprefs.isIntroDone() && 
+      if (startprefs.isIntroDone() &&
             ($rootScope.curr_consented == null || $rootScope.curr_consented == "")) {
         alert("intro is done, but consent not found, re-consenting...");
       }
@@ -188,7 +188,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         var ls_stored_val = storage.get(key);
         $window.cordova.plugins.BEMUserCache.getLocalStorage(key, false).then(function(uc_stored_val) {
             logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+" ls_stored_val = "+ls_stored_val);
-            if(angular.isDefined(uc_stored_val) && (uc_stored_val != null) 
+            if(angular.isDefined(uc_stored_val) && (uc_stored_val != null)
                 && (key in uc_stored_val) && angular.isDefined(uc_stored_val[key])) {
                 if (ls_stored_val == true) {
                     logger.log("local intro_done true, remote intro_done "+uc_stored_val[key]+", already synced");
@@ -203,7 +203,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
                     // Need to initialize this first because if we try to
                     // create it inlike with {key: value}, the key becomes the
-                    // word "key" and the stored object is 
+                    // word "key" and the stored object is
                     // {"key":"2018-01-31T06:26:02+00:00"}
                     var to_put = {};
                     to_put[key] = moment().format();
@@ -230,8 +230,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
           var temp = ReferralHandler.getReferralNavigation();
-          if (temp == 'goals') {
-            return 'root.main.goals';
+          if (temp == 'recommendations') {
+            return 'root.main.recommendations';
           } else if ($rootScope.displayingIncident == true) {
             $rootScope.displayingIncident = false;
             return 'root.main.diary';
@@ -254,7 +254,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         // TODO: Fix this the right way when we fix the FSM
         // https://github.com/e-mission/e-mission-phone/issues/146#issuecomment-251061736
         var reload = false;
-        if (($state.$current == destState) && ($state.$current.name == 'root.main.goals')) {
+        if (($state.$current == destState) && ($state.$current.name == 'root.main.recommendations')) {
           reload = true;
         }
         $state.go(destState).then(function() {
