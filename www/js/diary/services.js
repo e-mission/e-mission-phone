@@ -111,11 +111,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
 
-  dh.getTripBackground = function(dark_theme, tripgj) {
+  dh.getTripBackground = function(tripgj) {
       var background = "bg-light";
-      if (dark_theme) {
-        background = "bg-dark";
-      }
       if (dh.isDraft(tripgj)) {
         background = "bg-unprocessed";
       }

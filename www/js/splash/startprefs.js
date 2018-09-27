@@ -29,19 +29,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       return storage.get(DEFAULT_THEME_KEY);
     }
 
-    startprefs.loadDefaultTheme = function() {
-        logger.log("About to set theme from preference");
-        var curr_theme = startprefs.getDefaultTheme();
-        logger.log("preferred theme = "+curr_theme);
-
-        if (curr_theme == 'dark_theme') {
-            $rootScope.dark_theme = true;
-        } else {
-            $rootScope.dark_theme = false;
-        }
-        logger.log("set dark_theme = "+$rootScope.dark_theme);
-    };
-
     var writeConsentToNative = function() {
       return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
     };

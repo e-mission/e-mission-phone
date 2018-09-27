@@ -67,7 +67,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
   $scope.getTripBackground = function() {
-     var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
+     var ret_val = DiaryHelper.getTripBackground($scope.tripgj);
      return ret_val;
   }
 

@@ -48,7 +48,6 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.emailLog = ControlHelper.emailLog;
-    $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
         var userDataFromStorage = CalorieCal.get();
@@ -86,25 +85,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
-    $scope.ionViewBackgroundClass = function() {
-        return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
-    }
-    $scope.getDarkTheme = function() {
-        return $scope.dark_theme;
-    }
-    $scope.toggleDarkTheme = function() {
-        if ($scope.dark_theme) {
-            $rootScope.dark_theme = false;
-            $scope.dark_theme = false;
-            StartPrefs.setDefaultTheme(null);
-            $state.reload();
-        } else {
-            $rootScope.dark_theme = true;
-            $scope.dark_theme = true;
-            StartPrefs.setDefaultTheme('dark_theme');
-            $state.reload();
-        }
-    }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
