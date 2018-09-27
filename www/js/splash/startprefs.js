@@ -165,6 +165,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         startprefs.getConsentDocument().then(function(resultDoc) {
             if (resultDoc == null) {
                 if(startprefs.isConsented()) {
+                    logger.log("Local consent found, native consent missing, writing consent to native");
                     $ionicPopup.alert({template: "Local consent found, native consent missing, writing consent to native"});
                     return writeConsentToNative();
                 } else {
