@@ -230,8 +230,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
           var temp = ReferralHandler.getReferralNavigation();
-          if (temp == 'recommendations') {
-            return 'root.main.recommendations';
+          if (temp == 'goals') {
+            return 'root.main.goals';
           } else if ($rootScope.displayingIncident == true) {
             $rootScope.displayingIncident = false;
             return 'root.main.diary';
