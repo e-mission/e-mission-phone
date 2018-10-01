@@ -242,7 +242,7 @@
           }
       }, function(error){
           Logger.log("Error when getting incidents");
-          Logger.log(error);
+          Logger.log(JSON.stringify(error));
     });
   };
 
