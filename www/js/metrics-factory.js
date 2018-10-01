@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
+angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
 
 .factory('FootprintHelper', function() {
   var fh = {};
@@ -33,34 +33,19 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
   return fh;
 })
 
-.factory('CalorieCal', function(storage){
+.factory('CalorieCal', function(KVStore){
 
   var cc = {}; 
+  var USER_DATA_KEY = "user-data";
+
   cc.set = function(info) {
-    for(var key in info){
-      storage.set(key, info[key])
-    }
+    return KVStore.set(USER_DATA_KEY, info);
   };
   cc.get = function() {
-    var userData = {
-        'gender': storage.get('gender'),
-        'heightUnit': storage.get('heightUnit'),
-        'height': storage.get('height'),
-        'weightUnit': storage.get('weightUnit'),
-        'weight': storage.get('weight'),
-        'age': storage.get('age'),
-        'userDataSaved': storage.get('userDataSaved')
-      }
-      return userData;
+    return KVStore.get(USER_DATA_KEY);
   };
   cc.delete = function() {
-    storage.remove('gender');
-        storage.remove('height');
-        storage.remove('heightUnit');
-        storage.remove('weight');
-        storage.remove('weightUnit');
-        storage.remove('age');
-        storage.remove('userDataSaved');
+    return KVStore.remove(USER_DATA_KEY);
   };
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;

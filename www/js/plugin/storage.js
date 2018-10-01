@@ -90,5 +90,24 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
         return getNativePlugin().removeLocalStorage(key);
     }
 
+    kvstoreJs.clearAll = function() {
+        storage.clearAll(key);
+        return getNativePlugin().clearAll();
+    }
+
+    /* 
+     * TODO: remove these two functions after we have confirmed that native
+     * storage is never deleted weirdly, and returned to only native storage.
+     * In that case, there will be only one clear - of native storage - which
+     * will be covered using clearAll.
+     */
+    kvstoreJs.clearOnlyLocal = function() {
+        return storage.clearAll();
+    }
+
+    kvstoreJs.clearOnlyNative = function() {
+        return getNativePlugin().clearAll();
+    }
+
     return kvstoreJs;
 });

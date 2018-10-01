@@ -10,12 +10,13 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
-                                        'angularLocalStorage',
+                                        'emission.plugin.kvstore',
                                         'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
+               $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
@@ -50,27 +51,35 @@ angular.module('emission.main.control',['emission.services',
     $scope.emailLog = ControlHelper.emailLog;
     $scope.userData = []
     $scope.getUserData = function() {
-        var userDataFromStorage = CalorieCal.get();
-        $scope.userData = []
-        var height = userDataFromStorage.height.toString();
-        var weight = userDataFromStorage.weight.toString();
-        var temp  =  {
-            age: userDataFromStorage.age,
-            height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-            weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-            gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+        return CalorieCal.get().then(function(userDataFromStorage) {
+        $scope.rawUserData = userDataFromStorage;
+        if ($scope.userDataSaved()) {
+            $scope.userData = []
+            var height = userDataFromStorage.height.toString();
+            var weight = userDataFromStorage.weight.toString();
+            var temp  =  {
+                age: userDataFromStorage.age,
+                height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+                weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+                gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+            }
+            for (var i in temp) {
+                $scope.userData.push({key: i, value: temp[i]});
+            }
         }
-        for (var i in temp) {
-            $scope.userData.push({key: i, value: temp[i]});
-        }
+        });
     }
 
     $scope.userDataSaved = function() {
-        return CalorieCal.get().userDataSaved == true;
+        if (angular.isDefined($scope.rawUserData) && $scope.rawUserData != null) {
+            return $scope.rawUserData.userDataSaved;
+        } else {
+            return false;
+        }
     }
-    if ($scope.userDataSaved()) {
-        $scope.getUserData();
-    }
+    $ionicPlatform.ready().then(function() {
+        $scope.refreshScreen();
+    });
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
@@ -145,12 +154,12 @@ angular.module('emission.main.control',['emission.services',
         $state.go("root.main.map");
     }
     $scope.getState = function() {
-        ControlCollectionHelper.getState().then(function(response) {
+        return ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
             });
         }, function(error) {
-            $ionicPopup.alert("while getting email, "+error);
+            $ionicPopup.alert("while reading FSM state, "+error);
         });
     };
 
@@ -172,18 +181,13 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    var clearBoth = function() {
-        storage.clearAll();
-        clearUsercache();
-    }
-
     $scope.nukeUserCache = function() {
         var nukeChoiceActions = [{text: "UI state only",
-                                  action: storage.clearAll},
+                                  action: KVStore.clearOnlyLocal},
                                  {text: 'Native cache only',
-                                  action: clearUsercache},
+                                  action: KVStore.clearOnlyNative},
                                  {text: 'Everything',
-                                  action: clearBoth}];
+                                  action: KVStore.clearAll}];
 
         $ionicActionSheet.show({
             titleText: "Clear data",
@@ -209,7 +213,9 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.$on('$ionicView.afterEnter', function() {
+        $ionicPlatform.ready().then(function() {
         $scope.refreshScreen();
+        });
     })
 
     // Execute action on hidden popover
@@ -229,15 +235,24 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
-          return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
+          return arguments.length ? (UpdateCheck.setChannel(newName)) : $scope.settings.storedChannel;
         };
-
+        UpdateCheck.getChannel().then(function(retVal) { 
+            $scope.$apply(function() {
+                $scope.settings.storedChannel = retVal;
+            });
+        });
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
         $scope.getTNotifySettings();
         $scope.getEmail();
-        $scope.getState();
+        $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
+            $scope.$apply(function() {
+                $scope.settings.collect.trackingOn = isTracking;
+            });
+        });
+        $scope.getUserData();
     };
 
     $scope.returnToIntro = function() {
@@ -316,18 +331,19 @@ angular.module('emission.main.control',['emission.services',
         return ionic.Platform.isIOS();
     }
 
-    $scope.refreshScreen();
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {
         $scope.syncSettingsPopup = popover;
     });
-    $scope.trackingOn = function() {
+    $scope.isTrackingOn = function() {
+        return $ionicPlatform.ready().then(function() {
         if($scope.isAndroid()){
             return $scope.settings.collect.state != "local.state.tracking_stopped";
         } else if ($scope.isIOS()) {
             return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
         }
+        });
     };
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){
@@ -338,7 +354,7 @@ angular.module('emission.main.control',['emission.services',
             $scope.startStopBtnToggle = true;
         }
     }
-    $scope.startStopBtnToggle = $scope.trackingOn();
+    $scope.startStopBtnToggle = $scope.trackingOn;
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
@@ -346,9 +362,9 @@ angular.module('emission.main.control',['emission.services',
         return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
     $scope.eraseUserData = function() {
-        CalorieCal.delete();
+        CalorieCal.delete().then(function() {
         $ionicPopup.alert({template: 'User data erased.'});
-
+        });
     }
     $scope.parseState = function(state) {
         if (state) {
