@@ -1,7 +1,6 @@
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
-                                              'emission.plugin.kvstore',
-                                              'angularLocalStorage'])
+                                              'emission.plugin.kvstore'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
       $ionicPopup, KVStore, storage, $http, Logger, ReferralHandler) {
@@ -219,7 +218,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           alert("ionic is ready, but logger not present?");
       }
       logger = Logger;
-      startprefs.loadDefaultTheme();
       startprefs.loadPreferredScreen();
     };
 
