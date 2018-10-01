@@ -254,7 +254,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         // TODO: Fix this the right way when we fix the FSM
         // https://github.com/e-mission/e-mission-phone/issues/146#issuecomment-251061736
         var reload = false;
-        if (($state.$current == destState) && ($state.$current.name == 'root.main.recommendations')) {
+        if (($state.$current == destState) && ($state.$current.name == 'root.main.goals')) {
           reload = true;
         }
         $state.go(destState).then(function() {
