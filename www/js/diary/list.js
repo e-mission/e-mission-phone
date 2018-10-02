@@ -5,7 +5,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
-                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage',
+                                      'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
@@ -14,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage, Logger) {
+                                    Config, PostTripManualMarker, nzTour, KVStore, Logger) {
   console.log("controller DiaryListCtrl called");
   // Add option
 
@@ -341,10 +341,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     */
     var checkDiaryTutorialDone = function () {
       var DIARY_DONE_KEY = 'diary_tutorial_done';
-      var diaryTutorialDone = storage.get(DIARY_DONE_KEY);
+      var diaryTutorialDone = KVStore.getDirect(DIARY_DONE_KEY);
       if (!diaryTutorialDone) {
         startWalkthrough();
-        storage.set(DIARY_DONE_KEY, true);
+        KVStore.set(DIARY_DONE_KEY, true);
       }
     };
 
