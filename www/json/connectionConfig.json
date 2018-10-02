@@ -1,0 +1,15 @@
+{
+    "connectUrl": "http://52.91.65.149:8080",
+    "android": {
+        "auth": {
+            "method": "prompted-auth",
+            "prompt": "Please enter valid token:"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "prompted-auth",
+            "prompt": "Please enter valid token:"
+        }
+    }
+}

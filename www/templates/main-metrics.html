@@ -1,4 +1,4 @@
-<ion-view view-title="Dashboard" class="ion-view-background">
+<ion-view view-title="Big Data" class="ion-view-background">
   <ion-nav-bar class="bar-stable">
   </ion-nav-bar>
   <ion-nav-buttons side="primary">
@@ -58,7 +58,7 @@
               <div id="green-leaf" class="icon ion-leaf">
               </div>
             </div>
-              <h4 class="dashboard-headers">Footprint</h4>
+              <h4 class="dashboard-headers">Leaf and Green</h4>
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
                   <div class="user-carbon">{{carbonData.userCarbon}}</div>
@@ -85,15 +85,15 @@
         <div ng-class="changeCalorieCardHeight()" id="dashboard-calorie" class="card">
           <div>
             <div class="circle" ng-if="foodCompare == 'cookie'">
-              <img src="img/cookie.png" id="food"> 
+              <img src="img/cookie.png" id="food">
             </div>
             <div class="circle" ng-if="foodCompare == 'iceCream'">
-              <img src="img/icecream.png" id="food"> 
+              <img src="img/icecream.png" id="food">
             </div>
             <div class="circle" ng-if="foodCompare == 'banana'">
-              <img src="img/banana.png" id="foodB"> 
+              <img src="img/banana.png" id="foodB">
             </div>
-            <h4 class="dashboard-headers">Calories</h4>
+            <h4 class="dashboard-headers">Energy Burned</h4>
           </div>
           <div ng-show="!userDataSaved()"  class="metric-summary-option-button hvcenter" ng-click="caloriePopup()">Calibrate</div>
           <div ng-if="uictrl.showContent">
@@ -114,13 +114,13 @@
               <div class="card dashboard-list"><b>Last Week:</b> {{caloriesData.lastWeekUserCalories}}</div>
               <div style="align:center;">
                  <div class="circle" id="circle-food" ng-click="setCookie()">
-                  <img src="img/cookie.png" id="food"> 
+                  <img src="img/cookie.png" id="food">
                 </div>
                 <div class="circle" id="circle-food" ng-click="setIceCream()">
-                  <img src="img/icecream.png" id="food"> 
+                  <img src="img/icecream.png" id="food">
                 </div>
                 <div class="circle" id="circle-food" ng-click="setBanana()">
-                  <img src="img/banana.png" id="foodB"> 
+                  <img src="img/banana.png" id="foodB">
                 </div>
               </div>
             </div>
@@ -131,11 +131,11 @@
         <ion-slide-box show-pager="false" id="modes">
           <ion-slide id="modes">
             <div id="dashboard-bottom" class="card">
-              <h4 class="dashboard-headers">Distance</h4>
-                <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;">No summary data</div>
+              <h4 class="dashboard-headers">Distanz</h4>
+                <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #FFEF00;font-weight: 700;">No summary data</div>
                 <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
                   <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
-                    
+
                     <div class="metric-summary-left">
                       <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
                     </div>
@@ -147,7 +147,7 @@
                         {{ summaryData.defaultSummary.distance[dIndex + i].values }}
                       </div>
                     </div>
-                  </div> 
+                  </div>
                 </div>
             </div>
           </ion-slide>
@@ -157,7 +157,7 @@
                 <div ng-if="summaryData.defaultSummary.count.length == 0" style="margin-bottom: 20px; color: #54DCC1;font-weight: 700;">No summary data</div>
                 <div class="row" ng-repeat="d in summaryData.defaultSummary.count" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
                   <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.count.length" class="col-50" style="margin-bottom: 10px;">
-                    
+
                     <div class="metric-summary-left">
                       <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.count[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
                     </div>
@@ -169,7 +169,7 @@
                         {{ summaryData.defaultSummary.count[dIndex + i].values }}
                       </div>
                     </div>
-                  </div> 
+                  </div>
                 </div>
             </div>
           </ion-slide>
@@ -179,7 +179,7 @@
                 <div ng-if="summaryData.defaultSummary.duration.length == 0" style="margin-bottom: 20px; color: #54DCC1;font-weight: 700;">No summary data</div>
                 <div class="row" ng-repeat="d in summaryData.defaultSummary.duration" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
                   <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.duration.length" class="col-50" style="margin-bottom: 10px;">
-                    
+
                     <div class="metric-summary-left">
                       <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.duration[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
                     </div>
@@ -191,7 +191,7 @@
                         {{ summaryData.defaultSummary.duration[dIndex + i].values }}
                       </div>
                     </div>
-                  </div> 
+                  </div>
                 </div>
             </div>
           </ion-slide>
@@ -201,7 +201,7 @@
                 <div ng-if="summaryData.userSummary.median_speed.length == 0" style="margin-bottom: 20px; color: #54DCC1;font-weight: 700;">No summary data</div>
                 <div class="row" ng-repeat="d in summaryData.userSummary.median_speed" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
                   <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.userSummary.median_speed.length" class="col-50" style="margin-bottom: 10px;">
-                    
+
                     <div class="metric-summary-left">
                       <i ng-class="'icon ' + modeIcon(summaryData.userSummary.median_speed[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
                     </div>
@@ -213,12 +213,12 @@
                         {{ summaryData.defaultSummary.median_speed[dIndex + i].values }}
                       </div>
                     </div>
-                  </div> 
+                  </div>
                 </div>
             </div>
           </ion-slide>
-        </ion-slide-box> 
+        </ion-slide-box>
         </div>
-    </div> 
+    </div>
   </ion-content>
 </ion-view>
