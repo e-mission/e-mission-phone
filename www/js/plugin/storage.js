@@ -73,16 +73,37 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
         });
     }
 
+    var unmungeValue = function(key, retData) {
+        if((retData != null) && (angular.isDefined(retData[key]))) {
+            // it must have been a simple data type that we munged upfront
+            return retData[key];
+        } else {
+            // it must have been an object
+            return retData;
+        }
+    }
+
     kvstoreJs.get = function(key) {
         return getUnifiedValue(key).then(function(retData) {
-            if((retData != null) && (angular.isDefined(retData[key]))) {
-                // it must have been a simple data type that we munged upfront
-                return retData[key];
-            } else {
-                // it must have been an object
-                return retData;
-            }
+            return unmungeValue(key, retData);
         });
+    }
+
+    /*
+     * TODO: Temporary fix for data that:
+        - we want to return inline instead of in a promise
+        - is not catastrophic if it is cleared out (e.g. walkthrough code), OR
+        - is used primarily for session storage so will not be cleared out
+          (e.g. referral code)
+        We can replace this with promises in a future PR if needed
+
+        The code does copy the native value to local storage in the background,
+        so even if this is stripped out, it will work on retry.
+     */
+    kvstoreJs.getDirect = function(key) {
+        // will run in background, we won't wait for the results
+        getUnifiedValue(key);
+        return unmungeValue(key, storage.get(key));
     }
 
     kvstoreJs.remove = function(key) {
