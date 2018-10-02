@@ -4,11 +4,11 @@
                                                 'ionic',
                                                 'emission.incident.posttrip.manual',
                                                 'rzModule',
-                                                'angularLocalStorage',
+                                                'emission.plugin.kvstore',
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, storage, $ionicPlatform) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, $http, KVStore, $ionicPlatform) {
     
   console.log("controller CurrMapCtrl called from current.js");
   var _map;
@@ -55,18 +55,26 @@
     }
   };
 
-  var incident_value = storage.get(INCIDENT_CONFIG);
-  if(incident_value != null) {
-    $scope.verticalSlider.value = incident_value;
-  } else {
-    $scope.verticalSlider.value = 1;
+  var loadSliderValue = function() {
+      KVStore.get(INCIDENT_CONFIG).then(function(incident_value) {
+      Logger.log("in current screen, read incident_value = "+incident_value);
+      if(incident_value != null) {
+        $scope.verticalSlider.value = incident_value;
+      } else {
+        $scope.verticalSlider.value = 1;
+      }
+      });
   }
 
   var fromIncidentDate = moment().subtract($scope.verticalSlider.value, 'd');
 
 
   $scope.$watch('verticalSlider.value', function(newVal, oldVal){
-    storage.set(INCIDENT_CONFIG, newVal);
+    $ionicPlatform.ready().then(function() {
+    if (angular.isDefined(newVal) && !isNaN(newVal)) {
+        KVStore.set(INCIDENT_CONFIG, newVal);
+    }
+    });
     incidentServerCalldata.start_time = CommHelper.moment2Timestamp(moment().subtract(newVal, 'd'));
   }, true);
 
@@ -287,6 +295,7 @@
   $scope.$on('$ionicView.enter', function() {
     $ionicPlatform.ready().then(function() {
         Logger.log("entered current screen, starting incident refresh");
+        loadSliderValue();
         refreshTripLoop();
         getIncidentsLoop();
     });
