@@ -22,5 +22,4 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     $scope.clickReview = function() {
       review.style.display = "block";
     }
-
 });
