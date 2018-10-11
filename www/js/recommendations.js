@@ -13,6 +13,7 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     var review = document.getElementById('reviewModal');
     $scope.clickDirections = function() {
       map.style.display = "block";
+      console.log("clicked directions");
     };
     $scope.clickX = function() {
       map.style.display = "none";

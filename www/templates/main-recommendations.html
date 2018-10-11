@@ -5,6 +5,33 @@
       </button>
      </ion-nav-buttons>
      <link rel="stylesheet" href="css/main-recommend.css">
+     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
+     <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
+  <ion-content class="has-header" overflow-scroll="true" padding="false">
+    <div id = "scrolling">
+     <center><div class="recommendbox" id = "0">
+       <div class = "larger_font"> Cafes and Beverage ☕ </div>
+       <h4>
+       <p> Ernie's Espressx </p>
+         <p>1234 Sesame St. </p>
+           <p> 0.2 Miles Away </p>
+           <img src="img/small/small_4.png" width="75" />
+             <button class="button button-block button-balanced button-outline" ng-click="clickDirections()">Directions</button>
+             <button class="button button-block button-balanced button-outline" ng-click="clickReview()">Review</button>
+         </h4>
+     </div></center>
+     <center><div class="recommendbox" id = "1">
+       <div class = "larger_font">Education 🏫</div>
+       <h4>
+         <p>UC Berkeley</p>
+         <p>1 Telegraph Ave. </p>
+           <p>1 Mile Away </p>
+           <img src="img/small/small_4.png" width="75" />
+               <button class="button button-block button-balanced button-outline" ng-click="clickDirections()">Directions</button>
+               <button class="button button-block button-balanced button-outline" ng-click="clickReview()">Review</button>
+       </h4>
+       </div></center>
+       </div>
   <ion-content class="has-header" overflow-scroll="true" padding="false">
      <center><div class="recommendbox">
        <h3>Cafes and Beverage ☕</h3>
@@ -32,10 +59,10 @@
      <div id="mapModal" class="modal">
      <div class="modal-content">
          <h3>Directions</h3>
-       <p>1. Walk South on 100th Street
-         <p>2. Turn left on E. 45th Blvd
-           <p>3. Walk West on E. 45th Blvd
-             <p>4. Turn right on Sesame St.
+       1. Walk South on 100th Street <br />
+         2. Turn left on E. 45th Blvd <br />
+           3. Walk West on E. 45th Blvd <br />
+             4. Turn right on Sesame St.
                <iframe width="250" height="250" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="https://www.openstreetmap.org/export/embed.html?bbox=-122.26986058987679%2C37.86591047772012%2C-122.25990423001352%2C37.87693742783586&amp;layer=mapnik" style="border: 1px solid black"></iframe><br/><small><a href="https://www.openstreetmap.org/#map=16/37.8714/-122.2649">View Larger Map</a></small>
                <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
        </center>
@@ -46,18 +73,29 @@
      <div class="modal-content">
        <div align="left">
        <h3>Reviews</h3>
-       <p><img src="img/regular/regular_4_half.png" width="100" />
-       <p>I really like this cafe! It has great vibes!
-         <p><img src="img/small/small_5.png" width="50" /> - Jane, San Francisco
-           <p>I really like their espresso! It goes great with their
+       I really like this cafe! It has great vibes!
+         <img src="img/small/small_5.png" width="50" /> - Jane, San Francisco <br />
+           I really like their espresso! It goes great with their
              freshly baked rolls!
-             <p><img src="img/small/small_5.png" width="50" /> - John, Atlanta
-               <p>The drinks are ok but the service is kind of slow.
-                 <p><img src="img/small/small_4.png" width="50" /> - Sam, Boston
+             <img src="img/small/small_5.png" width="50" /> - John, Atlanta <br />
+               The drinks are ok but the service is kind of slow.
+                 <img src="img/small/small_4.png" width="50" /> - Sam, Boston <br />
          </div>
          <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
      </div>
    </div>
  </center>
+ <script src="js/recommendations.js"></script>
+ <script type="text/javascript" src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+<script type="text/javascript" src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="slick/slick.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.scrolling').slick({
+        setting-name: setting-value
+      });
+    });
+  </script>
+
 </ion-content>
 </ion-view>
