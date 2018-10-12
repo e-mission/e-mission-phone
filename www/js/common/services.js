@@ -7,7 +7,6 @@ angular.module('emission.main.common.services', [])
     commonGraph.data = {};
     commonGraph.UPDATE_DONE = "COMMON_GRAPH_UPDATE_DONE";
 
-    var db = window.cordova.plugins.BEMUserCache;
     var selKey = "common-trips";
 
     commonGraph.createEmpty = function() {
@@ -18,6 +17,7 @@ angular.module('emission.main.common.services', [])
     };
 
     commonGraph.updateCurrent = function() {
+      var db = window.cordova.plugins.BEMUserCache;
       db.getDocument(selKey, false).then(function(entryList) {
         try{
             var cmGraph = entryList;
