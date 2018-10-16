@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
-                                               'emission.services',
                                                'emission.plugin.kvstore'])
 
-.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, CommHelper, Logger, KVStore) {
+.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, KVStore) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
