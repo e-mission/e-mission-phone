@@ -18,10 +18,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   };
 
   uc.setChannel = function(channelName) {
-    return Promise.all([KVStore.set(CHANNEL_KEY, channelName),
-        CommHelper.updateUser({
-            client: channelName
-    })]);
+    return KVStore.set(CHANNEL_KEY, channelName);
   };
 
   uc.initChannelPromise = function(currChannel) {
