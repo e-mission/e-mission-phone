@@ -15,6 +15,7 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     $scope.clickDirections = function(id) {
       $scope.currentDisplay = document.getElementById("mapModal" + id)
       $scope.currentDisplay.style.display = "block";
+
     };
     $scope.clickX = function() {
       $scope.currentDisplay.style.display = "none";
