@@ -13,14 +13,24 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
         return $window.cordova.plugins.BEMUserCache;
     }
 
-    kvstoreJs.set = function(key, value) {
-        // add checks for data type
-        var store_val = value;
+    /*
+     * Munge plain, non-JSON objects to JSON objects before storage
+     */
+
+    var mungeValue = function(key, value) {
+        var storage_val = value;
         if (typeof value != "object") {
             // Should this be {"value": value} or {key: value}?
             store_val = {};
             store_val[key] = value;
         }
+        return store_val;
+    }
+
+
+    kvstoreJs.set = function(key, value) {
+        // add checks for data type
+        var store_val = mungeValue(key, value);
         /*
          * How should we deal with consistency here? Have the threads be
          * independent so that there is greater chance that one will succeed,
@@ -49,6 +59,13 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                     return uc_stored_val;
                 } else if (uc_stored_val == null) {
                     console.assert(ls_stored_val != null);
+                    /*
+                     * Backwards compatibility ONLY. Right after the first
+                     * update to this version, we may have a local value that
+                     * is not a JSON object. In that case, we want to munge it
+                     * before storage. Remove this after a few releases.
+                     */
+                    ls_stored_val = mungeValue(key, ls_stored_val);
                     $ionicPopup.alert({template: "Local "+key+" found, native "
                         +key+" missing, writing "+key+" to native"})
                     logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
@@ -73,6 +90,9 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
         });
     }
 
+    /*
+     * If a non-JSON object was munged for storage, unwrap it.
+     */
     var unmungeValue = function(key, retData) {
         if((retData != null) && (angular.isDefined(retData[key]))) {
             // it must have been a simple data type that we munged upfront
@@ -112,7 +132,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
     }
 
     kvstoreJs.clearAll = function() {
-        storage.clearAll(key);
+        storage.clearAll();
         return getNativePlugin().clearAll();
     }
 
