@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
-                                               'emission.services',
                                                'emission.plugin.kvstore'])
 
-.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, CommHelper, Logger, KVStore) {
+.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, KVStore) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
@@ -18,10 +17,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   };
 
   uc.setChannel = function(channelName) {
-    return Promise.all([KVStore.set(CHANNEL_KEY, channelName),
-        CommHelper.updateUser({
-            client: channelName
-    })]);
+    return KVStore.set(CHANNEL_KEY, channelName);
   };
 
   uc.initChannelPromise = function(currChannel) {
