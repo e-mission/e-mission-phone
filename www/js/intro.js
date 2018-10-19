@@ -120,4 +120,3 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     StartPrefs.loadPreferredScreen();
   }
 });
-
