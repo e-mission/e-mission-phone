@@ -1,13 +1,13 @@
 'use strict';
 angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
-                                      'angularLocalStorage',
+                                      'emission.plugin.kvstore',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.main.diary.services',
                                       'emission.incident.posttrip.manual'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
                                         $stateParams, $ionicLoading,
-                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
                                         UnifiedDataLoader, PostTripManualMarker) {
   Logger.log("controller PostTripMapDisplay called with params = "+
@@ -183,10 +183,10 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
 
   var checkIncidentTutorialDone = function () {
     var INCIDENT_DONE_KEY = 'incident_tutorial_done';
-    var incidentTutorialDone = storage.get(INCIDENT_DONE_KEY);
+    var incidentTutorialDone = KVStore.getDirect(INCIDENT_DONE_KEY);
     if (!incidentTutorialDone) {
       startWalkthrough();
-      storage.set(INCIDENT_DONE_KEY, true);
+      KVStore.set(INCIDENT_DONE_KEY, true);
     }
   };
 

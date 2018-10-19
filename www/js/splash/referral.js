@@ -1,6 +1,6 @@
-angular.module('emission.splash.referral', ['angularLocalStorage'])
+angular.module('emission.splash.referral', ['emission.plugin.kvstore'])
 
-.factory('ReferralHandler', function($window, $state, $interval, $rootScope, storage) {
+.factory('ReferralHandler', function($window, KVStore) {
     var referralHandler = {};
 
     var REFERRAL_NAVIGATION_KEY = 'referral_navigation';
@@ -9,32 +9,32 @@ angular.module('emission.splash.referral', ['angularLocalStorage'])
     var REFERRED_USER_ID = 'referred_user_id';
 
     referralHandler.getReferralNavigation = function() {
-      toReturn = storage.get(REFERRAL_NAVIGATION_KEY);
-      storage.remove(REFERRAL_NAVIGATION_KEY);
+      toReturn = KVStore.getDirect(REFERRAL_NAVIGATION_KEY);
+      KVStore.remove(REFERRAL_NAVIGATION_KEY);
       return toReturn;
     }
 
     referralHandler.setupGroupReferral = function(kvList) {
-        storage.set(REFERRED_KEY, true);
-        storage.set(REFERRED_GROUP_ID, kvList['groupid']);
-        storage.set(REFERRED_USER_ID, kvList['userid']);
-        storage.set(REFERRAL_NAVIGATION_KEY, 'goals');
+        KVStore.set(REFERRED_KEY, true);
+        KVStore.set(REFERRED_GROUP_ID, kvList['groupid']);
+        KVStore.set(REFERRED_USER_ID, kvList['userid']);
+        KVStore.set(REFERRAL_NAVIGATION_KEY, 'goals');
    };
 
    referralHandler.clearGroupReferral = function(kvList) {
-        storage.remove(REFERRED_KEY);
-        storage.remove(REFERRED_GROUP_ID);
-        storage.remove(REFERRED_USER_ID);
-        storage.remove(REFERRAL_NAVIGATION_KEY);
+        KVStore.remove(REFERRED_KEY);
+        KVStore.remove(REFERRED_GROUP_ID);
+        KVStore.remove(REFERRED_USER_ID);
+        KVStore.remove(REFERRAL_NAVIGATION_KEY);
    };
 
    referralHandler.getReferralParams = function(kvList) {
-        return [storage.get(REFERRED_GROUP_ID),
-                storage.get(REFERRED_USER_ID)];
+        return [KVStore.getDirect(REFERRED_GROUP_ID),
+                KVStore.getDirect(REFERRED_USER_ID)];
    }
 
    referralHandler.hasPendingRegistration = function() {
-       return storage.get(REFERRED_KEY)
+       return KVStore.getDirect(REFERRED_KEY)
    };
 
    return referralHandler;
