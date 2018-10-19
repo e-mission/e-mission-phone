@@ -4,17 +4,19 @@
                                                 'ionic',
                                                 'emission.incident.posttrip.manual',
                                                 'rzModule',
-                                                'angularLocalStorage',
+                                                'emission.plugin.kvstore',
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, storage, $ionicPlatform) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, $http, KVStore, $ionicPlatform) {
     
-  Logger.log("controller CurrMapCtrl called from current.js");
+  console.log("controller CurrMapCtrl called from current.js");
   var _map;
   var _localIncidentMarkers = [];
   var _serverIncidentMarkers = [];
-  var db = window.cordova.plugins.BEMUserCache;
+  var db = function() {
+    return window.cordova.plugins.BEMUserCache;
+  }
   MANUAL_INCIDENT = "manual/incident";
   BACKGROUND_LOCATION = "background/location";
   INCIDENT_CONFIG = 'incident_config';
@@ -32,7 +34,7 @@
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
-  Logger.log("mapCtrl", $scope.mapCtrl);
+  console.log("mapCtrl", $scope.mapCtrl);
 
   $scope.verticalSlider = {
     options: {
@@ -53,18 +55,26 @@
     }
   };
 
-  var incident_value = storage.get(INCIDENT_CONFIG);
-  if(incident_value != null) {
-    $scope.verticalSlider.value = incident_value;
-  } else {
-    $scope.verticalSlider.value = 1;
+  var loadSliderValue = function() {
+      KVStore.get(INCIDENT_CONFIG).then(function(incident_value) {
+      Logger.log("in current screen, read incident_value = "+incident_value);
+      if(incident_value != null) {
+        $scope.verticalSlider.value = incident_value;
+      } else {
+        $scope.verticalSlider.value = 1;
+      }
+      });
   }
 
   var fromIncidentDate = moment().subtract($scope.verticalSlider.value, 'd');
 
 
   $scope.$watch('verticalSlider.value', function(newVal, oldVal){
-    storage.set(INCIDENT_CONFIG, newVal);
+    $ionicPlatform.ready().then(function() {
+    if (angular.isDefined(newVal) && !isNaN(newVal)) {
+        KVStore.set(INCIDENT_CONFIG, newVal);
+    }
+    });
     incidentServerCalldata.start_time = CommHelper.moment2Timestamp(moment().subtract(newVal, 'd'));
   }, true);
 
@@ -106,7 +116,7 @@
   });
 
   var refreshTrip = function() {
-    db.getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
+    db().getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
       $scope.$apply(function() {
         Logger.log("current location data" + JSON.stringify(result[0].data));
         var coordinates = result.map(function(locWrapper, index, locList) {
@@ -175,8 +185,10 @@
   };
 
   $scope.$on('leafletDirectiveMap.current.resize', function(event, data) {
-        Logger.log("current/map received resize event, invalidating map size");
-        data.leafletObject.invalidateSize();
+        $ionicPlatform.ready().then(function() {
+            Logger.log("current/map received resize event, invalidating map size");
+            data.leafletObject.invalidateSize();
+        });
   });
 
   var addIncidentLayer = function(stress, marker, map) {
@@ -217,7 +229,7 @@
 
   var getLocalIncidents = function() {
     // No metadata, to make it consistent with the server incidents
-    db.getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
+    db().getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
       Logger.log("Incidents stored locally" + JSON.stringify(incidents));
       if(incidents.length > 0) {
         addIncidents(incidents, _map, _localIncidentMarkers);
@@ -238,13 +250,13 @@
           }
       }, function(error){
           Logger.log("Error when getting incidents");
-          Logger.log(error);
+          Logger.log(JSON.stringify(error));
     });
   };
 
   var marker;
   $scope.showIncidentSheet = function() {
-    db.getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
+    db().getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
             both = [result[0].data.latitude, result[0].data.longitude];
             var ts = result[0].data.ts;
             var latlng = L.latLng(both);
@@ -281,9 +293,12 @@
   };
 
   $scope.$on('$ionicView.enter', function() {
-    Logger.log("entered current screen, starting incident refresh");
-    refreshTripLoop();
-    getIncidentsLoop();
+    $ionicPlatform.ready().then(function() {
+        Logger.log("entered current screen, starting incident refresh");
+        loadSliderValue();
+        refreshTripLoop();
+        getIncidentsLoop();
+    });
   });
 
   $scope.$on('$ionicView.leave', function() {
@@ -303,6 +318,9 @@
     clearTimeout(mapRunning);
     clearTimeout(gettingIncidents);
   }); 
-  getLocalIncidents();
 
+  $ionicPlatform.ready().then(function() {
+      Logger.log("ionicPlatform.ready in current screen, getting local incidents");
+      getLocalIncidents();
+  });
 });

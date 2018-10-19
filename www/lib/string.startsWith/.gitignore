@@ -1,0 +1,5 @@
+.idea
+atlassian-ide-plugin.xml
+tests/coverage
+bower_components
+node_modules
