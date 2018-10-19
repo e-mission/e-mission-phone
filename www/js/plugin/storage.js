@@ -18,7 +18,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
      */
 
     var mungeValue = function(key, value) {
-        var storage_val = value;
+        var store_val = value;
         if (typeof value != "object") {
             // Should this be {"value": value} or {key: value}?
             store_val = {};

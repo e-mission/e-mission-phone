@@ -853,7 +853,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         console.log("Refreshing information");
         refresh = true;
         Promise.all([KVStore.get('party_id'),
-            KVStore.get(HABITICA_REGISTERED_KEY)]).then(function(party_id, is_registered) {
+            KVStore.get(HABITICA_REGISTERED_KEY)]).then(function([party_id, is_registered]) {
         console.log("Party ID = " + party_id);
         if (is_registered == true) {
             getUserInfo();
