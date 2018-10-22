@@ -1,11 +1,11 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
-                                      'nvd3', 'angularLocalStorage',
+                                      'nvd3', 'emission.plugin.kvstore',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
@@ -67,7 +67,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
 
   $scope.getTripBackground = function() {
-     var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
+     var ret_val = DiaryHelper.getTripBackground($scope.tripgj);
      return ret_val;
   }
 
@@ -148,10 +148,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 
   var checkDetailTutorialDone = function () {
     var DETAIL_DONE_KEY = 'detail_tutorial_done';
-    var detailTutorialDone = storage.get(DETAIL_DONE_KEY);
+    var detailTutorialDone = KVStore.getDirect(DETAIL_DONE_KEY);
     if (!detailTutorialDone) {
       startWalkthrough();
-      storage.set(DETAIL_DONE_KEY, true);
+      KVStore.set(DETAIL_DONE_KEY, true);
     }
   };
 

@@ -5,6 +5,11 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
+Additional Documentation
+---
+Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
+https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
+
 Updating the UI only
 ---
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
@@ -134,18 +139,9 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/docs/e-mission-common/configuring_authentication.md).
 
-By default, the phone app connects to the local server (localhost on iOS,
-[10.0.2.2 on
-android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips))
-by default. To connect to a different server, or to use a different
-authentication method, you need to create a `www/json/connectionConfig.json`
-file. You can find sample files for connecting physical devices to the local
-server (`www/json/connectionConfig.physical_device2localhost.json.sample`), and
-to production (www/json/connectionConfig.production.json.sample).
-
-So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
 Updating the e-mission-* plugins or adding new plugins
 ---
@@ -253,8 +249,8 @@ in startup.
 Troubleshooting
 ---
 
-Troubleshooting tips have now been moved to their own wiki page
-https://github.com/e-mission/e-mission-phone/wiki/Troubleshooting-tips-(FAQ)
+Troubleshooting tips have been moved to the e-mission-phone section of the e-mission-docs repo:
+https://github.com/e-mission/e-mission-docs/blob/master/docs/e-mission-phone/troubleshooting_tips_faq.md
 
 Debugging
 ---
