@@ -1,5 +1,7 @@
 /* Empty. Add your own CSS if you like */
-
+.pane {
+    background-color: #F2F5E3 !important;
+}
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
@@ -31,29 +33,29 @@
 
 }
 .button.ng-binding.button-positive {
-  background-color: #01D0A7;
+  background-color: #C3E669;
   height: 40px;
 }
 .button.ng-binding.button-assertive {
-  background-color: #01D0A7;
+  background-color: #C3E669;
   height: 40px;
 
 }
 .selected_date_full.ng-binding {
-  color: #01D0A7;
+  color: #C3E669;
 }
 .icon.ion-chevron-left {
- color: #01D0A7;
+ color: #C3E669;
 }
 .icon.ion-chevron-right {
- color: #01D0A7;
+ color: #C3E669;
 }
 .date_col.date_selected {
- background-color: #01D0A7 !important;
+ background-color: #C3E669 !important;
 
 }
 .date_col:active {
- background-color: #01D0A7 !important;
+ background-color: #C3E669 !important;
 }
 .customButtomIconSize:before {
     font-size: 25px !important;
@@ -116,27 +118,27 @@
 
 .button.button-light-green {
   border-color: transparent;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: #fff; }
 .button.button-light-green:hover {
     color: #fff;
     text-decoration: none; }
 .button.button-light-green.active, .button.button-gold.activated {
-    background-color:#01D0A7; }
+    background-color:#C3E669; }
 .button.button-light-green.button-clear {
     border-color: transparent;
     background: none;
     box-shadow: none;
-    color: #01D0A7; }
+    color: #C3E669; }
 .button.button-light-green.button-icon {
     border-color: transparent;
     background: none; }
 .button.button-light-green.button-outline {
-    border-color: #01D0A7;
+    border-color: #C3E669;
     background: transparent;
-    color: #01D0A7; }
+    color: #C3E669; }
 .button.button-light-green.button-outline.active, .button.button-gold.button-outline.activated {
-    background-color: #01D0A7;
+    background-color: #C3E669;
     box-shadow: none;
     color: #fff; }
 
@@ -306,10 +308,10 @@ img.center {
   float:left;
 }
 #challenge.active {
-  color: #01D0A7 !important;
+  color: #C3E669 !important;
 }
 #party.active {
-  color: #01D0A7 !important;
+  color: #C3E669 !important;
 }
 #add-goal:active {
   color: #ededed !important;
@@ -430,7 +432,7 @@ img.center {
 
 h4.dashboard-headers{
   color: #fff;
-  background: #54DCC1;
+  background: #C3E669;
   padding-top: 5px;
   padding-bottom: 5px;
   margin-top: -1px;
@@ -530,7 +532,7 @@ h4.dashboard-headers{
 }
 
 #green-leaf{
-  color: #01D0A7;
+  color: #C3E669;
   font-size: 45px;
   padding-top: 5px;
 }
@@ -700,8 +702,8 @@ background-image: none !important; }
 }
 
 .toggle-on-ourcolor-bg{
-  border-color: #01D0A7 !important;
-  background-color: #01D0A7 !important;
+  border-color: #C3E669 !important;
+  background-color: #C3E669 !important;
 }
 
 .toggle-color{
@@ -717,7 +719,7 @@ background-image: none !important; }
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
-    color: #01D0A7;
+    color: #C3E669;
 }
 
 ion-header-bar {
@@ -977,7 +979,7 @@ button.button.back-button.buttons.button-clear.header-item {
   padding: 0 8% 0 8%;
   border-left-width: 5px;
   border-left-style: solid;
-  border-left-color: #01D0A7;
+  border-left-color: #C3E669;
 }
 .succ-title {
   font-weight: 400;
@@ -1023,7 +1025,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .metric-title {
@@ -1045,7 +1047,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .metric-weekday-container-lower {
@@ -1055,7 +1057,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .metric-datepicker-container-lower {
@@ -1078,12 +1080,12 @@ html, body, #chart2, svg {
   border-radius: 20px;
   background-color: white;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
-  color: #01D0A7;
+  color: #C3E669;
   font-weight: 700;
   height: 30px;
 }
 .metric-change-data-button: active{
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   box-shadow: none;
 }
@@ -1093,7 +1095,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .heatmap-mode-button {
@@ -1102,7 +1104,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
   
 }
@@ -1263,21 +1265,21 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .metric-get-button {
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   height: 35px;
 }
 .metric-get-button-inactive {
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   opacity: 0.7;
   height: 35px;
 }
@@ -1292,7 +1294,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .metric-half {
@@ -1300,7 +1302,7 @@ span.rz-bar-wrapper {
   width: 100%;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);  color: #01D0A7;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);  color: #C3E669;
   height: 30px;
   overflow: hidden;
   position: relative;
@@ -1340,7 +1342,7 @@ span.rz-bar-wrapper {
   width: 25%;
   left: 50%;
   height: 35px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
 }
 .metric-filter-button {
@@ -1356,7 +1358,7 @@ span.rz-bar-wrapper {
   width: 25%;
   left: 75%;
   height: 35px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1376,7 +1378,7 @@ span.rz-bar-wrapper {
   position: absolute;
   left: 50%;
   height: 30px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -1402,7 +1404,7 @@ span.rz-bar-wrapper {
   border-right-style: solid;
   border-right-width: 1px;
   height: 30px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -1449,7 +1451,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   overflow: hidden;
   border-top-left-radius: 5px;
@@ -1462,7 +1464,7 @@ span.rz-bar-wrapper {
   font-size: 12px;
   font-weight: 700;
   overflow: hidden;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1473,7 +1475,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   overflow: hidden;
   float: left;
@@ -1483,7 +1485,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   overflow: hidden;
   float: left;
@@ -1614,7 +1616,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .heatmap-weekday-container-lower {
@@ -1624,7 +1626,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .heatmap-fixmap-button {
@@ -1634,7 +1636,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .heatmap-get-button {
@@ -1643,12 +1645,12 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #C3E669;
   height: 35px;
 }
 .metric-summary-option-button {
   float: right;
-  color: #54DCC1;
+  color: #C3E669;
   background-color: white;
   height: 20px;
   border-radius: 5px;
@@ -1671,7 +1673,7 @@ span.rz-bar-wrapper {
   border-bottom-left-radius: 5px;
 
   background-color: white;
-  color: #01D0A7;
+  color: #C3E669;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1684,7 +1686,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1699,7 +1701,7 @@ span.rz-bar-wrapper {
   border-bottom-right-radius: 5px;
 
   background-color: white;
-  color: #01D0A7;
+  color: #C3E669;
 }
 .full-toggle-right-active {
   width: 50%;
@@ -1709,7 +1711,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
 }
 .unit-toggle-container {
@@ -1722,7 +1724,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: white;
-  color: #01D0A7;
+  color: #C3E669;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1733,7 +1735,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1746,7 +1748,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: white;
-  color: #01D0A7;
+  color: #C3E669;
 }
 .unit-toggle-right-active {
   width: 50%;
@@ -1754,7 +1756,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   color: white;
 }
 .userdata-title {
@@ -1762,7 +1764,7 @@ span.rz-bar-wrapper {
 }
 .carbon-goal-chart {
   height: 5px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   opacity: 0.6;
   border-radius: 2px;
   width: 100%;
