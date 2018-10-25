@@ -15,8 +15,8 @@
        <h4>
        <p> {{recs.name}} </p>
          <p> {{recs.address}} </p>
-           <p> {{getDistance(3, 4)}}</p>
-           <img src="img/small/small_4.png" widsth="75" />
+           <p> {{getDistance(recs.coord[0], recs.coord[1])}}</p>
+           <img src="img/small/small_{{recs.stars}}.png" widsth="75" />
              <button class="button button-block button-balanced button-outline" ng-click="clickDirections(0)">Directions</button>
              <button class="button button-block button-balanced button-outline" ng-click="clickReview(0)">Review</button>
 
@@ -39,10 +39,11 @@
      <div class="modal-content">
        <center>
          <h3>Directions</h3>
-       1. Walk South on 100th Street <br />
-         2. Turn left on E. 45th Blvd <br />
-           3. Walk West on E. 45th Blvd <br />
-             4. Turn right on Sesame St.
+         <ul>
+           <li ng-repeat="directions in recs.directions">
+             {{directions.step}}. {{directions.move}}
+           </li>
+         </ul>
                <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
        </center>
      </div>
@@ -63,13 +64,12 @@
      <div class="modal-content">
        <div align="left">
        <h3>Reviews</h3>
-       I really like this cafe, it has great vibes!
-         <img src="img/small/small_5.png" width="50" /> - Jane, San Francisco <br />
-           I really like their midterms! It goes great with their
-             freshly baked depression!
-             <img src="img/small/small_5.png" width="50" /> - John, Atlanta <br />
-               The parties are ok but the grading is kind of slow.
-                 <img src="img/small/small_4.png" width="50" /> - Sam, Boston <br />
+       {{recs.reviews[0]}}
+         <img src="img/small/small_{{recs.rev-stars[0]}}.png" width="50" /> - {{recs.reviewers[0]}} <br />
+           {{recs.reviews[1]}}
+             <img src="img/small/small_{{recs.rev-stars[1]}}.png" width="50" /> - {{recs.reviewers[1]}} <br />
+               {{recs.reviews[2]}}
+                 <img src="img/small/small_{{recs.rev-stars[2]}}.png" width="50" /> - {{recs.reviewers[2]}} <br />
          </div>
          <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
      </div>
