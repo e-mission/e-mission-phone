@@ -1,0 +1,12 @@
+{
+    "id" : 0,
+    "name" : "Ernie's Espresso",
+    "type" : "Cafe and Restaurants",
+    "stars" : 4,
+    "coord" : [3, 4],
+    "reviews" : ["I really like this Cafe, it has great vibes!",
+    "I like this cafe but the service is a bit slow",
+    "Don't get the donuts!"],
+    "rev-stars" : [5, 4, 3]
+
+}
