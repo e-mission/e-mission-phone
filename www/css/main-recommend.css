@@ -1,27 +1,29 @@
-
+.pane {
+    background-color: #F2F5E3 !important;
+}
 
 #scrolling {
-  display: flex;
-  flex: 1;
   overflow: auto;
-  align-items: center;
   width: 100%;
   height: 100%;
   color: white;
   font-size: 20px;
   font-weight: bold;
+  align-content: center;
+  display: flex;
+  flex-direction: column;
 }
 .recommendbox {
   width : 300px;
   height : 300px;
   padding: 20px;
-  background-color: #01D0A7;
+  background-color: #C3E669;
   margin: 20px;
-  color: white;
+  color: black;
 }
 
 p {
-  color: white;
+  color: black;
 }
 
 .modal {
@@ -33,14 +35,17 @@ p {
   height : 100%;
   overflow: auto;
   background-color: rgba(0, 0, 0, 0.3);
+  top: 0%;
+  left: 0%;
 }
 .modal-content {
-  background-color : #DEDEDE;
+  background-color : #C3E669;
   position: -webkit-sticky;
   position: sticky;
-  top : 0;
-  margin : 20px;
-  padding : 20px;
+  top : 0%;
+  margin: 20px;
+  margin-left: 37px;
+  padding : 30px;
   width : 300px;
 }
 .close {
@@ -53,5 +58,5 @@ p {
   background-color: white;
   border-color: transparent;
   font-style: bold;
-  color: #01D0A7;
+  color: black;
 }
