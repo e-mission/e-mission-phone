@@ -6,7 +6,7 @@
 }
 
 .popup-title {
-    color: #6e6e6e;
+    color: #af4141;
 }
 
 .pull-right {
@@ -31,29 +31,29 @@
 
 }
 .button.ng-binding.button-positive {
-  background-color: #01D0A7;
+  background-color: #008ad0;
   height: 40px;
 }
 .button.ng-binding.button-assertive {
-  background-color: #01D0A7;
+  background-color: #008ad0;
   height: 40px;
 
 }
 .selected_date_full.ng-binding {
-  color: #01D0A7;
+  color: #008ad0;
 }
 .icon.ion-chevron-left {
- color: #01D0A7;
+ color: #008ad0;
 }
 .icon.ion-chevron-right {
- color: #01D0A7;
+ color: #008ad0;
 }
 .date_col.date_selected {
- background-color: #01D0A7 !important;
+ background-color: #008ad0 !important;
 
 }
 .date_col:active {
- background-color: #01D0A7 !important;
+ background-color: #008ad0 !important;
 }
 .customButtomIconSize:before {
     font-size: 25px !important;
@@ -116,13 +116,13 @@
 
 .button.button-light-green {
   border-color: transparent;
-  background-color: #01D0A7;
+  background-color: #00add0;
   color: #fff; }
 .button.button-light-green:hover {
     color: #fff;
     text-decoration: none; }
 .button.button-light-green.active, .button.button-gold.activated {
-    background-color:#01D0A7; }
+    background-color:#00add0; }
 .button.button-light-green.button-clear {
     border-color: transparent;
     background: none;
@@ -132,11 +132,11 @@
     border-color: transparent;
     background: none; }
 .button.button-light-green.button-outline {
-    border-color: #01D0A7;
+    border-color: #00add0;
     background: transparent;
-    color: #01D0A7; }
+    color: #00add0; }
 .button.button-light-green.button-outline.active, .button.button-gold.button-outline.activated {
-    background-color: #01D0A7;
+    background-color: #00add0;
     box-shadow: none;
     color: #fff; }
 
@@ -1370,7 +1370,7 @@ span.rz-bar-wrapper {
 }
 
 #email-cci{
-  background-color: #341B44;
+  background-color: #f4a460 ;
 }
 
 #call-cci{

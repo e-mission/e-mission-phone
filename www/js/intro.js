@@ -16,6 +16,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     templateUrl: 'templates/intro/reconsent.html',
     controller: 'IntroCtrl'
   });
+
 })
 
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
