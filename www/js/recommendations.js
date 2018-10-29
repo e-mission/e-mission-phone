@@ -32,6 +32,7 @@ Ask Shankari about this Wednesday
       $scope.currentDisplay.style.display = "block";
     };
 
+    //waiting on Vanessa integration 
     $scope.getSuggestion = function() {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
