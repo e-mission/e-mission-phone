@@ -1,9 +1,8 @@
-angular.module('emission.main.common.map',['ionic-datepicker',
-                                      'emission.main.common.services',
+angular.module('emission.main.common.map',['emission.main.common.services',
                                       'emission.services',
                                       'emission.main.diary.services', 'nvd3'])
 
-.controller("CommonMapCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
+.controller("CommonMapCtrl", function($window, $scope, $rootScope, $state,
                                     leafletMapEvents,
                                     CommonGraph, Config, DiaryHelper) {
   console.log("controller CommonMapCtrl called");

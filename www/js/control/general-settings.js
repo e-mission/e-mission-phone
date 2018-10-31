@@ -10,16 +10,18 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
-                                        'angularLocalStorage'])
+                                        'emission.plugin.kvstore',
+                                        'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
+               $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
-               CalorieCal, ClientStats, CommHelper) {
+               CalorieCal, ClientStats, CommHelper, Logger) {
 
     var datepickerObject = {
       todayLabel: 'Today',  //Optional
@@ -47,30 +49,37 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.emailLog = ControlHelper.emailLog;
-    $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
-        var userDataFromStorage = CalorieCal.get();
-        $scope.userData = []
-        var height = userDataFromStorage.height.toString();
-        var weight = userDataFromStorage.weight.toString();
-        var temp  =  {
-            age: userDataFromStorage.age,
-            height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-            weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-            gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+        return CalorieCal.get().then(function(userDataFromStorage) {
+        $scope.rawUserData = userDataFromStorage;
+        if ($scope.userDataSaved()) {
+            $scope.userData = []
+            var height = userDataFromStorage.height.toString();
+            var weight = userDataFromStorage.weight.toString();
+            var temp  =  {
+                age: userDataFromStorage.age,
+                height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+                weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+                gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+            }
+            for (var i in temp) {
+                $scope.userData.push({key: i, value: temp[i]});
+            }
         }
-        for (var i in temp) {
-            $scope.userData.push({key: i, value: temp[i]});
-        }
+        });
     }
 
     $scope.userDataSaved = function() {
-        return CalorieCal.get().userDataSaved == true;
+        if (angular.isDefined($scope.rawUserData) && $scope.rawUserData != null) {
+            return $scope.rawUserData.userDataSaved;
+        } else {
+            return false;
+        }
     }
-    if ($scope.userDataSaved()) {
-        $scope.getUserData();
-    }
+    $ionicPlatform.ready().then(function() {
+        $scope.refreshScreen();
+    });
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
@@ -85,30 +94,11 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
-    $scope.ionViewBackgroundClass = function() {
-        return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
-    }
-    $scope.getDarkTheme = function() {
-        return $scope.dark_theme;
-    }
-    $scope.toggleDarkTheme = function() {
-        if ($scope.dark_theme) {
-            $rootScope.dark_theme = false;
-            $scope.dark_theme = false;
-            StartPrefs.setDefaultTheme(null);
-            $state.reload();
-        } else {
-            $rootScope.dark_theme = true;
-            $scope.dark_theme = true;
-            StartPrefs.setDefaultTheme('dark_theme');
-            $state.reload();
-        }
-    }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
             $scope.$apply(function() {
-                $scope.settings.connect.url = response.connectURL;
+                $scope.settings.connect.url = response.connectUrl;
                 console.log(response);
             });
         }, function(error) {
@@ -164,12 +154,12 @@ angular.module('emission.main.control',['emission.services',
         $state.go("root.main.map");
     }
     $scope.getState = function() {
-        ControlCollectionHelper.getState().then(function(response) {
+        return ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
             });
         }, function(error) {
-            $ionicPopup.alert("while getting email, "+error);
+            $ionicPopup.alert("while reading FSM state, "+error);
         });
     };
 
@@ -191,18 +181,13 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    var clearBoth = function() {
-        storage.clearAll();
-        clearUsercache();
-    }
-
     $scope.nukeUserCache = function() {
         var nukeChoiceActions = [{text: "UI state only",
-                                  action: storage.clearAll},
+                                  action: KVStore.clearOnlyLocal},
                                  {text: 'Native cache only',
-                                  action: clearUsercache},
+                                  action: KVStore.clearOnlyNative},
                                  {text: 'Everything',
-                                  action: clearBoth}];
+                                  action: KVStore.clearAll}];
 
         $ionicActionSheet.show({
             titleText: "Clear data",
@@ -228,7 +213,9 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.$on('$ionicView.afterEnter', function() {
+        $ionicPlatform.ready().then(function() {
         $scope.refreshScreen();
+        });
     })
 
     // Execute action on hidden popover
@@ -248,15 +235,24 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
-          return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
+          return arguments.length ? (UpdateCheck.setChannel(newName)) : $scope.settings.storedChannel;
         };
-
+        UpdateCheck.getChannel().then(function(retVal) { 
+            $scope.$apply(function() {
+                $scope.settings.storedChannel = retVal;
+            });
+        });
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
         $scope.getTNotifySettings();
         $scope.getEmail();
-        $scope.getState();
+        $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
+            $scope.$apply(function() {
+                $scope.settings.collect.trackingOn = isTracking;
+            });
+        });
+        $scope.getUserData();
     };
 
     $scope.returnToIntro = function() {
@@ -275,9 +271,49 @@ angular.module('emission.main.control',['emission.services',
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
         ControlSyncHelper.forceSync().then(function(response) {
-            $ionicPopup.alert({template: 'success -> '+response});
-        }, function(error) {
-            $ionicPopup.alert({template: 'error -> '+error});
+            Logger.log("response = "+response);
+            /*
+             * Change to sensorKey to "background/location" after fixing issues
+             * with getLastSensorData and getLastMessages in the usercache
+             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+             */
+            var sensorKey = "statemachine/transition";
+            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+        }).then(function(sensorDataList) {
+            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+            // If everything has been pushed, we should
+            // only have one entry for the battery, which is the one that was
+            // inserted on the last successful push.
+            var isTripEnd = function(entry) {
+                if (entry.metadata.key == "local.transition.stopped_moving" ||
+                    entry.metadata.key == "T_TRIP_ENDED") {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+            var syncPending = (syncLaunchedCalls.length > 0);
+            Logger.log("sensorDataList.length = "+sensorDataList.length+
+                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+                       ", syncPending? = "+syncPending);
+            return syncPending;
+        }).then(function(syncPending) {
+            Logger.log("sync launched = "+syncPending);
+            if (syncPending) {
+                Logger.log("data is pending, showing confirm dialog");
+                $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
+                    if (res) {
+                        $scope.forceSync();
+                    } else {
+                        Logger.log("user refused to re-sync");
+                    }
+                });
+            } else {
+                $ionicPopup.alert({template: 'all data pushed!'});
+            }
+        }).catch(function(error) {
+            $ionicPopup.alert({template: 'error -> '+JSON.stringify(error)});
         });
     };
 
@@ -295,15 +331,20 @@ angular.module('emission.main.control',['emission.services',
         return ionic.Platform.isIOS();
     }
 
-    $scope.refreshScreen();
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {
         $scope.syncSettingsPopup = popover;
     });
-    $scope.trackingOn = function() {
-        return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-    }
+    $scope.isTrackingOn = function() {
+        return $ionicPlatform.ready().then(function() {
+        if($scope.isAndroid()){
+            return $scope.settings.collect.state != "local.state.tracking_stopped";
+        } else if ($scope.isIOS()) {
+            return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+        }
+        });
+    };
     $scope.userStartStopTracking = function() {
         if ($scope.startStopBtnToggle){
             ControlCollectionHelper.forceTransition('STOP_TRACKING');
@@ -313,7 +354,7 @@ angular.module('emission.main.control',['emission.services',
             $scope.startStopBtnToggle = true;
         }
     }
-    $scope.startStopBtnToggle = $scope.trackingOn();
+    $scope.startStopBtnToggle = $scope.trackingOn;
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
@@ -321,13 +362,17 @@ angular.module('emission.main.control',['emission.services',
         return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
     $scope.eraseUserData = function() {
-        CalorieCal.delete();
+        CalorieCal.delete().then(function() {
         $ionicPopup.alert({template: 'User data erased.'});
-
+        });
     }
     $scope.parseState = function(state) {
         if (state) {
-            return state.substring(6);
+            if($scope.isAndroid()){
+                return state.substring(12);
+            } else if ($scope.isIOS()) {
+                return state.substring(6);
+            }
         }
     }
     $scope.expandDeveloperZone = function() {
@@ -395,7 +440,8 @@ angular.module('emission.main.control',['emission.services',
                 handleConsent(resultDoc);
             }
         }, function(error) {
-            $ionicPopup.alert({template: error});
+            $ionicPopup.alert({title: "Error reading consent document from cache",
+                template: error});
         });
     }
 

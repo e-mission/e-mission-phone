@@ -6,7 +6,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
-                successCallback(settings.connectURL);
+                successCallback(settings.connectUrl);
             }, errorCallback);
     };
 
@@ -102,6 +102,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
          day: momentObj.date(),
        };
     };
+
+    this.moment2Timestamp = function(momentObj) {
+      return momentObj.unix();
+    }
 
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
@@ -373,7 +377,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
                       }
                       reader.readAsText(file);
                     }, function(error) {
-                      $ionicPopup.alert({template: error});
+                      $ionicPopup.alert({title: "Error while downloading JSON dump",
+                        template: error});
                       reject(error);
                     });
                   });
@@ -392,7 +397,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
           .catch(function(error) {
              window.Logger.log(window.Logger.LEVEL_INFO,
                  "Email cancel reported, seems to be an error on android");
-            $ionicPopup.alert({'template': JSON.stringify(error)});
+            $ionicPopup.alert({'title': "Error sending email",
+                'template': JSON.stringify(error)});
           })
     };
 

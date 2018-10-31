@@ -1,0 +1,15 @@
+{
+    "connectUrl": "http://<your laptop ip>:8080",
+    "android": {
+        "auth": {
+            "method": "prompted-auth",
+            "clientID": "ignored"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "prompted-auth",
+            "clientID": "ignored"
+        }
+    }
+}

@@ -1,11 +1,12 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.plugin.kvstore', 'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
-                                    $ionicScrollDelegate, $rootScope, $location,  $state, ReferHelper, $http) {
+                                    ionicDatePicker, $ionicPlatform,
+                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore,
+                                    $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -22,14 +23,17 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-         if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
-            console.log("result", result);
-            $state.go("root.main.current");
+        Logger.log("Current trip state" + JSON.stringify(result));
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+          $state.go("root.main.current");
         }
       });
     };
 
-    $scope.onCurrentTrip();
+    $ionicPlatform.ready(function() {
+        $scope.onCurrentTrip();
+    });
 
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
@@ -48,28 +52,32 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         });
     }
 
+    // TODO: Move this out into its own service
+    var FOOD_COMPARE_KEY = 'foodCompare';
     $scope.setCookie = function(){
       $scope.foodCompare = 'cookie';
-      storage.set('foodCompare', 'cookie');
+      return KVStore.set(FOOD_COMPARE_KEY, 'cookie');
     }
     $scope.setIceCream = function(){
       $scope.foodCompare = 'iceCream';
-      storage.set('foodCompare', 'iceCream');
+      return KVStore.set(FOOD_COMPARE_KEY, 'iceCream');
     }
     $scope.setBanana = function(){
       $scope.foodCompare = 'banana';
-      storage.set('foodCompare', 'banana');
+      return KVStore.set(FOOD_COMPARE_KEY, 'banana');
     }
-    if(storage.get('foodCompare') == null){
+    $scope.handleChosenFood = function(retVal) {
+    if (retVal == null){
       $scope.setCookie();
     } else {
-      var choosenFood = storage.get('foodCompare')
+      var choosenFood = retVal;
       if(choosenFood == 'cookie')
         $scope.setCookie();
       else if (choosenFood == 'iceCream')
         $scope.setIceCream();
       else
         $scope.setBanana();
+    }
     }
     $ionicModal.fromTemplateUrl('templates/metrics/metrics-control.html', {
       scope: $scope,
@@ -222,14 +230,31 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                   'weight': $scope.userData.weight,
                   'age': $scope.userData.age,
                   'userDataSaved': true};
-      CalorieCal.set(info);
+      CalorieCal.set(info).then(function() {
+        $scope.savedUserData = info;
+      });
+    }
+
+    $scope.loadUserData = function() {
+        if(angular.isDefined($scope.savedUserData)) {
+            // loaded or set
+            return Promise.resolve();
+        } else {
+            return CalorieCal.get().then(function(userDataFromStorage) {
+                $scope.savedUserData = userDataFromStorage;
+            });
+        }
     }
 
     $scope.userDataSaved = function() {
-      var saved_user_data = CalorieCal.get();
-      // console.log("saved vals = "+JSON.stringify(saved_user_data));
-      return saved_user_data.userDataSaved == true;
+      // console.log("saved vals = "+JSON.stringify($scope.savedUserData));
+      if (angular.isDefined($scope.savedUserData) && $scope.savedUserData != null) {
+          return $scope.savedUserData.userDataSaved == true;
+      } else {
+          return false;
+      };
     }
+
     $scope.options = {
         chart: {
             type: 'multiBarChart',
@@ -302,6 +327,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getData = function(){
       $scope.getMetricsHelper();
+      $scope.loadUserData();
+      KVStore.get(FOOD_COMPARE_KEY).then(function(retVal) {
+        $scope.handleChosenFood(retVal);
+      });
     }
 
     $scope.getMetricsHelper = function() {
@@ -463,7 +492,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $ionicLoading.hide();
         $ionicPopup.alert({
           title: "Error Loading Data",
-          template: ''
+          template: JSON.stringify(error)
         });
         console.log(error);
       })
@@ -491,7 +520,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.caloriesData.aggrCalories = "Unknown...";
         $ionicPopup.alert({
           title: "Error loading aggregate data, averages not available",
-          template: ''
+          template: JSON.stringify(error)
         });
         console.log(error);
       });
@@ -651,7 +680,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData) {
        if ($scope.userDataSaved()) {
-         var userDataFromStorage = CalorieCal.get();
+         // this is safe because userDataSaved will never be set unless there
+         // is stored user data that we have loaded
+         var userDataFromStorage = $scope.storedUserData;
          var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
          var gender = userDataFromStorage.gender;
          var heightUnit = userDataFromStorage.heightUnit;
@@ -1025,9 +1056,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   $scope.selectCtrl = {}
   initSelect();
-  $timeout(function() {
-    getData();
-  }, 1)
+
+  $ionicPlatform.ready(function() {
+      getData();
+  });
 
   $scope.doRefresh = function() {
     first = true;
@@ -1038,6 +1070,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
+    "CAR":"ion-android-car",
+    "BUS":"ion-android-bus",
+    "TRAIN":"ion-android-train",
     "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[key];
@@ -1046,7 +1081,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.setCurDayFrom = function(val) {
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
-      $scope.datepickerObjFrom.inputDate = val;
+      $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     } else {
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
@@ -1055,7 +1090,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.setCurDayTo = function(val) {
     if (val) {
       $scope.selectCtrl.toDateTimestamp = moment(val).utc();
-      $scope.datepickerObjTo.inputDate = val;
+      $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
@@ -1105,7 +1140,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMMM dd yyyy',
+      dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
@@ -1122,10 +1157,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMMM dd yyyy',
+      dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
+
+  $scope.pickFromDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObjFrom);
+  }
+
+  $scope.pickToDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObjTo);
+  }
 
   $scope.extendFootprintCard = function() {
     if($scope.expandedf){

@@ -5,7 +5,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.services',
-                                      'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+                                      'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
+                                      'emission.plugin.logger'])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
@@ -13,11 +14,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    Config, PostTripManualMarker, nzTour, storage) {
+                                    Config, PostTripManualMarker, nzTour, KVStore, Logger) {
   console.log("controller DiaryListCtrl called");
   // Add option
-  // StatusBar.styleBlackOpaque()
-  $scope.dark_theme = $rootScope.dark_theme;
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {
       console.log("diary/list received resize event, invalidating map size");
@@ -89,21 +88,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     * +date and -date operations.
     */
     $scope.listExpandClass = function () {
-      return ($scope.dark_theme)? "earlier-later-expand-dark" : "earlier-later-expand";
+      return "earlier-later-expand";
     }
     $scope.listLocationClass = function() {
-      return ($scope.dark_theme)? "item item-icon-left list-location-dark" : "item item-icon-left list-location";
+      return "item item-icon-left list-location";
     }
     $scope.listTextClass = function() {
-      return ($scope.dark_theme)? "list-text-dark" : "list-text";
-    }
-    $scope.ionViewBackgroundClass = function() {
-      return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
+      return "list-text";
     }
     $scope.datePickerClass = function() {
     }
     $scope.listCardClass = function(tripgj) {
-      var background = DiaryHelper.getTripBackground($scope.dark_theme, tripgj);
+      var background = DiaryHelper.getTripBackground(tripgj);
       if ($window.screen.width <= 320) {
         return "list card list-card "+ background +" list-card-sm";
       } else if ($window.screen.width <= 375) {
@@ -115,13 +111,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
     $scope.listColLeftClass = function(margin) {
       if (margin == 0) {
-        return ($scope.dark_theme)? "col-50 list-col-left-dark" : "col-50 list-col-left";
+        return "col-50 list-col-left";
       } else {
-        return ($scope.dark_theme)? "col-50 list-col-left-margin-dark" : "col-50 list-col-left-margin";
+        return "col-50 list-col-left-margin";
       }
     }
     $scope.listColRightClass = function() {
-      return ($scope.dark_theme)? "col-50 list-col-right-dark" : "col-50 list-col-right";
+      return "col-50 list-col-right";
     }
     $scope.differentCommon = function(tripgj) {
         return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
@@ -201,7 +197,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.setColor = function(mode) {
       var colors = {"icon ion-android-bicycle":'green',
     "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'red',};
+    "icon ion-speedometer":'purple',
+    "icon ion-android-bus": "purple",
+    "icon ion-android-train": "navy",
+    "icon ion-android-car": "salmon",
+    "icon ion-plane": "red"};
       return { color: colors[mode] };
     }
 
@@ -341,10 +341,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     */
     var checkDiaryTutorialDone = function () {
       var DIARY_DONE_KEY = 'diary_tutorial_done';
-      var diaryTutorialDone = storage.get(DIARY_DONE_KEY);
+      var diaryTutorialDone = KVStore.getDirect(DIARY_DONE_KEY);
       if (!diaryTutorialDone) {
         startWalkthrough();
-        storage.set(DIARY_DONE_KEY, true);
+        KVStore.set(DIARY_DONE_KEY, true);
       }
     };
 
@@ -385,7 +385,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var in_trip;
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"") {
+        Logger.log("Current trip state" + JSON.stringify(result));
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
           in_trip = false;

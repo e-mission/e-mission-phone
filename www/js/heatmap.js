@@ -2,11 +2,11 @@
 
 angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
                'emission.plugin.logger', 'emission.incident.posttrip.manual',
-               'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+               'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore'])
 
 .controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http,
         leafletData, Logger, Config, PostTripManualMarker,
-        $window, nzTour, storage) {
+        $window, nzTour, KVStore) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
@@ -371,10 +371,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   */
   var checkHeatmapTutorialDone = function () {
     var HEATMAP_DONE_KEY = 'heatmap_tutorial_done';
-    var heatmapTutorialDone = storage.get(HEATMAP_DONE_KEY);
+    var heatmapTutorialDone = KVStore.getDirect(HEATMAP_DONE_KEY);
     if (!heatmapTutorialDone) {
       startWalkthrough();
-      storage.set(HEATMAP_DONE_KEY, true);
+      KVStore.set(HEATMAP_DONE_KEY, true);
     }
   };
 

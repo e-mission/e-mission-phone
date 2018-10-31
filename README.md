@@ -1,11 +1,154 @@
 e-mission phone app
 --------------------
 
+[![Join the chat at https://gitter.im/e-mission/e-mission-phone](https://badges.gitter.im/e-mission/e-mission-phone.svg)](https://gitter.im/e-mission/e-mission-phone?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 This is the phone component of the e-mission system.
+
+Additional Documentation
+---
+Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
+https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
+
+Updating the UI only
+---
+If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
+
+### Dependencies
+1. node.js: You probably want to install this using [nvm](https://github.com/creationix/nvm), to ensure that you can pick a particular [version of node](https://github.com/creationix/nvm#usage).
+    ```
+    $ node -v
+    v9.4.0
+    $ npm -v
+    6.0.0
+    ```
+    
+  Make sure that the permissions are set correctly - npm and node need to be owned by `root` or another admin user.
+
+  ```
+  $ which npm
+  /usr/local/bin/npm
+  $ ls -al /usr/local/bin/npm
+  lrwxr-xr-x  1 root  wheel  38 May  8 10:04 /usr/local/bin/npm -> ../lib/node_modules/npm/bin/npm-cli.js
+  $ ls -al /usr/local/lib/node_modules/npm/bin/npm-cli.js
+  -rwxr-xr-x  1 cusgadmin  staff  4295 Oct 26  1985 /usr/local/lib/node_modules/npm/bin/npm-cli.js
+  ```
+  
+2. [bower](https://bower.io/):
+
+  ```
+  $ bower -v
+  1.8.4
+  ```
+
+### Installation
+1. Install the most recent release of the em-devapp (https://github.com/e-mission/e-mission-devapp)
+
+1. Get the current version of the phone UI code
+
+    1. Fork this repo using the github UI
+
+    1. Clone your fork
+
+    ```
+    $ git clone <your repo URL>
+    ```
+
+    ```
+    $ cd e-mission-phone
+    ```
+    
+1. Create a remote to pull updates from upstream
+
+    ```
+    $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
+    ```
+    
+1. Setup the config
+
+    ```
+    $ ./bin/configure_xml_and_json.js serve
+    ```
+
+1. Install all required node modules 
+
+    ```
+    $ npm install
+    ```
+ 1. Install javascript dependencies
+ 
+    ```
+    $ bower install
+    ```
+    
+1. Configure values if necessary - e.g.
+
+    ```
+    $ ls www/json/*.sample
+    $ cp www/json/setupConfig.json.sample www/json/setupConfig.json
+    $ cp ..... www/json/connectionConfig.json
+    ```
+  
+1. Run the setup script
+
+    ```
+    $ npm run setup-serve
+    > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
+    > ./bin/download_settings_controls.js
+
+    Sync collection settings updated
+    Data collection settings updated
+    Transition notify settings updated
+    ```
+  
+### Running
+
+1. Start the phonegap deployment server and note the URL(s) that the server is listening to.
+
+    ```
+    $ npm run serve
+    ....
+    [phonegap] listening on 10.0.0.14:3000
+    [phonegap] listening on 192.168.162.1:3000
+    [phonegap]
+    [phonegap] ctrl-c to stop the server
+    [phonegap]
+    ....
+    ```
+  
+1. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
+1. The app will now display the version of e-mission app that is in your local directory
+  1. The console logs will be displayed back in the server window (prefaced by `[console]`)
+  1. Breakpoints can be added by connecting through the browser
+    - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
+    - Chrome: chrome://inspect -> Remote target (emulator)
+    
+**Ta-da!** If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app.
+
+**Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
+
+
+End to end testing
+---
+A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
+
+1. installing a local server,
+2. running it, 
+3. loading it with test data, and
+4. running analysis on it
+
+are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
+
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/docs/e-mission-common/configuring_authentication.md).
+
+One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
+
+Updating the e-mission-* plugins or adding new plugins
+---
 
 Installing
 ---
-We are using the ionic v2.2.1 platform, which is a toolchain on top of the apache
+We are using the ionic v3.19.1 platform, which is a toolchain on top of the apache
 cordova project. So the first step is to install ionic using their instructions.
 http://ionicframework.com/docs/v1/getting-started/
 
@@ -13,9 +156,11 @@ NOTE: Since we are still on ionic v1, please do not install v2 or v3, as the cur
 Issue the following commands to install Cordova and Ionic instead of the ones provided in the instruction above.
 
 ```
-$ npm install -g cordova@6.5.0
-$ npm install -g ionic@2.2.1
+$ npm install -g cordova@8.0.0
+$ npm install -g ionic@3.19.1
 ```
+
+Install gradle (https://gradle.org/install/) for android builds.
 
 Then, get the current version of our code
 
@@ -23,37 +168,43 @@ Fork this repo using the github UI
 
 Clone your fork
 
-``
+```
 $ git clone <your repo URL>
-``
+```
 
-``
+```
 $ cd e-mission-phone
-``
+```
 
 Enable platform hooks, including http on iOS9
 
-``
+```
 $ git clone https://github.com/driftyco/ionic-package-hooks.git ./package-hooks
-``
+```
+
+Setup the config
+
+```
+$ ./bin/configure_xml_and_json.js cordovabuild
+```
 
 Install all javascript components using bower
 
-``
+```
 $ bower update
-``
+```
+
+Make sure to install the other node modules required for the setup scripts.
+
+```
+npm install
+```
 
 Create a remote to pull updates from upstream
 
-``
+```
 $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
-``
-
-Generate your App ID
-
-``
-$ ionic io init
-``
+```
 
 Setup cocoapods. For all versions > 1.9, we need https://cocoapods.org/ support. This is used by the push plugin for the GCM pod, and by the auth plugin to install the GTMOAuth framework. This is a good time to get a cup of your favourite beverage.
 
@@ -65,72 +216,41 @@ $ pod setup
 To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
 https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
 
-Next, restore platforms and plugins. This is a good time to get a second cup of your favorite beverage
-
-``
-$ ionic state restore
-``
-
-Finally, make sure to install the other node modules required for the setup scripts.
+Configure values if necessary - e.g.
 
 ```
-npm install
+ls www/json/*.sample
+cp www/json/setupConfig.json.sample www/json/setupConfig.json
+cp ..... www/json/connectionConfig.json
+```
+
+Restore cordova platforms and plugins
+
+```
+$ cordova prepare
 ```
 
 Installation is now complete. You can view the current state of the application in the emulator
 
-    $ ionic emulate ios --target="iPhone-6"
+    $ cordova emulate ios
 
-JS Testing
----
-From the root directory run
+    OR 
 
-    $ npm install karma --save-dev
-    $ npm install karma-jasmine karma-chrome-launcher --save-dev
+    $ cordova emulate android
 
-Write tests in www/js/test
-To run tests if you have karma globally set, run 
+The android build and emulator have improved significantly in the last release
+of Android Studio (3.0.1).  The build is significantly faster than iOS, the
+emulator is just as snappy, and the debugger is better since chrome saves logs
+from startup, so you don't have to use tricks like adding alerts to see errors
+in startup.
 
-    $ karma start my.conf.js 
-    
-in the root directory. If you didn't run the -g command, you can run
-tests with 
-
-    $ ./node_modules/karma/bin/karma start
-    
-in the root directory
+**Note:** Sometimes, the last command (`$ cordova prepare`) fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
 
 Troubleshooting
 ---
 
-Sometimes the IOS emulator doesn't work when called from command line. If so, you can use Xcode to load
-the project:
-
-``
-      /e-mission-phone/platforms/ios/emission.xcworkspace
-``
-
-and then run the project with IOS emulator.
-Make sure you use the most recent version of Xcode - older versions may not support some newer functionality.
-
----
-
-Some versions of Gradle create unnecessary files that may result in errors while building the app. Gradle 2.14.1 has proven to work without any issues.
-If errors persist, make sure 
-``
-	  /e-mission-phone/platforms/android/gradle/wrapper/gradle-wrapper.properties
-``
-looks like this:
-```
-distributionBase=GRADLE_USER_HOME
-distributionPath=wrapper/dists
-zipStoreBase=GRADLE_USER_HOME
-zipStorePath=wrapper/dists
-distributionUrl=https\://services.gradle.org/distributions/gradle-2.14.1-all.zip
-```
----
-
-The Android platform requires API levels 18-21, make sure you have installed them in the SDK manager.
+Troubleshooting tips have been moved to the e-mission-phone section of the e-mission-docs repo:
+https://github.com/e-mission/e-mission-docs/blob/master/docs/e-mission-phone/troubleshooting_tips_faq.md
 
 Debugging
 ---
@@ -147,21 +267,6 @@ $ pwd
 $ python bin/csv_export_add_date.py /tmp/loggerDB.<issue>
 $ less /tmp/loggerDB.<issue>.withdate.log
 ```
-
-End to end testing
----
-A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
-
-1. installing a local server,
-2. running it, 
-3. loading it with test data, and
-4. running analysis on it
-
-are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
-
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode and it has effectively no authentication. It expects the user token to contain the user email *in plaintext*.
-
-So when the phone app connects to a server that is in development mode, it is also in development mode. This means that any user email can be entered without a password. Developers should use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
 Contributing
 ---
@@ -189,52 +294,3 @@ $ git pull upstream master
 $ git push origin master
 $ git branch -d mybranch
 ```
-Game - Adding Habitica Avatar
----
-E-mission-phone does not use the API to get the Habitica avatar, instead it uses the same HTML, dependencies and PNG files as Habitica to generate the avatar. The avatar PNG are converted into CSS using [gulp.spritesmith](https://github.com/twolfson/gulp.spritesmith/blob/master/README.md)
-
-Habitrpg frequently updates sprites PNG and CSS folders and the dependencies may change too, so E-mission-phone may have to change sprites folders using the following guide:
-
-Habitrgp uses Jade template instead of HTML but E-mission-phone uses HTML. 
-	
-	1. Use the [Habitica API](https://habitica.com/apidoc/#api-DataExport-ExportUserAvatarHtml) with a habitica user id on the browser to render an user avatar HTML page.
-	2. Right click on the HTML page and click the Inspect option (This shows the Avatar HTML instead of Jade).
-	3. Use the body of HTML inside the <figure> tag
-
-The avatar has seperate PNG for head, costume, shirt, pet etc. Spritesmith converts the PNG to an avatar. The spritesmith gulp JavaScript that converts the PNG to a CSS avatar is located at www/tasks/gulp-sprites.js, updated this file according to Habitrpg repo. If there is a new PNG with different height and width than the defult PNGs, change this JavaScript.
-
-The PNG and CSS folder that has the avatar is located at www/common/. Add new avatar PNG and CSS here.
-
-Walk through to clone the required files from habitrpg to emission
-	
-1. Clone habitrpg repository
-
-		$ git clone https://github.com/HabitRPG/habitrpg.git
-
-2. Make task file in emission
-
-		$ cd e-mission-phone/www/js/
-		$ mkdir tasks
-
-3. Copy the gulp-sprites.js file from habitrpg to emission
-
-		$ cp -r habitrpg/tasks/gulp-sprites.js e-mission-phone/www/js/tasks/
-
-4. Add the following line to e-mission-phone/gulpfule.js to sycn the gulp-sprites.js file
-
-		require('glob').sync('/www/tasks/gulp-*').forEach(require);
-
-5. Copy the 3 folders from habitrpg/common- css, dist and img, and paste it to e-mission-phone/www/common
-
-		$ cd e-mission-phone/www
-		$ mkdir common
-		$ cp -r habitrpg/common/css e-mission-phone/www/common
-		$ cp -r habitrpg/common/dist e-mission-phone/www/common
-		$ cp -r habitrpg/common/img e-mission-phone/www/common
-	
-6. In e-mission-phone/www/js/tasks/gulp-sprite.js add www/ before common to all the lines those point to th common folder that was copied from habitrpg to e-mission-phone
-
-7. To add the avatar herobox css copy all the herobox class from habitrpg/website/build/app.css to one of the css folders in e-mission-phone 
-
-
-Alternative way is to get the avatar PNG directly through the API. E-mission-phone has Content-Security-Policy that blocks unknown contents, to allow E-mission-phone to recognize the URL add the Habitrpg server URL and the s3 URL to “Content-Secutiry-Policy” in the head of www/templates/index.html   

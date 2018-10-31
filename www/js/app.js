@@ -7,16 +7,36 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
-angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
-    'emission.controllers','emission.services',
+angular.module('emission', ['ionic',
+    'emission.controllers','emission.services', 'emission.plugin.logger',
+    'emission.splash.customURLScheme', 'emission.splash.referral',
+    'emission.splash.updatecheck',
     'emission.intro', 'emission.main'])
 
-.run(function($ionicPlatform, $rootScope) {
+.run(function($ionicPlatform, $rootScope, $http, Logger,
+    CustomURLScheme, ReferralHandler, UpdateCheck) {
   console.log("Starting run");
   // alert("Starting run");
+  // BEGIN: Global listeners, no need to wait for the platform
+  // TODO: Although the onLaunch call doesn't need to wait for the platform the
+  // handlers do. Can we rely on the fact that the event is generated from
+  // native code, so will only be launched after the platform is ready?
+  CustomURLScheme.onLaunch(function(event, url, urlComponents){
+    console.log("GOT URL:"+url);
+    // alert("GOT URL:"+url);
+
+    if (urlComponents.route == 'join') {
+      ReferralHandler.setupGroupReferral(urlComponents);
+      StartPrefs.loadWithPrefs();
+    } else if (urlComponents.route == 'change_client') {
+      UpdateCheck.handleClientChangeURL(urlComponents);
+    }
+  });
+  // END: Global listeners
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
+    Logger.log("ionicPlatform is ready");
     if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
       cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
       cordova.plugins.Keyboard.disableScroll(true);
@@ -26,42 +46,31 @@ angular.module('emission', ['ionic','ionic.service.core', 'ionic.cloud',
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
+
+    // Configure the connection settings
+    Logger.log("about to get connection config");
+    $http.get("json/connectionConfig.json").then(function(connectionConfig) {
+        if(connectionConfig.data.length == 0) {
+            throw "blank string instead of missing file on dynamically served app";
+        }
+        Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
+        window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
+    }).catch(function(err) {
+        Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
+        window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
+            Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
+            window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
+        }).catch(function(err) {
+            Logger.log("error "+JSON.stringify(err)+" reading or setting defaults, giving up");
+        });
+    });
   });
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider, $ionicCloudProvider) {
+.config(function($stateProvider, $urlRouterProvider) {
   console.log("Starting config");
-
-  var waitFn = function($q) {
-      var deferred = $q.defer();
-      ionic.Platform.ready(function() {
-         deferred.resolve();
-      });
-      return deferred.promise;
-  };
-
-  $ionicCloudProvider.init({
-    "core": {
-      "app_id": "9a6e5f95"
-    },
-    "push": {
-      "sender_id": "97387382925",
-      "pluginConfig": {
-        "ios": {
-          "badge": true,
-          "sound": true,
-          "vibration": true,
-          "clearBadge": true
-        },
-        "android": {
-          "icon": "ic_question_answer",
-          "iconColor": "#54DCC1",
-          "clearNotifications": true
-        }
-      }
-    }
-  });
+  // alert("config");
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
