@@ -1,10 +1,9 @@
 'use strict';
 
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
-                                               'emission.services',
-                                               'angularLocalStorage'])
+                                               'emission.plugin.kvstore'])
 
-.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, CommHelper, Logger, storage) {
+.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, KVStore) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
@@ -14,17 +13,14 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
    * to load UI updates from.
    */
   uc.getChannel = function() {
-    return storage.get(CHANNEL_KEY);
+    return KVStore.get(CHANNEL_KEY);
   };
 
   uc.setChannel = function(channelName) {
-    storage.set(CHANNEL_KEY, channelName);
-    CommHelper.updateUser({
-        client: channelName
-    });
+    return KVStore.set(CHANNEL_KEY, channelName);
   };
 
-  uc.setChannelPromise = function(currChannel) {
+  uc.initChannelPromise = function(currChannel) {
     var deploy = $window.IonicCordova.deploy;
     if (currChannel == null) {
         Logger.log("currChannel == null, skipping deploy init");
@@ -94,30 +90,36 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
 
   uc.handleClientChangeURL = function(urlComponents) {
     Logger.log("handleClientChangeURL = "+JSON.stringify(urlComponents));
-    if (urlComponents['clear_local_storage'] == "true") {
-        Logger.log("About to clear all local storage");
-        storage.clearAll();
-    }
+    var operationArray = []
     if (urlComponents['clear_usercache'] == "true") {
         Logger.log("About to clear usercache");
-        window.cordova.plugins.BEMUserCache.clearAll();
+        operationArray.push(KVStore.clearAll());
     }
-    uc.setChannel(urlComponents['new_client']);
-    uc.checkForUpdates();
+    operationArray.push(uc.setChannel(urlComponents['new_client']));
+    Promise.all(operationArray).then(function() {
+        Logger.log("successfully set the channel to "+urlComponents['new_client']);
+        uc.checkForUpdates();
+    }).catch(function(error) {
+      var display_msg = error.message + "\n" + error.stack;
+      if (!angular.isDefined(error.message)) {
+        display_msg = JSON.stringify(error);
+      }
+      $ionicPopup.alert({"title": "Unable to handle client change",
+        "template": display_msg});
+      Logger.log('Ionic Deploy: Unable to handle client change URL '+display_msg);
+    })
   };
 
   // Default to dev
   var getChannelToUse = function() {
-      var channel = uc.getChannel();
+      return uc.getChannel().then(function(channel) {
       if (channel == null || channel == "") {
         console.log("No saved channel found, skipping channel config")
         channel = null;
       };
       console.log("Returning channel "+channel)
       return channel;
-  }
-
-  var showProgressDialog = function(title) {
+      });
   }
 
   var applyUpdate = function() {
@@ -159,8 +161,8 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     // Check Ionic Deploy for new code
   uc.checkForUpdates = function() {
     console.log('Ionic Deploy: Checking for updates');
-    var currChannel = getChannelToUse();
-    uc.setChannelPromise(currChannel).then(function() {
+    getChannelToUse().then(function(currChannel) {
+    uc.initChannelPromise(currChannel).then(function() {
     Logger.log("deploy init complete ");
     uc.checkPromise().then(function(hasUpdate) {
       Logger.log('Ionic Deploy: Update available: ' + hasUpdate);
@@ -193,6 +195,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         // TODO: Figure out a better way to do this using promises
         // $ionicPopup.alert({title: "Up to date!"});
       }
+    })
     })
     }).catch(function(err) {
       Logger.log('Ionic Deploy: Unable to check for updates'+err);

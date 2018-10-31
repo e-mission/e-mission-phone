@@ -147,8 +147,7 @@ angular.module('emission.main', ['emission.main.recent',
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
-    $scope.dark_theme = $rootScope.dark_theme;
     $scope.tabsCustomClass = function() {
-        return ($scope.dark_theme)? "tabs-icon-top tabs-custom-dark" : "tabs-icon-top tabs-custom";
+        return "tabs-icon-top tabs-custom";
     }
 });
