@@ -1,11 +1,11 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'angularLocalStorage', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.plugin.kvstore', 'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
+                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore,
                                     $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
     var first = true;
@@ -52,28 +52,32 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         });
     }
 
+    // TODO: Move this out into its own service
+    var FOOD_COMPARE_KEY = 'foodCompare';
     $scope.setCookie = function(){
       $scope.foodCompare = 'cookie';
-      storage.set('foodCompare', 'cookie');
+      return KVStore.set(FOOD_COMPARE_KEY, 'cookie');
     }
     $scope.setIceCream = function(){
       $scope.foodCompare = 'iceCream';
-      storage.set('foodCompare', 'iceCream');
+      return KVStore.set(FOOD_COMPARE_KEY, 'iceCream');
     }
     $scope.setBanana = function(){
       $scope.foodCompare = 'banana';
-      storage.set('foodCompare', 'banana');
+      return KVStore.set(FOOD_COMPARE_KEY, 'banana');
     }
-    if(storage.get('foodCompare') == null){
+    $scope.handleChosenFood = function(retVal) {
+    if (retVal == null){
       $scope.setCookie();
     } else {
-      var choosenFood = storage.get('foodCompare')
+      var choosenFood = retVal;
       if(choosenFood == 'cookie')
         $scope.setCookie();
       else if (choosenFood == 'iceCream')
         $scope.setIceCream();
       else
         $scope.setBanana();
+    }
     }
     $ionicModal.fromTemplateUrl('templates/metrics/metrics-control.html', {
       scope: $scope,
@@ -226,14 +230,31 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                   'weight': $scope.userData.weight,
                   'age': $scope.userData.age,
                   'userDataSaved': true};
-      CalorieCal.set(info);
+      CalorieCal.set(info).then(function() {
+        $scope.savedUserData = info;
+      });
+    }
+
+    $scope.loadUserData = function() {
+        if(angular.isDefined($scope.savedUserData)) {
+            // loaded or set
+            return Promise.resolve();
+        } else {
+            return CalorieCal.get().then(function(userDataFromStorage) {
+                $scope.savedUserData = userDataFromStorage;
+            });
+        }
     }
 
     $scope.userDataSaved = function() {
-      var saved_user_data = CalorieCal.get();
-      // console.log("saved vals = "+JSON.stringify(saved_user_data));
-      return saved_user_data.userDataSaved == true;
+      // console.log("saved vals = "+JSON.stringify($scope.savedUserData));
+      if (angular.isDefined($scope.savedUserData) && $scope.savedUserData != null) {
+          return $scope.savedUserData.userDataSaved == true;
+      } else {
+          return false;
+      };
     }
+
     $scope.options = {
         chart: {
             type: 'multiBarChart',
@@ -306,6 +327,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     var getData = function(){
       $scope.getMetricsHelper();
+      $scope.loadUserData();
+      KVStore.get(FOOD_COMPARE_KEY).then(function(retVal) {
+        $scope.handleChosenFood(retVal);
+      });
     }
 
     $scope.getMetricsHelper = function() {
@@ -655,7 +680,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData) {
        if ($scope.userDataSaved()) {
-         var userDataFromStorage = CalorieCal.get();
+         // this is safe because userDataSaved will never be set unless there
+         // is stored user data that we have loaded
+         var userDataFromStorage = $scope.storedUserData;
          var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
          var gender = userDataFromStorage.gender;
          var heightUnit = userDataFromStorage.heightUnit;

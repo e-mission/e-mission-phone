@@ -1,15 +1,15 @@
 {
-    "connectUrl": "http://34.204.93.200",
+    "connectUrl": "http://cardshark.cs.berkeley.edu",
     "android": {
         "auth": {
-            "method": "dummy-dev",
-            "clientID": "ignored"
+            "method": "prompted-auth",
+            "prompt": "Enter a unique identifier for your device"
         }
     },
     "ios": {
         "auth": {
-            "method": "dummy-dev",
-            "clientID": "ignored"
+            "method": "prompted-auth",
+            "prompt": "Enter a unique identifier for your device"
         }
     }
 }

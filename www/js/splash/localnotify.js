@@ -6,11 +6,9 @@
  */
 
 angular.module('emission.splash.localnotify', ['emission.plugin.logger',
-                                              'emission.splash.startprefs',
-                                              'angularLocalStorage'])
+                                              'emission.splash.startprefs'])
 .factory('LocalNotify', function($window, $ionicPlatform, $ionicPopup,
-    $state, $rootScope, storage,
-    Logger) {
+    $state, $rootScope, Logger) {
   var localNotify = {};
 
   /*
