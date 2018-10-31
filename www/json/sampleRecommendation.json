@@ -1,8 +1,8 @@
 {
     "id" : 0,
-    "name" : "Ernie's Espresso",
+    "message" : "Ernie's Espresso",
     "type" : "Cafe and Restaurants",
-    "address" : "1234 Sesame Street",
+    "mode" : "Walk",
     "stars" : 4,
     "coord" : [3, 4],
     "reviews" : ["I really like this Cafe, it has great vibes!",
