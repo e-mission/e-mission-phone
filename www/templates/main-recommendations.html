@@ -1,4 +1,3 @@
-<html ng-app="emission.main.recommendations">
 <ion-view view-title="Recommendations" class="ion-view-background">
      <ion-nav-buttons side="left">
       <button ng-if="screen" class="button button-icon" ng-click="refreshPage()">
@@ -8,26 +7,26 @@
      <link rel="stylesheet" href="css/main-recommend.css">
      <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
      <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
-  <ion-content class="has-header" overflow-scroll="true" padding="false" ng-controller="RecommendationsCtrl">
+  <ion-content class="has-header" overflow-scroll="true" padding="false">
     <div id = "scrolling">
      <center><div class="recommendbox" id = "0">
-       <div class = "larger_font"> {{recs.type}} </div>
+       <div class = "larger_font"> Cafes and Beverage </div>
        <h4>
-       <p> {{recs.name}} </p>
-         <p> {{recs.address}} </p>
-           <p> {{getDistance(recs.coord[0], recs.coord[1])}}</p>
-           <img src="img/small/small_{{recs.stars}}.png" widsth="75" />
+
+       <div id = "message_1"> Ernie's Espresso </div>
+       <div id = "mode_1"> Walk </div>
+           <img src="img/small/small_4.png" width="75" />
              <button class="button button-block button-balanced button-outline" ng-click="clickDirections(0)">Directions</button>
              <button class="button button-block button-balanced button-outline" ng-click="clickReview(0)">Review</button>
+             <button class="button button-block button-balanced button-outline" ng-click="clickSuggestion(0)">Suggestion</button>
 
          </h4>
      </div></center>
      <center><div class="recommendbox" id = "1">
-       <div class = "larger_font">Education</div>
+       <div class = "larger_font">Education </div>
        <h4>
-         <p>UC Berkeley</p>
-         <p>1 Telegraph Ave. </p>
-           <p>1 Mile Away </p>
+         <div id = "message_2">UC Berkeley</div>
+         <div id = "mode_2"> Drive </div>
            <img src="img/small/small_4.png" width="75" />
 
                <button class="button button-block button-balanced button-outline" ng-click="clickDirections(1)">Directions</button>
@@ -39,11 +38,10 @@
      <div class="modal-content">
        <center>
          <h3>Directions</h3>
-         <ul>
-           <li ng-repeat="directions in recs.directions">
-             {{directions.step}}. {{directions.move}}
-           </li>
-         </ul>
+       1. Walk South on 100th Street <br />
+         2. Turn left on E. 45th Blvd <br />
+           3. Walk West on E. 45th Blvd <br />
+             4. Turn right on Sesame St.
                <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
        </center>
      </div>
@@ -64,12 +62,13 @@
      <div class="modal-content">
        <div align="left">
        <h3>Reviews</h3>
-       {{recs.reviews[0]}}
-         <img src="img/small/small_{{recs.rev-stars[0]}}.png" width="50" /> - {{recs.reviewers[0]}} <br />
-           {{recs.reviews[1]}}
-             <img src="img/small/small_{{recs.rev-stars[1]}}.png" width="50" /> - {{recs.reviewers[1]}} <br />
-               {{recs.reviews[2]}}
-                 <img src="img/small/small_{{recs.rev-stars[2]}}.png" width="50" /> - {{recs.reviewers[2]}} <br />
+       I really like this cafe, it has great vibes!
+         <img src="img/small/small_5.png" width="50" /> - Jane, San Francisco <br />
+           I really like their midterms! It goes great with their
+             freshly baked depression!
+             <img src="img/small/small_5.png" width="50" /> - John, Atlanta <br />
+               The parties are ok but the grading is kind of slow.
+                 <img src="img/small/small_4.png" width="50" /> - Sam, Boston <br />
          </div>
          <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
      </div>
@@ -103,3 +102,4 @@
 
 </ion-content>
 </ion-view>
+
