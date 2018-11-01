@@ -59,19 +59,19 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     return reportNotifyConfig;
   }
 
-  ptap.unregisterTripEnd = function() {
-    Logger.log( "unregistertripEnd received!" );
+  ptap.registerTripEnd = function() {
+    Logger.log( "registertripEnd received!" );
     // iOS
     var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
-    notifyPlugin.removeEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
+    notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
         .then(function(result) {
             // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
-            Logger.log("Finished unregistering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
+            Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
         })
         .catch(function(error) {
             Logger.log(JSON.stringify(error));
             $ionicPopup.alert({
-                title: "Unable to unregister notifications for trip end",
+                title: "Unable to register notifications for trip end",
                 template: JSON.stringify(error)
             });
         });;
@@ -134,8 +134,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     }
   }
 
-  ptap.unregisterUserResponse = function() {
-    Logger.log( "unregisterUserResponse received!" );
+  ptap.registerUserResponse = function() {
+    Logger.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
@@ -197,8 +197,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
    * default, we need to explicitly unregister, not just comment out.
    */
   $ionicPlatform.ready().then(function() {
-    ptap.unregisterTripEnd();
-    ptap.unregisterUserResponse();
+    ptap.registerTripEnd();
+    ptap.registerUserResponse();
   });
 
   return ptap;
