@@ -18,17 +18,20 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
         var mode = JSON.stringify(result.data.mode);
         document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
         document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
-        // Eventually this will be a for loop with all the messages 
+        // Eventually this will be a for loop with all the messages
       }
     )
     */
-
+    $scope.name = "Yeet Fang";
+    $scope.mode = "Yeet";
+    $http.get('json/sampleRecommendation.json').then(function(result) {
+        $scope.recs = result.data;
+      }
+    )
      CommHelper.getSuggestion().then(function(result) {
         console.log(result);
-        var name = JSON.stringify(result.message);
-        var mode = JSON.stringify(result.method);
-        document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
-        document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
+        $scope.name = JSON.stringify(result.message);
+        $scope.mode = JSON.stringify(result.method);
      });
 
     $scope.clickDirections = function(id) {
@@ -47,10 +50,8 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     $scope.clickSuggestion = function(id) {
       CommHelper.getSuggestion().then(function(result) {
         console.log(result);
-        var name = JSON.stringify(result.message);
-        var mode = JSON.stringify(result.method);
-        document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
-        document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
+        $scope.name = JSON.stringify(result.message);
+        $scope.mode = JSON.stringify(result.method);
      });
     }
 

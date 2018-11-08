@@ -1,20 +1,23 @@
-{
-    "id" : 0,
+[
+  {
+    "id" : 1,
     "name" : "Ernie's Espresso",
     "type" : "Cafe and Restaurants",
-    "address" : "1234 Sesame Street",
     "stars" : 4,
-    "coord" : [3, 4],
-    "reviews" : ["I really like this Cafe, it has great vibes!",
-    "I like this cafe but the service is a bit slow",
-    "Don't get the donuts!"],
-    "reviewers" : ["Jane, San Francisco", "John, Oakland", "Anne, Concord"],
-    "rev-stars" : [5, 4, 3],
-    "directions" : [
-                      {"step" : 1, "move" : "Walk left on San Jose Ave."},
-                      {"step" : 2, "move" : "Walk left on Jan Sose St."},
-                      {"step" : 3, "move" : "Walk left on Soy Ave."},
-                      {"step" : 4, "move" : "Walk left on Sesame St."}
-                    ]
-
-}
+    "mode" : "walk"
+  },
+  {
+    "id" : 2,
+    "name" : "UC Berkeley",
+    "type" : "Education",
+    "stars" : 3,
+    "mode" : "drive"
+  },
+  {
+    "id" : 3,
+    "name" : "Target",
+    "type" : "Stores",
+    "stars" : 4,
+    "mode" : "airplane"  
+  }
+]

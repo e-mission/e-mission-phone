@@ -9,43 +9,21 @@
      <link rel="stylesheet" type="text/css" href="slick/slick.css"/>
   <ion-content class="has-header" overflow-scroll="true" padding="false">
     <div id = "scrolling">
-     <center><div class="recommendbox" id = "0">
-       <div class = "larger_font"> Cafes and Beverage </div>
+      <center>
+    <div class="recommendbox" id = "1">
+       <div class = "larger_font"> Bubble Tea </div>
        <h4>
-
-       <div id = "message_1"> Ernie's Espresso </div>
-       <div id = "mode_1"> Walk </div>
+       {{name}}<br />
+       {{mode}}<br />
            <img src="img/small/small_4.png" width="75" />
-             <button class="button button-block button-balanced button-outline" ng-click="clickDirections(0)">Directions</button>
-             <button class="button button-block button-balanced button-outline" ng-click="clickReview(0)">Review</button>
-             <button class="button button-block button-balanced button-outline" ng-click="clickSuggestion(0)">Suggestion</button>
+             <button class="button button-block button-balanced button-outline" ng-click="clickDirections(1)">Directions</button>
+             <button class="button button-block button-balanced button-outline" ng-click="clickReview(1)">Review</button>
+             <button class="button button-block button-balanced button-outline" ng-click="clickSuggestion(1)">Update</button>
 
          </h4>
-     </div></center>
-     <center><div class="recommendbox" id = "1">
-       <div class = "larger_font">Education </div>
-       <h4>
-         <div id = "message_2">UC Berkeley</div>
-         <div id = "mode_2"> Drive </div>
-           <img src="img/small/small_4.png" width="75" />
-
-               <button class="button button-block button-balanced button-outline" ng-click="clickDirections(1)">Directions</button>
-               <button class="button button-block button-balanced button-outline" ng-click="clickReview(1)">Review</button>
-       </h4>
-       </div></center>
-       </div>
-     <div id="mapModal0" class="modal">
-     <div class="modal-content">
-       <center>
-         <h3>Directions</h3>
-       1. Walk South on 100th Street <br />
-         2. Turn left on E. 45th Blvd <br />
-           3. Walk West on E. 45th Blvd <br />
-             4. Turn right on Sesame St.
-               <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
-       </center>
      </div>
-   </div>
+   </center>
+  </div>
    <div id="mapModal1" class="modal">
    <div class="modal-content">
      <center>
@@ -55,29 +33,14 @@
          3. Walk West on 9th Berkeley St. <br />
            4. Turn right on Telegraph Ave.
              <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
-     </center>
-   </div>
- </div>
-   <div id="reviewModal0" class="modal">
-     <div class="modal-content">
-       <div align="left">
-       <h3>Reviews</h3>
-       I really like this cafe, it has great vibes!
-         <img src="img/small/small_5.png" width="50" /> - Jane, San Francisco <br />
-           I really like their midterms! It goes great with their
-             freshly baked depression!
-             <img src="img/small/small_5.png" width="50" /> - John, Atlanta <br />
-               The parties are ok but the grading is kind of slow.
-                 <img src="img/small/small_4.png" width="50" /> - Sam, Boston <br />
-         </div>
-         <button class="button button-block button-balanced button-outline" ng-click="clickX()">Back</button>
-     </div>
-   </div>
+           </center>
+      </div>
+    </div>
    <div id="reviewModal1" class="modal">
      <div class="modal-content">
        <div align="left">
        <h3>Reviews</h3>
-       I really like this University, it has great vibes!
+       I really like this cafe, it has great vibes!
          <img src="img/small/small_5.png" width="50" /> - Jane, San Francisco <br />
            I really like their midterms! It goes great with their
              freshly baked depression!
@@ -102,4 +65,3 @@
 
 </ion-content>
 </ion-view>
-
