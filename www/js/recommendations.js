@@ -8,34 +8,7 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
 .controller('RecommendationsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
-
-    //$scope.currentDisplay = "";
-    //Check and see if this is right with Vanessa
-    //for now using sample
-    /*
-    $http.get('json/sampleRecommendation.json').then(function(result) {
-        var name = JSON.stringify(result.data.name);
-        var mode = JSON.stringify(result.data.mode);
-        document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
-        document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
-        // Eventually this will be a for loop with all the messages 
-      }
-    )
-    */
-
-     CommHelper.getSuggestion().then(function(result) {
-        console.log(result);
-        var name = JSON.stringify(result.message);
-        var mode = JSON.stringify(result.method);
-        document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
-        document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
-     });
-
-    $scope.clickDirections = function(id) {
-      $scope.currentDisplay = document.getElementById("mapModal" + id);
-      $scope.currentDisplay.style.display = "block";
-
-    };
+    
     $scope.clickX = function() {
       $scope.currentDisplay.style.display = "none";
     };
@@ -46,12 +19,12 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
     $scope.clickSuggestion = function(id) {
       CommHelper.getSuggestion().then(function(result) {
-        console.log(result);
         var name = JSON.stringify(result.message);
         var mode = JSON.stringify(result.method);
         document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
         document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
-     });
-    }
-
+     }).catch(function(err) {
+      console.log("Error while getting suggestion" + err);
+    });
+  };
 });
