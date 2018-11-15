@@ -10,8 +10,8 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
                                 $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
 
 
-    $scope.name = "Yeet Fang";
-    $scope.mode = "Yeet";
+    $scope.name = "Cannot Retrieve Suggestion";
+    $scope.mode = "Cannot Retrieve Mode";
     $scope.clickX = function() {
       $scope.currentDisplay.style.display = "none";
     };
