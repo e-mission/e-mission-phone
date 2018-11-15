@@ -22,8 +22,8 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
     $scope.clickSuggestion = function(id) {
       CommHelper.getSuggestion().then(function(result) {
-        $scope.name = JSON.stringify(result.message);
-        $scope.mode = JSON.stringify(result.method);
+        $scope.name = result.message;
+        $scope.mode = result.method;
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
