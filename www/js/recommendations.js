@@ -8,7 +8,10 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
 .controller('RecommendationsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
-    
+
+
+    $scope.name = "Cannot Retrieve Suggestion";
+    $scope.mode = "Cannot Retrieve Mode";
     $scope.clickX = function() {
       $scope.currentDisplay.style.display = "none";
     };
@@ -19,10 +22,8 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
     $scope.clickSuggestion = function(id) {
       CommHelper.getSuggestion().then(function(result) {
-        var name = JSON.stringify(result.message);
-        var mode = JSON.stringify(result.method);
-        document.getElementById("message_1").innerHTML = name.replace(/\"/g, "");
-        document.getElementById("mode_1").innerHTML = mode.replace(/\"/g, "");
+        $scope.name = JSON.stringify(result.message);
+        $scope.mode = JSON.stringify(result.method);
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
