@@ -4,7 +4,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
-                                    ionicDatePicker,
+                                    ionicDatePicker, $ionicPlatform,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, storage,
                                     $rootScope, $location,  $state, ReferHelper, $http, Logger) {
     var lastTwoWeeksQuery = true;
@@ -31,7 +31,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       });
     };
 
-    $scope.onCurrentTrip();
+    $ionicPlatform.ready(function() {
+        $scope.onCurrentTrip();
+    });
 
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
@@ -1027,9 +1029,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   $scope.selectCtrl = {}
   initSelect();
-  $timeout(function() {
-    getData();
-  }, 1)
+
+  $ionicPlatform.ready(function() {
+      getData();
+  });
 
   $scope.doRefresh = function() {
     first = true;
