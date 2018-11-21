@@ -5,7 +5,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $ionicPopup, Logger) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
-  var CHOOSE_MODE_TEXT = "Did you use AccessMap to get your there?";
+  var CHOOSE_MODE_TEXT = "Please respond to the survey if you had a non motorized portion to this trip.";
   var TRIP_END_EVENT = "trip_ended";
 
   var reportMessage = function(platform) {
@@ -46,7 +46,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "Did you use AccessMap to get your there?",
+      title: "Please respond to the survey if you had a non motorized portion to this trip.",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
