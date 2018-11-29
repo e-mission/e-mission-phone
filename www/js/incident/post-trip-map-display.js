@@ -305,9 +305,9 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
         type: 'single_choice',
         options: [
           {text: 'No, I didn’t plan my trip with a routing application', value: 0, nextSlideOffset: -1},
-          {text: 'Yes, I used google Directions', value: 1, nextSlideOffset: 1},
-          {text: 'Yes, I used Apple Maps', value: 2, nextSlideOffset: 1},
-          {text: 'Yes, I used AccessMap', value: 3, nextSlideOffset: 1},
+          {text: 'Yes, I used Google Directions or Apple Maps',          value: 1, nextSlideOffset: 1},
+          {text: 'Yes, I used Google StreetView to visualize the route', value: 2, nextSlideOffset: 1},
+          {text: 'Yes, I used AccessMap',                                value: 3, nextSlideOffset: 1},
           {text: 'Yes, I used a different routing algorithm', value: 4, nextSlideOffset: 1}
         ],
         response: null
@@ -334,6 +334,18 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
         response: null
       },
       {
+        title: 'I was able to complete my rest of my trip exactly per the path displayed by the router',
+        type: 'single_choice',
+        options: [
+          {text: 'Strongly disagree',          value: 0, nextSlideOffset: 1},
+          {text: 'Disagree',                   value: 1, nextSlideOffset: 1},
+          {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
+          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree',             value: 4, nextSlideOffset: 1}
+        ],
+        response: null
+      },
+      {
         title: 'I was with another person when I completed the non-motorized portion of this trip',
         type: 'single_choice',
         options: [
@@ -352,7 +364,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
         response: null
       },
       {
-        title: 'The non-motorized segment of my trip was easy',
+        title: 'The non-motorized segment of my trip was not difficult',
         type: 'single_choice',
         options: [
           {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
@@ -362,6 +374,19 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
           {text: 'Strongly agree', value: 4, nextSlideOffset: 1}
         ],
         response: null
+      },
+      {
+        title: 'I experienced difficulty during the walking segment of my trip due to',
+        type: 'single_choice',
+        options: [
+          {text: 'Difficult infrastructure (ex: high hill or bad sidewalk condition)',          value: 0, nextSlideOffset: 1},
+          {text: 'Misinformation (ex: not knowing there is not a ramp)',                   value: 1, nextSlideOffset: 1},
+          {text: 'Difficult infrastructure AND misinformation', value: 2, nextSlideOffset: 1},
+          {text: 'A temporary issue (ex: broken elevator or construction)',                      value: 3, nextSlideOffset: 1},
+          {text: 'A different reason ',             value: 4, nextSlideOffset: 1},
+          {text: 'No difficulty during this walking trip ',             value: 5, nextSlideOffset: 1}
+        ],
+        response: null,
       },
       {
         title: 'Overall, the non-motorized portion of this trip was pleasant',
@@ -400,26 +425,28 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
         response: null
       },
       {
-        title: 'The trip planner had information about all the obstacles I met during the non-motorized part of the trip',
+        title: 'The trip planner had information about ALL the obstacles I met during the non-motorized part of the trip',
         type: 'single_choice',
         options: [
           {text: 'Strongly disagree', value: 0, nextSlideOffset: 1},
           {text: 'Disagree', value: 1, nextSlideOffset: 1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: 1},
-          {text: 'Agree', value: 3, nextSlideOffset: 1},
-          {text: 'Strongly agree', value: 4, nextSlideOffset: -1}
+          {text: 'Agree',                      value: 3, nextSlideOffset: 1},
+          {text: 'Strongly agree',             value: 4, nextSlideOffset: -1},
+          {text: 'Did not use trip planner',      value: 5, nextSlideOffset: -1}
         ],
         response: null
       },
       {
-        title: 'I would like to add information about the obstacles I encountered to the trip planner so the planner will route me a different way next time',
+        title: 'The trip planner needs additional data that was not there about this trip',
         type: 'single_choice',
         options: [
           {text: 'Strongly disagree', value: 0, nextSlideOffset: -1},
           {text: 'Disagree', value: 1, nextSlideOffset: -1},
           {text: 'Neither agree nor disagree', value: 2, nextSlideOffset: -1},
-          {text: 'Agree', value: 3, nextSlideOffset: -1},
-          {text: 'Strongly agree', value: 4, nextSlideOffset: -1}
+          {text: 'Agree',                      value: 3, nextSlideOffset: -1},
+          {text: 'Strongly agree',             value: 4, nextSlideOffset: -1},
+          {text: 'Not Applicable',             value: 4, nextSlideOffset: -1}
         ],
         response: null
       },
