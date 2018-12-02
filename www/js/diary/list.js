@@ -159,12 +159,132 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
+    var getTripModes = function(trip) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
+        Logger.log("Modes stored locally" + JSON.stringify(modes));
+        var tripMode = {};
+        if(modes.length > 0) {
+          modes.forEach(function(mode) {
+            if ((trip.properties.start_ts == mode.start_ts) &&
+                 (trip.properties.end_ts == mode.end_ts)) {
+              tripMode = mode;
+              Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+            }
+          });
+        }
+          return tripMode;
+      });
+    }
+
+    var getTripPurpose = function(trip) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function(purposeList) {
+        Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
+        var tripPurpose = {};
+        if(purposeList.length > 0) {
+          purposeList.forEach(function(purpose) {
+            if ((trip.properties.start_ts == purpose.start_ts) &&
+                 (trip.properties.end_ts == purpose.end_ts)) {
+              tripPurpose = purpose;
+              Logger.log("trip" + JSON.stringify(trip) + "purpose" + JSON.stringify(tripPurpose));
+            }
+          });
+        } 
+        return tripPurpose;
+      });
+    }
+
+    var addModeFeature = function(trip, mode) {
+      $scope.$apply(function() {
+        var modeFeature = mode;
+        modeFeature.feature_type = "mode";
+        Logger.log("Created mode feature" + JSON.stringify(modeFeature) + "for" + JSON.stringify(trip));
+        trip.features.push(modeFeature);
+        $scope.modeTripgj = angular.undefined;
+      });
+    }
+
+    var addPurposeFeature = function(trip, purpose) {
+      $scope.$apply(function() {
+        var purposeFeature = purpose;
+        purposeFeature.feature_type = "purpose";
+        Logger.log("Created purpose feature" + JSON.stringify(purposeFeature) + "for" + JSON.stringify(trip));
+        trip.features.push(purposeFeature);
+        $scope.purposeTripgj = angular.undefined;
+      });
+    }
+
+    var isNotEmpty = function(obj) {
+      for(var prop in obj) {
+          if(obj.hasOwnProperty(prop))
+              return true;
+      }
+      return false;
+    };
+
+    var addUnpushedMode = function(trip) {
+      getTripModes(trip).then(function(mode) {
+        if(isNotEmpty(mode)){
+          addModeFeature(trip, mode);
+        }
+      });
+    }
+
+    var addUnpushedPurpose = function(trip) {
+      getTripPurpose(trip).then(function(purpose) {
+        if(isNotEmpty(purpose)) {
+          addPurposeFeature(trip, purpose);
+        }
+      });
+    }
+
+    $scope.checkMode = function(trip) {
+      var hasMode = false;
+      trip.data.features.forEach(function(feature) {
+        if(feature.feature_type == "mode") {
+          var modes = $scope.modeOptions.map(a => a.value);
+          if(modes.indexOf(feature.label) > -1) {
+            $scope.modeOptions.forEach(function(mode) {
+              if(feature.label == mode.value) {
+                  $scope.mode = mode.text;
+                }
+              });
+          } else {
+            $scope.mode = feature.label;
+          } 
+          hasMode =  true;
+        }
+      });
+      return hasMode;
+    }
+
+    $scope.checkPurpose = function(trip) {
+      var hasPurpose = false;
+      trip.data.features.forEach(function(feature) {
+        if(feature.feature_type == "purpose") {
+          var purposes = $scope.purposeOptions.map(a => a.value);
+          if(purposes.indexOf(feature.label) > -1) {
+            $scope.purposeOptions.forEach(function(purpose) {
+              if(feature.label == purpose.value) {
+                $scope.purpose = purpose.text;
+              }
+            });
+          } else {
+            $scope.purpose = feature.label;
+          }
+          hasPurpose = true;
+        }
+      });
+      return hasPurpose;
+    }
+
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
           $scope.data.currDayTrips.forEach(function(trip, index, array) {
+              addUnpushedMode(trip);
+              addUnpushedPurpose(trip);
               PostTripManualMarker.addUnpushedIncidents(trip);
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
@@ -229,13 +349,32 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         // readAndUpdateForDay($scope.data.currDay);
     });
     */
+   
+
+
+  // TEST CODE REMOVE BEFORE PUSH
+    var printPurposes = function() {
+      $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function(purposeList) {
+        console.log("Purpose list");
+        console.log(purposeList);
+      });
+    };
+
+    var printModes = function() {
+      $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
+        console.log("Modes list");
+        console.log(modes);
+      });
+    };
 
     $scope.refresh = function() {
       if ($ionicScrollDelegate.getScrollPosition().top < 5) {
        readAndUpdateForDay(Timeline.data.currDay);
        $scope.$broadcast('invalidateSize');
       }
-    }
+      printPurposes();
+      printModes();
+    };
 
     /* For UI control */
     $scope.groups = [];
@@ -380,8 +519,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover = popover;
    });
 
-   $scope.openModePopover = function($event, start_ts, end_ts) {
-      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts}
+   $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
+      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts};
+      $scope.modeTripgj = tripgj;
       Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
       $scope.modePopover.show($event);
    };
@@ -399,8 +539,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover = popover;
    });
 
-   $scope.openPurposePopover = function($event, start_ts, end_ts) {
-      $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts}
+   $scope.openPurposePopover = function($event, start_ts, end_ts, tripgj) {
+      $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts};
+      $scope.purposeTripgj = tripgj;
       Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.show($event);
    };
@@ -496,7 +637,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    $scope.storeMode = function(mode_val, isOther) {
       $scope.draftMode.label = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
-      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
+      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function() {
+        console.log($scope.modeTripgj);
+        addUnpushedMode($scope.modeTripgj.data);
+      });
       if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
@@ -504,7 +648,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    $scope.storePurpose = function(purpose_val, isOther) {
       $scope.draftPurpose.label = purpose_val;
       Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
-      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
+      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function() {
+        console.log($scope.purposeTripgj);
+        addUnpushedPurpose($scope.purposeTripgj.data);
+      });
       if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
@@ -536,4 +683,5 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.checkTripState();
       return in_trip;
     };
+
 });

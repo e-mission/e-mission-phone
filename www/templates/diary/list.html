@@ -86,12 +86,26 @@
                     </div>
                 </div>
              </div>
-             <div class="row" style="padding-left: 5px;padding-right: 5px;">
+             <div class="row" style="padding-left: 5px;padding-right: 5px;">   
+             <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" ng-if="checkMode(tripgj)">
+             Mode
+             </div>
+             <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" ng-if="checkPurpose(tripgj)">
+             Purpose 
+             </div>
+             </div>
+             <div class="row" style="padding-left: 5px;padding-right: 5px;">   
                 <div class="col-50" style="text-align: center;">
-                    <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Mode</button>  
+                    <div ng-if="checkMode(tripgj)" style="font-size: 14px; margin-top: 5px">
+                    {{mode}}
+                    </div>
+                    <button ng-if="!checkMode(tripgj)" ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Mode</button>  
                 </div>
                 <div class="col-50" style="text-align: center;">
-                    <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Purpose</button>
+                    <div ng-if="checkPurpose(tripgj)" style="font-size: 14px; margin-top: 5px">
+                    {{purpose}}
+                    </div>
+                    <button ng-if="!checkPurpose(tripgj)" ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Purpose</button>
                 </div>
              </div>   
             </div>
