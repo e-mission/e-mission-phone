@@ -42,6 +42,16 @@ angular.module('emission.services', ['emission.plugin.logger'])
       });
     };
 
+    this.seeTrips = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(mesage) {
+          // donothing
+        }
+        //window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys", msgFiller, resolve, reject);
+        // add trip locations where Vanessa releases them
+      });
+    };
+
     /*
      * var regConfig = {'username': ....}
      * Other fields can be added easily and the server can be modified at the same time.

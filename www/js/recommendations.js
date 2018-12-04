@@ -21,11 +21,20 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     };
 
     $scope.clickSuggestion = function(id) {
+       $ionicLoading.show({
+        template: 'Loading...'
+        });
       CommHelper.getSuggestion().then(function(result) {
         $scope.name = result.message;
         $scope.mode = result.method;
+        $ionicLoading.hide();
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
+  };
+  $scope.pickTrip = function(id) {
+    $scope.currentDisplay = document.getElementById("tripSelection");
+    $scope.currentDisplay.style.display = "block";
+    $scope.currentDisplay.style.visibility = "visible";
   };
 });
