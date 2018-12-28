@@ -597,6 +597,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    };
 
   $scope.choosePurpose = function() {
+    $scope.purpose = $scope.chosen.purpose;
     var isOther = false
     if($scope.chosen.purpose != "other_purpose"){
       $scope.storePurpose($scope.chosen.purpose, isOther);
@@ -608,6 +609,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   $scope.chooseMode = function (){
+    $scope.mode = $scope.chosen.mode;
     var isOther = false
     if($scope.chosen.mode != "other_mode"){
       $scope.storeMode($scope.chosen.mode, isOther);
@@ -647,7 +649,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.draftMode.label = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function() {
-        console.log($scope.modeTripgj);
         addUnpushedMode($scope.modeTripgj.data);
       });
       if(isOther == true) 
@@ -658,7 +659,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.draftPurpose.label = purpose_val;
       Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function() {
-        console.log($scope.purposeTripgj);
         addUnpushedPurpose($scope.purposeTripgj.data);
       });
       if(isOther == true) 
