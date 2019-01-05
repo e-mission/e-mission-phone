@@ -3,13 +3,13 @@
     "android": {
         "auth": {
             "method": "prompted-auth",
-            "clientID": "Enter a unique identifier for your device"
+            "prompt": "Enter a unique identifier for your device"
         }
     },
     "ios": {
         "auth": {
             "method": "prompted-auth",
-            "clientID": "Enter a unique identifier for your device"
+            "prompt": "Enter a unique identifier for your device"
         }
     }
 }
