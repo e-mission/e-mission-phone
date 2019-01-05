@@ -2,13 +2,13 @@
     "connectUrl": "http://<your laptop ip>:8080",
     "android": {
         "auth": {
-            "method": "dummy-dev",
+            "method": "prompted-auth",
             "clientID": "ignored"
         }
     },
     "ios": {
         "auth": {
-            "method": "dummy-dev",
+            "method": "prompted-auth",
             "clientID": "ignored"
         }
     }
