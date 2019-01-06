@@ -467,30 +467,50 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
     closeModePopover();
   };
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 
-   $scope.modeOptions = [
-   {text:'Walk', value:'walk'},
-   {text:'Bike',value:'bike'},
-   {text:'Drove Alone',value:'drove_alone'},
-   {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi/Uber/Lyft',value:'taxi'},
-   {text:'Bus',value:'bus'},
-   {text:'Train',value:'train'},
-   {text:'Free Shuttle',value:'free_shuttle'},
+ $scope.modeOptions = [
+   {text:'Bus', value:'Bus'},
+   {text:'Cycle',value:'Cycle'},
+   {text:'Office car: self-driven',value:'Office car: self-driven'},
+   {text:'Office car: driver',value:'Office car:driver'},
+   {text:'Office shuttle',value:'Office shuttle'},
+   {text:'Ola/Uber or similar app-based ride service provider',value:'Ola/Uber'},
+   {text:'Olashare/Uberpool or similar app-based ride service provider',value:'Olashare/Uberpool'},
+   {text:'Personal car:self-driven',value:'Personal car:self-driven'},
+   {text:'Personal car:driver',value:'Personal car:driver'},
+   {text:'Personal car:with family',value:'Personal car:with family'},
+   {text:'Quickride',value:'Quickride'},
+   {text:'Ride in friends car',value:'Ride in friends car'},
+   {text:'Ride in friends two-wheeler',value:'Ride in friends two-wheeler'},
+   {text:'Two-wheeler ride: self-driven',value:'Two-wheeler ride: self-driven'},
+   {text:'Two-wheeler ride: with family',value:'Two-wheeler ride: with family'},
+   {text:'Walk',value:'Walk'},   
+	   
+	   
    {text:'Other',value:'other_mode'}];
 
    $scope.purposeOptions = [
-   {text:'Home', value:'home'},
-   {text:'Work',value:'work'},
-   {text:'School',value:'school'},
-   {text:'Transit transfer', value:'transit_transfer'},
+   {text:'Education', value:'Education'},
+   {text:'Household work',value:'Household work'},
+   {text:'Leisure',value:'Leisure'},
+   {text:'Lunch', value:'Lunch'},
    {text:'Shopping',value:'shopping'},
-   {text:'Meal',value:'meal'},
-   {text:'Pick-up/Drop off',value:'pick_drop'},
-   {text:'Personal/Medical',value:'personal_med'},
-   {text:'Recreation/Exercise',value:'exercise'},
-   {text:'Entertainment/Social',value:'entertainment'},
-   {text:'Religious', value:'religious'},
+   {text:'Medical(emergency or check-up)',value:'medical'},
+   {text:'Return home',value:'Return home'},
+   {text:'Social',value:'Social'},
+   {text:'Work',value:'Work'},
+  
    {text:'Other',value:'other_purpose'}];
 
    $scope.storeMode = function(mode_val, isOther) {
