@@ -42,12 +42,12 @@ angular.module('emission.services', ['emission.plugin.logger'])
       });
     };
 
-    this.seeTrips = function() {
+    this.getSpecificSuggestion = function() {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(mesage) {
           // donothing
         }
-        //window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys", msgFiller, resolve, reject);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys", msgFiller, resolve, reject);
         // add trip locations where Vanessa releases them
       });
     };

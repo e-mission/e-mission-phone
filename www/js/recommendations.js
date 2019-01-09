@@ -6,7 +6,7 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
                 'emission.splash.referral', 'angularLocalStorage',
                 'ng-walkthrough', 'nzTour'])
 
-.controller('RecommendationsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
+.controller('RecommendationsCtrl', function(CommHelper, $state, $stateParams, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
 
 
@@ -20,11 +20,14 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
       $scope.currentDisplay.style.display = "block";
     };
 
+
+    var uuid = $stateParams.uuid;
     $scope.clickSuggestion = function(id) {
-       $ionicLoading.show({
+      $ionicLoading.show({
         template: 'Loading...'
         });
       CommHelper.getSuggestion().then(function(result) {
+        console.log(result);
         $scope.name = result.message;
         $scope.mode = result.method;
         $ionicLoading.hide();
@@ -32,6 +35,7 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
       console.log("Error while getting suggestion" + err);
     });
   };
+
   $scope.pickTrip = function(id) {
     $scope.currentDisplay = document.getElementById("tripSelection");
     $scope.currentDisplay.style.display = "block";
