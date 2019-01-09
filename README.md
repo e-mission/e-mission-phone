@@ -233,6 +233,11 @@ $ cordova prepare
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ cordova emulate ios
+    
+    for Xcode >= 10:
+    $ cd platform/ios
+    $ pod install
+    $ cordova emulate ios --buildFlag="-UseModernBuildSysteVm=0"
 
     OR 
 
