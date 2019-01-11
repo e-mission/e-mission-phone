@@ -48,7 +48,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
           // donothing
         }
         window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys", msgFiller, resolve, reject);
-        // add trip locations where Vanessa releases them
       });
     };
 

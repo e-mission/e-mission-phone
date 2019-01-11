@@ -48,11 +48,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   };
 
   $scope.getIndividualSuggestion = function() {
-    var tripId = $stateParams.tripId;
-    console.log(tripId);
-    var uuID = $stateParams.uuID;
-    console.log(uuID);
-    //TO DO: call function to get individual suggestion depending on tripID
     $ionicLoading.show({
         template: 'Loading...'
         });
