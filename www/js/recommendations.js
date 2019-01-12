@@ -12,6 +12,9 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
     $scope.name = "Cannot Retrieve Suggestion";
     $scope.mode = "Cannot Retrieve Mode";
+    $scope.bid = 'hello';
+    $scope.review = '';
+    $scope.api_key = '';
     $scope.clickX = function() {
       $scope.currentDisplay.style.display = "none";
     };
@@ -27,5 +30,21 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
+
+    $scope.getReview = function() {
+      $http.get('json/yelpfusion.json').then(function(result) {
+          $scope.api_key = result.api_key;
+          $scope.api_host = result.api_host;
+        }
+      )
+      $http.get($scope.api_host +"/v3/businesses/search?term=Yalis_Cafe_Berkeley",
+      {headers: {'Authorization': 'Bearer '+$scope.api_key}}}).then(function(res) {
+        $scope.bid = res.businesses[0].id;
+      });
+      $http.get($scope.api_host + "/v3/businesses/" + $scope.bid + "/reviews",
+      {headers: {'Authorization': 'Bearer '+$scope.api_key}}}).then(function(rev) {
+        $scope.review = rev.reviews[0].text;
+      });
+    }
   };
 });
