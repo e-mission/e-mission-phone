@@ -1,0 +1,7 @@
+{
+	"api_key" : "api_key_here",
+	"api_host" : "https://api.yelp.com",
+	"search_path" : "/v3/businesses/search",
+	"business_path" : "/v3/businesses/",
+	"search_limit": 3
+}
