@@ -528,14 +528,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover = popover;
    });
 
-   $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
-      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts};
-      $scope.modeTripgj = tripgj;
-      Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
-      $scope.modePopover.show($event);
-   };
+    $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
+      var fakeTrip = { properties: { start_ts: start_ts, end_ts: end_ts, } };
+      getTripModes(fakeTrip).then(function(mode) {
+        $scope.chosen.mode = mode.label;
+        $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts};
+        $scope.modeTripgj = tripgj;
+        Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
+        $scope.modePopover.show($event);
+      });
+    };
 
    var closeModePopover = function($event, isOther) {
+    $scope.chosen.mode = '';
       if(isOther == false)
         $scope.draftMode = angular.undefined;
       Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
@@ -549,13 +554,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    });
 
    $scope.openPurposePopover = function($event, start_ts, end_ts, tripgj) {
+    var fakeTrip = { properties: { start_ts: start_ts, end_ts: end_ts, } };
+    getTripPurpose(fakeTrip).then(function(mode) {
+      $scope.chosen.purpose = mode.label;
       $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts};
       $scope.purposeTripgj = tripgj;
       Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.show($event);
+    });
    };
 
   var closePurposePopover = function($event, isOther) {
+    $scope.chosen.purpose = '';
       if(isOther == false)
         $scope.draftPurpose = angular.undefined;
       Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
