@@ -306,6 +306,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
             DiaryHelper.directiveForTrip);
+          $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
+            return el.data.id.indexOf('unprocessed_') === -1;
+          })
           $ionicScrollDelegate.scrollTop(true);
       });
     });
