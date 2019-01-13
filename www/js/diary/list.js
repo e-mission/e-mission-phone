@@ -652,7 +652,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         addUnpushedMode($scope.modeTripgj.data);
       });
       if(isOther == true) 
-        $scope.draftPurpose = angular.undefined;
+        $scope.draftMode = angular.undefined;
    }
 
    $scope.storePurpose = function(purpose_val, isOther) {
