@@ -172,12 +172,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
         Logger.log("Modes stored locally" + JSON.stringify(modes));
         var tripMode = {};
+        var found = false;
         if(modes.length > 0) {
           modes.forEach(function(mode) {
             if ((trip.properties.start_ts == mode.start_ts) &&
                  (trip.properties.end_ts == mode.end_ts)) {
-              tripMode = mode;
-              Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+              if (!found) {
+                tripMode = mode;
+                Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+                found = true;
+              }
             }
           });
         }
@@ -189,12 +193,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function(purposeList) {
         Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
         var tripPurpose = {};
+        var found = false;
         if(purposeList.length > 0) {
           purposeList.forEach(function(purpose) {
             if ((trip.properties.start_ts == purpose.start_ts) &&
                  (trip.properties.end_ts == purpose.end_ts)) {
-              tripPurpose = purpose;
-              Logger.log("trip" + JSON.stringify(trip) + "purpose" + JSON.stringify(tripPurpose));
+                  if (!found) {
+                    tripPurpose = purpose;
+                    Logger.log("trip" + JSON.stringify(trip) + "purpose" + JSON.stringify(tripPurpose));
+                    found = true;
+                  }
             }
           });
         } 
