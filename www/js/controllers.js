@@ -5,8 +5,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.pushnotify',
                                         'emission.splash.localnotify',
                                         'emission.survey.launch',
-                                        'emission.stats.clientstats',
-                                        'emission.incident.posttrip.prompt'])
+                                        'emission.stats.clientstats',])
 
 .controller('RootCtrl', function($scope) {})
 

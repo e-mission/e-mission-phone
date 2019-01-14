@@ -172,12 +172,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function(modes) {
         Logger.log("Modes stored locally" + JSON.stringify(modes));
         var tripMode = {};
+        var found = false;
         if(modes.length > 0) {
           modes.forEach(function(mode) {
             if ((trip.properties.start_ts == mode.start_ts) &&
                  (trip.properties.end_ts == mode.end_ts)) {
-              tripMode = mode;
-              Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+              if (!found) {
+                tripMode = mode;
+                Logger.log("trip" + JSON.stringify(trip)+ "mode" + JSON.stringify(tripMode));
+                found = true;
+              }
             }
           });
         }
@@ -189,12 +193,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function(purposeList) {
         Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
         var tripPurpose = {};
+        var found = false;
         if(purposeList.length > 0) {
           purposeList.forEach(function(purpose) {
             if ((trip.properties.start_ts == purpose.start_ts) &&
                  (trip.properties.end_ts == purpose.end_ts)) {
-              tripPurpose = purpose;
-              Logger.log("trip" + JSON.stringify(trip) + "purpose" + JSON.stringify(tripPurpose));
+                  if (!found) {
+                    tripPurpose = purpose;
+                    Logger.log("trip" + JSON.stringify(trip) + "purpose" + JSON.stringify(tripPurpose));
+                    found = true;
+                  }
             }
           });
         } 
@@ -298,6 +306,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
             DiaryHelper.directiveForTrip);
+          $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
+            return el.data.id.indexOf('unprocessed_') === -1;
+          })
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -528,14 +539,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover = popover;
    });
 
-   $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
-      $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts};
-      $scope.modeTripgj = tripgj;
-      Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
-      $scope.modePopover.show($event);
-   };
+    $scope.openModePopover = function($event, start_ts, end_ts, tripgj) {
+      var fakeTrip = { properties: { start_ts: start_ts, end_ts: end_ts, } };
+      getTripModes(fakeTrip).then(function(mode) {
+        $scope.chosen.mode = mode.label;
+        $scope.draftMode = {"start_ts": start_ts, "end_ts": end_ts};
+        $scope.modeTripgj = tripgj;
+        Logger.log("in openModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
+        $scope.modePopover.show($event);
+      });
+    };
 
    var closeModePopover = function($event, isOther) {
+    $scope.chosen.mode = '';
       if(isOther == false)
         $scope.draftMode = angular.undefined;
       Logger.log("in closeModePopover, setting draftMode = "+JSON.stringify($scope.draftMode));
@@ -549,13 +565,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    });
 
    $scope.openPurposePopover = function($event, start_ts, end_ts, tripgj) {
+    var fakeTrip = { properties: { start_ts: start_ts, end_ts: end_ts, } };
+    getTripPurpose(fakeTrip).then(function(mode) {
+      $scope.chosen.purpose = mode.label;
       $scope.draftPurpose = {"start_ts": start_ts, "end_ts": end_ts};
       $scope.purposeTripgj = tripgj;
       Logger.log("in openPurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.show($event);
+    });
    };
 
   var closePurposePopover = function($event, isOther) {
+    $scope.chosen.purpose = '';
       if(isOther == false)
         $scope.draftPurpose = angular.undefined;
       Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
@@ -652,7 +673,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         addUnpushedMode($scope.modeTripgj.data);
       });
       if(isOther == true) 
-        $scope.draftPurpose = angular.undefined;
+        $scope.draftMode = angular.undefined;
    }
 
    $scope.storePurpose = function(purpose_val, isOther) {
