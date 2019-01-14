@@ -254,6 +254,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     }
 
+    $scope.isAnalyzed = function(trip) {
+      return (trip.data.id.indexOf('unprocessed_') === -1);
+    }
+
     $scope.checkMode = function(trip) {
       var hasMode = false;
       trip.data.features.forEach(function(feature) {
@@ -306,9 +310,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
             DiaryHelper.directiveForTrip);
-          $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
-            return el.data.id.indexOf('unprocessed_') === -1;
-          })
+          // $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
+          //   return el.data.id.indexOf('unprocessed_') === -1;
+          // });
           $ionicScrollDelegate.scrollTop(true);
       });
     });
