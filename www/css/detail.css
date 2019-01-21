@@ -1,0 +1,17 @@
+.grid_layout {
+  display: grid;
+  grid-template-columns: auto auto;
+}
+
+.grid_item {
+	border: 1px solid black;
+	text-align: center;
+}
+
+#suggestion_title {
+	font-weight: bold;
+}
+
+#mode_title {
+	font-weight: bold;
+}
