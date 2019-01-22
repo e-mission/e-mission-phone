@@ -3,6 +3,7 @@
     <ion-nav-buttons side="right">
          <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>
+    <link rel="stylesheet" href="css/detail.css">
     <ion-content class="has-header" ng-class="getTripBackground" overflow-scroll="true" padding="true">
         <div class="row" style="">
 
@@ -62,10 +63,13 @@
             <button class="button button-stable button-block icon ion-refresh"
                 ng-click="refreshMap()">Refresh</button>
             <button class="button button-stable button-block"
-                ng-click="refreshTiles()">Fix Map</button>
-            <!--
-            <button style="" class="button button-stable button-block  icon ion-checkmark">Valid</button>
-            -->
+                ng-click="getIndividualSuggestion()">Get Suggestion</button>
+        </div>
+        <div class = "grid_layout">
+          <div class = "grid_item" id = "suggestion_title"> Suggestion </div>
+          <div class = "grid_item" id = "mode_title"> Mode </div>
+          <div class = "grid_item"> {{name}} </div>
+          <div class = "grid_item"> {{mode}} </div>
         </div>
     </ion-content>
 </ion-view>

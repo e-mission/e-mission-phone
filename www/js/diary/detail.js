@@ -4,7 +4,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
@@ -47,6 +47,20 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $scope.$broadcast('invalidateSize');
   };
 
+  $scope.getIndividualSuggestion = function() {
+    $ionicLoading.show({
+        template: 'Loading...'
+        });
+    CommHelper.getIndividualSuggestion().then(function(result) {
+      console.log(result);
+      $ionicLoading.hide();
+      $scope.name = result.message;
+      $scope.mode = result.method;
+    }).catch(function(err) {
+      console.log("Error while getting individual suggestion" + err);
+    });
+  };
+
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
   $scope.arrowColor = DiaryHelper.arrowColor;
   $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
@@ -63,8 +77,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-  $scope.getTripDetails = DiaryHelper.getTripDetails
+  $scope.getTripDetails = DiaryHelper.getTripDetails;
   $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+  $scope.name = "Click on the suggestion button for a suggestion for this trip";
+  $scope.mode = "Mode of Transporation";
 
   $scope.getTripBackground = function() {
      var ret_val = DiaryHelper.getTripBackground($scope.tripgj);
