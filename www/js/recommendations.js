@@ -12,14 +12,42 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
     $scope.name = "Cannot Retrieve Suggestion";
     $scope.mode = "Cannot Retrieve Mode";
+    $scope.yelp = {
+      "headers": {
+    		"Authorization": "Bearer your-api-key",
+    		"cache-control": "no-cache"
+    	}
+    }
+    $http.get('json/yelpfusion.json').then(function(result) {
+          $scope.yelp = result.data;
+        }
+    )
     $scope.clickX = function() {
       $scope.currentDisplay.style.display = "none";
     };
     $scope.clickReview = function(id) {
       $scope.currentDisplay = document.getElementById("reviewModal" + id);
       $scope.currentDisplay.style.display = "block";
-    };
+      $http({
+        "async": true,
+        "crossDomain": true,
+        "url": "https://api.yelp.com/v3/businesses/yalis-stanley-hall-cafe-berkeley/reviews",
+        "method": "GET",
+        "headers": $scope.yelp.headers
+      }).then(function(res) {
+        $scope.revs = res.data.reviews;
+      });
+      $http({
+        "async": true,
+        "crossDomain": true,
+        "url": "https://api.yelp.com/v3/businesses/yalis-stanley-hall-cafe-berkeley",
+        "method": "GET",
+        "headers": $scope.yelp.headers
 
+      }).then(function(res) {
+        $scope.info = res.data;
+      });
+    };
     $scope.clickSuggestion = function(id) {
       CommHelper.getSuggestion().then(function(result) {
         $scope.name = result.message;
@@ -27,5 +55,6 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
+
   };
 });
