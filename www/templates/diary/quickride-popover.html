@@ -1,0 +1,13 @@
+<ion-popover-view>
+   <ion-header-bar>
+      <h3 class = "title" style="font-size:0.7em;">For Ola,Uber and Quickride mention the cost:</h3>
+   </ion-header-bar>
+   <ion-content>
+      	<ion-list ng-repeat="quickride in quickrideOptions">
+		    <ion-radio ng-click="chooseQuickride()" ng-value="quickride.value" ng-model="chosen.quickride">{{quickride.text}}</ion-radio>
+		</ion-list>
+   </ion-content>
+</ion-popover-view>
+
+
+

@@ -1,0 +1,10 @@
+<ion-popover-view>
+   <ion-header-bar>
+      <h3 class = "title" style="font-size:0.7em;" >Please mention parking cost and time</h3>
+   </ion-header-bar>
+   <ion-content>
+      	<ion-list ng-repeat="parking in parkingOptions">
+		    <ion-radio ng-click="chooseParking()" ng-value="parking.value" ng-model="chosen.parking">{{parking.text}}</ion-radio>
+		</ion-list>
+   </ion-content>
+</ion-popover-view>

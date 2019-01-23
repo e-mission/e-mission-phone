@@ -18,6 +18,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   console.log("controller DiaryListCtrl called");
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
   var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+  var QUICKRIDE_CONFIRM_KEY = "manual/quickride_confirm";
+	 var PARKING_CONFIRM_KEY = "manual/parking_confirm";
 
   // Add option
 
@@ -411,12 +413,79 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       Logger.log("in closePurposePopover, setting draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.hide($event);
    };
+	
+	
+	
+	
+	
+	
+	 $ionicPopover.fromTemplateUrl('templates/diary/quickride-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.quickridePopover = popover;
+   });
 
-  $scope.chosen = {mode:'',purpose:''};
+   $scope.openQuickridePopover = function($event, start_ts, end_ts) {
+      $scope.draftQuickride = {"start_ts": start_ts, "end_ts": end_ts}
+      Logger.log("in openQuickridePopover, setting draftQuickride = "+JSON.stringify($scope.draftQuickride));
+      $scope.quickridePopover.show($event);
+   };
+
+  var closeQuickridePopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftQuickride = angular.undefined;
+      Logger.log("in closeQuickridePopover, setting draftQuickride = "+JSON.stringify($scope.draftQuickride));
+      $scope.quickridePopover.hide($event);
+   };
+	
+	
+	
+	
+	
+	
+	 $ionicPopover.fromTemplateUrl('templates/diary/parking-popover.html', {
+      scope: $scope
+   }).then(function(popover) {
+      $scope.parkingPopover = popover;
+   });
+
+   $scope.openParkingPopover = function($event, start_ts, end_ts) {
+      $scope.draftParking = {"start_ts": start_ts, "end_ts": end_ts}
+      Logger.log("in openParkingPopover, setting draftParking = "+JSON.stringify($scope.draftParking));
+      $scope.parkingPopover.show($event);
+   };
+
+  var closeParkingPopover = function($event, isOther) {
+      if(isOther == false)
+        $scope.draftParking = angular.undefined;
+      Logger.log("in closeParkingPopover, setting draftParking = "+JSON.stringify($scope.draftParking));
+      $scope.parkingPopover.hide($event);
+   };
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+  $scope.chosen = {mode:'',purpose:'',quickride:'',parking:''};
 
    var checkOtherOption = function(choice, isOther) {
-    if(choice == 'other_mode' || choice == 'other_purpose') {
-      var text = choice == 'other_mode' ? "mode" : "purpose";
+    if(choice == 'other_mode' || choice == 'other_purpose'|| choice == 'other_quickride'|| choice == 'other_parking') {
+      var text = choice == 'other_mode' ? "mode" : (choice == 'other_purpose'?"purpose":(choice == 'other_quickride'?"cost":"cost and time"));
+		if(text=="mode" || text=="purpose")
+		{
       $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
         scope: $scope,
         template: '<input type = "text" ng-model = "chosen.other">',        
@@ -432,17 +501,80 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                         if(choice == 'other_mode') {
                           $scope.storeMode($scope.chosen.other, isOther);
                           $scope.chosen.other = '';
-                        } else {
+                        }
+						 else if(choice == 'other_purpose')
+						{
                           $scope.storePurpose($scope.chosen.other, isOther);
                           $scope.chosen.other = '';
                         }
+						  else if(choice == 'other_quickride')
+						{
+                          $scope.storeQuickride($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+						  else
+						{
+                          $scope.storeParking($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+						 
+						 
                         return $scope.chosen.other;
                      }
                   }
             }
         ]
       });
-
+		}
+		
+		else
+		{
+			
+			     $ionicPopup.show({title: "Please fill in the " + text,
+        scope: $scope,
+        template: '<input type = "text" ng-model = "chosen.other">',        
+        buttons: [
+            { text: 'Cancel' }, {
+               text: '<b>Save</b>',
+               type: 'button-positive',
+                  onTap: function(e) {
+                     if (!$scope.chosen.other) {
+                           e.preventDefault();
+                     } else {
+                        Logger.log("in choose other, other = "+JSON.stringify($scope.chosen));
+                        if(choice == 'other_mode') {
+                          $scope.storeMode($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+						 else if(choice == 'other_purpose')
+						{
+                          $scope.storePurpose($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+						  else if(choice == 'other_quickride')
+						{
+                          $scope.storeQuickride($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+						  else
+						{
+                          $scope.storeParking($scope.chosen.other, isOther);
+                          $scope.chosen.other = '';
+                        }
+						 
+						 
+                        return $scope.chosen.other;
+                     }
+                  }
+            }
+        ]
+      });
+			
+		}
+		
+		
+		
+		
     }
    };
 
@@ -469,6 +601,28 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 	
 	
+	  $scope.chooseQuickride = function (){
+    var isOther = false
+    if($scope.chosen.quickride != "other_quickride"){
+      $scope.storeQuickride($scope.chosen.quickride, isOther);
+    } else {
+      isOther = true
+      checkOtherOption($scope.chosen.quickride, isOther);
+    }
+    closeQuickridePopover();
+  };
+	
+		
+	  $scope.chooseParking = function (){
+    var isOther = false
+    if($scope.chosen.parking != "other_parking"){
+      $scope.storeParking($scope.chosen.parking, isOther);
+    } else {
+      isOther = true
+      checkOtherOption($scope.chosen.parking, isOther);
+    }
+    closeParkingPopover();
+  };
 	
 	
 	
@@ -512,6 +666,28 @@ angular.module('emission.main.diary.list',['ui-leaflet',
    {text:'Work',value:'Work'},
   
    {text:'Other',value:'other_purpose'}];
+	
+	
+	
+	
+	
+	
+	
+	
+	 $scope.quickrideOptions = [
+  
+  
+   {text: 'Click here',value:'other_quickride'}];
+	
+	
+	 $scope.parkingOptions = [
+  
+  
+   {text:'Click here',value:'other_parking'}];
+	
+	
+	
+	
 
    $scope.storeMode = function(mode_val, isOther) {
       $scope.draftMode.label = mode_val;
@@ -528,6 +704,29 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if(isOther == true) 
         $scope.draftPurpose = angular.undefined;
    }
+   
+   
+   
+     $scope.storeQuickride = function(quickride_val, isOther) {
+      $scope.draftQuickride.label = quickride_val;
+      Logger.log("in storeQuickride, after setting quickride_val = "+quickride_val+", draftQuickride = "+JSON.stringify($scope.draftQuickride));
+      $window.cordova.plugins.BEMUserCache.putMessage(QUICKRIDE_CONFIRM_KEY, $scope.draftQuickride);
+      if(isOther == true) 
+        $scope.draftQuickride = angular.undefined;
+   }
+   
+      $scope.storeParking = function(parking_val, isOther) {
+      $scope.draftParking.label = parking_val;
+      Logger.log("in storeParking, after setting parking_val = "+parking_val+", draftParking = "+JSON.stringify($scope.draftParking));
+      $window.cordova.plugins.BEMUserCache.putMessage(PARKING_CONFIRM_KEY, $scope.draftParking);
+      if(isOther == true) 
+        $scope.draftParking = angular.undefined;
+   }
+   
+   
+   
+   
+   
 
     $scope.redirect = function(){
       $state.go("root.main.current");
