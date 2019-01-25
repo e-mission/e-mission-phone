@@ -233,7 +233,9 @@ $ cordova prepare
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ cordova emulate ios
-    OR 
+
+    OR
+
     $ cordova emulate android
 
 The android build and emulator have improved significantly in the last release
