@@ -143,7 +143,7 @@ In order to make end to end testing easy, if the local server is started on a HT
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
-Updating the e-mission-* plugins or adding new plugins
+Updating the e-mission-\* plugins or adding new plugins
 ---
 
 Installing
@@ -234,7 +234,7 @@ Installation is now complete. You can view the current state of the application 
 
     $ cordova emulate ios
 
-    OR 
+    OR
 
     $ cordova emulate android
 
@@ -245,6 +245,18 @@ from startup, so you don't have to use tricks like adding alerts to see errors
 in startup.
 
 **Note:** Sometimes, the last command (`$ cordova prepare`) fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
+
+**Note about Xcode >=10** For this repository only, the `build.json` override for the legacy build system does not work (https://github.com/e-mission/e-mission-phone/pull/513#issuecomment-457483071). Until that is resolved, you need to use the following commands to build. 
+
+```
+    $ cd platform/ios
+    $ pod install
+    $ cd ../..
+    $ cordova emulate ios --buildFlag="-UseModernBuildSysteVm=0"
+```
+
+- Also, on Mojave, we have reports that [you may need to manually enable the Legacy Build system in Xcode if you want to run the app on a real device](https://stackoverflow.com/a/52528662/4040267).
+
 
 Troubleshooting
 ---
