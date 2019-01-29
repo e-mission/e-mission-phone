@@ -58,9 +58,7 @@
                     <div ng-class="listColRightClass()">
                         <div>
                             <i class="{{mode}}" ng-repeat="mode in getPercentages(tripgj)[0]" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="setColor(mode)"></i>
-                            <div ng-if="isDraft(tripgj)" ng-class="listTextClass()" style="font-size: 0.6em; margin-right: 0.4em;"> (draft) 
-                              <button ng-click="makeCurrent()" style="font-size: 0.6em;"> Update now </button>
-                            </div>
+                            <div ng-if="isDraft(tripgj)" ng-class="listTextClass()" style="font-size: 0.6em; margin-right: 0.4em;"> (draft) </div>
                         </div>
                         <div style="margin-top: -5px;">
                             <a ng-class="listTextClass()" ng-repeat="percentage in getPercentages(tripgj)[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
@@ -87,10 +85,10 @@
                 </div>
              </div>
              <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">   
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" ng-if="checkMode(tripgj)">
+                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
                 Mode
                 </div>
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" ng-if="checkPurpose(tripgj)">
+                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
                 Purpose 
                 </div>
              </div>
