@@ -51,7 +51,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     $ionicLoading.show({
         template: 'Loading...'
         });
-    CommHelper.getIndividualSuggestion().then(function(result) {
+    CommHelper.getSingleTripSuggestion($stateParams.tripId).then(function(result) {
       console.log(result);
       $ionicLoading.hide();
       $scope.name = result.message;

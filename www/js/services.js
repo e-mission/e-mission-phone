@@ -38,16 +38,16 @@ angular.module('emission.services', ['emission.plugin.logger'])
         var msgFiller = function(mesage) {
           // donothing
         }
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys", msgFiller, resolve, reject);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys/getSug", msgFiller, resolve, reject);
       });
     };
 
-    this.getSpecificSuggestion = function() {
+   this.getSingleTripSuggestion = function(tripId) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(mesage) {
           // donothing
         }
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys", msgFiller, resolve, reject);
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/suggestion_sys/getSing/" +tripId, msgFiller, resolve, reject);
       });
     };
 
