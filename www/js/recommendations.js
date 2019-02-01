@@ -12,12 +12,8 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
 
     $scope.name = "Cannot Retrieve Suggestion";
     $scope.mode = "Cannot Retrieve Mode";
-    $scope.yelp = {
-      "headers": {
-    		"Authorization": "Bearer your-api-key",
-    		"cache-control": "no-cache"
-    	}
-    }
+    $scope.bid = "yalis-stanley-hall-cafe-berkeley";
+    $scope.stars = 4.5;
     $http.get('json/yelpfusion.json').then(function(result) {
           $scope.yelp = result.data;
         }
@@ -28,30 +24,26 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     $scope.clickReview = function(id) {
       $scope.currentDisplay = document.getElementById("reviewModal" + id);
       $scope.currentDisplay.style.display = "block";
+      $ionicLoading.show({
+        template: 'Loading Reviews...'
+        });
       $http({
         "async": true,
         "crossDomain": true,
-        "url": "https://api.yelp.com/v3/businesses/yalis-stanley-hall-cafe-berkeley/reviews",
+        "url": "https://api.yelp.com/v3/businesses/"+$scope.bid+"/reviews",
         "method": "GET",
         "headers": $scope.yelp.headers
       }).then(function(res) {
         $scope.revs = res.data.reviews;
       });
-      $http({
-        "async": true,
-        "crossDomain": true,
-        "url": "https://api.yelp.com/v3/businesses/yalis-stanley-hall-cafe-berkeley",
-        "method": "GET",
-        "headers": $scope.yelp.headers
-
-      }).then(function(res) {
-        $scope.info = res.data;
-      });
+      $ionicLoading.hide();
     };
     $scope.clickSuggestion = function(id) {
       CommHelper.getSuggestion().then(function(result) {
         $scope.name = result.message;
         $scope.mode = result.method;
+        $scope.bid = result.businessid;
+        $scope.stars = result.rating;
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
