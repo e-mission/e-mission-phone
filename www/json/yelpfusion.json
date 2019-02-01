@@ -1,0 +1,6 @@
+{
+	"headers": {
+		"Authorization": "Bearer your-api-key",
+		"cache-control": "no-cache"
+	}
+}

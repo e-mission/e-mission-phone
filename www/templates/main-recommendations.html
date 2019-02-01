@@ -14,7 +14,7 @@
        <h4>
          {{name}}<br />
          {{mode}}<br />
-           <img src="img/small/small_4.png" width="75" />
+           <img src="img/small/small_{{stars}}.png" width="75" />
              <button class="button button-block button-balanced button-outline" ng-click="clickReview(0)">Reviews</button>
          </h4>
      </div></center>
@@ -22,15 +22,13 @@
    <div id="reviewModal0" class="modal">
      <div class="modal-content">
        <div align="left">
-       <h3>Reviews</h3>
-       I really like this cafe, it has great vibes!
-         <img src="img/small/small_5.png" width="50" /> - Jane, San Francisco <br />
-           I really like their midterms! It goes great with their
-             freshly baked depression!
-             <img src="img/small/small_5.png" width="50" /> - John, Atlanta <br />
-               The parties are ok but the grading is kind of slow.
-                 <img src="img/small/small_4.png" width="50" /> - Sam, Boston <br />
-         </div>
+       <h4>Reviews<br /></h4>
+       <img src="img/small/small_{{stars}}.png" width="75" /><br />
+       <li ng-repeat='r in revs'>
+       {{r.text}}
+       <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
+     </li>
+      </div>
          <button class="button button-block button-balanced button-outline back" ng-click="clickX()">Back</button>
      </div>
    </div>
