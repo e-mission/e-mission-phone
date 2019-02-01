@@ -1,0 +1,12 @@
+Testing Update as of 1/19/2019
+
+Some people got recommendations but for those who weren't located in large cities, the API call resulted in a key value error. This was combatted by integrating the ProPublica API (allowing for unlimited calls using zip codes). The key value error was due to towns or a call resulting in only a zip code and not an actual city. For this reason, there was an error in giving back a suggestion. If trips are not cleaned, no suggestion will appear until the trip has been cleaned and a mode of transportation is associated with it. The suggestion system has been updated to guesstimate endpoints, since in some areas it can be difficult to pinpoint a restaurant (malls, parking lots, etc).
+
+Sample tests and results:
+
+-trip to Habachi Steakhouse via car (Hokkaido Teppanyaki Hibachi Steakhouse) recommended going to closer steakhouse (Echo and Rig) via public transit
+-trip to In N Out Burger via car recommended biking to JJ's Burger Joint in Marin County 
+-trip to Korean BBQ place via car suggested biking to a different bbq place (Smoking Pig BBQ) via bike
+
+Testing is ongoing and continuous. The testing files are used by sending trips directly to iPython and stepping through with a debugger. A new pull request should be sent out soon. 
+The results are being displayed on the page properly, unless there is an error with the suggestion system, in which case the page needs to be reloaded by the user. 

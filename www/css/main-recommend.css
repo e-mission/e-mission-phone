@@ -28,7 +28,7 @@
   text-align: center;
   transition: height 0.3s ease-out;
   overflow: hidden;
-  height: 275px;
+  height: 400px;
 }
 
 p {
@@ -57,6 +57,7 @@ p {
   padding : 30px;
   width : 300px;
 }
+
 .close {
   color : black;
   float : right;
