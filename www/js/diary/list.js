@@ -299,7 +299,10 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         });
         if (modes.length > 0) {
           var mode = modes[modes.length - 1];
-          $scope.chosen.mode.label = mode.data.label;
+          var opt = $scope.modeOptions.filter(o => o.value === mode.data.label);
+          if (opt.length > 0) {
+            $scope.chosen.mode.label = opt[0].text;
+          }
           hasMode = true;
         }
       }
@@ -333,7 +336,10 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         });
         if (purposes.length > 0) {
           var purpose = purposes[purposes.length - 1];
-          $scope.chosen.purpose.label = purpose.data.label;
+          var opt = $scope.purposeOptions.filter(o => o.value === purpose.data.label);
+          if (opt.length > 0) {
+            $scope.chosen.purpose.label = opt[0].text;
+          }
           hasPurpose = true;
         }
       }
@@ -645,7 +651,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
             );
           });
           if (unified_modes.length > 0) {
-            $scope.selected.mode = unified_modes[unified_modes.length - 1];
+            var unified_mode = unified_modes[unified_modes.length - 1];
+            $scope.selected.mode.label = unified_mode.data.label;
           }
         } else {
           $scope.selected.mode = mode;
@@ -692,7 +699,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
             );
           });
           if (unified_purposes.length > 0) {
-            $scope.selected.purpose = unified_purposes[unified_purposes.length - 1];
+            var unified_purpose = unified_purposes[unified_purposes.length - 1];
+            $scope.selected.purpose.label = unified_purpose.data.label;
           }
         } else {
           $scope.selected.purpose = purpose;
