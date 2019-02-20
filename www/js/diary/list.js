@@ -168,7 +168,10 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
-    var getLocalTripModes = function (trip) {
+    /**
+     * Get all 'mode' for the trip from local cache (BEMUserCache)
+     */
+    var getLocalTripMode = function (trip) {
       return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function (modes) {
         Logger.log("Modes stored locally" + JSON.stringify(modes));
         var tripMode = {};
@@ -189,7 +192,10 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       });
     }
 
-    var getLocalTripPurposes = function (trip) {
+    /**
+     * Get all 'purpose' for the trip from local cache (BEMUserCache)
+     */
+    var getLocalTripPurpose = function (trip) {
       return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function (purposeList) {
         Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
         var tripPurpose = {};
@@ -210,6 +216,9 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       });
     }
 
+    /**
+     * Embed 'mode' to the trip
+     */
     var addModeFeature = function (trip, mode) {
       $scope.$apply(function () {
         var modeFeature = mode;
@@ -220,6 +229,9 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       });
     }
 
+    /**
+     * Embed 'purpose' to the trip
+     */
     var addPurposeFeature = function (trip, purpose) {
       $scope.$apply(function () {
         var purposeFeature = purpose;
@@ -239,7 +251,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     };
 
     var addUnpushedMode = function (trip) {
-      getLocalTripModes(trip).then(function (mode) {
+      getLocalTripMode(trip).then(function (mode) {
         if (isNotEmpty(mode)) {
           addModeFeature(trip, mode);
         }
@@ -247,7 +259,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     }
 
     var addUnpushedPurpose = function (trip) {
-      getLocalTripPurposes(trip).then(function (purpose) {
+      getLocalTripPurpose(trip).then(function (purpose) {
         if (isNotEmpty(purpose)) {
           addPurposeFeature(trip, purpose);
         }
@@ -266,11 +278,11 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           if (modes.indexOf(feature.label) > -1) {
             $scope.modeOptions.forEach(function (mode) {
               if (feature.label == mode.value) {
-                $scope.mode = mode.text;
+                $scope.chosen.mode.label = mode.text;
               }
             });
           } else {
-            $scope.mode = feature.label;
+            $scope.chosen.mode.label = feature.label;
           }
           hasMode = true;
         }
@@ -286,11 +298,11 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           if (purposes.indexOf(feature.label) > -1) {
             $scope.purposeOptions.forEach(function (purpose) {
               if (feature.label == purpose.value) {
-                $scope.purpose = purpose.text;
+                $scope.chosen.purpose.label = purpose.text;
               }
             });
           } else {
-            $scope.purpose = feature.label;
+            $scope.chosen.purpose.label = feature.label;
           }
           hasPurpose = true;
         }
@@ -576,8 +588,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           end_ts: end_ts,
         }
       };
-      getLocalTripModes(fakeTrip).then(function (mode) {
-        $scope.chosen.mode = mode.label;
+      getLocalTripMode(fakeTrip).then(function (mode) {
+        $scope.selected.mode = mode;
         $scope.draftMode = {
           "start_ts": start_ts,
           "end_ts": end_ts
@@ -589,7 +601,9 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     };
 
     var closeModePopover = function ($event, isOther) {
-      $scope.chosen.mode = '';
+      $scope.selected.mode = {
+        label: ''
+      };
       if (isOther == false)
         $scope.draftMode = angular.undefined;
       Logger.log("in closeModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
@@ -609,8 +623,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           end_ts: end_ts,
         }
       };
-      getLocalTripPurposes(fakeTrip).then(function (mode) {
-        $scope.chosen.purpose = mode.label;
+      getLocalTripPurpose(fakeTrip).then(function (purpose) {
+        $scope.selected.purpose = purpose;
         $scope.draftPurpose = {
           "start_ts": start_ts,
           "end_ts": end_ts
@@ -622,43 +636,63 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     };
 
     var closePurposePopover = function ($event, isOther) {
-      $scope.chosen.purpose = '';
+      $scope.selected.purpose = {
+        label: ''
+      };
       if (isOther == false)
         $scope.draftPurpose = angular.undefined;
       Logger.log("in closePurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
       $scope.purposePopover.hide($event);
     };
 
+    /**
+     * Store selected value for options
+     */
+    $scope.selected = {
+      mode: {
+        label: ''
+      },
+      purpose: {
+        label: ''
+      }
+    };
+    /**
+     * Store currently chosen value
+     */
     $scope.chosen = {
-      mode: '',
-      purpose: ''
+      mode: {
+        label: ''
+      },
+      purpose: {
+        label: ''
+      }
     };
 
     var checkOtherOption = function (choice, isOther) {
-      if (choice == 'other_mode' || choice == 'other_purpose') {
-        var text = choice == 'other_mode' ? "mode" : "purpose";
+      if (choice.label == 'other_mode' || choice.label == 'other_purpose') {
+        var text = choice.label == 'other_mode' ? 'mode' : 'purpose';
         $ionicPopup.show({
           title: "Please fill in the " + text + " not listed.",
           scope: $scope,
-          template: '<input type = "text" ng-model = "chosen.other">',
+          template: '<input type = "text" ng-model = "selected.other">',
           buttons: [{
             text: 'Cancel'
           }, {
             text: '<b>Save</b>',
             type: 'button-positive',
             onTap: function (e) {
-              if (!$scope.chosen.other) {
+              if (!$scope.selected.other) {
                 e.preventDefault();
               } else {
-                Logger.log("in choose other, other = " + JSON.stringify($scope.chosen));
-                if (choice == 'other_mode') {
-                  $scope.storeMode($scope.chosen.other, isOther);
-                  $scope.chosen.other = '';
+                Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
+                if (choice.label == 'other_mode') {
+                  $scope.storeMode($scope.selected.other, isOther);
+                  $scope.selected.other = '';
                 } else {
-                  $scope.storePurpose($scope.chosen.other, isOther);
-                  $scope.chosen.other = '';
+                  $scope.storePurpose($scope.selected.other, isOther);
+                  $scope.selected.other = '';
                 }
-                return $scope.chosen.other;
+                return $scope.selected.other;
               }
             }
           }]
@@ -668,25 +702,25 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     };
 
     $scope.choosePurpose = function () {
-      $scope.purpose = $scope.chosen.purpose;
-      var isOther = false
-      if ($scope.chosen.purpose != "other_purpose") {
-        $scope.storePurpose($scope.chosen.purpose, isOther);
+      $scope.chosen.purpose = $scope.selected.purpose;
+      var isOther = false;
+      if ($scope.selected.purpose.label != "other_purpose") {
+        $scope.storePurpose($scope.selected.purpose, isOther);
       } else {
         isOther = true
-        checkOtherOption($scope.chosen.purpose, isOther);
+        checkOtherOption($scope.selected.purpose, isOther);
       }
       closePurposePopover();
     };
 
     $scope.chooseMode = function () {
-      $scope.mode = $scope.chosen.mode;
+      $scope.chosen.mode = $scope.selected.mode;
       var isOther = false
-      if ($scope.chosen.mode != "other_mode") {
-        $scope.storeMode($scope.chosen.mode, isOther);
+      if ($scope.selected.mode.label != "other_mode") {
+        $scope.storeMode($scope.selected.mode, isOther);
       } else {
         isOther = true
-        checkOtherOption($scope.chosen.mode, isOther);
+        checkOtherOption($scope.selected.mode, isOther);
       }
       closeModePopover();
     };
@@ -779,9 +813,9 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       }
     ];
 
-    $scope.storeMode = function (mode_val, isOther) {
-      $scope.draftMode.label = mode_val;
-      Logger.log("in storeMode, after setting mode_val = " + mode_val + ", draftMode = " + JSON.stringify($scope.draftMode));
+    $scope.storeMode = function (mode, isOther) {
+      $scope.draftMode.label = mode.label;
+      Logger.log("in storeMode, after setting mode.label = " + mode.label + ", draftMode = " + JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
         addUnpushedMode($scope.modeTripgj.data);
       });
@@ -789,9 +823,9 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         $scope.draftMode = angular.undefined;
     }
 
-    $scope.storePurpose = function (purpose_val, isOther) {
-      $scope.draftPurpose.label = purpose_val;
-      Logger.log("in storePurpose, after setting purpose_val = " + purpose_val + ", draftPurpose = " + JSON.stringify($scope.draftPurpose));
+    $scope.storePurpose = function (purpose, isOther) {
+      $scope.draftPurpose.label = purpose.label;
+      Logger.log("in storePurpose, after setting purpose.label = " + purpose.label + ", draftPurpose = " + JSON.stringify($scope.draftPurpose));
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function () {
         addUnpushedPurpose($scope.purposeTripgj.data);
       });
