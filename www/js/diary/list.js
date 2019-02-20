@@ -19,6 +19,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+    $scope.unifiedResults = null;
 
     // Add option
 
@@ -272,6 +273,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
 
     $scope.checkMode = function (trip) {
       var hasMode = false;
+      // Looking for mode in local cache
       trip.data.features.forEach(function (feature) {
         if (feature.feature_type == "mode") {
           var modes = $scope.modeOptions.map(a => a.value);
@@ -287,6 +289,20 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           hasMode = true;
         }
       });
+      // Fallback to unified Results
+      if (!hasMode && $scope.unifiedResults !== null) {
+        var modes = $scope.unifiedResults.modes.filter(mode => {
+          return (
+            mode.data.start_ts === trip.data.properties.start_ts &&
+            mode.data.end_ts === trip.data.properties.end_ts
+          );
+        });
+        if (modes.length > 0) {
+          var mode = modes[modes.length - 1];
+          $scope.chosen.mode.label = mode.data.label;
+          hasMode = true;
+        }
+      }
       return hasMode;
     }
 
@@ -307,6 +323,20 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           hasPurpose = true;
         }
       });
+      // Fallback to unified Results
+      if (!hasPurpose && $scope.unifiedResults !== null) {
+        var purposes = $scope.unifiedResults.purposes.filter(purpose => {
+          return (
+            purpose.data.start_ts === trip.data.properties.start_ts &&
+            purpose.data.end_ts === trip.data.properties.end_ts
+          );
+        });
+        if (purposes.length > 0) {
+          var purpose = purposes[purposes.length - 1];
+          $scope.chosen.purpose.label = purpose.data.label;
+          hasPurpose = true;
+        }
+      }
       return hasPurpose;
     }
 
@@ -315,17 +345,35 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       $scope.$apply(function () {
         $scope.data = Timeline.data;
         $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
-        $scope.data.currDayTrips.forEach(function (trip, index, array) {
-          addUnpushedMode(trip);
-          addUnpushedPurpose(trip);
-          PostTripManualMarker.addUnpushedIncidents(trip);
-        });
-        $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-          DiaryHelper.directiveForTrip);
-        // $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
-        //   return el.data.id.indexOf('unprocessed_') === -1;
-        // });
-        $ionicScrollDelegate.scrollTop(true);
+        
+        function routineTasks () {
+          $scope.data.currDayTrips.forEach(function (trip, index, array) {
+            addUnpushedMode(trip);
+            addUnpushedPurpose(trip);
+            PostTripManualMarker.addUnpushedIncidents(trip);
+          });
+          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
+            DiaryHelper.directiveForTrip);
+          // $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
+          //   return el.data.id.indexOf('unprocessed_') === -1;
+          // });
+          $ionicScrollDelegate.scrollTop(true);
+        }
+        if ($scope.unifiedResults === null) {
+          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
+          Promise.all([
+            UnifiedDataLoader.getUnifiedMessagesForInterval(MODE_CONFIRM_KEY, tq),
+            UnifiedDataLoader.getUnifiedMessagesForInterval(PURPOSE_CONFIRM_KEY, tq)
+          ]).then(results => {
+            $scope.unifiedResults = {
+              modes: results[0],
+              purposes: results[1],
+            };
+            routineTasks();
+          });
+          return;
+        }
+        routineTasks();
       });
     });
 
@@ -589,7 +637,19 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
       };
       getLocalTripMode(fakeTrip).then(function (mode) {
-        $scope.selected.mode = mode;
+        if (!mode.label && $scope.unifiedResults !== null) {
+          var unified_modes = $scope.unifiedResults.modes.filter(unified_mode => {
+            return (
+              unified_mode.data.start_ts === start_ts &&
+              unified_mode.data.end_ts === end_ts
+            );
+          });
+          if (unified_modes.length > 0) {
+            $scope.selected.mode = unified_modes[unified_modes.length - 1];
+          }
+        } else {
+          $scope.selected.mode = mode;
+        }
         $scope.draftMode = {
           "start_ts": start_ts,
           "end_ts": end_ts
@@ -624,7 +684,19 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
       };
       getLocalTripPurpose(fakeTrip).then(function (purpose) {
-        $scope.selected.purpose = purpose;
+        if (!purpose.label && $scope.unifiedResults !== null) {
+          var unified_purposes = $scope.unifiedResults.purposes.filter(unified_purpose => {
+            return (
+              unified_purpose.data.start_ts === start_ts &&
+              unified_purpose.data.end_ts === end_ts
+            );
+          });
+          if (unified_purposes.length > 0) {
+            $scope.selected.purpose = unified_purposes[unified_purposes.length - 1];
+          }
+        } else {
+          $scope.selected.purpose = purpose;
+        }
         $scope.draftPurpose = {
           "start_ts": start_ts,
           "end_ts": end_ts
@@ -725,7 +797,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       closeModePopover();
     };
 
-    $scope.modeOptions = [{
+    $scope.modeOptions = [
+      {
         text: 'Walk',
         value: 'walk'
       },
@@ -763,7 +836,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       }
     ];
 
-    $scope.purposeOptions = [{
+    $scope.purposeOptions = [
+      {
         text: 'Home',
         value: 'home'
       },
