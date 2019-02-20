@@ -168,7 +168,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
-    var getTripModes = function (trip) {
+    var getLocalTripModes = function (trip) {
       return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function (modes) {
         Logger.log("Modes stored locally" + JSON.stringify(modes));
         var tripMode = {};
@@ -189,7 +189,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
       });
     }
 
-    var getTripPurpose = function (trip) {
+    var getLocalTripPurposes = function (trip) {
       return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function (purposeList) {
         Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
         var tripPurpose = {};
@@ -208,10 +208,6 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
         return tripPurpose;
       });
-    }
-
-    var getRemoteTripModes = function (trip) {
-
     }
 
     var addModeFeature = function (trip, mode) {
@@ -243,7 +239,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     };
 
     var addUnpushedMode = function (trip) {
-      getTripModes(trip).then(function (mode) {
+      getLocalTripModes(trip).then(function (mode) {
         if (isNotEmpty(mode)) {
           addModeFeature(trip, mode);
         }
@@ -251,7 +247,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     }
 
     var addUnpushedPurpose = function (trip) {
-      getTripPurpose(trip).then(function (purpose) {
+      getLocalTripPurposes(trip).then(function (purpose) {
         if (isNotEmpty(purpose)) {
           addPurposeFeature(trip, purpose);
         }
@@ -580,7 +576,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           end_ts: end_ts,
         }
       };
-      getTripModes(fakeTrip).then(function (mode) {
+      getLocalTripModes(fakeTrip).then(function (mode) {
         $scope.chosen.mode = mode.label;
         $scope.draftMode = {
           "start_ts": start_ts,
@@ -613,7 +609,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
           end_ts: end_ts,
         }
       };
-      getTripPurpose(fakeTrip).then(function (mode) {
+      getLocalTripPurposes(fakeTrip).then(function (mode) {
         $scope.chosen.purpose = mode.label;
         $scope.draftPurpose = {
           "start_ts": start_ts,
