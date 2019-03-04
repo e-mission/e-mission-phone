@@ -727,6 +727,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
 
     /**
      * Store selected value for options
+     * $scope.selected is for display purpose only
+     * the value is displayed on popover selected option
      */
     $scope.selected = {
       mode: {
@@ -738,6 +740,7 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     };
     /**
      * Store currently chosen value
+     * $scope.chosen is the actual stored value
      */
     $scope.chosen = {
       mode: {
