@@ -42,9 +42,10 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     var uuid = $stateParams.uuid;
     $scope.clickSuggestion = function(id) {
       $ionicLoading.show({
-        template: 'Loading...'
+        template: 'Loading most recent suggestion, this may take a while...'
         });
       CommHelper.getSuggestion().then(function(result) {
+        $ionicLoading.hide();
         console.log(result);
         $scope.name = result.message;
         $scope.mode = result.method;
