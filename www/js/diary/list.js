@@ -19,7 +19,6 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
     console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
-    $scope.unifiedResults = null;
 
     // Add option
 
@@ -290,8 +289,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
       });
       // Fallback to unified Results
-      if (!hasMode && $scope.unifiedResults !== null) {
-        var modes = $scope.unifiedResults.modes.filter(mode => {
+      if (!hasMode && $scope.data.unifiedConfirmsResults !== null) {
+        var modes = $scope.data.unifiedConfirmsResults.modes.filter(mode => {
           return (
             mode.data.start_ts === trip.data.properties.start_ts &&
             mode.data.end_ts === trip.data.properties.end_ts
@@ -327,8 +326,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
       });
       // Fallback to unified Results
-      if (!hasPurpose && $scope.unifiedResults !== null) {
-        var purposes = $scope.unifiedResults.purposes.filter(purpose => {
+      if (!hasPurpose && $scope.data.unifiedConfirmsResults !== null) {
+        var purposes = $scope.data.unifiedConfirmsResults.purposes.filter(purpose => {
           return (
             purpose.data.start_ts === trip.data.properties.start_ts &&
             purpose.data.end_ts === trip.data.properties.end_ts
@@ -352,34 +351,17 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         $scope.data = Timeline.data;
         $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
         
-        function routineTasks () {
-          $scope.data.currDayTrips.forEach(function (trip, index, array) {
-            addUnpushedMode(trip);
-            addUnpushedPurpose(trip);
-            PostTripManualMarker.addUnpushedIncidents(trip);
-          });
-          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
-            DiaryHelper.directiveForTrip);
-          // $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
-          //   return el.data.id.indexOf('unprocessed_') === -1;
-          // });
-          $ionicScrollDelegate.scrollTop(true);
-        }
-        if ($scope.unifiedResults === null) {
-          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
-          Promise.all([
-            UnifiedDataLoader.getUnifiedMessagesForInterval(MODE_CONFIRM_KEY, tq),
-            UnifiedDataLoader.getUnifiedMessagesForInterval(PURPOSE_CONFIRM_KEY, tq)
-          ]).then(results => {
-            $scope.unifiedResults = {
-              modes: results[0],
-              purposes: results[1],
-            };
-            routineTasks();
-          });
-          return;
-        }
-        routineTasks();
+        $scope.data.currDayTrips.forEach(function (trip, index, array) {
+          addUnpushedMode(trip);
+          addUnpushedPurpose(trip);
+          PostTripManualMarker.addUnpushedIncidents(trip);
+        });
+        $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
+          DiaryHelper.directiveForTrip);
+        // $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
+        //   return el.data.id.indexOf('unprocessed_') === -1;
+        // });
+        $ionicScrollDelegate.scrollTop(true);
       });
     });
 
@@ -643,8 +625,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
       };
       getLocalTripMode(fakeTrip).then(function (mode) {
-        if (!mode.label && $scope.unifiedResults !== null) {
-          var unified_modes = $scope.unifiedResults.modes.filter(unified_mode => {
+        if (!mode.label && $scope.data.unifiedConfirmsResults !== null) {
+          var unified_modes = $scope.data.unifiedConfirmsResults.modes.filter(unified_mode => {
             return (
               unified_mode.data.start_ts === start_ts &&
               unified_mode.data.end_ts === end_ts
@@ -691,8 +673,8 @@ angular.module('emission.main.diary.list', ['ui-leaflet',
         }
       };
       getLocalTripPurpose(fakeTrip).then(function (purpose) {
-        if (!purpose.label && $scope.unifiedResults !== null) {
-          var unified_purposes = $scope.unifiedResults.purposes.filter(unified_purpose => {
+        if (!purpose.label && $scope.data.unifiedConfirmsResults !== null) {
+          var unified_purposes = $scope.data.unifiedConfirmsResults.purposes.filter(unified_purpose => {
             return (
               unified_purpose.data.start_ts === start_ts &&
               unified_purpose.data.end_ts === end_ts
