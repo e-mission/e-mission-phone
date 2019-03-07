@@ -220,35 +220,35 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   });
   /* END: ng-walkthrough code */
 
-   $scope.chosen = {mode:'',purpose:'',other:'', other_to_store:''};
+   $scope.selected = {mode:'',purpose:'',other:'', other_to_store:''};
 
    var checkOtherOption = function(choice) {
     if(choice == 'other_mode' || choice == 'other_purpose') {
       var text = choice == 'other_mode' ? "mode" : "purpose";
       $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
         scope: $scope,
-        template: '<input type = "text" ng-model = "chosen.other">',        
+        template: '<input type = "text" ng-model = "selected.other">',        
         buttons: [
             { text: 'Cancel',
               onTap: function(e) {
-                $scope.chosen.mode = '';
-                $scope.chosen.purpose = '';
+                $scope.selected.mode = '';
+                $scope.selected.purpose = '';
               }
             }, {
                text: '<b>Save</b>',
                type: 'button-positive',
                   onTap: function(e) {
-                     if (!$scope.chosen.other) {
+                     if (!$scope.selected.other) {
                            e.preventDefault();
                      } else {
                         if(choice == 'other_mode') {
-                          $scope.chosen.other_to_store = $scope.chosen.other;
-                          $scope.chosen.other = '';
+                          $scope.selected.other_to_store = $scope.selected.other;
+                          $scope.selected.other = '';
                         } else {
-                          $scope.chosen.other_to_store = $scope.chosen.other;
-                          $scope.chosen.other = '';
+                          $scope.selected.other_to_store = $scope.selected.other;
+                          $scope.selected.other = '';
                         }
-                        return $scope.chosen.other;
+                        return $scope.selected.other;
                      }
                   }
             }
@@ -259,45 +259,45 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
    };
 
   $scope.choosePurpose = function() {
-    if($scope.chosen.purpose == "other_purpose"){
-      checkOtherOption($scope.chosen.purpose);
+    if($scope.selected.purpose == "other_purpose"){
+      checkOtherOption($scope.selected.purpose);
     }
   };
 
   $scope.chooseMode = function (){
-    if($scope.chosen.mode == "other_mode"){
-      checkOtherOption($scope.chosen.mode);
+    if($scope.selected.mode == "other_mode"){
+      checkOtherOption($scope.selected.mode);
     }
   };
 
   $scope.secondSlide = false;
 
   $scope.nextSlide = function() {
-    if($scope.chosen.mode == "other_mode" && $scope.chosen.other_to_store.length > 0) {
+    if($scope.selected.mode == "other_mode" && $scope.selected.other_to_store.length > 0) {
       $scope.secondSlide = true;
-      console.log($scope.chosen.other_to_store);
+      console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storeMode($scope.chosen.other_to_store);
+      $scope.storeMode($scope.selected.other_to_store);
       $ionicSlideBoxDelegate.next();
-    } else if ($scope.chosen.mode != "other_mode" && $scope.chosen.mode.length > 0) {
+    } else if ($scope.selected.mode != "other_mode" && $scope.selected.mode.length > 0) {
       $scope.secondSlide = true;
-      console.log($scope.chosen.mode);
+      console.log($scope.selected.mode);
       // store mode here
-      $scope.storeMode($scope.chosen.mode);
+      $scope.storeMode($scope.selected.mode);
       $ionicSlideBoxDelegate.next();
     }
   };
 
   $scope.doneSlide = function() {
-    if($scope.chosen.purpose == "other_purpose" && $scope.chosen.other_to_store.length > 0) {
-      console.log($scope.chosen.other_to_store);
+    if($scope.selected.purpose == "other_purpose" && $scope.selected.other_to_store.length > 0) {
+      console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storePurpose($scope.chosen.other_to_store);
+      $scope.storePurpose($scope.selected.other_to_store);
       $scope.closeView();
-    } else if ($scope.chosen.purpose != "other_purpose" && $scope.chosen.purpose.length > 0) {
-      console.log($scope.chosen.purpose);
+    } else if ($scope.selected.purpose != "other_purpose" && $scope.selected.purpose.length > 0) {
+      console.log($scope.selected.purpose);
       // store purpose here
-      $scope.storePurpose($scope.chosen.purpose);
+      $scope.storePurpose($scope.selected.purpose);
       $scope.closeView();
     }
   };

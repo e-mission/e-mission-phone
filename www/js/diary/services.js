@@ -407,6 +407,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
     timeline.data = {};
+    timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
     // Internal function, not publicly exposed
@@ -897,6 +898,21 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         } else {
             return tripList;
         }
+      }).then(function(combinedTripList) {
+        if (timeline.data.unifiedConfirmsResults === null) {
+          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
+          return Promise.all([
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
+          ]).then(results => {
+            timeline.data.unifiedConfirmsResults = {
+              modes: results[0],
+              purposes: results[1],
+            };
+            return combinedTripList;
+          });
+        }
+        return combinedTripList;
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
