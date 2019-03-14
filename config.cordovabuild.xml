@@ -27,6 +27,7 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="ios">
+        <resource-file src="GoogleService-Info.plist" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
         <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />
@@ -62,7 +63,8 @@
     </platform>
     <platform name="android">
         <preference name="android-minSdkVersion" value="18" />
-        <preference name="android-targetSdkVersion" value="21" />
+        <preference name="android-targetSdkVersion" value="26" />
+        <resource-file src="google-services.json" target="google-services.json" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
@@ -83,8 +85,8 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
-    <plugin name="phonegap-plugin-push" spec="~1.9.2">
-        <variable name="SENDER_ID" value="1096592179912" />
+    <plugin name="phonegap-plugin-push" spec="=2.1.2">
+         <variable name="FCM_VERSION" value="11.0.1" />
     </plugin>
     <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
     <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
@@ -94,7 +96,7 @@
     <plugin name="cordova-plugin-customurlscheme" spec="~4.3.0">
         <variable name="URL_SCHEME" value="emission" />
     </plugin>
-    <plugin name="cordova-plugin-email-composer" spec="~0.8.12" />
+    <plugin name="cordova-plugin-email-composer" spec="^0.8.15" />
     <plugin name="cordova-plugin-x-socialsharing" spec="~5.2.1" />
     <plugin name="cordova-plugin-inappbrowser" spec="https://github.com/shankari/cordova-plugin-inappbrowser.git" />
     <plugin name="de.appplant.cordova.plugin.local-notification-ios9-fix" spec="https://github.com/shankari/cordova-plugin-local-notifications.git" />
@@ -108,12 +110,12 @@
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <engine name="ios" spec="^4.5.4" />
     <engine name="android" spec="^6.4.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git#v1.4.0" />
+    <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git#v1.5.0" />
     <plugin name="edu.berkeley.eecs.emission.cordova.comm" spec="https://github.com/e-mission/cordova-server-communication.git#v1.2.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.datacollection" spec="https://github.com/e-mission/e-mission-data-collection.git#v1.2.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.serversync" spec="https://github.com/e-mission/cordova-server-sync.git#v1.1.1" />
+    <plugin name="edu.berkeley.eecs.emission.cordova.datacollection" spec="https://github.com/e-mission/e-mission-data-collection.git#v1.3.0" />
+    <plugin name="edu.berkeley.eecs.emission.cordova.serversync" spec="https://github.com/e-mission/cordova-server-sync.git#v1.1.2" />
     <plugin name="edu.berkeley.eecs.emission.cordova.settings" spec="https://github.com/e-mission/cordova-connection-settings.git#v1.2.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.transitionnotify" spec="https://github.com/e-mission/e-mission-transition-notify.git#v1.1.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.unifiedlogger" spec="https://github.com/e-mission/cordova-unified-logger.git#v1.2.0" />
+    <plugin name="edu.berkeley.eecs.emission.cordova.transitionnotify" spec="https://github.com/e-mission/e-mission-transition-notify.git#v1.2.0" />
+    <plugin name="edu.berkeley.eecs.emission.cordova.unifiedlogger" spec="https://github.com/e-mission/cordova-unified-logger.git#v1.3.0" />
     <plugin name="edu.berkeley.eecs.emission.cordova.usercache" spec="https://github.com/e-mission/cordova-usercache.git#v1.1.0" />
 </widget>
