@@ -94,23 +94,27 @@
              </div>
              <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">   
                 <div class="col-50" style="text-align: center;">
-                    <div ng-if="checkMode(tripgj)" style="font-size: 14px; margin-top: 5px">
-                        <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">
+                    <div ng-if="checkMode(tripgj)" class="mode-confirm-container">
+                        <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button btn-mode-confirm btn-mode-confirm-green">
                             {{chosen.mode.label}}
                         </button>
                     </div>
-                    <div  ng-if="!checkMode(tripgj)">
-                        <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Mode</button>
+                    <div  ng-if="!checkMode(tripgj)" class="mode-confirm-container">
+                        <button ng-click ="openModePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button btn-mode-confirm btn-mode-confirm-white">
+                            Choose Mode
+                        </button>
                     </div>
                 </div>
                 <div class="col-50" style="text-align: center;">
-                    <div ng-if="checkPurpose(tripgj)" style="font-size: 14px; margin-top: 5px">
-                        <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">
+                    <div ng-if="checkPurpose(tripgj)" class="purpose-confirm-container">
+                        <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-green">
                             {{chosen.purpose.label}}
                         </button>
                     </div>
-                    <div ng-if="!checkPurpose(tripgj)">
-                        <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button" style="line-height: 30px;min-height: 30px;font-size: 0.8em;color: #333;background-color: #ddd;width: 115px;padding: 0;">Choose Purpose</button>
+                    <div ng-if="!checkPurpose(tripgj)" class="purpose-confirm-container">
+                        <button ng-click="openPurposePopover($event, tripgj.data.properties.start_ts, tripgj.data.properties.end_ts, tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-white">
+                            Choose Purpose
+                        </button>
                     </div>
                 </div>
              </div>   
