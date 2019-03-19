@@ -56,9 +56,30 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $ionicLoading.hide();
       $scope.name = result.message;
       $scope.mode = result.method;
+      $scope.bid = result.businessid;
+      $scope.stars = result.rating;
     }).catch(function(err) {
       console.log("Error while getting individual suggestion" + err);
     });
+  };
+  $http.get('json/yelpfusion.json').then(function(result) {
+        $scope.yelp = result.data;
+      }
+  )
+  $scope.clickReview = function() {
+    $ionicLoading.show({
+      template: 'Loading Reviews...'
+      });
+    $http({
+      "async": true,
+      "crossDomain": true,
+      "url": "https://api.yelp.com/v3/businesses/"+$scope.bid+"/reviews",
+      "method": "GET",
+      "headers": $scope.yelp.headers
+    }).then(function(res) {
+      $scope.revs = res.data.reviews;
+    });
+    $ionicLoading.hide();
   };
 
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
@@ -176,7 +197,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from 
+    // Workaround from
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
