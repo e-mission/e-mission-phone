@@ -1,5 +1,5 @@
 <ion-view ng-class="getTripBackground()">
-    <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title> 
+    <ion-nav-title>{{ getFormattedDate(tripgj.data.properties.start_ts) }}</ion-nav-title>
     <ion-nav-buttons side="right">
          <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>
@@ -28,7 +28,7 @@
             </div>
         </div>
         <div style="height: 10px;"></div>
-        <leaflet geojson="tripgj" id="detail" defaults="mapCtrl.defaults" 
+        <leaflet geojson="tripgj" id="detail" defaults="mapCtrl.defaults"
             height="50%" width="100%" data-tap-disabled="true">
         </leaflet>
         <div style="height: 15px;"></div>
@@ -67,6 +67,8 @@
                 ng-click="refreshMap()">Refresh</button>
             <button class="button button-stable button-block"
                 ng-click="getIndividualSuggestion()">Get Suggestion</button>
+            <button class="button button-stable button-block"
+                ng-click="clickReview()">Get Reviews</button>
         </div>
         <div class = "grid_layout">
           <div class = "grid_item" id = "suggestion_title"> Suggestion </div>
@@ -74,5 +76,14 @@
           <div class = "grid_item"> {{name}} </div>
           <div class = "grid_item"> {{mode}} </div>
         </div>
+        <div align="left">
+            <h4>Reviews<br /></h4>
+            <img src="img/small/small_{{stars}}.png" width="75" /><br />
+            <li ng-repeat='r in revs'>
+            {{r.text}}
+            <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
+          </li>
+           </div>
+              <button class="button button-block button-balanced button-outline back" ng-click="clickX()">Back</button>
     </ion-content>
 </ion-view>
