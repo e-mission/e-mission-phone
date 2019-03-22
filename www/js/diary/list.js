@@ -634,23 +634,36 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 	
 
  $scope.modeOptions = [
-   {text:'Bus', value:'Bus'},
-   {text:'Cycle',value:'Cycle'},
-   {text:'Office car: self-driven',value:'Office car: self-driven'},
-   {text:'Office car: driver',value:'Office car:driver'},
-   {text:'Office shuttle',value:'Office shuttle'},
-   {text:'Ola/Uber or similar app-based ride service provider',value:'Ola/Uber'},
-   {text:'Olashare/Uberpool or similar app-based ride service provider',value:'Olashare/Uberpool'},
-   {text:'Personal car:self-driven',value:'Personal car:self-driven'},
-   {text:'Personal car:driver',value:'Personal car:driver'},
-   {text:'Personal car:with family',value:'Personal car:with family'},
-   {text:'Quickride',value:'Quickride'},
-   {text:'Ride in friends car',value:'Ride in friends car'},
+	  {text:'Train', value:'Train'},
+	 {text:'Namma Metro', value:'Namma Metro'},
+	 {text:'Office bus', value:'Office bus'},
+	
+   {text:'BMTC Bus', value:'BMTC Bus'},
+    {text:'Own car drive self',value:'Own car drive self'},
+   {text:'Own car as passenger',value:'Own car as passenger'},
+   {text:'Office car:self-driven',value:'Office car:self-driven'},
+   {text:'Office car:driver',value:'Office car:driver'},
+    {text:'Ride in friends car',value:'Ride in friends car'},
+	 
+	 
+   {text:'Ola/Uber',value:'Ola/Uber'},
+	    {text:'Ola Auto/Uber Auto',value:'Ola Auto/Uber Auto'},
+   {text:'Olashare/Uberpool',value:'Olashare/Uberpool'},
+    {text:'Quickride',value:'Quickride'},
+  {text:'Auto-Rickshaw',value:'Auto-Rickshaw'},
+  
+  
+  
+   {text:'Own two-wheeler',value:'Own two-wheeler'},
+   {text:'Own two-wheeler as passenger',value:'Own two-wheeler as passenger'},
    {text:'Ride in friends two-wheeler',value:'Ride in friends two-wheeler'},
-   {text:'Two-wheeler ride: self-driven',value:'Two-wheeler ride: self-driven'},
-   {text:'Two-wheeler ride: with family',value:'Two-wheeler ride: with family'},
+	  {text:'Bounce/Vogo',value:'Bounce/Vogo'},
+	  {text:'Rapido',value:'Rapido'},
+	 
+	   {text:'Bicycle',value:'Bicycle'},
+	 {text:'Yulu/Pedl',value:'Yulu/Pedl'},
+	 
    {text:'Walk',value:'Walk'},   
-	   
 	   
    {text:'Other',value:'other_mode'}];
 
