@@ -230,6 +230,26 @@ Restore cordova platforms and plugins
 $ cordova prepare
 ```
 
+**Note:** Sometimes, the `$ cordova prepare` command fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
+
+**Note #2:** After the update to the plugins to support api 26, for this repository **only** the first call `$ cordova prepare` fails with the error
+
+    Using cordova-fetch for cordova-android@^6.4.0
+    Error: Platform ios already added.
+The workaround is to re-run `$cordova prepare`. This not required in the https://github.com/e-mission/e-mission-base repo although the config.xml seems to be the same for both repositories.
+
+    $ cordova prepare
+    Discovered platform "android@^6.4.0" in config.xml or package.json. Adding it to the project
+    Using cordova-fetch for cordova-android@^6.4.0
+    Adding android project...
+    Creating Cordova project for the Android platform:
+        Path: platforms/android
+        Package: edu.berkeley.eecs.emission
+        Name: emission
+        Activity: MainActivity
+        Android target: android-26
+
+
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ cordova emulate ios
@@ -244,16 +264,23 @@ emulator is just as snappy, and the debugger is better since chrome saves logs
 from startup, so you don't have to use tricks like adding alerts to see errors
 in startup.
 
-**Note:** Sometimes, the last command (`$ cordova prepare`) fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
+**Note about Xcode >=10** The cordova build doesn't work super smoothly for iOS anymore. Concretely, you need two additional steps:
+- install pods manually. Otherwise you will get a linker error for `-lAppAuth`
+    ```
+        $ cd platform/ios
+        $ pod install
+        $ cd ../..
+    ```
 
-**Note about Xcode >=10** For this repository only, the `build.json` override for the legacy build system does not work (https://github.com/e-mission/e-mission-phone/pull/513#issuecomment-457483071). Until that is resolved, you need to use the following commands to build. 
+- when you recompile, you will get the following compile error. The workaround is to compile from xcode. I have filed an issue for this (https://github.com/apache/cordova-ios/issues/550) but there have been no recent updates.
 
-```
-    $ cd platform/ios
-    $ pod install
-    $ cd ../..
-    $ cordova emulate ios --buildFlag="-UseModernBuildSysteVm=0"
-```
+    ```
+    /Users/shankari/e-mission/e-mission-phone/platforms/ios/Pods/JWT/Classes/Supplement/JWTBase64Coder.m:22:9: fatal error:
+          'Base64/MF_Base64Additions.h' file not found
+    #import <Base64/MF_Base64Additions.h>
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    1 error generated.
+    ```
 
 - Also, on Mojave, we have reports that [you may need to manually enable the Legacy Build system in Xcode if you want to run the app on a real device](https://stackoverflow.com/a/52528662/4040267).
 
