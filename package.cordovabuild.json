@@ -1,6 +1,6 @@
 {
   "name": "edu.berkeley.eecs.emission",
-  "version": "2.5.0",
+  "version": "2.8.0",
   "displayName": "emission",
   "scripts": {
     "setup-serve": "./bin/download_settings_controls.js",
