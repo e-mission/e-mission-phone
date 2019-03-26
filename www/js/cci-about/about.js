@@ -28,3 +28,12 @@ angular.module('emission.main.cci-about', ['emission.plugin.logger'])
         });
   };
 })
+
+
+  
+  
+  
+  
+  
+  
+
