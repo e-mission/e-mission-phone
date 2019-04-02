@@ -153,7 +153,21 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
           reloadAlert.then(function(res) {
             uc.redirectPromise();
           });
-      });
+      }).catch(function(err) {
+        $rootScope.isDownloading = false;
+        extractPop.close();
+        $ionicPopup.alert({
+            title: "Extraction error",
+            message: JSON.stringify(err)
+        });
+      })
+    }).catch(function(err) {
+        $rootScope.isDownloading = false;
+        downloadPop.close();
+        $ionicPopup.alert({
+            title: "Download error",
+            message: JSON.stringify(err)
+        });
     });
   };
 
@@ -198,6 +212,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     })
     })
     }).catch(function(err) {
+      $rootScope.isDownloading = false;
       Logger.log('Ionic Deploy: Unable to check for updates'+err);
       console.error('Ionic Deploy: Unable to check for updates',err)
     })
