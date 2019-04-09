@@ -1,15 +1,14 @@
 'use strict';
-angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
+angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.plugin.kvstore',
                                       'emission.services', 'emission.plugin.logger',
-                                      'emission.main.diary.services',
-                                      'emission.incident.posttrip.manual'])
+                                      'emission.main.diary.services'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
-                                        Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
+                                        Logger, DiaryHelper, Config,
+                                        UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
@@ -76,16 +75,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       template: 'Loading...'
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
-      // .then(PostTripManualMarker.addLatLng)
       .then(function(resultList) {
         Logger.log("Read data of length "+resultList.length);
         $ionicLoading.show({
           template: 'Mapping '+resultList.length+' points'
         });
         if (resultList.length > 0) {
-          // $scope.mapCtrl.cache.points = PostTripManualMarker.addLatLng(resultList);
-          // $scope.mapCtrl.cache.points = resultList;
-          // Logger.log("Finished adding latlng");
           var pointCoords = resultList.map(function(locEntry) {
             return [locEntry.data.longitude, locEntry.data.latitude];
           });
@@ -119,9 +114,6 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                 latlng: L.GeoJSON.coordsToLatLng(coords),
                 ts: locEntry.data.ts};
           });
-          /*
-          var points = PostTripManualMarker.addLatLng(resultList);
-          */
           $scope.mapCtrl.cache.points = points;
           Logger.log("Finished getting section points");
               /*
@@ -194,12 +186,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
   };
 
 
-  var checkIncidentTutorialDone = function () {
-    var INCIDENT_DONE_KEY = 'incident_tutorial_done';
-    var incidentTutorialDone = KVStore.getDirect(INCIDENT_DONE_KEY);
-    if (!incidentTutorialDone) {
+  var checkTripConfirmTutorialDone = function () {
+    var TRIP_CONFIRM_DONE_KEY = 'tripconfirm_tutorial_done';
+    var tripconfirmTutorialDone = KVStore.getDirect(TRIP_CONFIRM_DONE_KEY);
+    if (!tripconfirmTutorialDone) {
       startWalkthrough();
-      KVStore.set(INCIDENT_DONE_KEY, true);
+      KVStore.set(TRIP_CONFIRM_DONE_KEY, true);
     }
   };
 
@@ -216,7 +208,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
-    checkIncidentTutorialDone();
+    checkTripConfirmTutorialDone();
   });
   /* END: ng-walkthrough code */
 

@@ -105,6 +105,20 @@ angular.module('emission.main', ['emission.main.recent',
       }
   })
 
+  .state('root.main.tripconfirm', {
+      url: "/tripconfirm",
+      params: {
+        start_ts: null,
+        end_ts: null
+      },
+      views: {
+        'main-control': {
+          templateUrl: "templates/tripconfirm/map.html",
+          controller: 'PostTripMapCtrl'
+        }
+      }
+  })
+
   .state('root.main.log', {
     url: '/log',
     views: {

@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
+angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'])
 .factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
     $ionicPopup, Logger) {
   var ptap = {};
@@ -10,12 +10,12 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe left or tap to pick the mode of transportation.",
-      "android": "See options or tap to pick the mode of transportation."
+      "ios": "Swipe left or tap to add information about this trip.",
+      "android": "See options or tap to add information about this trip."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Tap to pick the mode of transportation.";
+      selMessage = "Tap to add information about this trip.";
     }
     return selMessage;
   };
@@ -123,7 +123,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var displayCompletedTrip = function(notification, state, data) {
     $rootScope.displayingIncident = true;
       Logger.log("About to display completed trip from Notification");
-      $state.go("root.main.incident", notification.data);
+      $state.go("root.main.tripconfirm", notification.data);
   };
 
   var checkCategory = function(notification) {
@@ -171,7 +171,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
               Logger.log("About to go to prompt page");
             displayCompletedTrip(notification, state, data);
           } else {
-            Logger.log("Skipped incident reporting");
+            Logger.log("Skipped confirmation reporting");
           }
         });
         } else {
