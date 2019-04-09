@@ -7,7 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
-                                 'emission.incident.posttrip.map',
+                                 'emission.tripconfirm.posttrip.map',
                                  'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
