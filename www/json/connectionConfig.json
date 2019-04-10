@@ -2,14 +2,14 @@
     "connectUrl": "http://52.91.65.149:80",
     "android": {
         "auth": {
-            "method": "prompted-auth",
-            "prompt": "Please enter valid token:"
+            "method": "google-authutil",
+            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
         }
     },
     "ios": {
         "auth": {
-            "method": "prompted-auth",
-            "prompt": "Please enter valid token:"
+            "method": "google-signin-lib",
+            "clientID": "Get from google, e.g. https://developers.google.com/identity/protocols/OAuth2"
         }
     }
 }
