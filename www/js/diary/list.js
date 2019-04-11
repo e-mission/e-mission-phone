@@ -172,23 +172,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Get all 'mode' for the trip from local cache (BEMUserCache)
      */
     var getLocalTripMode = function (trip) {
-      return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function (modes) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, true).then(function (modes) {
         Logger.log("Modes stored locally" + JSON.stringify(modes));
-        var tripMode = {};
-        var found = false;
-        if (modes.length > 0) {
-          modes.forEach(function (mode) {
-            if ((trip.properties.start_ts == mode.start_ts) &&
-              (trip.properties.end_ts == mode.end_ts)) {
-              if (!found) {
-                tripMode = mode;
-                Logger.log("trip" + JSON.stringify(trip) + "mode" + JSON.stringify(tripMode));
-                found = true;
-              }
-            }
-          });
-        }
-        return tripMode;
+        return DiaryHelper.getUserInputForTrip(trip.properties, modes);
       });
     }
 
@@ -196,23 +182,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Get all 'purpose' for the trip from local cache (BEMUserCache)
      */
     var getLocalTripPurpose = function (trip) {
-      return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function (purposeList) {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, true).then(function (purposeList) {
         Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
-        var tripPurpose = {};
-        var found = false;
-        if (purposeList.length > 0) {
-          purposeList.forEach(function (purpose) {
-            if ((trip.properties.start_ts == purpose.start_ts) &&
-              (trip.properties.end_ts == purpose.end_ts)) {
-              if (!found) {
-                tripPurpose = purpose;
-                Logger.log("trip" + JSON.stringify(trip) + "purpose" + JSON.stringify(tripPurpose));
-                found = true;
-              }
-            }
-          });
-        }
-        return tripPurpose;
+        return DiaryHelper.getUserInputForTrip(trip.properties, purposeList);
       });
     }
 
@@ -221,7 +193,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     var addModeFeature = function (trip, mode) {
       $scope.$apply(function () {
-        var modeFeature = mode;
+        var modeFeature = mode.data;
         modeFeature.feature_type = "mode";
         Logger.log("Created mode feature" + JSON.stringify(modeFeature) + "for" + JSON.stringify(trip));
         trip.features.push(modeFeature);
@@ -234,7 +206,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     var addPurposeFeature = function (trip, purpose) {
       $scope.$apply(function () {
-        var purposeFeature = purpose;
+        var purposeFeature = purpose.data;
         purposeFeature.feature_type = "purpose";
         Logger.log("Created purpose feature" + JSON.stringify(purposeFeature) + "for" + JSON.stringify(trip));
         trip.features.push(purposeFeature);
@@ -267,7 +239,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.isAnalyzed = function (trip) {
-      return (trip.data.id.indexOf('unprocessed_') === -1);
+      return true;
     }
 
     $scope.checkMode = function (trip) {
@@ -290,14 +262,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
       // Fallback to unified Results
       if (!hasMode && $scope.data.unifiedConfirmsResults !== null) {
-        var modes = $scope.data.unifiedConfirmsResults.modes.filter(mode => {
-          return (
-            mode.data.start_ts === trip.data.properties.start_ts &&
-            mode.data.end_ts === trip.data.properties.end_ts
-          );
-        });
-        if (modes.length > 0) {
-          var mode = modes[modes.length - 1];
+        var mode = DiaryHelper.getUserInputForTrip(trip.data.properties,
+            $scope.data.unifiedConfirmsResults.modes);
+        if (angular.isDefined(mode)) {
           var opt = $scope.modeOptions.filter(o => o.value === mode.data.label);
           if (opt.length > 0) {
             $scope.chosen.mode.label = opt[0].text;
@@ -327,14 +294,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
       // Fallback to unified Results
       if (!hasPurpose && $scope.data.unifiedConfirmsResults !== null) {
-        var purposes = $scope.data.unifiedConfirmsResults.purposes.filter(purpose => {
-          return (
-            purpose.data.start_ts === trip.data.properties.start_ts &&
-            purpose.data.end_ts === trip.data.properties.end_ts
-          );
-        });
-        if (purposes.length > 0) {
-          var purpose = purposes[purposes.length - 1];
+        var purpose = DiaryHelper.getUserInputForTrip(trip.data.properties,
+            $scope.data.unifiedConfirmsResults.purposes);
+        if (angular.isDefined(purpose)) {
           var opt = $scope.purposeOptions.filter(o => o.value === purpose.data.label);
           if (opt.length > 0) {
             $scope.chosen.purpose.label = opt[0].text;
@@ -624,19 +586,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
       };
       getLocalTripMode(fakeTrip).then(function (mode) {
-        if (!mode.label && $scope.data.unifiedConfirmsResults !== null) {
-          var unified_modes = $scope.data.unifiedConfirmsResults.modes.filter(unified_mode => {
-            return (
-              unified_mode.data.start_ts === start_ts &&
-              unified_mode.data.end_ts === end_ts
-            );
-          });
-          if (unified_modes.length > 0) {
-            var unified_mode = unified_modes[unified_modes.length - 1];
-            $scope.selected.mode.label = unified_mode.data.label;
+        if (!angular.isDefined(mode) && $scope.data.unifiedConfirmsResults !== null) {
+          var unifiedMode = DiaryHelper.getUserInputForTrip(fakeTrip.properties, $scope.data.unifiedConfirmsResults.modes);
+          if (angular.isDefined(unifiedMode)) {
+            $scope.selected.mode.label = unifiedMode.data.label;
           }
         } else {
-          $scope.selected.mode = mode;
+          $scope.selected.mode = mode.data;
         }
         $scope.draftMode = {
           "start_ts": start_ts,
@@ -672,19 +628,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
       };
       getLocalTripPurpose(fakeTrip).then(function (purpose) {
-        if (!purpose.label && $scope.data.unifiedConfirmsResults !== null) {
-          var unified_purposes = $scope.data.unifiedConfirmsResults.purposes.filter(unified_purpose => {
-            return (
-              unified_purpose.data.start_ts === start_ts &&
-              unified_purpose.data.end_ts === end_ts
-            );
-          });
-          if (unified_purposes.length > 0) {
-            var unified_purpose = unified_purposes[unified_purposes.length - 1];
-            $scope.selected.purpose.label = unified_purpose.data.label;
+        if (!angular.isDefined(purpose) && $scope.data.unifiedConfirmsResults !== null) {
+          var unifiedPurpose = DiaryHelper.getUserInputForTrip(fakeTrip.properties, $scope.data.unifiedConfirmsResults.purposes);
+          if (angular.isDefined(unified_purpose)) {
+            $scope.selected.purpose.label = unifiedPurpose.data.label;
           }
         } else {
-          $scope.selected.purpose = purpose;
+          $scope.selected.purpose = purpose.data;
         }
         $scope.draftPurpose = {
           "start_ts": start_ts,

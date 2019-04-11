@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker){
+.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -102,7 +102,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
   dh.isDraft = function(tripgj) {
-    if (tripgj.data.features.length == 3 && 
+    if (// tripgj.data.features.length == 3 && // reinstate after the local and remote paths are unified
       tripgj.data.features[2].features[0].properties.feature_type == "section" &&
       tripgj.data.features[2].features[0].properties.sensed_mode == "MotionTypes.UNPROCESSED") {
         return true;
@@ -398,12 +398,40 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }
       };
 
-  return dh;
+  var printUserInput = function(ui) {
+    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
+        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  }
 
+  dh.getUserInputForTrip = function(tripProp, userInputList) {
+    var potentialCandidates = userInputList.filter(userInput => {
+        return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
+    });
+    if (potentialCandidates.length === 0)  {
+        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        return undefined;
+    }
+
+    if (potentialCandidates.length === 1)  {
+        Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  "+ printUserInput(potentialCandidates[0]));
+        return potentialCandidates[0];
+    }
+
+    Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
+    var sortedPC = potentialCandidates.sort((pc1, pc2) => {
+        return pc2.metadata.write_ts - pc1.metadata.write_ts;
+    });
+    var mostRecentEntry = sortedPC[0];
+    Logger.log("Returning mostRecentEntry "+printUserInput(mostRecentEntry));
+    return mostRecentEntry;
+  }
+
+
+  return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
-  var timeline = {};
+    var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
     timeline.data = {};
