@@ -24,14 +24,10 @@ angular.module('emission.main.control.tnotify', [])
         return Promise.all(promiseList).then(function(resultList){
             ctnh.transition2configList = resultList;
             var notifyEnableLists = resultList.filter(non_null).map(ctnh.config2notifyList);
-            if (notifyEnableLists.length == 0) {
-                ctnh.mergedTransitionNotifyEnableList = [];
-            } else {
-                ctnh.mergedTransitionNotifyEnableList = notifyEnableLists.reduce(
-                    function(acc, val) {
-                    return acc.concat(val);
-                });
-            }
+            ctnh.mergedTransitionNotifyEnableList = notifyEnableLists.reduce(
+                function(acc, val) {
+                return acc.concat(val);
+            });
             // return mergedTransitionNotifyEnable.map(ctnh.formatConfigForDisplay);
             return ctnh.mergedTransitionNotifyEnableList;
         })
