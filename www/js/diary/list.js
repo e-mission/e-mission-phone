@@ -225,7 +225,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
             var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
-
+            if (!angular.isDefined(userPurposeEntry)) {
+              userPurposeEntry = $scope.value2entryPurpose['other_purpose'];
+            }
             console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
             tripgj.userpurpose = userPurposeEntry;
         }
@@ -499,7 +501,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.toDetail = function (param) {
-      $state.go('root.main.diary-detail', {
+      $sate.go('root.main.diary-detail', {
         tripId: param
       });
     };
@@ -544,35 +546,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover = popover;
     });
 
-    $scope.openPurposePopover = function ($event, start_ts, end_ts, tripgj) {
-      var fakeTrip = {
-        properties: {
-          start_ts: start_ts,
-          end_ts: end_ts,
-        }
+    $scope.openPurposePopover = function ($event, tripgj) {
+      var userPurpose = tripgj.userpurpose;
+      if (angular.isDefined(userPurpose)) {
+        $scope.selected.purpose.value = userPurpose.value;
+      } else {
+        $scope.selected.purpose.value = '';
+      }
+
+      $scope.draftPurpose = {
+        "start_ts": tripgj.data.properties.start_ts,
+        "end_ts": tripgj.data.properties.end_ts
       };
-      getLocalTripPurpose(fakeTrip).then(function (purpose) {
-        if (!angular.isDefined(purpose) && $scope.data.unifiedConfirmsResults !== null) {
-          var unifiedPurpose = DiaryHelper.getUserInputForTrip(fakeTrip.properties, $scope.data.unifiedConfirmsResults.purposes);
-          if (angular.isDefined(unified_purpose)) {
-            $scope.selected.purpose.label = unifiedPurpose.data.label;
-          }
-        } else {
-          $scope.selected.purpose = purpose.data;
-        }
-        $scope.draftPurpose = {
-          "start_ts": start_ts,
-          "end_ts": end_ts
-        };
-        $scope.purposeTripgj = tripgj;
-        Logger.log("in openPurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
-        $scope.purposePopover.show($event);
-      });
+      $scope.purposeTripgj = tripgj;
+      Logger.log("in openPurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
+      $scope.purposePopover.show($event);
     };
 
     var closePurposePopover = function ($event, isOther) {
       $scope.selected.purpose = {
-        label: ''
+        value: ''
       };
       if (isOther == false)
         $scope.draftPurpose = angular.undefined;
@@ -595,7 +588,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       },
       purpose: {
         value: ''
-      }
+      },
+      other_purpose: {
+        text: '',
+        value: ''
+      },
     };
 
     var checkOtherOption = function (choice, isOther) {
@@ -619,7 +616,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                   $scope.storeMode($scope.selected.other_mode, isOther);
                   $scope.selected.other = '';
                 } else {
-                  $scope.storePurpose($scope.selected.other, isOther);
+                  $scope.storePurpose($scope.selected.other_purpose, isOther);
                   $scope.selected.other = '';
                 }
                 return $scope.selected.other;
@@ -632,9 +629,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.choosePurpose = function () {
-      $scope.chosen.purpose = $scope.selected.purpose;
       var isOther = false;
-      if ($scope.selected.purpose.label != "other_purpose") {
+      if ($scope.selected.purpose.value != "other_purpose") {
         $scope.storePurpose($scope.selected.purpose, isOther);
       } else {
         isOther = true
@@ -792,10 +788,20 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.storePurpose = function (purpose, isOther) {
-      $scope.draftPurpose.label = purpose.label;
-      Logger.log("in storePurpose, after setting purpose.label = " + purpose.label + ", draftPurpose = " + JSON.stringify($scope.draftPurpose));
+      if (isOther) {
+        purpose.value = purpose.text.toLowerCase().replace(" ", "_");
+      }
+      $scope.draftPurpose.label = purpose.value;
+      Logger.log("in storePurpose, after setting purpose.value = " + purpose.value + ", draftPurpose = " + JSON.stringify($scope.draftPurpose));
+      var tripToUpdate = $scope.purposeTripgj;
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function () {
-        addUnpushedPurpose($scope.purposeTripgj.data);
+        $scope.$apply(function() {
+          if (isOther) {
+            tripToUpdate.userpurpose = $scope.value2entryPurpose["other_purpose"];
+          } else {
+            tripToUpdate.userpurpose = $scope.value2entryPurpose[purpose.value];
+          }
+        });
       });
       if (isOther == true)
         $scope.draftPurpose = angular.undefined;
