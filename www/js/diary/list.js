@@ -206,6 +206,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
             var userModeEntry = $scope.value2entryMode[userMode.data.label];
+            if (!angular.isDefined(userModeEntry)) {
+              userModeEntry = $scope.value2entryMode['other_mode'];
+            }
             console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
             tripgj.usermode = userModeEntry;
         }
@@ -509,35 +512,25 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover = popover;
     });
 
-    $scope.openModePopover = function ($event, start_ts, end_ts, tripgj) {
-      var fakeTrip = {
-        properties: {
-          start_ts: start_ts,
-          end_ts: end_ts,
-        }
+    $scope.openModePopover = function ($event, tripgj) {
+      var userMode = tripgj.usermode;
+      if (angular.isDefined(userMode)) {
+        $scope.selected.mode.value = userMode.value;
+      } else {
+        $scope.selected.mode.value = '';
+      }
+      $scope.draftMode = {
+        "start_ts": tripgj.data.properties.start_ts,
+        "end_ts": tripgj.data.properties.end_ts
       };
-      getLocalTripMode(fakeTrip).then(function (mode) {
-        if (!angular.isDefined(mode) && $scope.data.unifiedConfirmsResults !== null) {
-          var unifiedMode = DiaryHelper.getUserInputForTrip(fakeTrip.properties, $scope.data.unifiedConfirmsResults.modes);
-          if (angular.isDefined(unifiedMode)) {
-            $scope.selected.mode.label = unifiedMode.data.label;
-          }
-        } else {
-          $scope.selected.mode = mode.data;
-        }
-        $scope.draftMode = {
-          "start_ts": start_ts,
-          "end_ts": end_ts
-        };
-        $scope.modeTripgj = tripgj;
-        Logger.log("in openModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-        $scope.modePopover.show($event);
-      });
+      $scope.modeTripgj = tripgj;
+      Logger.log("in openModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
+      $scope.modePopover.show($event);
     };
 
     var closeModePopover = function ($event, isOther) {
       $scope.selected.mode = {
-        label: ''
+        value: ''
       };
       if (isOther == false)
         $scope.draftMode = angular.undefined;
@@ -594,32 +587,36 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     $scope.selected = {
       mode: {
-        label: ''
+        value: ''
+      },
+      other_mode: {
+        text: '',
+        value: ''
       },
       purpose: {
-        label: ''
+        value: ''
       }
     };
 
     var checkOtherOption = function (choice, isOther) {
-      if (choice.label == 'other_mode' || choice.label == 'other_purpose') {
-        var text = choice.label == 'other_mode' ? 'mode' : 'purpose';
+      if (choice.value == 'other_mode' || choice.value == 'other_purpose') {
+        var text = choice.value == 'other_mode' ? 'mode' : 'purpose';
         $ionicPopup.show({
           title: "Please fill in the " + text + " not listed.",
           scope: $scope,
-          template: '<input type = "text" ng-model = "selected.other">',
+          template: '<input type = "text" ng-model = "selected.other.text">',
           buttons: [{
             text: 'Cancel'
           }, {
             text: '<b>Save</b>',
             type: 'button-positive',
             onTap: function (e) {
-              if (!$scope.selected.other) {
+              if (!$scope.selected.other.text) {
                 e.preventDefault();
               } else {
                 Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-                if (choice.label == 'other_mode') {
-                  $scope.storeMode($scope.selected.other, isOther);
+                if (choice.value == 'other_mode') {
+                  $scope.storeMode($scope.selected.other_mode, isOther);
                   $scope.selected.other = '';
                 } else {
                   $scope.storePurpose($scope.selected.other, isOther);
@@ -647,9 +644,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.chooseMode = function () {
-      $scope.chosen.mode = $scope.selected.mode;
       var isOther = false
-      if ($scope.selected.mode.label != "other_mode") {
+      if ($scope.selected.mode.value != "other_mode") {
         $scope.storeMode($scope.selected.mode, isOther);
       } else {
         isOther = true
@@ -774,10 +770,22 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.storeMode = function (mode, isOther) {
-      $scope.draftMode.label = mode.label;
-      Logger.log("in storeMode, after setting mode.label = " + mode.label + ", draftMode = " + JSON.stringify($scope.draftMode));
+      if(isOther) {
+        // Let's make the value for user entered modes look consistent with our
+        // other values
+        mode.value = mode.text.toLowerCase().replace(" ", "_");
+      }
+      $scope.draftMode.label = mode.value;
+      Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
+      var tripToUpdate = $scope.modeTripgj;
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
-        addUnpushedMode($scope.modeTripgj.data);
+        $scope.$apply(function() {
+          if (isOther) {
+            tripToUpdate.usermode = $scope.value2entryMode["other_mode"];
+          } else {
+            tripToUpdate.usermode = $scope.value2entryMode[mode.value];
+          }
+        });
       });
       if (isOther == true)
         $scope.draftMode = angular.undefined;
@@ -820,5 +828,4 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.checkTripState();
       return in_trip;
     };
-
 });

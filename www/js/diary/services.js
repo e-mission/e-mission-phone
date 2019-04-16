@@ -909,6 +909,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       // First, we try the server
       var tripsFromServerPromise = timeline.updateFromServer(day);
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
+
+      // Deal with all the trip retrieval
       Promise.all([tripsFromServerPromise, isProcessingCompletePromise])
         .then(function([processedTripList, completeStatus]) {
         console.log("Promise.all() finished successfully with length "
@@ -927,7 +929,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return tripList;
         }
       }).then(function(combinedTripList) {
-        if (timeline.data.unifiedConfirmsResults === null) {
           var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
           return Promise.all([
             UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
@@ -939,7 +940,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             };
             return combinedTripList;
           });
-        }
         return combinedTripList;
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
