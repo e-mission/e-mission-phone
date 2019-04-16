@@ -1,5 +1,13 @@
 'use strict';
 
+/*
+ * The general structure of this code is that all the timeline information for
+ * a particular day is retrieved from the Timeline factory and put into the scope.
+ * For best performance, all data should be loaded into the in-memory timeline,
+ * and in addition to writing to storage, the data should be written to memory.
+ * All UI elements should only use $scope variables.
+ */
+
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
@@ -188,30 +196,38 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     }
 
+
     /**
      * Embed 'mode' to the trip
      */
-    var addModeFeature = function (trip, mode) {
-      $scope.$apply(function () {
-        var modeFeature = mode.data;
-        modeFeature.feature_type = "mode";
-        Logger.log("Created mode feature" + JSON.stringify(modeFeature) + "for" + JSON.stringify(trip));
-        trip.features.push(modeFeature);
+    $scope.populateModeFromTimeline = function (tripgj, modeList) {
+        var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        if (angular.isDefined(userMode)) {
+            // userMode is a mode object with data + metadata
+            // the label is the "value" from the options
+            var userModeEntry = $scope.value2entryMode[userMode.data.label];
+            console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
+            tripgj.usermode = userModeEntry;
+        }
+        Logger.log("Set mode" + JSON.stringify(userModeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
         $scope.modeTripgj = angular.undefined;
-      });
     }
 
     /**
      * Embed 'purpose' to the trip
      */
-    var addPurposeFeature = function (trip, purpose) {
-      $scope.$apply(function () {
-        var purposeFeature = purpose.data;
-        purposeFeature.feature_type = "purpose";
-        Logger.log("Created purpose feature" + JSON.stringify(purposeFeature) + "for" + JSON.stringify(trip));
-        trip.features.push(purposeFeature);
+    $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
+        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+        if (angular.isDefined(userPurpose)) {
+            // userPurpose is a purpose object with data + metadata
+            // the label is the "value" from the options
+            var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
+
+            console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
+            tripgj.userpurpose = userPurposeEntry;
+        }
+        Logger.log("Set purpose " + JSON.stringify(userPurposeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
         $scope.purposeTripgj = angular.undefined;
-      });
     }
 
     var isNotEmpty = function (obj) {
@@ -242,86 +258,20 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return true;
     }
 
-    $scope.checkMode = function (trip) {
-      var hasMode = false;
-      // Looking for mode in local cache
-      trip.data.features.forEach(function (feature) {
-        if (feature.feature_type == "mode") {
-          var modes = $scope.modeOptions.map(a => a.value);
-          if (modes.indexOf(feature.label) > -1) {
-            $scope.modeOptions.forEach(function (mode) {
-              if (feature.label == mode.value) {
-                $scope.chosen.mode.label = mode.text;
-              }
-            });
-          } else {
-            $scope.chosen.mode.label = feature.label;
-          }
-          hasMode = true;
-        }
-      });
-      // Fallback to unified Results
-      if (!hasMode && $scope.data.unifiedConfirmsResults !== null) {
-        var mode = DiaryHelper.getUserInputForTrip(trip.data.properties,
-            $scope.data.unifiedConfirmsResults.modes);
-        if (angular.isDefined(mode)) {
-          var opt = $scope.modeOptions.filter(o => o.value === mode.data.label);
-          if (opt.length > 0) {
-            $scope.chosen.mode.label = opt[0].text;
-          }
-          hasMode = true;
-        }
-      }
-      return hasMode;
-    }
-
-    $scope.checkPurpose = function (trip) {
-      var hasPurpose = false;
-      trip.data.features.forEach(function (feature) {
-        if (feature.feature_type == "purpose") {
-          var purposes = $scope.purposeOptions.map(a => a.value);
-          if (purposes.indexOf(feature.label) > -1) {
-            $scope.purposeOptions.forEach(function (purpose) {
-              if (feature.label == purpose.value) {
-                $scope.chosen.purpose.label = purpose.text;
-              }
-            });
-          } else {
-            $scope.chosen.purpose.label = feature.label;
-          }
-          hasPurpose = true;
-        }
-      });
-      // Fallback to unified Results
-      if (!hasPurpose && $scope.data.unifiedConfirmsResults !== null) {
-        var purpose = DiaryHelper.getUserInputForTrip(trip.data.properties,
-            $scope.data.unifiedConfirmsResults.purposes);
-        if (angular.isDefined(purpose)) {
-          var opt = $scope.purposeOptions.filter(o => o.value === purpose.data.label);
-          if (opt.length > 0) {
-            $scope.chosen.purpose.label = opt[0].text;
-          }
-          hasPurpose = true;
-        }
-      }
-      return hasPurpose;
-    }
-
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
           $scope.data = Timeline.data;
           $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
           $scope.data.currDayTrips.forEach(function(trip, index, array) {
-          addUnpushedMode(trip);
-          addUnpushedPurpose(trip);
-              PostTripManualMarker.addUnpushedIncidents(trip);
+            PostTripManualMarker.addUnpushedIncidents(trip);
           });
           $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
             DiaryHelper.directiveForTrip);
-        // $scope.data.currAnalysedDayTripWrappers = $scope.data.currDayTripWrappers.filter(function(el){
-        //   return el.data.id.indexOf('unprocessed_') === -1;
-        // });
+          $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
+            $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
+            $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
+          });
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -404,30 +354,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
     */
 
-
-
-    // TEST CODE REMOVE BEFORE PUSH
-    var printPurposes = function () {
-      $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, false).then(function (purposeList) {
-        console.log("Purpose list");
-        console.log(purposeList);
-      });
-    };
-
-    var printModes = function () {
-      $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, false).then(function (modes) {
-        console.log("Modes list");
-        console.log(modes);
-      });
-    };
-
     $scope.refresh = function() {
       if ($ionicScrollDelegate.getScrollPosition().top < 5) {
        readAndUpdateForDay(Timeline.data.currDay);
        $scope.$broadcast('invalidateSize');
       }
-      printPurposes();
-      printModes();
     };
 
     /* For UI control */
@@ -669,18 +600,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         label: ''
       }
     };
-    /**
-     * Store currently chosen value
-     * $scope.chosen is the actual stored value
-     */
-    $scope.chosen = {
-      mode: {
-        label: ''
-      },
-      purpose: {
-        label: ''
-      }
-    };
 
     var checkOtherOption = function (choice, isOther) {
       if (choice.label == 'other_mode' || choice.label == 'other_purpose') {
@@ -828,6 +747,31 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         value: 'other_purpose'
       }
     ];
+
+    /*
+     * Convert the array of {text, value} objects to a {value: text} map so that 
+     * we can look up quickly without iterating over the list for each trip
+     */
+
+    var arrayToMap = function(optionsArray) {
+        var text2entryMap = {};
+        var value2entryMap = {};
+
+        optionsArray.forEach(text2val => {
+            text2entryMap[text2val.text] = text2val;
+            value2entryMap[text2val.value] = text2val;
+        });
+        return [text2entryMap, value2entryMap];
+    }
+
+    $scope.$on('$ionicView.loaded', function() {
+        var modeMaps = arrayToMap($scope.modeOptions);
+        $scope.text2entryMode = modeMaps[0];
+        $scope.value2entryMode = modeMaps[1];
+        var purposeMaps = arrayToMap($scope.purposeOptions);
+        $scope.text2entryPurpose = purposeMaps[0];
+        $scope.value2entryPurpose = purposeMaps[1];
+    });
 
     $scope.storeMode = function (mode, isOther) {
       $scope.draftMode.label = mode.label;
