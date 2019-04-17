@@ -44,24 +44,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // CommonGraph.updateCurrent();
   };
 
-  $scope.$on('$ionicView.afterEnter', function() {
-    if($rootScope.barDetail){
-      readAndUpdateForDay($rootScope.barDetailDate);
-      $rootScope.barDetail = false;
-      }
-    if($rootScope.displayingIncident == true) {
-      if (angular.isDefined(Timeline.data.currDay)) {
-          // page was already loaded, reload it automatically
-          readAndUpdateForDay(Timeline.data.currDay);
-      } else {
-         Logger.log("currDay is not defined, load not complete");
-      }
-      $rootScope.displayingIncident = false;
-    }
-  });
-
-  readAndUpdateForDay(moment().startOf('day'));
-
   angular.extend($scope, {
       defaults: {
           zoomControl: false,
@@ -360,7 +342,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     */
 
     $scope.refresh = function() {
-      if ($ionicScrollDelegate.getScrollPosition().top < 5) {
+      if ($ionicScrollDelegate.getScrollPosition().top < 20) {
        readAndUpdateForDay(Timeline.data.currDay);
        $scope.$broadcast('invalidateSize');
       }
@@ -477,14 +459,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.startWalkthrough = function () {
       startWalkthrough();
     }
-
-    $scope.$on('$ionicView.enter', function(ev) {
-      // Workaround from                                  
-      // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-      if(ev.targetScope !== $scope)
-        return;
-      checkDiaryTutorialDone();
-    });
 
     $scope.prevDay = function() {
         console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
@@ -834,4 +808,32 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.checkTripState();
       return in_trip;
     };
+
+    $ionicPlatform.ready().then(function() {
+      readAndUpdateForDay(moment().startOf('day'));
+
+      $scope.$on('$ionicView.enter', function(ev) {
+        // Workaround from
+        // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
+        if(ev.targetScope !== $scope)
+          return;
+        checkDiaryTutorialDone();
+      });
+
+      $scope.$on('$ionicView.afterEnter', function() {
+        if($rootScope.barDetail){
+          readAndUpdateForDay($rootScope.barDetailDate);
+          $rootScope.barDetail = false;
+          }
+        if($rootScope.displayingIncident == true) {
+          if (angular.isDefined(Timeline.data.currDay)) {
+              // page was already loaded, reload it automatically
+              readAndUpdateForDay(Timeline.data.currDay);
+          } else {
+             Logger.log("currDay is not defined, load not complete");
+          }
+          $rootScope.displayingIncident = false;
+        }
+      });
+    });
 });
