@@ -570,37 +570,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       },
     };
 
-    var checkOtherOption = function (choice, isOther) {
-      if (choice.value == 'other_mode' || choice.value == 'other_purpose') {
-        var text = choice.value == 'other_mode' ? 'mode' : 'purpose';
-        $ionicPopup.show({
-          title: "Please fill in the " + text + " not listed.",
-          scope: $scope,
-          template: '<input type = "text" ng-model = "selected.other.text">',
-          buttons: [{
-            text: 'Cancel'
-          }, {
-            text: '<b>Save</b>',
-            type: 'button-positive',
-            onTap: function (e) {
-              if (!$scope.selected.other.text) {
-                e.preventDefault();
-              } else {
-                Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-                if (choice.value == 'other_mode') {
-                  $scope.storeMode($scope.selected.other_mode, isOther);
-                  $scope.selected.other = '';
-                } else {
-                  $scope.storePurpose($scope.selected.other_purpose, isOther);
-                  $scope.selected.other = '';
-                }
-                return $scope.selected.other;
-              }
+    /*
+     * This is a curried function that curries the `$scope` variable
+     * while returing a function that takes `e` as the input
+     */
+    var checkOtherOptionOnTap = function ($scope, choice) {
+        return function (e) {
+          if (!$scope.selected.other.text) {
+            e.preventDefault();
+          } else {
+            Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
+            if (choice.value == 'other_mode') {
+              $scope.storeMode($scope.selected.other_mode, true /* isOther */);
+              $scope.selected.other = '';
+            } else if (choice.value == 'other_purpose') {
+              $scope.storePurpose($scope.selected.other_purpose, true /* isOther */);
+              $scope.selected.other = '';
             }
-          }]
-        });
-
-      }
+            return $scope.selected.other;
+          }
+        }
     };
 
     $scope.choosePurpose = function () {
@@ -609,7 +598,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.storePurpose($scope.selected.purpose, isOther);
       } else {
         isOther = true
-        checkOtherOption($scope.selected.purpose, isOther);
+        ConfirmHelper.checkOtherOption($scope.selected.purpose, checkOtherOptionOnTap, $scope);
       }
       closePurposePopover();
     };
@@ -620,7 +609,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.storeMode($scope.selected.mode, isOther);
       } else {
         isOther = true
-        checkOtherOption($scope.selected.mode, isOther);
+        ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
       }
       closeModePopover();
     };

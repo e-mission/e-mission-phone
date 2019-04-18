@@ -214,84 +214,60 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
   });
   /* END: ng-walkthrough code */
 
-   $scope.selected = {mode:'',purpose:'',other:'', other_to_store:''};
+   $scope.selected = {mode: {value: ''},purpose: {value: ''},other: {text: ''}, other_to_store:''};
 
-   var checkOtherOption = function(choice) {
-    if(choice == 'other_mode' || choice == 'other_purpose') {
-      var text = choice == 'other_mode' ? "mode" : "purpose";
-      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
-        scope: $scope,
-        template: '<input type = "text" ng-model = "selected.other">',        
-        buttons: [
-            { text: 'Cancel',
-              onTap: function(e) {
-                $scope.selected.mode = '';
-                $scope.selected.purpose = '';
-              }
-            }, {
-               text: '<b>Save</b>',
-               type: 'button-positive',
-                  onTap: function(e) {
-                     if (!$scope.selected.other) {
-                           e.preventDefault();
-                     } else {
-                        if(choice == 'other_mode') {
-                          $scope.selected.other_to_store = $scope.selected.other;
-                          $scope.selected.other = '';
-                        } else {
-                          $scope.selected.other_to_store = $scope.selected.other;
-                          $scope.selected.other = '';
-                        }
-                        return $scope.selected.other;
-                     }
-                  }
-            }
-        ]
-      });
-
-    }
-   };
+   var checkOtherOptionOnTap = function($scope, choice) {
+      return function(e) {
+         if (!$scope.selected.other.text) {
+               e.preventDefault();
+         } else {
+            $scope.selected.other_to_store = $scope.selected.other.text;
+            $scope.selected.other.text = '';
+            return $scope.selected.other;
+         }
+      };
+    };
 
   $scope.choosePurpose = function() {
-    if($scope.selected.purpose == "other_purpose"){
-      checkOtherOption($scope.selected.purpose);
+    if($scope.selected.purpose.value == "other_purpose"){
+      ConfirmHelper.checkOtherOption($scope.selected.purpose, checkOtherOptionOnTap, $scope);
     }
   };
 
   $scope.chooseMode = function (){
-    if($scope.selected.mode == "other_mode"){
-      checkOtherOption($scope.selected.mode);
+    if($scope.selected.mode.value == "other_mode"){
+      ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
     }
   };
 
   $scope.secondSlide = false;
 
   $scope.nextSlide = function() {
-    if($scope.selected.mode == "other_mode" && $scope.selected.other_to_store.length > 0) {
+    if($scope.selected.mode.value == "other_mode" && $scope.selected.other_to_store.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.selected.other_to_store);
       // store other_to_store here
       $scope.storeMode($scope.selected.other_to_store);
       $ionicSlideBoxDelegate.next();
-    } else if ($scope.selected.mode != "other_mode" && $scope.selected.mode.length > 0) {
+    } else if ($scope.selected.mode.value != "other_mode" && $scope.selected.mode.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.selected.mode);
-      // store mode here
+      // This storeMode expects a string, not an object with a value string
       $scope.storeMode($scope.selected.mode);
       $ionicSlideBoxDelegate.next();
     }
   };
 
   $scope.doneSlide = function() {
-    if($scope.selected.purpose == "other_purpose" && $scope.selected.other_to_store.length > 0) {
+    if($scope.selected.purpose.value == "other_purpose" && $scope.selected.other_to_store.length > 0) {
       console.log($scope.selected.other_to_store);
       // store other_to_store here
       $scope.storePurpose($scope.selected.other_to_store);
       $scope.closeView();
-    } else if ($scope.selected.purpose != "other_purpose" && $scope.selected.purpose.length > 0) {
+    } else if ($scope.selected.purpose.value != "other_purpose" && $scope.selected.purpose.length > 0) {
       console.log($scope.selected.purpose);
-      // store purpose here
-      $scope.storePurpose($scope.selected.purpose);
+      // This storePurpose expects a string, not an object with a value string
+      $scope.storePurpose($scope.selected.purpose.value);
       $scope.closeView();
     }
   };

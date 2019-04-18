@@ -1,5 +1,5 @@
-angular.module('emission.tripconfirm.services', [])
-.factory("ConfirmHelper", function($http) {
+angular.module('emission.tripconfirm.services', ['ionic'])
+.factory("ConfirmHelper", function($http, $ionicPopup) {
     var ch = {};
 
     var fillInOptions = function(confirmConfig) {
@@ -43,6 +43,28 @@ angular.module('emission.tripconfirm.services', [])
                 .then(function() { return ch.purposeOptions; });
         } else {
             return Promise.resolve(ch.purposeOptions);
+        }
+    }
+
+    ch.checkOtherOption = function(choice, onTapFn, $scope) {
+        if(choice.value == 'other_mode' || choice.value == 'other_purpose') {
+          var text = choice.value == 'other_mode' ? "mode" : "purpose";
+          $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+            scope: $scope,
+            template: '<input type = "text" ng-model = "selected.other.text">',
+            buttons: [
+                { text: 'Cancel',
+                  onTap: function(e) {
+                    $scope.selected.mode = '';
+                    $scope.selected.purpose = '';
+                  }
+                }, {
+                   text: '<b>Save</b>',
+                   type: 'button-positive',
+                   onTap: onTapFn($scope, choice)
+                }
+            ]
+          });
         }
     }
 
