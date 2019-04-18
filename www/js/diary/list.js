@@ -190,7 +190,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             // the label is the "value" from the options
             var userModeEntry = $scope.value2entryMode[userMode.data.label];
             if (!angular.isDefined(userModeEntry)) {
-              userModeEntry = $scope.value2entryMode['other_mode'];
+              userModeEntry = ConfirmHelper.getFakeEntry(userMode.data.label);
+              $scope.modeOptions.push(userModeEntry);
             }
             console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
             tripgj.usermode = userModeEntry;
@@ -209,7 +210,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             // the label is the "value" from the options
             var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
             if (!angular.isDefined(userPurposeEntry)) {
-              userPurposeEntry = $scope.value2entryPurpose['other_purpose'];
+              userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
+              $scope.purposeOptions.push(userPurposeEntry);
             }
             console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
             tripgj.userpurpose = userPurposeEntry;
@@ -645,7 +647,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if(isOther) {
         // Let's make the value for user entered modes look consistent with our
         // other values
-        mode.value = mode.text.toLowerCase().replace(" ", "_");
+        mode.value = ConfirmHelper.otherTextToValue(mode.text);
       }
       $scope.draftMode.label = mode.value;
       Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
@@ -653,7 +655,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
         $scope.$apply(function() {
           if (isOther) {
-            tripToUpdate.usermode = $scope.value2entryMode["other_mode"];
+            tripToUpdate.usermode = ConfirmHelper.getFakeEntry(mode.value);
+            $scope.modeOptions.push(tripToUpdate.usermode);
           } else {
             tripToUpdate.usermode = $scope.value2entryMode[mode.value];
           }
@@ -665,7 +668,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.storePurpose = function (purpose, isOther) {
       if (isOther) {
-        purpose.value = purpose.text.toLowerCase().replace(" ", "_");
+        purpose.value = ConfirmHelper.otherTextToValue(purpose.text);
       }
       $scope.draftPurpose.label = purpose.value;
       Logger.log("in storePurpose, after setting purpose.value = " + purpose.value + ", draftPurpose = " + JSON.stringify($scope.draftPurpose));
@@ -673,7 +676,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function () {
         $scope.$apply(function() {
           if (isOther) {
-            tripToUpdate.userpurpose = $scope.value2entryPurpose["other_purpose"];
+            tripToUpdate.userpurpose = ConfirmHelper.getFakeEntry(purpose.value);
+            $scope.purposeOptions.push(tripToUpdate.userpurpose);
           } else {
             tripToUpdate.userpurpose = $scope.value2entryPurpose[purpose.value];
           }

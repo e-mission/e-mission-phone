@@ -1,6 +1,8 @@
 angular.module('emission.tripconfirm.services', ['ionic'])
 .factory("ConfirmHelper", function($http, $ionicPopup) {
     var ch = {};
+    ch.otherModes = [];
+    ch.otherPurposes = [];
 
     var fillInOptions = function(confirmConfig) {
         if(confirmConfig.data.length == 0) {
@@ -66,6 +68,25 @@ angular.module('emission.tripconfirm.services', ['ionic'])
             ]
           });
         }
+    }
+
+    ch.otherTextToValue = function(otherText) {
+        return otherText.toLowerCase().replace(" ", "_");
+    }
+
+    ch.otherValueToText = function(otherValue) {
+        var words = otherValue.replace("_", " ").split(" ");
+        if (words.length == 0) {
+            return "";
+        }
+        return words.map(word => {
+            return word[0].toUpperCase() + word.slice(1);
+        }).join(" ");
+    }
+
+    ch.getFakeEntry = function(otherValue) {
+        return {text: ch.otherValueToText(otherValue),
+            value: otherValue};
     }
 
     return ch;
