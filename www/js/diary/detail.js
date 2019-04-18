@@ -4,7 +4,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet, $ionicLoading,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet, $ionicLoading, $http,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
@@ -16,6 +16,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     defaults : {
     }
   });
+
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
@@ -42,11 +43,17 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       console.log("diary/detail received resize event, invalidating map size");
       data.leafletObject.invalidateSize();
   });
-
+  $scope.name = "Cannot Retrieve Suggestion";
+  $scope.mode = "Cannot Retrieve Mode";
+  $scope.bid = "yalis-stanley-hall-cafe-berkeley";
+  $scope.stars = 4.5;
+  $http.get('json/yelpfusion.json').then(function(result) {
+        $scope.yelp = result.data;
+      }
+  )
   $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
   };
-
   $scope.getIndividualSuggestion = function() {
     $ionicLoading.show({
         template: 'Loading...'
@@ -61,6 +68,21 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     }).catch(function(err) {
       console.log("Error while getting individual suggestion" + err);
     });
+  };
+  $scope.clickReview = function() {
+    $ionicLoading.show({
+      template: 'Loading Reviews...'
+      });
+    $http({
+      "async": true,
+      "crossDomain": true,
+      "url": "https://api.yelp.com/v3/businesses/"+$scope.bid+"/reviews",
+      "method": "GET",
+      "headers": $scope.yelp.headers
+    }).then(function(res) {
+      $scope.revs = res.data.reviews;
+    });
+    $ionicLoading.hide();
   };
 
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
