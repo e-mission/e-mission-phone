@@ -475,7 +475,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.toDetail = function (param) {
-      $sate.go('root.main.diary-detail', {
+      $state.go('root.main.diary-detail', {
         tripId: param
       });
     };
