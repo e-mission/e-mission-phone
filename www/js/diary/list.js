@@ -557,15 +557,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       mode: {
         value: ''
       },
-      other_mode: {
+      other: {
         text: '',
         value: ''
       },
       purpose: {
-        value: ''
-      },
-      other_purpose: {
-        text: '',
         value: ''
       },
     };
@@ -581,10 +577,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           } else {
             Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
             if (choice.value == 'other_mode') {
-              $scope.storeMode($scope.selected.other_mode, true /* isOther */);
+              $scope.storeMode($scope.selected.other, true /* isOther */);
               $scope.selected.other = '';
             } else if (choice.value == 'other_purpose') {
-              $scope.storePurpose($scope.selected.other_purpose, true /* isOther */);
+              $scope.storePurpose($scope.selected.other, true /* isOther */);
               $scope.selected.other = '';
             }
             return $scope.selected.other;
