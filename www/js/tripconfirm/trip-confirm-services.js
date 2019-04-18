@@ -15,11 +15,11 @@ angular.module('emission.tripconfirm.services', ['ionic'])
     var loadAndPopulateOptions = function(filename) {
         return $http.get(filename)
             .then(fillInOptions)
-            .catch(err => {
+            .catch(function(err) {
                 console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
                 return $http.get(filename+".sample")
                      .then(fillInOptions)
-                     .catch(err => {
+                     .catch(function(err) {
                         console.log("error "+JSON.stringify(err)+" while reading default confirm options, giving up");
                      });
             });
@@ -79,7 +79,7 @@ angular.module('emission.tripconfirm.services', ['ionic'])
         if (words.length == 0) {
             return "";
         }
-        return words.map(word => {
+        return words.map(function(word) {
             return word[0].toUpperCase() + word.slice(1);
         }).join(" ");
     }

@@ -404,7 +404,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
 
   dh.getUserInputForTrip = function(tripProp, userInputList) {
-    var potentialCandidates = userInputList.filter(userInput => {
+    var potentialCandidates = userInputList.filter(function(userInput) {
         return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
     });
     if (potentialCandidates.length === 0)  {
@@ -418,7 +418,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
-    var sortedPC = potentialCandidates.sort((pc1, pc2) => {
+    var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
         return pc2.metadata.write_ts - pc1.metadata.write_ts;
     });
     var mostRecentEntry = sortedPC[0];
@@ -933,7 +933,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           return Promise.all([
             UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
             UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
-          ]).then(results => {
+          ]).then(function(results) {
             timeline.data.unifiedConfirmsResults = {
               modes: results[0],
               purposes: results[1],

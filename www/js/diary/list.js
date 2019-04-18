@@ -621,7 +621,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         var text2entryMap = {};
         var value2entryMap = {};
 
-        optionsArray.forEach(text2val => {
+        optionsArray.forEach(function(text2val) {
             text2entryMap[text2val.text] = text2val;
             value2entryMap[text2val.value] = text2val;
         });
@@ -629,13 +629,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.loaded', function() {
-        ConfirmHelper.getModeOptions().then(modeOptions => {
+        ConfirmHelper.getModeOptions().then(function(modeOptions) {
             $scope.modeOptions = modeOptions;
             var modeMaps = arrayToMap($scope.modeOptions);
             $scope.text2entryMode = modeMaps[0];
             $scope.value2entryMode = modeMaps[1];
         });
-        ConfirmHelper.getPurposeOptions().then(purposeOptions => {
+        ConfirmHelper.getPurposeOptions().then(function(purposeOptions) {
             $scope.purposeOptions = purposeOptions;
             var purposeMaps = arrayToMap($scope.purposeOptions);
             $scope.text2entryPurpose = purposeMaps[0];

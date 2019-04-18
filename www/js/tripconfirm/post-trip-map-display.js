@@ -276,11 +276,11 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
    $ionicSlideBoxDelegate.enableSlide(false);
   };
 
-  ConfirmHelper.getModeOptions().then(modeOptions => {
+  ConfirmHelper.getModeOptions().then(function(modeOptions) {
       $scope.modeOptions = modeOptions;
   });
 
-  ConfirmHelper.getPurposeOptions().then(purposeOptions => {
+  ConfirmHelper.getPurposeOptions().then(function(purposeOptions) {
       $scope.purposeOptions = purposeOptions;
   });
 
