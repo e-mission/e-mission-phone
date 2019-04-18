@@ -12,6 +12,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
+                                      'emission.tripconfirm.services',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
@@ -23,7 +24,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
@@ -624,96 +625,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       closeModePopover();
     };
 
-    $scope.modeOptions = [
-      {
-        text: 'Walk',
-        value: 'walk'
-      },
-      {
-        text: 'Bike',
-        value: 'bike'
-      },
-      {
-        text: 'Drove Alone',
-        value: 'drove_alone'
-      },
-      {
-        text: 'Shared Ride',
-        value: 'shared_ride'
-      },
-      {
-        text: 'Taxi/Uber/Lyft',
-        value: 'taxi'
-      },
-      {
-        text: 'Bus',
-        value: 'bus'
-      },
-      {
-        text: 'Train',
-        value: 'train'
-      },
-      {
-        text: 'Free Shuttle',
-        value: 'free_shuttle'
-      },
-      {
-        text: 'Other',
-        value: 'other_mode'
-      }
-    ];
-
-    $scope.purposeOptions = [
-      {
-        text: 'Home',
-        value: 'home'
-      },
-      {
-        text: 'Work',
-        value: 'work'
-      },
-      {
-        text: 'School',
-        value: 'school'
-      },
-      {
-        text: 'Transit transfer',
-        value: 'transit_transfer'
-      },
-      {
-        text: 'Shopping',
-        value: 'shopping'
-      },
-      {
-        text: 'Meal',
-        value: 'meal'
-      },
-      {
-        text: 'Pick-up/Drop off',
-        value: 'pick_drop'
-      },
-      {
-        text: 'Personal/Medical',
-        value: 'personal_med'
-      },
-      {
-        text: 'Recreation/Exercise',
-        value: 'exercise'
-      },
-      {
-        text: 'Entertainment/Social',
-        value: 'entertainment'
-      },
-      {
-        text: 'Religious',
-        value: 'religious'
-      },
-      {
-        text: 'Other',
-        value: 'other_purpose'
-      }
-    ];
-
     /*
      * Convert the array of {text, value} objects to a {value: text} map so that 
      * we can look up quickly without iterating over the list for each trip
@@ -731,12 +642,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.loaded', function() {
-        var modeMaps = arrayToMap($scope.modeOptions);
-        $scope.text2entryMode = modeMaps[0];
-        $scope.value2entryMode = modeMaps[1];
-        var purposeMaps = arrayToMap($scope.purposeOptions);
-        $scope.text2entryPurpose = purposeMaps[0];
-        $scope.value2entryPurpose = purposeMaps[1];
+        ConfirmHelper.getModeOptions().then(modeOptions => {
+            $scope.modeOptions = modeOptions;
+            var modeMaps = arrayToMap($scope.modeOptions);
+            $scope.text2entryMode = modeMaps[0];
+            $scope.value2entryMode = modeMaps[1];
+        });
+        ConfirmHelper.getPurposeOptions().then(purposeOptions => {
+            $scope.purposeOptions = purposeOptions;
+            var purposeMaps = arrayToMap($scope.purposeOptions);
+            $scope.text2entryPurpose = purposeMaps[0];
+            $scope.value2entryPurpose = purposeMaps[1];
+        });
     });
 
     $scope.storeMode = function (mode, isOther) {

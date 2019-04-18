@@ -1,13 +1,15 @@
 'use strict';
 angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.plugin.kvstore',
-                                      'emission.services', 'emission.plugin.logger',
+                                      'emission.services',
+                                      'emission.tripconfirm.services',
+                                      'emission.plugin.logger',
                                       'emission.main.diary.services'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
-                                        Logger, DiaryHelper, Config,
+                                        Logger, DiaryHelper, ConfirmHelper, Config,
                                         UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
@@ -298,30 +300,13 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
    $ionicSlideBoxDelegate.enableSlide(false);
   };
 
-  $scope.modeOptions = [
-   {text:'Walk', value:'walk'},
-   {text:'Bike',value:'bike'},
-   {text:'Drove Alone',value:'drove_alone'},
-   {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi/Uber/Lyft',value:'taxi'},
-   {text:'Bus',value:'bus'},
-   {text:'Train',value:'train'},
-   {text:'Free Shuttle',value:'free_shuttle'},
-   {text:'Other',value:'other_mode'}];
+  ConfirmHelper.getModeOptions().then(modeOptions => {
+      $scope.modeOptions = modeOptions;
+  });
 
-   $scope.purposeOptions = [
-   {text:'Home', value:'home'},
-   {text:'Work',value:'work'},
-   {text:'School',value:'school'},
-   {text:'Transit transfer', value:'transit_transfer'},
-   {text:'Shopping',value:'shopping'},
-   {text:'Meal',value:'meal'},
-   {text:'Pick-up/Drop off',value:'pick_drop'},
-   {text:'Personal/Medical',value:'personal_med'},
-   {text:'Recreation/Exercise',value:'exercise'},
-   {text:'Entertainment/Social',value:'entertainment'},
-   {text:'Religious', value:'religious'},
-   {text:'Other',value:'other_purpose'}];
+  ConfirmHelper.getPurposeOptions().then(purposeOptions => {
+      $scope.purposeOptions = purposeOptions;
+  });
 
    $scope.storeMode = function(mode_val) {
       $scope.draftMode.label = mode_val;
