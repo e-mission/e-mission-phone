@@ -45,7 +45,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   });
   $scope.name = "Cannot Retrieve Suggestion";
   $scope.mode = "Cannot Retrieve Mode";
-  $scope.bid = "yalis-stanley-hall-cafe-berkeley";
+  $scope.bid = "";
   $scope.stars = 4.5;
   $http.get('json/yelpfusion.json').then(function(result) {
         $scope.yelp = result.data;
