@@ -247,13 +247,13 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
       $scope.secondSlide = true;
       console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storeMode($scope.selected.other_to_store);
+      $scope.storeMode($scope.selected.other_to_store, true /* isOther */);
       $ionicSlideBoxDelegate.next();
-    } else if ($scope.selected.mode.value != "other_mode" && $scope.selected.mode.length > 0) {
+    } else if ($scope.selected.mode.value != "other_mode" && $scope.selected.mode.value.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.selected.mode);
       // This storeMode expects a string, not an object with a value string
-      $scope.storeMode($scope.selected.mode);
+      $scope.storeMode($scope.selected.mode.value, false /* isOther */);
       $ionicSlideBoxDelegate.next();
     }
   };
@@ -262,12 +262,12 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
     if($scope.selected.purpose.value == "other_purpose" && $scope.selected.other_to_store.length > 0) {
       console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storePurpose($scope.selected.other_to_store);
+      $scope.storePurpose($scope.selected.other_to_store, true /* isOther */);
       $scope.closeView();
-    } else if ($scope.selected.purpose.value != "other_purpose" && $scope.selected.purpose.length > 0) {
+    } else if ($scope.selected.purpose.value != "other_purpose" && $scope.selected.purpose.value.length > 0) {
       console.log($scope.selected.purpose);
       // This storePurpose expects a string, not an object with a value string
-      $scope.storePurpose($scope.selected.purpose.value);
+      $scope.storePurpose($scope.selected.purpose.value, false /*is Other */);
       $scope.closeView();
     }
   };
@@ -284,13 +284,19 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
       $scope.purposeOptions = purposeOptions;
   });
 
-   $scope.storeMode = function(mode_val) {
+   $scope.storeMode = function(mode_val, isOther) {
+      if (isOther) {
+        mode_val = ConfirmHelper.otherTextToValue(mode_val);
+      }
       $scope.draftMode.label = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
    }
 
-   $scope.storePurpose = function(purpose_val) {
+   $scope.storePurpose = function(purpose_val, isOther) {
+      if (isOther) {
+        purpose_val = ConfirmHelper.otherTextToValue(purpose_val);
+      }
       $scope.draftPurpose.label = purpose_val;
       Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
