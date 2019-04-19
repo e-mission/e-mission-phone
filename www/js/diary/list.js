@@ -160,27 +160,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     /**
-     * Get all 'mode' for the trip from local cache (BEMUserCache)
-     */
-    var getLocalTripMode = function (trip) {
-      return $window.cordova.plugins.BEMUserCache.getAllMessages(MODE_CONFIRM_KEY, true).then(function (modes) {
-        Logger.log("Modes stored locally" + JSON.stringify(modes));
-        return DiaryHelper.getUserInputForTrip(trip.properties, modes);
-      });
-    }
-
-    /**
-     * Get all 'purpose' for the trip from local cache (BEMUserCache)
-     */
-    var getLocalTripPurpose = function (trip) {
-      return $window.cordova.plugins.BEMUserCache.getAllMessages(PURPOSE_CONFIRM_KEY, true).then(function (purposeList) {
-        Logger.log("Purpose stored locally" + JSON.stringify(purposeList));
-        return DiaryHelper.getUserInputForTrip(trip.properties, purposeList);
-      });
-    }
-
-
-    /**
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
@@ -227,22 +206,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }
       return false;
     };
-
-    var addUnpushedMode = function (trip) {
-      getLocalTripMode(trip).then(function (mode) {
-        if (isNotEmpty(mode)) {
-          addModeFeature(trip, mode);
-        }
-      });
-    }
-
-    var addUnpushedPurpose = function (trip) {
-      getLocalTripPurpose(trip).then(function (purpose) {
-        if (isNotEmpty(purpose)) {
-          addPurposeFeature(trip, purpose);
-        }
-      });
-    }
 
     $scope.isAnalyzed = function (trip) {
       return true;
