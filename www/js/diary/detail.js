@@ -47,6 +47,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.mode = "Cannot Retrieve Mode";
   $scope.bid = "";
   $scope.stars = 4.5;
+  $scope.rating = "";
   $http.get('json/yelpfusion.json').then(function(result) {
         $scope.yelp = result.data;
       }
@@ -81,6 +82,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       "headers": $scope.yelp.headers
     }).then(function(res) {
       $scope.revs = res.data.reviews;
+      $scope.rating = "img/small/small_"+$scope.stars+".png";
     });
     $ionicLoading.hide();
   };

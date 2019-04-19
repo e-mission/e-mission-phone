@@ -82,7 +82,7 @@
         </div>
         <div align="left">
             <h4>Reviews<br /></h4>
-            <img src="img/small/small_{{stars}}.png" width="75" /><br />
+            <img src={{rating}} width="75" /><br />
             <li ng-repeat='r in revs'>
             {{r.text}}
             <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
