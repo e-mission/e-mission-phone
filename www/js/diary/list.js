@@ -207,6 +207,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return false;
     };
 
+    $scope.explainDraft = function($event) {
+      $event.stopPropagation();
+      $ionicPopup.alert({
+        template: "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong."
+      });
+      // don't want to go to the detail screen
+    }
+
     $scope.isAnalyzed = function (trip) {
       return true;
     }
