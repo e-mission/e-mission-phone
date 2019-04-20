@@ -10,10 +10,13 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
                                 $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
 
 
-    $scope.name = "Cannot Retrieve Suggestion";
+    $scope.message = "Cannot Retrieve Suggestion, Please Refresh";
+    $scope.question = "";
+    $scope.loc = "";
     $scope.mode = "Cannot Retrieve Mode";
     $scope.bid = "yalis-stanley-hall-cafe-berkeley";
     $scope.stars = 4.5;
+    $scope.rating = "";
     $http.get('json/yelpfusion.json').then(function(result) {
           $scope.yelp = result.data;
         }
@@ -47,10 +50,13 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
       CommHelper.getSuggestion().then(function(result) {
         $ionicLoading.hide();
         console.log(result);
-        $scope.name = result.message;
-        $scope.mode = result.method;
+        $scope.message = result.message;
+        $scope.question = result.question;
+        $scope.loc = result.suggested_loc;
+        $scope.mode = "Also try " + result.method + " instead";
         $scope.bid = result.businessid;
         $scope.stars = result.rating;
+        $scope.rating = "img/small/small_"+$scope.stars+".png";
      }).catch(function(err) {
       console.log("Error while getting suggestion" + err);
     });
