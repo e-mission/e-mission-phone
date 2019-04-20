@@ -65,10 +65,14 @@
         <div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"
                 ng-click="refreshMap()">Refresh</button>
-            <button class="button button-stable button-block"
-                ng-click="getIndividualSuggestion()">Get Suggestion</button>
-            <button class="button button-stable button-block"
-                ng-click="clickReview()">Get Reviews</button>
+        </div>
+        <div style="" class="button-bar">
+          <button class="button button-stable button-block"
+              ng-click="getIndividualSuggestion()">Get Suggestion</button>
+        </div>
+        <div style="" class="button-bar">
+          <button class="button button-stable button-block"
+              ng-click="clickReview()">Get Reviews</button>
         </div>
         <div class = "grid_layout">
           <div class = "grid_item" id = "suggestion_title"> Suggestion </div>
@@ -78,12 +82,11 @@
         </div>
         <div align="left">
             <h4>Reviews<br /></h4>
-            <img src="img/small/small_{{stars}}.png" width="75" /><br />
+            <img src={{rating}} width="75" /><br />
             <li ng-repeat='r in revs'>
             {{r.text}}
             <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
           </li>
-           </div>
-              <button class="button button-block button-balanced button-outline back" ng-click="clickX()">Back</button>
+        </div>
     </ion-content>
 </ion-view>
