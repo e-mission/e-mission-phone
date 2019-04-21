@@ -14,7 +14,7 @@ angular.module('emission.main.recommendations',['emission.services', 'emission.p
     $scope.question = "";
     $scope.loc = "";
     $scope.mode = "Cannot Retrieve Mode";
-    $scope.bid = "yalis-stanley-hall-cafe-berkeley";
+    $scope.bid = "";
     $scope.stars = 4.5;
     $scope.rating = "";
     $http.get('json/yelpfusion.json').then(function(result) {
