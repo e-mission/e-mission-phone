@@ -62,8 +62,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     CommHelper.getSingleTripSuggestion($stateParams.tripId).then(function(result) {
       console.log(result);
       $ionicLoading.hide();
-      $scope.name = result.message;
-      $scope.mode = result.method;
+      $scope.message = result.message;
+      $scope.question = result.question;
+      $scope.loc = result.suggested_loc;
+      $scope.mode = "Also try " + result.method + " instead.";
       $scope.bid = result.businessid;
       $scope.stars = result.rating;
     }).catch(function(err) {
