@@ -25,7 +25,7 @@ angular.module('emission.main.accessmap', [
           },
           {
             target: '#open-accessmap-button',
-            content: 'This will bring you outside the Emission app, but Emission will stays at background to continue tracking',
+            content: 'This will bring you outside the Emission app, but Emission will stay in the background to continue tracking',
           },
           {
             target: '#accessmap-help',
@@ -67,16 +67,11 @@ angular.module('emission.main.accessmap', [
 
       $scope.openBrowser = function () {
         // Load AccessMap with uuid
-        CommHelper.getUser().then(function(userProfile) {
-          var uuid = sliceUUID(userProfile.user_id['$uuid']);
-          var url = $sce.trustAsResourceUrl('https://emission.accessmap.io/emission?uuid=' + uuid);
-          console.log("ACCESSMAP URL: " + url);
-
-          $cordovaInAppBrowser.open(url, '_system', {
-            location: 'no',
-            clearcache: 'no',
-            toolbar: 'yes'
-          });
+        var url = $sce.trustAsResourceUrl('https://www.accessmap.io/signin');
+        $cordovaInAppBrowser.open(url, '_system', {
+          location: 'no',
+          clearcache: 'no',
+          toolbar: 'yes'
         });
       };
 
