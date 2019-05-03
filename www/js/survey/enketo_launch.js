@@ -19,7 +19,7 @@ angular.module('emission.survey.enketo.launch', ['emission.services',
             console.log(form_json);
             $scope.loaded_form = form_json.data.form;
             $scope.loaded_model = form_json.data.model;
-            $( '#dummy-form-content' ).after( $scope.loaded_form );
+            $( '.form-header' ).after( $scope.loaded_form );
             var formSelector = 'form.or:eq(0)';
             var data = {
                  // required string of the default instance defined in the XForm
