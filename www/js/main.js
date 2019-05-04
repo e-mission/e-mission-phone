@@ -7,6 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.survey.enketo.launch',
                                  'emission.incident.posttrip.map',
                                  'emission.services'])
 
@@ -59,6 +60,17 @@ angular.module('emission.main', ['emission.main.recent',
         controller: 'ControlCtrl'
       }
     }
+  })
+
+  .state('root.main.enketosurvey', {
+    // if we have this the param here, we don't need the params in the definition
+    url: '/enketosurvey/:form_location',
+    views: {
+      'main-metrics': {
+        templateUrl: 'templates/survey/enketo-survey.html',
+        controller: 'EnketoSurveyCtrl'
+      }
+    },
   })
 
   .state('root.main.goals', {

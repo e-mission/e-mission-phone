@@ -158,8 +158,9 @@ angular.module('emission.main.control',['emission.services',
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
             });
+            return response;
         }, function(error) {
-            $ionicPopup.alert("while reading FSM state, "+error);
+            $ionicPopup.alert("while getting current state, "+error);
         });
     };
 
@@ -228,6 +229,7 @@ angular.module('emission.main.control',['emission.services',
     });
 
     $scope.refreshScreen = function() {
+        console.log("Refreshing screen");
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
@@ -249,6 +251,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getEmail();
         $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
             $scope.$apply(function() {
+                console.log("Setting settings.collect.trackingOn = "+isTracking);
                 $scope.settings.collect.trackingOn = isTracking;
             });
         });
@@ -265,13 +268,39 @@ angular.module('emission.main.control',['emission.services',
       }
     };
 
+    var getStartTransitionKey = function() {
+        if($scope.isAndroid()) {
+            return "local.transition.exited_geofence";
+        }
+        else if($scope.isIOS()) {
+            return "T_EXITED_GEOFENCE";
+        }
+    }
+
+    var getEndTransitionKey = function() {
+        if($scope.isAndroid()) {
+            return "local.transition.stopped_moving";
+        }
+        else if($scope.isIOS()) {
+            return "T_TRIP_ENDED";
+        }
+    }
+
+    var getOngoingTransitionState = function() {
+        if($scope.isAndroid()) {
+            return "local.state.ongoing_trip";
+        }
+        else if($scope.isIOS()) {
+            return "STATE_ONGOING_TRIP";
+        }
+    }
+
     $scope.forceSync = function() {
         ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
             function() {
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
-        ControlSyncHelper.forceSync().then(function(response) {
-            Logger.log("response = "+response);
+        ControlSyncHelper.forceSync().then(function() {
             /*
              * Change to sensorKey to "background/location" after fixing issues
              * with getLastSensorData and getLastMessages in the usercache
@@ -285,8 +314,7 @@ angular.module('emission.main.control',['emission.services',
             // only have one entry for the battery, which is the one that was
             // inserted on the last successful push.
             var isTripEnd = function(entry) {
-                if (entry.metadata.key == "local.transition.stopped_moving" ||
-                    entry.metadata.key == "T_TRIP_ENDED") {
+                if (entry.metadata.key == getEndTransition()) {
                     return true;
                 } else {
                     return false;
@@ -317,6 +345,32 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
+    var getTransition = function(transKey) {
+        var entry_data = {};
+        return $scope.getState().then(function(curr_state) {
+            entry_data.curr_state = curr_state;
+            if (transKey == getEndTransitionKey()) {
+                entry_data.curr_state = getOngoingTransitionState();
+            }
+            entry_data.transition = transKey;
+            entry_data.ts = moment().unix();
+            return entry_data;
+        })
+    }
+
+    $scope.endForceSync = function() {
+        /* First, quickly start and end the trip. Let's listen to the promise
+         * result for start so that we ensure ordering */
+        var sensorKey = "statemachine/transition";
+        return getTransition(getStartTransitionKey()).then(function(entry_data) {
+            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        }).then(function() {
+                return getTransition(getEndTransitionKey()).then(function(entry_data) {
+                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+                })
+        }).then($scope.forceSync);
+    }
+
     $scope.forceState = ControlCollectionHelper.forceState;
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
     $scope.editSyncConfig = ControlSyncHelper.editConfig;
@@ -338,23 +392,20 @@ angular.module('emission.main.control',['emission.services',
     });
     $scope.isTrackingOn = function() {
         return $ionicPlatform.ready().then(function() {
-        if($scope.isAndroid()){
-            return $scope.settings.collect.state != "local.state.tracking_stopped";
-        } else if ($scope.isIOS()) {
-            return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-        }
+            if($scope.isAndroid()){
+                return $scope.settings.collect.state != "local.state.tracking_stopped";
+            } else if ($scope.isIOS()) {
+                return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+            }
         });
     };
     $scope.userStartStopTracking = function() {
-        if ($scope.startStopBtnToggle){
-            ControlCollectionHelper.forceTransition('STOP_TRACKING');
-            $scope.startStopBtnToggle = false;
+        if ($scope.settings.collect.trackingOn){
+            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
         } else {
-            ControlCollectionHelper.forceTransition('START_TRACKING');
-            $scope.startStopBtnToggle = true;
+            return ControlCollectionHelper.forceTransition('START_TRACKING');
         }
     }
-    $scope.startStopBtnToggle = $scope.trackingOn;
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
