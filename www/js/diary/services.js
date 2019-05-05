@@ -103,6 +103,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
   dh.isDraft = function(tripgj) {
     if (// tripgj.data.features.length == 3 && // reinstate after the local and remote paths are unified
+      angular.isDefined(tripgj.data.features[2].features) &&
       tripgj.data.features[2].features[0].properties.feature_type == "section" &&
       tripgj.data.features[2].features[0].properties.sensed_mode == "MotionTypes.UNPROCESSED") {
         return true;
