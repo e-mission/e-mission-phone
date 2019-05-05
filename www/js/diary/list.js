@@ -82,16 +82,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     * setHours here, while the currDay is a moment, since we use it to perform
     * +date and -date operations.
     */
-    $scope.listExpandClass = function () {
-      return "earlier-later-expand";
-    }
-    $scope.listLocationClass = function() {
-      return "item item-icon-left list-location";
-    }
-    $scope.listTextClass = function() {
-      return "list-text";
-    }
-    $scope.datePickerClass = function () {}
+    $scope.listExpandClass = "earlier-later-expand";
+    $scope.listLocationClass = "item item-icon-left list-location";
+    $scope.listTextClass = "list-text";
+
     $scope.listCardClass = function(tripgj) {
       var background = DiaryHelper.getTripBackground(tripgj);
       if ($window.screen.width <= 320) {
@@ -110,9 +104,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         return "col-50 list-col-left-margin";
       }
     }
-    $scope.listColRightClass = function() {
-      return "col-50 list-col-right";
-    }
+    $scope.listColRightClass = "col-50 list-col-right"
+
     $scope.differentCommon = function(tripgj) {
         return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
@@ -126,12 +119,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
           readAndUpdateForDay(moment(val));
         }
-    }
-    $scope.localTimeString = function(dt) {
-      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
-      var post = ((dt.hour >= 12))? " pm" : " am";
-      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
-      return hr + ":" + min + post;
     }
 
     $scope.datepickerObject = {
@@ -201,6 +188,37 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.purposeTripgj = angular.undefined;
     }
 
+    $scope.localTimeString = function(dt) {
+      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
+      var post = ((dt.hour >= 12))? " pm" : " am";
+      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
+      return hr + ":" + min + post;
+    }
+
+    $scope.populateBasicClasses = function(tripgj) {
+        tripgj.display_start_time = $scope.localTimeString(tripgj.data.properties.start_local_dt);
+        tripgj.display_end_time = $scope.localTimeString(tripgj.data.properties.end_local_dt);
+        tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
+                                tripgj.data.properties.end_ts);
+        tripgj.isDraft = $scope.isDraft(tripgj);
+        tripgj.listCardClass = $scope.listCardClass(tripgj);
+    }
+
+    $scope.populateCommonInfo = function(tripgj) {
+        tripgj.common = {}
+        DiaryHelper.fillCommonTripCount(tripgj);
+        tripgj.common.different = $scope.differentCommon(tripgj);
+        tripgj.common.longerOrShorter = $scope.getLongerOrShorter(tripgj.data, tripgj.data.id);
+        tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
+        tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
+        tripgj.common.arrowColor = $scope.arrowColor(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowClass = $scope.getArrowClass(tripgj.common.longerOrShorter[0]);
+
+        tripgj.common.earlierOrLater = $scope.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
+        tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
+    }
+
     var isNotEmpty = function (obj) {
       for (var prop in obj) {
         if (obj.hasOwnProperty(prop))
@@ -217,10 +235,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       // don't want to go to the detail screen
     }
 
-    $scope.isAnalyzed = function (trip) {
-      return true;
-    }
-
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
@@ -234,6 +248,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
             $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
+            $scope.populateBasicClasses(tripgj);
+            $scope.populateCommonInfo(tripgj);
           });
           $ionicScrollDelegate.scrollTop(true);
       });
@@ -248,7 +264,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           // the counts, so let us do it here.
           if (!angular.isUndefined($scope.data) && !angular.isUndefined($scope.data.currDayTripWrappers)) {
              $scope.data.currDayTripWrappers.forEach(function(tripWrapper, index, array) {
-                DiaryHelper.fillCommonTripCount(tripWrapper);
+                $scope.populateCommonInfo(tripWrapper);
              });
           };
       });

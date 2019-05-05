@@ -280,7 +280,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   dh.fillCommonTripCount = function(tripWrapper) {
       var cTrip = CommonGraph.trip2Common(tripWrapper.data.id);
       if (!angular.isUndefined(cTrip)) {
-          tripWrapper.common_count = cTrip.trips.length;
+          tripWrapper.common.count = cTrip.trips.length;
       }
   };
   dh.directiveForTrip = function(trip) {
@@ -294,7 +294,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     retVal.stops = trip.stops;
     retVal.sections = trip.sections;
     retVal.tripSummary = trip.tripSummary;
-    dh.fillCommonTripCount(retVal);
     // Hardcoding to avoid repeated nominatim calls
     // retVal.start_place.properties.displayName = "Start";
     // retVal.start_place.properties.displayName = "End";
