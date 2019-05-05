@@ -20,6 +20,10 @@
         pulling-text="Pull to refresh"
         on-refresh="refresh()">
         </ion-refresher>
+        <div  ng-if="inTrip()" class="control-list-item">
+            <div class="control-list-text">Current Trip</div>
+            <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+        </div>
 		<ion-list>
         <ion-nav-view ></ion-nav-view>
         <!--
