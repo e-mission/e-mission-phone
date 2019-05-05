@@ -171,6 +171,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             if (!angular.isDefined(userModeEntry)) {
               userModeEntry = ConfirmHelper.getFakeEntry(userMode.data.label);
               $scope.modeOptions.push(userModeEntry);
+              $scope.value2entryMode[userMode.data.label] = userModeEntry;
             }
             console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
             tripgj.usermode = userModeEntry;
@@ -191,6 +192,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             if (!angular.isDefined(userPurposeEntry)) {
               userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
               $scope.purposeOptions.push(userPurposeEntry);
+              $scope.value2entryPurpose[userPurpose.data.label] = userPurposeEntry;
             }
             console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
             tripgj.userpurpose = userPurposeEntry;
@@ -628,6 +630,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           if (isOther) {
             tripToUpdate.usermode = ConfirmHelper.getFakeEntry(mode.value);
             $scope.modeOptions.push(tripToUpdate.usermode);
+            $scope.value2entryMode[mode.value] = tripToUpdate.usermode;
           } else {
             tripToUpdate.usermode = $scope.value2entryMode[mode.value];
           }
@@ -649,6 +652,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           if (isOther) {
             tripToUpdate.userpurpose = ConfirmHelper.getFakeEntry(purpose.value);
             $scope.purposeOptions.push(tripToUpdate.userpurpose);
+            $scope.value2entryPurpose[purpose.value] = tripToUpdate.userpurpose;
           } else {
             tripToUpdate.userpurpose = $scope.value2entryPurpose[purpose.value];
           }
