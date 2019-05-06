@@ -87,7 +87,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.listTextClass = "list-text";
 
     $scope.listCardClass = function(tripgj) {
-      var background = DiaryHelper.getTripBackground(tripgj);
+      var background = tripgj.background;
       if ($window.screen.width <= 320) {
         return "list card list-card "+ background +" list-card-sm";
       } else if ($window.screen.width <= 375) {
@@ -188,20 +188,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.purposeTripgj = angular.undefined;
     }
 
-    $scope.localTimeString = function(dt) {
-      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
-      var post = ((dt.hour >= 12))? " pm" : " am";
-      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
-      return hr + ":" + min + post;
-    }
-
     $scope.populateBasicClasses = function(tripgj) {
-        tripgj.display_start_time = $scope.localTimeString(tripgj.data.properties.start_local_dt);
-        tripgj.display_end_time = $scope.localTimeString(tripgj.data.properties.end_local_dt);
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
+        tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
         tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = $scope.isDraft(tripgj);
+        tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         tripgj.percentages = $scope.getPercentages(tripgj)
     }
@@ -244,8 +238,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.data.currDayTrips.forEach(function(trip, index, array) {
             PostTripManualMarker.addUnpushedIncidents(trip);
           });
-          $scope.data.currDayTripWrappers = Timeline.data.currDayTrips.map(
+          var currDayTripWrappers = Timeline.data.currDayTrips.map(
             DiaryHelper.directiveForTrip);
+          Timeline.setTripWrappers(currDayTripWrappers);
+
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
             $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);

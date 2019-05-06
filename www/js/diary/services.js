@@ -165,6 +165,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     dh.getHumanReadable(section.properties.sensed_mode)];
     return retVal;
   };
+
+  dh.getLocalTimeString = function(dt) {
+      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
+      var post = ((dt.hour >= 12))? " pm" : " am";
+      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
+      return hr + ":" + min + post;
+    }
+
   dh.getFormattedTime = function(ts_in_secs) {
     if (angular.isDefined(ts_in_secs)) {
       return moment(ts_in_secs * 1000).format('LT');
@@ -299,6 +307,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // retVal.start_place.properties.display_name = "End";
     return retVal;
   };
+
   dh.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];
@@ -972,6 +981,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return timeline.data.tripMap[tripId];
       };
 
+      timeline.getTripWrapper = function(tripId) {
+        return timeline.data.tripWrapperMap[tripId];
+      };
+
       /*
        Let us assume that we have recieved a list of trips for that date from somewhere
        (either local usercache or the internet). Now, what do we need to process them?
@@ -1004,14 +1017,24 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
         timeline.data.currDayTrips.forEach(function(trip, index, array) {
           if (angular.isDefined(trip.start_place.properties.display_name)) {
-            console.log("Already have display name "+ trip.start_place.properties.display_name +" for start_place")
+            if (trip.start_place.properties.display_name != ", ") {
+                console.log("Already have display name "+ trip.start_place.properties.display_name +" for start_place")
+            } else {
+                console.log("Got display name "+ trip.start_place.properties.display_name +" for start_place, but it is blank, trying OSM nominatim now...");
+                CommonGraph.getDisplayName('place', trip.start_place);
+            }
           } else {
             console.log("Don't have display name for start place, going to query nominatim")
             CommonGraph.getDisplayName('place', trip.start_place);
 
           }
           if (angular.isDefined(trip.end_place.properties.display_name)) {
-            console.log("Already have display name " + trip.end_place.properties.display_name + " for end_place")
+            if (trip.end_place.properties.display_name != ", ") {
+                console.log("Already have display name " + trip.end_place.properties.display_name + " for end_place")
+            } else {
+                console.log("Got display name "+ trip.end_place.properties.display_name +" for end_place, but it is blank, trying OSM nominatim now...");
+                CommonGraph.getDisplayName('place', trip.end_place);
+            }
           } else {
             console.log("Don't have display name for end place, going to query nominatim")
             CommonGraph.getDisplayName('place', trip.end_place);
@@ -1032,6 +1055,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             console.log("About to hide 'Processing trips'");
             $ionicLoading.hide();
           };
+
+    timeline.setTripWrappers = function(tripWrapperList) {
+        timeline.data.currDayTripWrappers = tripWrapperList;
+
+        timeline.data.tripWrapperMap = {};
+
+        timeline.data.currDayTripWrappers.forEach(function(tripw, index, array) {
+          timeline.data.tripWrapperMap[tripw.data.id] = tripw;
+        });
+    }
 
     // TODO: Should this be in the factory or in the scope?
     var generateDaySummary = function() {
