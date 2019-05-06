@@ -20,10 +20,12 @@
         pulling-text="Pull to refresh"
         on-refresh="refresh()">
         </ion-refresher>
+        <!--
         <div  ng-if="inTrip()" class="control-list-item">
             <div class="control-list-text">Current Trip</div>
             <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
         </div>
+        -->
 		<ion-list>
         <ion-nav-view ></ion-nav-view>
         <!--
@@ -74,12 +76,12 @@
                     <div class="start-end-addresses-container">
                         <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
-                                {{tripgj.start_place.properties.displayName.split(',')[0]}}
+                                {{tripgj.start_place.properties.display_name.split(',')[0]}}
 
                         </div>
                         <div ng-class="listLocationClass" id="no-border" href="#">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-                                {{tripgj.end_place.properties.displayName.split(',')[0]}}
+                                {{tripgj.end_place.properties.display_name.split(',')[0]}}
                         </div>
                     </div>
                     <div class="diary-arrow-container">

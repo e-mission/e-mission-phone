@@ -295,8 +295,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     retVal.sections = trip.sections;
     retVal.tripSummary = trip.tripSummary;
     // Hardcoding to avoid repeated nominatim calls
-    // retVal.start_place.properties.displayName = "Start";
-    // retVal.start_place.properties.displayName = "End";
+    // retVal.start_place.properties.display_name = "Start";
+    // retVal.start_place.properties.display_name = "End";
     return retVal;
   };
   dh.userModes = [
@@ -346,8 +346,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // console.log("onEachFeature called with "+JSON.stringify(feature));
     switch(feature.properties.feature_type) {
       case "stop": layer.bindPopup(""+feature.properties.duration); break;
-      case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
-      case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
+      case "start_place": layer.bindPopup(""+feature.properties.display_name); break;
+      case "end_place": layer.bindPopup(""+feature.properties.display_name); break;
       case "section": layer.on('click',
         PostTripManualMarker.startAddingIncidentToSection(feature, layer)); break;
       case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
@@ -1003,15 +1003,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
 
         timeline.data.currDayTrips.forEach(function(trip, index, array) {
-          if (angular.isDefined(trip.start_place.properties.displayName)) {
-            console.log("Already have display name "+ dt.start_place.properties.displayName +" for start_place")
+          if (angular.isDefined(trip.start_place.properties.display_name)) {
+            console.log("Already have display name "+ trip.start_place.properties.display_name +" for start_place")
           } else {
             console.log("Don't have display name for start place, going to query nominatim")
             CommonGraph.getDisplayName('place', trip.start_place);
 
           }
-          if (angular.isDefined(trip.end_place.properties.displayName)) {
-            console.log("Already have display name " + dt.end_place.properties.displayName + " for end_place")
+          if (angular.isDefined(trip.end_place.properties.display_name)) {
+            console.log("Already have display name " + trip.end_place.properties.display_name + " for end_place")
           } else {
             console.log("Don't have display name for end place, going to query nominatim")
             CommonGraph.getDisplayName('place', trip.end_place);

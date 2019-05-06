@@ -703,8 +703,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
-      $scope.checkTripState();
-      return in_trip;
+      $ionicPlatform.ready().then(function() {
+          $scope.checkTripState();
+          return in_trip;
+      });
     };
 
     $ionicPlatform.ready().then(function() {
