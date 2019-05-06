@@ -203,6 +203,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = $scope.isDraft(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
+        tripgj.percentages = $scope.getPercentages(tripgj)
     }
 
     $scope.populateCommonInfo = function(tripgj) {
