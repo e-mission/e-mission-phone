@@ -168,9 +168,15 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           if (temp == 'goals') {
             return 'root.main.goals';
           } else if ($rootScope.displayingIncident == true) {
+<<<<<<< HEAD
             logger.log("Showing incident from startprefs");
             $rootScope.displayingIncident = false;
             return 'root.main.incident';
+=======
+            logger.log("Showing tripconfirm from startprefs");
+            $rootScope.displayingIncident = false;
+            return 'root.main.tripconfirm';
+>>>>>>> 9fc4bfa48a421d8e10e5f38a847654206cac3000
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             $rootScope.redirectTo = undefined;

@@ -905,7 +905,11 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 9px;
         position: absolute;
         left: 1%;
+<<<<<<< HEAD
         bottom:15px;
+=======
+        bottom: 15px;
+>>>>>>> 9fc4bfa48a421d8e10e5f38a847654206cac3000
         line-height: 16px;
 }
 .stop-time-tag-lower {

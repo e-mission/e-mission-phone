@@ -7,9 +7,14 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+<<<<<<< HEAD
                                  'emission.incident.posttrip.map',
                                  'emission.services',
                                  'emission.main.cci-about'])
+=======
+                                 'emission.tripconfirm.posttrip.map',
+                                 'emission.services'])
+>>>>>>> 9fc4bfa48a421d8e10e5f38a847654206cac3000
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -111,6 +116,20 @@ angular.module('emission.main', ['emission.main.recent',
       views: {
         'main-cci-about': {
           templateUrl: "templates/incident/map.html",
+          controller: 'PostTripMapCtrl'
+        }
+      }
+  })
+
+  .state('root.main.tripconfirm', {
+      url: "/tripconfirm",
+      params: {
+        start_ts: null,
+        end_ts: null
+      },
+      views: {
+        'main-control': {
+          templateUrl: "templates/tripconfirm/map.html",
           controller: 'PostTripMapCtrl'
         }
       }

@@ -161,7 +161,7 @@ angular.module('emission.main.control',['emission.services',
             });
             return response;
         }, function(error) {
-            $ionicPopup.alert("while reading FSM state, "+error);
+            $ionicPopup.alert("while getting current state, "+error);
         });
     };
 
@@ -230,6 +230,7 @@ angular.module('emission.main.control',['emission.services',
     });
 
     $scope.refreshScreen = function() {
+        console.log("Refreshing screen");
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
@@ -251,6 +252,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getEmail();
         $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
             $scope.$apply(function() {
+                console.log("Setting settings.collect.trackingOn = "+isTracking);
                 $scope.settings.collect.trackingOn = isTracking;
             });
         });
@@ -391,23 +393,20 @@ angular.module('emission.main.control',['emission.services',
     });
     $scope.isTrackingOn = function() {
         return $ionicPlatform.ready().then(function() {
-        if($scope.isAndroid()){
-            return $scope.settings.collect.state != "local.state.tracking_stopped";
-        } else if ($scope.isIOS()) {
-            return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-        }
+            if($scope.isAndroid()){
+                return $scope.settings.collect.state != "local.state.tracking_stopped";
+            } else if ($scope.isIOS()) {
+                return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+            }
         });
     };
     $scope.userStartStopTracking = function() {
-        if ($scope.startStopBtnToggle){
-            ControlCollectionHelper.forceTransition('STOP_TRACKING');
-            $scope.startStopBtnToggle = false;
+        if ($scope.settings.collect.trackingOn){
+            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
         } else {
-            ControlCollectionHelper.forceTransition('START_TRACKING');
-            $scope.startStopBtnToggle = true;
+            return ControlCollectionHelper.forceTransition('START_TRACKING');
         }
     }
-    $scope.startStopBtnToggle = $scope.trackingOn;
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
