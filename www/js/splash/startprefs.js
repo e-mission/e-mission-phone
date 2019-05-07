@@ -168,8 +168,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           if (temp == 'goals') {
             return 'root.main.goals';
           } else if ($rootScope.displayingIncident == true) {
+            logger.log("Showing tripconfirm from startprefs");
             $rootScope.displayingIncident = false;
-            return 'root.main.diary';
+            return 'root.main.tripconfirm';
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             $rootScope.redirectTo = undefined;

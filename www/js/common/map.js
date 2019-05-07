@@ -177,7 +177,7 @@ angular.module('emission.main.common.map',['emission.main.common.services',
         }
 
        console.log("got response, setting display name to "+name);
-       place_feature.properties.displayName = name;
+       place_feature.properties.display_name = name;
     };
 
 
