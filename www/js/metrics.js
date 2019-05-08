@@ -490,11 +490,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       })
       .catch(function(error) {
         $ionicLoading.hide();
-        $ionicPopup.alert({
-          title: "Error Loading Data",
-          template: JSON.stringify(error)
-        });
-        console.log(error);
+        Logger.displayError("Error loading user data", error);
       })
 
       getAggMetricsFromServer().then(function(results) {
@@ -518,11 +514,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $ionicLoading.hide();
         $scope.carbonData.aggrCarbon = "Unknown";
         $scope.caloriesData.aggrCalories = "Unknown...";
-        $ionicPopup.alert({
-          title: "Error loading aggregate data, averages not available",
-          template: JSON.stringify(error)
-        });
-        console.log(error);
+        Logger.displayError("Error loading aggregate data, averages not available",
+            error);
       });
    };
 
@@ -1159,7 +1152,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       showTodayButton: true,
       dateFormat: 'MMM dd yyyy',
       closeOnSelect: false,
-      # add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
+      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
 
   $scope.pickFromDay = function() {

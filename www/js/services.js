@@ -240,7 +240,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
 })
 .service('ControlHelper', function($cordovaEmailComposer,
                                    $ionicPopup,
-                                   CommHelper) {
+                                   CommHelper,
+                                   Logger) {
   this.emailLog = function() {
         var parentDir = "unknown";
 
@@ -391,14 +392,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {
-             window.Logger.log(window.Logger.LEVEL_DEBUG,
-                 "Email queued successfully");
+             Logger.log("Email queued successfully");
           })
           .catch(function(error) {
-             window.Logger.log(window.Logger.LEVEL_INFO,
-                 "Email cancel reported, seems to be an error on android");
-            $ionicPopup.alert({'title': "Error sending email",
-                'template': JSON.stringify(error)});
+             Logger.displayError("Error emailing JSON dump", error);
           })
     };
 

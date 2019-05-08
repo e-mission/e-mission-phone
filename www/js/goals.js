@@ -175,7 +175,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
           .then(function(event) {     
             // success        
           })      
-          .catch(function(event) {        
+          .catch(function(error) {        
+            Logger.displayError("Error while launching habitica website", error);
             // error      
           });
        

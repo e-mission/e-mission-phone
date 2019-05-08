@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.main.common.services', [])
+angular.module('emission.main.common.services', ['emission.plugin.logger'])
 
-.factory('CommonGraph', function($rootScope, $http) {
+.factory('CommonGraph', function($rootScope, $http, Logger) {
     var commonGraph = {};
     commonGraph.data = {};
     commonGraph.UPDATE_DONE = "COMMON_GRAPH_UPDATE_DONE";
@@ -25,6 +25,7 @@ angular.module('emission.main.common.services', [])
                 cmGraph = commonGraph.createEmpty();
             }
         } catch(err) {
+            // No popup for this since it is the common case and we have a fallback
             window.Logger.log("Error "+err+" while parsing common trip data");
             // If there was an error in parsing the current common trips, and
             // there is no existing cached common trips, we create a blank
