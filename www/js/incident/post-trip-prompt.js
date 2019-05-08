@@ -69,12 +69,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
             Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
         })
         .catch(function(error) {
-            Logger.log(JSON.stringify(error));
-            $ionicPopup.alert({
-                title: "Unable to register notifications for trip end",
-                template: JSON.stringify(error)
-            });
-        });;
+            Logger.displayError("Unable to register notifications for trip end", error);
+        });
   }
 
   var getFormattedTime = function(ts_in_secs) {
@@ -209,10 +205,9 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
                 });
             }
         }).catch(function(error) {
-            $ionicPopup.alert({
-                title: "Error while muting notifications for trip end. Try again later.",
-                template: JSON.stringify(error)
-            });
+            Logger.displayError(
+                "Error while muting notifications for trip end. Try again later.",
+                error);
         });
       }
     });

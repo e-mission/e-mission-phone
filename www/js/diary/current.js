@@ -178,8 +178,7 @@
         });  
       });
     }).catch(function(error) {
-        Logger.log("While loading location data, error "+JSON.stringify(error));
-        $ionicPopup.alert({"template": "While loading location data, error = "+ JSON.stringify(error)})
+        Logger.displayError("Error while loading location data", error);
     });
     console.log($scope.mapCtrl);
   };
@@ -266,7 +265,7 @@
             PostTripManualMarker.showSheet($scope.features, latlng, ts, marker, _map);
     })
     .catch(function(error) {
-      Logger.log("error while getting map current from leafletData");
+      Logger.displayError("Error while getting selected map location ", error);
     });
   };
 

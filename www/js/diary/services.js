@@ -970,9 +970,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }).then(function(combinedTripList) {
           processOrDisplayNone(day, combinedTripList);
         }).catch(function(error) {
-          Logger.log("while reading data from cache for "+day +" error = "+JSON.stringify(error));
           console.log("About to hide loading overlay");
           $ionicLoading.hide();
+          Logger.displayError("while reading data from cache for "+day, error);
         })
       });
     }

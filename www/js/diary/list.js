@@ -424,7 +424,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       nzTour.start(tour).then(function(result) {
         Logger.log("list walkthrough start completed, no error");
       }).catch(function(err) {
-        Logger.log("list walkthrough start errored" + err);
+        Logger.displayError("list walkthrough start errored", err);
       });
     };
 

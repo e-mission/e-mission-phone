@@ -142,13 +142,8 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
         $ionicLoading.hide();
     })
     .catch(function(error) {
-        var errStr = JSON.stringify(error);
         $ionicLoading.hide();
-        Logger.log(errStr);
-        $ionicPopup.alert({
-            title: "Unable to retrieve data",
-            template: errStr
-        });
+        Logger.displayError("Unable to retrieve data for map display", error);
     });
   }
 
@@ -183,7 +178,7 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
     nzTour.start(tour).then(function(result) {
       Logger.log("post trip mode walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("post trip mode walkthrough start errored" + err);
+      Logger.displayError("post trip mode walkthrough errored", err);
     });
   };
 
