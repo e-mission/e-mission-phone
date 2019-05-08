@@ -314,7 +314,7 @@ angular.module('emission.main.control',['emission.services',
             // only have one entry for the battery, which is the one that was
             // inserted on the last successful push.
             var isTripEnd = function(entry) {
-                if (entry.metadata.key == getEndTransition()) {
+                if (entry.metadata.key == getEndTransitionKey()) {
                     return true;
                 } else {
                     return false;
