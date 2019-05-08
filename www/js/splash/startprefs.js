@@ -207,7 +207,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.loadPreferredScreen = function() {
       logger.log("About to navigate to preferred tab");
       startprefs.getNextState().then(changeState).catch(function(error) {
-        logger.log("error "+error+" loading finding tab, loading root.intro");
+        logger.displayError("Error loading preferred tab, loading root.intro", error);
+        // logger.log("error "+error+" loading finding tab, loading root.intro");
         changeState('root.intro');
       });
     };

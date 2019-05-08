@@ -137,7 +137,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     nzTour.start(tour).then(function(result) {
       Logger.log("detail walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("detail walkthrough start errored" + err);
+      Logger.displayError("detail walkthrough start errored", err);
     });
   };
 

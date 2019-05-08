@@ -1,5 +1,5 @@
-angular.module('emission.tripconfirm.services', ['ionic'])
-.factory("ConfirmHelper", function($http, $ionicPopup) {
+angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
+.factory("ConfirmHelper", function($http, $ionicPopup, Logger) {
     var ch = {};
     ch.otherModes = [];
     ch.otherPurposes = [];
@@ -16,11 +16,13 @@ angular.module('emission.tripconfirm.services', ['ionic'])
         return $http.get(filename)
             .then(fillInOptions)
             .catch(function(err) {
+                // no prompt here since we have a fallback
                 console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
                 return $http.get(filename+".sample")
                      .then(fillInOptions)
                      .catch(function(err) {
-                        console.log("error "+JSON.stringify(err)+" while reading default confirm options, giving up");
+                        // prompt here since we don't have a fallback
+                        Logger.displayError("Error while reading default confirm options", err);
                      });
             });
     }
