@@ -23761,7 +23761,7 @@ var enketocore = (function () {
 	            .eq( 0 )
 	            .trigger( 'fakefocus' );
 
-	        pageEl.scrollIntoView();
+	        // pageEl.scrollIntoView();
 	    },
 	    _toggleButtons( index ) {
 	        const i = index || this._getCurrentIndex(),
