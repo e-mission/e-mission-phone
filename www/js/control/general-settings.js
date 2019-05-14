@@ -10,12 +10,13 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
-                                        'angularLocalStorage',
+                                        'emission.plugin.kvstore',
                                         'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
+               $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, storage, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
@@ -48,30 +49,37 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.emailLog = ControlHelper.emailLog;
-    $scope.dark_theme = $rootScope.dark_theme;
     $scope.userData = []
     $scope.getUserData = function() {
-        var userDataFromStorage = CalorieCal.get();
-        $scope.userData = []
-        var height = userDataFromStorage.height.toString();
-        var weight = userDataFromStorage.weight.toString();
-        var temp  =  {
-            age: userDataFromStorage.age,
-            height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-            weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-            gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+        return CalorieCal.get().then(function(userDataFromStorage) {
+        $scope.rawUserData = userDataFromStorage;
+        if ($scope.userDataSaved()) {
+            $scope.userData = []
+            var height = userDataFromStorage.height.toString();
+            var weight = userDataFromStorage.weight.toString();
+            var temp  =  {
+                age: userDataFromStorage.age,
+                height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+                weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+                gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+            }
+            for (var i in temp) {
+                $scope.userData.push({key: i, value: temp[i]});
+            }
         }
-        for (var i in temp) {
-            $scope.userData.push({key: i, value: temp[i]});
-        }
+        });
     }
 
     $scope.userDataSaved = function() {
-        return CalorieCal.get().userDataSaved == true;
+        if (angular.isDefined($scope.rawUserData) && $scope.rawUserData != null) {
+            return $scope.rawUserData.userDataSaved;
+        } else {
+            return false;
+        }
     }
-    if ($scope.userDataSaved()) {
-        $scope.getUserData();
-    }
+    $ionicPlatform.ready().then(function() {
+        $scope.refreshScreen();
+    });
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
         var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
@@ -86,25 +94,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
-    $scope.ionViewBackgroundClass = function() {
-        return ($scope.dark_theme)? "ion-view-background-dark" : "ion-view-background";
-    }
-    $scope.getDarkTheme = function() {
-        return $scope.dark_theme;
-    }
-    $scope.toggleDarkTheme = function() {
-        if ($scope.dark_theme) {
-            $rootScope.dark_theme = false;
-            $scope.dark_theme = false;
-            StartPrefs.setDefaultTheme(null);
-            $state.reload();
-        } else {
-            $rootScope.dark_theme = true;
-            $scope.dark_theme = true;
-            StartPrefs.setDefaultTheme('dark_theme');
-            $state.reload();
-        }
-    }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
@@ -165,12 +154,13 @@ angular.module('emission.main.control',['emission.services',
         $state.go("root.main.map");
     }
     $scope.getState = function() {
-        ControlCollectionHelper.getState().then(function(response) {
+        return ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {
                 $scope.settings.collect.state = response;
             });
+            return response;
         }, function(error) {
-            $ionicPopup.alert("while getting email, "+error);
+            $ionicPopup.alert("while getting current state, "+error);
         });
     };
 
@@ -192,18 +182,13 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    var clearBoth = function() {
-        storage.clearAll();
-        clearUsercache();
-    }
-
     $scope.nukeUserCache = function() {
         var nukeChoiceActions = [{text: "UI state only",
-                                  action: storage.clearAll},
+                                  action: KVStore.clearOnlyLocal},
                                  {text: 'Native cache only',
-                                  action: clearUsercache},
+                                  action: KVStore.clearOnlyNative},
                                  {text: 'Everything',
-                                  action: clearBoth}];
+                                  action: KVStore.clearAll}];
 
         $ionicActionSheet.show({
             titleText: "Clear data",
@@ -229,7 +214,9 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.$on('$ionicView.afterEnter', function() {
+        $ionicPlatform.ready().then(function() {
         $scope.refreshScreen();
+        });
     })
 
     // Execute action on hidden popover
@@ -242,6 +229,7 @@ angular.module('emission.main.control',['emission.services',
     });
 
     $scope.refreshScreen = function() {
+        console.log("Refreshing screen");
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
@@ -249,15 +237,25 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.channel = function(newName) {
-          return arguments.length ? (UpdateCheck.setChannel(newName)) : UpdateCheck.getChannel();
+          return arguments.length ? (UpdateCheck.setChannel(newName)) : $scope.settings.storedChannel;
         };
-
+        UpdateCheck.getChannel().then(function(retVal) { 
+            $scope.$apply(function() {
+                $scope.settings.storedChannel = retVal;
+            });
+        });
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
         $scope.getTNotifySettings();
         $scope.getEmail();
-        $scope.getState();
+        $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
+            $scope.$apply(function() {
+                console.log("Setting settings.collect.trackingOn = "+isTracking);
+                $scope.settings.collect.trackingOn = isTracking;
+            });
+        });
+        $scope.getUserData();
     };
 
     $scope.returnToIntro = function() {
@@ -270,13 +268,39 @@ angular.module('emission.main.control',['emission.services',
       }
     };
 
+    var getStartTransitionKey = function() {
+        if($scope.isAndroid()) {
+            return "local.transition.exited_geofence";
+        }
+        else if($scope.isIOS()) {
+            return "T_EXITED_GEOFENCE";
+        }
+    }
+
+    var getEndTransitionKey = function() {
+        if($scope.isAndroid()) {
+            return "local.transition.stopped_moving";
+        }
+        else if($scope.isIOS()) {
+            return "T_TRIP_ENDED";
+        }
+    }
+
+    var getOngoingTransitionState = function() {
+        if($scope.isAndroid()) {
+            return "local.state.ongoing_trip";
+        }
+        else if($scope.isIOS()) {
+            return "STATE_ONGOING_TRIP";
+        }
+    }
+
     $scope.forceSync = function() {
         ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
             function() {
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
-        ControlSyncHelper.forceSync().then(function(response) {
-            Logger.log("response = "+response);
+        ControlSyncHelper.forceSync().then(function() {
             /*
              * Change to sensorKey to "background/location" after fixing issues
              * with getLastSensorData and getLastMessages in the usercache
@@ -290,8 +314,7 @@ angular.module('emission.main.control',['emission.services',
             // only have one entry for the battery, which is the one that was
             // inserted on the last successful push.
             var isTripEnd = function(entry) {
-                if (entry.metadata.key == "local.transition.stopped_moving" ||
-                    entry.metadata.key == "T_TRIP_ENDED") {
+                if (entry.metadata.key == getEndTransitionKey()) {
                     return true;
                 } else {
                     return false;
@@ -318,9 +341,35 @@ angular.module('emission.main.control',['emission.services',
                 $ionicPopup.alert({template: 'all data pushed!'});
             }
         }).catch(function(error) {
-            $ionicPopup.alert({template: 'error -> '+JSON.stringify(error)});
+            Logger.displayError("Error while forcing sync", error);
         });
     };
+
+    var getTransition = function(transKey) {
+        var entry_data = {};
+        return $scope.getState().then(function(curr_state) {
+            entry_data.curr_state = curr_state;
+            if (transKey == getEndTransitionKey()) {
+                entry_data.curr_state = getOngoingTransitionState();
+            }
+            entry_data.transition = transKey;
+            entry_data.ts = moment().unix();
+            return entry_data;
+        })
+    }
+
+    $scope.endForceSync = function() {
+        /* First, quickly start and end the trip. Let's listen to the promise
+         * result for start so that we ensure ordering */
+        var sensorKey = "statemachine/transition";
+        return getTransition(getStartTransitionKey()).then(function(entry_data) {
+            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        }).then(function() {
+                return getTransition(getEndTransitionKey()).then(function(entry_data) {
+                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+                })
+        }).then($scope.forceSync);
+    }
 
     $scope.forceState = ControlCollectionHelper.forceState;
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
@@ -336,29 +385,27 @@ angular.module('emission.main.control',['emission.services',
         return ionic.Platform.isIOS();
     }
 
-    $scope.refreshScreen();
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {
         $scope.syncSettingsPopup = popover;
     });
-    $scope.trackingOn = function() {
-        if($scope.isAndroid()){
-            return $scope.settings.collect.state != "local.state.tracking_stopped";
-        } else if ($scope.isIOS()) {
-            return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-        }
+    $scope.isTrackingOn = function() {
+        return $ionicPlatform.ready().then(function() {
+            if($scope.isAndroid()){
+                return $scope.settings.collect.state != "local.state.tracking_stopped";
+            } else if ($scope.isIOS()) {
+                return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+            }
+        });
     };
     $scope.userStartStopTracking = function() {
-        if ($scope.startStopBtnToggle){
-            ControlCollectionHelper.forceTransition('STOP_TRACKING');
-            $scope.startStopBtnToggle = false;
+        if ($scope.settings.collect.trackingOn){
+            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
         } else {
-            ControlCollectionHelper.forceTransition('START_TRACKING');
-            $scope.startStopBtnToggle = true;
+            return ControlCollectionHelper.forceTransition('START_TRACKING');
         }
     }
-    $scope.startStopBtnToggle = $scope.trackingOn();
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
@@ -366,9 +413,9 @@ angular.module('emission.main.control',['emission.services',
         return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
     $scope.eraseUserData = function() {
-        CalorieCal.delete();
+        CalorieCal.delete().then(function() {
         $ionicPopup.alert({template: 'User data erased.'});
-
+        });
     }
     $scope.parseState = function(state) {
         if (state) {
@@ -444,8 +491,7 @@ angular.module('emission.main.control',['emission.services',
                 handleConsent(resultDoc);
             }
         }, function(error) {
-            $ionicPopup.alert({title: "Error reading consent document from cache",
-                template: error});
+            Logger.displayError("Error reading consent document from cache", error)
         });
     }
 

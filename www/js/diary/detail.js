@@ -1,11 +1,11 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
-                                      'nvd3', 'angularLocalStorage',
+                                      'nvd3', 'emission.plugin.kvstore',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
   console.log("controller DiaryDetailCtrl called with params = "+
@@ -61,15 +61,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
   $scope.getSectionDetails = DiaryHelper.getSectionDetails;
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
+  $scope.getLocalTimeString = DiaryHelper.getLocalTimeString;
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
-  $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
-
-  $scope.getTripBackground = function() {
-     var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
-     return ret_val;
-  }
+  $scope.tripgj = Timeline.getTripWrapper($stateParams.tripId);
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
@@ -141,17 +137,17 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     nzTour.start(tour).then(function(result) {
       Logger.log("detail walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("detail walkthrough start errored" + err);
+      Logger.displayError("detail walkthrough start errored", err);
     });
   };
 
 
   var checkDetailTutorialDone = function () {
     var DETAIL_DONE_KEY = 'detail_tutorial_done';
-    var detailTutorialDone = storage.get(DETAIL_DONE_KEY);
+    var detailTutorialDone = KVStore.getDirect(DETAIL_DONE_KEY);
     if (!detailTutorialDone) {
       startWalkthrough();
-      storage.set(DETAIL_DONE_KEY, true);
+      KVStore.set(DETAIL_DONE_KEY, true);
     }
   };
 

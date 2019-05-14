@@ -1,9 +1,8 @@
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services',
-                                              'emission.splash.startprefs',
-                                              'angularLocalStorage'])
+                                              'emission.splash.startprefs'])
 .factory('PushNotify', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, storage, Logger, CommHelper, StartPrefs) {
+    $ionicPopup, Logger, CommHelper, StartPrefs) {
 
     var pushnotify = {};
     var push = null;
@@ -80,10 +79,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
          // alert("Finished saving token = "+JSON.stringify(t.token));
          Logger.log("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {
-         var display_msg = error.message + "\n" + error.stack;
-         $ionicPopup.alert({title: "Error in registering push notifications",
-            template: display_msg});
-         Logger.log("Error in registering push notifications "+display_msg);
+        Logger.displayError("Error in registering push notifications", error);
       });
     }
 
@@ -115,8 +111,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
         })
         .catch(function(error) {
             push.finish(function(){}, finishErrFn, notId);
-            $ionicPopup.alert({title: "Error while handling silent push notifications",
-                template: JSON.stringify(error)});
+            Logger.displayError("Error while redirecting silent push", error);
         });
     }
 

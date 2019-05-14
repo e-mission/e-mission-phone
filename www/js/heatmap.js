@@ -2,11 +2,11 @@
 
 angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
                'emission.plugin.logger', 'emission.incident.posttrip.manual',
-               'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+               'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore'])
 
 .controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http,
         leafletData, Logger, Config, PostTripManualMarker,
-        $window, nzTour, storage) {
+        $window, nzTour, KVStore) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
@@ -54,8 +54,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       }
       $scope.countData.isLoading = false;
     }, function(error) {
-      Logger.log("Got error %s while trying to read heatmap data" +
-        JSON.stringify(error));
+      Logger.displayError("Error while trying to read heatmap data", error);
       $scope.countData.isLoading = false;
     });
   };
@@ -297,8 +296,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       }
       $scope.stressData.isLoading = false;
     }, function(error) {
-      Logger.log("Got error %s while trying to read heatmap data" +
-        JSON.stringify(error));
+      Logger.displayError("Error while trying to read stress data", error);
       $scope.stressData.isLoading = false;
     });
   };
@@ -361,7 +359,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     nzTour.start(tour).then(function(result) {
       Logger.log("heatmap walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("heatmap walkthrough start errored" + err);
+      Logger.displayError("Error in heatmap walkthrough", err);
     });
   };
 
@@ -371,10 +369,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   */
   var checkHeatmapTutorialDone = function () {
     var HEATMAP_DONE_KEY = 'heatmap_tutorial_done';
-    var heatmapTutorialDone = storage.get(HEATMAP_DONE_KEY);
+    var heatmapTutorialDone = KVStore.getDirect(HEATMAP_DONE_KEY);
     if (!heatmapTutorialDone) {
       startWalkthrough();
-      storage.set(HEATMAP_DONE_KEY, true);
+      KVStore.set(HEATMAP_DONE_KEY, true);
     }
   };
 
