@@ -56,12 +56,14 @@ angular.module('emission', ['ionic',
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
+        // not displaying the error here since we have a backup
         Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
             Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
-            Logger.log("error "+JSON.stringify(err)+" reading or setting defaults, giving up");
+            // displaying the error here since we don't have a backup
+            Logger.displayError("Error reading or setting connection defaults", err);
         });
     });
   });
