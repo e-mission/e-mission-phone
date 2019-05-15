@@ -50131,7 +50131,7 @@ var enketocore = (function () {
 	            target.dispatchEvent( event.GoToHidden() );
 	        }
 	        // Scroll to element
-	        target.scrollIntoView();
+	        // target.scrollIntoView();
 	        // Focus on the first non .ignore form control
 	        // If the element is hidden (e.g. because it's been replaced by a widget), 
 	        // the focus event will not fire, so we also trigger an applyfocus event that widgets can listen for.
