@@ -24,7 +24,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $http) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
@@ -471,6 +471,37 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.showModes = DiaryHelper.showModes;
 
+    $scope.readAndFormatCandidates = function(tripgj) {
+        var RADIUS = 250; // meters
+        var SEARCH_LIMIT = 3; // top 3 entries
+        $ionicLoading.show({
+          template: 'Loading candidates...'
+        });
+        // geometry coordinates are in the order [lat, lng]
+        var url_params = {
+            'latitude': tripgj.end_place.geometry.coordinates[1],
+            'longitude': tripgj.end_place.geometry.coordinates[0],
+            'radius' : RADIUS,
+            'limit': SEARCH_LIMIT,
+            'sort_by': 'distance',
+            'categories' : 'food,restaurants,shopping,hotels,beautysvc,auto,education,collegeuniv,financialservices,publicservicesgovt'
+        };
+        return $http({
+          "async": true,
+          "crossDomain": true,
+          "url": "https://api.yelp.com/v3/businesses/search",
+          "method": "GET",
+          "headers": $scope.yelp.headers,
+          "params": url_params
+        }).then(function(result) {
+          $ionicLoading.hide();
+          return result.data.businesses;
+        }).catch(function(err) {
+          Logger.displayError("Error while retrieving candidate destinations", err);
+          $ionicLoading.hide();
+        });
+    };
+
     $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
       scope: $scope
     }).then(function (popover) {
@@ -490,7 +521,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       };
       $scope.modeTripgj = tripgj;
       Logger.log("in openModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.modePopover.show($event);
+      $scope.readAndFormatCandidates(tripgj).then(function(candidates) {
+        console.log("before mapping, candidates = "+JSON.stringify(candidates));
+        $scope.modeOptions = candidates.map(function(c) {
+            return {"text": c.name, "value": c.alias};
+        });
+        console.log("after mapping, candidates = "+JSON.stringify($scope.modeOptions));
+        return $scope.modeOptions;
+      }).then(function() {
+        return $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+          scope: $scope
+        })
+      }).then(function (popover) {
+        $scope.modePopover = popover;
+        $scope.modePopover.show($event);
+      });
     };
 
     var closeModePopover = function ($event, isOther) {
@@ -704,6 +749,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           return in_trip;
       });
     };
+
+    $http.get('json/yelpfusion.json').then(function(result) {
+      $scope.yelp = result.data;
+    });
 
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
