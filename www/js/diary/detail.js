@@ -107,7 +107,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails;
-  $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+  $scope.tripgj = Timeline.getTripWrapper($stateParams.tripId);
   $scope.name = "Click on the suggestion button for a suggestion for this trip";
   $scope.mode = "Mode of Transporation";
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
