@@ -12,9 +12,11 @@
      <center><div id="dashboard-recommend" class="card">
        <h4 class="dashboard-headers"> Current Recommendation </h4>
        <h4>
-         {{name}}<br />
+         {{message}}<br />
+         {{question}}<br />
+         {{loc}}<br />
          {{mode}}<br />
-           <img src="img/small/small_{{stars}}.png" width="75" />
+           <img src="{{rating}}" width="75" />
              <button class="button button-block button-balanced button-outline" ng-click="clickReview(0)">Reviews</button>
          </h4>
      </div></center>
@@ -23,7 +25,7 @@
      <div class="modal-content">
        <div align="left">
        <h4>Reviews<br /></h4>
-       <img src="img/small/small_{{stars}}.png" width="75" /><br />
+       <img src={{rating}} width="75" /><br />
        <li ng-repeat='r in revs'>
        {{r.text}}
        <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
@@ -45,4 +47,3 @@
   </script>
 
 </ion-content>
-</ion-view>

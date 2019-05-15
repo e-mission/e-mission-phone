@@ -47,16 +47,11 @@
 
         <!--
          <div id="sectionList" class="col button-small">
-
               <div class="row" ng-repeat="section in trip.sections" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
                   <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getLocalTimeString(section.properties.start_local_dt)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p>
-
                   </div>
-
-
                   <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} km</div>
                   <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
-
               </div>
           </div>
           -->
@@ -65,25 +60,32 @@
         <div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"
                 ng-click="refreshMap()">Refresh</button>
-            <button class="button button-stable button-block"
-                ng-click="getIndividualSuggestion()">Get Suggestion</button>
-            <button class="button button-stable button-block"
-                ng-click="clickReview()">Get Reviews</button>
+        </div>
+        <div style="" class="button-bar">
+          <button class="button button-stable button-block"
+              ng-click="getIndividualSuggestion()">Get Suggestion</button>
+        </div>
+        <div style="" class="button-bar">
+          <button class="button button-stable button-block"
+              ng-click="clickReview()">Get Reviews</button>
         </div>
         <div class = "grid_layout">
           <div class = "grid_item" id = "suggestion_title"> Suggestion </div>
           <div class = "grid_item" id = "mode_title"> Mode </div>
-          <div class = "grid_item"> {{name}} </div>
+          <div class = "grid_item">
+            {{message}}<br />
+            {{question}}<br />
+            {{loc}}
+          </div>
           <div class = "grid_item"> {{mode}} </div>
         </div>
         <div align="left">
-            <h4>Reviews<br /></h4>
-            <img src="img/small/small_{{stars}}.png" width="75" /><br />
-            <li ng-repeat='r in revs'>
-            {{r.text}}
-            <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
-          </li>
-           </div>
-              <button class="button button-block button-balanced button-outline back" ng-click="clickX()">Back</button>
+           <h4>Reviews<br /></h4>
+           <img src={{rating}} width="75" /><br />
+           <li ng-repeat='r in revs'>
+           {{r.text}}
+           <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
+         </li>
+       </div>
     </ion-content>
 </ion-view>
