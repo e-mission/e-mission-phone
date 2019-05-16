@@ -1,14 +1,14 @@
 e-mission phone app
 --------------------
 
-[![Join the chat at https://gitter.im/e-mission/e-mission-phone](https://badges.gitter.im/e-mission/e-mission-phone.svg)](https://gitter.im/e-mission/e-mission-phone?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-
 This is the phone component of the e-mission system.
 
 Additional Documentation
 ---
 Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
 https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
+
+**Issues:** Since this repository is part of a larger project, all issues are tracked [in the central docs repository](https://github.com/e-mission/e-mission-docs/issues). If you have a question, [as suggested by the open source guide](https://opensource.guide/how-to-contribute/#communicating-effectively), please file an issue instead of sending an email. Since issues are public, other contributors can try to answer the question and benefit from the answer.
 
 Updating the UI only
 ---
@@ -143,7 +143,7 @@ In order to make end to end testing easy, if the local server is started on a HT
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
-Updating the e-mission-* plugins or adding new plugins
+Updating the e-mission-\* plugins or adding new plugins
 ---
 
 Installing
@@ -230,11 +230,31 @@ Restore cordova platforms and plugins
 $ cordova prepare
 ```
 
+**Note:** Sometimes, the `$ cordova prepare` command fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
+
+**Note #2:** After the update to the plugins to support api 26, for this repository **only** the first call `$ cordova prepare` fails with the error
+
+    Using cordova-fetch for cordova-android@^6.4.0
+    Error: Platform ios already added.
+The workaround is to re-run `$cordova prepare`. This not required in the https://github.com/e-mission/e-mission-base repo although the config.xml seems to be the same for both repositories.
+
+    $ cordova prepare
+    Discovered platform "android@^6.4.0" in config.xml or package.json. Adding it to the project
+    Using cordova-fetch for cordova-android@^6.4.0
+    Adding android project...
+    Creating Cordova project for the Android platform:
+        Path: platforms/android
+        Package: edu.berkeley.eecs.emission
+        Name: emission
+        Activity: MainActivity
+        Android target: android-26
+
+
 Installation is now complete. You can view the current state of the application in the emulator
 
     $ cordova emulate ios
 
-    OR 
+    OR
 
     $ cordova emulate android
 
@@ -244,7 +264,26 @@ emulator is just as snappy, and the debugger is better since chrome saves logs
 from startup, so you don't have to use tricks like adding alerts to see errors
 in startup.
 
-**Note:** Sometimes, the last command (`$ cordova prepare`) fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
+**Note about Xcode >=10** The cordova build doesn't work super smoothly for iOS anymore. Concretely, you need two additional steps:
+- install pods manually. Otherwise you will get a linker error for `-lAppAuth`
+    ```
+        $ cd platform/ios
+        $ pod install
+        $ cd ../..
+    ```
+
+- when you recompile, you will get the following compile error. The workaround is to compile from xcode. I have filed an issue for this (https://github.com/apache/cordova-ios/issues/550) but there have been no recent updates.
+
+    ```
+    /Users/shankari/e-mission/e-mission-phone/platforms/ios/Pods/JWT/Classes/Supplement/JWTBase64Coder.m:22:9: fatal error:
+          'Base64/MF_Base64Additions.h' file not found
+    #import <Base64/MF_Base64Additions.h>
+            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    1 error generated.
+    ```
+
+- Also, on Mojave, we have reports that [you may need to manually enable the Legacy Build system in Xcode if you want to run the app on a real device](https://stackoverflow.com/a/52528662/4040267).
+
 
 Troubleshooting
 ---

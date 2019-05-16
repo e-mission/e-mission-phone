@@ -7,7 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
-                                 'emission.incident.posttrip.map',
+                                 'emission.tripconfirm.posttrip.map',
                                  'emission.services'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
@@ -100,6 +100,20 @@ angular.module('emission.main', ['emission.main.recent',
       views: {
         'main-control': {
           templateUrl: "templates/incident/map.html",
+          controller: 'PostTripMapCtrl'
+        }
+      }
+  })
+
+  .state('root.main.tripconfirm', {
+      url: "/tripconfirm",
+      params: {
+        start_ts: null,
+        end_ts: null
+      },
+      views: {
+        'main-control': {
+          templateUrl: "templates/tripconfirm/map.html",
           controller: 'PostTripMapCtrl'
         }
       }
