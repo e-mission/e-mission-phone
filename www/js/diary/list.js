@@ -151,14 +151,27 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
         var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        tripgj.modeOptions = tripgj.data.destination_candidates.map(function(c) {
+            return {"text": c.name, "value": c.alias}
+        });
+        var modeMaps = arrayToMap(tripgj.modeOptions);
+        tripgj.text2entryMode = modeMaps[0];
+        tripgj.value2entryMode = modeMaps[1];
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
-            var userModeEntry = $scope.value2entryMode[userMode.data.label];
+            var userModeEntry = tripgj.value2entryMode[userMode.data.label];
             if (!angular.isDefined(userModeEntry)) {
-              userModeEntry = ConfirmHelper.getFakeEntry(userMode.data.label);
-              $scope.modeOptions.push(userModeEntry);
-              $scope.value2entryMode[userMode.data.label] = userModeEntry;
+             /* the selected entry is not one of the candidates
+              * let's look up the bid manually
+              * this involves making a remote call from list.js
+              * but it will happen once per timeline load, and only
+              * if the user manually selected a destination (~ 15% of the time)
+              */
+              userModeEntry = $scope.getOtherEntry(userMode.data.label);
+              tripgj.modeOptions.push(userModeEntry);
+              tripgj.value2entryMode[userMode.data.label] = userModeEntry;
+              tripgj.text2entryMode[userModeEntry.text] = userModeEntry;
             }
             console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
             tripgj.usermode = userModeEntry;
@@ -520,18 +533,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         "end_ts": tripgj.data.properties.end_ts
       };
       $scope.modeTripgj = tripgj;
+      $scope.modeOptions = tripgj.modeOptions;
+      $scope.value2entryMode = tripgj.value2entryMode;
       Logger.log("in openModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.readAndFormatCandidates(tripgj).then(function(candidates) {
-        console.log("before mapping, candidates = "+JSON.stringify(candidates));
-        $scope.modeOptions = candidates.map(function(c) {
-            return {"text": c.name, "value": c.alias};
-        });
-        console.log("after mapping, candidates = "+JSON.stringify($scope.modeOptions));
-        return $scope.modeOptions;
-      }).then(function() {
-        return $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
           scope: $scope
-        })
       }).then(function (popover) {
         $scope.modePopover = popover;
         $scope.modePopover.show($event);
@@ -542,8 +548,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.selected.mode = {
         value: ''
       };
-      if (isOther == false)
+      if (isOther == false) {
         $scope.draftMode = angular.undefined;
+        $scope.modeOptions = angular.undefined;
+        $scope.value2entryMode = angular.undefined;
+      }
       Logger.log("in closeModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
       $scope.modePopover.hide($event);
     };
@@ -694,8 +703,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           }
         });
       });
-      if (isOther == true)
+      if (isOther == true) {
         $scope.draftMode = angular.undefined;
+        $scope.modeOptions = angular.undefined;
+        $scope.value2entryMode = angular.undefined;
+      }
     }
 
     $scope.storePurpose = function (purpose, isOther) {
@@ -753,6 +765,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $http.get('json/yelpfusion.json').then(function(result) {
       $scope.yelp = result.data;
     });
+
+    $scope.getOtherEntry = function(other_bid) {
+        var RADIUS = 250; // meters
+        var SEARCH_LIMIT = 3; // top 3 entries
+        // geometry coordinates are in the order [lat, lng]
+        return $http({
+          "async": true,
+          "crossDomain": true,
+          "url": "https://api.yelp.com/v3/businesses/"+other_bid,
+          "method": "GET",
+          "headers": $scope.yelp.headers
+        }).then(function(result) {
+          return {"text": result.data.name, "value": result.data.alias};
+        }).catch(function(err) {
+          Logger.displayError("Error while retrieving candidate destinations", err);
+        });
+    };
 
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
