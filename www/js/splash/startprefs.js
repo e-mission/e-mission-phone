@@ -168,9 +168,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           if (temp == 'goals') {
             return 'root.main.goals';
           } else if ($rootScope.displayingIncident == true) {
-            logger.log("Showing incident from startprefs");
+            logger.log("Showing tripconfirm from startprefs");
             $rootScope.displayingIncident = false;
-            return 'root.main.incident';
+            return 'root.main.tripconfirm';
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             $rootScope.redirectTo = undefined;
@@ -207,7 +207,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.loadPreferredScreen = function() {
       logger.log("About to navigate to preferred tab");
       startprefs.getNextState().then(changeState).catch(function(error) {
-        logger.log("error "+error+" loading finding tab, loading root.intro");
+        logger.displayError("Error loading preferred tab, loading root.intro", error);
+        // logger.log("error "+error+" loading finding tab, loading root.intro");
         changeState('root.intro');
       });
     };

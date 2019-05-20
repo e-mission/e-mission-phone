@@ -1,43 +1,43 @@
 'use strict';
 
-angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
+angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'])
 .factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
     $ionicPopup, Logger) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
-  var CHOOSE_MODE_TEXT = 'CHOOSE_MODE';
+  var TRIP_CONFIRM_TEXT = 'TRIP_CONFIRM';
   var TRIP_END_EVENT = "trip_ended";
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe left or tap to pick the mode of transportation.",
-      "android": "See options or tap to pick the mode of transportation."
+      "ios": "Swipe left or tap to add information about this trip.",
+      "android": "See options or tap to add information about this trip."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Tap to pick the mode of transportation.";
+      selMessage = "Tap to add information about this trip.";
     }
     return selMessage;
   };
 
   var getTripEndReportNotification = function() {
     var actions = [{
-       identifier: 'WALK',
-       title: 'Walk',
+       identifier: 'MUTE',
+       title: 'Mute',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-       identifier: 'BIKE',
-       title: 'Bike',
+       identifier: 'SNOOZE',
+       title: 'Snooze',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-        identifier: 'MORE',
-        title: 'More',
+        identifier: 'CHOOSE',
+        title: 'Choose',
         icon: 'res://ic_signin',
         activationMode: 'foreground',
         destructive: false,
@@ -46,13 +46,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "How did you get here?",
+      title: "How and why did you come here?",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
       sound: null,
       actions: actions,
-      category: CHOOSE_MODE_TEXT,
+      category: TRIP_CONFIRM_TEXT,
       autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
@@ -89,7 +89,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     Logger.log("notification = "+JSON.stringify(notification));
     Logger.log("state = "+JSON.stringify(state));
     Logger.log("data = "+JSON.stringify(data));
-    return $ionicPopup.show({title: "Choose the transportation mode you took on trip",
+    return $ionicPopup.show({title: "Choose the travel mode and purpose of this trip",
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
         buttons: [{
@@ -117,13 +117,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   };
 
   var displayCompletedTrip = function(notification, state, data) {
-      $rootScope.displayingIncident = true;
+    $rootScope.displayingIncident = true;
       Logger.log("About to display completed trip from Notification");
-      $state.go("root.main.incident", notification.data);
+      $state.go("root.main.tripconfirm", notification.data);
   };
 
   var checkCategory = function(notification) {
-    if (notification.category == CHOOSE_MODE_TEXT) {
+    if (notification.category == TRIP_CONFIRM_TEXT) {
         return true;
     } else {
         return false;
@@ -137,7 +137,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
-      if (data.identifier === 'MORE') {
+      if (data.identifier === 'CHOOSE') {
           Logger.log("Notification, action event");
           cleanDataIfNecessary(notification, state, data);
           displayCompletedTrip(notification, state, data);
@@ -192,9 +192,7 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
                 });
             }
         }).catch(function(error) {
-            Logger.displayError(
-                "Error while muting notifications for trip end. Try again later.",
-                error);
+            Logger.displayError("Error while muting notifications for trip end. Try again later.", error);
         });
       }
     });
@@ -213,14 +211,14 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
         }
         cleanDataIfNecessary(notification, state, data);
         if($ionicPlatform.is('ios')) {
-          promptReport(notification, state, data).then(function(res) {
-            if(res == true) {
-              Logger.log("About to go to prompt page");
-              displayCompletedTrip(notification, state, data);
-            } else {
-              Logger.log("Skipped incident reporting");
-            }
-          });
+            promptReport(notification, state, data).then(function(res) {
+              if (res == true) {
+                  Logger.log("About to go to prompt page");
+                displayCompletedTrip(notification, state, data);
+              } else {
+                Logger.log("Skipped confirmation reporting");
+              }
+            });
         } else {
           Logger.log("About to go to prompt page");
           displayCompletedTrip(notification, state, data);
@@ -238,11 +236,6 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
   };
 
-  /*
-   * Unregister the post-trip notification for cci-berkeley
-   * because they want to make it opt-in. Since the base app registers by
-   * default, we need to explicitly unregister, not just comment out.
-   */
   $ionicPlatform.ready().then(function() {
     ptap.registerTripEnd();
     ptap.registerUserResponse();

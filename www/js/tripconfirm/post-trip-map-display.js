@@ -1,15 +1,16 @@
 'use strict';
-angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
+angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.plugin.kvstore',
-                                      'emission.services', 'emission.plugin.logger',
-                                      'emission.main.diary.services',
-                                      'emission.incident.posttrip.manual'])
+                                      'emission.services',
+                                      'emission.tripconfirm.services',
+                                      'emission.plugin.logger',
+                                      'emission.main.diary.services'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
-                                        Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
+                                        Logger, DiaryHelper, ConfirmHelper, Config,
+                                        UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
@@ -76,16 +77,12 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       template: 'Loading...'
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
-      // .then(PostTripManualMarker.addLatLng)
       .then(function(resultList) {
         Logger.log("Read data of length "+resultList.length);
         $ionicLoading.show({
           template: 'Mapping '+resultList.length+' points'
         });
         if (resultList.length > 0) {
-          // $scope.mapCtrl.cache.points = PostTripManualMarker.addLatLng(resultList);
-          // $scope.mapCtrl.cache.points = resultList;
-          // Logger.log("Finished adding latlng");
           var pointCoords = resultList.map(function(locEntry) {
             return [locEntry.data.longitude, locEntry.data.latitude];
           });
@@ -119,9 +116,6 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                 latlng: L.GeoJSON.coordsToLatLng(coords),
                 ts: locEntry.data.ts};
           });
-          /*
-          var points = PostTripManualMarker.addLatLng(resultList);
-          */
           $scope.mapCtrl.cache.points = points;
           Logger.log("Finished getting section points");
               /*
@@ -149,7 +143,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     })
     .catch(function(error) {
         $ionicLoading.hide();
-        Logger.displayError("Unable to retrieve location data for map", error);
+        Logger.displayError("Unable to retrieve data for map display", error);
     });
   }
 
@@ -184,17 +178,17 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     nzTour.start(tour).then(function(result) {
       Logger.log("post trip mode walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.displayError("incident walkthrough start errored", err);
+      Logger.displayError("post trip mode walkthrough errored", err);
     });
   };
 
 
-  var checkIncidentTutorialDone = function () {
-    var INCIDENT_DONE_KEY = 'incident_tutorial_done';
-    var incidentTutorialDone = KVStore.getDirect(INCIDENT_DONE_KEY);
-    if (!incidentTutorialDone) {
+  var checkTripConfirmTutorialDone = function () {
+    var TRIP_CONFIRM_DONE_KEY = 'tripconfirm_tutorial_done';
+    var tripconfirmTutorialDone = KVStore.getDirect(TRIP_CONFIRM_DONE_KEY);
+    if (!tripconfirmTutorialDone) {
       startWalkthrough();
-      KVStore.set(INCIDENT_DONE_KEY, true);
+      KVStore.set(TRIP_CONFIRM_DONE_KEY, true);
     }
   };
 
@@ -211,88 +205,64 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
-    checkIncidentTutorialDone();
+    checkTripConfirmTutorialDone();
   });
   /* END: ng-walkthrough code */
 
-   $scope.selected = {mode:'',purpose:'',other:'', other_to_store:''};
+   $scope.selected = {mode: {value: ''},purpose: {value: ''},other: {text: ''}, other_to_store:''};
 
-   var checkOtherOption = function(choice) {
-    if(choice == 'other_mode' || choice == 'other_purpose') {
-      var text = choice == 'other_mode' ? "mode" : "purpose";
-      $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
-        scope: $scope,
-        template: '<input type = "text" ng-model = "selected.other">',        
-        buttons: [
-            { text: 'Cancel',
-              onTap: function(e) {
-                $scope.selected.mode = '';
-                $scope.selected.purpose = '';
-              }
-            }, {
-               text: '<b>Save</b>',
-               type: 'button-positive',
-                  onTap: function(e) {
-                     if (!$scope.selected.other) {
-                           e.preventDefault();
-                     } else {
-                        if(choice == 'other_mode') {
-                          $scope.selected.other_to_store = $scope.selected.other;
-                          $scope.selected.other = '';
-                        } else {
-                          $scope.selected.other_to_store = $scope.selected.other;
-                          $scope.selected.other = '';
-                        }
-                        return $scope.selected.other;
-                     }
-                  }
-            }
-        ]
-      });
-
-    }
-   };
+   var checkOtherOptionOnTap = function($scope, choice) {
+      return function(e) {
+         if (!$scope.selected.other.text) {
+               e.preventDefault();
+         } else {
+            $scope.selected.other_to_store = $scope.selected.other.text;
+            $scope.selected.other.text = '';
+            return $scope.selected.other;
+         }
+      };
+    };
 
   $scope.choosePurpose = function() {
-    if($scope.selected.purpose == "other_purpose"){
-      checkOtherOption($scope.selected.purpose);
+    if($scope.selected.purpose.value == "other_purpose"){
+      ConfirmHelper.checkOtherOption($scope.selected.purpose, checkOtherOptionOnTap, $scope);
     }
   };
 
   $scope.chooseMode = function (){
-    if($scope.selected.mode == "other_mode"){
-      checkOtherOption($scope.selected.mode);
+    if($scope.selected.mode.value == "other_mode"){
+      ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
     }
   };
 
   $scope.secondSlide = false;
 
   $scope.nextSlide = function() {
-    if($scope.selected.mode == "other_mode" && $scope.selected.other_to_store.length > 0) {
+    if($scope.selected.mode.value == "other_mode" && $scope.selected.other_to_store.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storeMode($scope.selected.other_to_store);
+      $scope.storeMode($scope.selected.other_to_store, true /* isOther */);
       $ionicSlideBoxDelegate.next();
-    } else if ($scope.selected.mode != "other_mode" && $scope.selected.mode.length > 0) {
+    } else if ($scope.selected.mode.value != "other_mode" && $scope.selected.mode.value.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.selected.mode);
-      // store mode here
-      $scope.storeMode($scope.selected.mode);
+      // This storeMode expects a string, not an object with a value string
+      $scope.storeMode($scope.selected.mode.value, false /* isOther */);
       $ionicSlideBoxDelegate.next();
     }
   };
 
   $scope.doneSlide = function() {
-    if($scope.selected.purpose == "other_purpose" && $scope.selected.other_to_store.length > 0) {
+    if($scope.selected.purpose.value == "other_purpose" && $scope.selected.other_to_store.length > 0) {
       console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storePurpose($scope.selected.other_to_store);
+      $scope.storePurpose($scope.selected.other_to_store, true /* isOther */);
       $scope.closeView();
-    } else if ($scope.selected.purpose != "other_purpose" && $scope.selected.purpose.length > 0) {
+    } else if ($scope.selected.purpose.value != "other_purpose" && $scope.selected.purpose.value.length > 0) {
       console.log($scope.selected.purpose);
-      // store purpose here
-      $scope.storePurpose($scope.selected.purpose);
+      // This storePurpose expects a string, not an object with a value string
+      $scope.storePurpose($scope.selected.purpose.value, false /*is Other */);
       $scope.closeView();
     }
   };
@@ -301,38 +271,27 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
    $ionicSlideBoxDelegate.enableSlide(false);
   };
 
-  $scope.modeOptions = [
-   {text:'Walk', value:'walk'},
-   {text:'Bike',value:'bike'},
-   {text:'Drove Alone',value:'drove_alone'},
-   {text:'Shared Ride',value:'shared_ride'},
-   {text:'Taxi/Uber/Lyft',value:'taxi'},
-   {text:'Bus',value:'bus'},
-   {text:'Train',value:'train'},
-   {text:'Free Shuttle',value:'free_shuttle'},
-   {text:'Other',value:'other_mode'}];
+  ConfirmHelper.getModeOptions().then(function(modeOptions) {
+      $scope.modeOptions = modeOptions;
+  });
 
-   $scope.purposeOptions = [
-   {text:'Home', value:'home'},
-   {text:'Work',value:'work'},
-   {text:'School',value:'school'},
-   {text:'Transit transfer', value:'transit_transfer'},
-   {text:'Shopping',value:'shopping'},
-   {text:'Meal',value:'meal'},
-   {text:'Pick-up/Drop off',value:'pick_drop'},
-   {text:'Personal/Medical',value:'personal_med'},
-   {text:'Recreation/Exercise',value:'exercise'},
-   {text:'Entertainment/Social',value:'entertainment'},
-   {text:'Religious', value:'religious'},
-   {text:'Other',value:'other_purpose'}];
+  ConfirmHelper.getPurposeOptions().then(function(purposeOptions) {
+      $scope.purposeOptions = purposeOptions;
+  });
 
-   $scope.storeMode = function(mode_val) {
+   $scope.storeMode = function(mode_val, isOther) {
+      if (isOther) {
+        mode_val = ConfirmHelper.otherTextToValue(mode_val);
+      }
       $scope.draftMode.label = mode_val;
       Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
    }
 
-   $scope.storePurpose = function(purpose_val) {
+   $scope.storePurpose = function(purpose_val, isOther) {
+      if (isOther) {
+        purpose_val = ConfirmHelper.otherTextToValue(purpose_val);
+      }
       $scope.draftPurpose.label = purpose_val;
       Logger.log("in storePurpose, after setting purpose_val = "+purpose_val+", draftPurpose = "+JSON.stringify($scope.draftPurpose));
       $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose);
