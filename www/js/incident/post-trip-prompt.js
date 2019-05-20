@@ -69,12 +69,8 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
             Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
         })
         .catch(function(error) {
-            Logger.log(JSON.stringify(error));
-            $ionicPopup.alert({
-                title: "Unable to register notifications for trip end",
-                template: JSON.stringify(error)
-            });
-        });;
+            Logger.displayError("Unable to register notifications for trip end", error);
+        });
   }
 
   var getFormattedTime = function(ts_in_secs) {
@@ -145,10 +141,61 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
           Logger.log("Notification, action event");
           cleanDataIfNecessary(notification, state, data);
           displayCompletedTrip(notification, state, data);
-      } else if (data.identifier == 'BIKE') {
-        // store mode here
-      } else if (data.identifier === 'WALK') {
-        // store mode here
+      } else if (data.identifier == 'SNOOZE') {
+        var now = new Date().getTime(),
+            _30_mins_from_now = new Date(now + 30 * 60 * 1000);
+        var after_30_mins_prompt = getTripEndReportNotification();
+        after_30_mins_prompt.at = _30_mins_from_now;
+        $window.cordova.plugins.notification.local.schedule([after_30_mins_prompt]);
+        if ($ionicPlatform.is('android')) {
+            $ionicPopup.alert({
+                title: "Snoozed reminder",
+                template: "Will reappear in 30 mins"
+            });
+        }
+      } else if (data.identifier === 'MUTE') {
+        var now = new Date().getTime(),
+            _1_min_from_now = new Date(now + 60 * 1000);
+        var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
+        notifyPlugin.disableEventListener(notifyPlugin.TRIP_END, notification).then(function() {
+            if ($ionicPlatform.is('ios')) {
+                $window.cordova.plugins.notification.local.schedule([{
+                    id: REPORT,
+                    title: "Notifications for TRIP_END incident report muted",
+                    text: "Can be re-enabled from the Profile -> Developer Zone screen. Select to re-enable now, clear to ignore",
+                    at: _1_min_from_now,
+                    data: {redirectTo: "root.main.control"}
+                }]);
+            } else if ($ionicPlatform.is('android')) {
+                $ionicPopup.show({
+                    title: "Muted",
+                    template: "Notifications for TRIP_END incident report muted",
+                    buttons: [{
+                      text: 'Unmute',
+                      type: 'button-positive',
+                      onTap: function(e) {
+                        return true;
+                      }
+                    }, {
+                      text: 'Keep muted',
+                      type: 'button-positive',
+                      onTap: function(e) {
+                        return false;
+                      }
+                    }]
+                }).then(function(res) {
+                    if(res == true) {
+                        notifyPlugin.enableEventListener(notifyPlugin.TRIP_END, notification);
+                    } else {
+                        Logger.log("User chose to keep the transition muted");
+                    }
+                });
+            }
+        }).catch(function(error) {
+            Logger.displayError(
+                "Error while muting notifications for trip end. Try again later.",
+                error);
+        });
       }
     });
     $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {

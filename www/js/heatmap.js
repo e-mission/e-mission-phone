@@ -54,8 +54,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       }
       $scope.countData.isLoading = false;
     }, function(error) {
-      Logger.log("Got error %s while trying to read heatmap data" +
-        JSON.stringify(error));
+      Logger.displayError("Error while trying to read heatmap data", error);
       $scope.countData.isLoading = false;
     });
   };
@@ -297,8 +296,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       }
       $scope.stressData.isLoading = false;
     }, function(error) {
-      Logger.log("Got error %s while trying to read heatmap data" +
-        JSON.stringify(error));
+      Logger.displayError("Error while trying to read stress data", error);
       $scope.stressData.isLoading = false;
     });
   };
@@ -361,7 +359,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     nzTour.start(tour).then(function(result) {
       Logger.log("heatmap walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("heatmap walkthrough start errored" + err);
+      Logger.displayError("Error in heatmap walkthrough", err);
     });
   };
 

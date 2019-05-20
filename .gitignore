@@ -17,3 +17,6 @@ www/js/control/sync-settings.js
 www/js/control/transition-notify-settings.js
 config.xml
 package.json
+# **/data-json/*
+# **/data-xml/*
+!survey-resources/package.json

@@ -91,8 +91,8 @@ angular.module('emission.survey.launch', ['emission.services',
               });
             });
           })
-          .catch(function(event) {
-            // error
+          .catch(function(error) {
+            Logger.displayError("Unable to launch survey", error);
           });
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));
@@ -124,8 +124,8 @@ angular.module('emission.survey.launch', ['emission.services',
               });
             });
           })
-          .catch(function(event) {
-            // error
+          .catch(function(error) {
+            Logger.displayError("Unable to launch survey", error);
           });
       $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
         console.log("started loading, event = "+JSON.stringify(event));

@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com 'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: http://*.tile.openstreetmap.org https://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com 'unsafe-inline'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -21,6 +21,12 @@
     <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
     <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
+    <link href="manual_lib/enketo/css/formhub.css" media="all" rel="stylesheet">
+    <!--<link type="text/css" href="manual_lib/enketo/css/plain.css" media="all" rel="stylesheet" />-->
+    <!--<link type="text/css" href="manual_lib/enketo/css/grid.css" media="all" rel="stylesheet" />-->
+    <link href="manual_lib/enketo/css/formhub-print.css" media="print" rel="stylesheet">
+    <!--<link type="text/css" href="manual_lib/enketo/css/plain-print.css" media="print" rel="stylesheet" />-->
+    <!--<link type="text/css" href="manual_lib/enketo/css/grid-print.css" media="print" rel="stylesheet" />-->
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -53,9 +59,10 @@
     <script src="lib/angularLocalStorage/dist/angularLocalStorage.min.js"></script>
     <script src="manual_lib/leaflet-plugins/leaflet.textpath.js"></script>
     <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
+    <script src="manual_lib/enketo/enketo-bundle.js"></script>
     <!-- Manually installed javascript for libraries that are not published through bower -->
     <!-- cordova script (this will be a 404 in the browser) -->
-    <script src="cordova.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
@@ -72,8 +79,9 @@
     <script src="js/main.js"></script>
     <script src="js/recent.js"></script>
     <script src="js/incident/post-trip-manual.js"></script>
-    <!-- <script src="js/incident/post-trip-prompt.js"></script> -->
-    <script src="js/incident/post-trip-map-display.js"></script>
+    <script src="js/tripconfirm/post-trip-prompt.js"></script>
+    <script src="js/tripconfirm/post-trip-map-display.js"></script>
+    <script src="js/tripconfirm/trip-confirm-services.js"></script>
     <script src="js/diary.js"></script>
     <script src="js/diary/list.js"></script>
     <script src="js/diary/current.js"></script>
@@ -87,6 +95,7 @@
     <script src="js/common/place-detail.js"></script>
     <script src="js/common/services.js"></script>
     <script src="js/survey/launch.js"></script>
+    <script src="js/survey/enketo_launch.js"></script>
     <script src="js/heatmap.js"></script>
     <script src="js/metrics.js"></script>
     <script src="js/goals.js"></script>
