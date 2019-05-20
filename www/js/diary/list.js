@@ -14,8 +14,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.tripconfirm.services',
                                       'emission.services',
-                                      'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-    'emission.plugin.logger'
+                                      'ng-walkthrough', 'nzTour',
+                                      'emission.plugin.kvstore',
+                                      'emission.plugin.logger', 'ion-autocomplete'
   ])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
@@ -28,6 +29,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+    var NOT_A_SERVICE_ENTRY = {"text": "Not a service", "value": "not_a_service"}
 
   // Add option
 
@@ -146,6 +148,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
+    $scope.addModeEntry = function(tripgj, userModeEntry) {
+      tripgj.modeOptions.push(userModeEntry);
+      tripgj.value2entryMode[userModeEntry.value] = userModeEntry;
+      tripgj.text2entryMode[userModeEntry.text] = userModeEntry;
+    };
+
     /**
      * Embed 'mode' to the trip
      */
@@ -154,6 +162,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.modeOptions = tripgj.data.destination_candidates.map(function(c) {
             return {"text": c.name, "value": c.alias}
         });
+        tripgj.modeOptions.push(NOT_A_SERVICE_ENTRY);
         var modeMaps = arrayToMap(tripgj.modeOptions);
         tripgj.text2entryMode = modeMaps[0];
         tripgj.value2entryMode = modeMaps[1];
@@ -163,18 +172,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             var userModeEntry = tripgj.value2entryMode[userMode.data.label];
             if (!angular.isDefined(userModeEntry)) {
              /* the selected entry is not one of the candidates
+              * but it is a valid service
               * let's look up the bid manually
               * this involves making a remote call from list.js
               * but it will happen once per timeline load, and only
               * if the user manually selected a destination (~ 15% of the time)
               */
-              userModeEntry = $scope.getOtherEntry(userMode.data.label);
-              tripgj.modeOptions.push(userModeEntry);
-              tripgj.value2entryMode[userMode.data.label] = userModeEntry;
-              tripgj.text2entryMode[userModeEntry.text] = userModeEntry;
+              $scope.getOtherEntry(userMode.data.label).then(function(text2val) {
+                userModeEntry = text2val;
+                $scope.addModeEntry(tripgj, text2val);
+                tripgj.usermode = userModeEntry;
+              });
+            } else {
+                console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
+                tripgj.usermode = userModeEntry;
             }
-            console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
-            tripgj.usermode = userModeEntry;
         }
         Logger.log("Set mode" + JSON.stringify(userModeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
         $scope.modeTripgj = angular.undefined;
@@ -652,6 +664,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       closeModePopover();
     };
 
+    $scope.chooseTypedMode = function (callback) {
+       console.log("choose typed mode with id "+$scope.selected.other.id
+        +" for trip "+$scope.modeTripgj);
+       // Note that on typing, autocomplete returns an id and not the alias.
+       // however, fortunately, the API call to lookup the business works with
+       // both id and alias
+       return $scope.getOtherEntry($scope.selected.other.id).then(function(text2val) {
+         // text2val is now text: name, value: alias
+         $scope.storeMode(text2val, true); // isOther = true
+       });
+    };
+
     /*
      * Convert the array of {text, value} objects to a {value: text} map so that 
      * we can look up quickly without iterating over the list for each trip
@@ -684,22 +708,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.storeMode = function (mode, isOther) {
-      if(isOther) {
-        // Let's make the value for user entered modes look consistent with our
-        // other values
-        mode.value = ConfirmHelper.otherTextToValue(mode.text);
-      }
       $scope.draftMode.label = mode.value;
       Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
       var tripToUpdate = $scope.modeTripgj;
       $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
+        // in this callback we will use the curried value of tripToUpdate
         $scope.$apply(function() {
           if (isOther) {
-            tripToUpdate.usermode = ConfirmHelper.getFakeEntry(mode.value);
-            $scope.modeOptions.push(tripToUpdate.usermode);
-            $scope.value2entryMode[mode.value] = tripToUpdate.usermode;
+            $scope.addModeEntry(tripToUpdate, mode);
+            tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
           } else {
-            tripToUpdate.usermode = $scope.value2entryMode[mode.value];
+            tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
           }
         });
       });
@@ -781,6 +800,33 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }).catch(function(err) {
           Logger.displayError("Error while retrieving candidate destinations", err);
         });
+    };
+
+    $scope.queryByName = function(query, tripgj) {
+        console.log("About to query for "+query);
+        if (query) {
+            var tripToUpdate = tripgj;
+            // geometry coordinates are in the order [lat, lng]
+            var url_params = {
+                'latitude': tripToUpdate.data.properties.end_loc.coordinates[1],
+                'longitude': tripToUpdate.data.properties.end_loc.coordinates[0],
+                'text' : query,
+            };
+            return $http({
+              "async": true,
+              "crossDomain": true,
+              "url": "https://api.yelp.com/v3/autocomplete",
+              "method": "GET",
+              "headers": $scope.yelp.headers,
+              "params": url_params
+            }).then(function(result) {
+              console.log("Got result "+JSON.stringify(result.data.businesses));
+              return result.data.businesses;
+            }).catch(function(err) {
+              Logger.displayError("Error while retrieving candidate destinations", err);
+            });
+        }
+        return []
     };
 
     $ionicPlatform.ready().then(function() {
