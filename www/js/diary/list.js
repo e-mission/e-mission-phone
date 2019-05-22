@@ -30,6 +30,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
     var NOT_A_SERVICE_ENTRY = {"text": "Not a service", "value": "not_a_service"}
+    var OTHER_ENTRY = {"text": "Other", "value": "other_mode"}
 
   // Add option
 
@@ -162,6 +163,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.modeOptions = tripgj.data.destination_candidates.map(function(c) {
             return {"text": c.name, "value": c.alias}
         });
+        tripgj.modeOptions.push(OTHER_ENTRY);
         tripgj.modeOptions.push(NOT_A_SERVICE_ENTRY);
         var modeMaps = arrayToMap(tripgj.modeOptions);
         tripgj.text2entryMode = modeMaps[0];
@@ -599,7 +601,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if (isOther == false)
         $scope.draftPurpose = angular.undefined;
       Logger.log("in closePurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
-      $scope.purposePopover.hide($event);
+      $scope.purposePopover.remove($event);
     };
 
     /**
@@ -659,18 +661,31 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.storeMode($scope.selected.mode, isOther);
       } else {
         isOther = true
-        ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
+        $scope.launchAutocompletePopup();
+        // ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
       }
       closeModePopover();
     };
 
+    $scope.launchAutocompletePopup = function() {
+        var ionAutocompleteElement = document.getElementsByClassName("ion-autocomplete");
+        angular.element(ionAutocompleteElement).controller('ionAutocomplete').fetchSearchQuery("", true);
+        angular.element(ionAutocompleteElement).controller('ionAutocomplete').showModal();
+    }
+
     $scope.chooseTypedMode = function (callback) {
-       console.log("choose typed mode with id "+$scope.selected.other.id
+       // We used to use a $scope variable to represent the callback, but that
+       // seems to be updated in a delayed fashion - e.g. if I select Thaiphoon,
+       // then the scope variable is set to "". but if I open the popup again
+       // and then select "Kaplan's Test Prep" then the $scope variable is set
+       // to "Thaiphoon". See video in associated PR.
+       // so we just use the selected value instead
+       console.log("choose typed mode with id "+callback.item.id
         +" for trip "+$scope.modeTripgj);
        // Note that on typing, autocomplete returns an id and not the alias.
        // however, fortunately, the API call to lookup the business works with
        // both id and alias
-       return $scope.getOtherEntry($scope.selected.other.id).then(function(text2val) {
+       return $scope.getOtherEntry(callback.item.id).then(function(text2val) {
          // text2val is now text: name, value: alias
          $scope.storeMode(text2val, true); // isOther = true
        });
@@ -830,7 +845,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $ionicPlatform.ready().then(function() {
-      readAndUpdateForDay(moment().startOf('day'));
+      readAndUpdateForDay(moment("2018-05-10").startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from

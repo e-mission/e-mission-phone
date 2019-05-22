@@ -6,6 +6,6 @@
       	<ion-list ng-repeat="mode in modeOptions">
 		    <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value">{{mode.text}}</ion-radio>
 		</ion-list>
-        <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off" max-selected-items="1" ng-model="selected.other" items-method="queryByName(query, modeTripgj)" placeholder="Destination" item-view-value-key="name" items-clicked-method="chooseTypedMode()" ng-model-options="{debounce:1000}"/>
+        <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off" max-selected-items="1" ng-model="selected.other" items-method="queryByName(query, modeTripgj)" placeholder="Destination" item-view-value-key="name" items-clicked-method="chooseTypedMode(callback)" ng-model-options="{debounce:1000}" manage-externally="true" ng-hide="true"/>
    </ion-content>
 </ion-popover-view>
