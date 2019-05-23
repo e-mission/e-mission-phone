@@ -29,6 +29,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
+    $scope.confirmSurvey = function(trip) {
+      $state.go("root.main.enketosurvey", {
+          form_location: "json/trip-end-survey_v5.json",
+          opts: JSON.stringify({
+            session: {
+              data_key: 'manual/confirm_survey',
+              trip_properties: {
+                start_ts: trip.data.properties.start_ts,
+                end_ts: trip.data.properties.end_ts,
+              },
+            }
+          }),
+      });
+    }
+
   // Add option
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {

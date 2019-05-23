@@ -89,6 +89,7 @@
                     </div>
                 </div>
              </div>
+             <!-- Mode / Purpose confirm labels -->
              <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">
                 <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
                 Mode
@@ -97,27 +98,38 @@
                 Purpose 
                 </div>
              </div>
+             <!-- Mode / Purpose confirm buttons -->
              <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">
                 <div class="col-50" style="text-align: center;">
-                    <div ng-if="tripgj.usermode" class="mode-confirm-container">
+                    <!-- <div ng-if="tripgj.usermode" class="mode-confirm-container">
                         <button ng-click ="openModePopover($event, tripgj)" class="button btn-mode-confirm btn-mode-confirm-green">
                             {{tripgj.usermode.text}}
                         </button>
-                    </div>
-                    <div  ng-if="!tripgj.usermode" class="mode-confirm-container">
+                    </div> -->
+                    <!-- <div  ng-if="!tripgj.usermode" class="mode-confirm-container">
                         <button ng-click ="openModePopover($event, tripgj)" class="button btn-mode-confirm btn-mode-confirm-white">
+                            Choose Mode
+                        </button>
+                    </div> -->
+                    <div  class="mode-confirm-container">
+                        <button ng-click ="confirmSurvey(tripgj)" class="button btn-mode-confirm btn-mode-confirm-white">
                             Choose Mode
                         </button>
                     </div>
                 </div>
                 <div class="col-50" style="text-align: center;">
-                    <div ng-if="tripgj.userpurpose" class="purpose-confirm-container">
+                    <!-- <div ng-if="tripgj.userpurpose" class="purpose-confirm-container">
                         <button ng-click="openPurposePopover($event, tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-green">
                             {{tripgj.userpurpose.text}}
                         </button>
-                    </div>
-                    <div ng-if="!tripgj.userpurpose" class="purpose-confirm-container">
+                    </div> -->
+                    <!-- <div ng-if="!tripgj.userpurpose" class="purpose-confirm-container">
                         <button ng-click="openPurposePopover($event, tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-white">
+                            Choose Purpose
+                        </button>
+                    </div> -->
+                    <div class="purpose-confirm-container">
+                        <button ng-click="confirmSurvey(tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-white">
                             Choose Purpose
                         </button>
                     </div>
