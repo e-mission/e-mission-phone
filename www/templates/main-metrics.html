@@ -132,7 +132,7 @@
           <ion-slide id="modes">
             <div id="dashboard-bottom" class="card">
               <h4 class="dashboard-headers">Distance</h4>
-                <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #FFEF00;font-weight: 700;">No summary data</div>
+                <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #C3E669;font-weight: 700;">No summary data</div>
                 <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
                   <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
 
