@@ -1,9 +1,10 @@
 angular.module('emission.enketo-survey.services', [
   'ionic',
+  'emission.services',
   'emission.plugin.logger',
   'emission.main.diary.services'
 ])
-.factory('EnketoSurvey', function($window, $http, DiaryHelper, Logger) {
+.factory('EnketoSurvey', function($window, $http, DiaryHelper, UnifiedDataLoader, Logger) {
   var __form = null;
   var __session = {};
   var __form_location = null;
@@ -47,7 +48,7 @@ angular.module('emission.enketo-survey.services', [
 
   function _restoreAnswer(answers) {
     const answer = DiaryHelper.getUserInputForTrip(__session.trip_properties, answers);
-    return (!answer) ? null : answer.dataStr;
+    return (!answer) ? null : answer.data.dataStr;
   }
 
   function displayForm() {
@@ -56,7 +57,8 @@ angular.module('emission.enketo-survey.services', [
         __session.data_key &&
         __session.data_key === 'manual/confirm_survey'
     ) {
-      return $window.cordova.plugins.BEMUserCache.getAllMessages(__session.data_key, false)
+      const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+      return UnifiedDataLoader.getUnifiedMessagesForInterval(__session.data_key, tq)
       .then(_restoreAnswer)
       .then(function(answerData) {
         return _loadForm({ instanceStr: answerData });
