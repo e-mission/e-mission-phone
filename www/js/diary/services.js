@@ -1,8 +1,11 @@
 'use strict';
 
-angular.module('emission.main.diary.services', ['emission.plugin.logger',
-    'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual'])
+angular.module('emission.main.diary.services', [
+  'emission.plugin.logger',
+  'emission.services', 'emission.main.common.services',
+  'emission.enketo-survey.services',
+  'emission.incident.posttrip.manual',
+])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -454,7 +457,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
+    $rootScope, CommonGraph, UnifiedDataLoader, EnketoSurvey, Logger) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -956,11 +959,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
           return Promise.all([
             UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq),
+            EnketoSurvey.getAllSurveyAnswers('manual/confirm_survey', { populateLabels: true }),
           ]).then(function(results) {
             timeline.data.unifiedConfirmsResults = {
               modes: results[0],
               purposes: results[1],
+              surveyAnswers: results[2]
             };
             return combinedTripList;
           });
