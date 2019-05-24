@@ -17,7 +17,6 @@ angular.module('emission.survey.enketo.launch', [
       $state.go("root.main.diary")
     });
   } else {
-    console.log('EnketoSurvey.init()');
     EnketoSurvey.init($stateParams.form_location, $stateParams.opts)
     .then(function(){
       $('.form-header').after(EnketoSurvey.getState().loaded_form);

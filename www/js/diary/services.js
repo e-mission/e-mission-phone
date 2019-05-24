@@ -408,12 +408,24 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       };
 
   var printUserInput = function(ui) {
+    // Type: Survey Answer
+    if (angular.isDefined(ui.trip_properties)) {
+      return ui.trip_properties.start_ts + " -> "+ ui.trip_properties.end_ts;
+    }
+
+    // Default: Mode / Purpose
     return ui.data.start_ts + " -> "+ ui.data.end_ts + 
         " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
   dh.getUserInputForTrip = function(tripProp, userInputList) {
     var potentialCandidates = userInputList.filter(function(userInput) {
+        // Type: Survey Answer
+        if (angular.isDefined(userInput.trip_properties)) {
+          return userInput.trip_properties.start_ts >= tripProp.start_ts && userInput.trip_properties.end_ts <= tripProp.end_ts;
+        }
+
+        // Default: Mode / Purpose
         return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
     });
     if (potentialCandidates.length === 0)  {
@@ -428,6 +440,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
     var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
+        // Type: Survey Answer
+        if (angular.isDefined(pc2.trip_properties) && angular.isDefined(pc1.trip_properties)) {
+          return pc2.trip_properties.start_ts - pc1.trip_properties.start_ts;
+        }
+
+        // Default: Mode / Purpose
         return pc2.metadata.write_ts - pc1.metadata.write_ts;
     });
     var mostRecentEntry = sortedPC[0];
