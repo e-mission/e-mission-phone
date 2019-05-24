@@ -1,5 +1,9 @@
-angular.module('emission.enketo-survey.services', ['ionic', 'emission.plugin.logger'])
-.factory('EnketoSurvey', function($window, $http, Logger) {
+angular.module('emission.enketo-survey.services', [
+  'ionic',
+  'emission.plugin.logger',
+  'emission.main.diary.services'
+])
+.factory('EnketoSurvey', function($window, $http, DiaryHelper, Logger) {
   var __form = null;
   var __session = {};
   var __form_location = null;
@@ -40,28 +44,10 @@ angular.module('emission.enketo-survey.services', ['ionic', 'emission.plugin.log
     var loadErrors = __form.init();
     return loadErrors;
   }
-  
+
   function _restoreAnswer(answers) {
-    Logger.log("Answers stored locally" + JSON.stringify(answers));
-    var tripAnswer = null;
-    var found = false;
-    answers.forEach(function(answer){
-      Logger.log(__session.trip_properties);
-      Logger.log(answer.trip_properties);
-      if ((__session.trip_properties.start_ts === answer.trip_properties.start_ts) &&
-        (__session.trip_properties.end_ts === answer.trip_properties.end_ts)) {
-          Logger.log('found');
-          Logger.log(found);
-        if (!found) {
-          tripAnswer = answer.data;
-          Logger.log("trip" + JSON.stringify(trip) + "answer" + JSON.stringify(tripAnswer));
-          found = true;
-        }
-      }
-    });
-    Logger.log('tripAnswer');
-    Logger.log(tripAnswer);
-    return tripAnswer;
+    const answer = DiaryHelper.getUserInputForTrip(__session.trip_properties, answers);
+    return (!answer) ? null : answer.dataStr;
   }
 
   function displayForm() {
@@ -70,31 +56,27 @@ angular.module('emission.enketo-survey.services', ['ionic', 'emission.plugin.log
         __session.data_key &&
         __session.data_key === 'manual/confirm_survey'
     ) {
-      console.log('try to restore answer');
       return $window.cordova.plugins.BEMUserCache.getAllMessages(__session.data_key, false)
       .then(_restoreAnswer)
       .then(function(answerData) {
-        console.log('answerData');
-        console.log(answerData);
         return _loadForm({ instanceStr: answerData });
       });
     }
     return _loadForm();
   }
+
+  function _saveData() {
+    const value = {
+      dataStr: __form.getDataStr(),
+      trip_properties: __session.trip_properties,
+    };
+    return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, value);
+  }
   
   function validateForm() {
     return __form.validate()
     .then(function (valid){
-      if (valid) {
-        const data = {
-          data: __form.getDataStr(),
-          trip_properties: __session.trip_properties,
-        };
-        return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data)
-        .then(function(){
-          return true;
-        });
-      }
+      if (valid) return _saveData().then(function(){return valid});
       return valid;
     });
   }
