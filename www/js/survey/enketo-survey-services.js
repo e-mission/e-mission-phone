@@ -1,9 +1,13 @@
 angular.module('emission.enketo-survey.services', [
   'ionic',
   'emission.services',
-  'emission.plugin.logger'
+  'emission.plugin.logger',
+  'emission.tripconfirm.services',
 ])
-.factory('EnketoSurvey', function($window, $http, UnifiedDataLoader, Logger) {
+.factory('EnketoSurvey', function(
+  $window, $http, UnifiedDataLoader, Logger,
+  ConfirmHelper
+) {
   var __form = null;
   var __session = {};
   var __form_location = null;
@@ -45,61 +49,8 @@ angular.module('emission.enketo-survey.services', [
     return loadErrors;
   }
 
-  /**
-   * _printUserInput
-   * Borrowed from `DiaryHelper.printUserInput` in file `www/js/diary/services.js`
-   * to avoid circular dependency
-   */
-  function _printUserInput(ui) {
-    // Type: Survey Answer
-    if (angular.isDefined(ui.data.trip_properties)) {
-      return ui.data.trip_properties.start_ts + " -> "+ ui.data.trip_properties.end_ts +
-        " logged at "+ ui.metadata.write_ts;
-    }
-
-    // Default: Mode / Purpose
-    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
-        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
-  }
-
-  /**
-   * _getUserInputForTrip
-   * Borrowed from `DiaryHelper.getUserInputForTrip` in file `www/js/diary/services.js`
-   * to avoid circular dependency
-   */
-  function _getUserInputForTrip(tripProp, userInputList) {
-    var potentialCandidates = userInputList.filter(function(userInput) {
-        // Type: Survey Answer
-        if (angular.isDefined(userInput.data.trip_properties)) {
-          return userInput.data.trip_properties.start_ts >= tripProp.start_ts &&
-            userInput.data.trip_properties.end_ts <= tripProp.end_ts;
-        }
-
-        // Default: Mode / Purpose
-        return userInput.data.start_ts >= tripProp.start_ts &&
-          userInput.data.end_ts <= tripProp.end_ts;
-    });
-    if (potentialCandidates.length === 0)  {
-        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
-        return undefined;
-    }
-
-    if (potentialCandidates.length === 1)  {
-        Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  "+ _printUserInput(potentialCandidates[0]));
-        return potentialCandidates[0];
-    }
-
-    Logger.log("potentialCandidates are "+potentialCandidates.map(_printUserInput));
-    var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
-        return pc2.metadata.write_ts - pc1.metadata.write_ts;
-    });
-    var mostRecentEntry = sortedPC[0];
-    Logger.log("Returning mostRecentEntry "+_printUserInput(mostRecentEntry));
-    return mostRecentEntry;
-  }
-
   function _restoreAnswer(answers) {
-    const answer = _getUserInputForTrip(__session.trip_properties, answers);
+    const answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
     return (!answer) ? null : answer.data.dataStr;
   }
 
