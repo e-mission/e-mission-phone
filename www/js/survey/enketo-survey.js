@@ -2,7 +2,7 @@
 
 angular.module('emission.survey.enketo.launch', [
   'emission.services',
-  'emission.enketo-survey.services',
+  'emission.enketo-survey.service',
   'emission.plugin.logger',
 ])
 .controller('EnketoSurveyCtrl', function($scope, $state, $stateParams, $rootScope,

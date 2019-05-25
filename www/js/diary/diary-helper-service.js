@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.helper.service', [
   'emission.plugin.logger',
   'emission.services', 'emission.main.common.services',
-  'emission.enketo-survey.services',
+  'emission.enketo-survey.service',
   'emission.incident.posttrip.manual',
 ])
 .factory('DiaryHelper', function (CommonGraph, PostTripManualMarker) {

@@ -1,4 +1,4 @@
-angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
+angular.module('emission.tripconfirm.service', ['ionic', "emission.plugin.logger"])
 .factory('ConfirmHelper', function ($http, $ionicPopup, Logger) {
   var ch = {};
   ch.otherModes = [];
