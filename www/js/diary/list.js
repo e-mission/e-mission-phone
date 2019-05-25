@@ -166,7 +166,7 @@ angular.module('emission.main.diary.list', [
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        var userMode = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, modeList);
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
@@ -187,7 +187,7 @@ angular.module('emission.main.diary.list', [
      * Embed 'purpose' to the trip
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
-        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+        var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
@@ -731,7 +731,9 @@ angular.module('emission.main.diary.list', [
     };
 
     $ionicPlatform.ready().then(function() {
-      readAndUpdateForDay(moment().startOf('day'));
+      // DEBUG DATE
+      readAndUpdateForDay(moment('2015-07-22').startOf('day'));
+      // readAndUpdateForDay(moment().startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from

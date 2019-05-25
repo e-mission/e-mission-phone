@@ -1,95 +1,142 @@
 angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
-.factory("ConfirmHelper", function($http, $ionicPopup, Logger) {
-    var ch = {};
-    ch.otherModes = [];
-    ch.otherPurposes = [];
+.factory('ConfirmHelper', function ($http, $ionicPopup, Logger) {
+  var ch = {};
+  ch.otherModes = [];
+  ch.otherPurposes = [];
 
-    var fillInOptions = function(confirmConfig) {
-        if(confirmConfig.data.length == 0) {
-            throw "blank string instead of missing file on dynamically served app";
-        }
-        ch.modeOptions = confirmConfig.data.modeOptions;
-        ch.purposeOptions = confirmConfig.data.purposeOptions;
+  var fillInOptions = function (confirmConfig) {
+    if (confirmConfig.data.length == 0) {
+      throw "blank string instead of missing file on dynamically served app";
     }
+    ch.modeOptions = confirmConfig.data.modeOptions;
+    ch.purposeOptions = confirmConfig.data.purposeOptions;
+  };
 
-    var loadAndPopulateOptions = function(filename) {
-        return $http.get(filename)
-            .then(fillInOptions)
-            .catch(function(err) {
-                // no prompt here since we have a fallback
-                console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
-                return $http.get(filename+".sample")
-                     .then(fillInOptions)
-                     .catch(function(err) {
-                        // prompt here since we don't have a fallback
-                        Logger.displayError("Error while reading default confirm options", err);
-                     });
-            });
-    }
-    
-    /*
-     * Lazily loads the options and returns the chosen one. Using this option
-     * instead of an in-memory data structure so that we can return a promise
-     * and not have to worry about when the data is available.
-     */
-    ch.getModeOptions = function() {
-        if (!angular.isDefined(ch.modeOptions)) {
-            return loadAndPopulateOptions("json/trip_confirm_options.json")
-                .then(function() { return ch.modeOptions; });
-        } else {
-            return Promise.resolve(ch.modeOptions);
-        }
-    }
-
-    ch.getPurposeOptions = function() {
-        if (!angular.isDefined(ch.purposeOptions)) {
-            return loadAndPopulateOptions("json/trip_confirm_options.json")
-                .then(function() { return ch.purposeOptions; });
-        } else {
-            return Promise.resolve(ch.purposeOptions);
-        }
-    }
-
-    ch.checkOtherOption = function(choice, onTapFn, $scope) {
-        if(choice.value == 'other_mode' || choice.value == 'other_purpose') {
-          var text = choice.value == 'other_mode' ? "mode" : "purpose";
-          $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
-            scope: $scope,
-            template: '<input type = "text" ng-model = "selected.other.text">',
-            buttons: [
-                { text: 'Cancel',
-                  onTap: function(e) {
-                    $scope.selected.mode = '';
-                    $scope.selected.purpose = '';
-                  }
-                }, {
-                   text: '<b>Save</b>',
-                   type: 'button-positive',
-                   onTap: onTapFn($scope, choice)
-                }
-            ]
+  var loadAndPopulateOptions = function (filename) {
+    return $http.get(filename)
+      .then(fillInOptions)
+      .catch(function (err) {
+        // no prompt here since we have a fallback
+        console.log("error " + JSON.stringify(err) + " while reading confirm options, reverting to defaults");
+        return $http.get(filename + ".sample")
+          .then(fillInOptions)
+          .catch(function (err) {
+            // prompt here since we don't have a fallback
+            Logger.displayError("Error while reading default confirm options", err);
           });
-        }
+      });
+  };
+
+  /*
+    * Lazily loads the options and returns the chosen one. Using this option
+    * instead of an in-memory data structure so that we can return a promise
+    * and not have to worry about when the data is available.
+    */
+  ch.getModeOptions = function () {
+    if (!angular.isDefined(ch.modeOptions)) {
+      return loadAndPopulateOptions("json/trip_confirm_options.json")
+        .then(function () { return ch.modeOptions; });
+    } else {
+      return Promise.resolve(ch.modeOptions);
+    }
+  }
+
+  ch.getPurposeOptions = function () {
+    if (!angular.isDefined(ch.purposeOptions)) {
+      return loadAndPopulateOptions("json/trip_confirm_options.json")
+        .then(function () { return ch.purposeOptions; });
+    } else {
+      return Promise.resolve(ch.purposeOptions);
+    }
+  }
+
+  ch.checkOtherOption = function (choice, onTapFn, $scope) {
+    if (choice.value == 'other_mode' || choice.value == 'other_purpose') {
+      var text = choice.value == 'other_mode' ? "mode" : "purpose";
+      $ionicPopup.show({
+        title: "Please fill in the " + text + " not listed.",
+        scope: $scope,
+        template: '<input type = "text" ng-model = "selected.other.text">',
+        buttons: [
+          {
+            text: 'Cancel',
+            onTap: function (e) {
+              $scope.selected.mode = '';
+              $scope.selected.purpose = '';
+            }
+          }, {
+            text: '<b>Save</b>',
+            type: 'button-positive',
+            onTap: onTapFn($scope, choice)
+          }
+        ]
+      });
+    }
+  }
+
+  ch.otherTextToValue = function (otherText) {
+    return otherText.toLowerCase().replace(" ", "_");
+  }
+
+  ch.otherValueToText = function (otherValue) {
+    var words = otherValue.replace("_", " ").split(" ");
+    if (words.length == 0) {
+      return "";
+    }
+    return words.map(function (word) {
+      return word[0].toUpperCase() + word.slice(1);
+    }).join(" ");
+  }
+
+  ch.getFakeEntry = function (otherValue) {
+    return {
+      text: ch.otherValueToText(otherValue),
+      value: otherValue
+    };
+  }
+
+  var printUserInput = function (ui) {
+    // Type: Survey Answer
+    if (angular.isDefined(ui.data.trip_properties)) {
+      return ui.data.trip_properties.start_ts + " -> " + ui.data.trip_properties.end_ts +
+        " logged at " + ui.metadata.write_ts;
     }
 
-    ch.otherTextToValue = function(otherText) {
-        return otherText.toLowerCase().replace(" ", "_");
+    // Default: Mode / Purpose
+    return ui.data.start_ts + " -> " + ui.data.end_ts +
+      " " + ui.data.label + " logged at " + ui.metadata.write_ts;
+  };
+
+  ch.getUserInputForTrip = function (tripProp, userInputList) {
+    var potentialCandidates = userInputList.filter(function (userInput) {
+      // Type: Survey Answer
+      if (angular.isDefined(userInput.data.trip_properties)) {
+        return userInput.data.trip_properties.start_ts >= tripProp.start_ts &&
+          userInput.data.trip_properties.end_ts <= tripProp.end_ts;
+      }
+
+      // Default: Mode / Purpose
+      return userInput.data.start_ts >= tripProp.start_ts &&
+        userInput.data.end_ts <= tripProp.end_ts;
+    });
+    if (potentialCandidates.length === 0) {
+      Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+      return undefined;
     }
 
-    ch.otherValueToText = function(otherValue) {
-        var words = otherValue.replace("_", " ").split(" ");
-        if (words.length == 0) {
-            return "";
-        }
-        return words.map(function(word) {
-            return word[0].toUpperCase() + word.slice(1);
-        }).join(" ");
+    if (potentialCandidates.length === 1) {
+      Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  " + printUserInput(potentialCandidates[0]));
+      return potentialCandidates[0];
     }
 
-    ch.getFakeEntry = function(otherValue) {
-        return {text: ch.otherValueToText(otherValue),
-            value: otherValue};
-    }
+    Logger.log("potentialCandidates are " + potentialCandidates.map(printUserInput));
+    var sortedPC = potentialCandidates.sort(function (pc1, pc2) {
+      return pc2.metadata.write_ts - pc1.metadata.write_ts;
+    });
+    var mostRecentEntry = sortedPC[0];
+    Logger.log("Returning mostRecentEntry " + printUserInput(mostRecentEntry));
+    return mostRecentEntry;
+  };
 
-    return ch;
-})
+  return ch;
+});
