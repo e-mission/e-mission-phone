@@ -439,48 +439,5 @@ angular.module('emission.main.diary.helper.service', [
     }
   };
 
-  var printUserInput = function (ui) {
-    // Type: Survey Answer
-    if (angular.isDefined(ui.data.trip_properties)) {
-      return ui.data.trip_properties.start_ts + " -> " + ui.data.trip_properties.end_ts +
-        " logged at " + ui.metadata.write_ts;
-    }
-
-    // Default: Mode / Purpose
-    return ui.data.start_ts + " -> " + ui.data.end_ts +
-      " " + ui.data.label + " logged at " + ui.metadata.write_ts;
-  };
-
-  dh.getUserInputForTrip = function (tripProp, userInputList) {
-    var potentialCandidates = userInputList.filter(function (userInput) {
-      // Type: Survey Answer
-      if (angular.isDefined(userInput.data.trip_properties)) {
-        return userInput.data.trip_properties.start_ts >= tripProp.start_ts &&
-          userInput.data.trip_properties.end_ts <= tripProp.end_ts;
-      }
-
-      // Default: Mode / Purpose
-      return userInput.data.start_ts >= tripProp.start_ts &&
-        userInput.data.end_ts <= tripProp.end_ts;
-    });
-    if (potentialCandidates.length === 0) {
-      Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
-      return undefined;
-    }
-
-    if (potentialCandidates.length === 1) {
-      Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  " + printUserInput(potentialCandidates[0]));
-      return potentialCandidates[0];
-    }
-
-    Logger.log("potentialCandidates are " + potentialCandidates.map(printUserInput));
-    var sortedPC = potentialCandidates.sort(function (pc1, pc2) {
-      return pc2.metadata.write_ts - pc1.metadata.write_ts;
-    });
-    var mostRecentEntry = sortedPC[0];
-    Logger.log("Returning mostRecentEntry " + printUserInput(mostRecentEntry));
-    return mostRecentEntry;
-  };
-
   return dh;
 });
