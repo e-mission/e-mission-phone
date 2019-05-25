@@ -726,7 +726,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.draftMode.label = mode.value;
       Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
       var tripToUpdate = $scope.modeTripgj;
-      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
+      Timeline.instantSave(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
         // in this callback we will use the curried value of tripToUpdate
         $scope.$apply(function() {
           if (isOther) {
@@ -736,6 +736,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
           }
         });
+      }).catch(function(error) {
+          Logger.displayError("Error while saving mode information", error);
       });
       if (isOther == true) {
         $scope.draftMode = angular.undefined;
