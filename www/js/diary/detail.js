@@ -69,7 +69,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $scope.bid = result.businessid;
       $scope.stars = result.rating;
     }).catch(function(err) {
-      console.log("Error while getting individual suggestion" + err);
+      Logger.displayError("Error while getting individual suggestion", err);
+      $ionicLoading.hide();
     });
   };
   $scope.clickReview = function() {
@@ -85,8 +86,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     }).then(function(res) {
       $scope.revs = res.data.reviews;
       $scope.rating = "img/small/small_"+$scope.stars+".png";
+    }).catch(function(err) {
+      Logger.displayError("Error while getting individual suggestion", err);
+      $ionicLoading.hide();
     });
-    $ionicLoading.hide();
   };
 
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;

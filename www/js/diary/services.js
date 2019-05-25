@@ -951,6 +951,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           });
         return combinedTripList;
       }).then(function(combinedTripList) {
+        var retrieveCandidatePromises = combinedTripList.map(function(trip) {
+            return timeline.readAndFormatCandidates(trip)
+        });
+        return Promise.all(retrieveCandidatePromises).then(function(candidateLists) {
+            combinedTripList.forEach(function(trip, index, array) {
+                trip.destination_candidates = candidateLists[index];
+            });
+            return combinedTripList;
+        }).catch(function(error) {
+            Logging.displayError("Error while retrieving candidate businesses", error);
+            return combinedTripList;
+        });
+      }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
         // If there is any error reading from the server, we fallback on the local cache
@@ -1155,6 +1168,40 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           });
       return [startPlace, endPlace, stopList, sectionList];
     };
+
+    $http.get('json/yelpfusion.json').then(function(result) {
+      timeline.yelp = result.data;
+    });
+
+    timeline.readAndFormatCandidates = function(trip) {
+        var RADIUS = 250; // meters
+        var SEARCH_LIMIT = 3; // top 3 entries
+        // geometry coordinates are in the order [lng, lat] because they are geojson
+        var url_params = {
+            'latitude': trip.properties.end_loc.coordinates[1],
+            'longitude': trip.properties.end_loc.coordinates[0],
+            'radius' : RADIUS,
+            'limit': SEARCH_LIMIT,
+            'sort_by': 'distance',
+            'categories' : 'food,restaurants,shopping,hotels,'
+                + 'beautysvc,auto,education,collegeuniv,'
+                + 'financialservices,publicservicesgovt'
+        };
+        return $http({
+          "async": true,
+          "crossDomain": true,
+          "url": "https://api.yelp.com/v3/businesses/search",
+          "method": "GET",
+          "headers": timeline.yelp.headers,
+          "params": url_params
+        }).then(function(result) {
+          return result.data.businesses;
+        })
+    };
+
+    timeline.instantSave = function(key, data) {
+        return CommHelper.putOne(key, data);
+    }
 
     return timeline;
   })
