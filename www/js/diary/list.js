@@ -16,7 +16,9 @@ angular.module('emission.main.diary.list', [
   'emission.tripconfirm.service',
   'emission.services',
   'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-  'emission.plugin.logger'
+  'emission.plugin.logger',
+  'emission.main.diary.helper.service',
+  'emission.main.diary.timeline-helper.service',
 ])
 .controller("DiaryListCtrl", function(
   $window, $scope, $rootScope, $ionicPlatform, $state,
@@ -166,42 +168,57 @@ angular.module('emission.main.diary.list', [
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, modeList);
-        if (angular.isDefined(userMode)) {
-            // userMode is a mode object with data + metadata
-            // the label is the "value" from the options
-            var userModeEntry = $scope.value2entryMode[userMode.data.label];
-            if (!angular.isDefined(userModeEntry)) {
-              userModeEntry = ConfirmHelper.getFakeEntry(userMode.data.label);
-              $scope.modeOptions.push(userModeEntry);
-              $scope.value2entryMode[userMode.data.label] = userModeEntry;
-            }
-            console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
-            tripgj.usermode = userModeEntry;
+      if (!modeList) return;
+      var userMode = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+      if (angular.isDefined(userMode)) {
+        // userMode is a mode object with data + metadata
+        // the label is the "value" from the options
+        var userModeEntry = $scope.value2entryMode[userMode.data.label];
+        if (!angular.isDefined(userModeEntry)) {
+          userModeEntry = ConfirmHelper.getFakeEntry(userMode.data.label);
+          $scope.modeOptions.push(userModeEntry);
+          $scope.value2entryMode[userMode.data.label] = userModeEntry;
         }
-        Logger.log("Set mode" + JSON.stringify(userModeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
-        $scope.modeTripgj = angular.undefined;
+        console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
+        tripgj.usermode = userModeEntry;
+      }
+      Logger.log("Set mode" + JSON.stringify(userModeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
+      $scope.modeTripgj = angular.undefined;
     }
 
     /**
      * Embed 'purpose' to the trip
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
-        var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
-        if (angular.isDefined(userPurpose)) {
-            // userPurpose is a purpose object with data + metadata
-            // the label is the "value" from the options
-            var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
-            if (!angular.isDefined(userPurposeEntry)) {
-              userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
-              $scope.purposeOptions.push(userPurposeEntry);
-              $scope.value2entryPurpose[userPurpose.data.label] = userPurposeEntry;
-            }
-            console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
-            tripgj.userpurpose = userPurposeEntry;
+      if (!purposeList) return;
+      var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+      if (angular.isDefined(userPurpose)) {
+        // userPurpose is a purpose object with data + metadata
+        // the label is the "value" from the options
+        var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
+        if (!angular.isDefined(userPurposeEntry)) {
+          userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
+          $scope.purposeOptions.push(userPurposeEntry);
+          $scope.value2entryPurpose[userPurpose.data.label] = userPurposeEntry;
         }
-        Logger.log("Set purpose " + JSON.stringify(userPurposeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
-        $scope.purposeTripgj = angular.undefined;
+        console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
+        tripgj.userpurpose = userPurposeEntry;
+      }
+      Logger.log("Set purpose " + JSON.stringify(userPurposeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
+      $scope.purposeTripgj = angular.undefined;
+    }
+
+    /**
+     * Embed 'surveyAnswer' to the trip
+     */
+    $scope.populateSurveyAnswerFromTimeline = function (tripgj, surveyAnswers) {
+      if (!surveyAnswers) return;
+      var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, surveyAnswers);
+      console.log(userSurveyAnswer);
+      if (angular.isDefined(userSurveyAnswer)) {
+        // userSurveyAnswer is a survey answer object with data + metadata
+        tripgj.userSurveyAnswer = userSurveyAnswer;
+      }
     }
 
     $scope.populateBasicClasses = function(tripgj) {
@@ -265,6 +282,7 @@ angular.module('emission.main.diary.list', [
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
             $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
+            $scope.populateSurveyAnswerFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.surveyAnswers);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
