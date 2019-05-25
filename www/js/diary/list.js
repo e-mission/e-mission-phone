@@ -774,5 +774,11 @@ angular.module('emission.main.diary.list', [
           $rootScope.displayingIncident = false;
         }
       });
+
+      $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams, fromState, fromParams) {
+        if (fromState.url === '/enketosurvey/:form_location/:opts' && toState.url === '/diary') {
+          readAndUpdateForDay(Timeline.data.currDay);
+        }
+      });
     });
 });
