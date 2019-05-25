@@ -96,26 +96,12 @@ angular.module('emission.tripconfirm.service', ['ionic', "emission.plugin.logger
   }
 
   var printUserInput = function (ui) {
-    // Type: Survey Answer
-    if (angular.isDefined(ui.data.trip_properties)) {
-      return ui.data.trip_properties.start_ts + " -> " + ui.data.trip_properties.end_ts +
-        " logged at " + ui.metadata.write_ts;
-    }
-
-    // Default: Mode / Purpose
-    return ui.data.start_ts + " -> " + ui.data.end_ts +
-      " " + ui.data.label + " logged at " + ui.metadata.write_ts;
+    const data = ui.data.label ? ui.data.label : '<survey_result>';
+    return `${ui.data.start_ts} -> ${ui.data.end_ts} ${data} logged at ${ui.metadata.write_ts}`;
   };
 
   ch.getUserInputForTrip = function (tripProp, userInputList) {
     var potentialCandidates = userInputList.filter(function (userInput) {
-      // Type: Survey Answer
-      if (angular.isDefined(userInput.data.trip_properties)) {
-        return userInput.data.trip_properties.start_ts >= tripProp.start_ts &&
-          userInput.data.trip_properties.end_ts <= tripProp.end_ts;
-      }
-
-      // Default: Mode / Purpose
       return userInput.data.start_ts >= tripProp.start_ts &&
         userInput.data.end_ts <= tripProp.end_ts;
     });

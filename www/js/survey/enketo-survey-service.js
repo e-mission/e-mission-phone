@@ -51,7 +51,7 @@ angular.module('emission.enketo-survey.service', [
 
   function _restoreAnswer(answers) {
     const answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
-    return (!answer) ? null : answer.data.dataStr;
+    return (!answer) ? null : answer.data.survey_result;
   }
 
   function getAllSurveyAnswers(key = 'manual/confirm_survey', opts = {}) {
@@ -65,7 +65,7 @@ angular.module('emission.enketo-survey.service', [
       const xmlParser = new $window.DOMParser();
       if (key === 'manual/confirm_survey') {
         return answers.map(function(answer){
-          const xmlStr = answer.data.dataStr;
+          const xmlStr = answer.data.survey_result;
           const xml = xmlParser.parseFromString(xmlStr, 'text/xml');
 
           // Travel Mode
@@ -106,8 +106,9 @@ angular.module('emission.enketo-survey.service', [
 
   function _saveData() {
     const value = {
-      dataStr: __form.getDataStr(),
-      trip_properties: __session.trip_properties,
+      survey_result: __form.getDataStr(),
+      start_ts: __session.start_ts,
+      end_ts: __session.end_ts,
     };
     return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, value);
   }
