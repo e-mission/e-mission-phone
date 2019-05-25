@@ -13,7 +13,7 @@ angular.module('emission.main.diary.list', [
   'ionic-datepicker',
   'emission.main.common.services',
   'emission.incident.posttrip.manual',
-  'emission.tripconfirm.services',
+  'emission.tripconfirm.service',
   'emission.services',
   'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
   'emission.plugin.logger'
