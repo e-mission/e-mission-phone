@@ -731,9 +731,7 @@ angular.module('emission.main.diary.list', [
     };
 
     $ionicPlatform.ready().then(function() {
-      // DEBUG DATE
-      readAndUpdateForDay(moment('2015-07-22').startOf('day'));
-      // readAndUpdateForDay(moment().startOf('day'));
+      readAndUpdateForDay(moment().startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from
