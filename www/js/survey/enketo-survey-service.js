@@ -54,6 +54,13 @@ angular.module('emission.enketo-survey.service', [
     return (!answer) ? null : answer.data.survey_result;
   }
 
+  function _parseAnswerByTagName(answerXml, tagName) {
+    const vals = answerXml.getElementsByTagName(tagName);
+    const val = vals.length ? vals[0].innerHTML : null;
+    if (!val) return '<null>';
+    return val.replace(/_/g, ' ');
+  }
+
   function getAllSurveyAnswers(key = 'manual/confirm_survey', opts = {}) {
     const _opts_populateLabels = opts.populateLabels || false;
 
@@ -67,20 +74,10 @@ angular.module('emission.enketo-survey.service', [
         return answers.map(function(answer){
           const xmlStr = answer.data.survey_result;
           const xml = xmlParser.parseFromString(xmlStr, 'text/xml');
-
-          // Travel Mode
-          const travelModes = xml.getElementsByTagName('travel_mode_main');
-          const travelMode = travelModes.length ? travelModes[0].innerHTML : null;
-          const travelModeLabel = travelMode ? travelMode.charAt(0).toUpperCase() + travelMode.slice(1) : '';
-
-          // Travel Purpose
-          const travelPurposes = xml.getElementsByTagName('travel_purpose_main');
-          const travelPurpose = travelPurposes.length ? travelPurposes[0].innerHTML : null;
-          const travelPurposeLabel = travelPurpose ? travelPurpose.charAt(0).toUpperCase() + travelPurpose.slice(1) : '';
-
-          // Result Population
-          answer.mode_label = travelModeLabel;
-          answer.purpose_label = travelPurposeLabel;
+          // Data injection
+          answer.travel_mode_main = _parseAnswerByTagName(xml, 'travel_mode_main');
+          answer.o_purpose_main = _parseAnswerByTagName(xml, 'o_purpose_main');
+          answer.d_purpose_main = _parseAnswerByTagName(xml, 'd_purpose_main');
           return answer;
         });
       }
