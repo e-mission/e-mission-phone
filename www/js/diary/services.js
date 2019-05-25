@@ -1199,6 +1199,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         })
     };
 
+    timeline.instantSave = function(key, data) {
+        return CommHelper.putOne(key, data);
+    }
+
     return timeline;
   })
 
