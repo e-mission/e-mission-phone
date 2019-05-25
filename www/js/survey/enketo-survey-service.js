@@ -107,8 +107,8 @@ angular.module('emission.enketo-survey.service', [
   function _saveData() {
     const value = {
       survey_result: __form.getDataStr(),
-      start_ts: __session.start_ts,
-      end_ts: __session.end_ts,
+      start_ts: __session.trip_properties.start_ts,
+      end_ts: __session.trip_properties.end_ts,
     };
     return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, value);
   }
