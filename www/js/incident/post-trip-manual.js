@@ -1,9 +1,13 @@
 'use strict';
 
-angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
-  'emission.main.diary.services'])
-.factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, $ionicPlatform,
-                                          Logger, Timeline) {
+angular.module('emission.incident.posttrip.manual', [
+  'emission.plugin.logger',
+  'emission.main.diary.timeline-helper.service'
+])
+.factory('PostTripManualMarker', function(
+  $window, $state, $ionicActionSheet, $ionicPlatform,
+  Logger, Timeline
+) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
@@ -353,71 +357,73 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
     */
 
    var startAddingIncidentToPointsImpl = function(e, layer, allPoints, geojsonFeatureArray) {
-          Logger.log("points "+getFormattedTime(allPoints[0].ts)
-                      + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
-                      + " received click event, adding stress popup at "
-                      + e.latlng);
-          if ($state.$current == "root.main.diary") {
-            Logger.log("skipping incident addition in list view");
-            return;
-          }
-          var map = layer;
-          if (!(layer instanceof L.Map)) {
-            map = layer._map;
-          }
-          var latlng = e.latlng;
-          var marker = L.circleMarker(latlng).addTo(map);
+    Logger.log("points "+getFormattedTime(allPoints[0].ts)
+      + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
+      + " received click event, adding stress popup at "
+      + e.latlng);
+    if ($state.$current == "root.main.diary") {
+      Logger.log("skipping incident addition in list view");
+      return;
+    }
+    var map = layer;
+    if (!(layer instanceof L.Map)) {
+      map = layer._map;
+    }
+    var latlng = e.latlng;
+    var marker = L.circleMarker(latlng).addTo(map);
 
-          var sortedPoints = getClosestPoints(marker.toGeoJSON(), allPoints);
-          if (sortedPoints[0].selDistance > DISTANCE_THRESHOLD()) {
-            Logger.log("skipping incident addition because closest distance "
-              + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + DISTANCE_THRESHOLD());
-            cancelTempEntry(latlng, ts, marker, map);
-            return;
-          };
-          var closestPoints = sortedPoints.slice(0,10);
-          Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
+    var sortedPoints = getClosestPoints(marker.toGeoJSON(), allPoints);
+    if (sortedPoints[0].selDistance > DISTANCE_THRESHOLD()) {
+      Logger.log("skipping incident addition because closest distance "
+        + sortedPoints[0].selDistance + " > DISTANCE_THRESHOLD " + DISTANCE_THRESHOLD());
+      cancelTempEntry(latlng, ts, marker, map);
+      return;
+    };
+    var closestPoints = sortedPoints.slice(0,10);
+    Logger.log("Closest 10 points are "+ closestPoints.map(JSON.stringify));
 
-          var timeBins = getTimeBins(closestPoints);
-          Logger.log("number of bins = " + timeBins.length);
+    var timeBins = getTimeBins(closestPoints);
+    Logger.log("number of bins = " + timeBins.length);
 
 
-          if (timeBins.length == 1) {
-            // Common case: find the first item in the first time bin, no need to
-            // prompt
-            Logger.log("About to retrieve ts from first bin of "+timeBins);
-            var ts = timeBins[0][0].ts;
-            ptmm.showSheet(geojsonFeatureArray, latlng, ts, marker, map);
-          } else {
-            // Uncommon case: multiple passes - get the closest point in each bin
-            // Note that this may not be the point with the smallest time diff
-            // e.g. if I am going to school and coming back, when sorted by time diff,
-            // the points will be ordered from home to school on the way there and
-            // from school to home on the way back. So if the incident happened
-            // close to home, the second bin, sorted by time, will have the first
-            // point as the point closest to school, not to home. We will need to
-            // re-sort based on distance. Or we can just accept an error in the timestamp,
-            // which will be a max of 5 * 30 secs = 2.5 minutes
-            // Let's accept the error for now and fix later.
-            // Example: 8:06 - 8:48 on 16 Nov on iPhone3, around 3pm on 16 Nov on
-            Logger.log("About to retrieve first ts from each bin of "+timeBins);
-            var tsOptions = timeBins.map(function(bin) {
-              return bin[0].ts;
-            });
-            Logger.log("tsOptions = " + tsOptions);
-            var timeSelActions = tsOptions.map(function(ts) {
-              return {text: getFormattedTime(ts),
-                      selValue: ts};
-            });
-            $ionicActionSheet.show({titleText: "Choose incident time",
-              buttons: timeSelActions,
-              buttonClicked: function(index, button) {
-                var ts = button.selValue;
-                ptmm.showSheet(geojsonFeatureArray, latlng, ts, marker, map);
-                return true;
-              }
-            });
-          };
+    if (timeBins.length == 1) {
+      // Common case: find the first item in the first time bin, no need to
+      // prompt
+      Logger.log("About to retrieve ts from first bin of "+timeBins);
+      var ts = timeBins[0][0].ts;
+      ptmm.showSheet(geojsonFeatureArray, latlng, ts, marker, map);
+    } else {
+      // Uncommon case: multiple passes - get the closest point in each bin
+      // Note that this may not be the point with the smallest time diff
+      // e.g. if I am going to school and coming back, when sorted by time diff,
+      // the points will be ordered from home to school on the way there and
+      // from school to home on the way back. So if the incident happened
+      // close to home, the second bin, sorted by time, will have the first
+      // point as the point closest to school, not to home. We will need to
+      // re-sort based on distance. Or we can just accept an error in the timestamp,
+      // which will be a max of 5 * 30 secs = 2.5 minutes
+      // Let's accept the error for now and fix later.
+      // Example: 8:06 - 8:48 on 16 Nov on iPhone3, around 3pm on 16 Nov on
+      Logger.log("About to retrieve first ts from each bin of "+timeBins);
+      var tsOptions = timeBins.map(function(bin) {
+        return bin[0].ts;
+      });
+      Logger.log("tsOptions = " + tsOptions);
+      var timeSelActions = tsOptions.map(function(ts) {
+        return {
+          text: getFormattedTime(ts),
+          selValue: ts,
+        };
+      });
+      $ionicActionSheet.show({titleText: "Choose incident time",
+        buttons: timeSelActions,
+        buttonClicked: function(index, button) {
+          var ts = button.selValue;
+          ptmm.showSheet(geojsonFeatureArray, latlng, ts, marker, map);
+          return true;
+        }
+      });
+    };
   };
 
   // END: Adding incidents
@@ -472,7 +478,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
       return existingTs.indexOf(currFeature.ts) == -1;
     });
     Logger.log("After filtering existing length went from = "
-      +existingTs.length +" to "+retList.length);
+      + existingTs.length + " to " + retList.length);
     return retList;
   };
 

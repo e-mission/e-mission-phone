@@ -8,48 +8,49 @@
  * All UI elements should only use $scope variables.
  */
 
-angular.module('emission.main.diary.list',['ui-leaflet',
-                                      'ionic-datepicker',
-                                      'emission.main.common.services',
-                                      'emission.incident.posttrip.manual',
-                                      'emission.tripconfirm.services',
-                                      'emission.services',
-                                      'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-    'emission.plugin.logger'
-  ])
-
-.controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    $ionicScrollDelegate, $ionicPopup,
-                                    $ionicLoading,
-                                    $ionicActionSheet,
-                                    ionicDatePicker,
-                                    leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover) {
+angular.module('emission.main.diary.list', [
+  'ui-leaflet',
+  'ionic-datepicker',
+  'emission.main.common.services',
+  'emission.incident.posttrip.manual',
+  'emission.tripconfirm.services',
+  'emission.services',
+  'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
+  'emission.plugin.logger'
+])
+.controller("DiaryListCtrl", function(
+  $window, $scope, $rootScope, $ionicPlatform, $state,
+  $ionicScrollDelegate, $ionicPopup,
+  $ionicLoading,
+  $ionicActionSheet,
+  ionicDatePicker,
+  leafletData, Timeline, CommonGraph, DiaryHelper,
+  Config, PostTripManualMarker, ConfirmHelper, nzTour,
+  KVStore, Logger, UnifiedDataLoader, $ionicPopover
+) {
   console.log("controller DiaryListCtrl called");
-    var MODE_CONFIRM_KEY = "manual/mode_confirm";
-    var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+  var MODE_CONFIRM_KEY = "manual/mode_confirm";
+  var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
-    $scope.confirmSurvey = function(trip) {
-      $state.go("root.main.enketosurvey", {
+  $scope.confirmSurvey = function(trip) {
+    $state.go("root.main.enketosurvey", {
       form_location: "json/trip-end-survey_v6.json",
-          opts: JSON.stringify({
-            session: {
-              data_key: 'manual/confirm_survey',
-              trip_properties: {
-                start_ts: trip.data.properties.start_ts,
-                end_ts: trip.data.properties.end_ts,
-              },
-            }
-          }),
-      });
-    }
-
-  // Add option
+      opts: JSON.stringify({
+        session: {
+          data_key: 'manual/confirm_survey',
+          trip_properties: {
+            start_ts: trip.data.properties.start_ts,
+            end_ts: trip.data.properties.end_ts,
+          },
+        }
+      }),
+    });
+  }
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {
-      console.log("diary/list received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-    });
+    console.log("diary/list received resize event, invalidating map size");
+    data.leafletObject.invalidateSize();
+  });
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -61,36 +62,36 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   };
 
   angular.extend($scope, {
-      defaults: {
-        zoomControl: false,
-        dragging: false,
-        zoomAnimation: true,
-        touchZoom: false,
-        scrollWheelZoom: false,
-        doubleClickZoom: false,
-        boxZoom: false,
-      }
-    });
+    defaults: {
+      zoomControl: false,
+      dragging: false,
+      zoomAnimation: true,
+      touchZoom: false,
+      scrollWheelZoom: false,
+      doubleClickZoom: false,
+      boxZoom: false,
+    }
+  });
 
-    angular.extend($scope.defaults, Config.getMapTiles())
+  angular.extend($scope.defaults, Config.getMapTiles());
 
-    moment.locale('en', {
-      relativeTime: {
-        future: "in %s",
-        past: "%s ago",
-        s: "secs",
-        m: "a min",
-        mm: "%d m",
-        h: "an hr",
-        hh: "%d h",
-        d: "a day",
-        dd: "%d days",
-        M: "a month",
-        MM: "%d months",
-        y: "a year",
-        yy: "%d years"
-      }
-    });
+  moment.locale('en', {
+    relativeTime: {
+      future: "in %s",
+      past: "%s ago",
+      s: "secs",
+      m: "a min",
+      mm: "%d m",
+      h: "an hr",
+      hh: "%d h",
+      d: "a day",
+      dd: "%d days",
+      M: "a month",
+      MM: "%d months",
+      y: "a year",
+      yy: "%d years"
+    }
+  });
 
     /*
     * While working with dates, note that the datepicker needs a javascript date because it uses
