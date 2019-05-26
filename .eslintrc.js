@@ -47,6 +47,11 @@ module.exports = {
                 "exports": "only-multiline",
                 "functions": "ignore",
             }
-        ]
+        ],
+        "no-unused-vars": [
+            "error", {
+                "argsIgnorePattern": "^_",
+            }
+        ],
     }
 };
