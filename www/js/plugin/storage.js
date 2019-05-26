@@ -1,9 +1,9 @@
-angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
-                                           'angularLocalStorage'])
-
-.factory('KVStore', function($window, Logger, storage, $ionicPopup) {
+angular.module("emission.plugin.kvstore", [
+    "emission.plugin.logger",
+    "angularLocalStorage",
+]).factory("KVStore", function($window, Logger, storage, $ionicPopup) {
     var logger = Logger;
-    var kvstoreJs = {}
+    var kvstoreJs = {};
     /*
      * Sets in both localstorage and native storage
      * If the message is not a JSON object, wrap it in an object with the key
@@ -11,7 +11,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
      */
     var getNativePlugin = function() {
         return $window.cordova.plugins.BEMUserCache;
-    }
+    };
 
     /*
      * Munge plain, non-JSON objects to JSON objects before storage
@@ -25,7 +25,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
             store_val[key] = value;
         }
         return store_val;
-    }
+    };
 
 
     kvstoreJs.set = function(key, value) {
@@ -39,7 +39,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
          */
         storage.set(key, store_val);
         return getNativePlugin().putLocalStorage(key, store_val);
-    }
+    };
 
     var getUnifiedValue = function(key) {
         var ls_stored_val = storage.get(key, undefined);
@@ -67,7 +67,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                      */
                     ls_stored_val = mungeValue(key, ls_stored_val);
                     $ionicPopup.alert({template: "Local "+key+" found, native "
-                        +key+" missing, writing "+key+" to native"})
+                        +key+" missing, writing "+key+" to native"});
                     logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
                                 " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                                 " copying local "+key+" to native...");
@@ -77,10 +77,10 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                     });
                 }
                 console.assert(ls_stored_val != null && uc_stored_val != null,
-                "ls_stored_val ="+JSON.stringify(ls_stored_val)+
+                    "ls_stored_val ="+JSON.stringify(ls_stored_val)+
                 "uc_stored_val ="+JSON.stringify(uc_stored_val));
                 $ionicPopup.alert({template: "Local "+key+" found, native "
-                    +key+" found, but different, writing "+key+" to local"})
+                    +key+" found, but different, writing "+key+" to local"});
                 logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
                             " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                             " copying native "+key+" to local...");
@@ -88,7 +88,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                 return uc_stored_val;
             }
         });
-    }
+    };
 
     /*
      * If a non-JSON object was munged for storage, unwrap it.
@@ -101,13 +101,13 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
             // it must have been an object
             return retData;
         }
-    }
+    };
 
     kvstoreJs.get = function(key) {
         return getUnifiedValue(key).then(function(retData) {
             return unmungeValue(key, retData);
         });
-    }
+    };
 
     /*
      * TODO: Temporary fix for data that:
@@ -124,17 +124,17 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
         // will run in background, we won't wait for the results
         getUnifiedValue(key);
         return unmungeValue(key, storage.get(key));
-    }
+    };
 
     kvstoreJs.remove = function(key) {
         storage.remove(key);
         return getNativePlugin().removeLocalStorage(key);
-    }
+    };
 
     kvstoreJs.clearAll = function() {
         storage.clearAll();
         return getNativePlugin().clearAll();
-    }
+    };
 
     /* 
      * TODO: remove these two functions after we have confirmed that native
@@ -144,11 +144,11 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
      */
     kvstoreJs.clearOnlyLocal = function() {
         return storage.clearAll();
-    }
+    };
 
     kvstoreJs.clearOnlyNative = function() {
         return getNativePlugin().clearAll();
-    }
+    };
 
     return kvstoreJs;
 });
