@@ -1,18 +1,15 @@
 'use strict';
-angular.module('emission.incident.posttrip.map', [
-  'ui-leaflet', 'ng-walkthrough',
-  'emission.plugin.kvstore',
-  'emission.services', 'emission.plugin.logger',
-  'emission.main.diary.timeline-helper.service',
-  'emission.incident.posttrip.manual',
-])
-.controller("PostTripMapCtrl", function(
-  $scope, $window, $state,
-  $stateParams, $ionicLoading,
-  leafletData, leafletMapEvents, nzTour, KVStore,
-  Logger, DiaryHelper, Config,
-  UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup
-) {
+angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
+                                      'emission.plugin.kvstore',
+                                      'emission.services', 'emission.plugin.logger',
+                                      'emission.main.diary.services',
+                                      'emission.incident.posttrip.manual'])
+
+.controller("PostTripMapCtrl", function($scope, $window, $state,
+                                        $stateParams, $ionicLoading,
+                                        leafletData, leafletMapEvents, nzTour, KVStore,
+                                        Logger, Timeline, DiaryHelper, Config,
+                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
