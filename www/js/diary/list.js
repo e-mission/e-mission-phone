@@ -194,9 +194,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             // the label is the "value" from the options
             var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
             if (!angular.isDefined(userPurposeEntry)) {
-                userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
-                $scope.purposeOptions.push(userPurposeEntry);
-                $scope.value2entryPurpose[userPurpose.data.label] = userPurposeEntry;
+              userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
+              $scope.purposeOptions.push(userPurposeEntry);
+              $scope.value2entryPurpose[userPurpose.data.label] = userPurposeEntry;
             }
             console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
             tripgj.userpurpose = userPurposeEntry;
