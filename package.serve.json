@@ -7,6 +7,7 @@
     "serve": "phonegap --verbose serve"
   },
   "devDependencies": {
+    "eslint": "^5.16.0",
     "phonegap": "7.1.1"
   },
   "dependencies": {
