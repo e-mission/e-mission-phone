@@ -41,10 +41,10 @@ module.exports = {
         ],
         "comma-dangle": [
             "error", {
-                "arrays": "always",
-                "objects": "always",
-                "imports": "always",
-                "exports": "always",
+                "arrays": "only-multiline",
+                "objects": "only-multiline",
+                "imports": "only-multiline",
+                "exports": "only-multiline",
                 "functions": "ignore",
             }
         ]
