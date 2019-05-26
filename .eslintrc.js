@@ -1,6 +1,7 @@
 module.exports = {
     "globals": {
         "angular": "readonly",
+        "d3": "readonly",
     },
     "env": {
         "browser": true,
