@@ -1,10 +1,17 @@
 module.exports = {
+    "globals": {
+        "angular": "readonly",
+    },
     "env": {
         "browser": true,
         "es6": true,
         "node": true,
     },
-    "extends": "eslint:recommended",
+    "extends": [
+        "eslint:recommended"
+    ],
+    "plugins": [
+    ],
     "rules": {
         "indent": [
             "error",
