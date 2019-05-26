@@ -1,6 +1,7 @@
 module.exports = {
     "globals": {
         "angular": "readonly",
+        "cordova": "readonly",
         "d3": "readonly",
         "ionic": "readonly",
         "L": "readonly",
