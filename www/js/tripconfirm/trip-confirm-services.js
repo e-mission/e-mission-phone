@@ -91,6 +91,8 @@ angular.module('emission.tripconfirm.service', ['ionic', "emission.plugin.logger
             value: otherValue};
     }
 
+    // copied over from www/js/diary/services.js
+    // for previous blame, please look at that history prior to 2019-05-26
     var printUserInput = function (ui) {
         const data = ui.data.label ? ui.data.label : '<survey_result>';
         return `${ui.data.start_ts} -> ${ui.data.end_ts} ${data} logged at ${ui.metadata.write_ts}`;
