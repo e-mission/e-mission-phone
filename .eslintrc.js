@@ -2,6 +2,7 @@ module.exports = {
     "globals": {
         "angular": "readonly",
         "d3": "readonly",
+        "moment": "readonly",
     },
     "env": {
         "browser": true,
