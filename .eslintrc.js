@@ -2,7 +2,9 @@ module.exports = {
     "globals": {
         "angular": "readonly",
         "d3": "readonly",
+        "ionic": "readonly",
         "moment": "readonly",
+        "nv": "readonly",
     },
     "env": {
         "browser": true,
@@ -10,7 +12,7 @@ module.exports = {
         "node": true,
     },
     "extends": [
-        "eslint:recommended"
+        "eslint:recommended",
     ],
     "plugins": [
     ],
@@ -57,7 +59,7 @@ module.exports = {
         ],
         "strict": [
             "error",
-            "never"
+            "never",
         ],
     }
 };
