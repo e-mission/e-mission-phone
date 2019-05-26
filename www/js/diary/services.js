@@ -2,6 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
+    'emission.enketo-survey.service',
     'emission.incident.posttrip.manual'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
   var dh = {};
@@ -410,7 +411,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
+    $rootScope, CommonGraph, UnifiedDataLoader, EnketoSurvey, Logger) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -922,7 +923,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             };
             return combinedTripList;
           });
-        return combinedTripList;
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
