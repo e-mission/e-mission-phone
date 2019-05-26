@@ -1,6 +1,9 @@
-angular.module('emission.main.control.collection', [])
-.factory("ControlCollectionHelper", function($window, 
-        $ionicActionSheet, $ionicPopup, $ionicPopover, $rootScope) {
+angular.module("emission.main.control.collection", [
+
+]).factory("ControlCollectionHelper", function(
+    $window, $ionicActionSheet, $ionicPopup,
+    $ionicPopover, $rootScope
+) {
 
     var cch = {};
     cch.new_config = {};
@@ -13,7 +16,7 @@ angular.module('emission.main.control.collection', [])
      */
 
     cch.getCollectionSettings = function() {
-        var promiseList = []
+        var promiseList = [];
         promiseList.push(cch.getConfig());
         promiseList.push(cch.getAccuracyOptions());
         return Promise.all(promiseList).then(function(resultList){
@@ -22,7 +25,7 @@ angular.module('emission.main.control.collection', [])
             cch.config = config;
             cch.accuracyOptions = accuracyOptions;
             return cch.formatConfigForDisplay(config, accuracyOptions);
-        })
+        });
     };
 
     cch.formatConfigForDisplay = function(config, accuracyOptions) {
@@ -31,15 +34,15 @@ angular.module('emission.main.control.collection', [])
             if (prop == "accuracy") {
                 for (var name in accuracyOptions) {
                     if (accuracyOptions[name] == config[prop]) {
-                        retVal.push({'key': prop, 'val': name});
+                        retVal.push({"key": prop, "val": name});
                     }
                 }
             } else {
-                retVal.push({'key': prop, 'val': config[prop]});
+                retVal.push({"key": prop, "val": config[prop]});
             }
         }
         return retVal;
-    }
+    };
 
     /* 
      * Functions to edit and save values
@@ -52,29 +55,29 @@ angular.module('emission.main.control.collection', [])
         new_scope.isAndroid = ionic.Platform.isAndroid;
         new_scope.setAccuracy = cch.setAccuracy;
         return new_scope;
-    }
+    };
 
     cch.editConfig = function($event) {
         // TODO: replace with angular.clone
         cch.new_config = JSON.parse(JSON.stringify(cch.config));
         var popover_scope = getPopoverScope();
         popover_scope.new_config = cch.new_config;
-        $ionicPopover.fromTemplateUrl('templates/control/main-collect-settings.html', {
-            scope: popover_scope
+        $ionicPopover.fromTemplateUrl("templates/control/main-collect-settings.html", {
+            scope: popover_scope,
         }).then(function(popover) {
             cch.settingsPopup = popover;
             console.log("settings popup = "+cch.settingsPopup);
             cch.settingsPopup.show($event);
         });
         return cch.new_config;
-    }
+    };
 
     cch.saveAndReload = function() {
         console.log("new config = "+cch.new_config);
-        cch.setConfig(cch.new_config)
-        .then(function(){
+        cch.setConfig(cch.new_config
+        ).then(function(){
             cch.config = cch.new_config;
-            $rootScope.$broadcast('control.update.complete', 'collection config');
+            $rootScope.$broadcast("control.update.complete", "collection config");
         }, function(err){
             console.log("setConfig Error: " + err);
         });
@@ -88,7 +91,7 @@ angular.module('emission.main.control.collection', [])
 
     cch.setAccuracy= function() {
         var accuracyActions = [];
-        for (name in cch.accuracyOptions) {
+        for (let name in cch.accuracyOptions) {
             accuracyActions.push({text: name, value: cch.accuracyOptions[name]});
         }
         $ionicActionSheet.show({
@@ -98,23 +101,30 @@ angular.module('emission.main.control.collection', [])
             buttonClicked: function(index, button) {
                 cch.new_config.accuracy = button.value;
                 return true;
-            }
+            },
         });
     };
 
     cch.forceState = function() {
-        var forceStateActions = [{text: "Initialize",
-                                  transition: "INITIALIZE"},
-                                 {text: 'Start trip',
-                                  transition: "EXITED_GEOFENCE"},
-                                 {text: 'End trip',
-                                  transition: "STOPPED_MOVING"},
-                                 {text: 'Visit ended',
-                                  transition: "VISIT_ENDED"},
-                                 {text: 'Visit started',
-                                  transition: "VISIT_STARTED"},
-                                 {text: 'Remote push',
-                                  transition: "RECEIVED_SILENT_PUSH"}];
+        var forceStateActions = [{
+            text: "Initialize",
+            transition: "INITIALIZE",
+        }, {
+            text: "Start trip",
+            transition: "EXITED_GEOFENCE",
+        }, {
+            text: "End trip",
+            transition: "STOPPED_MOVING",
+        }, {
+            text: "Visit ended",
+            transition: "VISIT_ENDED",
+        }, {
+            text: "Visit started",
+            transition: "VISIT_STARTED",
+        }, {
+            text: "Remote push",
+            transition: "RECEIVED_SILENT_PUSH",
+        }];
         $ionicActionSheet.show({
             buttons: forceStateActions,
             titleText: "Force state",
@@ -122,17 +132,17 @@ angular.module('emission.main.control.collection', [])
             buttonClicked: function(index, button) {
                 cch.forceTransition(button.transition);
                 return true;
-            }
+            },
         });
     };
 
     cch.forceTransition = function(transition) {
         cch.forceTransitionWrapper(transition).then(function(result) {
-            $rootScope.$broadcast('control.update.complete', 'forceTransition');
-            $ionicPopup.alert({template: 'success -> '+result});
+            $rootScope.$broadcast("control.update.complete", "forceTransition");
+            $ionicPopup.alert({template: "success -> "+result});
         }, function(error) {
-            $rootScope.$broadcast('control.update.complete', 'forceTransition');
-            $ionicPopup.alert({template: 'error -> '+error});
+            $rootScope.$broadcast("control.update.complete", "forceTransition");
+            $ionicPopup.alert({template: "error -> "+error});
         });
     };
 
@@ -148,7 +158,7 @@ angular.module('emission.main.control.collection', [])
                 return k;
             }
         }
-    }
+    };
 
     cch.isMediumAccuracy = function() {
         if (cch.config == null) {
@@ -163,7 +173,7 @@ angular.module('emission.main.control.collection', [])
                 $ionicPopup.alert("Emission does not support this platform");
             }
         }
-    }
+    };
 
     cch.toggleLowAccuracy = function() {
         cch.new_config = JSON.parse(JSON.stringify(cch.config));
@@ -171,7 +181,7 @@ angular.module('emission.main.control.collection', [])
             if (ionic.Platform.isIOS()) {
                 cch.new_config.accuracy = cch.accuracyOptions["kCLLocationAccuracyBest"];
             } else if (ionic.Platform.isAndroid()) {
-                accuracy = cch.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
+                cch.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
             }
         } else {
             if (ionic.Platform.isIOS()) {
@@ -180,36 +190,36 @@ angular.module('emission.main.control.collection', [])
                 cch.new_config.accuracy = cch.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
             }
         }
-        cch.setConfig(cch.new_config)
-        .then(function(){
+        cch.setConfig(cch.new_config
+        ).then(function(){
             console.log("setConfig Sucess");
         }, function(err){
             console.log("setConfig Error: " + err);
         });
-    }
+    };
 
     /*
      * BEGIN: Simple read/write wrappers
      */
 
     cch.getState = function() {
-      return window.cordova.plugins.BEMDataCollection.getState();
+        return window.cordova.plugins.BEMDataCollection.getState();
     };
 
     cch.setConfig = function(config) {
-      return $window.cordova.plugins.BEMDataCollection.setConfig(config);
+        return $window.cordova.plugins.BEMDataCollection.setConfig(config);
     };
 
     cch.getConfig = function() {
-      return $window.cordova.plugins.BEMDataCollection.getConfig();
+        return $window.cordova.plugins.BEMDataCollection.getConfig();
     };
 
     cch.getAccuracyOptions = function() {
-      return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
+        return $window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
     };
 
     cch.forceTransitionWrapper = function(transition) {
-      return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
+        return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
     };
 
     return cch;
