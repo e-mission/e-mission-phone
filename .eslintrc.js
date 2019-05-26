@@ -3,6 +3,7 @@ module.exports = {
         "angular": "readonly",
         "d3": "readonly",
         "ionic": "readonly",
+        "L": "readonly",
         "moment": "readonly",
         "nv": "readonly",
     },
