@@ -1,9 +1,11 @@
 module.exports = {
     "globals": {
+        "$": "readonly",
         "angular": "readonly",
         "cordova": "readonly",
         "d3": "readonly",
         "ionic": "readonly",
+        "jQuery": "readonly",
         "L": "readonly",
         "moment": "readonly",
         "nv": "readonly",
