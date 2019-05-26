@@ -7,12 +7,17 @@
 // 'emission.controllers' is found in controllers.js
 angular.module("emission", [
     "ionic",
-    "emission.controllers","emission.services", "emission.plugin.logger",
-    "emission.splash.customURLScheme", "emission.splash.referral",
+    "emission.controllers",
+    "emission.services",
+    "emission.plugin.logger",
+    "emission.splash.customURLScheme",
+    "emission.splash.referral",
     "emission.splash.updatecheck",
-    "emission.intro", "emission.main",
+    "emission.intro",
+    "emission.main",
+    "emission.splash.startprefs",
 ]).run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, UpdateCheck) {
+    CustomURLScheme, ReferralHandler, UpdateCheck, StartPrefs) {
     console.log("Starting run");
     // alert("Starting run");
     // BEGIN: Global listeners, no need to wait for the platform
@@ -42,7 +47,7 @@ angular.module("emission", [
         }
         if (window.StatusBar) {
             // org.apache.cordova.statusbar required
-            StatusBar.styleDefault();
+            window.StatusBar.styleDefault();
         }
 
         // Configure the connection settings
