@@ -41,6 +41,7 @@ module.exports = {
                     "warn",
                     "error",
                     "log",
+                    "assert",
                 ]
             }
         ],
