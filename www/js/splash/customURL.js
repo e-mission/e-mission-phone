@@ -1,19 +1,17 @@
-'use strict';
+angular.module("emission.splash.customURLScheme", [
 
-angular.module('emission.splash.customURLScheme', [])
-
-.factory('CustomURLScheme', function($rootScope) {
+]).factory("CustomURLScheme", function($rootScope) {
     var cus = {};
 
     var parseURL = function(url) {
-        var addr = url.split('//')[1];
-        var route = addr.split('?')[0];
-        var params = addr.split('?')[1];
-        var paramsList = params.split('&');
+        var addr = url.split("//")[1];
+        var route = addr.split("?")[0];
+        var params = addr.split("?")[1];
+        var paramsList = params.split("&");
         var rtn = {route: route};
         for (var i = 0; i < paramsList.length; i++) {
-          var splitList = paramsList[i].split('=');
-          rtn[splitList[0]] = splitList[1];
+            var splitList = paramsList[i].split("=");
+            rtn[splitList[0]] = splitList[1];
         }
         return rtn;
     };
@@ -37,10 +35,10 @@ angular.module('emission.splash.customURLScheme', [])
     return cus;
 });
 
-function handleOpenURL(url) {
-    console.log("onLaunch method from external function called");
-    var c = document.querySelectorAll("[ng-app]")[0];
-    var scope = angular.element(c).scope();
-    scope.$broadcast("CUSTOM_URL_LAUNCH", url);
-};
+// function handleOpenURL(url) {
+//     console.log("onLaunch method from external function called");
+//     var c = document.querySelectorAll("[ng-app]")[0];
+//     var scope = angular.element(c).scope();
+//     scope.$broadcast("CUSTOM_URL_LAUNCH", url);
+// }
 
