@@ -1,152 +1,148 @@
-'use strict';
+angular.module("emission.main", [
+    "emission.main.recent",
+    "emission.main.diary",
+    "emission.main.control",
+    "emission.main.goals",
+    "emission.main.common",
+    "emission.main.heatmap",
+    "emission.main.metrics",
+    "emission.survey.enketo.launch",
+    "emission.tripconfirm.posttrip.map",
+    "emission.services",
+]).config(function($stateProvider, $ionicConfigProvider) {
 
-angular.module('emission.main', ['emission.main.recent',
-                                 'emission.main.diary',
-                                 'emission.main.control',
-                                 'emission.main.goals',
-                                 'emission.main.common',
-                                 'emission.main.heatmap',
-                                 'emission.main.metrics',
-                                 'emission.survey.enketo.launch',
-                                 'emission.tripconfirm.posttrip.map',
-                                 'emission.services'])
+    $stateProvider
+        // setup an abstract state for the tabs directive
+        .state("root.main", {
+            url: "/main",
+            abstract: true,
+            templateUrl: "templates/main.html",
+            controller: "MainCtrl",
+        })
 
-.config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
+        .state("root.main.common", {
+            url: "/common",
+            abstract: true,
+            views: {
+                "main-common": {
+                    templateUrl: "templates/main-common.html",
+                    controller: "CommonCtrl",
+                },
+            },
+        })
 
-  $stateProvider
-  // setup an abstract state for the tabs directive
-    .state('root.main', {
-    url: '/main',
-    abstract: true,
-    templateUrl: 'templates/main.html',
-    controller: 'MainCtrl'
-  })
+        .state("root.main.heatmap", {
+            url: "/heatmap",
+            views: {
+                "main-heatmap": {
+                    templateUrl: "templates/main-heatmap.html",
+                    controller: "HeatmapCtrl",
+                },
+            },
+        })
 
-  .state('root.main.common', {
-    url: '/common',
-    abstract: true,
-    views: {
-      'main-common': {
-        templateUrl: 'templates/main-common.html',
-        controller: 'CommonCtrl'
-      }
-    },
-  })
+        .state("root.main.metrics", {
+            url: "/metrics",
+            views: {
+                "main-metrics": {
+                    templateUrl: "templates/main-metrics.html",
+                    controller: "MetricsCtrl",
+                },
+            },
+        })
 
-  .state('root.main.heatmap', {
-    url: '/heatmap',
-    views: {
-      'main-heatmap': {
-        templateUrl: 'templates/main-heatmap.html',
-        controller: 'HeatmapCtrl'
-      }
-    }
-  })
+        .state("root.main.control", {
+            url: "/control",
+            views: {
+                "main-control": {
+                    templateUrl: "templates/control/main-control.html",
+                    controller: "ControlCtrl",
+                },
+            },
+        })
 
-  .state('root.main.metrics', {
-    url: '/metrics',
-    views: {
-      'main-metrics': {
-        templateUrl: 'templates/main-metrics.html',
-        controller: 'MetricsCtrl'
-      }
-    }
-  })
+        .state("root.main.enketosurvey", {
+            // if we have this the param here, we don't need the params in the definition
+            url: "/enketosurvey/:form_location/:opts",
+            views: {
+                "main-diary": {
+                    templateUrl: "templates/survey/enketo-survey.html",
+                    controller: "EnketoSurveyCtrl",
+                },
+            },
+        })
 
-  .state('root.main.control', {
-    url: '/control',
-    views: {
-      'main-control': {
-        templateUrl: 'templates/control/main-control.html',
-        controller: 'ControlCtrl'
-      }
-    }
-  })
+        .state("root.main.goals", {
+            url: "/goals",
+            views: {
+                "main-goals": {
+                    templateUrl: "templates/main-goals.html",
+                    controller: "GoalsCtrl",
+                },
+            },
+        })
 
-  .state('root.main.enketosurvey', {
-    // if we have this the param here, we don't need the params in the definition
-    url: '/enketosurvey/:form_location/:opts',
-    views: {
-      'main-diary': {
-        templateUrl: 'templates/survey/enketo-survey.html',
-        controller: 'EnketoSurveyCtrl'
-      }
-    },
-  })
+        .state("root.main.sensed", {
+            url: "/sensed",
+            views: {
+                "main-control": {
+                    templateUrl: "templates/recent/sensedData.html",
+                    controller: "sensedDataCtrl",
+                },
+            },
+        })
 
-  .state('root.main.goals', {
-    url: '/goals',
-    views: {
-      'main-goals': {
-        templateUrl: 'templates/main-goals.html',
-        controller: 'GoalsCtrl'
-      }
-    }
-  })
+        .state("root.main.map", {
+            url: "/map",
+            views: {
+                "main-control": {
+                    templateUrl: "templates/recent/map.html",
+                    controller: "mapCtrl",
+                },
+            },
+        })
 
-  .state('root.main.sensed', {
-    url: "/sensed",
-    views: {
-      'main-control': {
-        templateUrl: "templates/recent/sensedData.html",
-        controller: 'sensedDataCtrl'
-      }
-    }
-  })
+        .state("root.main.incident", {
+            url: "/incident",
+            params: {
+                start_ts: null,
+                end_ts: null,
+            },
+            views: {
+                "main-control": {
+                    templateUrl: "templates/incident/map.html",
+                    controller: "PostTripMapCtrl",
+                },
+            },
+        })
 
-  .state('root.main.map', {
-      url: "/map",
-      views: {
-        'main-control': {
-          templateUrl: "templates/recent/map.html",
-          controller: 'mapCtrl'
-        }
-      }
-  })
+        .state("root.main.tripconfirm", {
+            url: "/tripconfirm",
+            params: {
+                start_ts: null,
+                end_ts: null,
+            },
+            views: {
+                "main-control": {
+                    templateUrl: "templates/tripconfirm/map.html",
+                    controller: "PostTripMapCtrl",
+                },
+            },
+        })
 
-  .state('root.main.incident', {
-      url: "/incident",
-      params: {
-        start_ts: null,
-        end_ts: null
-      },
-      views: {
-        'main-control': {
-          templateUrl: "templates/incident/map.html",
-          controller: 'PostTripMapCtrl'
-        }
-      }
-  })
+        .state("root.main.log", {
+            url: "/log",
+            views: {
+                "main-control": {
+                    templateUrl: "templates/recent/log.html",
+                    controller: "logCtrl",
+                },
+            },
+        });
 
-  .state('root.main.tripconfirm', {
-      url: "/tripconfirm",
-      params: {
-        start_ts: null,
-        end_ts: null
-      },
-      views: {
-        'main-control': {
-          templateUrl: "templates/tripconfirm/map.html",
-          controller: 'PostTripMapCtrl'
-        }
-      }
-  })
-
-  .state('root.main.log', {
-    url: '/log',
-    views: {
-      'main-control': {
-        templateUrl: 'templates/recent/log.html',
-        controller: 'logCtrl'
-      }
-    }
-  });
-
-  $ionicConfigProvider.tabs.style('standard')
-  $ionicConfigProvider.tabs.position('bottom');
-})
-
-.controller('appCtrl', function($scope, $ionicModal, $timeout) {
+    $ionicConfigProvider.tabs.style("standard");
+    $ionicConfigProvider.tabs.position("bottom");
+}).controller("appCtrl", function($scope) {
 
     $scope.openNativeSettings = function() {
         window.Logger.log(window.Logger.LEVEL_DEBUG, "about to open native settings");
@@ -157,14 +153,12 @@ angular.module('emission.main', ['emission.main.recent',
             window.Logger.log(window.Logger.LEVEL_ERROR,
                 "Unable to open screen NativeSettings because of err "+err);
         });
-    }
-})
-
-.controller('MainCtrl', function($scope, $state, $rootScope) {
+    };
+}).controller("MainCtrl", function($scope) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
     $scope.tabsCustomClass = function() {
         return "tabs-icon-top tabs-custom";
-    }
+    };
 });
