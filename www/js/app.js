@@ -47,7 +47,7 @@ angular.module("emission", [
         }
         if (window.StatusBar) {
             // org.apache.cordova.statusbar required
-            window.StatusBar.styleDefault();
+            StatusBar.styleDefault();
         }
 
         // Configure the connection settings

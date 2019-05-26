@@ -9,6 +9,7 @@ module.exports = {
         "L": "readonly",
         "moment": "readonly",
         "nv": "readonly",
+        "StatusBar": "readonly",
     },
     "env": {
         "browser": true,
