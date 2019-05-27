@@ -5,10 +5,12 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
 .factory('FootprintHelper', function() {
   var fh = {};
   var footprint = {
-    train: 92/1609,
-    car: 287/1609,
-    ON_FOOT: 0,
-    BICYCLING: 0
+    ON_FOOT:      0,
+    BICYCLING:    0,
+    CAR:        267/1609,
+    BUS:        278/1609,
+    TRAIN:       92/1609,
+    AIR_OR_HSR: 217/1609
   }
   var readable = function(v) {
     return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
@@ -16,26 +18,29 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
   var mtokm = function(v) {
     return v / 1000;
   }
-  fh.getFootprintRaw = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
-    } else {
-      return footprint[mode] * mtokm(distance);
-    }
+
+  fh.readableFormat = function(v) {
+    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprint = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
-    } else {
-      return readable(footprint[mode] * mtokm(distance));
+  fh.getFootprintFromMetrics = function(userMetrics) {
+    var result = 0;
+    for (var i in userMetrics) {
+      var mode = userMetrics[i].key;
+      if (mode in footprint) {
+        result += footprint[mode] * mtokm(userMetrics[i].values);
+      }
+      else {
+        console.debug('WARNING: FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+      }
     }
+    return result;
   }
   return fh;
 })
 
 .factory('CalorieCal', function(KVStore){
 
-  var cc = {}; 
+  var cc = {};
   var USER_DATA_KEY = "user-data";
 
   cc.set = function(info) {
@@ -52,7 +57,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
   };
   cc.getMet = function(mode, speed) {
     if (!standardMETs[mode]) {
-      console.log("Illegal mode");
+      console.log("CalorieCal.getMet() Illegal mode: " + mode);
       return 0; //So the calorie sum does not break with wrong return type
     }
     for (var i in standardMETs[mode]) {
@@ -130,12 +135,6 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
         mets: 9.8
       }
     },
-    "IN_VEHICLE": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
     "BICYCLING": {
       "VERY_VERY_SLOW": {
         range: [0, 5.5],
@@ -164,6 +163,30 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
       "RACING": {
         range: [20, Number.MAX_VALUE],
         mets: 15.8
+      }
+    },
+    "CAR": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "BUS": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "TRAIN": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "AIR_OR_HSR": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
       }
     }
   }
