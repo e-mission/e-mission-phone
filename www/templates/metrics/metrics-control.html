@@ -1,6 +1,6 @@
 <ion-modal-view style="background-color: #eeeeee">
 	<ion-header-bar>
-		<button side="left" class="button" ng-click="closeModal()">Cancle</button>
+		<button side="left" class="button" ng-click="closeModal()">Cancel</button>
 		<button side="right" class="button" ng-click="getMetricsHelper()">Get</button>
 	</ion-header-bar>
 	<ion-content class="padding">
@@ -22,10 +22,10 @@
             <div class="metric-datepicker">{{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </button>
           </div>
-       </div>    
+       </div>
     </div>
-    
-    
+
+
     <div style="height: 40px; width: 100%;">
       <div class="metric-datepicker-container-lower">
           <div class="metric-left">
@@ -37,7 +37,7 @@
             <div class="metric-datepicker">{{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </ionic-datepicker>
           </div>
-       </div>     
+       </div>
     </div>
     <div class="metric-left">
         <div class="metric-title">Frequency:</div>
@@ -45,7 +45,7 @@
     <div class="metric-right">
       <div class="metric-freq-button hvcenter" ng-click="changePandaFreq()">{{selectCtrl.pandaFreqString}}</div>
     </div>
-  </div>  
+  </div>
 
   <div ng-if="uictrl.showFilter">
   <div style="height: 40px; width: 100%;">

@@ -12,8 +12,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
     var twoWeeksAgoCarbon = "";
-    var lastWeekCarbonInt = [];
-    var twoWeeksAgoCarbonInt = [];
+    var lastWeekCarbonInt = 0;
+    var twoWeeksAgoCarbonInt = 0;
     var twoWeeksAgoCalories = 0;
 
     var DURATION = "duration";
@@ -24,7 +24,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           $state.go("root.main.current");
         }
@@ -410,6 +410,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = true;
+      // TIAGO we should use our own server here, but for now it will return empty metrics, see:
+      //       https://github.com/e-mission/e-mission-docs/issues/288
+      // var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
       var getMetricsResult = $http.post(
         "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
         clonedData)
@@ -699,77 +702,93 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
       if (userDistance) {
         var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
+        console.debug('TIAGO: fillFootprintCardUserVals userDistance ' + JSON.stringify(userDistance, null, 2));
+        console.debug("TIAGO: fillFootprintCardUserVals userCarbonData (distances, from getSummaryDataRaw)" + JSON.stringify(userCarbonData, null, 2));
+
         var optimalDistance = getOptimalFootprintDistance(userDistance);
-        var worstDistance = getWorstFootprintDistance(userDistance);
+        var worstDistance   = getWorstFootprintDistance(userDistance);
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
         var duration = moment.duration(date2.diff(date1));
         var days = duration.asDays();
-        //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
+
         $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
-        //$scope.carbonData.userCarbon = [];
-        for (var i in userCarbonData) {
-          //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-          if (userCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-            $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
-            $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
-            lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-          }
-        }
+
+        $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintFromMetrics(userCarbonData));
+        $scope.carbonData.optimalCarbon = "Unavailable";
+        $scope.carbonData.worstCarbon   = "Unavailable";
+        lastWeekCarbonInt               = FootprintHelper.getFootprintFromMetrics(userCarbonData);
+      }
+      else {
+        // TIAGO: -------------
+        // else what does this absence mean and what do we write in the UI?
+        console.log("TIAGO: fillFootprintCardUserVals ERROR: can't fill most carbon values because userDistance is " + JSON.stringify(userDistance, null, 2));
       }
 
       if (first) {
         if (twoWeeksAgoDistance) {
-          var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-          for (var i in userCarbonData) {
-            if (userCarbonData[i].key === "IN_VEHICLE") {
-              twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-              twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-              if(first){
-                lastWeekCarbon = twoWeeksAgoCarbon;
-              }
-              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-            }
-          }
+          var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
+          twoWeeksAgoCarbon    = 0;
+          twoWeeksAgoCarbonInt = 0;
+
+          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintFromMetrics(userCarbonDataTwoWeeks);
+
+          twoWeeksAgoCarbon = FootprintHelper.readableFormat(twoWeeksAgoCarbonInt);
+          lastWeekCarbon    = twoWeeksAgoCarbon;
         }
       }
+      $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
 
       var change = "";
-      console.log("Running calculation with "
-                    + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
-                    + " and "
-                    + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
-      var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
-                        / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
-                        * 100 - 100;
+      console.log("Running calculation with " + lastWeekCarbonInt + " and " + twoWeeksAgoCarbonInt);
+      var calculation = (lastWeekCarbonInt/twoWeeksAgoCarbonInt) * 100 - 100;
 
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
-          if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
-            $scope.carbonData.change = " increase over a week";
-            $scope.carbonUp = true;
-            $scope.carbonDown = false;
-          } else {
-            $scope.carbonData.change = " decrease over a week"
-            $scope.carbonUp = false;
-            $scope.carbonDown = true;
-          }
-          $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+        if(lastWeekCarbonInt > twoWeeksAgoCarbonInt){
+          $scope.carbonData.change = " increase over a week";
+          $scope.carbonUp = true;
+          $scope.carbonDown = false;
+        } else {
+          $scope.carbonData.change = " decrease over a week"
+          $scope.carbonUp = false;
+          $scope.carbonDown = true;
+        }
+        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+      }
+      else {
+        // TIAGO: -------------
+        // else what does this mean and what do we write in the UI?
+        console.debug("TIAGO: fillFootprintCardUserVals WARNING: calculation (for carbon change) is not a valid number: " + calculation);
+        $scope.carbonData.change = "";
+        $scope.carbonData.changeInPercentage = "Unavailable";
       }
    };
 
    $scope.fillFootprintAggVals = function(aggDistance) {
       if (aggDistance) {
         var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
+
+        // TIAGO: please remove before PR, and turn into an issue?
+        // It can happen that the mode "ON_FOOT" has a NaN value.
+        // This may be due to the fact that the aggregated values are requested
+        // from the main e-mission server and not from our own.
         for (var i in aggrCarbonData) {
-          if (aggrCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
-            $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
+          if (isNaN(aggrCarbonData[i].values)) {
+            console.debug("TIAGO: fillFootprintAggVals() WARNING: value is NaN for mode " + aggrCarbonData[i].key + ", changing to 0");
+            aggrCarbonData[i].values = 0;
           }
         }
+
+        $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintFromMetrics(aggrCarbonData);
+        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintFromMetrics(aggrCarbonData));
+
+      }
+      else {
+        // TIAGO: -------------
+        // else what does this mean and what do we write in the UI?
       }
    };
 
@@ -854,6 +873,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return rtn;
     }
+
     var getSummaryDataRaw = function(metrics, metric) {
         var data = getDataFromMetrics(metrics);
         for (var i = 0; i < data.length; i++) {
@@ -870,6 +890,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return data;
     }
+
     /*var sortNumber = function(a,b) {
       return a - b;
     }*/
@@ -878,7 +899,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var distance = 0;
       var longTrip = 5000;
       for(var i = 0; i < data.length; i++) {
-        if(data[i].key == "IN_VEHICLE") {
+        // TIAGO: changed the following, from IN_VEHICLE to all vehicle-based modes.
+        // However this doesn't solve the broader issue: what carbon data will we use for this aggergated distance?
+        if(data[i].key == "CAR" || data[i].key == "BUS" || data[i].key == "TRAIN" || data[i].key == "AIR_OR_HSR") {
           for(var j = 0; j < data[i].values.length; j++){
             if(data[i].values[j][1] >= longTrip){
               distance += data[i].values[j][1];
@@ -1199,5 +1222,5 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  
+
 });
