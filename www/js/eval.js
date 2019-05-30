@@ -2,7 +2,8 @@
 
 angular.module('emission.main.eval',['emission.plugin.logger'])
 
-.controller('EvalCtrl', function($scope, $ionicPlatform, $ionicModal, $http, Logger) {
+.controller('EvalCtrl', function($scope, $ionicPlatform, $ionicModal,
+                                 $ionicActionSheet, $http, Logger) {
 
     /*
      * START: Control the UX of the summary card
@@ -10,6 +11,9 @@ angular.module('emission.main.eval',['emission.plugin.logger'])
     $scope.eval_settings_card_display = {};
     $scope.sel_author_spec = {};
     $scope.curr_regime = {};
+    $scope.curr_regime.calibration = {};
+    $scope.curr_regime.evaluation = {};
+    $scope.curr_regime.settings = {};
 
     var shrinkEvalCard = function() {
         $scope.expandedEval = false;
@@ -120,4 +124,25 @@ angular.module('emission.main.eval',['emission.plugin.logger'])
             JSON.stringify(sel_spec));
         */
     };
+
+    /*
+     * Select trips for calibration/evaluation.
+     * We will use an actionsheet because the select on iOS moves the app up again
+     */
+
+    $scope.selectCalibrationTrip = function() {
+        var calibrationButtons = $scope.sel_author_spec.sel_spec.calibration_trips.map(
+            function(ct) {
+                return {text: ct.label};
+            });
+        $ionicActionSheet.show({
+            titleText: "Select calibration to perform",
+            cancelText: "Cancel",
+            buttons: calibrationButtons,
+            buttonClicked: function(index, button) {
+                $scope.curr_regime.calibration.curr_trip = button.text;
+                return true;
+            }
+        });
+    }
 })

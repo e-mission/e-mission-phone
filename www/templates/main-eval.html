@@ -23,5 +23,30 @@
             <ion-item>Model: {{device_info.model}}</ion-item>
             <ion-item>Version: {{device_info.version}}</ion-item>
         </ion-card>
+        <ion-card ng-if="sel_author_spec.sel_spec"
+            id="eval-settings"
+            class="card small-calibration-settings-card">
+            <ion-item class="item-divider">
+            <div class="row">
+                <div class="col-75">
+                    Calibration
+                </div>
+                <div class="col-25">
+                <label ng-if="curr_regime.calibration.curr_trip"
+                       class="toggle toggle-color">
+                   <input type="checkbox" ng-model="curr_regime.calibration.on"
+                        ng-changed="startCalibration()">
+                   <div class="track">
+                     <div class="handle"></div>
+                   </div>
+                </label>
+                </div>
+            </div>
+            </ion-item>
+            <button class="button button-block"
+                ng-click="selectCalibrationTrip()">
+                {{curr_regime.calibration.curr_trip}}
+            </button>
+        </ion-card>
     </ion-content>
 </ion-view>

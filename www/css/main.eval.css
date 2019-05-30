@@ -6,6 +6,10 @@
   height: 80px !important;
 }
 
+.small-calibration-settings-card {
+  height: 120px !important;
+}
+
 #eval-settings.card {
   background: #fff;
   color: #54DCC1;
