@@ -1,0 +1,35 @@
+.expanded-eval-settings-card {
+  height: 350px !important;
+}
+
+.small-eval-settings-card {
+  height: 80px !important;
+}
+
+#eval-settings.card {
+  background: #fff;
+  color: #54DCC1;
+  border-radius: 5px;
+  display: block;
+  margin: 10px;
+  margin-top: 50px;
+  position: relative;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: height 0.3s ease-out;
+  overflow: hidden;
+}
+
+#calibration-settings.card {
+  background: #fff;
+  color: #54DCC1;
+  border-radius: 5px;
+  display: block;
+  margin: 10px;
+  margin-top: 50px;
+  position: relative;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
+  text-align: center;
+  transition: height 0.3s ease-out;
+  overflow: hidden;
+}

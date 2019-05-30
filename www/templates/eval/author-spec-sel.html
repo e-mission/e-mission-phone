@@ -1,0 +1,19 @@
+<ion-modal-view>
+    <ion-header-bar>
+      <label class="item item-input">
+        <input type="text" autocapitalize="off" autocorrect="off"
+            ng-model="sel_author_spec.author_email"
+            placeholder="Author email">
+      </label>
+      <button class="button button-icon ion-search" ng-click="getExperimentsForAuthor()"/>
+      <button ng-if="sel_author_spec.sel_spec.name" side="right" class="button button-icon ion-close" ng-click="author_spec_sel_modal.hide()"/>
+    </ion-header-bar>
+    <ion-content>
+        <ion-radio ng-repeat="eval_spec in author_eval_spec_list"
+                   ng-value="eval_spec"
+                   ng-model="sel_author_spec.sel_spec"
+                   ng-click="saveSelectedEval()">
+            {{eval_spec.name}}
+        </ion-radio>
+    </ion-content>
+</ion-modal-view>

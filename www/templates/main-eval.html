@@ -1,0 +1,27 @@
+<ion-view ng-class="ion-view-background">
+    <ion-nav-buttons side="left">
+      <button ng-if="!sel_author_spec.author_email" class="button button-icon ion-gear-a" ng-click="author_spec_sel_modal.show()">
+        Choose evaluation
+      </button>
+      <div ng-if="sel_author_spec.author_email">
+        <ion-title>{{sel_author_spec.sel_spec.name}}</ion-title>
+        <button class="button button-icon ion-edit" side="right" ng-click="author_spec_sel_modal.show()">
+        </button>
+      </div>
+    </ion-nav-buttons>
+    <ion-content class="has-header">
+        <ion-card id="eval-settings" class="card {{eval_settings_card_display.class}}">
+            <ion-item class="item-divider">Evaluation settings
+            <div ng-click="toggleEvalCardDisplay()" class="arrow-position">
+                <i class="{{eval_settings_card_display.icon}}"></i>
+            </div>
+            </ion-item>
+            <ion-item>Profile: {{curr_regime.profile}}</ion-item>
+            <ion-item>Author: {{sel_author_spec.author_email}}</ion-item>
+            <ion-item>Start: {{sel_author_spec.sel_spec.start_fmt_date}} to End: {{sel_author_spec.sel_spec.end_fmt_date}}</ion-item>
+            <ion-item>Manufacturer: {{device_info.manufacturer}}</ion-item>
+            <ion-item>Model: {{device_info.model}}</ion-item>
+            <ion-item>Version: {{device_info.version}}</ion-item>
+        </ion-card>
+    </ion-content>
+</ion-view>
