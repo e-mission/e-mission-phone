@@ -7,7 +7,11 @@
 }
 
 .small-calibration-settings-card {
-  height: 120px !important;
+  height: 110px !important;
+}
+
+.small-evaluation-settings-card {
+  height: 160px !important;
 }
 
 #eval-settings.card {

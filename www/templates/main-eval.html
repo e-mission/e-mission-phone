@@ -16,14 +16,17 @@
                 <i class="{{eval_settings_card_display.icon}}"></i>
             </div>
             </ion-item>
-            <ion-item>Profile: {{curr_regime.profile}}</ion-item>
+            <ion-item ng-style="$scope.curr_regime.registered ? {} : {color: 'red'}">
+                {{curr_regime.email}} ({{curr_regime.profile}})
+            </ion-item>
             <ion-item>Author: {{sel_author_spec.author_email}}</ion-item>
             <ion-item>Start: {{sel_author_spec.sel_spec.start_fmt_date}} to End: {{sel_author_spec.sel_spec.end_fmt_date}}</ion-item>
             <ion-item>Manufacturer: {{device_info.manufacturer}}</ion-item>
             <ion-item>Model: {{device_info.model}}</ion-item>
             <ion-item>Version: {{device_info.version}}</ion-item>
         </ion-card>
-        <ion-card ng-if="sel_author_spec.sel_spec"
+        <ion-card ng-if="sel_author_spec.sel_spec
+                            && (curr_regime.registered)"
             id="eval-settings"
             class="card small-calibration-settings-card">
             <ion-item class="item-divider">
@@ -32,7 +35,8 @@
                     Calibration
                 </div>
                 <div class="col-25">
-                <label ng-if="curr_regime.calibration.curr_trip"
+                <label ng-if="(curr_regime.calibration.curr_trip)
+                                && (!curr_regime.evaluation.on)"
                        class="toggle toggle-color">
                    <input type="checkbox" ng-model="curr_regime.calibration.on"
                         ng-changed="startCalibration()">
@@ -46,6 +50,36 @@
             <button class="button button-block"
                 ng-click="selectCalibrationTrip()">
                 {{curr_regime.calibration.curr_trip}}
+            </button>
+        </ion-card>
+        <ion-card ng-if="(sel_author_spec.sel_spec)
+                                && (curr_regime.registered)"
+            id="eval-settings"
+            class="card small-evaluation-settings-card">
+            <ion-item class="item-divider">
+            <div class="row">
+                <div class="col-75">
+                    Evaluation
+                </div>
+                <div class="col-25">
+                <label ng-if="(curr_regime.evaluation.curr_trip) && (!curr_regime.calibration.on)"
+                       class="toggle toggle-color">
+                   <input type="checkbox" ng-model="curr_regime.evaluation.on"
+                        ng-changed="startCalibration()">
+                   <div class="track">
+                     <div class="handle"></div>
+                   </div>
+                </label>
+                </div>
+            </div>
+            </ion-item>
+            <button class="button button-block"
+                ng-click="selectEvaluationTrip()">
+                {{curr_regime.evaluation.curr_trip}}
+            </button>
+            <button class="button button-block"
+                ng-click="selectSensingSettings()">
+                {{curr_regime.evaluation.sensing_settings.label}}
             </button>
         </ion-card>
     </ion-content>

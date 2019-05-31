@@ -1,9 +1,9 @@
 'use strict';
 
-angular.module('emission.main.eval',['emission.plugin.logger'])
+angular.module('emission.main.eval',['emission.plugin.logger', "emission.services"])
 
 .controller('EvalCtrl', function($scope, $ionicPlatform, $ionicModal,
-                                 $ionicActionSheet, $http, Logger) {
+                                 $ionicActionSheet, $http, ControlHelper, Logger) {
 
     /*
      * START: Control the UX of the summary card
@@ -55,6 +55,17 @@ angular.module('emission.main.eval',['emission.plugin.logger'])
             "model": device.model,
             "version": device.version,
         }
+        ControlHelper.getUserEmail().then(function(response) {
+            $scope.$apply(function() {
+                if (response == null) {
+                    $scope.curr_regime.email = "Not logged in";
+                } else {
+                    $scope.curr_regime.email = response;
+                }
+            });
+        }).catch(function(error) {
+            Logger.displayError("Error while reading current login", error);
+        });
     });
 
     /*
@@ -111,8 +122,15 @@ angular.module('emission.main.eval',['emission.plugin.logger'])
 
     $scope.saveSelectedEval = function() {
         console.log("Selected spec is "+JSON.stringify($scope.sel_author_spec));
-        $scope.curr_regime.profile = "accuracy_control";
-        $scope.curr_regime.isAccuracyControl = true;
+        $scope.curr_regime.profile = $scope.sel_author_spec.sel_spec.phones[$scope.curr_regime.email]
+        $scope.curr_regime.registered = angular.isDefined($scope.curr_regime.profile);
+        if (!$scope.curr_regime.registered) {
+            $scope.curr_regime.profile = "unregistered";
+            $scope.profile_item_style = {color: "red"};
+        }
+        if ($scope.curr_regime.profile == "accuracy_control") {
+            $scope.curr_regime.isAccuracyControl = true;
+        }
         $scope.author_spec_sel_modal.hide()
         /*
         var sel_spec = $scope.author_eval_spec_list.find(function(es) {
@@ -141,6 +159,39 @@ angular.module('emission.main.eval',['emission.plugin.logger'])
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
                 $scope.curr_regime.calibration.curr_trip = button.text;
+                return true;
+            }
+        });
+    }
+
+    $scope.selectEvaluationTrip = function() {
+        var evaluationButtons = $scope.sel_author_spec.sel_spec.evaluation_trips.map(
+            function(ct) {
+                return {text: ct.label};
+            });
+        $ionicActionSheet.show({
+            titleText: "Select evaluation to perform",
+            cancelText: "Cancel",
+            buttons: evaluationButtons,
+            buttonClicked: function(index, button) {
+                $scope.curr_regime.evaluation.curr_trip = button.text;
+                return true;
+            }
+        });
+    }
+
+    $scope.selectSensingSettings = function() {
+        var evaluationButtons = $scope.sel_author_spec.sel_spec.sensing_settings.map(
+            function(ct) {
+                return {text: ct.label, sensing_config: ct.sensing_config_a};
+            });
+        $ionicActionSheet.show({
+            titleText: "Select sensing settings",
+            cancelText: "Cancel",
+            buttons: evaluationButtons,
+            buttonClicked: function(index, button) {
+                $scope.curr_regime.evaluation.sensing_settings = button.sensing_config;
+                $scope.curr_regime.evaluation.sensing_settings.label = button.text;
                 return true;
             }
         });
