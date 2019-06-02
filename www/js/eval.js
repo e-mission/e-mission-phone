@@ -2,18 +2,41 @@
 
 angular.module('emission.main.eval',['emission.plugin.logger', "emission.services"])
 
-.controller('EvalCtrl', function($scope, $ionicPlatform, $ionicModal,
+.controller('EvalCtrl', function($window, $scope, $ionicPlatform, $ionicModal,
                                  $ionicActionSheet, $http, ControlHelper, Logger) {
 
-    /*
-     * START: Control the UX of the summary card
-     */
-    $scope.eval_settings_card_display = {};
     $scope.sel_author_spec = {};
     $scope.curr_regime = {};
     $scope.curr_regime.calibration = {};
     $scope.curr_regime.evaluation = {};
     $scope.curr_regime.settings = {};
+
+    var MILLISECONDS = Math.pow(10, 6)
+
+    var ACCURACY_CONTROL_SETTINGS = {
+        is_duty_cycling: false,
+        accuracy: ["PRIORITY_HIGH_ACCURACY","kCLLocationAccuracyBest"],
+        filter: 1,
+    }
+
+    var POWER_CONTROL_SETTINGS = {
+        accuracy: ["PRIORITY_NO_POWER","kCLLocationAccuracyThreeKilometers"],
+        filter: 1200,
+    }
+
+    const DEFAULT_CONFIG = {
+        is_duty_cycling: true,
+        simulate_user_interaction: false,
+        accuracy: ["PRIORITY_HIGH_ACCURACY","kCLLocationAccuracyBest"],
+        accuracy_threshold: 200,
+        geofence_radius: 100,
+        filter: [30,50]
+    }
+
+    /*
+     * START: Control the UX of the summary card
+     */
+    $scope.eval_settings_card_display = {};
 
     var shrinkEvalCard = function() {
         $scope.expandedEval = false;
@@ -65,6 +88,9 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             });
         }).catch(function(error) {
             Logger.displayError("Error while reading current login", error);
+        });
+        $window.cordova.plugins.BEMDataCollection.getAccuracyOptions().then(function(accuracyOptions) {
+            $scope.accuracyOptions = accuracyOptions;
         });
     });
 
@@ -120,9 +146,66 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             })
     }
 
+    /*
+     * BEGIN: code to map labels to configuration settings
+     */
+
+    var fillFilterValue = function(config, filter_vals) {
+        if (typeof filter_vals == "number") {
+            var android_val = filter_vals;
+            var ios_val = filter_vals;
+        } else {
+            var android_val = filter_vals[0];
+            var ios_val = filter_vals[1];
+        }
+        if (ionic.Platform.isAndroid()) {
+            config.filter_time = android_val;
+        } else {
+            config.filter_distance = ios_val;
+        }
+    }
+
+    var fillAccuracyValue = function(config, accuracy_vals) {
+        var android_val = accuracy_vals[0];
+        var ios_val = accuracy_vals[1];
+        if (ionic.Platform.isAndroid()) {
+            config.accuracy = $scope.accuracyOptions[android_val];
+        } else {
+            config.accuracy = $scope.accuracyOptions[ios_val];
+        }
+    }
+
+    var getPlatformSpecificDefaultConfig = function() {
+        var platformSpecificDC = JSON.parse(JSON.stringify(DEFAULT_CONFIG));
+        console.log(DEFAULT_CONFIG);
+        console.log(platformSpecificDC);
+        fillFilterValue(platformSpecificDC, platformSpecificDC.filter);
+        fillAccuracyValue(platformSpecificDC, platformSpecificDC.accuracy);
+        console.log(platformSpecificDC);
+        return platformSpecificDC;
+    }
+
+    var expandForPlatform = function(spec_diffs) {
+        var new_config = getPlatformSpecificDefaultConfig();
+        Object.keys(spec_diffs).forEach(function(k) {
+            if (k == "filter") {
+                fillFilterValue(new_config, spec_diffs.filter)
+                delete new_config.filter;
+            }
+            else if (k == "accuracy") {
+                fillAccuracyValue(new_config, spec_diffs.accuracy);
+            } else {
+                new_config[k] = spec_diffs[k]
+            }
+        });
+        console.log(JSON.stringify(new_config));
+        return new_config;
+    }
+
     $scope.saveSelectedEval = function() {
         console.log("Selected spec is "+JSON.stringify($scope.sel_author_spec));
-        $scope.curr_regime.profile = $scope.sel_author_spec.sel_spec.phones[$scope.curr_regime.email]
+        var phone_map = $scope.sel_author_spec.sel_spec.phones[ionic.Platform.platform()];
+        $scope.curr_regime.profile = phone_map[$scope.curr_regime.email]
         $scope.curr_regime.registered = angular.isDefined($scope.curr_regime.profile);
         if (!$scope.curr_regime.registered) {
             $scope.curr_regime.profile = "unregistered";
@@ -130,18 +213,55 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         }
         if ($scope.curr_regime.profile == "accuracy_control") {
             $scope.curr_regime.isAccuracyControl = true;
+            $scope.curr_regime.evaluation.sensing_settings = 
+                expandForPlatform(ACCURACY_CONTROL_SETTINGS);
+            $scope.curr_regime.evaluation.sensing_settings.label =
+                "accuracy_control (fixed)";
+        }
+        if ($scope.curr_regime.profile == "power_control") {
+            $scope.curr_regime.isPowerControl = true;
+            $scope.curr_regime.evaluation.sensing_settings =
+                expandForPlatform(POWER_CONTROL_SETTINGS);
+            $scope.curr_regime.evaluation.sensing_settings.label = 
+                "power_control (fixed)";
         }
         $scope.author_spec_sel_modal.hide()
-        /*
-        var sel_spec = $scope.author_eval_spec_list.find(function(es) {
-            return es.name == $scope.sel_author_spec.sel_spec_name;
-        
-        });
-        $scope.sel_author_spec.sel_spec = sel_spec;
-        console.log("After searching, selected spec object = "+
-            JSON.stringify(sel_spec));
-        */
     };
+
+    var find_config = function(sensing_setting, profile) {
+        // profile = "evaluation_a"
+        var profile_parts = profile.split("_");
+        // profile_parts = ["evaluation", "a"]
+        if (profile_parts[0] == "evaluation") {
+            // profile_parts[1] = "a"
+            // config_label = config_a
+            var config_label = "sensing_config_"+profile_parts[1]
+            return sensing_setting[config_label]
+        }
+    }
+
+    $scope.selectSensingSettings = function() {
+        var evaluationButtons = $scope.sel_author_spec.sel_spec.sensing_settings.map(
+            function(ss) {
+                return {text: ss.label,
+                    sensing_config: find_config(ss, $scope.curr_regime.profile)};
+            });
+        $ionicActionSheet.show({
+            titleText: "Select sensing settings",
+            cancelText: "Cancel",
+            buttons: evaluationButtons,
+            buttonClicked: function(index, button) {
+                $scope.curr_regime.evaluation.sensing_settings = 
+                    expandForPlatform(button.sensing_config);
+                $scope.curr_regime.evaluation.sensing_settings.label = button.text;
+                return true;
+            }
+        });
+    }
+
+    /*
+     * END: code to map labels to configuration settings
+     */
 
     /*
      * Select trips for calibration/evaluation.
@@ -164,6 +284,40 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         });
     }
 
+
+    /*
+     * START: Control the UX of the summary card
+     */
+    $scope.sensing_settings_card_display = {};
+
+    var shrinkSensingCard = function() {
+        $scope.expandedSensing = false;
+        $scope.sensing_settings_card_display.class = "small-sensing-settings-card";
+        $scope.sensing_settings_card_display.icon = "icon ion-chevron-down";
+    }
+
+    var expandSensingCard = function() {
+        $scope.expandedSensing = true;
+        $scope.sensing_settings_card_display.class = "expanded-sensing-settings-card";
+        $scope.sensing_settings_card_display.icon = "icon ion-chevron-up";
+    }
+
+    $scope.toggleSensingCardDisplay = function() {
+        if (!$scope.expandedSensing) {
+            expandSensingCard();
+        } else {
+            shrinkSensingCard();
+        }
+    }
+
+    // Start out with shrunk card
+    shrinkSensingCard();
+
+    /*
+     * END: Control the UX of the summary card
+     */
+
+
     $scope.selectEvaluationTrip = function() {
         var evaluationButtons = $scope.sel_author_spec.sel_spec.evaluation_trips.map(
             function(ct) {
@@ -180,20 +334,4 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         });
     }
 
-    $scope.selectSensingSettings = function() {
-        var evaluationButtons = $scope.sel_author_spec.sel_spec.sensing_settings.map(
-            function(ct) {
-                return {text: ct.label, sensing_config: ct.sensing_config_a};
-            });
-        $ionicActionSheet.show({
-            titleText: "Select sensing settings",
-            cancelText: "Cancel",
-            buttons: evaluationButtons,
-            buttonClicked: function(index, button) {
-                $scope.curr_regime.evaluation.sensing_settings = button.sensing_config;
-                $scope.curr_regime.evaluation.sensing_settings.label = button.text;
-                return true;
-            }
-        });
-    }
 })

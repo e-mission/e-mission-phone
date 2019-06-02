@@ -52,6 +52,23 @@
                 {{curr_regime.calibration.curr_trip}}
             </button>
         </ion-card>
+        <ion-card id="eval-settings" ng-if="sel_author_spec.sel_spec"
+            class="card {{sensing_settings_card_display.class}}">
+            <ion-item class="item-divider">Sensing selection
+            <div ng-click="toggleSensingCardDisplay()" class="arrow-position">
+                <i class="{{sensing_settings_card_display.icon}}"></i>
+            </div>
+            </ion-item>
+            <button ng-disabled="(curr_regime.isAccuracyControl) ||
+                           (curr_regime.isPowerControl)"
+                class="button button-block"
+                ng-click="selectSensingSettings()">
+                {{curr_regime.evaluation.sensing_settings.label}}
+            </button>
+            <ion-item ng-repeat="(k,v) in curr_regime.evaluation.sensing_settings">
+                <b>{{k}}:</b> {{v}}
+            </ion-item>
+        </ion-card>
         <ion-card ng-if="(sel_author_spec.sel_spec)
                                 && (curr_regime.registered)"
             id="eval-settings"
@@ -76,10 +93,6 @@
             <button class="button button-block"
                 ng-click="selectEvaluationTrip()">
                 {{curr_regime.evaluation.curr_trip}}
-            </button>
-            <button class="button button-block"
-                ng-click="selectSensingSettings()">
-                {{curr_regime.evaluation.sensing_settings.label}}
             </button>
         </ion-card>
     </ion-content>

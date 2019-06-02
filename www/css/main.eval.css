@@ -6,6 +6,14 @@
   height: 80px !important;
 }
 
+.expanded-sensing-settings-card {
+  height: 475px !important;
+}
+
+.small-sensing-settings-card {
+  height: 110px !important;
+}
+
 .small-calibration-settings-card {
   height: 110px !important;
 }
