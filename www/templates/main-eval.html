@@ -1,7 +1,7 @@
 <ion-view ng-class="ion-view-background">
     <ion-nav-buttons side="left">
       <button ng-if="!sel_author_spec.author_email" class="button button-icon ion-gear-a" ng-click="author_spec_sel_modal.show()">
-        Choose evaluation
+        Evaluation spec
       </button>
       <div ng-if="sel_author_spec.author_email">
         <ion-title>{{sel_author_spec.sel_spec.name}}</ion-title>
@@ -11,7 +11,7 @@
     </ion-nav-buttons>
     <ion-content class="has-header">
         <ion-card id="eval-settings" class="card {{eval_settings_card_display.class}}">
-            <ion-item class="item-divider">Evaluation settings
+            <ion-item class="item-divider">Choose experiment spec
             <div ng-click="toggleEvalCardDisplay()" class="arrow-position">
                 <i class="{{eval_settings_card_display.icon}}"></i>
             </div>
@@ -32,7 +32,7 @@
             <ion-item class="item-divider">
             <div class="row">
                 <div class="col-75">
-                    Calibration
+                    Calibrate phones
                 </div>
                 <div class="col-25">
                 <label ng-if="(curr_regime.calibration.curr_trip)
@@ -54,46 +54,50 @@
         </ion-card>
         <ion-card id="eval-settings" ng-if="sel_author_spec.sel_spec"
             class="card {{sensing_settings_card_display.class}}">
-            <ion-item class="item-divider">Sensing selection
+            <ion-item class="item-divider">Select regimes to compare
             <div ng-click="toggleSensingCardDisplay()" class="arrow-position">
                 <i class="{{sensing_settings_card_display.icon}}"></i>
             </div>
             </ion-item>
-            <button ng-disabled="(curr_regime.isAccuracyControl) ||
-                           (curr_regime.isPowerControl)"
-                class="button button-block"
+            <button class="button button-block"
                 ng-click="selectSensingSettings()">
+                <div ng-if="!curr_regime.evaluation.sensing_settings.label">
+                Select sensing regime
+                </div>
+                <div ng-if="curr_regime.evaluation.sensing_settings.label">
                 {{curr_regime.evaluation.sensing_settings.label}}
+                </div>
             </button>
             <ion-item ng-repeat="(k,v) in curr_regime.evaluation.sensing_settings">
                 <b>{{k}}:</b> {{v}}
             </ion-item>
         </ion-card>
         <ion-card ng-if="(sel_author_spec.sel_spec)
-                                && (curr_regime.registered)"
+                                && (curr_regime.registered)
+                                && (curr_regime.isAccuracyControl)
+                                && (curr_regime.evaluation.sensing_settings.label)"
             id="eval-settings"
-            class="card small-evaluation-settings-card">
+            class="card small-calibration-settings-card">
             <ion-item class="item-divider">
-            <div class="row">
-                <div class="col-75">
-                    Evaluation
-                </div>
-                <div class="col-25">
-                <label ng-if="(curr_regime.evaluation.curr_trip) && (!curr_regime.calibration.on)"
-                       class="toggle toggle-color">
-                   <input type="checkbox" ng-model="curr_regime.evaluation.on"
-                        ng-changed="startCalibration()">
-                   <div class="track">
-                     <div class="handle"></div>
-                   </div>
-                </label>
-                </div>
+            Select trip in experiment
+            <div ng-if="curr_regime.evaluation.curr_trip.label"
+                ng-click="evaluation_trip_modal.show()"
+                class="arrow-position">
+                <i class="icon ion-chevron-right"></i>
             </div>
             </ion-item>
-            <button class="button button-block"
-                ng-click="selectEvaluationTrip()">
-                {{curr_regime.evaluation.curr_trip}}
-            </button>
+            <button-bar class="button-bar">
+                <button ng-if="!curr_regime.evaluation.curr_trip.label"
+                    class="button button-block"
+                    ng-click="selectEvaluationTrip()">
+                    Select trip
+                </button>
+                <button ng-if="curr_regime.evaluation.curr_trip.label"
+                    class="button button-block"
+                    ng-click="evaluation_trip_modal.show()">
+                    {{curr_regime.evaluation.curr_trip.label}}
+                </button>
+            </button-bar>
         </ion-card>
     </ion-content>
 </ion-view>

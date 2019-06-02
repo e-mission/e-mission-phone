@@ -213,17 +213,9 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         }
         if ($scope.curr_regime.profile == "accuracy_control") {
             $scope.curr_regime.isAccuracyControl = true;
-            $scope.curr_regime.evaluation.sensing_settings = 
-                expandForPlatform(ACCURACY_CONTROL_SETTINGS);
-            $scope.curr_regime.evaluation.sensing_settings.label =
-                "accuracy_control (fixed)";
         }
         if ($scope.curr_regime.profile == "power_control") {
             $scope.curr_regime.isPowerControl = true;
-            $scope.curr_regime.evaluation.sensing_settings =
-                expandForPlatform(POWER_CONTROL_SETTINGS);
-            $scope.curr_regime.evaluation.sensing_settings.label = 
-                "power_control (fixed)";
         }
         $scope.author_spec_sel_modal.hide()
     };
@@ -241,19 +233,36 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     }
 
     $scope.selectSensingSettings = function() {
-        var evaluationButtons = $scope.sel_author_spec.sel_spec.sensing_settings.map(
-            function(ss) {
-                return {text: ss.label,
-                    sensing_config: find_config(ss, $scope.curr_regime.profile)};
-            });
+        var evaluationButtons = [];
+        if ($scope.curr_regime.isAccuracyControl) {
+            evaluationButtons.push({text: "accuracy_control (fixed)",
+                sensing_config: ACCURACY_CONTROL_SETTINGS});
+        } else if ($scope.curr_regime.isPowerControl) {
+            evaluationButtons.push({text: "power_control (fixed)",
+                sensing_config: POWER_CONTROL_SETTINGS});
+        } else {
+            evaluationButtons = $scope.sel_author_spec.sel_spec.sensing_settings.map(
+                function(ss) {
+                    return {text: ss.label,
+                        sensing_config: find_config(ss, $scope.curr_regime.profile)};
+                });
+        };
+        var RESTORE_DEFAULTS_TEXT = "Restore defaults";
         $ionicActionSheet.show({
             titleText: "Select sensing settings",
+            destructiveText: "Restore defaults",
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
                 $scope.curr_regime.evaluation.sensing_settings = 
                     expandForPlatform(button.sensing_config);
                 $scope.curr_regime.evaluation.sensing_settings.label = button.text;
+                return true;
+            },
+            destructiveButtonClicked: function() {
+                $scope.curr_regime.evaluation.sensing_settings = 
+                    getPlatformSpecificDefaultConfig();
+                $scope.curr_regime.evaluation.sensing_settings.label = angular.undefined;
                 return true;
             }
         });
@@ -321,17 +330,29 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     $scope.selectEvaluationTrip = function() {
         var evaluationButtons = $scope.sel_author_spec.sel_spec.evaluation_trips.map(
             function(ct) {
-                return {text: ct.label};
+                return {text: ct.label,
+                        trip: ct};
             });
         $ionicActionSheet.show({
             titleText: "Select evaluation to perform",
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
-                $scope.curr_regime.evaluation.curr_trip = button.text;
+                $scope.curr_regime.evaluation.curr_trip = button.trip;
                 return true;
             }
         });
     }
 
+    /*
+     * BEGIN: detail view code (TODO: Decide whether we want to use a view or a 
+     * modal here. Let's start with modal since it can share this state.
+     */
+
+    $ionicModal.fromTemplateUrl("templates/eval/evaluation-trip.html", {
+        scope: $scope,
+        animation: "slide-in-up"
+    }).then(function(modal) {
+        $scope.evaluation_trip_modal = modal;
+    })
 })
