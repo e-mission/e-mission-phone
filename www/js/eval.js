@@ -1,15 +1,21 @@
 'use strict';
 
-angular.module('emission.main.eval',['emission.plugin.logger', "emission.services"])
+angular.module('emission.main.eval',['emission.plugin.logger', "emission.services",
+    "emission.main.diary.services"])
 
 .controller('EvalCtrl', function($window, $scope, $ionicPlatform, $ionicModal,
-                                 $ionicActionSheet, $http, ControlHelper, Logger) {
+                                 $ionicActionSheet, $http, DiaryHelper,
+                                 Config, ControlHelper, Logger) {
 
     $scope.sel_author_spec = {};
     $scope.curr_regime = {};
     $scope.curr_regime.calibration = {};
     $scope.curr_regime.evaluation = {};
     $scope.curr_regime.settings = {};
+
+    $scope.mapCtrl = {};
+    angular.extend($scope.mapCtrl, { defaults : {} });
+    angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
     var MILLISECONDS = Math.pow(10, 6)
 
@@ -326,6 +332,22 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
      * END: Control the UX of the summary card
      */
 
+    var toGeojsonFC = function(eval_trip) {
+        var featureList = [
+            GeoJSON.parse(eval_trip.start_loc, {Point: "coordinates"}),
+            GeoJSON.parse(eval_trip.end_loc, {Point: "coordinates"}),
+            GeoJSON.parse(eval_trip, {LineString: "route_coords"})
+        ]
+        return {
+            type: "FeatureCollection",
+            features: featureList,
+            properties: {
+                label: eval_trip.label,
+                mode: eval_trip.mode,
+                waypoints: eval_trip.route_waypoints
+            }
+        }
+    }
 
     $scope.selectEvaluationTrip = function() {
         var evaluationButtons = $scope.sel_author_spec.sel_spec.evaluation_trips.map(
@@ -339,6 +361,8 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
                 $scope.curr_regime.evaluation.curr_trip = button.trip;
+                var curr_fc = toGeojsonFC(button.trip);
+                $scope.curr_regime.evaluation.curr_tripgj = {data: curr_fc}
                 return true;
             }
         });
