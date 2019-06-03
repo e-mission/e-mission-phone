@@ -446,7 +446,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
-      $scope.caloriesData.changeInPercentage = "0%"
+      $scope.caloriesData.changeInPercentage = "0%";
       $scope.caloriesData.change = " change";
 
       $scope.carbonData.userCarbon = "0 kg CO₂";
@@ -715,10 +715,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
 
-        $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintFromMetrics(userCarbonData));
-        $scope.carbonData.optimalCarbon = "Unavailable";
-        $scope.carbonData.worstCarbon   = "Unavailable";
-        lastWeekCarbonInt               = FootprintHelper.getFootprintFromMetrics(userCarbonData);
+        $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
+        $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
+        $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
+        lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
       }
       else {
         // TIAGO: -------------
@@ -732,7 +732,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           twoWeeksAgoCarbon    = 0;
           twoWeeksAgoCarbonInt = 0;
 
-          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintFromMetrics(userCarbonDataTwoWeeks);
+          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
 
           twoWeeksAgoCarbon = FootprintHelper.readableFormat(twoWeeksAgoCarbonInt);
           lastWeekCarbon    = twoWeeksAgoCarbon;
@@ -759,11 +759,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
       }
       else {
-        // TIAGO: -------------
-        // else what does this mean and what do we write in the UI?
-        console.debug("TIAGO: fillFootprintCardUserVals WARNING: calculation (for carbon change) is not a valid number: " + calculation);
-        $scope.carbonData.change = "";
-        $scope.carbonData.changeInPercentage = "Unavailable";
+        console.debug("TIAGO: fillFootprintCardUserVals() WARNING: calculation for carbon change is not a valid number: " + calculation);
+        $scope.carbonData.change = " (no change)";
+        $scope.carbonData.changeInPercentage = '0%';
       }
    };
 
@@ -782,8 +780,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
 
-        $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintFromMetrics(aggrCarbonData);
-        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintFromMetrics(aggrCarbonData));
+        $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintForMetrics(aggrCarbonData);
+        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
 
       }
       else {
@@ -894,13 +892,14 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     /*var sortNumber = function(a,b) {
       return a - b;
     }*/
+
     var getOptimalFootprintDistance = function(metrics){
+      console.debug("TIAGO: getOptimalFootprintDistance() metrics: " + JSON.stringify(metrics, null, 2));
       var data = getDataFromMetrics(metrics);
       var distance = 0;
       var longTrip = 5000;
+      // total distance for long trips using motorized vehicles
       for(var i = 0; i < data.length; i++) {
-        // TIAGO: changed the following, from IN_VEHICLE to all vehicle-based modes.
-        // However this doesn't solve the broader issue: what carbon data will we use for this aggergated distance?
         if(data[i].key == "CAR" || data[i].key == "BUS" || data[i].key == "TRAIN" || data[i].key == "AIR_OR_HSR") {
           for(var j = 0; j < data[i].values.length; j++){
             if(data[i].values[j][1] >= longTrip){

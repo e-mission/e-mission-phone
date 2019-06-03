@@ -22,7 +22,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
   fh.readableFormat = function(v) {
     return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprintFromMetrics = function(userMetrics) {
+  fh.getFootprintForMetrics = function(userMetrics) {
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;
@@ -34,6 +34,25 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
       }
     }
     return result;
+  }
+  fh.getLowestFootprintForDistance = function(distance) {
+    var lowestFootprint = 9999;
+    for (var mode in footprint) {
+      if (mode == 'ON_FOOT' || mode == 'BICYCLING') {
+        // these modes aren't considered when determining the lowest carbon footprint
+      }
+      else {
+        lowestFootprint = Math.min(lowestFootprint, footprint[mode]);
+      }
+    }
+    return lowestFootprint * mtokm(distance);
+  }
+  fh.getHighestFootprintForDistance = function(distance) {
+    var highestFootprint = 0;
+    for (var mode in footprint) {
+      highestFootprint = Math.max(highestFootprint, footprint[mode]);
+    }
+    return highestFootprint * mtokm(distance);
   }
   return fh;
 })
