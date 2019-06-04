@@ -9,7 +9,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
     $scope.sel_author_spec = {};
     $scope.curr_regime = {};
-    $scope.curr_regime.calibration = {};
+    $scope.calibration = {};
     $scope.curr_regime.evaluation = {};
     $scope.curr_regime.settings = {};
 
@@ -283,7 +283,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
      * We will use an actionsheet because the select on iOS moves the app up again
      */
 
-    $scope.selectCalibrationTrip = function() {
+    $scope.selectCalibrationTest = function() {
         var calibrationButtons = $scope.sel_author_spec.sel_spec.calibration_trips.map(
             function(ct) {
                 return {text: ct.label};
@@ -293,7 +293,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             cancelText: "Cancel",
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
-                $scope.curr_regime.calibration.curr_trip = button.text;
+                $scope.calibration.curr_test = button.text;
                 return true;
             }
         });

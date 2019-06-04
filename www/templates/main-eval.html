@@ -37,10 +37,10 @@
                     Calibrate phones
                 </div>
                 <div class="col-25">
-                <label ng-if="(curr_regime.calibration.curr_trip)
+                <label ng-if="(calibration.curr_test)
                                 && (!curr_regime.evaluation.on)"
                        class="toggle toggle-color">
-                   <input type="checkbox" ng-model="curr_regime.calibration.on"
+                   <input type="checkbox" ng-model="calibration.on"
                         ng-changed="startCalibration()">
                    <div class="track">
                      <div class="handle"></div>
@@ -50,8 +50,8 @@
             </div>
             </ion-item>
             <button class="button button-block"
-                ng-click="selectCalibrationTrip()">
-                {{curr_regime.calibration.curr_trip}}
+                ng-click="selectCalibrationTest()">
+                {{calibration.curr_test}}
             </button>
         </ion-card>
         <ion-card id="eval-settings" ng-if="sel_author_spec.sel_spec"
