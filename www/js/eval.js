@@ -355,8 +355,8 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         }
     }
 
-    // Start out with shrunk card
-    shrinkTripCard();
+    // Start out with expanded card
+    expandTripCard();
 
     /*
      * END: Control the UX of the trip settings
