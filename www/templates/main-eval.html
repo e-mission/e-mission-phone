@@ -82,35 +82,35 @@
             class="card {{trip_settings_card_display.class}}">
             <ion-item class="item-divider">
             Select trip in experiment
-            <div ng-if="curr_regime.evaluation.curr_trip.label"
+            <div ng-if="eval_trip.raw.label"
                 ng-click="toggleTripCardDisplay()"
                 class="arrow-position">
                 <i class="icon {{trip_settings_card_display.icon}}"></i>
             </div>
             </ion-item>
             <button-bar class="button-bar">
-                <button ng-if="!curr_regime.evaluation.curr_trip.label"
+                <button ng-if="!eval_trip.raw.label"
                     class="button button-block"
                     ng-click="selectEvaluationTrip()">
                     Select trip
                 </button>
-                <button ng-if="curr_regime.evaluation.curr_trip.label"
+                <button ng-if="eval_trip.raw.label"
                     class="button button-block"
                     ng-click="toggleTripCardDisplay()">
-                    {{curr_regime.evaluation.curr_trip.label}}
+                    {{eval_trip.raw.label}}
                 </button>
             </button-bar>
             <div class="row" style="color:black;text-align:center">Trip</div>
             <button-bar class="button-bar row">
                 <button class="button button-block trip-control-button"
-                    ng-disabled="!curr_regime.evaluation.waiting_for_trip_start"
+                    ng-disabled="!eval_trip.waiting_for_trip_start"
                     ng-click="startEvalTrip()"> Start </button>
                 <button class="button button-block trip-control-button"
-                    ng-disabled="!curr_regime.evaluation.ongoing_trip"
+                    ng-disabled="!eval_trip.ongoing_trip"
                     ng-click="endEvalTrip()"> End </button>
             </button-bar>
             </div>
-            <leaflet geojson="curr_regime.evaluation.curr_tripgj"
+            <leaflet geojson="eval_trip.gj"
                 id="eval" defaults="mapCtrl.defaults"
             height="50%" width="100%" data-tap-disabled="true">
             </leaflet>

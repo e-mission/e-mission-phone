@@ -9,7 +9,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
     $scope.sel_author_spec = {};
     $scope.curr_regime = {};
-    $scope.curr_regime.evaluation = {};
     $scope.calibration = {};
     $scope.eval_settings = {};
     $scope.eval_trip = {};
@@ -392,25 +391,24 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
-                $scope.curr_regime.evaluation.waiting_for_trip_start = true;
+                $scope.eval_trip.waiting_for_trip_start = true;
                 expandTripCard();
-                $scope.curr_regime.evaluation.curr_trip = button.trip;
+                $scope.eval_trip.raw = button.trip;
                 var curr_fc = toGeojsonFC(button.trip);
-                $scope.curr_regime.evaluation.curr_tripgj = {data: curr_fc}
+                $scope.eval_trip.gj = {data: curr_fc}
                 return true;
             }
         });
     }
 
     $scope.startEvalTrip = function() {
-        $scope.curr_regime.evaluation.ongoing_trip = true;
-        $scope.curr_regime.evaluation.waiting_for_trip_start = false;
+        $scope.eval_trip.ongoing_trip = true;
+        $scope.eval_trip.waiting_for_trip_start = false;
     }
 
     $scope.endEvalTrip = function() {
-        $scope.curr_regime.evaluation.ongoing_trip = false;
-        $scope.curr_regime.evaluation.curr_trip = angular.undefined;
-        $scope.curr_regime.evaluation.curr_tripgj = angular.undefined;
+        $scope.eval_trip.ongoing_trip = false;
+        $scope.eval_trip = {};
     }
 
 })
