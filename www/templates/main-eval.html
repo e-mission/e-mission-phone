@@ -14,27 +14,27 @@
         <ion-card ng-if="(sel_spec.full_spec)
                          && (curr_phone.registered)
                          && (curr_phone.isAccuracyControl)
-                         && (eval_settings.label)"
+                         && (eval_settings.name)"
             id="eval-settings"
             class="card {{trip_settings_card_display.class}}">
             <ion-item class="item-divider">
             Select trip in experiment
-            <div ng-if="eval_trip.raw.label"
+            <div ng-if="eval_trip.raw.id"
                 ng-click="toggleTripCardDisplay()"
                 class="arrow-position">
                 <i class="icon {{trip_settings_card_display.icon}}"></i>
             </div>
             </ion-item>
             <button-bar class="button-bar">
-                <button ng-if="!eval_trip.raw.label"
+                <button ng-if="!eval_trip.raw.id"
                     class="button button-block"
                     ng-click="selectEvaluationTrip()">
                     Select trip
                 </button>
-                <button ng-if="eval_trip.raw.label"
+                <button ng-if="eval_trip.raw.id"
                     class="button button-block"
                     ng-click="selectEvaluationTrip()">
-                    {{eval_trip.raw.label}}
+                    {{eval_trip.raw.name}}
                 </button>
             </button-bar>
             <div class="row" style="color:black;text-align:center">Trip</div>
@@ -47,14 +47,14 @@
                     ng-click="endEvalTrip()"> End </button>
             </button-bar>
             </div>
-            <leaflet ng-if="eval_trip.raw.label" geojson="eval_trip.gj"
+            <leaflet ng-if="eval_trip.raw.id" geojson="eval_trip.gj"
                 id="eval-trip" defaults="mapCtrl.defaults"
             height="50%" width="100%" data-tap-disabled="true">
             </leaflet>
         </ion-card>
         <ion-card ng-if="sel_spec.full_spec
                             && (curr_phone.registered)
-                            && (!eval_settings.label)"
+                            && (!eval_settings.name)"
             id="eval-settings"
             class="card {{calibration_settings_card_display.class}}">
             <ion-item class="item-divider">
@@ -64,7 +64,7 @@
                 </div>
                 <div class="col-25">
                 <label ng-if="(calibration.curr_test)
-                                && (!eval_settings.label)"
+                                && (!eval_settings.name)"
                        class="toggle toggle-color">
                    <input type="checkbox" ng-model="calibration.on"
                         ng-changed="startCalibration()">
@@ -73,7 +73,7 @@
                    </div>
                 </label>
                 </div>
-                <div ng-if="calibration.curr_test.label"
+                <div ng-if="calibration.curr_test.id"
                     ng-click="toggleCalibrationCardDisplay()"
                     class="col-5 arrow-position">
                     <i class="icon {{calibration_settings_card_display.icon}}"></i>
@@ -83,9 +83,9 @@
             <button-bar class="row">
                 <button class="button button-block col-70"
                     ng-click="selectCalibrationTest()">
-                    {{calibration.curr_test.label}}
+                    {{calibration.curr_test.id}}
                 </button>
-                <select-bar class="col-30" ng-if="calibration.curr_test.label">
+                <select-bar class="col-30" ng-if="calibration.curr_test.id">
                     <ion-radio type="radio" ng-model="calibration.expandedView" value="settings">
                     <i class="icon ion-information-circled"></i>
                     </ion-radio>
@@ -115,11 +115,11 @@
             </ion-item>
             <button class="button button-block"
                 ng-click="selectSensingSettings()">
-                <div ng-if="!eval_settings.label">
+                <div ng-if="!eval_settings.name">
                 Select sensing regime
                 </div>
-                <div ng-if="eval_settings.label">
-                {{eval_settings.label}}
+                <div ng-if="eval_settings.name">
+                {{eval_settings.name}}
                 </div>
             </button>
             <ion-item ng-repeat="(k,v) in eval_settings">

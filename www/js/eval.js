@@ -103,7 +103,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     }
 
     /*
-     * BEGIN: code to map labels to configuration settings
+     * BEGIN: code to map ids to configuration settings
      */
 
     var fillFilterValue = function(config, filter_vals) {
@@ -182,9 +182,9 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         // profile_parts = ["evaluation", "a"]
         if (profile_parts[0] == "evaluation") {
             // profile_parts[1] = "a"
-            // config_label = config_a
-            var config_label = "sensing_config_"+profile_parts[1]
-            return sensing_setting[config_label]
+            // config_id = config_a
+            var config_id = "sensing_config_"+profile_parts[1]
+            return sensing_setting[config_id]
         }
     }
 
@@ -199,7 +199,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         } else {
             evaluationButtons = $scope.sel_spec.full_spec.sensing_settings.map(
                 function(ss) {
-                    return {text: ss.label,
+                    return {text: ss.name,
                         sensing_config: find_config(ss, $scope.curr_phone.profile)};
                 });
         };
@@ -211,19 +211,19 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
                 $scope.eval_settings = expandForPlatform(button.sensing_config);
-                $scope.eval_settings.label = button.text;
+                $scope.eval_settings.name = button.text;
                 return true;
             },
             destructiveButtonClicked: function() {
                 $scope.eval_settings = getPlatformSpecificDefaultConfig();
-                $scope.eval_settings.label = angular.undefined;
+                $scope.eval_settings.name = angular.undefined;
                 return true;
             }
         });
     }
 
     /*
-     * END: code to map labels to configuration settings
+     * END: code to map ids to configuration settings
      */
 
     /*
@@ -282,7 +282,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             type: "FeatureCollection",
             features: featureList,
             properties: {
-                label: calibration_test.label,
+                id: calibration_test.id,
                 mode: calibration_test.mode,
             }
         }
@@ -291,7 +291,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     $scope.selectCalibrationTest = function() {
         var calibrationButtons = $scope.sel_spec.full_spec.calibration_tests.map(
             function(ct) {
-                return {text: ct.label, test: ct};
+                return {text: ct.id, test: ct};
             });
         $ionicActionSheet.show({
             titleText: "Select calibration to perform",
@@ -378,15 +378,20 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
     var toGeojsonFC = function(eval_trip) {
         var featureList = [
-            GeoJSON.parse(eval_trip.start_loc, {Point: "coordinates"}),
-            GeoJSON.parse(eval_trip.end_loc, {Point: "coordinates"}),
+            GeoJSON.parse(eval_trip.start_loc, {Point: "coordinates", extra: {
+                icon_style: {className: 'leaflet-div-icon-start', iconSize: [12, 12], html: "<div class='inner-icon'>"}
+            }}),
+            GeoJSON.parse(eval_trip.end_loc, {Point: "coordinates", extra: {
+                icon_style: {className: 'leaflet-div-icon-stop', iconSize: [12, 12], html: "<div class='inner-icon'>"},
+            }}),
             GeoJSON.parse(eval_trip, {LineString: "route_coords"})
         ]
         return {
             type: "FeatureCollection",
             features: featureList,
             properties: {
-                label: eval_trip.label,
+                id: eval_trip.id,
+                name: eval_trip.name,
                 mode: eval_trip.mode,
                 waypoints: eval_trip.route_waypoints
             }
@@ -396,7 +401,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     $scope.selectEvaluationTrip = function() {
         var evaluationButtons = $scope.sel_spec.full_spec.evaluation_trips.map(
             function(ct) {
-                return {text: ct.label,
+                return {text: ct.name,
                         trip: ct};
             });
         $ionicActionSheet.show({
@@ -504,4 +509,10 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
     // Initialize on controller creation
     $scope.resetAndRefresh();
+
+    /*
+     * Everything above this deals only with local UX state and modifications.
+     * Nothing is persisted; nothing affects actual functionality.
+     */
+
 })
