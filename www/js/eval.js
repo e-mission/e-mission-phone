@@ -7,16 +7,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
                                  $ionicActionSheet, $http, DiaryHelper,
                                  Config, ControlHelper, Logger) {
 
-    $scope.sel_spec = {};
-    $scope.curr_phone = {}
-    $scope.calibration = {};
-    $scope.eval_settings = {};
-    $scope.eval_trip = {};
-
-    $scope.mapCtrl = {};
-    angular.extend($scope.mapCtrl, { defaults : {} });
-    angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
-
     const MILLISECONDS = Math.pow(10, 6)
 
     const ACCURACY_CONTROL_SETTINGS = {
@@ -42,8 +32,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     /*
      * START: Control the UX of the summary card
      */
-    $scope.eval_settings_card_display = {};
-
     var shrinkEvalCard = function() {
         $scope.expandedEval = false;
         $scope.eval_settings_card_display.class = "small-eval-settings-card";
@@ -64,41 +52,10 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         }
     }
 
-    // Start out with shrunk card
-    shrinkEvalCard();
-
     /*
      * END: Control the UX of the summary card
      */
 
-    /*
-     * Reading stuff from native code
-     */
-
-    $ionicPlatform.ready().then(function() {
-        /*
-         * Populate device information for sending and for display
-         */
-        $scope.device_info = {
-            "manufacturer": device.manufacturer,
-            "model": device.model,
-            "version": device.version,
-        }
-        ControlHelper.getUserEmail().then(function(response) {
-            $scope.$apply(function() {
-                if (response == null) {
-                    $scope.curr_phone.email = "Not logged in";
-                } else {
-                    $scope.curr_phone.email = response;
-                }
-            });
-        }).catch(function(error) {
-            Logger.displayError("Error while reading current login", error);
-        });
-        $window.cordova.plugins.BEMDataCollection.getAccuracyOptions().then(function(accuracyOptions) {
-            $scope.accuracyOptions = accuracyOptions;
-        });
-    });
 
     /*
      * Read experiment info and populate it. Since one author could have
@@ -131,13 +88,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             return $http.post(url+"/datastreams/find_entries/timestamp", message);
         })
     }
-
-    $ionicModal.fromTemplateUrl("templates/eval/author-spec-sel.html", {
-        scope: $scope,
-        animation: "slide-in-up"
-    }).then(function(modal) {
-        $scope.author_spec_sel_modal = modal;
-    })
 
     $scope.getExperimentsForAuthor = function() {
         // $scope.sel_spec.author_email = "shankari@eecs.berkeley.edu"
@@ -301,7 +251,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     /*
      * START: Control the UX of the sensing settings
      */
-    $scope.sensing_settings_card_display = {};
 
     var shrinkSensingCard = function() {
         $scope.expandedSensing = false;
@@ -323,9 +272,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         }
     }
 
-    // Start out with shrunk card
-    shrinkSensingCard();
-
     /*
      * END: Control the UX of the sensing settings
      */
@@ -333,7 +279,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     /*
      * START: Control the UX of the trip settings
      */
-    $scope.trip_settings_card_display = {};
 
     var shrinkTripCard = function() {
         $scope.expandedTrip = false;
@@ -354,9 +299,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             shrinkTripCard();
         }
     }
-
-    // Start out with expanded card
-    expandTripCard();
 
     /*
      * END: Control the UX of the trip settings
@@ -392,7 +334,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
                 $scope.eval_trip.waiting_for_trip_start = true;
-                expandTripCard();
                 $scope.eval_trip.raw = button.trip;
                 var curr_fc = toGeojsonFC(button.trip);
                 $scope.eval_trip.gj = {data: curr_fc}
@@ -411,4 +352,72 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         $scope.eval_trip = {};
     }
 
+    /* 
+     * Move everything that is run in the main body of the controller into a reset
+     * function to make it easier to reset state.
+     */
+
+    $scope.resetAndRefresh = function() {
+        $scope.sel_spec = {};
+        $scope.curr_phone = {}
+        $scope.calibration = {};
+        $scope.eval_settings = {};
+        $scope.eval_trip = {};
+
+        $scope.mapCtrl = {};
+        angular.extend($scope.mapCtrl, { defaults : {} });
+        angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
+
+        $scope.eval_settings_card_display = {};
+        $scope.sensing_settings_card_display = {};
+        $scope.trip_settings_card_display = {};
+
+        // Start out with shrunk card
+        shrinkEvalCard();
+        shrinkSensingCard();
+        expandTripCard();
+
+        /*
+         * Reading stuff from native code
+         */
+
+        $ionicPlatform.ready().then(function() {
+            /*
+             * Populate device information for sending and for display
+             */
+            $scope.device_info = {
+                "manufacturer": device.manufacturer,
+                "model": device.model,
+                "version": device.version,
+            }
+            ControlHelper.getUserEmail().then(function(response) {
+                $scope.$apply(function() {
+                    if (response == null) {
+                        $scope.curr_phone.email = "Not logged in";
+                    } else {
+                        $scope.curr_phone.email = response;
+                    }
+                });
+            }).catch(function(error) {
+                Logger.displayError("Error while reading current login", error);
+            });
+            $window.cordova.plugins.BEMDataCollection.getAccuracyOptions().then(function(accuracyOptions) {
+                $scope.accuracyOptions = accuracyOptions;
+            });
+        });
+
+        if (angular.isDefined($scope.author_spec_sel_modal)) {
+            $scope.author_spec_sel_modal.remove();
+        }
+        $ionicModal.fromTemplateUrl("templates/eval/author-spec-sel.html", {
+            scope: $scope,
+            animation: "slide-in-up"
+        }).then(function(modal) {
+            $scope.author_spec_sel_modal = modal;
+        })
+
+    }
+
+    // Initialize on controller creation
+    $scope.resetAndRefresh();
 })
