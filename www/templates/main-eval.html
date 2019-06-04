@@ -47,7 +47,7 @@
                     ng-click="endEvalTrip()"> End </button>
             </button-bar>
             </div>
-            <leaflet geojson="eval_trip.gj"
+            <leaflet ng-if="eval_trip.raw.label" geojson="eval_trip.gj"
                 id="eval" defaults="mapCtrl.defaults"
             height="50%" width="100%" data-tap-disabled="true">
             </leaflet>
