@@ -4,6 +4,7 @@
         Evaluation spec
       </button>
       <div ng-if="sel_author_spec.author_email">
+        <button class="button button-icon ion-refresh" side="left" ng-click="resetAndRefresh()"></button>
         <ion-title>{{sel_author_spec.sel_spec.name}}</ion-title>
         <button class="button button-icon ion-edit" side="right" ng-click="author_spec_sel_modal.show()">
         </button>
@@ -26,7 +27,8 @@
             <ion-item>Version: {{device_info.version}}</ion-item>
         </ion-card>
         <ion-card ng-if="sel_author_spec.sel_spec
-                            && (curr_regime.registered)"
+                            && (curr_regime.registered)
+                            && (!curr_regime.evaluation.sensing_settings.label)"
             id="eval-settings"
             class="card small-calibration-settings-card">
             <ion-item class="item-divider">
@@ -77,13 +79,13 @@
                                 && (curr_regime.isAccuracyControl)
                                 && (curr_regime.evaluation.sensing_settings.label)"
             id="eval-settings"
-            class="card small-calibration-settings-card">
+            class="card {{trip_settings_card_display.class}}">
             <ion-item class="item-divider">
             Select trip in experiment
             <div ng-if="curr_regime.evaluation.curr_trip.label"
-                ng-click="evaluation_trip_modal.show()"
+                ng-click="toggleTripCardDisplay()"
                 class="arrow-position">
-                <i class="icon ion-chevron-right"></i>
+                <i class="icon {{trip_settings_card_display.icon}}"></i>
             </div>
             </ion-item>
             <button-bar class="button-bar">
@@ -94,10 +96,24 @@
                 </button>
                 <button ng-if="curr_regime.evaluation.curr_trip.label"
                     class="button button-block"
-                    ng-click="evaluation_trip_modal.show()">
+                    ng-click="toggleTripCardDisplay()">
                     {{curr_regime.evaluation.curr_trip.label}}
                 </button>
             </button-bar>
+            <div class="row" style="color:black;text-align:center">Trip</div>
+            <button-bar class="button-bar row">
+                <button class="button button-block trip-control-button"
+                    ng-disabled="!curr_regime.evaluation.waiting_for_trip_start"
+                    ng-click="startEvalTrip()"> Start </button>
+                <button class="button button-block trip-control-button"
+                    ng-disabled="!curr_regime.evaluation.ongoing_trip"
+                    ng-click="endEvalTrip()"> End </button>
+            </button-bar>
+            </div>
+            <leaflet geojson="curr_regime.evaluation.curr_tripgj"
+                id="eval" defaults="mapCtrl.defaults"
+            height="50%" width="100%" data-tap-disabled="true">
+            </leaflet>
         </ion-card>
     </ion-content>
 </ion-view>

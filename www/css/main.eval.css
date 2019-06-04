@@ -14,12 +14,16 @@
   height: 110px !important;
 }
 
-.small-calibration-settings-card {
-  height: 110px !important;
+.expanded-trip-settings-card {
+  height: 475px !important;
 }
 
-.small-evaluation-settings-card {
-  height: 160px !important;
+.small-trip-settings-card {
+  height: 105px !important;
+}
+
+.small-calibration-settings-card {
+  height: 110px !important;
 }
 
 #eval-settings.card {

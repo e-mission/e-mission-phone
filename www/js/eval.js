@@ -17,15 +17,15 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     angular.extend($scope.mapCtrl, { defaults : {} });
     angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
-    var MILLISECONDS = Math.pow(10, 6)
+    const MILLISECONDS = Math.pow(10, 6)
 
-    var ACCURACY_CONTROL_SETTINGS = {
+    const ACCURACY_CONTROL_SETTINGS = {
         is_duty_cycling: false,
         accuracy: ["PRIORITY_HIGH_ACCURACY","kCLLocationAccuracyBest"],
         filter: 1,
     }
 
-    var POWER_CONTROL_SETTINGS = {
+    const POWER_CONTROL_SETTINGS = {
         accuracy: ["PRIORITY_NO_POWER","kCLLocationAccuracyThreeKilometers"],
         filter: 1200,
     }
@@ -301,7 +301,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
 
     /*
-     * START: Control the UX of the summary card
+     * START: Control the UX of the sensing settings
      */
     $scope.sensing_settings_card_display = {};
 
@@ -329,8 +329,41 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     shrinkSensingCard();
 
     /*
-     * END: Control the UX of the summary card
+     * END: Control the UX of the sensing settings
      */
+
+    /*
+     * START: Control the UX of the trip settings
+     */
+    $scope.trip_settings_card_display = {};
+
+    var shrinkTripCard = function() {
+        $scope.expandedTrip = false;
+        $scope.trip_settings_card_display.class = "small-trip-settings-card";
+        $scope.trip_settings_card_display.icon = "icon ion-chevron-down";
+    }
+
+    var expandTripCard = function() {
+        $scope.expandedTrip = true;
+        $scope.trip_settings_card_display.class = "expanded-trip-settings-card";
+        $scope.trip_settings_card_display.icon = "icon ion-chevron-up";
+    }
+
+    $scope.toggleTripCardDisplay = function() {
+        if (!$scope.expandedTrip) {
+            expandTripCard();
+        } else {
+            shrinkTripCard();
+        }
+    }
+
+    // Start out with shrunk card
+    shrinkTripCard();
+
+    /*
+     * END: Control the UX of the trip settings
+     */
+
 
     var toGeojsonFC = function(eval_trip) {
         var featureList = [
@@ -360,6 +393,8 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
+                $scope.curr_regime.evaluation.waiting_for_trip_start = true;
+                expandTripCard();
                 $scope.curr_regime.evaluation.curr_trip = button.trip;
                 var curr_fc = toGeojsonFC(button.trip);
                 $scope.curr_regime.evaluation.curr_tripgj = {data: curr_fc}
@@ -368,15 +403,15 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         });
     }
 
-    /*
-     * BEGIN: detail view code (TODO: Decide whether we want to use a view or a 
-     * modal here. Let's start with modal since it can share this state.
-     */
+    $scope.startEvalTrip = function() {
+        $scope.curr_regime.evaluation.ongoing_trip = true;
+        $scope.curr_regime.evaluation.waiting_for_trip_start = false;
+    }
 
-    $ionicModal.fromTemplateUrl("templates/eval/evaluation-trip.html", {
-        scope: $scope,
-        animation: "slide-in-up"
-    }).then(function(modal) {
-        $scope.evaluation_trip_modal = modal;
-    })
+    $scope.endEvalTrip = function() {
+        $scope.curr_regime.evaluation.ongoing_trip = false;
+        $scope.curr_regime.evaluation.curr_trip = angular.undefined;
+        $scope.curr_regime.evaluation.curr_tripgj = angular.undefined;
+    }
+
 })
