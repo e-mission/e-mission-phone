@@ -255,16 +255,29 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     }
 
     /*
-     * END: Control the UX of the summary card
+     * END: Control the UX of the calibration card
      */
 
+    var pointFormat = function(feature, latlng) {
+      return L.marker(latlng, {icon: L.divIcon(feature.properties.icon_style)})
+    };
 
     var toGeojsonCT = function(calibration_test) {
         var featureList = [
-            GeoJSON.parse(calibration_test.start_loc, {Point: "coordinates"}),
-            GeoJSON.parse(calibration_test.end_loc, {Point: "coordinates"})
-            // GeoJSON.parse(calibration_test, {LineString: [calibration_test.start_loc.coordinates, calibration_test.end_loc.coordinates]})
+            GeoJSON.parse(calibration_test.start_loc, {Point: "coordinates", extra: {
+                icon_style: {className: 'leaflet-div-icon-start', iconSize: [12, 12], html: "<div class='inner-icon'>"}
+            }}),
+            GeoJSON.parse(calibration_test.end_loc, {Point: "coordinates", extra: {
+                icon_style: {className: 'leaflet-div-icon-stop', iconSize: [12, 12], html: "<div class='inner-icon'>"}
+            }}),
         ]
+        featureList.push({
+            type: "Feature",
+            geometry: {
+                type: "LineString",
+                coordinates: [calibration_test.start_loc.coordinates, calibration_test.end_loc.coordinates]
+            }
+        });
         return {
             type: "FeatureCollection",
             features: featureList,
@@ -288,11 +301,13 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             buttonClicked: function(index, button) {
                 $scope.calibration.curr_test = button.test;
                 $scope.calibration.full_config = expandForPlatform($scope.calibration.curr_test.config.sensing_config);
+                expandCalibrationCard();
+                $scope.calibration.expandedView = angular.undefined;
                 if ($scope.calibration.curr_test.start_loc != null &&
                     $scope.calibration.curr_test.end_loc != null) {
-                    expandCalibrationCard();
                     $scope.calibration.moving = true;
                     $scope.calibration.gj = {data: toGeojsonCT($scope.calibration.curr_test)};
+                    $scope.calibration.gj.pointToLayer = pointFormat;
                 }
                 return true;
             },
@@ -393,6 +408,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
                 $scope.eval_trip.raw = button.trip;
                 var curr_fc = toGeojsonFC(button.trip);
                 $scope.eval_trip.gj = {data: curr_fc}
+                $scope.eval_trip.gj.pointToLayer = pointFormat;
                 return true;
             }
         });

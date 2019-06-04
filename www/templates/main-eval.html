@@ -73,7 +73,7 @@
                    </div>
                 </label>
                 </div>
-                <div ng-if="calibration.moving"
+                <div ng-if="calibration.curr_test.label"
                     ng-click="toggleCalibrationCardDisplay()"
                     class="col-5 arrow-position">
                     <i class="icon {{calibration_settings_card_display.icon}}"></i>
@@ -89,7 +89,8 @@
                     <ion-radio type="radio" ng-model="calibration.expandedView" value="settings">
                     <i class="icon ion-information-circled"></i>
                     </ion-radio>
-                    <ion-radio type="radio" ng-model="calibration.expandedView" value="map">
+                    <ion-radio type="radio" ng-model="calibration.expandedView"
+                        value="map" ng-disabled="!calibration.moving">
                     <i class="icon ion-map"></i>
                     </ion-radio>
                 </select-bar>
