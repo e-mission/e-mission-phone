@@ -48,7 +48,7 @@
             </button-bar>
             </div>
             <leaflet ng-if="eval_trip.raw.label" geojson="eval_trip.gj"
-                id="eval" defaults="mapCtrl.defaults"
+                id="eval-trip" defaults="mapCtrl.defaults"
             height="50%" width="100%" data-tap-disabled="true">
             </leaflet>
         </ion-card>
@@ -56,7 +56,7 @@
                             && (curr_phone.registered)
                             && (!eval_settings.label)"
             id="eval-settings"
-            class="card small-calibration-settings-card">
+            class="card expanded-calibration-settings-card">
             <ion-item class="item-divider">
             <div class="row">
                 <div class="col-75">
@@ -75,10 +75,20 @@
                 </div>
             </div>
             </ion-item>
-            <button class="button button-block"
-                ng-click="selectCalibrationTest()">
-                {{calibration.curr_test}}
-            </button>
+            <button-bar class="button-bar row">
+                <button class="button button-block col-75"
+                    ng-click="selectCalibrationTest()">
+                    {{calibration.curr_test.label}}
+                </button>
+                <button ng-if="calibration.curr_test.label"
+                    class="button icon ion-information-circled col-25"
+                    ng-click="config_settings_popover.show($event)">
+                </button>
+            </button-bar>
+            <leaflet geojson="calibration.gj"
+                id="eval-calibration" defaults="mapCtrl.defaults"
+                height="80%" width="100%" data-tap-disabled="true">
+            </leaflet>
         </ion-card>
         <ion-card id="eval-settings" ng-if="sel_spec.full_spec"
             class="card {{sensing_settings_card_display.class}}">

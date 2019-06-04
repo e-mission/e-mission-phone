@@ -4,7 +4,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     "emission.main.diary.services"])
 
 .controller('EvalCtrl', function($window, $scope, $ionicPlatform, $ionicModal,
-                                 $ionicActionSheet, $http, DiaryHelper,
+                                 $ionicActionSheet, $ionicPopover, $http, DiaryHelper,
                                  Config, ControlHelper, Logger) {
 
     const MILLISECONDS = Math.pow(10, 6)
@@ -231,17 +231,43 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
      * We will use an actionsheet because the select on iOS moves the app up again
      */
 
+    var toGeojsonCT = function(calibration_test) {
+        var featureList = [
+            GeoJSON.parse(calibration_test.start_loc, {Point: "coordinates"}),
+            GeoJSON.parse(calibration_test.end_loc, {Point: "coordinates"}),
+            GeoJSON.parse(calibration_test, {LineString: [calibration_test.start_loc, calibration_test.end_loc]})
+        ]
+        return {
+            type: "FeatureCollection",
+            features: featureList,
+            properties: {
+                label: calibration_test.label,
+                mode: calibration_test.mode,
+            }
+        }
+    }
+
     $scope.selectCalibrationTest = function() {
-        var calibrationButtons = $scope.sel_spec.full_spec.calibration_trips.map(
+        var calibrationButtons = $scope.sel_spec.full_spec.calibration_tests.map(
             function(ct) {
-                return {text: ct.label};
+                return {text: ct.label, test: ct};
             });
         $ionicActionSheet.show({
             titleText: "Select calibration to perform",
+            destructiveText: "Restore defaults",
             cancelText: "Cancel",
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
-                $scope.calibration.curr_test = button.text;
+                $scope.calibration.curr_test = button.test;
+                $scope.calibration.full_config = expandForPlatform($scope.calibration.curr_test.config);
+                if ($scope.calibration.curr_test.start_loc != null &&
+                    $scope.calibration.curr_test.end_loc != null) {
+                    $scope.calibration.gj = toGeojsonCT($scope.calibration.curr_test);
+                }
+                return true;
+            },
+            destructiveButtonClicked: function() {
+                $scope.calibration = {};
                 return true;
             }
         });
@@ -364,6 +390,8 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         $scope.eval_settings = {};
         $scope.eval_trip = {};
 
+        $scope.author_eval_spec_list = [];
+
         $scope.mapCtrl = {};
         angular.extend($scope.mapCtrl, { defaults : {} });
         angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
@@ -416,6 +444,14 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             $scope.author_spec_sel_modal = modal;
         })
 
+        if (angular.isDefined($scope.config_settings_popover)) {
+            $scope.config_settings_popover.remove();
+        }
+        $ionicPopover.fromTemplateUrl('templates/eval/display_config.html', {
+            scope: $scope
+        }).then(function(popover) {
+            $scope.config_settings_popover = popover;
+        });
     }
 
     // Initialize on controller creation
