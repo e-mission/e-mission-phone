@@ -313,6 +313,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             },
             destructiveButtonClicked: function() {
                 $scope.calibration = {};
+                shrinkCalibrationCard();
                 return true;
             }
         });
