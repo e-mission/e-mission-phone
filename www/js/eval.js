@@ -7,8 +7,8 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
                                  $ionicActionSheet, $http, DiaryHelper,
                                  Config, ControlHelper, Logger) {
 
-    $scope.sel_author_spec = {};
-    $scope.curr_regime = {};
+    $scope.sel_spec = {};
+    $scope.curr_phone = {}
     $scope.calibration = {};
     $scope.eval_settings = {};
     $scope.eval_trip = {};
@@ -87,9 +87,9 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         ControlHelper.getUserEmail().then(function(response) {
             $scope.$apply(function() {
                 if (response == null) {
-                    $scope.curr_regime.email = "Not logged in";
+                    $scope.curr_phone.email = "Not logged in";
                 } else {
-                    $scope.curr_regime.email = response;
+                    $scope.curr_phone.email = response;
                 }
             });
         }).catch(function(error) {
@@ -124,7 +124,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
               "key_list": key_list,
               "start_time": start_ts,
               "end_time": end_ts,
-              "user": $scope.sel_author_spec.author_email
+              "user": $scope.sel_spec.author_email
             };
             console.log("About to return message "+JSON.stringify(message));
             console.log("getRawEntries: about to get pushGetJSON for the timestamp");
@@ -140,7 +140,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     })
 
     $scope.getExperimentsForAuthor = function() {
-        // $scope.sel_author_spec.author_email = "shankari@eecs.berkeley.edu"
+        // $scope.sel_spec.author_email = "shankari@eecs.berkeley.edu"
         return getRawEntriesForAuthor(["config/evaluation_spec"], 0, moment().unix())
             .then(function(result) { return result.data})
             .then(function(serverResponse) { return serverResponse.phone_data; })
@@ -209,19 +209,19 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     }
 
     $scope.saveSelectedEval = function() {
-        console.log("Selected spec is "+JSON.stringify($scope.sel_author_spec));
-        var phone_map = $scope.sel_author_spec.sel_spec.phones[ionic.Platform.platform()];
-        $scope.curr_regime.profile = phone_map[$scope.curr_regime.email]
-        $scope.curr_regime.registered = angular.isDefined($scope.curr_regime.profile);
-        if (!$scope.curr_regime.registered) {
-            $scope.curr_regime.profile = "unregistered";
+        console.log("Selected spec is "+JSON.stringify($scope.sel_spec));
+        var phone_map = $scope.sel_spec.full_spec.phones[ionic.Platform.platform()];
+        $scope.curr_phone.profile = phone_map[$scope.curr_phone.email]
+        $scope.curr_phone.registered = angular.isDefined($scope.curr_phone.profile);
+        if (!$scope.curr_phone.registered) {
+            $scope.curr_phone.profile = "unregistered";
             $scope.profile_item_style = {color: "red"};
         }
-        if ($scope.curr_regime.profile == "accuracy_control") {
-            $scope.curr_regime.isAccuracyControl = true;
+        if ($scope.curr_phone.profile == "accuracy_control") {
+            $scope.curr_phone.isAccuracyControl = true;
         }
-        if ($scope.curr_regime.profile == "power_control") {
-            $scope.curr_regime.isPowerControl = true;
+        if ($scope.curr_phone.profile == "power_control") {
+            $scope.curr_phone.isPowerControl = true;
         }
         $scope.author_spec_sel_modal.hide()
     };
@@ -240,17 +240,17 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
     $scope.selectSensingSettings = function() {
         var evaluationButtons = [];
-        if ($scope.curr_regime.isAccuracyControl) {
+        if ($scope.curr_phone.isAccuracyControl) {
             evaluationButtons.push({text: "accuracy_control (fixed)",
                 sensing_config: ACCURACY_CONTROL_SETTINGS});
-        } else if ($scope.curr_regime.isPowerControl) {
+        } else if ($scope.curr_phone.isPowerControl) {
             evaluationButtons.push({text: "power_control (fixed)",
                 sensing_config: POWER_CONTROL_SETTINGS});
         } else {
-            evaluationButtons = $scope.sel_author_spec.sel_spec.sensing_settings.map(
+            evaluationButtons = $scope.sel_spec.full_spec.sensing_settings.map(
                 function(ss) {
                     return {text: ss.label,
-                        sensing_config: find_config(ss, $scope.curr_regime.profile)};
+                        sensing_config: find_config(ss, $scope.curr_phone.profile)};
                 });
         };
         var RESTORE_DEFAULTS_TEXT = "Restore defaults";
@@ -282,7 +282,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
      */
 
     $scope.selectCalibrationTest = function() {
-        var calibrationButtons = $scope.sel_author_spec.sel_spec.calibration_trips.map(
+        var calibrationButtons = $scope.sel_spec.full_spec.calibration_trips.map(
             function(ct) {
                 return {text: ct.label};
             });
@@ -381,7 +381,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     }
 
     $scope.selectEvaluationTrip = function() {
-        var evaluationButtons = $scope.sel_author_spec.sel_spec.evaluation_trips.map(
+        var evaluationButtons = $scope.sel_spec.full_spec.evaluation_trips.map(
             function(ct) {
                 return {text: ct.label,
                         trip: ct};

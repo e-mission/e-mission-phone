@@ -1,11 +1,11 @@
 <ion-view ng-class="ion-view-background">
     <ion-nav-buttons side="left">
-      <button ng-if="!sel_author_spec.author_email" class="button button-icon ion-gear-a" ng-click="author_spec_sel_modal.show()">
+      <button ng-if="!sel_spec.author_email" class="button button-icon ion-gear-a" ng-click="author_spec_sel_modal.show()">
         Evaluation spec
       </button>
-      <div ng-if="sel_author_spec.author_email">
+      <div ng-if="sel_spec.author_email">
         <button class="button button-icon ion-refresh" side="left" ng-click="resetAndRefresh()"></button>
-        <ion-title>{{sel_author_spec.sel_spec.name}}</ion-title>
+        <ion-title>{{sel_spec.full_spec.name}}</ion-title>
         <button class="button button-icon ion-edit" side="right" ng-click="author_spec_sel_modal.show()">
         </button>
       </div>
@@ -17,17 +17,17 @@
                 <i class="{{eval_settings_card_display.icon}}"></i>
             </div>
             </ion-item>
-            <ion-item ng-style="$scope.curr_regime.registered ? {} : {color: 'red'}">
-                {{curr_regime.email}} ({{curr_regime.profile}})
+            <ion-item ng-style="$scope.curr_phone.registered ? {} : {color: 'red'}">
+                {{curr_phone.email}} ({{curr_phone.profile}})
             </ion-item>
-            <ion-item>Author: {{sel_author_spec.author_email}}</ion-item>
-            <ion-item>Start: {{sel_author_spec.sel_spec.start_fmt_date}} to End: {{sel_author_spec.sel_spec.end_fmt_date}}</ion-item>
+            <ion-item>Author: {{sel_spec.author_email}}</ion-item>
+            <ion-item>Start: {{sel_spec.full_spec.start_fmt_date}} to End: {{sel_spec.full_spec.end_fmt_date}}</ion-item>
             <ion-item>Manufacturer: {{device_info.manufacturer}}</ion-item>
             <ion-item>Model: {{device_info.model}}</ion-item>
             <ion-item>Version: {{device_info.version}}</ion-item>
         </ion-card>
-        <ion-card ng-if="sel_author_spec.sel_spec
-                            && (curr_regime.registered)
+        <ion-card ng-if="sel_spec.full_spec
+                            && (curr_phone.registered)
                             && (!eval_settings.label)"
             id="eval-settings"
             class="card small-calibration-settings-card">
@@ -54,7 +54,7 @@
                 {{calibration.curr_test}}
             </button>
         </ion-card>
-        <ion-card id="eval-settings" ng-if="sel_author_spec.sel_spec"
+        <ion-card id="eval-settings" ng-if="sel_spec.full_spec"
             class="card {{sensing_settings_card_display.class}}">
             <ion-item class="item-divider">Select regimes to compare
             <div ng-click="toggleSensingCardDisplay()" class="arrow-position">
@@ -74,10 +74,10 @@
                 <b>{{k}}:</b> {{v}}
             </ion-item>
         </ion-card>
-        <ion-card ng-if="(sel_author_spec.sel_spec)
-                                && (curr_regime.registered)
-                                && (curr_regime.isAccuracyControl)
-                                && (eval_settings.label)"
+        <ion-card ng-if="(sel_spec.full_spec)
+                         && (curr_phone.registered)
+                         && (curr_phone.isAccuracyControl)
+                         && (eval_settings.label)"
             id="eval-settings"
             class="card {{trip_settings_card_display.class}}">
             <ion-item class="item-divider">
