@@ -9,9 +9,10 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
 
     $scope.sel_author_spec = {};
     $scope.curr_regime = {};
-    $scope.calibration = {};
     $scope.curr_regime.evaluation = {};
-    $scope.curr_regime.settings = {};
+    $scope.calibration = {};
+    $scope.eval_settings = {};
+    $scope.eval_trip = {};
 
     $scope.mapCtrl = {};
     angular.extend($scope.mapCtrl, { defaults : {} });
@@ -260,15 +261,13 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
-                $scope.curr_regime.evaluation.sensing_settings = 
-                    expandForPlatform(button.sensing_config);
-                $scope.curr_regime.evaluation.sensing_settings.label = button.text;
+                $scope.eval_settings = expandForPlatform(button.sensing_config);
+                $scope.eval_settings.label = button.text;
                 return true;
             },
             destructiveButtonClicked: function() {
-                $scope.curr_regime.evaluation.sensing_settings = 
-                    getPlatformSpecificDefaultConfig();
-                $scope.curr_regime.evaluation.sensing_settings.label = angular.undefined;
+                $scope.eval_settings = getPlatformSpecificDefaultConfig();
+                $scope.eval_settings.label = angular.undefined;
                 return true;
             }
         });

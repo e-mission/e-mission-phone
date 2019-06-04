@@ -28,7 +28,7 @@
         </ion-card>
         <ion-card ng-if="sel_author_spec.sel_spec
                             && (curr_regime.registered)
-                            && (!curr_regime.evaluation.sensing_settings.label)"
+                            && (!eval_settings.label)"
             id="eval-settings"
             class="card small-calibration-settings-card">
             <ion-item class="item-divider">
@@ -38,7 +38,7 @@
                 </div>
                 <div class="col-25">
                 <label ng-if="(calibration.curr_test)
-                                && (!curr_regime.evaluation.on)"
+                                && (!eval_settings.label)"
                        class="toggle toggle-color">
                    <input type="checkbox" ng-model="calibration.on"
                         ng-changed="startCalibration()">
@@ -63,21 +63,21 @@
             </ion-item>
             <button class="button button-block"
                 ng-click="selectSensingSettings()">
-                <div ng-if="!curr_regime.evaluation.sensing_settings.label">
+                <div ng-if="!eval_settings.label">
                 Select sensing regime
                 </div>
-                <div ng-if="curr_regime.evaluation.sensing_settings.label">
-                {{curr_regime.evaluation.sensing_settings.label}}
+                <div ng-if="eval_settings.label">
+                {{eval_settings.label}}
                 </div>
             </button>
-            <ion-item ng-repeat="(k,v) in curr_regime.evaluation.sensing_settings">
+            <ion-item ng-repeat="(k,v) in eval_settings">
                 <b>{{k}}:</b> {{v}}
             </ion-item>
         </ion-card>
         <ion-card ng-if="(sel_author_spec.sel_spec)
                                 && (curr_regime.registered)
                                 && (curr_regime.isAccuracyControl)
-                                && (curr_regime.evaluation.sensing_settings.label)"
+                                && (eval_settings.label)"
             id="eval-settings"
             class="card {{trip_settings_card_display.class}}">
             <ion-item class="item-divider">
