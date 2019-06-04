@@ -231,11 +231,39 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
      * We will use an actionsheet because the select on iOS moves the app up again
      */
 
+    /*
+     * START: Control the UX of the calibration card
+     */
+    var shrinkCalibrationCard = function() {
+        $scope.expandedCalibration = false;
+        $scope.calibration_settings_card_display.class = "small-calibration-settings-card";
+        $scope.calibration_settings_card_display.icon = "icon ion-chevron-down";
+    }
+
+    var expandCalibrationCard = function() {
+        $scope.expandedCalibration = true;
+        $scope.calibration_settings_card_display.class = "expanded-calibration-settings-card";
+        $scope.calibration_settings_card_display.icon = "icon ion-chevron-up";
+    }
+
+    $scope.toggleCalibrationCardDisplay = function() {
+        if (!$scope.expandedCalibration) {
+            expandCalibrationCard();
+        } else {
+            shrinkCalibrationCard();
+        }
+    }
+
+    /*
+     * END: Control the UX of the summary card
+     */
+
+
     var toGeojsonCT = function(calibration_test) {
         var featureList = [
             GeoJSON.parse(calibration_test.start_loc, {Point: "coordinates"}),
-            GeoJSON.parse(calibration_test.end_loc, {Point: "coordinates"}),
-            GeoJSON.parse(calibration_test, {LineString: [calibration_test.start_loc, calibration_test.end_loc]})
+            GeoJSON.parse(calibration_test.end_loc, {Point: "coordinates"})
+            // GeoJSON.parse(calibration_test, {LineString: [calibration_test.start_loc.coordinates, calibration_test.end_loc.coordinates]})
         ]
         return {
             type: "FeatureCollection",
@@ -259,10 +287,12 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
                 $scope.calibration.curr_test = button.test;
-                $scope.calibration.full_config = expandForPlatform($scope.calibration.curr_test.config);
+                $scope.calibration.full_config = expandForPlatform($scope.calibration.curr_test.config.sensing_config);
                 if ($scope.calibration.curr_test.start_loc != null &&
                     $scope.calibration.curr_test.end_loc != null) {
-                    $scope.calibration.gj = toGeojsonCT($scope.calibration.curr_test);
+                    expandCalibrationCard();
+                    $scope.calibration.moving = true;
+                    $scope.calibration.gj = {data: toGeojsonCT($scope.calibration.curr_test)};
                 }
                 return true;
             },
@@ -397,11 +427,13 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
 
         $scope.eval_settings_card_display = {};
+        $scope.calibration_settings_card_display = {};
         $scope.sensing_settings_card_display = {};
         $scope.trip_settings_card_display = {};
 
         // Start out with shrunk card
         shrinkEvalCard();
+        shrinkCalibrationCard();
         shrinkSensingCard();
         expandTripCard();
 

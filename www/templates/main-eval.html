@@ -56,10 +56,10 @@
                             && (curr_phone.registered)
                             && (!eval_settings.label)"
             id="eval-settings"
-            class="card expanded-calibration-settings-card">
+            class="card {{calibration_settings_card_display.class}}">
             <ion-item class="item-divider">
             <div class="row">
-                <div class="col-75">
+                <div class="col-70">
                     Calibrate phones
                 </div>
                 <div class="col-25">
@@ -73,19 +73,34 @@
                    </div>
                 </label>
                 </div>
+                <div ng-if="calibration.moving"
+                    ng-click="toggleCalibrationCardDisplay()"
+                    class="col-5 arrow-position">
+                    <i class="icon {{calibration_settings_card_display.icon}}"></i>
+                </div>
             </div>
             </ion-item>
-            <button-bar class="button-bar row">
-                <button class="button button-block col-75"
+            <button-bar class="row">
+                <button class="button button-block col-70"
                     ng-click="selectCalibrationTest()">
                     {{calibration.curr_test.label}}
                 </button>
-                <button ng-if="calibration.curr_test.label"
-                    class="button icon ion-information-circled col-25"
-                    ng-click="config_settings_popover.show($event)">
-                </button>
+                <select-bar class="col-30" ng-if="calibration.curr_test.label">
+                    <ion-radio type="radio" ng-model="calibration.expandedView" value="settings">
+                    <i class="icon ion-information-circled"></i>
+                    </ion-radio>
+                    <ion-radio type="radio" ng-model="calibration.expandedView" value="map">
+                    <i class="icon ion-map"></i>
+                    </ion-radio>
+                </select-bar>
             </button-bar>
-            <leaflet geojson="calibration.gj"
+            <ion-list ng-if="calibration.expandedView == 'settings'">
+                <ion-item ng-repeat="(k,v) in calibration.full_config">
+                        <b>{{k}}:</b> {{v}}
+                </ion-item>
+            </ion-list>
+            <leaflet ng-if="calibration.expandedView == 'map'"
+                geojson="calibration.gj"
                 id="eval-calibration" defaults="mapCtrl.defaults"
                 height="80%" width="100%" data-tap-disabled="true">
             </leaflet>
