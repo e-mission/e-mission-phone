@@ -1,10 +1,10 @@
 'use strict';
 
-angular.module('emission.main.eval',['emission.plugin.logger', "emission.services",
-    "emission.main.diary.services"])
+angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.kvstore",
+    "emission.services", "emission.main.diary.services"])
 
 .controller('EvalCtrl', function($window, $scope, $ionicPlatform, $ionicModal,
-                                 $ionicActionSheet, $ionicPopover, $http, DiaryHelper,
+                                 $ionicActionSheet, $ionicPopover, $http, KVStore,
                                  Config, ControlHelper, Logger) {
 
     const MILLISECONDS = Math.pow(10, 6)
@@ -28,6 +28,12 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         geofence_radius: 100,
         filter: [30,50]
     }
+
+    const SEL_SPEC_KEY = "local/sel_spec";
+    const CURR_PHONE_KEY = "local/curr_phone";
+    const CALIBRATION_KEY = "local/calibration";
+    const EVAL_SETTINGS_KEY = "local/eval_settings";
+    const EVAL_TRIP_KEY = "local/eval_trip";
 
     /*
      * START: Control the UX of the summary card
@@ -173,6 +179,8 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         if ($scope.curr_phone.profile == "power_control") {
             $scope.curr_phone.isPowerControl = true;
         }
+        KVStore.set(SEL_SPEC_KEY, $scope.sel_spec);
+        KVStore.set(CURR_PHONE_KEY, $scope.curr_phone);
         $scope.author_spec_sel_modal.hide()
     };
 
@@ -212,11 +220,13 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
             buttonClicked: function(index, button) {
                 $scope.eval_settings = expandForPlatform(button.sensing_config);
                 $scope.eval_settings.name = button.text;
+                KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
                 return true;
             },
             destructiveButtonClicked: function() {
                 $scope.eval_settings = getPlatformSpecificDefaultConfig();
                 $scope.eval_settings.name = angular.undefined;
+                KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
                 return true;
             }
         });
@@ -309,11 +319,13 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
                     $scope.calibration.gj = {data: toGeojsonCT($scope.calibration.curr_test)};
                     $scope.calibration.gj.pointToLayer = pointFormat;
                 }
+                KVStore.set(CALIBRATION_KEY, $scope.calibration);
                 return true;
             },
             destructiveButtonClicked: function() {
                 $scope.calibration = {};
                 shrinkCalibrationCard();
+                KVStore.set(CALIBRATION_KEY, $scope.calibration);
                 return true;
             }
         });
@@ -415,6 +427,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
                 var curr_fc = toGeojsonFC(button.trip);
                 $scope.eval_trip.gj = {data: curr_fc}
                 $scope.eval_trip.gj.pointToLayer = pointFormat;
+                KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
                 return true;
             }
         });
@@ -423,25 +436,71 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
     $scope.startEvalTrip = function() {
         $scope.eval_trip.ongoing_trip = true;
         $scope.eval_trip.waiting_for_trip_start = false;
+        KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
     }
 
     $scope.endEvalTrip = function() {
         $scope.eval_trip.ongoing_trip = false;
         $scope.eval_trip = {};
+        KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
+    }
+
+    /*
+     * BEGIN: persistence code. Everything above this that does not invoke one of these
+     * deals only with local state.
+     */
+
+    $scope.applySensingSettings = function() {
+    }
+
+    $scope.generateTransition = function() {
     }
 
     /* 
      * Move everything that is run in the main body of the controller into a reset
      * function to make it easier to reset state.
+     * since we now load/store state, this is now split up into three main parts:
+     * - the constants that always need to be initialized
+     * - the version that loads initial state
+     * - the version that resets initial state
      */
 
-    $scope.resetAndRefresh = function() {
-        $scope.sel_spec = {};
-        $scope.curr_phone = {}
-        $scope.calibration = {};
-        $scope.eval_settings = {};
-        $scope.eval_trip = {};
+    $scope.readConstants = function() {
+        // returns a promise, so it can be used in both reset and restore cases
+        /*
+         * Populate device information for sending and for display
+         */
+        $scope.device_info = {
+            "manufacturer": device.manufacturer,
+            "model": device.model,
+            "version": device.version,
+        }
+        $window.cordova.plugins.BEMDataCollection.getAccuracyOptions().then(function(accuracyOptions) {
+            $scope.accuracyOptions = accuracyOptions;
+        });
+    }
 
+    $scope.readEmail = function() {
+        if (!angular.isDefined($scope.curr_phone.email)) {
+            ControlHelper.getUserEmail().then(function(response) {
+                $scope.$apply(function() {
+                    if (response == null) {
+                        $scope.curr_phone.email = "Not logged in";
+                    } else {
+                        $scope.curr_phone.email = response;
+                    }
+                });
+            }).catch(function(error) {
+                Logger.displayError("Error while reading current login", error);
+            });
+        }
+    }
+
+    /*
+     * All the initialization that is not relevant to the current stored state.
+     * This is mainly display stuff since we don't currently persist display state.
+     */
+    $scope.nonStateInit = function() {
         $scope.author_eval_spec_list = [];
 
         $scope.mapCtrl = {};
@@ -458,35 +517,6 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         shrinkCalibrationCard();
         shrinkSensingCard();
         expandTripCard();
-
-        /*
-         * Reading stuff from native code
-         */
-
-        $ionicPlatform.ready().then(function() {
-            /*
-             * Populate device information for sending and for display
-             */
-            $scope.device_info = {
-                "manufacturer": device.manufacturer,
-                "model": device.model,
-                "version": device.version,
-            }
-            ControlHelper.getUserEmail().then(function(response) {
-                $scope.$apply(function() {
-                    if (response == null) {
-                        $scope.curr_phone.email = "Not logged in";
-                    } else {
-                        $scope.curr_phone.email = response;
-                    }
-                });
-            }).catch(function(error) {
-                Logger.displayError("Error while reading current login", error);
-            });
-            $window.cordova.plugins.BEMDataCollection.getAccuracyOptions().then(function(accuracyOptions) {
-                $scope.accuracyOptions = accuracyOptions;
-            });
-        });
 
         if (angular.isDefined($scope.author_spec_sel_modal)) {
             $scope.author_spec_sel_modal.remove();
@@ -508,12 +538,60 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.service
         });
     }
 
-    // Initialize on controller creation
-    $scope.resetAndRefresh();
+    $scope.resetAndRefresh = function() {
+        $scope.sel_spec = {};
+        $scope.curr_phone = {}
+        $scope.calibration = {};
+        $scope.eval_settings = {};
+        $scope.eval_trip = {};
 
-    /*
-     * Everything above this deals only with local UX state and modifications.
-     * Nothing is persisted; nothing affects actual functionality.
-     */
+        $scope.nonStateInit();
+
+        /*
+         * Reading stuff from native code
+         */
+
+        $ionicPlatform.ready().then(function() {
+            $scope.readConstants();
+            $scope.readEmail();
+            KVStore.remove(SEL_SPEC_KEY);
+            KVStore.remove(CURR_PHONE_KEY);
+            KVStore.remove(CALIBRATION_KEY);
+            KVStore.remove(EVAL_SETTINGS_KEY);
+            KVStore.remove(EVAL_TRIP_KEY);
+        });
+    }
+
+    var readOrBlank = function(key, scopevar) {
+        return KVStore.get(key).then(function(val) {
+            $scope.$apply(function() {
+                if (val != null) {
+                    $scope[scopevar] = val;
+                } else {
+                    $scope[scopevar] = {};
+                }
+            });
+        });
+    }
+
+    $scope.reloadAndRefresh = function() {
+        $scope.nonStateInit();
+
+        /*
+         * Reading stuff from native code
+         */
+
+        $ionicPlatform.ready().then(function() {
+            $scope.readConstants();
+            readOrBlank(SEL_SPEC_KEY, "sel_spec");
+            readOrBlank(CURR_PHONE_KEY, "curr_phone").then($scope.readEmail);
+            readOrBlank(CALIBRATION_KEY, "calibration");
+            readOrBlank(EVAL_SETTINGS_KEY, "eval_settings");
+            readOrBlank(EVAL_TRIP_KEY, "eval_trip");
+        });
+    }
+
+    // Initialize on controller creation
+    $scope.reloadAndRefresh();
 
 })

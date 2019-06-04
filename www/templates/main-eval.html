@@ -4,9 +4,11 @@
         Evaluation spec
       </button>
       <div ng-if="sel_spec.author_email">
-        <button class="button button-icon ion-refresh" side="left" ng-click="resetAndRefresh()"></button>
+        <button class="button button-icon ion-refresh" side="left" ng-click="reloadAndRefresh()"></button>
         <ion-title>{{sel_spec.full_spec.name}}</ion-title>
         <button class="button button-icon ion-edit" side="right" ng-click="author_spec_sel_modal.show()">
+        </button>
+        <button class="button button-icon ion-trash-a" side="right" ng-click="resetAndRefresh()">
         </button>
       </div>
     </ion-nav-buttons>
