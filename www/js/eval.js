@@ -5,7 +5,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     "emission.main.control.sync"])
 
 .controller('EvalCtrl', function($window, $rootScope, $scope, $ionicPlatform,
-                                 $ionicModal, $ionicPopup, $ionicActionSheet, $ionicPopover,
+                                 $ionicModal, $ionicPopup, $ionicActionSheet,
                                  $http, KVStore, Config, ControlHelper,
                                  ControlCollectionHelper, ControlSyncHelper,
                                  Logger) {
@@ -597,15 +597,6 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         }).then(function(modal) {
             $scope.author_spec_sel_modal = modal;
         })
-
-        if (angular.isDefined($scope.config_settings_popover)) {
-            $scope.config_settings_popover.remove();
-        }
-        $ionicPopover.fromTemplateUrl('templates/eval/display_config.html', {
-            scope: $scope
-        }).then(function(popover) {
-            $scope.config_settings_popover = popover;
-        });
     }
 
     /*
