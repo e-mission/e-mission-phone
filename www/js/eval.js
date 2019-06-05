@@ -200,30 +200,41 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     };
 
     var find_config = function(sensing_setting, profile) {
-        // profile = "evaluation_a"
+        // profile = "evaluation_0"
         var profile_parts = profile.split("_");
-        // profile_parts = ["evaluation", "a"]
+        // profile_parts = ["evaluation", "0"]
         if (profile_parts[0] == "evaluation") {
-            // profile_parts[1] = "a"
-            // config_id = config_a
-            var config_id = "sensing_config_"+profile_parts[1]
-            return sensing_setting[config_id]
+            // profile_parts[1] = "0"
+            // config_id = 0
+            var config_id = parseInt(profile_parts[1]);
+            return sensing_setting["sensing_configs"][config_id]
         }
     }
 
     $scope.selectSensingSettings = function() {
         var evaluationButtons = [];
         if ($scope.curr_phone.isAccuracyControl) {
-            evaluationButtons.push({text: "accuracy_control (fixed)",
-                sensing_config: ACCURACY_CONTROL_SETTINGS});
+            evaluationButtons.push({text: "fixed:ACCURACY_CONTROL",
+                config_wrapper: {
+                    id: "ACCURACY_CONTROL",
+                    name: "Highest possible accuracy",
+                    sensing_config: ACCURACY_CONTROL_SETTINGS
+                }
+            });
         } else if ($scope.curr_phone.isPowerControl) {
-            evaluationButtons.push({text: "power_control (fixed)",
-                sensing_config: POWER_CONTROL_SETTINGS});
+            evaluationButtons.push({text: "fixed:POWER_CONTROL",
+                config_wrapper: {
+                    id: "POWER_CONTROL",
+                    name: "Lowest possible power",
+                    sensing_config: POWER_CONTROL_SETTINGS
+                }
+            });
         } else {
             evaluationButtons = $scope.sel_spec.full_spec.sensing_settings.map(
                 function(ss) {
-                    return {text: ss.name,
-                        sensing_config: find_config(ss, $scope.curr_phone.profile)};
+                    var cw = find_config(ss, $scope.curr_phone.profile)
+                    return {text: ss.name + ":"+cw.id,
+                        config_wrapper: cw};
                 });
         };
         var RESTORE_DEFAULTS_TEXT = "Restore defaults";
@@ -237,12 +248,13 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                     $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
                         $scope.eval_settings.name);
                 }
-                $scope.eval_settings.config = expandForPlatform(button.sensing_config);
+                $scope.eval_settings.config_wrapper = button.config_wrapper;
+                $scope.eval_settings.full_config = expandForPlatform(button.config_wrapper.sensing_config);
                 $scope.eval_settings.name = button.text;
                 $scope.generateTransition(ETENUM.START_EVALUATION_PERIOD,
                     $scope.eval_settings.name);
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
-                $scope.applyCollectionConfig($scope.eval_settings);
+                $scope.applyCollectionConfig($scope.eval_settings.full_config);
                 return true;
             },
             destructiveButtonClicked: function() {
@@ -250,10 +262,9 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                     $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
                         $scope.eval_settings.name);
                 }
-                $scope.eval_settings = getPlatformSpecificDefaultConfig();
-                $scope.eval_settings.name = angular.undefined;
+                $scope.eval_settings = {};
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
-                $scope.applyCollectionConfig($scope.eval_settings);
+                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig());
                 return true;
             }
         });
@@ -509,10 +520,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 return Promise.resolve();
             }
         }).then(function() {
-            var newc_old_name = new_config.name;
-            delete new_config.name;
             return ControlCollectionHelper.setConfig(new_config).then(function() {
-                new_config.name = newc_old_name;
                 $rootScope.$broadcast('control.update.complete', 'collection config');
             }).catch(function(err) {
                 Logger.displayError("Error while setting collection config", err);
