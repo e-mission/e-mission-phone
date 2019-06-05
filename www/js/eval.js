@@ -1,11 +1,14 @@
 'use strict';
 
-angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.kvstore",
-    "emission.services", "emission.main.diary.services"])
+angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.kvstore",
+    "emission.services", "emission.main.control.collection",
+    "emission.main.control.sync"])
 
-.controller('EvalCtrl', function($window, $scope, $ionicPlatform, $ionicModal,
-                                 $ionicActionSheet, $ionicPopover, $http, KVStore,
-                                 Config, ControlHelper, Logger) {
+.controller('EvalCtrl', function($window, $rootScope, $scope, $ionicPlatform,
+                                 $ionicModal, $ionicPopup, $ionicActionSheet, $ionicPopover,
+                                 $http, KVStore, Config, ControlHelper,
+                                 ControlCollectionHelper, ControlSyncHelper,
+                                 Logger) {
 
     const MILLISECONDS = Math.pow(10, 6)
 
@@ -16,6 +19,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
     }
 
     const POWER_CONTROL_SETTINGS = {
+        is_duty_cycling: false,
         accuracy: ["PRIORITY_NO_POWER","kCLLocationAccuracyThreeKilometers"],
         filter: 1200,
     }
@@ -34,6 +38,16 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
     const CALIBRATION_KEY = "local/calibration";
     const EVAL_SETTINGS_KEY = "local/eval_settings";
     const EVAL_TRIP_KEY = "local/eval_trip";
+
+    const EVAL_TRANSITION_KEY = "manual/evaluation_transition";
+    const ETENUM = {
+        START_CALIBRATION_PERIOD: "START_CALIBRATION_PERIOD",
+        STOP_CALIBRATION_PERIOD: "STOP_CALIBRATION_PERIOD",
+        START_EVALUATION_PERIOD: "START_EVALUATION_PERIOD",
+        STOP_EVALUATION_PERIOD: "STOP_EVALUATION_PERIOD",
+        START_EVALUATION_TRIP: "START_EVALUATION_TRIP",
+        STOP_EVALUATION_TRIP: "STOP_EVALUATION_TRIP"
+    }
 
     /*
      * START: Control the UX of the summary card
@@ -142,6 +156,7 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
         console.log(DEFAULT_CONFIG);
         console.log(platformSpecificDC);
         fillFilterValue(platformSpecificDC, platformSpecificDC.filter);
+        delete platformSpecificDC.filter;
         fillAccuracyValue(platformSpecificDC, platformSpecificDC.accuracy);
         console.log(platformSpecificDC);
         return platformSpecificDC;
@@ -218,15 +233,27 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
-                $scope.eval_settings = expandForPlatform(button.sensing_config);
+                if (angular.isDefined($scope.eval_settings.name)) {
+                    $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
+                        $scope.eval_settings.name);
+                }
+                $scope.eval_settings.config = expandForPlatform(button.sensing_config);
                 $scope.eval_settings.name = button.text;
+                $scope.generateTransition(ETENUM.START_EVALUATION_PERIOD,
+                    $scope.eval_settings.name);
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
+                $scope.applyCollectionConfig($scope.eval_settings);
                 return true;
             },
             destructiveButtonClicked: function() {
+                if (angular.isDefined($scope.eval_settings.name)) {
+                    $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
+                        $scope.eval_settings.name);
+                }
                 $scope.eval_settings = getPlatformSpecificDefaultConfig();
                 $scope.eval_settings.name = angular.undefined;
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
+                $scope.applyCollectionConfig($scope.eval_settings);
                 return true;
             }
         });
@@ -309,6 +336,10 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
             cancelText: "Cancel",
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
+                if (angular.isDefined($scope.calibration.curr_test.id)) {
+                    $scope.generateTransition(ETENUM.STOP_CALIBRATION_PERIOD,
+                        $scope.calibration.curr_test.id);
+                }
                 $scope.calibration.curr_test = button.test;
                 $scope.calibration.full_config = expandForPlatform($scope.calibration.curr_test.config.sensing_config);
                 expandCalibrationCard();
@@ -319,18 +350,28 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
                     $scope.calibration.gj = {data: toGeojsonCT($scope.calibration.curr_test)};
                     $scope.calibration.gj.pointToLayer = pointFormat;
                 }
+                $scope.generateTransition(ETENUM.START_CALIBRATION_PERIOD,
+                    $scope.calibration.curr_test.id);
                 KVStore.set(CALIBRATION_KEY, $scope.calibration);
+                $scope.applyCollectionConfig($scope.calibration.full_config);
                 return true;
             },
             destructiveButtonClicked: function() {
+                // This should always be there, but what if the user clicks
+                // "Restore defaults" without having selected a calibration
+                // test earlier.
+                if (angular.isDefined($scope.calibration.curr_test.id)) {
+                    $scope.generateTransition(ETENUM.STOP_CALIBRATION_PERIOD,
+                        $scope.calibration.curr_test.id);
+                }
                 $scope.calibration = {};
                 shrinkCalibrationCard();
                 KVStore.set(CALIBRATION_KEY, $scope.calibration);
+                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig());
                 return true;
             }
         });
     }
-
 
     /*
      * START: Control the UX of the sensing settings
@@ -436,10 +477,14 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
     $scope.startEvalTrip = function() {
         $scope.eval_trip.ongoing_trip = true;
         $scope.eval_trip.waiting_for_trip_start = false;
+        $scope.generateTransition(ETENUM.START_EVALUATION_TRIP,
+            $scope.eval_trip.raw.id);
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
     }
 
     $scope.endEvalTrip = function() {
+        $scope.generateTransition(ETENUM.STOP_EVALUATION_TRIP,
+            $scope.eval_trip.raw.id);
         $scope.eval_trip.ongoing_trip = false;
         $scope.eval_trip = {};
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
@@ -450,20 +495,45 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
      * deals only with local state.
      */
 
-    $scope.applySensingSettings = function() {
+    $scope.applyCollectionConfig = function(new_config) {
+        return ControlCollectionHelper.getConfig().then(function(curr_config) {
+            if (!curr_config.is_duty_cycling && new_config.is_duty_cycling) {
+                // we want to be careful here because now that we are duty cycling,
+                // we won't push this data until the next trip is complete
+                // so let's force sync while we still can
+                return $ionicPopup.alert({template: "Moving from always on -> duty cycling, forcing sync"})
+                .then(function(result) {
+                    return ControlSyncHelper.forceSync();
+                });
+            } else {
+                return Promise.resolve();
+            }
+        }).then(function() {
+            var newc_old_name = new_config.name;
+            delete new_config.name;
+            return ControlCollectionHelper.setConfig(new_config).then(function() {
+                new_config.name = newc_old_name;
+                $rootScope.$broadcast('control.update.complete', 'collection config');
+            }).catch(function(err) {
+                Logger.displayError("Error while setting collection config", err);
+            });
+        });
     }
 
-    $scope.generateTransition = function() {
+    // we need to pass in the trip id as well since we re-use the same function
+    // for both calibration and evaluation
+    $scope.generateTransition = function(eval_transition_type, trip_id) {
+        var data = {
+            transition: eval_transition_type,
+            trip_id: trip_id, // either calibration or evaluation
+            spec_id: $scope.sel_spec.full_spec.id,
+            device_manufacturer: $scope.device_info.manufacturer,
+            device_model: $scope.device_info.model,
+            device_version: $scope.device_info.version,
+            ts: moment().unix()
+        }
+        return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY, data);
     }
-
-    /* 
-     * Move everything that is run in the main body of the controller into a reset
-     * function to make it easier to reset state.
-     * since we now load/store state, this is now split up into three main parts:
-     * - the constants that always need to be initialized
-     * - the version that loads initial state
-     * - the version that resets initial state
-     */
 
     $scope.readConstants = function() {
         // returns a promise, so it can be used in both reset and restore cases
@@ -537,6 +607,15 @@ angular.module('emission.main.eval',['emission.plugin.logger', "emission.plugin.
             $scope.config_settings_popover = popover;
         });
     }
+
+    /*
+     * Move everything that is run in the main body of the controller into a reset
+     * function to make it easier to reset state.
+     * since we now load/store state, this is now split up into three main parts:
+     * - the constants that always need to be initialized
+     * - the version that loads initial state
+     * - the version that resets initial state
+     */
 
     $scope.resetAndRefresh = function() {
         $scope.sel_spec = {};

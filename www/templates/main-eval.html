@@ -61,23 +61,12 @@
             class="card {{calibration_settings_card_display.class}}">
             <ion-item class="item-divider">
             <div class="row">
-                <div class="col-70">
+                <div class="col-90">
                     Calibrate phones
-                </div>
-                <div class="col-25">
-                <label ng-if="(calibration.curr_test)
-                                && (!eval_settings.name)"
-                       class="toggle toggle-color">
-                   <input type="checkbox" ng-model="calibration.on"
-                        ng-changed="startCalibration()">
-                   <div class="track">
-                     <div class="handle"></div>
-                   </div>
-                </label>
                 </div>
                 <div ng-if="calibration.curr_test.id"
                     ng-click="toggleCalibrationCardDisplay()"
-                    class="col-5 arrow-position">
+                    class="col-10 arrow-position">
                     <i class="icon {{calibration_settings_card_display.icon}}"></i>
                 </div>
             </div>
@@ -108,7 +97,8 @@
                 height="80%" width="100%" data-tap-disabled="true">
             </leaflet>
         </ion-card>
-        <ion-card id="eval-settings" ng-if="sel_spec.full_spec"
+        <ion-card id="eval-settings"
+            ng-if="sel_spec.full_spec && !calibration.curr_test.id"
             class="card {{sensing_settings_card_display.class}}">
             <ion-item class="item-divider">Select regimes to compare
             <div ng-click="toggleSensingCardDisplay()" class="arrow-position">
