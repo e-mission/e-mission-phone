@@ -1,6 +1,6 @@
 {
   "name": "edu.berkeley.eecs.emission",
-  "version": "2.5.0",
+  "version": "2.8.1",
   "displayName": "emission",
   "scripts": {
     "setup-serve": "./bin/download_settings_controls.js",
@@ -16,7 +16,7 @@
     ],
     "plugins": {
       "phonegap-plugin-push": {
-        "SENDER_ID": "1096592179912"
+        "FCM_VERSION": "11.0.1"
       },
       "ionic-plugin-keyboard": {},
       "cordova-plugin-app-version": {},
@@ -29,13 +29,6 @@
       "cordova-plugin-x-socialsharing": {},
       "cordova-plugin-inappbrowser": {},
       "de.appplant.cordova.plugin.local-notification-ios9-fix": {},
-      "edu.berkeley.eecs.emission.cordova.settings": {},
-      "edu.berkeley.eecs.emission.cordova.unifiedlogger": {},
-      "edu.berkeley.eecs.emission.cordova.comm": {},
-      "edu.berkeley.eecs.emission.cordova.usercache": {},
-      "edu.berkeley.eecs.emission.cordova.datacollection": {},
-      "edu.berkeley.eecs.emission.cordova.serversync": {},
-      "edu.berkeley.eecs.emission.cordova.transitionnotify": {},
       "cordova-plugin-ionic": {
         "APP_ID": "e0d8cdec",
         "CHANNEL_NAME": "Production",
@@ -43,8 +36,17 @@
         "UPDATE_API": "https://api.ionicjs.com",
         "MAX_STORE": "2"
       },
+      "cordova-plugin-whitelist": {},
       "edu.berkeley.eecs.emission.cordova.auth": {},
-      "cordova-plugin-whitelist": {}
+      "edu.berkeley.eecs.emission.cordova.comm": {},
+      "edu.berkeley.eecs.emission.cordova.datacollection": {
+        "LOCATION_VERSION": "11.0.1"
+      },
+      "edu.berkeley.eecs.emission.cordova.serversync": {},
+      "edu.berkeley.eecs.emission.cordova.settings": {},
+      "edu.berkeley.eecs.emission.cordova.transitionnotify": {},
+      "edu.berkeley.eecs.emission.cordova.unifiedlogger": {},
+      "edu.berkeley.eecs.emission.cordova.usercache": {}
     }
   },
   "dependencies": {
@@ -53,24 +55,24 @@
     "cordova-plugin-app-version": "~0.1.9",
     "cordova-plugin-customurlscheme": "~4.3.0",
     "cordova-plugin-device": "~2.0.1",
-    "cordova-plugin-email-composer": "~0.8.12",
+    "cordova-plugin-email-composer": "^0.8.15",
     "cordova-plugin-file": "~6.0.1",
     "cordova-plugin-inappbrowser": "https://github.com/shankari/cordova-plugin-inappbrowser.git",
     "cordova-plugin-ionic": "git+https://github.com/e-mission/cordova-plugin-ionic.git#3.2.0",
+    "cordova-plugin-whitelist": "~1.3.3",
     "cordova-plugin-x-socialsharing": "~5.2.1",
     "de.appplant.cordova.plugin.local-notification-ios9-fix": "https://github.com/shankari/cordova-plugin-local-notifications.git",
-    "em-cordova-jwt-auth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.4.0",
-    "em-cordova-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.0",
-    "e-mission-data-collection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.1.0",
-    "em-cordova-server-sync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.1.0",
+    "e-mission-data-collection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.3.3",
     "em-cordova-connection-settings": "git+https://github.com/e-mission/cordova-connection-settings.git#v1.2.0",
-    "em-cordova-transition-notify": "git+https://github.com/e-mission/e-mission-transition-notify.git#v1.1.0",
-    "em-cordova-unified-logger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.1.0",
+    "em-cordova-jwt-auth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.5.0",
+    "em-cordova-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.0",
+    "em-cordova-server-sync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.1.2",
+    "em-cordova-transition-notify": "git+https://github.com/e-mission/e-mission-transition-notify.git#v1.2.0",
+    "em-cordova-unified-logger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.3.1",
     "em-cordova-usercache": "git+https://github.com/e-mission/cordova-usercache.git#v1.1.0",
     "fs-extra": "^5.0.0",
     "ionic-plugin-keyboard": "~2.2.1",
     "klaw-sync": "^3.0.2",
-    "phonegap-plugin-push": "~1.9.2",
-    "cordova-plugin-whitelist": "~1.3.3"
+    "phonegap-plugin-push": "=2.1.2"
   }
 }
