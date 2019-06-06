@@ -76,7 +76,7 @@ angular.module('emission.main.control.collection', [])
             cch.config = cch.new_config;
             $rootScope.$broadcast('control.update.complete', 'collection config');
         }, function(err){
-            console.log("setConfig Error: " + err);
+            window.logger.Logger.displayError("Error while setting collection config", err);
         });
         cch.settingsPopup.hide();
         cch.settingsPopup.remove();
@@ -128,11 +128,13 @@ angular.module('emission.main.control.collection', [])
 
     cch.forceTransition = function(transition) {
         cch.forceTransitionWrapper(transition).then(function(result) {
-            $rootScope.$broadcast('control.update.complete', 'forceTransition');
-            $ionicPopup.alert({template: 'success -> '+result});
+            $ionicPopup.alert({template: 'success -> '+result}).then(function() {
+                $rootScope.$broadcast('control.update.complete', 'forceTransition');
+            });
         }, function(error) {
-            $rootScope.$broadcast('control.update.complete', 'forceTransition');
-            $ionicPopup.alert({template: 'error -> '+error});
+            $ionicPopup.alert({template: 'error -> '+error}).then(function() {
+                $rootScope.$broadcast('control.update.complete', 'forceTransition');
+            });
         });
     };
 
@@ -171,7 +173,7 @@ angular.module('emission.main.control.collection', [])
             if (ionic.Platform.isIOS()) {
                 cch.new_config.accuracy = cch.accuracyOptions["kCLLocationAccuracyBest"];
             } else if (ionic.Platform.isAndroid()) {
-                accuracy = cch.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
+                cch.new_config.accuracy = cch.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
             }
         } else {
             if (ionic.Platform.isIOS()) {
@@ -184,7 +186,7 @@ angular.module('emission.main.control.collection', [])
         .then(function(){
             console.log("setConfig Sucess");
         }, function(err){
-            console.log("setConfig Error: " + err);
+            window.logger.Logger.displayError("Error while setting collection config", err);
         });
     }
 

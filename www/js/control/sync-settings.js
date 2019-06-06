@@ -72,7 +72,7 @@ angular.module('emission.main.control.sync', ['emission.services'])
                 curr_sync_interval: csh.new_config.sync_interval
             });
         }).catch(function(err){
-            console.log("setConfig Error: " + err);
+            window.logger.Logger.displayError("Error while setting sync config", err);
         });
     };
 

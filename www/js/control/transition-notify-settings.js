@@ -135,9 +135,9 @@ angular.module('emission.main.control.tnotify', [])
             // reset temporary state after all promises are resolved.
             ctnh.mergedTransitionNotifyEnableList = ctnh.editedDisplayConfig;
             ctnh.toggledSet = [];
-            $rootScope.$broadcast('control.update.complete', 'collection config');
+            $rootScope.$broadcast('control.update.complete', 'transition config');
         }).catch(function(error) {
-            console.log("setConfig Error: " + err);
+            window.logger.Logger.displayError("Error while setting transition config", error);
         });
 
         ctnh.settingsPopup.hide();
@@ -152,92 +152,6 @@ angular.module('emission.main.control.tnotify', [])
         console.log(JSON.stringify(entry));
         ctnh.toggledSet.add(entry);
     };
-
-    ctnh.forceState = function() {
-        var forceStateActions = [{text: "Initialize",
-                                  transition: "INITIALIZE"},
-                                 {text: 'Start trip',
-                                  transition: "EXITED_GEOFENCE"},
-                                 {text: 'End trip',
-                                  transition: "STOPPED_MOVING"},
-                                 {text: 'Visit ended',
-                                  transition: "VISIT_ENDED"},
-                                 {text: 'Visit started',
-                                  transition: "VISIT_STARTED"},
-                                 {text: 'Remote push',
-                                  transition: "RECEIVED_SILENT_PUSH"}];
-        $ionicActionSheet.show({
-            buttons: forceStateActions,
-            titleText: "Force state",
-            cancelText: "Cancel",
-            buttonClicked: function(index, button) {
-                ctnh.forceTransition(button.transition);
-                return true;
-            }
-        });
-    };
-
-    ctnh.forceTransition = function(transition) {
-        ctnh.forceTransitionWrapper(transition).then(function(result) {
-            $rootScope.$broadcast('control.update.complete', 'forceTransition');
-            $ionicPopup.alert({template: 'success -> '+result});
-        }, function(error) {
-            $rootScope.$broadcast('control.update.complete', 'forceTransition');
-            $ionicPopup.alert({template: 'error -> '+error});
-        });
-    };
-
-
-    /* 
-     * Functions for the separate accuracy toggle 
-     */
-
-    var accuracy2String = function() {
-        var accuracy = ctnh.config.accuracy;
-        for (var k in ctnh.accuracyOptions) {
-            if (ctnh.accuracyOptions[k] == accuracy) {
-                return k;
-            }
-        }
-    }
-
-    ctnh.isMediumAccuracy = function() {
-        if (ctnh.config == null) {
-            return undefined; // config not loaded when loading ui, set default as false
-        } else {
-            var v = accuracy2String();
-            if (ionic.Platform.isIOS()) {
-                return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
-            } else if (ionic.Platform.isAndroid()) {
-                return v != "PRIORITY_HIGH_ACCURACY";
-            } else {
-                $ionicPopup.alert("Emission does not support this platform");
-            }
-        }
-    }
-
-    ctnh.toggleLowAccuracy = function() {
-        ctnh.new_config = JSON.parse(JSON.stringify(ctnh.config));
-        if (ctnh.isMediumAccuracy()) {
-            if (ionic.Platform.isIOS()) {
-                ctnh.new_config.accuracy = ctnh.accuracyOptions["kCLLocationAccuracyBest"];
-            } else if (ionic.Platform.isAndroid()) {
-                accuracy = ctnh.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
-            }
-        } else {
-            if (ionic.Platform.isIOS()) {
-                ctnh.new_config.accuracy = ctnh.accuracyOptions["kCLLocationAccuracyHundredMeters"];
-            } else if (ionic.Platform.isAndroid()) {
-                ctnh.new_config.accuracy = ctnh.accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
-            }
-        }
-        ctnh.setConfig(ctnh.new_config)
-        .then(function(){
-            console.log("setConfig Sucess");
-        }, function(err){
-            console.log("setConfig Error: " + err);
-        });
-    }
 
     /*
      * BEGIN: Simple read/write wrappers
