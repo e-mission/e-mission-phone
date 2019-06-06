@@ -314,7 +314,7 @@ angular.module('emission.main.control',['emission.services',
             // only have one entry for the battery, which is the one that was
             // inserted on the last successful push.
             var isTripEnd = function(entry) {
-                if (entry.metadata.key == getEndTransition()) {
+                if (entry.metadata.key == getEndTransitionKey()) {
                     return true;
                 } else {
                     return false;
@@ -341,7 +341,7 @@ angular.module('emission.main.control',['emission.services',
                 $ionicPopup.alert({template: 'all data pushed!'});
             }
         }).catch(function(error) {
-            $ionicPopup.alert({template: 'error -> '+JSON.stringify(error)});
+            Logger.displayError("Error while forcing sync", error);
         });
     };
 
@@ -491,8 +491,7 @@ angular.module('emission.main.control',['emission.services',
                 handleConsent(resultDoc);
             }
         }, function(error) {
-            $ionicPopup.alert({title: "Error reading consent document from cache",
-                template: error});
+            Logger.displayError("Error reading consent document from cache", error)
         });
     }
 

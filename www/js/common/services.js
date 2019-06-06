@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.main.common.services', [])
+angular.module('emission.main.common.services', ['emission.plugin.logger'])
 
-.factory('CommonGraph', function($rootScope, $http) {
+.factory('CommonGraph', function($rootScope, $http, Logger) {
     var commonGraph = {};
     commonGraph.data = {};
     commonGraph.UPDATE_DONE = "COMMON_GRAPH_UPDATE_DONE";
@@ -25,6 +25,7 @@ angular.module('emission.main.common.services', [])
                 cmGraph = commonGraph.createEmpty();
             }
         } catch(err) {
+            // No popup for this since it is the common case and we have a fallback
             window.Logger.log("Error "+err+" while parsing common trip data");
             // If there was an error in parsing the current common trips, and
             // there is no existing cached common trips, we create a blank
@@ -164,13 +165,13 @@ angular.module('emission.main.common.services', [])
         console.log("got response, setting display name to "+name);
         switch (mode) {
           case 'place':
-            obj.properties.displayName = name;
+            obj.properties.display_name = name;
             break;
           case 'cplace':
-            obj.displayName = name;
+            obj.display_name = name;
             break;
           case 'ctrip':
-            obj.start_displayName = name;
+            obj.start_display_name = name;
             break;
         }
 
@@ -193,7 +194,7 @@ angular.module('emission.main.common.services', [])
             }
         }
         console.log("got response, setting display name to "+name);
-        obj.end_displayName = name;
+        obj.end_display_name = name;
 
       };
       switch (mode) {
@@ -293,8 +294,8 @@ angular.module('emission.main.common.services', [])
         commonGraph.data.graph.common_places.forEach(function(cPlace, index, array) {
             commonGraph.data.cPlaceCountMap[cPlace._id.$oid] = cPlace.places.length;
             commonGraph.data.cPlaceId2ObjMap[cPlace._id.$oid] = cPlace;
-            if (angular.isDefined(cPlace.displayName)) {
-              console.log("For place "+cPlace.id+", already have displayName "+cPlace.displayName);
+            if (angular.isDefined(cPlace.display_name)) {
+              console.log("For place "+cPlace.id+", already have display_name "+cPlace.display_name);
             } else {
               console.log("Don't have display name for end place, going to query nominatim");
               commonGraph.getDisplayName('cplace', cPlace);
@@ -318,7 +319,7 @@ angular.module('emission.main.common.services', [])
                 "id": place._id.$oid,
                 "geometry": place.location,
                 "properties": {
-                    "displayName": place.displayName
+                    "display_name": place.display_name
                 }
             };
         });

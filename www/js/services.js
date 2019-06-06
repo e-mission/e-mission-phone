@@ -26,6 +26,25 @@ angular.module('emission.services', ['emission.plugin.logger'])
         });
     };
 
+    this.putOne = function(key, data) {
+        var now = moment().unix();
+        var md = {
+            "write_ts": now,
+            "read_ts": now,
+            "time_zone": moment.tz.guess(),
+            "type": "message",
+            "key": key,
+            "platform": ionic.Platform.platform()
+        };
+        var entryToPut = {
+            "metadata": md,
+            "data": data
+        }
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMServerComm.postUserPersonalData("/usercache/putone", "the_entry", entryToPut, resolve, reject);
+        });
+    };
+
     this.getTimelineForDay = function(date) {
         return new Promise(function(resolve, reject) {
           var dateString = date.startOf('day').format('YYYY-MM-DD');
@@ -240,7 +259,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
 })
 .service('ControlHelper', function($cordovaEmailComposer,
                                    $ionicPopup,
-                                   CommHelper) {
+                                   CommHelper,
+                                   Logger) {
   this.emailLog = function() {
         var parentDir = "unknown";
 
@@ -391,14 +411,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {
-             window.Logger.log(window.Logger.LEVEL_DEBUG,
-                 "Email queued successfully");
+             Logger.log("Email queued successfully");
           })
           .catch(function(error) {
-             window.Logger.log(window.Logger.LEVEL_INFO,
-                 "Email cancel reported, seems to be an error on android");
-            $ionicPopup.alert({'title': "Error sending email",
-                'template': JSON.stringify(error)});
+             Logger.displayError("Error emailing JSON dump", error);
           })
     };
 

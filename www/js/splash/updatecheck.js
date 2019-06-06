@@ -100,13 +100,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         Logger.log("successfully set the channel to "+urlComponents['new_client']);
         uc.checkForUpdates();
     }).catch(function(error) {
-      var display_msg = error.message + "\n" + error.stack;
-      if (!angular.isDefined(error.message)) {
-        display_msg = JSON.stringify(error);
-      }
-      $ionicPopup.alert({"title": "Unable to handle client change",
-        "template": display_msg});
-      Logger.log('Ionic Deploy: Unable to handle client change URL '+display_msg);
+      Logger.displayError("Unable to handle client change", error);
     })
   };
 
@@ -156,18 +150,12 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       }).catch(function(err) {
         $rootScope.isDownloading = false;
         extractPop.close();
-        $ionicPopup.alert({
-            title: "Extraction error",
-            message: JSON.stringify(err)
-        });
+        Logger.displayError("Extraction error", err);
       })
     }).catch(function(err) {
         $rootScope.isDownloading = false;
         downloadPop.close();
-        $ionicPopup.alert({
-            title: "Download error",
-            message: JSON.stringify(err)
-        });
+        Logger.displayError("Download error", err);
     });
   };
 
@@ -213,8 +201,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     })
     }).catch(function(err) {
       $rootScope.isDownloading = false;
-      Logger.log('Ionic Deploy: Unable to check for updates'+err);
-      console.error('Ionic Deploy: Unable to check for updates',err)
+      Logger.displayError("Unable to check for updates", err);
     })
   }
 
