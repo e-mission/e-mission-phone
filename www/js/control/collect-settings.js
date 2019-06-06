@@ -76,7 +76,7 @@ angular.module('emission.main.control.collection', [])
             cch.config = cch.new_config;
             $rootScope.$broadcast('control.update.complete', 'collection config');
         }, function(err){
-            console.log("setConfig Error: " + err);
+            window.logger.Logger.displayError("Error while setting collection config", err);
         });
         cch.settingsPopup.hide();
         cch.settingsPopup.remove();
@@ -186,7 +186,7 @@ angular.module('emission.main.control.collection', [])
         .then(function(){
             console.log("setConfig Sucess");
         }, function(err){
-            console.log("setConfig Error: " + err);
+            window.logger.Logger.displayError("Error while setting collection config", err);
         });
     }
 
