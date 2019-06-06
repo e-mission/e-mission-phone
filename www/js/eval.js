@@ -347,7 +347,8 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             cancelText: "Cancel",
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
-                if (angular.isDefined($scope.calibration.curr_test.id)) {
+                if ((angular.isDefined($scope.calibration.curr_test) &&
+                     angular.isDefined($scope.calibration.curr_test.id))) {
                     $scope.generateTransition(ETENUM.STOP_CALIBRATION_PERIOD,
                         $scope.calibration.curr_test.id);
                 }
