@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(Timeline, CommonGraph, PostTripManualMarker){
+.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -102,7 +102,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
   dh.isDraft = function(tripgj) {
-    if (tripgj.data.features.length == 3 && 
+    if (// tripgj.data.features.length == 3 && // reinstate after the local and remote paths are unified
+      angular.isDefined(tripgj.data.features[2].features) &&
       tripgj.data.features[2].features[0].properties.feature_type == "section" &&
       tripgj.data.features[2].features[0].properties.sensed_mode == "MotionTypes.UNPROCESSED") {
         return true;
@@ -164,6 +165,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     dh.getHumanReadable(section.properties.sensed_mode)];
     return retVal;
   };
+
+  dh.getLocalTimeString = function(dt) {
+      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
+      var post = ((dt.hour >= 12))? " pm" : " am";
+      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
+      return hr + ":" + min + post;
+    }
+
   dh.getFormattedTime = function(ts_in_secs) {
     if (angular.isDefined(ts_in_secs)) {
       return moment(ts_in_secs * 1000).format('LT');
@@ -279,7 +288,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   dh.fillCommonTripCount = function(tripWrapper) {
       var cTrip = CommonGraph.trip2Common(tripWrapper.data.id);
       if (!angular.isUndefined(cTrip)) {
-          tripWrapper.common_count = cTrip.trips.length;
+          tripWrapper.common.count = cTrip.trips.length;
       }
   };
   dh.directiveForTrip = function(trip) {
@@ -293,12 +302,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     retVal.stops = trip.stops;
     retVal.sections = trip.sections;
     retVal.tripSummary = trip.tripSummary;
-    dh.fillCommonTripCount(retVal);
     // Hardcoding to avoid repeated nominatim calls
-    // retVal.start_place.properties.displayName = "Start";
-    // retVal.start_place.properties.displayName = "End";
+    // retVal.start_place.properties.display_name = "Start";
+    // retVal.start_place.properties.display_name = "End";
     return retVal;
   };
+
   dh.userModes = [
         "walk", "bicycle", "car", "bus", "train", "unicorn"
     ];
@@ -346,8 +355,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     // console.log("onEachFeature called with "+JSON.stringify(feature));
     switch(feature.properties.feature_type) {
       case "stop": layer.bindPopup(""+feature.properties.duration); break;
-      case "start_place": layer.bindPopup(""+feature.properties.displayName); break;
-      case "end_place": layer.bindPopup(""+feature.properties.displayName); break;
+      case "start_place": layer.bindPopup(""+feature.properties.display_name); break;
+      case "end_place": layer.bindPopup(""+feature.properties.display_name); break;
       case "section": layer.on('click',
         PostTripManualMarker.startAddingIncidentToSection(feature, layer)); break;
       case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
@@ -398,15 +407,44 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }
       };
 
-  return dh;
+  var printUserInput = function(ui) {
+    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
+        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  }
 
+  dh.getUserInputForTrip = function(tripProp, userInputList) {
+    var potentialCandidates = userInputList.filter(function(userInput) {
+        return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
+    });
+    if (potentialCandidates.length === 0)  {
+        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        return undefined;
+    }
+
+    if (potentialCandidates.length === 1)  {
+        Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  "+ printUserInput(potentialCandidates[0]));
+        return potentialCandidates[0];
+    }
+
+    Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
+    var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
+        return pc2.metadata.write_ts - pc1.metadata.write_ts;
+    });
+    var mostRecentEntry = sortedPC[0];
+    Logger.log("Returning mostRecentEntry "+printUserInput(mostRecentEntry));
+    return mostRecentEntry;
+  }
+
+
+  return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
-  var timeline = {};
+    var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
     timeline.data = {};
+    timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
     // Internal function, not publicly exposed
@@ -880,6 +918,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       // First, we try the server
       var tripsFromServerPromise = timeline.updateFromServer(day);
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
+
+      // Deal with all the trip retrieval
       Promise.all([tripsFromServerPromise, isProcessingCompletePromise])
         .then(function([processedTripList, completeStatus]) {
         console.log("Promise.all() finished successfully with length "
@@ -897,6 +937,32 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         } else {
             return tripList;
         }
+      }).then(function(combinedTripList) {
+          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
+          return Promise.all([
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
+          ]).then(function(results) {
+            timeline.data.unifiedConfirmsResults = {
+              modes: results[0],
+              purposes: results[1],
+            };
+            return combinedTripList;
+          });
+        return combinedTripList;
+      }).then(function(combinedTripList) {
+        var retrieveCandidatePromises = combinedTripList.map(function(trip) {
+            return timeline.readAndFormatCandidates(trip)
+        });
+        return Promise.all(retrieveCandidatePromises).then(function(candidateLists) {
+            combinedTripList.forEach(function(trip, index, array) {
+                trip.destination_candidates = candidateLists[index];
+            });
+            return combinedTripList;
+        }).catch(function(error) {
+            Logging.displayError("Error while retrieving candidate businesses", error);
+            return combinedTripList;
+        });
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
@@ -917,15 +983,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }).then(function(combinedTripList) {
           processOrDisplayNone(day, combinedTripList);
         }).catch(function(error) {
-          Logger.log("while reading data from cache for "+day +" error = "+JSON.stringify(error));
           console.log("About to hide loading overlay");
           $ionicLoading.hide();
+          Logger.displayError("while reading data from cache for "+day, error);
         })
       });
     }
 
       timeline.getTrip = function(tripId) {
         return timeline.data.tripMap[tripId];
+      };
+
+      timeline.getTripWrapper = function(tripId) {
+        return timeline.data.tripWrapperMap[tripId];
       };
 
       /*
@@ -959,15 +1029,25 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
 
         timeline.data.currDayTrips.forEach(function(trip, index, array) {
-          if (angular.isDefined(trip.start_place.properties.displayName)) {
-            console.log("Already have display name "+ dt.start_place.properties.displayName +" for start_place")
+          if (angular.isDefined(trip.start_place.properties.display_name)) {
+            if (trip.start_place.properties.display_name != ", ") {
+                console.log("Already have display name "+ trip.start_place.properties.display_name +" for start_place")
+            } else {
+                console.log("Got display name "+ trip.start_place.properties.display_name +" for start_place, but it is blank, trying OSM nominatim now...");
+                CommonGraph.getDisplayName('place', trip.start_place);
+            }
           } else {
             console.log("Don't have display name for start place, going to query nominatim")
             CommonGraph.getDisplayName('place', trip.start_place);
 
           }
-          if (angular.isDefined(trip.end_place.properties.displayName)) {
-            console.log("Already have display name " + dt.end_place.properties.displayName + " for end_place")
+          if (angular.isDefined(trip.end_place.properties.display_name)) {
+            if (trip.end_place.properties.display_name != ", ") {
+                console.log("Already have display name " + trip.end_place.properties.display_name + " for end_place")
+            } else {
+                console.log("Got display name "+ trip.end_place.properties.display_name +" for end_place, but it is blank, trying OSM nominatim now...");
+                CommonGraph.getDisplayName('place', trip.end_place);
+            }
           } else {
             console.log("Don't have display name for end place, going to query nominatim")
             CommonGraph.getDisplayName('place', trip.end_place);
@@ -988,6 +1068,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             console.log("About to hide 'Processing trips'");
             $ionicLoading.hide();
           };
+
+    timeline.setTripWrappers = function(tripWrapperList) {
+        timeline.data.currDayTripWrappers = tripWrapperList;
+
+        timeline.data.tripWrapperMap = {};
+
+        timeline.data.currDayTripWrappers.forEach(function(tripw, index, array) {
+          timeline.data.tripWrapperMap[tripw.data.id] = tripw;
+        });
+    }
 
     // TODO: Should this be in the factory or in the scope?
     var generateDaySummary = function() {
@@ -1078,6 +1168,40 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           });
       return [startPlace, endPlace, stopList, sectionList];
     };
+
+    $http.get('json/yelpfusion.json').then(function(result) {
+      timeline.yelp = result.data;
+    });
+
+    timeline.readAndFormatCandidates = function(trip) {
+        var RADIUS = 250; // meters
+        var SEARCH_LIMIT = 3; // top 3 entries
+        // geometry coordinates are in the order [lng, lat] because they are geojson
+        var url_params = {
+            'latitude': trip.properties.end_loc.coordinates[1],
+            'longitude': trip.properties.end_loc.coordinates[0],
+            'radius' : RADIUS,
+            'limit': SEARCH_LIMIT,
+            'sort_by': 'distance',
+            'categories' : 'food,restaurants,shopping,hotels,'
+                + 'beautysvc,auto,education,collegeuniv,'
+                + 'financialservices,publicservicesgovt'
+        };
+        return $http({
+          "async": true,
+          "crossDomain": true,
+          "url": "https://api.yelp.com/v3/businesses/search",
+          "method": "GET",
+          "headers": timeline.yelp.headers,
+          "params": url_params
+        }).then(function(result) {
+          return result.data.businesses;
+        })
+    };
+
+    timeline.instantSave = function(key, data) {
+        return CommHelper.putOne(key, data);
+    }
 
     return timeline;
   })

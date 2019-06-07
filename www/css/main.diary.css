@@ -114,3 +114,44 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
+.btn-mode-confirm-green,
+.btn-mode-confirm-green:hover,
+.btn-mode-confirm-green:active,
+.btn-purpose-confirm-green,
+.btn-purpose-confirm-green:hover,
+.btn-purpose-confirm-green:active {
+  background-color: #30A64A;
+  color: white;
+}
+.btn-mode-confirm-white,
+.btn-mode-confirm-white:hover,
+.btn-mode-confirm-white:active,
+.btn-purpose-confirm-white,
+.btn-purpose-confirm-white:hover,
+.btn-purpose-confirm-white:active {
+  background-color: #ddd;
+  color: #333;
+  font-size: 0.8em;
+}
+.btn-mode-confirm,
+.btn-purpose-confirm {
+  line-height: 30px;
+  min-height: 30px;
+  font-size: 0.8em !important;
+  width: 115px;
+  padding: 0;
+}
+.mode-confirm-container,
+.purpose-confirm-container {
+  margin-top: 5px;
+}
+
+.popover {
+  height: 297px;
+  width: 230px;
+}
+
+#diary-item {
+  padding: 0;
+  border-width: 0;
+}

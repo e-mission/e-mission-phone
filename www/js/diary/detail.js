@@ -69,7 +69,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $scope.bid = result.businessid;
       $scope.stars = result.rating;
     }).catch(function(err) {
-      console.log("Error while getting individual suggestion" + err);
+      Logger.displayError("Error while getting individual suggestion", err);
+      $ionicLoading.hide();
     });
   };
   $scope.clickReview = function() {
@@ -85,8 +86,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     }).then(function(res) {
       $scope.revs = res.data.reviews;
       $scope.rating = "img/small/small_"+$scope.stars+".png";
+    }).catch(function(err) {
+      Logger.displayError("Error while getting individual suggestion", err);
+      $ionicLoading.hide();
     });
-    $ionicLoading.hide();
   };
 
   $scope.getFormattedDate = DiaryHelper.getFormattedDate;
@@ -103,18 +106,13 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
   $scope.getSectionDetails = DiaryHelper.getSectionDetails;
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
+  $scope.getLocalTimeString = DiaryHelper.getLocalTimeString;
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails;
-  $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+  $scope.tripgj = Timeline.getTripWrapper($stateParams.tripId);
   $scope.name = "Click on the suggestion button for a suggestion for this trip";
   $scope.mode = "Mode of Transporation";
-
-  $scope.getTripBackground = function() {
-     var ret_val = DiaryHelper.getTripBackground($scope.tripgj);
-     return ret_val;
-  }
-
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
   leafletData.getMap('detail').then(function(map) {
@@ -185,7 +183,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     nzTour.start(tour).then(function(result) {
       Logger.log("detail walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("detail walkthrough start errored" + err);
+      Logger.displayError("detail walkthrough start errored", err);
     });
   };
 
