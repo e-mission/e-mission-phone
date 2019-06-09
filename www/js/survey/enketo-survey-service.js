@@ -61,6 +61,22 @@ angular.module('emission.enketo-survey.service', [
     return val.replace(/_/g, ' ');
   }
 
+  function makeAnswerFromAnswerData(data) {
+    return {
+      data: data
+    }
+  }
+
+  function populateLabels(answer, xmlParser = new $window.DOMParser()) {
+    const xmlStr = answer.data.survey_result;
+    const xml = xmlParser.parseFromString(xmlStr, 'text/xml');
+    // Data injection
+    answer.travel_mode_main = _parseAnswerByTagName(xml, 'travel_mode_main');
+    answer.o_purpose_main = _parseAnswerByTagName(xml, 'o_purpose_main');
+    answer.d_purpose_main = _parseAnswerByTagName(xml, 'd_purpose_main');
+    return answer;
+  }
+
   function getAllSurveyAnswers(key = 'manual/confirm_survey', opts = {}) {
     const _opts_populateLabels = opts.populateLabels || false;
 
@@ -72,13 +88,7 @@ angular.module('emission.enketo-survey.service', [
       const xmlParser = new $window.DOMParser();
       if (key === 'manual/confirm_survey') {
         return answers.map(function(answer){
-          const xmlStr = answer.data.survey_result;
-          const xml = xmlParser.parseFromString(xmlStr, 'text/xml');
-          // Data injection
-          answer.travel_mode_main = _parseAnswerByTagName(xml, 'travel_mode_main');
-          answer.o_purpose_main = _parseAnswerByTagName(xml, 'o_purpose_main');
-          answer.d_purpose_main = _parseAnswerByTagName(xml, 'd_purpose_main');
-          return answer;
+          return populateLabels(answer, xmlParser);
         });
       }
 
@@ -107,14 +117,17 @@ angular.module('emission.enketo-survey.service', [
       start_ts: __session.trip_properties.start_ts,
       end_ts: __session.trip_properties.end_ts,
     };
-    return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data);
+    return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data
+    ).then(function(){
+      return data;
+    });
   }
   
   function validateForm() {
     return __form.validate()
     .then(function (valid){
-      if (valid) return _saveData().then(function(){return valid});
-      return valid;
+      if (valid) return _saveData();
+      return false;
     });
   }
 
@@ -133,5 +146,7 @@ angular.module('emission.enketo-survey.service', [
     validateForm: validateForm,
     getAllSurveyAnswers: getAllSurveyAnswers,
     getState: getState,
+    populateLabels: populateLabels,
+    makeAnswerFromAnswerData: makeAnswerFromAnswerData,
   };
 });

@@ -30,6 +30,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
     $scope.confirmSurvey = function(trip) {
+      $rootScope.confirmSurveyTrip = trip;
       $state.go("root.main.enketosurvey", {
       form_location: "json/trip-end-survey_v6.json",
           opts: JSON.stringify({
@@ -773,23 +774,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
 
       $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams, fromState, fromParams) {
-        if (fromState.url === '/enketosurvey/:form_location/:opts' && toState.url === '/diary') {
-            $rootScope.$on("$stateChangeStart", function (_event, toState, _toStateParams, fromState, _fromParams) {
-                if (fromState.url === "/enketosurvey/tripconfirm/:form_location/:opts" && toState.url === "/diary") {
-                    EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true }
-                    ).then(function(answers) {
-                        $scope.$apply(function() {
-                            $scope.data.currDayTripWrappers.forEach(function(tripgj, _index, _array) {
-                                $scope.populateSurveyAnswerFromTimeline(
-                                    tripgj,
-                                    answers
-                                );
-                            });
-                        });
-                    });
-                    // readAndUpdateForDay(Timeline.data.currDay);
-                }
-            });
+        if (
+          fromState.url === '/enketosurvey/:form_location/:opts' &&
+          toState.url === '/diary' &&
+          $rootScope.confirmSurveyTrip &&
+          $rootScope.confirmSurveyAnswer
+        ) {
+          $scope.$apply(function() {
+            $rootScope.confirmSurveyTrip.userSurveyAnswer = $rootScope.confirmSurveyAnswer;
+            $rootScope.confirmSurveyTrip = undefined;
+            $rootScope.confirmSurveyAnswer = undefined;
+          });
         }
       });
     });

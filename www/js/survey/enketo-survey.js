@@ -36,6 +36,11 @@ angular.module('emission.survey.enketo.launch', [
       if (!valid) {
         $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
       } else {
+        const data = valid;
+        const answer = EnketoSurvey.populateLabels(
+          EnketoSurvey.makeAnswerFromAnswerData(data)
+        );
+        $rootScope.confirmSurveyAnswer = answer;
         $state.go($rootScope.previousState, $rootScope.previousStateParams);
       }
     });
