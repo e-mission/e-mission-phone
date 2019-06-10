@@ -12,7 +12,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
-                                      'emission.tripconfirm.services',
+                                      'emission.tripconfirm.service',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
@@ -28,6 +28,22 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+
+    $scope.confirmSurvey = function(trip) {
+      $rootScope.confirmSurveyTrip = trip;
+      $state.go("root.main.enketosurvey", {
+      form_location: "json/trip-end-survey_v6.json",
+          opts: JSON.stringify({
+            session: {
+              data_key: 'manual/confirm_survey',
+              trip_properties: {
+                start_ts: trip.data.properties.start_ts,
+                end_ts: trip.data.properties.end_ts,
+              },
+            }
+          }),
+      });
+    }
 
   // Add option
 
@@ -150,7 +166,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        if (!modeList) return;
+        var userMode = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, modeList);
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
@@ -171,7 +188,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'purpose' to the trip
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
-        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+        if (!purposeList) return;
+        var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
@@ -186,6 +204,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
         Logger.log("Set purpose " + JSON.stringify(userPurposeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
         $scope.purposeTripgj = angular.undefined;
+    }
+
+    /**
+     * Embed 'surveyAnswer' to the trip
+     */
+    $scope.populateSurveyAnswerFromTimeline = function (tripgj, surveyAnswers) {
+      if (!surveyAnswers) return;
+      var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, surveyAnswers);
+      console.log(userSurveyAnswer);
+      if (angular.isDefined(userSurveyAnswer)) {
+        // userSurveyAnswer is a survey answer object with data + metadata
+        tripgj.userSurveyAnswer = userSurveyAnswer;
+      }
     }
 
     $scope.populateBasicClasses = function(tripgj) {
@@ -249,6 +280,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
             $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
+            $scope.populateSurveyAnswerFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.surveyAnswers);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
@@ -738,6 +770,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
              Logger.log("currDay is not defined, load not complete");
           }
           $rootScope.displayingIncident = false;
+        }
+      });
+
+      $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams, fromState, fromParams) {
+        if (
+          fromState.url === '/enketosurvey/:form_location/:opts' &&
+          toState.url === '/diary' &&
+          $rootScope.confirmSurveyTrip &&
+          $rootScope.confirmSurveyAnswer
+        ) {
+          $scope.$apply(function() {
+            $rootScope.confirmSurveyTrip.userSurveyAnswer = $rootScope.confirmSurveyAnswer;
+            $rootScope.confirmSurveyTrip = undefined;
+            $rootScope.confirmSurveyAnswer = undefined;
+          });
         }
       });
     });

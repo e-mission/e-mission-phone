@@ -1,4 +1,4 @@
-angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
+angular.module('emission.tripconfirm.service', ['ionic', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, Logger) {
     var ch = {};
     ch.otherModes = [];
@@ -91,5 +91,36 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
             value: otherValue};
     }
 
+    // copied over from www/js/diary/services.js
+    // for previous blame, please look at that history prior to 2019-05-26
+    var printUserInput = function (ui) {
+        const data = ui.data.label ? ui.data.label : '<survey_result>';
+        return `${ui.data.start_ts} -> ${ui.data.end_ts} ${data} logged at ${ui.metadata.write_ts}`;
+    };
+
+    ch.getUserInputForTrip = function (tripProp, userInputList) {
+        var potentialCandidates = userInputList.filter(function (userInput) {
+            return userInput.data.start_ts >= tripProp.start_ts &&
+                userInput.data.end_ts <= tripProp.end_ts;
+        });
+        if (potentialCandidates.length === 0) {
+            Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+            return undefined;
+        }
+
+        if (potentialCandidates.length === 1) {
+            Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  " + printUserInput(potentialCandidates[0]));
+            return potentialCandidates[0];
+        }
+
+        Logger.log("potentialCandidates are " + potentialCandidates.map(printUserInput));
+            var sortedPC = potentialCandidates.sort(function (pc1, pc2) {
+            return pc2.metadata.write_ts - pc1.metadata.write_ts;
+        });
+        var mostRecentEntry = sortedPC[0];
+        Logger.log("Returning mostRecentEntry " + printUserInput(mostRecentEntry));
+        return mostRecentEntry;
+    };
+
     return ch;
-})
+});

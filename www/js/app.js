@@ -63,6 +63,11 @@ angular.module('emission', ['ionic',
             Logger.displayError("Error reading or setting connection defaults", err);
         });
     });
+
+    $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams, fromState, fromParams) {
+        $rootScope.previousState = fromState;
+        $rootScope.previousStateParams = fromParams;
+    });
   });
   console.log("Ending run");
 })

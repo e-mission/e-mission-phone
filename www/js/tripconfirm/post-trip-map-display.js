@@ -2,7 +2,7 @@
 angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.plugin.kvstore',
                                       'emission.services',
-                                      'emission.tripconfirm.services',
+                                      'emission.tripconfirm.service',
                                       'emission.plugin.logger',
                                       'emission.main.diary.services'])
 

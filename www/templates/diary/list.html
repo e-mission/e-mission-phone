@@ -49,7 +49,7 @@
                 </div>
 
 
-                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
+              <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '315px'}">
                 <div ng-click="toDetail(tripgj.data.id)">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common.count) }};"></i> -->
 
@@ -89,16 +89,42 @@
                     </div>
                 </div>
              </div>
-             <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
-                Mode
+             <div ng-if="isAnalyzed(tripgj)" class="row trip-confirm-container">
+                  <button
+                    ng-if="tripgj.userSurveyAnswer"
+                    class="button btn-trip-confirm btn-trip-confirm-green"
+                    ng-click="confirmSurvey(tripgj)"
+                    >
+                    <b>{{tripgj.userSurveyAnswer.travel_mode_main}}</b>
+                    from
+                    <b>{{tripgj.userSurveyAnswer.o_purpose_main}}</b>
+                    to
+                    <b>{{tripgj.userSurveyAnswer.d_purpose_main}}</b>
+                  </button>
+                  <button
+                    ng-if="!tripgj.userSurveyAnswer"
+                    class="button btn-trip-confirm btn-trip-confirm-white"
+                    ng-click="confirmSurvey(tripgj)"
+                    >
+                    Add Trip Details
+                  </button>
+                  <!-- <button class="button btn-trip-confirm btn-trip-confirm-green" ng-click="confirmSurvey(tripgj)">
+                    Home -> Work
+                  </button> -->
                 </div>
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
-                Purpose 
-                </div>
-             </div>
-             <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-50" style="text-align: center;">
+  
+                <!-- Mode / Purpose confirm labels -->
+                <!-- <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">
+                  <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
+                    Mode
+                  </div>
+                  <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;">
+                    Purpose 
+                  </div>
+                </div> -->
+                <!-- Mode / Purpose confirm buttons -->
+                <!-- <div ng-if="isAnalyzed(tripgj)" class="row" style="padding-left: 5px;padding-right: 5px;">
+                  <div class="col-50" style="text-align: center;">
                     <div ng-if="tripgj.usermode" class="mode-confirm-container">
                         <button ng-click ="openModePopover($event, tripgj)" class="button btn-mode-confirm btn-mode-confirm-green">
                             {{tripgj.usermode.text}}
@@ -122,10 +148,9 @@
                         </button>
                     </div>
                 </div>
-             </div>   
+             </div> -->
             </div>
             </ion-item>
-
             </div>
             <div ng-class="tripgj.common.stopTimeTagClass">{{tripgj.display_end_time}}</div>
         </div>

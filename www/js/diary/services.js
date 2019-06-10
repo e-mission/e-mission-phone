@@ -2,6 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
+    'emission.enketo-survey.service',
     'emission.incident.posttrip.manual'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
   var dh = {};
@@ -407,39 +408,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }
       };
 
-  var printUserInput = function(ui) {
-    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
-        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
-  }
-
-  dh.getUserInputForTrip = function(tripProp, userInputList) {
-    var potentialCandidates = userInputList.filter(function(userInput) {
-        return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
-    });
-    if (potentialCandidates.length === 0)  {
-        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
-        return undefined;
-    }
-
-    if (potentialCandidates.length === 1)  {
-        Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  "+ printUserInput(potentialCandidates[0]));
-        return potentialCandidates[0];
-    }
-
-    Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
-    var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
-        return pc2.metadata.write_ts - pc1.metadata.write_ts;
-    });
-    var mostRecentEntry = sortedPC[0];
-    Logger.log("Returning mostRecentEntry "+printUserInput(mostRecentEntry));
-    return mostRecentEntry;
-  }
-
-
   return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
+    $rootScope, CommonGraph, UnifiedDataLoader, EnketoSurvey, Logger) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -941,15 +913,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
           return Promise.all([
             UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq),
+            EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true }),
           ]).then(function(results) {
             timeline.data.unifiedConfirmsResults = {
               modes: results[0],
               purposes: results[1],
+              surveyAnswers: results[2],
             };
             return combinedTripList;
           });
-        return combinedTripList;
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
