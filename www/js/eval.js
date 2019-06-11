@@ -541,6 +541,12 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     // we need to pass in the trip id as well since we re-use the same function
     // for both calibration and evaluation
     $scope.generateTransition = function(eval_transition_type, trip_id) {
+        // we want to store the battery state on every transition to avoid
+        // gaps at the beginning or end of an evaluation period
+        // unfortunately, we don't currently expose a method to store the 
+        // battery data, so let's call force sync, which is guaranteed to 
+        // store battery data, whether or not it sends it to the server
+        ControlSyncHelper.forceSync();
         var data = {
             transition: eval_transition_type,
             trip_id: trip_id, // either calibration or evaluation
