@@ -6,7 +6,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
 
 .controller('EvalCtrl', function($window, $rootScope, $scope, $ionicPlatform,
                                  $ionicModal, $ionicPopup, $ionicActionSheet,
-                                 $http, KVStore, Config, ControlHelper,
+                                 $http, $timeout, KVStore, Config, ControlHelper,
                                  ControlCollectionHelper, ControlSyncHelper,
                                  Logger) {
 
@@ -515,7 +515,14 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 // so let's force sync while we still can
                 return $ionicPopup.alert({template: "Moving from always on -> duty cycling, forcing sync"})
                 .then(function(result) {
-                    return ControlSyncHelper.forceSync();
+                    if (ionic.Platform.isAndroid()) {
+                        return new Promise(function(resolve, reject) {
+                            ControlSyncHelper.forceSync();
+                            $timeout(resolve(), 5000);
+                        });
+                    } else {
+                        return ControlSyncHelper.forceSync();
+                    }
                 });
             } else {
                 return Promise.resolve();
@@ -526,6 +533,8 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             }).catch(function(err) {
                 Logger.displayError("Error while setting collection config", err);
             });
+        }).catch(function(err) {
+            Logger.displayError("Error while forcing sync", err);
         });
     }
 
