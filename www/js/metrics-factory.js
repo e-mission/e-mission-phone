@@ -184,6 +184,12 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
         mets: 15.8
       }
     },
+    "IN_VEHICLE": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
     "CAR": {
       "ALL": {
         range: [0, Number.MAX_VALUE],
