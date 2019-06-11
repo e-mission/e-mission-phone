@@ -12,9 +12,6 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     TRAIN:       92/1609,
     AIR_OR_HSR: 217/1609
   }
-  var readable = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
-  }
   var mtokm = function(v) {
     return v / 1000;
   }
@@ -29,6 +26,9 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
       if (mode in footprint) {
         result += footprint[mode] * mtokm(userMetrics[i].values);
       }
+      else if (mode == "IN_VEHICLE") {
+        result += ((footprint[CAR] + footprint[BUS] + footprint[TRAIN]) / 3) * mtokm(userMetrics[i].values);
+      }
       else {
         console.debug('WARNING: FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
       }
@@ -36,7 +36,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return result;
   }
   fh.getLowestFootprintForDistance = function(distance) {
-    var lowestFootprint = 9999;
+    var lowestFootprint = Number.MAX_VALUE;
     for (var mode in footprint) {
       if (mode == 'ON_FOOT' || mode == 'BICYCLING') {
         // these modes aren't considered when determining the lowest carbon footprint
