@@ -115,7 +115,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             .then(function(result) { return result.data})
             .then(function(serverResponse) { return serverResponse.phone_data; })
             .then(function(eval_spec_entry_list) {
-               return eval_spec_entry_list.map(function(es) { return es.data; });
+               return eval_spec_entry_list.map(function(es) { return es.data.label; });
             })
             .then(function(eval_spec_list) {
                $scope.author_eval_spec_list = eval_spec_list;
