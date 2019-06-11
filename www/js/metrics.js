@@ -412,12 +412,13 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = true;
-      // TIAGO we should use our own server here, but for now it will return empty metrics, see:
-      //       https://github.com/e-mission/e-mission-docs/issues/288
-      // var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
+      // TIAGO: change for PR
       var getMetricsResult = $http.post(
-        "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
+        "http://192.168.1.238:8080/result/metrics/timestamp",
         clonedData)
+      // var getMetricsResult = $http.post(
+      //   "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
+      //   clonedData)
       return getMetricsResult;
    }
 
@@ -572,6 +573,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
+        console.debug("TIAGO: fillAggregateValues() agg_metrics_arr " + JSON.stringify(agg_metrics_arr, null, 2));
         if (first) {
             var aggDuration = agg_metrics_arr[0].slice(0, 7);
             var aggMedianSpeed = agg_metrics_arr[1].slice(0, 7);
@@ -716,8 +718,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
       }
       else {
-        // TIAGO: -------------
-        // else what does this absence mean and what do we write in the UI?
         console.log("TIAGO: fillFootprintCardUserVals ERROR: can't fill most carbon values because userDistance is " + JSON.stringify(userDistance, null, 2));
       }
 
@@ -777,13 +777,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           }
         }
 
-        $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintForMetrics(aggrCarbonData);
         $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
-
-      }
-      else {
-        // TIAGO: -------------
-        // else what does this mean and what do we write in the UI?
       }
    };
 
