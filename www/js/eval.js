@@ -507,6 +507,17 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
      * deals only with local state.
      */
 
+    var xPlatformSync = function() {
+        if (ionic.Platform.isAndroid()) {
+            return new Promise(function(resolve, reject) {
+                ControlSyncHelper.forceSync();
+                $timeout(resolve(), 30000);
+            });
+        } else {
+            return ControlSyncHelper.forceSync();
+        }
+    }
+
     $scope.applyCollectionConfig = function(new_config) {
         return ControlCollectionHelper.getConfig().then(function(curr_config) {
             if (!curr_config.is_duty_cycling && new_config.is_duty_cycling) {
@@ -515,14 +526,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 // so let's force sync while we still can
                 return $ionicPopup.alert({template: "Moving from always on -> duty cycling, forcing sync"})
                 .then(function(result) {
-                    if (ionic.Platform.isAndroid()) {
-                        return new Promise(function(resolve, reject) {
-                            ControlSyncHelper.forceSync();
-                            $timeout(resolve(), 5000);
-                        });
-                    } else {
-                        return ControlSyncHelper.forceSync();
-                    }
+                    return xPlatformSync();
                 });
             } else {
                 return Promise.resolve();
@@ -546,7 +550,6 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         // unfortunately, we don't currently expose a method to store the 
         // battery data, so let's call force sync, which is guaranteed to 
         // store battery data, whether or not it sends it to the server
-        ControlSyncHelper.forceSync();
         var data = {
             transition: eval_transition_type,
             trip_id: trip_id, // either calibration or evaluation
@@ -556,7 +559,11 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             device_version: $scope.device_info.version,
             ts: moment().unix()
         }
-        return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY, data);
+        xPlatformSync().then(function() {
+            return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY, data);
+        }).catch(function(err) {
+            Logger.displayError("Error while saving transition", err);
+        });
     }
 
     $scope.readConstants = function() {
