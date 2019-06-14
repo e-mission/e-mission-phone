@@ -560,7 +560,12 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             ts: moment().unix()
         }
         xPlatformSync().then(function() {
-            return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY, data);
+            return $ionicPopup.alert({template: "Finished sync, saving "+EVAL_TRANSITION_KEY+" of type "+eval_transition_type})
+            .then(function(result) {
+                return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY, data).then(function() {
+                    return $ionicPopup.alert({template: "Successfully saved "+EVAL_TRANSITION_KEY+" of type "+eval_transition_type});
+                });
+            });
         }).catch(function(err) {
             Logger.displayError("Error while saving transition", err);
         });
