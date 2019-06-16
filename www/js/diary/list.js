@@ -29,8 +29,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
-    var NOT_A_SERVICE_ENTRY = {"text": "Not a service", "value": "not_a_service"}
-    var OTHER_ENTRY = {"text": "Other", "value": "other_mode"}
+    var NOT_A_SERVICE_ENTRY = {"text": "Not a service", "value": "not_a_service", "rating": 0}
+    var OTHER_ENTRY = {"text": "Other", "value": "other_mode", "rating": 0}
 
   // Add option
 
@@ -161,7 +161,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
         var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
         tripgj.modeOptions = tripgj.data.destination_candidates.map(function(c) {
-            return {"text": c.name, "value": c.alias}
+            return {"text": c.name, "value": c.alias, "rating": c.rating}
         });
         tripgj.modeOptions.push(OTHER_ENTRY);
         tripgj.modeOptions.push(NOT_A_SERVICE_ENTRY);
@@ -491,9 +491,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.toDetail = function (param) {
-      $state.go('root.main.diary-detail', {
-        tripId: param
-      });
+      var userMode = param.usermode;
+      if (angular.isDefined(userMode)) {
+        $state.go('root.main.diary-detail', {
+          tripId: param.data.id //tripgj.data.id
+        });
+      } else {
+
+      }
     };
 
     $scope.showModes = DiaryHelper.showModes;
@@ -692,7 +697,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     /*
-     * Convert the array of {text, value} objects to a {value: text} map so that 
+     * Convert the array of {text, value} objects to a {value: text} map so that
      * we can look up quickly without iterating over the list for each trip
      */
 
@@ -733,6 +738,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.addModeEntry(tripToUpdate, mode);
             tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
           } else {
+            Logger.log("picked shop here !!!")
             tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
           }
         });
@@ -776,7 +782,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -788,7 +794,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
@@ -813,7 +819,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           "method": "GET",
           "headers": $scope.yelp.headers
         }).then(function(result) {
-          return {"text": result.data.name, "value": result.data.alias};
+          return {"text": result.data.name, "value": result.data.alias, "rating": result.data.rating};
         }).catch(function(err) {
           Logger.displayError("Error while retrieving candidate destinations", err);
         });
