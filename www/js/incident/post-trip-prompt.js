@@ -119,7 +119,20 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   var displayCompletedTrip = function(notification, state, data) {
       $rootScope.displayingIncident = true;
       Logger.log("About to display completed trip from Notification");
-      $state.go("root.main.incident", notification.data);
+      $state.go("root.main.enketosurvey", {
+        form_location: "json/trip-end-survey_v6.json",
+            opts: JSON.stringify({
+              session: {
+                data_key: 'manual/confirm_survey',
+                trip_properties: {
+                  // TODO: use the right variable
+                  start_ts: notification.data.properties.start_ts,
+                  // TODO: use the right variable
+                  end_ts: notification.data.properties.end_ts,
+                },
+              }
+            }),
+        });
   };
 
   var checkCategory = function(notification) {
@@ -212,19 +225,20 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
             return;
         }
         cleanDataIfNecessary(notification, state, data);
-        if($ionicPlatform.is('ios')) {
-          promptReport(notification, state, data).then(function(res) {
-            if(res == true) {
-              Logger.log("About to go to prompt page");
-              displayCompletedTrip(notification, state, data);
-            } else {
-              Logger.log("Skipped incident reporting");
-            }
-          });
-        } else {
-          Logger.log("About to go to prompt page");
-          displayCompletedTrip(notification, state, data);
-        }
+        displayCompletedTrip(notification, state, data);
+        // if($ionicPlatform.is('ios')) {
+        //   promptReport(notification, state, data).then(function(res) {
+        //     if(res == true) {
+        //       Logger.log("About to go to prompt page");
+        //       displayCompletedTrip(notification, state, data);
+        //     } else {
+        //       Logger.log("Skipped incident reporting");
+        //     }
+        //   });
+        // } else {
+        //   Logger.log("About to go to prompt page");
+        //   displayCompletedTrip(notification, state, data);
+        // }
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");

@@ -126,9 +126,9 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
                 data_key: 'manual/confirm_survey',
                 trip_properties: {
                   // TODO: use the right variable
-                  start_ts: trip.data.properties.start_ts,
+                  start_ts: notification.data.properties.start_ts,
                   // TODO: use the right variable
-                  end_ts: trip.data.properties.end_ts,
+                  end_ts: notification.data.properties.end_ts,
                 },
               }
             }),
