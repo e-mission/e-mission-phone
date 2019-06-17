@@ -1,5 +1,5 @@
 angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
-.factory("ConfirmHelper", function($http, $ionicPopup, Logger) {
+.factory("ConfirmHelper", function($http, $ionicPopup, $translate, Logger) {
     var ch = {};
     ch.otherModes = [];
     ch.otherPurposes = [];
@@ -53,17 +53,17 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
     ch.checkOtherOption = function(choice, onTapFn, $scope) {
         if(choice.value == 'other_mode' || choice.value == 'other_purpose') {
           var text = choice.value == 'other_mode' ? "mode" : "purpose";
-          $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+          $ionicPopup.show({title: $translate.instant("trip-confirm.services-please-fill-in",{text: text}),
             scope: $scope,
             template: '<input type = "text" ng-model = "selected.other.text">',
             buttons: [
-                { text: 'Cancel',
+                { text: $translate.instant('trip-confirm.services-cancel'),
                   onTap: function(e) {
                     $scope.selected.mode = '';
                     $scope.selected.purpose = '';
                   }
                 }, {
-                   text: '<b>Save</b>',
+                   text: '<b>' + $translate.instant('trip-confirm.services-save') + '</b>',
                    type: 'button-positive',
                    onTap: onTapFn($scope, choice)
                 }

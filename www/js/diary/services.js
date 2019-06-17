@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
+.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -166,12 +166,17 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     return retVal;
   };
 
-  dh.getLocalTimeString = function(dt) {
-      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
-      var post = ((dt.hour >= 12))? " pm" : " am";
-      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
-      return hr + ":" + min + post;
+  dh.getLocalTimeString = function (dt) {
+    if ($translate.use() != "en") {
+      return moment(dt).format('HH:mm');
+    } else {
+      // var hr = ((dt.hour > 12)) ? dt.hour - 12 : dt.hour;
+      // var post = ((dt.hour >= 12)) ? " pm" : " am";
+      // var min = (dt.minute.toString().length == 1) ? "0" + dt.minute.toString() : dt.minute.toString();
+      // return hr + ":" + min + post;
+      return moment(dt).format('HH:mmA')
     }
+  };
 
   dh.getFormattedTime = function(ts_in_secs) {
     if (angular.isDefined(ts_in_secs)) {
@@ -439,7 +444,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger) {
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -456,7 +461,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.updateFromDatabase = function(day) {
       console.log("About to show 'Reading from cache'");
       $ionicLoading.show({
-        template: 'Reading from cache...'
+        template: $translate.instant('service.reading-cache')
       });
       return window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
       .then(function (timelineDoc) {
@@ -477,7 +482,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.updateFromServer = function(day) {
       console.log("About to show 'Reading from server'");
       $ionicLoading.show({
-        template: 'Reading from server...'
+        template: $translate.instant('service.reading-server')
       });
       return CommHelper.getTimelineForDay(day).then(function(response) {
         var tripList = response.timeline;
@@ -830,7 +835,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284312004
        */
         $ionicLoading.show({
-          template: 'Reading unprocessed data...'
+          template: $translate.instant('service.reading-unprocessed-data')
         });
        if (tripListForDay.length == 0) {
          var last_processed_ts = moment(day).startOf("day").unix();

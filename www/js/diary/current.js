@@ -8,7 +8,7 @@
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, KVStore, $ionicPlatform) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, $http, KVStore, $ionicPlatform, $translate) {
     
   console.log("controller CurrMapCtrl called from current.js");
   var _map;
@@ -46,9 +46,9 @@
       hideLimitLabels: true,
       translate: function(value) {
           if (value === 1) {
-            return "Yesterday";
+            return $translate.instant('diary.current-yesterday');
           } else if (value === 7) {
-            return "Week ago";
+            return $translate.instant('diary.current-weekagos');
           }
         return "";
       }
@@ -84,15 +84,20 @@
       sel_region: null
   };
 
-  var startTimeFn = function(ts) {
-    var date = new Date(ts*1000);
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var amOrPm = hours < 12 ? 'AM' : 'PM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    minutes = minutes < 10 ? '0'+ minutes : minutes;
-    return hours + ':' + minutes + ' ' + amOrPm;
+  var startTimeFn = function (ts) {
+    var date = new Date(ts * 1000);
+    if ($translate.use() != "en") {
+      return moment(date).format('HH:mm');
+    } else {
+      return moment(date).format('HH:mmA')
+    }
+    // var hours = date.getHours();
+    // var minutes = date.getMinutes();
+    // var amOrPm = hours < 12 ? 'AM' : 'PM';
+    // hours = hours % 12;
+    // hours = hours ? hours : 12;
+    // minutes = minutes < 10 ? '0'+ minutes : minutes;
+    // return hours + ':' + minutes + ' ' + amOrPm;
   };
 
   var getSpeed = function(curr_lglat, last_lglat, curr_ts, last_ts) {

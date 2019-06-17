@@ -6,7 +6,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore,
-                                    $rootScope, $location,  $state, ReferHelper, $http, Logger) {
+                                    $rootScope, $location, $state, ReferHelper, $http, Logger,
+                                    $translate) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
@@ -266,6 +267,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 bottom: 40,
                 left: 55
             },
+            noData: $translate.instant('metrics.chart-no-data'),
             showControls: false,
             showValues: true,
             stacked: false,
@@ -287,7 +289,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
             xAxis: {
                 axisLabelDistance: 3,
-                axisLabel: 'Date',
+                axisLabel: $translate.instant('metrics.chart-xaxis-date'),
                 tickFormat: function(d) {
                     var day = new Date(d * 1000)
                     day.setDate(day.getDate()+1) // Had to add a day to match date with data
@@ -297,7 +299,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 staggerLabels: true
             },
             yAxis: {
-              axisLabel: "Number",
+              axisLabel: $translate.instant('metrics.trips-yaxis-number'),
               axisLabelDistance: -10
             },
             callback: function(chart) {
@@ -426,7 +428,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    var getMetrics = function() {
       $ionicLoading.show({
-        template: 'Loading...'
+        template: $translate.instant('loading')
       });
       if(!first){
         $scope.uictrl.current = "Custom";
@@ -444,15 +446,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
       $scope.caloriesData.changeInPercentage = "0%"
-      $scope.caloriesData.change = " change";
+      $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change');
 
       $scope.carbonData.userCarbon = "0 kg CO₂";
-      $scope.carbonData.aggrCarbon = "Calculating...";
+      $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-calculating');;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
       $scope.carbonData.worstCarbon = "0 kg CO₂";
       $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
       $scope.carbonData.changeInPercentage = "0%";
-      $scope.carbonData.change = " change";
+      $scope.carbonData.change = $translate.instant('metrics.carbon-data-change');
 
       $scope.summaryData.userSummary = [];
       $scope.chartDataUser = {};
@@ -512,8 +514,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       })
       .catch(function(error) {
         $ionicLoading.hide();
-        $scope.carbonData.aggrCarbon = "Unknown";
-        $scope.caloriesData.aggrCalories = "Unknown...";
+        $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-unknown');
+        $scope.caloriesData.aggrCalories = $translate.instant('metrics.calorie-data-unknown');
         Logger.displayError("Error loading aggregate data, averages not available",
             error);
       });
@@ -644,11 +646,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
        if (isValidNumber(calorieCalculation)) {
           $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
           if(lastWeekCalories > twoWeeksAgoCalories){
-            $scope.caloriesData.change = " increase over a week";
+            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-increase');
             $scope.caloriesUp = true;
             $scope.caloriesDown = false;
           } else {
-            $scope.caloriesData.change = " decrease over a week"
+            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-decrease');
             $scope.caloriesUp = false;
             $scope.caloriesDown = true;
           }
@@ -742,11 +744,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
           if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
-            $scope.carbonData.change = " increase over a week";
+            $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-increase');
             $scope.carbonUp = true;
             $scope.carbonDown = false;
           } else {
-            $scope.carbonData.change = " decrease over a week"
+            $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-decrease');
             $scope.carbonUp = false;
             $scope.carbonDown = true;
           }
@@ -772,7 +774,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
       $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
       $scope.countOptions = angular.copy($scope.options)
-      $scope.countOptions.chart.yAxis.axisLabel = 'Number';
+      $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)
       $scope.distanceOptions.chart.yAxis.axisLabel = 'm';
       $scope.durationOptions = angular.copy($scope.options)
@@ -781,16 +783,16 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.speedOptions.chart.yAxis.axisLabel = 'm/sec'
     };
     $scope.pandaFreqOptions = [
-      {text: "DAILY", value: 'D'},
-      {text: "WEEKLY", value: 'W'},
-      {text: "BIWEEKLY", value: '2W'},
-      {text: "MONTHLY", value: 'M'},
-      {text: "YEARLY", value: 'A'}
+      {text: $translate.instant('metrics.pandafreqoptions-daily'), value: 'D'},
+      {text: $translate.instant('metrics.pandafreqoptions-weekly'), value: 'W'},
+      {text: $translate.instant('metrics.pandafreqoptions-biweekly'), value: '2W'},
+      {text: $translate.instant('metrics.pandafreqoptions-monthly'), value: 'M'},
+      {text: $translate.instant('metrics.pandafreqoptions-yearly'), value: 'A'}
     ];
     $scope.freqOptions = [
-      {text: "DAILY", value:'DAILY'},
-      {text: "MONTHLY", value: 'MONTHLY'},
-      {text: "YEARLY", value: 'YEARLY'}
+      {text: $translate.instant('metrics.freqoptions-daily'), value:'DAILY'},
+      {text: $translate.instant('metrics.freqoptions-monthly'), value: 'MONTHLY'},
+      {text: $translate.instant('metrics.freqoptions-yearly'), value: 'YEARLY'}
     ];
     var getAvgDataFromMetrics = function(metrics) {
         var mode_bins = {};
@@ -961,19 +963,19 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.changeWeekday = function(stringSetFunction, target) {
       var weekdayOptions = [
-        {text: "All", value: null},
-        {text: "Monday", value: 0},
-        {text: "Tuesday", value: 1},
-        {text: "Wednesday", value: 2},
-        {text: "Thursday", value: 3},
-        {text: "Friday", value: 4},
-        {text: "Saturday", value: 5},
-        {text: "Sunday", value: 6}
+        {text: $translate.instant('weekdays-all'), value: null},
+        {text: moment.weekdays(1), value: 0},
+        {text: moment.weekdays(2), value: 1},
+        {text: moment.weekdays(3), value: 2},
+        {text: moment.weekdays(4), value: 3},
+        {text: moment.weekdays(5), value: 4},
+        {text: moment.weekdays(6), value: 5},
+        {text: moment.weekdays(0), value: 6}
       ];
       $ionicActionSheet.show({
         buttons: weekdayOptions,
-        titleText: "Select day of the week",
-        cancelText: "Cancel",
+        titleText: $translate.instant('weekdays-select'),
+        cancelText: $translate.instant('metrics.cancel'),
         buttonClicked: function(index, button) {
           stringSetFunction(button.text);
           if (target === 'from') {
@@ -990,8 +992,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.changeFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.freqOptions,
-          titleText: "Select summary freqency",
-          cancelText: "Cancel",
+          titleText: $translate.instant('metrics.select-frequency'),
+          cancelText: $translate.instant('metrics.cancel'),
           buttonClicked: function(index, button) {
             $scope.selectCtrl.freqString = button.text;
             $scope.selectCtrl.freq = button.value;
@@ -1003,8 +1005,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.changePandaFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.pandaFreqOptions,
-          titleText: "Select summary freqency",
-          cancelText: "Cancel",
+          titleText: $translate.instant('metrics.select-pandafrequency'),
+          cancelText: $translate.instant('metrics.cancel'),
           buttonClicked: function(index, button) {
             $scope.selectCtrl.pandaFreqString = button.text;
             $scope.selectCtrl.pandaFreq = button.value;
@@ -1027,9 +1029,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var now = moment().utc();
       var weekAgoFromNow = moment().utc().subtract(7, 'd');
       $scope.selectCtrl.freq = 'DAILY';
-      $scope.selectCtrl.freqString = "DAILY";
+      $scope.selectCtrl.freqString = $translate.instant('metrics.freqoptions-daily');
       $scope.selectCtrl.pandaFreq = 'D';
-      $scope.selectCtrl.pandaFreqString = "DAILY";
+      $scope.selectCtrl.pandaFreqString = $translate.instant('metrics.pandafreqoptions-daily');
       // local_date saved as localdate
       $scope.selectCtrl.fromDateLocalDate = moment2Localdate(weekAgoFromNow);
       $scope.selectCtrl.toDateLocalDate = moment2Localdate(now);
@@ -1037,8 +1039,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.selectCtrl.fromDateTimestamp= weekAgoFromNow;
       $scope.selectCtrl.toDateTimestamp = now;
 
-      $scope.selectCtrl.fromDateWeekdayString = "All"
-      $scope.selectCtrl.toDateWeekdayString = "All"
+      $scope.selectCtrl.fromDateWeekdayString = $translate.instant('weekdays-all');
+      $scope.selectCtrl.toDateWeekdayString = $translate.instant('weekdays-all');
 
       $scope.selectCtrl.fromDateWeekdayValue = null;
       $scope.selectCtrl.toDateWeekdayValue = null;
@@ -1104,9 +1106,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       title: '',
       scope: $scope,
       buttons: [
-        { text: 'Cancel' },
+        { text: $translate.instant('metrics.cancel') },
         {
-          text: '<b>Confirm</b>',
+          text: '<b>'+ $translate.instant('metrics.confirm') +'</b>',
           type: 'button-positive',
           onTap: function(e) {
             if (!($scope.userData.gender != -1 && $scope.userData.age && $scope.userData.weight && $scope.userData.height)) {
@@ -1123,34 +1125,36 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.datepickerObjFrom = {
       callback: $scope.setCurDayFrom,
       inputDate: $scope.selectCtrl.fromDateTimestamp.toDate(),
-      setLabel: 'Set',
-      todayLabel: 'Today',
-      closeLabel: 'Close',
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
       mondayFirst: false,
-      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),     
       templateType: 'popup',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMM dd yyyy',
+      dateFormat: 'dd/MM/yyyy',
       closeOnSelect: false,
       disableWeekdays: [6]
     };
   $scope.datepickerObjTo = {
       callback: $scope.setCurDayTo,
       inputDate: $scope.selectCtrl.toDateTimestamp.toDate(),
-      setLabel: 'Set',
-      todayLabel: 'Today',
-      closeLabel: 'Close',
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
       mondayFirst: false,
-      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),
       templateType: 'popup',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMM dd yyyy',
+      dateFormat: 'dd/MM/yyyy',
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };

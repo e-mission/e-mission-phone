@@ -24,7 +24,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
@@ -42,6 +42,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
     Timeline.updateForDay(day);
+    // This will be used to show the date of datePicker in the user language.
+    $scope.currDay = moment(day).format('DD MMM YYYY');
     // CommonGraph.updateCurrent();
   };
 
@@ -59,23 +61,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
   angular.extend($scope.defaults, Config.getMapTiles())
 
-  moment.locale('en', {
-    relativeTime : {
-        future: "in %s",
-        past:   "%s ago",
-        s:  "secs",
-        m:  "a min",
-        mm: "%d m",
-        h:  "an hr",
-        hh: "%d h",
-        d:  "a day",
-        dd: "%d days",
-        M:  "a month",
-        MM: "%d months",
-        y:  "a year",
-        yy: "%d years"
-    }
-});
+//   moment.locale('en', {
+//   relativeTime : {
+//       future: "in %s",
+//       past:   "%s ago",
+//       s:  "secs",
+//       m:  "a min",
+//       mm: "%d m",
+//       h:  "an hr",
+//       hh: "%d h",
+//       d:  "a day",
+//       dd: "%d days",
+//       M:  "a month",
+//       MM: "%d months",
+//       y:  "a year",
+//       yy: "%d years"
+//   }
+// });
 
     /*
     * While working with dates, note that the datepicker needs a javascript date because it uses
@@ -123,9 +125,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.datepickerObject = {
 
-      todayLabel: 'Today',  //Optional
-      closeLabel: 'Close',  //Optional
-      setLabel: 'Set',  //Optional
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      monthsList: moment.monthsShort(),
+      weeksList: moment.weekdaysMin(),
+      titleLabel: $translate.instant('diary.list-pick-a-date'),
       setButtonType : 'button-positive',  //Optional
       todayButtonType : 'button-stable',  //Optional
       closeButtonType : 'button-stable',  //Optional
@@ -225,7 +230,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
-        template: "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong."
+        template: $translate.instant('list-explainDraft-alert')
       });
       // don't want to go to the detail screen
     }
@@ -402,20 +407,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       config: {
         mask: {
           visibleOnNoTarget: true,
-          clickExit: true
-        }
+          clickExit: true,
+        },
+        previousText: $translate.instant('tour-previous'),
+        nextText: $translate.instant('tour-next'),
+        finishText: $translate.instant('tour-finish')
       },
       steps: [{
         target: '#date-picker-button',
-        content: 'Use this to select the day you want to see.'
+        content: $translate.instant('list-tour-datepicker-button')
       },
       {
         target: '.diary-entry',
-        content: 'Click on the map to see more details about each trip.'
+        content: $translate.instant('list-tour-diary-entry')
       },
       {
         target: '#map-fix-button',
-        content: 'Use this to fix the map tiles if they have not loaded properly.'
+        content: $translate.instant('list-tour-diary-entry')
         }
       ]
     };
