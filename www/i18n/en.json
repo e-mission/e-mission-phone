@@ -75,22 +75,24 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify"
     },
-
-    "general-settings-choose-date" : "Choose date to download data",
-    "general-settings-nuke-ui-state-only" : "UI state only",
-    "general-settings-nuke-native-cache-only" : "Native cache only",
-    "general-settings-nuke-everything" : "Everything",
-    "general-settings-clear-data": "Clear data",
-    "general-settings-cancel": "Cancel",
-    "general-settings-user-data-erased": "User data erased.",
-    "general-settings-consent-not-found": "Consent for data collection not found, consent now?",
-    "general-settings-no-consent-message": "OK! Note that you won't get any personalized stats until you do!",
-    "general-settings-consent-found": "Consent found!",
-    "general-settings-consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
-    "general-settings-consented-ok": "OK",
-    "general-settings-share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
-    "general-settings-share-subject": "Emission - UC Berkeley Research Project",
-    "general-settings-share-url": "https://bic2cal.eecs.berkeley.edu/#download",
+    
+    "general-settings":{
+        "choose-date" : "Choose date to download data",
+        "nuke-ui-state-only" : "UI state only",
+        "nuke-native-cache-only" : "Native cache only",
+        "nuke-everything" : "Everything",
+        "clear-data": "Clear data",
+        "cancel": "Cancel",
+        "user-data-erased": "User data erased.",
+        "consent-not-found": "Consent for data collection not found, consent now?",
+        "no-consent-message": "OK! Note that you won't get any personalized stats until you do!",
+        "consent-found": "Consent found!",
+        "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
+        "consented-ok": "OK",
+        "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
+        "share-subject": "Emission - UC Berkeley Research Project",
+        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
+    },
 
     "metrics":{
         "cancel": "Cancel",

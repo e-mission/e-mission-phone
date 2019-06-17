@@ -19,9 +19,26 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate, $cordovaFile) {
   
-  $scope.lang = $translate.use();
+  $scope.getConsentFile = function () {
+    var lang = $translate.use();
+    $scope.consentFile = "templates/intro/consent.html";
+    if (lang != 'en') {
+      var url = "www/i18n/intro/consent-" + lang + ".html";
+      $cordovaFile.checkFile(cordova.file.applicationDirectory, url).then( function(result){
+        window.Logger.log(window.Logger.LEVEL_DEBUG,
+          "Successfully found the consent file, result is " + JSON.stringify(result));
+        $scope.consentFile = url.replace("www/", "");
+      }, function (err) {
+        window.Logger.log(window.Logger.LEVEL_DEBUG,
+          "Consent file not found, loading english version, error is " + JSON.stringify(err));
+          $scope.consentFile = "templates/intro/consent.html";
+        });
+    }
+  }
+  
+  $scope.getConsentFile();
 
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
