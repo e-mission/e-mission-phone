@@ -1138,7 +1138,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       showTodayButton: true,
       dateFormat: 'dd/MM/yyyy',
       closeOnSelect: false,
-      disableWeekdays: [6]
+      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
   $scope.datepickerObjTo = {
       callback: $scope.setCurDayTo,
