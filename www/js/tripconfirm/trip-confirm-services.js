@@ -12,7 +12,7 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
         ch.purposeOptions = confirmConfig.data.purposeOptions;
     }
 
-    var loadAndPopulateOptions = function(filename) {
+    var loadAndPopulateOptions = function (filename) {
         return $http.get(filename)
             .then(fillInOptions)
             .catch(function(err) {
@@ -27,6 +27,15 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
             });
     }
     
+    var loadAndPopulateOptionsLocales = function (filename) {
+        return $http.get(filename)
+            .then(fillInOptions)
+            .catch(function (err) {
+                // no prompt here since we have a fallback
+                console.log("error "+JSON.stringify(err)+" while reading confirm options, no file for this language, revert to default options");
+                return loadAndPopulateOptions("json/trip_confirm_options.json");
+            });
+    }
     /*
      * Lazily loads the options and returns the chosen one. Using this option
      * instead of an in-memory data structure so that we can return a promise
@@ -34,8 +43,14 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
      */
     ch.getModeOptions = function() {
         if (!angular.isDefined(ch.modeOptions)) {
-            return loadAndPopulateOptions("json/trip_confirm_options.json")
+            var lang = $translate.use();
+            if (lang != "en") {
+                return loadAndPopulateOptionsLocales("i18n/trip_confirm_options-"+ lang+".json")
+                    .then(function () { return ch.modeOptions; });
+            } else {
+                return loadAndPopulateOptions("json/trip_confirm_options.json")
                 .then(function() { return ch.modeOptions; });
+            }
         } else {
             return Promise.resolve(ch.modeOptions);
         }
@@ -43,8 +58,14 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
 
     ch.getPurposeOptions = function() {
         if (!angular.isDefined(ch.purposeOptions)) {
-            return loadAndPopulateOptions("json/trip_confirm_options.json")
+            var lang = $translate.use();
+            if (lang != "en") {
+                return loadAndPopulateOptionsLocales("i18n/trip_confirm_options-fr.json")
+                    .then(function () { return ch.purposeOptions; });
+            } else {
+                return loadAndPopulateOptions("json/trip_confirm_options.json")
                 .then(function() { return ch.purposeOptions; });
+            }
         } else {
             return Promise.resolve(ch.purposeOptions);
         }
