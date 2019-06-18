@@ -236,10 +236,12 @@
         "button-decline": "I refuse"
     },
 
-    "updatecheck-downloading-update": "Downloading UI-only update",
-    "updatecheck-extracting-update": "Extracting UI-only update",
-    "updatecheck-done": "Update done, reloading...",
-    "updatecheck-download-new-ui": "Download new UI-only update?.",
-    "updatecheck-download-not-now": "Not now",
-    "updatecheck-download-apply": "Apply"
+    "updatecheck":{
+        "downloading-update": "Downloading UI-only update",
+        "extracting-update": "Extracting UI-only update",
+        "done": "Update done, reloading...",
+        "download-new-ui": "Download new UI-only update?.",
+        "download-not-now": "Not now",
+        "download-apply": "Apply"
+    }
 }
