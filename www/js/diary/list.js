@@ -766,10 +766,20 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           if (angular.isDefined(Timeline.data.currDay)) {
               // page was already loaded, reload it automatically
               readAndUpdateForDay(Timeline.data.currDay);
+
+              const tripProp = notificationData.properties;
+              const trip = $scope.data.currDayTripWrappers.find(function(tripgj, index, array) {
+                return (
+                  tripgj.properties.start_ts === tripProp.start_ts &&
+                  tripgj.properties.end_ts === tripProp.end_ts
+                );
+              });
+              $scope.confirmSurvey(trip);
           } else {
              Logger.log("currDay is not defined, load not complete");
           }
           $rootScope.displayingIncident = false;
+          $rootScope.notificationData = null;
         }
       });
 
