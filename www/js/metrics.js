@@ -1,6 +1,11 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.plugin.kvstore', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3',
+                                        'emission.services',
+                                        'ionic-datepicker',
+                                        'emission.main.metrics.factory',
+                                        'emission.plugin.kvstore',
+                                        'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,

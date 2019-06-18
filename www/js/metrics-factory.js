@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
+angular.module('emission.main.metrics.factory', ['emission.services', 'emission.plugin.kvstore'])
 
-.factory('FootprintHelper', function() {
+.factory('FootprintHelper', function(CarbonDatasetHelper) {
   var fh = {};
   var footprint = {
     WALKING:      0,
@@ -20,6 +20,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
   fh.getFootprintForMetrics = function(userMetrics) {
+    console.debug("FootprintHelper.getFootprintFromMetrics() current dataset is " + CarbonDatasetHelper.getCurrentCarbonDatasetName());
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;

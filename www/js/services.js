@@ -196,7 +196,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
           var remoteResult = [];
           var remoteError = null;
-      
+
           var localPromiseDone = false;
           var remotePromiseDone = false;
 
@@ -426,6 +426,56 @@ angular.module('emission.services', ['emission.plugin.logger'])
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
 
+})
+
+.service('CarbonDatasetHelper', function() {
+  // for convenience, the dataset options are structured
+  // to be passed directly to an ionicActionSheet
+  var carbonDatasetOptions = [
+    {text: "United States", value: 'US'},
+    {text: "European Union", value: 'EU'},
+    {text: "Austria", value: 'AT'},
+    {text: "France", value: 'FR'},
+    {text: "Germany", value: 'DE'},
+    {text: "Norway", value: 'NO'},
+    {text: "Sweden", value: 'SE'},
+    {text: "Switzerland", value: 'CH'}
+  ];
+
+  var defaultCarbonDatasetOption = carbonDatasetOptions[0];
+  var currentCarbonDatasetOption = defaultCarbonDatasetOption;
+
+  this.getCarbonDatasetOptions = function() {
+    return carbonDatasetOptions;
+  };
+
+  this.getCurrentCarbonDatasetName = function () {
+    return currentCarbonDatasetOption.text;
+  };
+
+  this.getCurrentCarbonDatasetLocale = function () {
+    return currentCarbonDatasetOption.value;
+  };
+
+  this.setCurrentCarbonDatasetLocale = function (localeCode) {
+    var updatedDatasetOption = defaultCarbonDatasetOption;
+    for (var i in carbonDatasetOptions) {
+      var datasetOption = carbonDatasetOptions[i];
+      //console.debug(JSON.stringify(datasetOption, null, 2));
+      //console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() compare [" + datasetOption.value + "] with [" + localeCode + "]")
+      if (datasetOption.value == localeCode) {
+        updatedDatasetOption = datasetOption;
+        break;
+      }
+    }
+    currentCarbonDatasetOption = updatedDatasetOption;
+    console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetOption.value);
+  }
+
+  this.setCurrentCarbonDatasetOption = function (datasetOption) {
+    console.debug("CarbonDatasetHelper.setCurrentCarbonDataset() param " + JSON.stringify(datasetOption));
+    currentCarbonDatasetOption = datasetOption;
+  };
 })
 
 // common configuration methods across all screens
