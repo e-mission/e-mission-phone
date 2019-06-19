@@ -25,7 +25,7 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
         return $http.get("json/trip_confirm_options.json")
         .then(fillInOptions)
         .catch(function(err) {
-           // prompt here since we don't have a fallback
+           // no prompt here since we have a fallback
            console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
            return $http.get("json/trip_confirm_options.json.sample")
             .then(fillInOptions)
