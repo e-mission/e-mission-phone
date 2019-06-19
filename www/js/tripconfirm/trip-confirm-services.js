@@ -1,5 +1,5 @@
 angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
-.factory("ConfirmHelper", function($http, $ionicPopup, Logger) {
+.factory("ConfirmHelper", function($http, $ionicPopup, $translate, Logger) {
     var ch = {};
     ch.otherModes = [];
     ch.otherPurposes = [];
@@ -12,19 +12,28 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
         ch.purposeOptions = confirmConfig.data.purposeOptions;
     }
 
-    var loadAndPopulateOptions = function(filename) {
-        return $http.get(filename)
+    var loadAndPopulateOptions = function (lang) {
+        if (lang != "en") {
+            return $http.get("i18n/trip_confirm_options-" + lang + ".json")
+            .then(fillInOptions)
+            .catch(function (err) {
+                console.log("error "+JSON.stringify(err)+" while reading confirm options in your language, reverting to english options");
+                return loadAndPopulateOptions("en");
+            });
+        }
+
+        return $http.get("json/trip_confirm_options.json")
+        .then(fillInOptions)
+        .catch(function(err) {
+           // no prompt here since we have a fallback
+           console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
+           return $http.get("json/trip_confirm_options.json.sample")
             .then(fillInOptions)
             .catch(function(err) {
-                // no prompt here since we have a fallback
-                console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
-                return $http.get(filename+".sample")
-                     .then(fillInOptions)
-                     .catch(function(err) {
-                        // prompt here since we don't have a fallback
-                        Logger.displayError("Error while reading default confirm options", err);
-                     });
+               // prompt here since we don't have a fallback
+               Logger.displayError("Error while reading default confirm options", err);
             });
+        });
     }
     
     /*
@@ -34,8 +43,9 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
      */
     ch.getModeOptions = function() {
         if (!angular.isDefined(ch.modeOptions)) {
-            return loadAndPopulateOptions("json/trip_confirm_options.json")
-                .then(function() { return ch.modeOptions; });
+            var lang = $translate.use();
+            return loadAndPopulateOptions(lang)
+                .then(function () { return ch.modeOptions; });
         } else {
             return Promise.resolve(ch.modeOptions);
         }
@@ -43,8 +53,9 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
 
     ch.getPurposeOptions = function() {
         if (!angular.isDefined(ch.purposeOptions)) {
-            return loadAndPopulateOptions("json/trip_confirm_options.json")
-                .then(function() { return ch.purposeOptions; });
+            var lang = $translate.use();
+            return loadAndPopulateOptions(lang)
+                .then(function () { return ch.purposeOptions; });
         } else {
             return Promise.resolve(ch.purposeOptions);
         }
@@ -53,17 +64,17 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
     ch.checkOtherOption = function(choice, onTapFn, $scope) {
         if(choice.value == 'other_mode' || choice.value == 'other_purpose') {
           var text = choice.value == 'other_mode' ? "mode" : "purpose";
-          $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
+          $ionicPopup.show({title: $translate.instant("trip-confirm.services-please-fill-in",{text: text}),
             scope: $scope,
             template: '<input type = "text" ng-model = "selected.other.text">',
             buttons: [
-                { text: 'Cancel',
+                { text: $translate.instant('trip-confirm.services-cancel'),
                   onTap: function(e) {
                     $scope.selected.mode = '';
                     $scope.selected.purpose = '';
                   }
                 }, {
-                   text: '<b>Save</b>',
+                   text: '<b>' + $translate.instant('trip-confirm.services-save') + '</b>',
                    type: 'button-positive',
                    onTap: onTapFn($scope, choice)
                 }

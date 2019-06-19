@@ -102,12 +102,12 @@ is also available <a
 href="https://e-mission.eecs.berkeley.edu/consent">online</a> in case you need
 to read it again in the future.
 
-<div class="row" style="margin-top: 20px;">
+<div class="row" style="margin-top: 20px;" translate-namespace="consent">
   <div class="col" style="margin-right: 5px">
-    <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button">I Refuse</button>
+      <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button"><span translate>{{'.button-decline'}}</span></button>
   </div>
   <div class="col" style="margin-left: 5px">
-    <button class="button button-block button-balanced button-outline" ng-click="agree()" id="consent-button">I Agree</button>
+      <button class="button button-block button-positive button-outline" ng-click="agree()" id="consent-button"><span translate>{{'.button-accept'}}</span></button>
   </div>
 </div>
 </div>
