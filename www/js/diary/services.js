@@ -167,15 +167,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.getLocalTimeString = function (dt) {
-    if ($translate.use() != "en") {
-      return moment(dt).format('HH:mm');
-    } else {
-      // var hr = ((dt.hour > 12)) ? dt.hour - 12 : dt.hour;
-      // var post = ((dt.hour >= 12)) ? " pm" : " am";
-      // var min = (dt.minute.toString().length == 1) ? "0" + dt.minute.toString() : dt.minute.toString();
-      // return hr + ":" + min + post;
-      return moment(dt).format('HH:mmA')
-    }
+    return moment(dt).format("LT");
   };
 
   dh.getFormattedTime = function(ts_in_secs) {

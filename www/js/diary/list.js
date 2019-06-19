@@ -43,7 +43,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // do this juggling
     Timeline.updateForDay(day);
     // This will be used to show the date of datePicker in the user language.
-    $scope.currDay = moment(day).format('DD MMM YYYY');
+    $scope.currDay = moment(day).format('LL');
     // CommonGraph.updateCurrent();
   };
 

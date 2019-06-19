@@ -86,18 +86,7 @@
 
   var startTimeFn = function (ts) {
     var date = new Date(ts * 1000);
-    if ($translate.use() != "en") {
-      return moment(date).format('HH:mm');
-    } else {
-      return moment(date).format('HH:mmA')
-    }
-    // var hours = date.getHours();
-    // var minutes = date.getMinutes();
-    // var amOrPm = hours < 12 ? 'AM' : 'PM';
-    // hours = hours % 12;
-    // hours = hours ? hours : 12;
-    // minutes = minutes < 10 ? '0'+ minutes : minutes;
-    // return hours + ':' + minutes + ' ' + amOrPm;
+    return moment(date).format("LT");
   };
 
   var getSpeed = function(curr_lglat, last_lglat, curr_ts, last_ts) {
