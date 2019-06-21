@@ -246,25 +246,32 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             buttonClicked: function(index, button) {
                 if (angular.isDefined($scope.eval_settings.name)) {
                     $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
-                        $scope.eval_settings.name);
+                        $scope.eval_settings.config_wrapper.id);
+                    if ($scope.eval_settings.config_wrapper.id != "POWER_CONTROL") {
+                        $scope.setTrackingState(true);
+                    }
                 }
                 $scope.eval_settings.config_wrapper = button.config_wrapper;
                 $scope.eval_settings.full_config = expandForPlatform(button.config_wrapper.sensing_config);
                 $scope.eval_settings.name = button.text;
                 $scope.generateTransition(ETENUM.START_EVALUATION_PERIOD,
-                    $scope.eval_settings.name);
+                    $scope.eval_settings.config_wrapper.id);
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
                 $scope.applyCollectionConfig($scope.eval_settings.full_config);
+                if ($scope.eval_settings.config_wrapper.id == "POWER_CONTROL") {
+                    $scope.setTrackingState(false);
+                }
                 return true;
             },
             destructiveButtonClicked: function() {
                 if (angular.isDefined($scope.eval_settings.name)) {
                     $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
-                        $scope.eval_settings.name);
+                        $scope.eval_settings.config_wrapper.id);
                 }
                 $scope.eval_settings = {};
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
                 $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig());
+                $scope.setTrackingState(true);
                 return true;
             }
         });
@@ -570,6 +577,14 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             Logger.displayError("Error while saving transition", err);
         });
     }
+
+    $scope.setTrackingState = function(targetTrackingState) {
+        if (targetTrackingState) {
+            return ControlCollectionHelper.forceTransition('START_TRACKING');
+        } else {
+            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
+        }
+    };
 
     $scope.readConstants = function() {
         // returns a promise, so it can be used in both reset and restore cases
