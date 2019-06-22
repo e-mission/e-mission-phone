@@ -277,14 +277,34 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             DiaryHelper.directiveForTrip);
           Timeline.setTripWrappers(currDayTripWrappers);
 
+          let tripFromNotification = null;
+
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
             $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
             $scope.populateSurveyAnswerFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.surveyAnswers);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
+
+            if($rootScope.displayingIncident == true && $rootScope.notificationData) {
+              console.log('tripgj =>', tripgj);
+              console.log('$rootScope.notificationData =>', $rootScope.notificationData);
+              if (
+                tripgj.data.properties.start_ts === $rootScope.notificationData.start_ts &&
+                tripgj.data.properties.end_ts === $rootScope.notificationData.end_ts
+              ) {
+                tripFromNotification = tripgj;
+              }
+            }
           });
           $ionicScrollDelegate.scrollTop(true);
+
+          if (tripFromNotification) {
+            console.log('tripFromNotification =>', tripFromNotification);
+            $scope.confirmSurvey(tripFromNotification);
+            $rootScope.displayingIncident = false;
+            $rootScope.notificationData = null;
+          }
       });
     });
 
@@ -763,23 +783,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $rootScope.barDetail = false;
           }
         if($rootScope.displayingIncident == true) {
-          if (angular.isDefined(Timeline.data.currDay)) {
-              // page was already loaded, reload it automatically
-              readAndUpdateForDay(Timeline.data.currDay);
+          const tripProp = $rootScope.notificationData;
+          const day = moment(tripProp.start_ts*1000).startOf('day');
 
-              const tripProp = $rootScope.notificationData;
-              const trip = $scope.data.currDayTripWrappers.find(function(tripgj, index, array) {
-                return (
-                  tripgj.data.properties.start_ts === tripProp.start_ts &&
-                  tripgj.data.properties.end_ts === tripProp.end_ts
-                );
-              });
-              $scope.confirmSurvey(trip);
-          } else {
-             Logger.log("currDay is not defined, load not complete");
-          }
-          $rootScope.displayingIncident = false;
-          $rootScope.notificationData = null;
+              // page was already loaded, reload it automatically
+          readAndUpdateForDay(day);
         }
       });
 
