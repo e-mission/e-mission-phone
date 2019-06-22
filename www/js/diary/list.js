@@ -767,11 +767,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               // page was already loaded, reload it automatically
               readAndUpdateForDay(Timeline.data.currDay);
 
-              const tripProp = notificationData.properties;
+              const tripProp = $rootScope.notificationData;
               const trip = $scope.data.currDayTripWrappers.find(function(tripgj, index, array) {
                 return (
-                  tripgj.properties.start_ts === tripProp.start_ts &&
-                  tripgj.properties.end_ts === tripProp.end_ts
+                  tripgj.data.properties.start_ts === tripProp.start_ts &&
+                  tripgj.data.properties.end_ts === tripProp.end_ts
                 );
               });
               $scope.confirmSurvey(trip);
