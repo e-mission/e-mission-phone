@@ -442,6 +442,81 @@ angular.module('emission.services', ['emission.plugin.logger'])
     {text: "Switzerland", value: 'CH'}
   ];
 
+  // Values are in Kg/PKm (kilograms per passenger-kilometer)
+  // Sources for EU values:
+  //  - Tremod: 2017, CO2, CH4 and N2O in CO2-equivalent
+  //  - HBEFA: 2020, CO2 (per country)
+  // German data uses Tremod. Other EU countries (and Switzerland) use HBEFA for car and bus,
+  // and Tremod for train and air (because HBEFA doesn't provide these).
+  // EU data is an average of the Tremod/HBEFA data for the countries listed;
+  // for this average the HBEFA data was used also in the German set (for car and bus).
+  var carbonDatasets = {
+    US: {
+      ON_FOOT:      0,
+      BICYCLING:    0,
+      CAR:        267/1609,
+      BUS:        278/1609,
+      TRAIN:       92/1609,
+      AIR_OR_HSR: 217/1609
+    },
+    EU: {                   // Plain average of values for the countries below (using HBEFA for car and bus, Tremod for others)
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.14515,
+      BUS:         0.04751,
+      TRAIN:       0.048,
+      AIR_OR_HSR:  0.201
+    },
+    DE: {
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.139,   // Tremod (passenger car)
+      BUS:         0.0535,  // Tremod (average city/coach)
+      TRAIN:       0.048,   // Tremod (average short/long distance)
+      AIR_OR_HSR:  0.201    // Tremod (airplane)
+    },
+    FR: {
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
+      BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
+      TRAIN:       0.048,   // Tremod (DE value)
+      AIR_OR_HSR:  0.201    // Tremod (airplane)
+    },
+    AT: {
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
+      BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
+      TRAIN:       0.048,   // Tremod (DE value)
+      AIR_OR_HSR:  0.201    // Tremod (airplane)
+    },
+    SE: {
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
+      BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
+      TRAIN:       0.048,   // Tremod (DE value)
+      AIR_OR_HSR:  0.201    // Tremod (airplane)
+    },
+    NO: {
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
+      BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
+      TRAIN:       0.048,   // Tremod (DE value)
+      AIR_OR_HSR:  0.201    // Tremod (airplane)
+    },
+    CH: {
+      ON_FOOT:     0,
+      BICYCLING:   0,
+      CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
+      BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)
+      TRAIN:       0.048,   // Tremod (DE value)
+      AIR_OR_HSR:  0.201    // Tremod (airplane)
+    }
+  };
+
   var defaultCarbonDatasetOption = carbonDatasetOptions[0];
   var currentCarbonDatasetOption = defaultCarbonDatasetOption;
 
@@ -453,8 +528,13 @@ angular.module('emission.services', ['emission.plugin.logger'])
     return currentCarbonDatasetOption.text;
   };
 
-  this.getCurrentCarbonDatasetLocale = function () {
-    return currentCarbonDatasetOption.value;
+  // unused
+  // this.getCurrentCarbonDatasetLocale = function () {
+  //   return currentCarbonDatasetOption.value;
+  // };
+
+  this.getCurrentCarbonDataset = function () {
+    return carbonDatasets[currentCarbonDatasetOption.value];
   };
 
   this.setCurrentCarbonDatasetLocale = function (localeCode) {
@@ -472,10 +552,11 @@ angular.module('emission.services', ['emission.plugin.logger'])
     console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetOption.value);
   }
 
-  this.setCurrentCarbonDatasetOption = function (datasetOption) {
-    console.debug("CarbonDatasetHelper.setCurrentCarbonDataset() param " + JSON.stringify(datasetOption));
-    currentCarbonDatasetOption = datasetOption;
-  };
+  // unused
+  // this.setCurrentCarbonDatasetOption = function (datasetOption) {
+  //   console.debug("CarbonDatasetHelper.setCurrentCarbonDataset() param " + JSON.stringify(datasetOption));
+  //   currentCarbonDatasetOption = datasetOption;
+  // };
 })
 
 // common configuration methods across all screens

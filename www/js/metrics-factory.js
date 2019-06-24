@@ -21,6 +21,7 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
   }
   fh.getFootprintForMetrics = function(userMetrics) {
     console.debug("FootprintHelper.getFootprintFromMetrics() current dataset is " + CarbonDatasetHelper.getCurrentCarbonDatasetName());
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDataset();
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;
