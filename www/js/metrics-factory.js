@@ -5,7 +5,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
 .factory('FootprintHelper', function() {
   var fh = {};
   var footprint = {
-    ON_FOOT:      0,
+    WALKING:      0,
     BICYCLING:    0,
     CAR:        267/1609,
     BUS:        278/1609,
@@ -17,7 +17,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
   }
 
   fh.readableFormat = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
+    return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
   fh.getFootprintForMetrics = function(userMetrics) {
     var result = 0;
@@ -36,9 +36,11 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return result;
   }
   fh.getLowestFootprintForDistance = function(distance) {
+    // Find the mode with the lowest carbon footprint (excluding non-motorized modes).
+    // Another option would be to pre-calculate and store this value only once.
     var lowestFootprint = Number.MAX_VALUE;
     for (var mode in footprint) {
-      if (mode == 'ON_FOOT' || mode == 'BICYCLING') {
+      if (mode == 'WALKING' || mode == 'BICYCLING') {
         // these modes aren't considered when determining the lowest carbon footprint
       }
       else {
@@ -48,6 +50,8 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return lowestFootprint * mtokm(distance);
   }
   fh.getHighestFootprintForDistance = function(distance) {
+    // Find the mode with the highest carbon footprint.
+    // Another option would be to pre-calculate and store this value only once.
     var highestFootprint = 0;
     for (var mode in footprint) {
       highestFootprint = Math.max(highestFootprint, footprint[mode]);
@@ -112,7 +116,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return weightInKg * durationInMin * met;
   }
   var standardMETs = {
-    "ON_FOOT": {
+    "WALKING": {
       "VERY_SLOW": {
         range: [0, 2.0],
         mets: 2.0

@@ -844,11 +844,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 // Here, we check if the string is all upper case by
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
-                    if (field === "WALKING" || field === "RUNNING") {
-                      fieldPhone = "ON_FOOT";
-                    } else {
+                    // if (field === "WALKING" || field === "RUNNING") {
+                    //   fieldPhone = "ON_FOOT";
+                    // } else {
                       fieldPhone = field;
-                    }
+                    // }
                     if (fieldPhone in mode_bins == false) {
                         mode_bins[fieldPhone] = []
                     }
