@@ -754,9 +754,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
       }
       else {
-        // TIAGO: -------------
-        // else what does this mean and what do we write in the UI?
-        console.debug("TIAGO: fillFootprintCardUserVals WARNING: calculation (for carbon change) is not a valid number: " + calculation);
         $scope.carbonData.change = "";
         $scope.carbonData.changeInPercentage = "0%";
       }
@@ -772,7 +769,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         // from the main e-mission server and not from our own.
         for (var i in aggrCarbonData) {
           if (isNaN(aggrCarbonData[i].values)) {
-            console.debug("TIAGO: fillFootprintAggVals() WARNING: value is NaN for mode " + aggrCarbonData[i].key + ", changing to 0");
+            console.warn("WARNING fillFootprintAggVals(): value is NaN for mode " + aggrCarbonData[i].key + ", changing to 0");
             aggrCarbonData[i].values = 0;
           }
         }
@@ -817,9 +814,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 // Here, we check if the string is all upper case by
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
-                    if (field === "WALKING" || field === "RUNNING") {
+                    // if (field === "WALKING" || field === "RUNNING") {
                       field = "ON_FOOT";
-                    }
+                    // }
                     if (field in mode_bins == false) {
                         mode_bins[field] = []
                     }
@@ -1082,6 +1079,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
+    "WALKING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "CAR":"ion-android-car",
     "BUS":"ion-android-bus",

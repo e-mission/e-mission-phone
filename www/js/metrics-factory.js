@@ -23,14 +23,18 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;
+      if (mode == 'ON_FOOT') {
+        mode = 'WALKING';
+        console.debug("FootprintHelper.getFootprintFromMetrics(): converted 'ON_FOOT' to 'WALKING'");
+      }
       if (mode in footprint) {
         result += footprint[mode] * mtokm(userMetrics[i].values);
       }
-      else if (mode == "IN_VEHICLE") {
+      else if (mode == 'IN_VEHICLE') {
         result += ((footprint[CAR] + footprint[BUS] + footprint[TRAIN]) / 3) * mtokm(userMetrics[i].values);
       }
       else {
-        console.debug('WARNING: FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+        console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
       }
     }
     return result;
@@ -79,6 +83,10 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return this >= min && this <= max;
   };
   cc.getMet = function(mode, speed) {
+    if (mode == 'ON_FOOT') {
+      console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
+      mode = 'WALKING';
+    }
     if (!standardMETs[mode]) {
       console.log("CalorieCal.getMet() Illegal mode: " + mode);
       return 0; //So the calorie sum does not break with wrong return type
