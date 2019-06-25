@@ -1,6 +1,7 @@
 'use strict';
 
-angular.module('emission.services', ['emission.plugin.logger'])
+angular.module('emission.services', ['emission.plugin.logger',
+                                     'emission.plugin.kvstore'])
 
 .service('CommHelper', function($http) {
     var getConnectURL = function(successCallback, errorCallback) {
@@ -428,7 +429,9 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
 })
 
-.service('CarbonDatasetHelper', function() {
+.service('CarbonDatasetHelper', function(KVStore) {
+  var CARBON_DATASET_KEY = 'carbon_dataset_locale';
+
   // for convenience, the dataset options are structured
   // to be passed directly to an ionicActionSheet
   var carbonDatasetOptions = [
@@ -518,13 +521,38 @@ angular.module('emission.services', ['emission.plugin.logger'])
   };
 
   var defaultCarbonDatasetOption = carbonDatasetOptions[0];
-  var currentCarbonDatasetOption = defaultCarbonDatasetOption;
+  var currentCarbonDatasetOption; // = defaultCarbonDatasetOption;
+  //console.debug("Tiago: CarbonDatasetHelper.initialize() called from general context");
+  //this.initialize();
+
+  this.initialize = function() {
+    console.debug("Tiago: CarbonDatasetHelper.initialize()");
+    currentCarbonDatasetOption = defaultCarbonDatasetOption;
+    var value = KVStore.getDirect(CARBON_DATASET_KEY);
+    console.debug("Tiago: CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
+    if (!value) {
+      value = defaultCarbonDatasetOption.value;
+      console.debug("Tiago: CarbonDatasetHelper.initialize() using [" + value + "] instead");
+    }
+    this.setCurrentCarbonDatasetLocale(value);
+    // KVStore.get(CARBON_DATASET_KEY).then(function(value) {
+    //   console.debug("Tiago: CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
+    //   if (!value) {
+    //     value = defaultCarbonDatasetOption.value;
+    //     console.debug("Tiago: CarbonDatasetHelper.initialize() using [" + value + "] instead");
+    //
+    //   }
+    //   console.debug("BOOOO");
+    //   this.setCurrentCarbonDatasetLocale(value);
+    // });
+  };
 
   this.getCarbonDatasetOptions = function() {
     return carbonDatasetOptions;
   };
 
   this.getCurrentCarbonDatasetName = function () {
+    if (!currentCarbonDatasetOption) this.initialize();
     return currentCarbonDatasetOption.text;
   };
 
@@ -534,10 +562,12 @@ angular.module('emission.services', ['emission.plugin.logger'])
   // };
 
   this.getCurrentCarbonDataset = function () {
+    if (!currentCarbonDatasetOption) this.initialize();
     return carbonDatasets[currentCarbonDatasetOption.value];
   };
 
   this.setCurrentCarbonDatasetLocale = function (localeCode) {
+    console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale()");
     var updatedDatasetOption = defaultCarbonDatasetOption;
     for (var i in carbonDatasetOptions) {
       var datasetOption = carbonDatasetOptions[i];
@@ -549,6 +579,8 @@ angular.module('emission.services', ['emission.plugin.logger'])
       }
     }
     currentCarbonDatasetOption = updatedDatasetOption;
+    console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale() writing value to storage [" + currentCarbonDatasetOption.value + "]");
+    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetOption.value);
     console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetOption.value);
   }
 
