@@ -434,16 +434,16 @@ angular.module('emission.services', ['emission.plugin.logger',
 
   // for convenience, the dataset options are structured
   // to be passed directly to an ionicActionSheet
-  var carbonDatasetOptions = [
-    {text: "United States", value: 'US'},
-    {text: "European Union", value: 'EU'},
-    {text: "Austria", value: 'AT'},
-    {text: "France", value: 'FR'},
-    {text: "Germany", value: 'DE'},
-    {text: "Norway", value: 'NO'},
-    {text: "Sweden", value: 'SE'},
-    {text: "Switzerland", value: 'CH'}
-  ];
+  // var carbonDatasetOptions = [
+  //   {text: "United States", value: 'US'},
+  //   {text: "European Union", value: 'EU'},
+  //   {text: "Austria", value: 'AT'},
+  //   {text: "France", value: 'FR'},
+  //   {text: "Germany", value: 'DE'},
+  //   {text: "Norway", value: 'NO'},
+  //   {text: "Sweden", value: 'SE'},
+  //   {text: "Switzerland", value: 'CH'}
+  // ];
 
   // Values are in Kg/PKm (kilograms per passenger-kilometer)
   // Sources for EU values:
@@ -455,83 +455,107 @@ angular.module('emission.services', ['emission.plugin.logger',
   // for this average the HBEFA data was used also in the German set (for car and bus).
   var carbonDatasets = {
     US: {
-      ON_FOOT:      0,
-      BICYCLING:    0,
-      CAR:        267/1609,
-      BUS:        278/1609,
-      TRAIN:       92/1609,
-      AIR_OR_HSR: 217/1609
+      regionName: "United States",
+      footprintData: {
+        ON_FOOT:      0,
+        BICYCLING:    0,
+        CAR:        267/1609,
+        BUS:        278/1609,
+        TRAIN:       92/1609,
+        AIR_OR_HSR: 217/1609
+      }
     },
     EU: {                   // Plain average of values for the countries below (using HBEFA for car and bus, Tremod for others)
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.14515,
-      BUS:         0.04751,
-      TRAIN:       0.048,
-      AIR_OR_HSR:  0.201
+      regionName: "European Union",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.14515,
+        BUS:         0.04751,
+        TRAIN:       0.048,
+        AIR_OR_HSR:  0.201
+      }
     },
     DE: {
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.139,   // Tremod (passenger car)
-      BUS:         0.0535,  // Tremod (average city/coach)
-      TRAIN:       0.048,   // Tremod (average short/long distance)
-      AIR_OR_HSR:  0.201    // Tremod (airplane)
+      regionName: "Germany",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.139,   // Tremod (passenger car)
+        BUS:         0.0535,  // Tremod (average city/coach)
+        TRAIN:       0.048,   // Tremod (average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (airplane)
+      }
     },
     FR: {
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
-      BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
-      TRAIN:       0.048,   // Tremod (DE value)
-      AIR_OR_HSR:  0.201    // Tremod (airplane)
+      regionName: "France",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
+        TRAIN:       0.048,   // Tremod (DE value)
+        AIR_OR_HSR:  0.201    // Tremod (airplane)
+      }
     },
     AT: {
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
-      BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
-      TRAIN:       0.048,   // Tremod (DE value)
-      AIR_OR_HSR:  0.201    // Tremod (airplane)
+      regionName: "Austria",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
+        TRAIN:       0.048,   // Tremod (DE value)
+        AIR_OR_HSR:  0.201    // Tremod (airplane)
+      }
     },
     SE: {
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
-      BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
-      TRAIN:       0.048,   // Tremod (DE value)
-      AIR_OR_HSR:  0.201    // Tremod (airplane)
+      regionName: "Sweden",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
+        TRAIN:       0.048,   // Tremod (DE value)
+        AIR_OR_HSR:  0.201    // Tremod (airplane)
+      }
     },
     NO: {
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
-      BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
-      TRAIN:       0.048,   // Tremod (DE value)
-      AIR_OR_HSR:  0.201    // Tremod (airplane)
+      regionName: "Norway",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
+        TRAIN:       0.048,   // Tremod (DE value)
+        AIR_OR_HSR:  0.201    // Tremod (airplane)
+      }
     },
     CH: {
-      ON_FOOT:     0,
-      BICYCLING:   0,
-      CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
-      BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)
-      TRAIN:       0.048,   // Tremod (DE value)
-      AIR_OR_HSR:  0.201    // Tremod (airplane)
+      regionName: "Switzerland",
+      footprintData: {
+        ON_FOOT:     0,
+        BICYCLING:   0,
+        CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)
+        TRAIN:       0.048,   // Tremod (DE value)
+        AIR_OR_HSR:  0.201    // Tremod (airplane)
+      }
     }
   };
 
-  var defaultCarbonDatasetOption = carbonDatasetOptions[0];
-  var currentCarbonDatasetOption; // = defaultCarbonDatasetOption;
+  var defaultCarbonDatasetCode = 'US';
+  var currentCarbonDatasetCode; // = defaultCarbonDatasetOption;
   //console.debug("Tiago: CarbonDatasetHelper.initialize() called from general context");
   //this.initialize();
 
   this.initialize = function() {
     console.debug("Tiago: CarbonDatasetHelper.initialize()");
-    currentCarbonDatasetOption = defaultCarbonDatasetOption;
+    currentCarbonDatasetCode = defaultCarbonDatasetCode;
     var value = KVStore.getDirect(CARBON_DATASET_KEY);
     console.debug("Tiago: CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
     if (!value) {
-      value = defaultCarbonDatasetOption.value;
+      value = defaultCarbonDatasetCode;
       console.debug("Tiago: CarbonDatasetHelper.initialize() using [" + value + "] instead");
     }
     this.setCurrentCarbonDatasetLocale(value);
@@ -548,12 +572,19 @@ angular.module('emission.services', ['emission.plugin.logger',
   };
 
   this.getCarbonDatasetOptions = function() {
-    return carbonDatasetOptions;
+    var options = [];
+    for (var code in carbonDatasets) {
+      options.push({
+        text: carbonDatasets[code].regionName,
+        value: code
+      });
+    }
+    return options;
   };
 
   this.getCurrentCarbonDatasetName = function () {
-    if (!currentCarbonDatasetOption) this.initialize();
-    return currentCarbonDatasetOption.text;
+    if (!currentCarbonDatasetCode) this.initialize();
+    return carbonDatasets[currentCarbonDatasetCode].regionName;
   };
 
   // unused
@@ -561,27 +592,27 @@ angular.module('emission.services', ['emission.plugin.logger',
   //   return currentCarbonDatasetOption.value;
   // };
 
-  this.getCurrentCarbonDataset = function () {
-    if (!currentCarbonDatasetOption) this.initialize();
-    return carbonDatasets[currentCarbonDatasetOption.value];
+  this.getCurrentCarbonDatasetFootprint = function () {
+    if (!currentCarbonDatasetCode) this.initialize();
+    return carbonDatasets[currentCarbonDatasetCode].footprintData;
   };
 
   this.setCurrentCarbonDatasetLocale = function (localeCode) {
     console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale()");
-    var updatedDatasetOption = defaultCarbonDatasetOption;
-    for (var i in carbonDatasetOptions) {
-      var datasetOption = carbonDatasetOptions[i];
+    var updatedDatasetCode = defaultCarbonDatasetCode;
+    for (var code in carbonDatasets) {
+      //var datasetOption = carbonDatasetOptions[i];
       //console.debug(JSON.stringify(datasetOption, null, 2));
       //console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() compare [" + datasetOption.value + "] with [" + localeCode + "]")
-      if (datasetOption.value == localeCode) {
-        updatedDatasetOption = datasetOption;
+      if (code == localeCode) {
+        updatedDatasetCode = localeCode;
         break;
       }
     }
-    currentCarbonDatasetOption = updatedDatasetOption;
-    console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale() writing value to storage [" + currentCarbonDatasetOption.value + "]");
-    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetOption.value);
-    console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetOption.value);
+    currentCarbonDatasetCode = updatedDatasetCode;
+    console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale() writing value to storage [" + currentCarbonDatasetCode + "]");
+    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
+    console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetCode);
   }
 
   // unused

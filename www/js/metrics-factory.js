@@ -21,7 +21,7 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
   }
   fh.getFootprintForMetrics = function(userMetrics) {
     console.debug("FootprintHelper.getFootprintFromMetrics() current dataset is " + CarbonDatasetHelper.getCurrentCarbonDatasetName());
-    var footprint = CarbonDatasetHelper.getCurrentCarbonDataset();
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;
@@ -41,9 +41,8 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
     return result;
   }
   fh.getLowestFootprintForDistance = function(distance) {
-    // Find the mode with the lowest carbon footprint (excluding non-motorized modes).
-    // Another option would be to pre-calculate and store this value only once.
-    var lowestFootprint = Number.MAX_VALUE;
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    var lowestFootprint = 9999;
     for (var mode in footprint) {
       if (mode == 'WALKING' || mode == 'BICYCLING') {
         // these modes aren't considered when determining the lowest carbon footprint
@@ -55,8 +54,7 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
     return lowestFootprint * mtokm(distance);
   }
   fh.getHighestFootprintForDistance = function(distance) {
-    // Find the mode with the highest carbon footprint.
-    // Another option would be to pre-calculate and store this value only once.
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
     var highestFootprint = 0;
     for (var mode in footprint) {
       highestFootprint = Math.max(highestFootprint, footprint[mode]);
