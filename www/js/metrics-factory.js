@@ -4,13 +4,9 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
 
 .factory('FootprintHelper', function(CarbonDatasetHelper) {
   var fh = {};
-  var footprint = {
-    WALKING:      0,
-    BICYCLING:    0,
-    CAR:        267/1609,
-    BUS:        278/1609,
-    TRAIN:       92/1609,
-    AIR_OR_HSR: 217/1609
+
+  var readable = function(v) {
+    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
   var mtokm = function(v) {
     return v / 1000;

@@ -432,19 +432,6 @@ angular.module('emission.services', ['emission.plugin.logger',
 .service('CarbonDatasetHelper', function(KVStore) {
   var CARBON_DATASET_KEY = 'carbon_dataset_locale';
 
-  // for convenience, the dataset options are structured
-  // to be passed directly to an ionicActionSheet
-  // var carbonDatasetOptions = [
-  //   {text: "United States", value: 'US'},
-  //   {text: "European Union", value: 'EU'},
-  //   {text: "Austria", value: 'AT'},
-  //   {text: "France", value: 'FR'},
-  //   {text: "Germany", value: 'DE'},
-  //   {text: "Norway", value: 'NO'},
-  //   {text: "Sweden", value: 'SE'},
-  //   {text: "Switzerland", value: 'CH'}
-  // ];
-
   // Values are in Kg/PKm (kilograms per passenger-kilometer)
   // Sources for EU values:
   //  - Tremod: 2017, CO2, CH4 and N2O in CO2-equivalent
@@ -545,9 +532,7 @@ angular.module('emission.services', ['emission.plugin.logger',
   };
 
   var defaultCarbonDatasetCode = 'US';
-  var currentCarbonDatasetCode; // = defaultCarbonDatasetOption;
-  //console.debug("Tiago: CarbonDatasetHelper.initialize() called from general context");
-  //this.initialize();
+  var currentCarbonDatasetCode;
 
   this.initialize = function() {
     console.debug("Tiago: CarbonDatasetHelper.initialize()");
@@ -559,16 +544,6 @@ angular.module('emission.services', ['emission.plugin.logger',
       console.debug("Tiago: CarbonDatasetHelper.initialize() using [" + value + "] instead");
     }
     this.setCurrentCarbonDatasetLocale(value);
-    // KVStore.get(CARBON_DATASET_KEY).then(function(value) {
-    //   console.debug("Tiago: CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
-    //   if (!value) {
-    //     value = defaultCarbonDatasetOption.value;
-    //     console.debug("Tiago: CarbonDatasetHelper.initialize() using [" + value + "] instead");
-    //
-    //   }
-    //   console.debug("BOOOO");
-    //   this.setCurrentCarbonDatasetLocale(value);
-    // });
   };
 
   this.getCarbonDatasetOptions = function() {
@@ -587,11 +562,6 @@ angular.module('emission.services', ['emission.plugin.logger',
     return carbonDatasets[currentCarbonDatasetCode].regionName;
   };
 
-  // unused
-  // this.getCurrentCarbonDatasetLocale = function () {
-  //   return currentCarbonDatasetOption.value;
-  // };
-
   this.getCurrentCarbonDatasetFootprint = function () {
     if (!currentCarbonDatasetCode) this.initialize();
     return carbonDatasets[currentCarbonDatasetCode].footprintData;
@@ -601,9 +571,6 @@ angular.module('emission.services', ['emission.plugin.logger',
     console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale()");
     var updatedDatasetCode = defaultCarbonDatasetCode;
     for (var code in carbonDatasets) {
-      //var datasetOption = carbonDatasetOptions[i];
-      //console.debug(JSON.stringify(datasetOption, null, 2));
-      //console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() compare [" + datasetOption.value + "] with [" + localeCode + "]")
       if (code == localeCode) {
         updatedDatasetCode = localeCode;
         break;
@@ -614,12 +581,6 @@ angular.module('emission.services', ['emission.plugin.logger',
     KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
     console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetCode);
   }
-
-  // unused
-  // this.setCurrentCarbonDatasetOption = function (datasetOption) {
-  //   console.debug("CarbonDatasetHelper.setCurrentCarbonDataset() param " + JSON.stringify(datasetOption));
-  //   currentCarbonDatasetOption = datasetOption;
-  // };
 })
 
 // common configuration methods across all screens
