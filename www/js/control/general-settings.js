@@ -21,13 +21,16 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
-               CalorieCal, ClientStats, CommHelper, Logger) {
+               CalorieCal, ClientStats, CommHelper, Logger,
+               $translate) {
 
     var datepickerObject = {
-      todayLabel: 'Today',  //Optional
-      closeLabel: 'Close',  //Optional
-      setLabel: 'Set',  //Optional
-      titleLabel: 'Choose date to download data',
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      monthsList: moment.monthsShort(),
+      weeksList: moment.weekdaysMin(),
+      titleLabel: $translate.instant('general-settings.choose-date'),
       setButtonType : 'button-positive',  //Optional
       todayButtonType : 'button-stable',  //Optional
       closeButtonType : 'button-stable',  //Optional
@@ -61,7 +64,7 @@ angular.module('emission.main.control',['emission.services',
                 age: userDataFromStorage.age,
                 height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
                 weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                gender: userDataFromStorage.gender == 1? 'Male' : 'Female'
+                gender: userDataFromStorage.gender == 1? $translate.instant('gender-male') : $translate.instant('gender-female')
             }
             for (var i in temp) {
                 $scope.userData.push({key: i, value: temp[i]});
@@ -183,16 +186,16 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.nukeUserCache = function() {
-        var nukeChoiceActions = [{text: "UI state only",
+        var nukeChoiceActions = [{text: $translate.instant('general-settings.nuke-ui-state-only'),
                                   action: KVStore.clearOnlyLocal},
-                                 {text: 'Native cache only',
+                                 {text: $translate.instant('general-settings.nuke-native-cache-only'),
                                   action: KVStore.clearOnlyNative},
-                                 {text: 'Everything',
+                                 {text: $translate.instant('general-settings.nuke-everything'),
                                   action: KVStore.clearAll}];
 
         $ionicActionSheet.show({
-            titleText: "Clear data",
-            cancelText: "Cancel",
+            titleText: $translate.instant('general-settings.clear-data'),
+            cancelText: $translate.instant('general-settings.cancel'),
             buttons: nukeChoiceActions,
             buttonClicked: function(index, button) {
                 button.action();
@@ -414,7 +417,7 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.eraseUserData = function() {
         CalorieCal.delete().then(function() {
-        $ionicPopup.alert({template: 'User data erased.'});
+            $ionicPopup.alert({template: $translate.instant('general-settings.user-data-erased')});
         });
     }
     $scope.parseState = function(state) {
@@ -456,13 +459,13 @@ angular.module('emission.main.control',['emission.services',
     }
 
     var handleNoConsent = function(resultDoc) {
-        $ionicPopup.confirm({template: "Consent for data collection not found, consent now?"})
+        $ionicPopup.confirm({template: $translate.instant('general-settings.consent-not-found')})
         .then(function(res){
             if (res) {
                $state.go("root.reconsent");
             } else {
                $ionicPopup.alert({
-                template: "OK! Note that you won't get any personalized stats until you do!"});
+                template: $translate.instant('general-settings.no-consent-message')});
             }
         });
     }
@@ -470,13 +473,13 @@ angular.module('emission.main.control',['emission.services',
     var handleConsent = function(resultDoc) {
         $scope.consentDoc = resultDoc;
         $ionicPopup.confirm({
-            template: 'Consented to protocol {{consentDoc.protocol_id}}, {{consentDoc.approval_date}}',
+            template: $translate.instant('general-settings.consented-to',{protocol_id: $scope.consentDoc.protocol_id,approval_date: $scope.consentDoc.approval_date}),
             scope: $scope,
-            title: "Consent found!",
+            title: $translate.instant('general-settings.consent-found'),
             buttons: [
             // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
             //  type: 'button-calm'},
-            {text: "<b>OK</b>",
+            {text: "<b>"+ $translate.instant('general-settings.consented-ok') +"</b>",
              type: 'button-positive'} ]
         }).finally(function(res) {
             $scope.consentDoc = null;
@@ -496,9 +499,9 @@ angular.module('emission.main.control',['emission.services',
     }
 
     var prepopulateMessage = {
-      message: 'Join me in making transportation greener and healthier \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Emission - UC Berkeley Research Project', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+        message: $translate.instant('general-settings.share-message'), // not supported on some apps (Facebook, Instagram)
+        subject: $translate.instant('general-settings.share-subject'), // fi. for email
+        url: $translate.instant('general-settings.share-url')
     }
 
     $scope.share = function() {

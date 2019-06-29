@@ -8,9 +8,9 @@
       -->
       <div style="box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);" class="full-toggle-container">
         <div class="full-toggle-left hvcenter"
-          ng-click="refreshMap()">Refresh</div>
+          ng-click="refreshMap()" translate>{{'map-refresh'}}</div>
         <div class="full-toggle-right hvcenter"
-          ng-click="refreshTiles()">Fix Map</div>
+          ng-click="refreshTiles()" translate>{{'map-fixmap'}}</div>
       </div>
       <div style="height: 10px;"></div>
       <leaflet geojson="mapCtrl.geojson"

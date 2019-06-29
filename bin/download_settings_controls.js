@@ -17,13 +17,29 @@ var download = function(url, dest, cb) {
 };
 
 download("https://raw.githubusercontent.com/e-mission/e-mission-data-collection/master/www/ui/ionic/js/collect-settings.js", "www/js/control/collect-settings.js", function(message) {
-    console.log("Data collection settings updated");
+    console.log("Data collection settings javascript updated");
+});
+
+download("https://raw.githubusercontent.com/e-mission/e-mission-data-collection/master/www/ui/ionic/templates/main-collect-settings.html", "www/templates/control/main-collect-settings.html", function(message) {
+    console.log("Data collection settings template updated");
 });
 
 download("https://raw.githubusercontent.com/e-mission/cordova-server-sync/master/www/ui/ionic/js/sync-settings.js", "www/js/control/sync-settings.js", function(message) {
-    console.log("Sync collection settings updated");
+    console.log("Sync collection settings javascript updated");
+});
+
+download("https://raw.githubusercontent.com/e-mission/cordova-server-sync/master/www/ui/ionic/templates/main-sync-settings.html", "www/templates/control/main-sync-settings.html", function(message) {
+    console.log("Sync collection settings template updated");
 });
 
 download("https://raw.githubusercontent.com/e-mission/e-mission-transition-notify/master/www/ui/ionic/js/transition-notify-settings.js", "www/js/control/transition-notify-settings.js", function(message) {
     console.log("Transition notify settings updated");
+});
+
+download("https://raw.githubusercontent.com/e-mission/e-mission-transition-notify/master/www/ui/ionic/templates/transition-notify-display-detail.html", "www/templates/control/transition-notify-display-detail.html", function(message) {
+    console.log("Transition notify settings display template updated");
+});
+
+download("https://raw.githubusercontent.com/e-mission/e-mission-transition-notify/master/www/ui/ionic/templates/main-transition-notify-settings.html", "www/templates/control/main-transition-notify-settings.html", function(message) {
+    console.log("Transition notify settings edit template updated");
 });

@@ -26,6 +26,25 @@ angular.module('emission.services', ['emission.plugin.logger'])
         });
     };
 
+    this.putOne = function(key, data) {
+        var now = moment().unix();
+        var md = {
+            "write_ts": now,
+            "read_ts": now,
+            "time_zone": moment.tz.guess(),
+            "type": "message",
+            "key": key,
+            "platform": ionic.Platform.platform()
+        };
+        var entryToPut = {
+            "metadata": md,
+            "data": data
+        }
+        return new Promise(function(resolve, reject) {
+            window.cordova.plugins.BEMServerComm.postUserPersonalData("/usercache/putone", "the_entry", entryToPut, resolve, reject);
+        });
+    };
+
     this.getTimelineForDay = function(date) {
         return new Promise(function(resolve, reject) {
           var dateString = date.startOf('day').format('YYYY-MM-DD');

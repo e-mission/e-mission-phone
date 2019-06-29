@@ -1,4 +1,4 @@
-<ion-view view-title="Incident" class="ion-view-background">
+<ion-view view-title="Incident" class="ion-view-background" translate-namespace="trip-confirm">
     <ion-nav-buttons side="right">
       <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>
@@ -8,7 +8,7 @@
     <ion-nav-title>{{ getFormattedDate(mapCtrl.start_ts) }}</ion-nav-title> 
     <ion-content class="has-header" overflow-scroll="true" padding="true">
         <div class="row" style="text-align: center;display: block;">
-            <div style="font-size: 1em;opacity: 0.7;">Recent trip from: {{getFormattedTime(mapCtrl.start_ts)}}  &rarr;  to: {{getFormattedTime(mapCtrl.end_ts)}}</div>
+            <div style="font-size: 1em;opacity: 0.7;" translate=".recenttrip" translate-values="{startTime: getFormattedTime(mapCtrl.start_ts), endTime: getFormattedTime(mapCtrl.end_ts)}"></div>
         </div>
         <div style="height: 10px;"></div>
             <leaflet geojson="mapCtrl.geojson" id="incident" defaults="mapCtrl.defaults" 
@@ -21,8 +21,8 @@
         </div>
          <ion-slide-box show-pager="false" ng-init="disableSwipe()" style="background: transparent !important;">
             <ion-slide id="modes">
-                    <div style="padding: 5px; font-size: 1.25em;opacity: 0.7;">
-                    How did you get here?
+                    <div style="padding: 5px; font-size: 1.25em;opacity: 0.7;" translate>
+                    {{'diary.how-did-you-get-here'}}
                     </div>
                     <div style="height: 100%; padding-top: 10px;" >
                         <ion-scroll style="height: 40%;" id=mode_list>
@@ -33,8 +33,8 @@
                     </div>
             </ion-slide>
             <ion-slide id="modes">
-                    <div style="padding: 5px;font-size: 1.25em;opacity: 0.7;">
-                    Why did you come here?
+                    <div style="padding: 5px;font-size: 1.25em;opacity: 0.7;" translate>
+                    {{'diary.why-did-you-come-here'}}
                     </div>
                     <div style="height: 100%;padding-top: 10px;">
                         <ion-scroll style="height: 40%;">
@@ -46,10 +46,10 @@
             </ion-slide>
         </ion-slide-box>
         <div style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;" ng-if="!secondSlide">
-            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="nextSlide()">Continue</button>
+            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="nextSlide()" translate>{{'.continue'}}</button>
         </div>
         <div style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;" ng-if="secondSlide">
-            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="doneSlide()">Done</button>
+            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="doneSlide()" translate>{{'.done'}}</button>
         </div>
         <!--div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"

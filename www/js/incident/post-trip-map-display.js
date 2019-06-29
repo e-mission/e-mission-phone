@@ -9,7 +9,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker) {
+                                        UnifiedDataLoader, PostTripManualMarker, $translate) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   $scope.mapCtrl = {};
@@ -54,7 +54,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     };
     Logger.log("About to query buffer for "+JSON.stringify(tq));
     $ionicLoading.show({
-      template: 'Loading...'
+      template: $translate.instant('loading')
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       // .then(PostTripManualMarker.addLatLng)
@@ -159,11 +159,14 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       mask: {
         visibleOnNoTarget: true,
         clickExit: true
-      }
+      },
+      previousText: $translate.instant('tour-previous'),
+      nextText: $translate.instant('tour-next'),
+      finishText: $translate.instant('tour-finish')
     },
     steps: [{
       target: '#incident',
-      content: 'Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size="+3">&#x263B;</font> or <font size="+3">&#x2639;</font> incident'
+      content: $translate.instant('post-trip-map-display-tour-incident')
     }]
   };
 
