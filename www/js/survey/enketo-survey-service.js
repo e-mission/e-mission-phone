@@ -97,18 +97,14 @@ angular.module('emission.enketo-survey.service', [
   }
 
   function displayForm() {
-    // Load survey with previous answer
-    if (__session &&
-        __session.data_key &&
-        __session.data_key === 'manual/confirm_survey'
-    ) {
-      return getAllSurveyAnswers(__session.data_key)
-      .then(_restoreAnswer)
-      .then(function(answerData) {
-        return _loadForm({ instanceStr: answerData });
-      });
-    }
-    return _loadForm();
+    let data_key = (__session && __session.data_key) ?
+        __session.data_key :
+        "manual/confirm_survey";
+    return getAllSurveyAnswers(data_key
+    ).then(_restoreAnswer
+    ).then(function(answerData) {
+      return _loadForm({ instanceStr: answerData });
+    });
   }
 
   function _saveData() {
