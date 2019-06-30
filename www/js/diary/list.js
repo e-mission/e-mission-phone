@@ -289,14 +289,25 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             if($rootScope.displayingIncident == true && $rootScope.notificationData) {
               console.log('tripgj =>', tripgj);
               console.log('$rootScope.notificationData =>', $rootScope.notificationData);
+              console.log("Delta start_ts = "+
+                ($rootScope.notificationData.start_ts - tripgj.data.properties.start_ts)
+                +" and delta end_ts = "+
+                ($rootScope.notificationData.end_ts - tripgj.data.properties.end_ts));
               if (
-                tripgj.data.properties.start_ts === $rootScope.notificationData.start_ts &&
-                tripgj.data.properties.end_ts === $rootScope.notificationData.end_ts
+                tripgj.data.properties.start_ts === $rootScope.notificationData.start_ts*1000 &&
+                tripgj.data.properties.end_ts === $rootScope.notificationData.end_ts*1000
               ) {
                 tripFromNotification = tripgj;
               }
             }
           });
+          if($rootScope.displayingIncident == true && $rootScope.notificationData) {
+            const trip = ConfirmHelper.getUserInputForTrip({
+              start_ts: $rootScope.notificationData.start_ts*1000,
+              end_ts: $rootScope.notificationData.end_ts*1000,
+            }, $scope.data.currDayTripWrappers);
+            console.log('trip => ', trip);
+          }
           $ionicScrollDelegate.scrollTop(true);
 
           if (tripFromNotification) {
@@ -768,6 +779,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
+      // readAndUpdateForDay(moment().startOf('day'));
+      // DEBUG
+      readAndUpdateForDay(moment("2015-07-22").startOf("day"));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from
