@@ -778,7 +778,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $ionicPlatform.ready().then(function() {
-      readAndUpdateForDay(moment().startOf('day'));
       // readAndUpdateForDay(moment().startOf('day'));
       // DEBUG
       readAndUpdateForDay(moment("2015-07-22").startOf("day"));
