@@ -21,6 +21,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
+               CommHelper,
                CalorieCal, ClientStats, CommHelper, Logger) {
 
     var datepickerObject = {
@@ -400,7 +401,20 @@ angular.module('emission.main.control',['emission.services',
         });
     };
     $scope.editUserProfile = function() {
-        console.log("Edit User Profile");
+        CommHelper.getUser().then(function(profile){
+            const uuid = profile.user_id["$uuid"];
+            $state.go("root.main.enketosurvey", {
+                form_location: "json/user-profile_v1.json",
+                opts: JSON.stringify({
+                    session: {
+                        data_key: "manual/user_profile_survey",
+                        user_properties: {
+                            uuid: uuid,
+                        },
+                    },
+                }),
+            });
+        });
     };
 
     $scope.userStartStopTracking = function() {
