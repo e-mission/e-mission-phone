@@ -49,8 +49,22 @@ angular.module('emission.enketo-survey.service', [
     return loadErrors;
   }
 
+  function _getUserProfile(user_properties, answers) {
+    const potentialCandidates = answers.filter(function(answer) {
+        return answer.data.user_uuid = user_properties.uuid;
+    });
+    return potentialCandidates.length ?
+        potentialCandidates[potentialCandidates.length - 1] :
+        null;
+  }
+
   function _restoreAnswer(answers) {
-    const answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
+    let answer = null;
+    if (__session.trip_properties) {
+        answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
+    } else if (__session.user_properties) {
+        answer = _getUserProfile(__session.user_properties, answers);
+    }
     return (!answer) ? null : answer.data.survey_result;
   }
 
@@ -110,9 +124,14 @@ angular.module('emission.enketo-survey.service', [
   function _saveData() {
     const data = {
       survey_result: __form.getDataStr(),
-      start_ts: __session.trip_properties.start_ts,
-      end_ts: __session.trip_properties.end_ts,
     };
+    if (__session && __session.trip_properties) {
+        data.start_ts = __session.trip_properties.start_ts;
+        data.end_ts = __session.trip_properties.end_ts;
+    }
+    if (__session && __session.user_properties) {
+        data.user_uuid = __session.user_properties.uuid;
+    }
     return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data
     ).then(function(){
       return data;
