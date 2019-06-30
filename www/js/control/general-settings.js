@@ -399,6 +399,10 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
+    $scope.editUserProfile = function() {
+        console.log("Edit User Profile");
+    };
+
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');
