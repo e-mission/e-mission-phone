@@ -71,10 +71,6 @@ angular.module('emission.main', ['emission.main.recent',
         templateUrl: 'templates/survey/enketo-survey.html',
         controller: 'EnketoSurveyCtrl'
       },
-      'main-control': {
-        templateUrl: 'templates/survey/enketo-survey.html',
-        controller: 'EnketoSurveyCtrl',
-      },
     },
   })
 
