@@ -81,7 +81,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     $scope.refreshEntries();
 })
 
-.controller('sensedDataCtrl', function($scope, $cordovaEmailComposer, $ionicActionSheet) {
+.controller('sensedDataCtrl', function($scope, $cordovaEmailComposer, $ionicActionSheet, $translate) {
     var currentStart = 0;
 
     /* Let's keep a reference to the database for convenience */
@@ -109,7 +109,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
          $cordovaEmailComposer.isAvailable().then(function() {
            // is available
          }, function () {
-            alert("Email account is not configured, cannot send email");
+            alert($translate.instant('recent.email-account-not-configured'));
             return;
          });
 
@@ -117,7 +117,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
             parentDir = "app://databases";
         }
         if (ionic.Platform.isIOS()) {
-            alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
+            alert($translate.instant('recent.email-account-mail-app'));
             parentDir = cordova.file.dataDirectory+"../LocalDatabase";
         }
 
@@ -125,7 +125,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
         window.Logger.log(window.Logger.LEVEL_INFO,
             "Going to export logs to "+parentDir);
          */
-        alert("Going to email database from "+parentDir+"/userCacheDB");
+        alert($translate.instant('recent.going-to-email', {parentDir: parentDirs}));
 
         var email = {
             to: ['shankari@eecs.berkeley.edu'],

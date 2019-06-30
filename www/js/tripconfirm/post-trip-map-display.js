@@ -10,7 +10,8 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, DiaryHelper, ConfirmHelper, Config,
-                                        UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup) {
+                                        UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup,
+                                        $translate) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
@@ -74,7 +75,7 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
     };
     Logger.log("About to query buffer for "+JSON.stringify(tq));
     $ionicLoading.show({
-      template: 'Loading...'
+      template: $translate.instant('loading')
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       .then(function(resultList) {

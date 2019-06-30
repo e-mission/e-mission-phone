@@ -3,7 +3,7 @@
 angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   'emission.main.diary.services'])
 .factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, $ionicPlatform,
-                                          Logger, Timeline) {
+                                          Logger, Timeline, $translate) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
@@ -409,7 +409,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               return {text: getFormattedTime(ts),
                       selValue: ts};
             });
-            $ionicActionSheet.show({titleText: "Choose incident time",
+            $ionicActionSheet.show({titleText: $translate.instant('post-trip-manual-incident-time'),
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
