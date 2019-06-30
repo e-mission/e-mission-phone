@@ -49,7 +49,7 @@ angular.module('emission.enketo-survey.service', [
     return loadErrors;
   }
 
-  function _getUserProfile(user_properties, answers) {
+  function getUserProfile(user_properties, answers) {
     const potentialCandidates = answers.filter(function(answer) {
         return answer.data.user_uuid = user_properties.uuid;
     });
@@ -63,7 +63,7 @@ angular.module('emission.enketo-survey.service', [
     if (__session.trip_properties) {
         answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
     } else if (__session.user_properties) {
-        answer = _getUserProfile(__session.user_properties, answers);
+        answer = getUserProfile(__session.user_properties, answers);
     }
     return (!answer) ? null : answer.data.survey_result;
   }
@@ -161,6 +161,7 @@ angular.module('emission.enketo-survey.service', [
     validateForm: validateForm,
     getAllSurveyAnswers: getAllSurveyAnswers,
     getState: getState,
+    getUserProfile: getUserProfile,
     populateLabels: populateLabels,
     makeAnswerFromAnswerData: makeAnswerFromAnswerData,
   };

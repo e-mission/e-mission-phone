@@ -1,7 +1,10 @@
 'use strict';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'ionic-toast'])
+                                  'ionic-toast',
+                                  'emission.survey.enketo.launch',
+                                  'emission.enketo-survey.service',
+                                ])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -18,8 +21,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs) {
+.controller('IntroCtrl', function($rootScope, $scope, $state, $ionicSlideBoxDelegate,
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -83,10 +86,23 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
-      ionicToast.show(userEmail, 'middle', false, 2500);
+      $scope.userEmail = userEmail;
       CommHelper.registerUser(function(successResult) {
-        $scope.finish();
+          const uuid = successResult.uuid;
+          return EnketoSurvey.getAllSurveyAnswers("manual/user_profile_survey"
+          ).then(function(answers){
+              return EnketoSurvey.getUserProfile({ uuid }, answers);
+          }).then(function(userProfile){
+              if (userProfile) {
+                ionicToast.show(userEmail, 'middle', false, 2500);
+                $scope.finish();
+              } else {
+                $rootScope.confirmSurveyIntroMode = true;
+                $scope.next();
+            }
+          });
       }, function(errorResult) {
+        ionicToast.show(userEmail, 'middle', false, 2500);
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
       });
@@ -95,6 +111,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.finish();
     });
   };
+
+  /**
+   * Listen for USERPROFILE_SUBMIT
+   */
+  $scope.$on("USERPROFILE_SUBMIT", function(_event, _args) {
+    ionicToast.show($scope.userEmail, "middle", false, 2500);
+    $scope.finish();
+  });
 
   // Called each time the slide changes
   $scope.slideChanged = function(index) {

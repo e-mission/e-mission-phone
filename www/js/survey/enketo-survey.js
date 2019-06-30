@@ -6,29 +6,35 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
 ])
 .controller('EnketoSurveyCtrl', function($scope, $state, $stateParams, $rootScope,
-  $ionicPopup, EnketoSurvey
+  $ionicPopup, EnketoSurvey, CommHelper
 ) {
-  if (!$rootScope.previousState){
-    $ionicPopup.alert("No previousState defined, going back to diary")
-    $state.go("root.main.diary")
-  } else if (!angular.isDefined($stateParams.form_location)) {
-    $ionicPopup.alert("No form location defined, going back to diary")
-    .then(function() {
-      $state.go("root.main.diary")
-    });
-  } else {
-    EnketoSurvey.init($stateParams.form_location, $stateParams.opts)
-    .then(function(){
+  CommHelper.getUser().then(function(profile){
+      const uuid = profile.user_id["$uuid"];
+      return uuid;
+  }).then(function(uuid) {
+      const form_location = $stateParams.form_location || "json/user-profile_v1.json";
+      const opts = $stateParams.opts || JSON.stringify({
+          session: {
+              data_key: "manual/user_profile_survey",
+              user_properties: {
+                  uuid: uuid,
+              },
+          },
+      });
+      return EnketoSurvey.init(form_location, opts);
+  }).then(function(){
       $('.form-header').after(EnketoSurvey.getState().loaded_form);
-      return;
-    })
-    .then(EnketoSurvey.displayForm)
-    .then(function(loadErrors){
-      if (loadErrors.length > 0) {
-        $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
+      if(!$stateParams.form_location) {
+        $(".previous-page").hide();
+        $(".form-footer__jump-nav").hide();
       }
-    });
-  }
+      return;
+  }).then(EnketoSurvey.displayForm
+  ).then(function(loadErrors){
+    if (loadErrors.length > 0) {
+      $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
+    }
+  });
 
   $scope.validateForm = function() {
     EnketoSurvey.validateForm()
@@ -41,6 +47,11 @@ angular.module('emission.survey.enketo.launch', [
           EnketoSurvey.makeAnswerFromAnswerData(data)
         );
         $rootScope.confirmSurveyAnswer = answer;
+        if ($rootScope.confirmSurveyIntroMode) {
+            $rootScope.confirmSurveyIntroMode = false;
+            $rootScope.$broadcast('USERPROFILE_SUBMIT');
+          return;
+        }
         $state.go($rootScope.previousState, $rootScope.previousStateParams);
       }
     });
