@@ -21,7 +21,6 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
-               CommHelper,
                CalorieCal, ClientStats, CommHelper, Logger) {
 
     var datepickerObject = {
