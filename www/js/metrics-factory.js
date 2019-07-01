@@ -30,7 +30,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
         result += footprint[mode] * mtokm(userMetrics[i].values);
       }
       else if (mode == 'IN_VEHICLE') {
-        result += ((footprint[CAR] + footprint[BUS] + footprint[TRAIN]) / 3) * mtokm(userMetrics[i].values);
+        result += ((footprint['CAR'] + footprint['BUS'] + footprint['TRAIN']) / 3) * mtokm(userMetrics[i].values);
       }
       else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
