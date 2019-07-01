@@ -25,7 +25,6 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
       var mode = userMetrics[i].key;
       if (mode == 'ON_FOOT') {
         mode = 'WALKING';
-        console.debug("FootprintHelper.getFootprintFromMetrics(): converted 'ON_FOOT' to 'WALKING'");
       }
       if (mode in footprint) {
         result += footprint[mode] * mtokm(userMetrics[i].values);

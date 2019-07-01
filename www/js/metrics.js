@@ -412,13 +412,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = true;
-      // TIAGO: change for PR
       var getMetricsResult = $http.post(
-        "http://192.168.1.238:8080/result/metrics/timestamp",
+        "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
         clonedData)
-      // var getMetricsResult = $http.post(
-      //   "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
-      //   clonedData)
       return getMetricsResult;
    }
 
@@ -573,7 +569,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
-        console.debug("TIAGO: fillAggregateValues() agg_metrics_arr " + JSON.stringify(agg_metrics_arr, null, 2));
         if (first) {
             var aggDuration = agg_metrics_arr[0].slice(0, 7);
             var aggMedianSpeed = agg_metrics_arr[1].slice(0, 7);
@@ -699,8 +694,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
       if (userDistance) {
         var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
-        console.debug('TIAGO: fillFootprintCardUserVals userDistance ' + JSON.stringify(userDistance, null, 2));
-        console.debug("TIAGO: fillFootprintCardUserVals userCarbonData (distances, from getSummaryDataRaw)" + JSON.stringify(userCarbonData, null, 2));
 
         var optimalDistance = getOptimalFootprintDistance(userDistance);
         var worstDistance   = getWorstFootprintDistance(userDistance);
@@ -716,9 +709,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
         $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
         lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
-      }
-      else {
-        console.log("TIAGO: fillFootprintCardUserVals ERROR: can't fill most carbon values because userDistance is " + JSON.stringify(userDistance, null, 2));
       }
 
       if (first) {
@@ -763,10 +753,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       if (aggDistance) {
         var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
 
-        // TIAGO: please remove before PR, and turn into an issue?
-        // It can happen that the mode "ON_FOOT" has a NaN value.
-        // This may be due to the fact that the aggregated values are requested
-        // from the main e-mission server and not from our own.
+        // Issue 422:
+        // https://github.com/e-mission/e-mission-docs/issues/422
         for (var i in aggrCarbonData) {
           if (isNaN(aggrCarbonData[i].values)) {
             console.warn("WARNING fillFootprintAggVals(): value is NaN for mode " + aggrCarbonData[i].key + ", changing to 0");
@@ -841,11 +829,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 // Here, we check if the string is all upper case by
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
-                    // if (field === "WALKING" || field === "RUNNING") {
-                    //   fieldPhone = "ON_FOOT";
-                    // } else {
+                    if (field === "WALKING" || field === "RUNNING") {
+                      fieldPhone = "ON_FOOT";
+                    } else {
                       fieldPhone = field;
-                    // }
+                    }
                     if (fieldPhone in mode_bins == false) {
                         mode_bins[fieldPhone] = []
                     }
@@ -882,7 +870,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }*/
 
     var getOptimalFootprintDistance = function(metrics){
-      console.debug("TIAGO: getOptimalFootprintDistance() metrics: " + JSON.stringify(metrics, null, 2));
       var data = getDataFromMetrics(metrics);
       var distance = 0;
       var longTrip = 5000;
