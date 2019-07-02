@@ -757,6 +757,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           var tripStartPoint = filteredLocationList[0];
           var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
+          // if we get a list but our start and end are undefined
+          // let's print out the complete original list to get a clue
+          // this should help with debugging 
+          // https://github.com/e-mission/e-mission-docs/issues/417
+          // if it ever occurs again
+          if (angular.isUndefined(tripStartPoint) || angular.isUndefined(tripEndPoint)) {
+            Logger.log("BUG 417 check: locationList = "+JSON.stringify(locationList));
+            Logger.log("transitions: start = "+JSON.stringify(tripStartTransition.data)
+                + " end = "+JSON.stringify(tripEndTransition.data.ts));
+          }
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
             place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
