@@ -677,7 +677,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
        if ($scope.userDataSaved()) {
          // this is safe because userDataSaved will never be set unless there
          // is stored user data that we have loaded
-         var userDataFromStorage = $scope.storedUserData;
+         var userDataFromStorage = $scope.savedUserData;
          var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
          var gender = userDataFromStorage.gender;
          var heightUnit = userDataFromStorage.heightUnit;
