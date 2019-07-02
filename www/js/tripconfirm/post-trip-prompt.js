@@ -118,7 +118,8 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   var displayCompletedTrip = function(notification, state, data) {
     $rootScope.displayingIncident = true;
-      Logger.log("About to display completed trip from Notification");
+      Logger.log("About to display completed trip from notification "+
+        JSON.stringify(notification.data));
       $state.go("root.main.tripconfirm", notification.data);
   };
 
