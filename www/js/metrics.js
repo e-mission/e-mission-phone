@@ -767,10 +767,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data.count = getDataFromMetrics(agg_metrics.count);
-      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
-      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
-      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
+      $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);
+      $scope.data.duration = getDataFromMetrics(agg_metrics.duration, metric2valUser);
+      $scope.data.speed = getDataFromMetrics(agg_metrics.speed, metric2valUser);
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)
@@ -792,53 +792,54 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       {text: $translate.instant('metrics.freqoptions-monthly'), value: 'MONTHLY'},
       {text: $translate.instant('metrics.freqoptions-yearly'), value: 'YEARLY'}
     ];
-    var getAvgDataFromMetrics = function(metrics) {
+
+    /*
+     * metric2val is a function that takes a metric entry and a field and returns
+     * the appropriate value.
+     * for regular data (user-specific), this will return the field value
+     * for avg data (aggregate), this will return the field value/nUsers
+     */
+
+    var metric2valUser = function(metric, field) {
+        return metric[field];
+    }
+
+    var metric2valAvg = function(metric, field) {
+        return metric[field]/metric.nUsers;
+    }
+
+    var getDataFromMetrics = function(metrics, metric2val) {
         var mode_bins = {};
-        var nUsers = 0;
         metrics.forEach(function(metric) {
+            var on_foot_val = 0;
             for (var field in metric) {
                 // TODO: Consider creating a prefix such as M_ to signal
                 // modes. Is that really less fragile than caps, though?
                 // Here, we check if the string is all upper case by
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
-                    if (field === "WALKING" || field === "RUNNING") {
+                    // since we can have multiple possible ON_FOOT modes, we
+                    // add all of them up here
+                    // see https://github.com/e-mission/e-mission-docs/issues/422
+                    if (field === "WALKING" || field === "RUNNING" || field === "ON_FOOT") {
+                      on_foot_val = on_foot_val + metric2val(metric, field);
                       field = "ON_FOOT";
                     }
                     if (field in mode_bins == false) {
                         mode_bins[field] = []
                     }
-                    mode_bins[field].push([metric.ts, Math.round(metric[field] / metric.nUsers), metric.fmt_time]);
+                    // since we can have multiple on_foot entries, let's hold
+                    // off on handling them until we have considered all fields
+                    if (field != "ON_FOOT") {
+                        mode_bins[field].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
+                    }
                 }
             }
-        });
-        var rtn = [];
-        for (var mode in mode_bins) {
-          var val_arrays = rtn.push({key: mode, values: mode_bins[mode]});
-        }
-        return rtn;
-    }
-
-    var getDataFromMetrics = function(metrics) {
-        var mode_bins = {};
-        var fieldPhone = "";
-        metrics.forEach(function(metric) {
-            for (var field in metric) {
-                // TODO: Consider creating a prefix such as M_ to signal
-                // modes. Is that really less fragile than caps, though?
-                // Here, we check if the string is all upper case by
-                // converting it to upper case and seeing if it is changed
-                if (field == field.toUpperCase()) {
-                    if (field === "WALKING" || field === "RUNNING") {
-                      fieldPhone = "ON_FOOT";
-                    } else {
-                      fieldPhone = field;
-                    }
-                    if (fieldPhone in mode_bins == false) {
-                        mode_bins[fieldPhone] = []
-                    }
-                    mode_bins[fieldPhone].push([metric.ts, metric[field], metric.fmt_time]);
-                }
+            // here's where we handle the ON_FOOT
+            if ("ON_FOOT" in mode_bins == true) {
+                // we must have received one of the on_foot modes, so we can
+                // boldly insert the value
+                mode_bins["ON_FOOT"].push([metric.ts, Math.round(on_foot_val), metric.fmt_time]);
             }
         });
         var rtn = [];
@@ -870,7 +871,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }*/
 
     var getOptimalFootprintDistance = function(metrics){
-      var data = getDataFromMetrics(metrics);
+      var data = getDataFromMetrics(metrics, metric2valUser);
       var distance = 0;
       var longTrip = 5000;
       // total distance for long trips using motorized vehicles
@@ -886,7 +887,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return distance;
     }
     var getWorstFootprintDistance = function(metrics){
-      var data = getDataFromMetrics(metrics);
+      var data = getDataFromMetrics(metrics, metric2valUser);
       var distance = 0;
       for(var i = 0; i < data.length; i++) {
         for(var j = 0; j < data[i].values.length; j++){
@@ -896,7 +897,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return distance;
     }
     var getAvgSummaryDataRaw = function(metrics, metric) {
-        var data = getAvgDataFromMetrics(metrics);
+        var data = getDataFromMetrics(metrics, metric2valAvg);
         for (var i = 0; i < data.length; i++) {
           var temp = 0;
           for (var j = 0; j < data[i].values.length; j++) {
@@ -912,7 +913,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return data;
     }
     var getSummaryData = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics);
+        var data = getDataFromMetrics(metrics, metric2valUser);
         for (var i = 0; i < data.length; i++) {
           var temp = 0;
           for (var j = 0; j < data[i].values.length; j++) {
