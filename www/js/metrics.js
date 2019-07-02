@@ -13,8 +13,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
     var twoWeeksAgoCarbon = "";
-    var lastWeekCarbonInt = [];
-    var twoWeeksAgoCarbonInt = [];
+    var lastWeekCarbonInt = 0;
+    var twoWeeksAgoCarbonInt = 0;
     var twoWeeksAgoCalories = 0;
 
     var DURATION = "duration";
@@ -25,7 +25,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           $state.go("root.main.current");
         }
@@ -694,77 +694,75 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
       if (userDistance) {
         var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
+
         var optimalDistance = getOptimalFootprintDistance(userDistance);
-        var worstDistance = getWorstFootprintDistance(userDistance);
+        var worstDistance   = getWorstFootprintDistance(userDistance);
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
         var duration = moment.duration(date2.diff(date1));
         var days = duration.asDays();
-        //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
+
         $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
-        //$scope.carbonData.userCarbon = [];
-        for (var i in userCarbonData) {
-          //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-          if (userCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-            $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
-            $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
-            lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-          }
-        }
+
+        $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
+        $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
+        $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
+        lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
       }
 
       if (first) {
         if (twoWeeksAgoDistance) {
-          var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-          for (var i in userCarbonData) {
-            if (userCarbonData[i].key === "IN_VEHICLE") {
-              twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-              twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-              if(first){
-                lastWeekCarbon = twoWeeksAgoCarbon;
-              }
-              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-            }
-          }
+          var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
+          twoWeeksAgoCarbon    = 0;
+          twoWeeksAgoCarbonInt = 0;
+
+          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
+
+          twoWeeksAgoCarbon = FootprintHelper.readableFormat(twoWeeksAgoCarbonInt);
+          lastWeekCarbon    = twoWeeksAgoCarbon;
         }
       }
+      $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
 
       var change = "";
-      console.log("Running calculation with "
-                    + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
-                    + " and "
-                    + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
-      var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
-                        / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
-                        * 100 - 100;
+      console.log("Running calculation with " + lastWeekCarbonInt + " and " + twoWeeksAgoCarbonInt);
+      var calculation = (lastWeekCarbonInt/twoWeeksAgoCarbonInt) * 100 - 100;
 
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
-          if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
-            $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-increase');
-            $scope.carbonUp = true;
-            $scope.carbonDown = false;
-          } else {
-            $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-decrease');
-            $scope.carbonUp = false;
-            $scope.carbonDown = true;
-          }
-          $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+        if(lastWeekCarbonInt > twoWeeksAgoCarbonInt){
+          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-increase');
+          $scope.carbonUp = true;
+          $scope.carbonDown = false;
+        } else {
+          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-decrease');
+          $scope.carbonUp = false;
+          $scope.carbonDown = true;
+        }
+        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+      }
+      else {
+        $scope.carbonData.change = "";
+        $scope.carbonData.changeInPercentage = "0%";
       }
    };
 
    $scope.fillFootprintAggVals = function(aggDistance) {
       if (aggDistance) {
         var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
+
+        // Issue 422:
+        // https://github.com/e-mission/e-mission-docs/issues/422
         for (var i in aggrCarbonData) {
-          if (aggrCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
-            $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
+          if (isNaN(aggrCarbonData[i].values)) {
+            console.warn("WARNING fillFootprintAggVals(): value is NaN for mode " + aggrCarbonData[i].key + ", changing to 0");
+            aggrCarbonData[i].values = 0;
           }
         }
+
+        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
       }
    };
 
@@ -849,6 +847,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return rtn;
     }
+
     var getSummaryDataRaw = function(metrics, metric) {
         var data = getDataFromMetrics(metrics);
         for (var i = 0; i < data.length; i++) {
@@ -865,15 +864,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return data;
     }
+
     /*var sortNumber = function(a,b) {
       return a - b;
     }*/
+
     var getOptimalFootprintDistance = function(metrics){
       var data = getDataFromMetrics(metrics);
       var distance = 0;
       var longTrip = 5000;
+      // total distance for long trips using motorized vehicles
       for(var i = 0; i < data.length; i++) {
-        if(data[i].key == "IN_VEHICLE") {
+        if(data[i].key == "CAR" || data[i].key == "BUS" || data[i].key == "TRAIN" || data[i].key == "AIR_OR_HSR") {
           for(var j = 0; j < data[i].values.length; j++){
             if(data[i].values[j][1] >= longTrip){
               distance += data[i].values[j][1];
@@ -1064,6 +1066,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
+    "WALKING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "CAR":"ion-android-car",
     "BUS":"ion-android-bus",
@@ -1131,7 +1134,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       titleLabel: $translate.instant('metrics.pick-a-date'),
       mondayFirst: false,
       weeksList: moment.weekdaysMin(),
-      monthsList: moment.monthsShort(),     
+      monthsList: moment.monthsShort(),
       templateType: 'popup',
       from: new Date(2015, 1, 1),
       to: new Date(),
@@ -1196,5 +1199,5 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  
+
 });

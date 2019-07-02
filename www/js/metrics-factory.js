@@ -5,37 +5,68 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
 .factory('FootprintHelper', function() {
   var fh = {};
   var footprint = {
-    train: 92/1609,
-    car: 287/1609,
-    ON_FOOT: 0,
-    BICYCLING: 0
-  }
-  var readable = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
+    WALKING:      0,
+    BICYCLING:    0,
+    CAR:        267/1609,
+    BUS:        278/1609,
+    TRAIN:       92/1609,
+    AIR_OR_HSR: 217/1609
   }
   var mtokm = function(v) {
     return v / 1000;
   }
-  fh.getFootprintRaw = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return [footprint.train * mtokm(distance), footprint.car * mtokm(distance)];
-    } else {
-      return footprint[mode] * mtokm(distance);
-    }
+
+  fh.readableFormat = function(v) {
+    return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprint = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return readable(footprint.train * mtokm(distance)) + ' ~ ' + readable(footprint.car * mtokm(distance));
-    } else {
-      return readable(footprint[mode] * mtokm(distance));
+  fh.getFootprintForMetrics = function(userMetrics) {
+    var result = 0;
+    for (var i in userMetrics) {
+      var mode = userMetrics[i].key;
+      if (mode == 'ON_FOOT') {
+        mode = 'WALKING';
+      }
+      if (mode in footprint) {
+        result += footprint[mode] * mtokm(userMetrics[i].values);
+      }
+      else if (mode == 'IN_VEHICLE') {
+        result += ((footprint['CAR'] + footprint['BUS'] + footprint['TRAIN']) / 3) * mtokm(userMetrics[i].values);
+      }
+      else {
+        console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+      }
     }
+    return result;
+  }
+  fh.getLowestFootprintForDistance = function(distance) {
+    // Find the mode with the lowest carbon footprint (excluding non-motorized modes).
+    // Another option would be to pre-calculate and store this value only once.
+    var lowestFootprint = Number.MAX_VALUE;
+    for (var mode in footprint) {
+      if (mode == 'WALKING' || mode == 'BICYCLING') {
+        // these modes aren't considered when determining the lowest carbon footprint
+      }
+      else {
+        lowestFootprint = Math.min(lowestFootprint, footprint[mode]);
+      }
+    }
+    return lowestFootprint * mtokm(distance);
+  }
+  fh.getHighestFootprintForDistance = function(distance) {
+    // Find the mode with the highest carbon footprint.
+    // Another option would be to pre-calculate and store this value only once.
+    var highestFootprint = 0;
+    for (var mode in footprint) {
+      highestFootprint = Math.max(highestFootprint, footprint[mode]);
+    }
+    return highestFootprint * mtokm(distance);
   }
   return fh;
 })
 
 .factory('CalorieCal', function(KVStore){
 
-  var cc = {}; 
+  var cc = {};
   var USER_DATA_KEY = "user-data";
 
   cc.set = function(info) {
@@ -51,8 +82,12 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return this >= min && this <= max;
   };
   cc.getMet = function(mode, speed) {
+    if (mode == 'ON_FOOT') {
+      console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
+      mode = 'WALKING';
+    }
     if (!standardMETs[mode]) {
-      console.log("Illegal mode");
+      console.log("CalorieCal.getMet() Illegal mode: " + mode);
       return 0; //So the calorie sum does not break with wrong return type
     }
     for (var i in standardMETs[mode]) {
@@ -88,7 +123,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return weightInKg * durationInMin * met;
   }
   var standardMETs = {
-    "ON_FOOT": {
+    "WALKING": {
       "VERY_SLOW": {
         range: [0, 2.0],
         mets: 2.0
@@ -130,12 +165,6 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
         mets: 9.8
       }
     },
-    "IN_VEHICLE": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
     "BICYCLING": {
       "VERY_VERY_SLOW": {
         range: [0, 5.5],
@@ -164,6 +193,36 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
       "RACING": {
         range: [20, Number.MAX_VALUE],
         mets: 15.8
+      }
+    },
+    "IN_VEHICLE": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "CAR": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "BUS": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "TRAIN": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "AIR_OR_HSR": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
       }
     }
   }
