@@ -12,16 +12,15 @@ module.exports = function (context) {
 
     // Checking if git is installed, return error if not. 
     try {
-        child_process.execSync('which git');
+        child_process.execSync('which git', {'stdio': 'inherit' });
     } catch (err) {
         console.error(LOG_NAME + 'git not found, (' + err + ')');
         return;
     }
 
     if (!fs.existsSync(localesFolder)) {
-        child_process.execSync('git clone https://github.com/e-mission/e-mission-translate ' + localesFolder, { 'timeout': 10000 });
+        child_process.execSync('git clone https://github.com/e-mission/e-mission-translate ' + localesFolder, { 'timeout': 10000, 'stdio': 'inherit'});
     } else {
-        var stdout = child_process.execSync('git pull', { 'cwd': localesFolder, 'timeout': 10000 });
-        console.log(LOG_NAME + stdout);
+        child_process.execSync('git pull', { 'cwd': localesFolder, 'timeout': 10000, 'stdio': 'inherit' });
     }
 }

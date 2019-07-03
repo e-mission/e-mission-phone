@@ -28,7 +28,7 @@
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="ios">
-        <hook src="hooks/after_platform_add/ios/ios_move_locales.js" type="after_platform_add" />
+        <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
         <resource-file src="GoogleService-Info.plist" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
@@ -64,7 +64,7 @@
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
     <platform name="android">
-        <hook src="hooks/before_build/android/android_move_locales.js" type="before_build" />
+        <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
         <preference name="android-minSdkVersion" value="18" />
         <preference name="android-targetSdkVersion" value="26" />
         <resource-file src="google-services.json" target="google-services.json" />
