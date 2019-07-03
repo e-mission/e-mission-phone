@@ -32,7 +32,7 @@ module.exports = function (context) {
             var data = fs.readFileSync(confFile, 'utf8');
             url = JSON.parse(data).url;
         } else {
-            console.log(LOG_NAME + confFile + " not found, you can found it in the e-mission-phone repo.");
+            console.log(LOG_NAME + confFile + " not found, you can find a sample at bin/conf in the e-mission-phone repo.");
             return;
         }
     } 
