@@ -404,34 +404,38 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }
       };
 
+  var fmtTs = function(ts_in_secs, tz) {
+    return moment(ts_in_secs * 1000).tz(tz).format();
+  }
+
   var printUserInput = function(ui) {
-    return moment(ui.data.start_ts * 1000).format() + "("+ui.data.start_ts + ") -> "+
-           moment(ui.data.end_ts * 1000).format() + "("+ui.data.end_ts + ")"+
+    return fmtTs(ui.data.start_ts, ui.metadata.time_zone) + "("+ui.data.start_ts + ") -> "+
+           fmtTs(ui.data.end_ts, ui.metadata.time_zone) + "("+ui.data.end_ts + ")"+
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
   dh.getUserInputForTrip = function(tripgj, userInputList) {
-    // console.log("Input list = "+userInputList.map(printUserInput));
+    console.log("Input list = "+userInputList.map(printUserInput));
     var tripProp = tripgj.data.properties;
     var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
         /*
         console.log("startDelta "+userInput.data.label+
-            "= user("+moment(userInput.data.start_ts * 1000).format()+
-            ") - trip("+moment(tripProp.start_ts * 1000).format()+") = "+
+            "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
             (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
         console.log("endDelta = "+userInput.data.label+
-            "user("+moment(userInput.data.end_ts * 1000).format()+
-            ") - trip("+moment(tripProp.end_ts * 1000).format()+") = "+
+            "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)+") = "+
             (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
         */
         // logic described in
         // https://github.com/e-mission/e-mission-docs/issues/423
         if (isDraft) {
-            var logStr = "Draft trip: comparing user = "+moment(userInput.data.start_ts * 1000).format()
-                +" -> "+moment(userInput.data.end_ts * 1000).format()
-                +" trip = "+moment(tripProp.start_ts * 1000).format()
-                +" -> "+moment(tripProp.end_ts * 1000).format()
+            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
                 +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
                 +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
                 +") && "+(userInput.data.end_ts <= tripProp.end_ts);
@@ -441,8 +445,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                     || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
                 && userInput.data.end_ts <= tripProp.end_ts;
         } else {
-            var logStr = "Cleaned trip: comparing user = "+userInput.data.start_fmt_time
-                +" -> "+userInput.data.end_fmt_time
+            // we know that the trip is cleaned so we can use the fmt_time
+            // but the confirm objects are not necessarily filled out
+            var logStr = "Cleaned trip: comparing user = "
+                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
                 +" trip = "+tripProp.start_fmt_time
                 +" -> "+tripProp.end_fmt_time
                 +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
