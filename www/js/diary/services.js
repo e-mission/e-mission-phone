@@ -405,13 +405,54 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       };
 
   var printUserInput = function(ui) {
-    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
-        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+    return moment(ui.data.start_ts * 1000).format() + "("+ui.data.start_ts + ") -> "+
+           moment(ui.data.end_ts * 1000).format() + "("+ui.data.end_ts + ")"+
+           " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  dh.getUserInputForTrip = function(tripProp, userInputList) {
+  dh.getUserInputForTrip = function(tripgj, userInputList) {
+    // console.log("Input list = "+userInputList.map(printUserInput));
+    var tripProp = tripgj.data.properties;
+    var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
-        return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
+        /*
+        console.log("startDelta "+userInput.data.label+
+            "= user("+moment(userInput.data.start_ts * 1000).format()+
+            ") - trip("+moment(tripProp.start_ts * 1000).format()+") = "+
+            (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
+        console.log("endDelta = "+userInput.data.label+
+            "user("+moment(userInput.data.end_ts * 1000).format()+
+            ") - trip("+moment(tripProp.end_ts * 1000).format()+") = "+
+            (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
+        */
+        // logic described in
+        // https://github.com/e-mission/e-mission-docs/issues/423
+        if (isDraft) {
+            var logStr = "Draft trip: comparing user = "+moment(userInput.data.start_ts * 1000).format()
+                +" -> "+moment(userInput.data.end_ts * 1000).format()
+                +" trip = "+moment(tripProp.start_ts * 1000).format()
+                +" -> "+moment(tripProp.end_ts * 1000).format()
+                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+            console.log(logStr);
+            // Logger.log(logStr);
+            return (userInput.data.start_ts >= tripProp.start_ts
+                    || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                && userInput.data.end_ts <= tripProp.end_ts;
+        } else {
+            var logStr = "Cleaned trip: comparing user = "+userInput.data.start_fmt_time
+                +" -> "+userInput.data.end_fmt_time
+                +" trip = "+tripProp.start_fmt_time
+                +" -> "+tripProp.end_fmt_time
+                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
+                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
+            Logger.log(logStr);
+            return userInput.data.start_ts >= tripProp.start_ts
+                && (userInput.data.end_ts <= tripProp.end_ts ||
+                    (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
+        }
     });
     if (potentialCandidates.length === 0)  {
         Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
@@ -770,8 +811,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             properties: angular.copy(section_gj.features[0].properties)
           }
 
-          Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
-            " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
+          // Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
+          //  " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
           // customize to trip versus section properties
           trip_gj.properties.feature_type = "trip";
           trip_gj.properties.start_loc = features[0].geometry;
@@ -853,7 +894,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             var sortedTransitionList = transitionList.sort(tsEntrySort);
             /*
             sortedTransitionList.forEach(function(transition) {
-                console.log(JSON.stringify(transition));
+                console.log(moment(transition.data.ts * 1000).format()+":" + JSON.stringify(transition.data));
             });
             */
             var tripsList = transition2Trip(transitionList);

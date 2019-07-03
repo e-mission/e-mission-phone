@@ -155,7 +155,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        var userMode = DiaryHelper.getUserInputForTrip(tripgj, modeList);
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
@@ -176,7 +176,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'purpose' to the trip
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
-        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj, purposeList);
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
