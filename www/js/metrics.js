@@ -850,7 +850,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     }
 
     var getSummaryDataRaw = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics);
+        var data = getDataFromMetrics(metrics, metric2valUser);
         for (var i = 0; i < data.length; i++) {
           var temp = 0;
           for (var j = 0; j < data[i].values.length; j++) {
