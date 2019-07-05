@@ -166,20 +166,21 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         if (result == null) {
           var temp = ReferralHandler.getReferralNavigation();
           if (temp == 'goals') {
-            return 'root.main.goals';
-          } else if ($rootScope.displayingIncident == true) {
+            return {state: 'root.main.goals', params: {}};
+          } else if ($rootScope.tripConfirmParams) {
             logger.log("Showing tripconfirm from startprefs");
-            $rootScope.displayingIncident = false;
-            return 'root.main.tripconfirm';
+            var startEndParams = $rootScope.tripConfirmParams;
+            $rootScope.tripConfirmParams = angular.undefined;
+            return {state: 'root.main.tripconfirm', params: startEndParams};
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             $rootScope.redirectTo = undefined;
-            return redirState;
+            return {state: redirState, params: {}};
           } else {
-            return 'root.main.metrics';
+            return {state: 'root.main.metrics', params: {}};
           }
         } else {
-          return result;
+          return {state: result, params: {}};
         }
       });
     };
@@ -190,10 +191,10 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         // TODO: Fix this the right way when we fix the FSM
         // https://github.com/e-mission/e-mission-phone/issues/146#issuecomment-251061736
         var reload = false;
-        if (($state.$current == destState) && ($state.$current.name == 'root.main.goals')) {
+        if (($state.$current == destState.state) && ($state.$current.name == 'root.main.goals')) {
           reload = true;
         }
-        $state.go(destState).then(function() {
+        $state.go(destState.state, destState.params).then(function() {
             if (reload) {
               $rootScope.$broadcast("RELOAD_GOAL_PAGE_FOR_REFERRAL")
             }
