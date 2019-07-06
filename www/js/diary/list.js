@@ -27,7 +27,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
     Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $http) {
   console.log("controller DiaryListCtrl called");
-    var MODE_CONFIRM_KEY = "manual/mode_confirm";
+    var DESTINATION_CONFIRM_KEY = "manual/destination_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
     var NOT_A_SERVICE_ENTRY = {"text": "Not a service", "value": "not_a_service", "rating": 0}
     var OTHER_ENTRY = {"text": "Other", "value": "other_mode", "rating": 0}
@@ -731,7 +731,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.draftMode.label = mode.value;
       Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
       var tripToUpdate = $scope.modeTripgj;
-      Timeline.instantSave(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
+      Timeline.instantSave(DESTINATION_CONFIRM_KEY, $scope.draftMode).then(function () {
         // in this callback we will use the curried value of tripToUpdate
         $scope.$apply(function() {
           if (isOther) {
