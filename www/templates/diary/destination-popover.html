@@ -1,0 +1,12 @@
+<ion-popover-view>
+   <ion-header-bar>
+      <h2 class = "title">Confirm Destination</h2>
+   </ion-header-bar>
+   <ion-content>
+      	<ion-list ng-repeat="destination in destinationOptions">
+		    <ion-radio ng-click="chooseDestination()" ng-model="selected.destination.value" ng-value="destination.value">{{destination.text}}</ion-radio>
+		</ion-list>
+        <input ion-autocomplete type="text" readonly="readonly" class="ion-autocomplete" autocomplete="off" max-selected-items="1" ng-model="selected.other" items-method="queryByName(query, destinationTripgj)" placeholder="Destination" item-view-value-key="name" items-clicked-method="chooseTypedDestination(callback)" ng-model-options="{debounce:1000}" manage-externally="true" ng-hide="true"/>
+   </ion-content>
+</ion-popover-view>
+destination

@@ -13,7 +13,7 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
                                         UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
-  var MODE_CONFIRM_KEY = "manual/mode_confirm";
+  var DESINTATION_CONFIRM_KEY = "manual/destination_confirm";
   var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
   $scope.mapCtrl = {};
@@ -32,13 +32,13 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
     // and then when the user clicks on a notification, they will re-enter this
     // screen.
     Logger.log("entered post-trip map screen, prompting for values");
-    $scope.draftMode = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
+    $scope.draftDestination = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
     $scope.draftPurpose = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
   });
 
   $scope.$on('$ionicView.leave', function() {
     Logger.log("entered post-trip map screen, prompting for values");
-    $scope.draftMode = angular.undefined;
+    $scope.draftDestination = angular.undefined;
     $scope.draftPurpose = angular.undefined;
   });
 
@@ -169,16 +169,16 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
       }
     },
     steps: [{
-      target: '#mode_list',
+      target: '#destination_list',
       content: 'Scroll for more options'
     }]
   };
 
   var startWalkthrough = function () {
     nzTour.start(tour).then(function(result) {
-      Logger.log("post trip mode walkthrough start completed, no error");
+      Logger.log("post trip destination walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.displayError("post trip mode walkthrough errored", err);
+      Logger.displayError("post trip destination walkthrough errored", err);
     });
   };
 
@@ -209,7 +209,7 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
   });
   /* END: ng-walkthrough code */
 
-   $scope.selected = {mode: {value: ''},purpose: {value: ''},other: {text: ''}, other_to_store:''};
+   $scope.selected = {destination: {value: ''},purpose: {value: ''},other: {text: ''}, other_to_store:''};
 
    var checkOtherOptionOnTap = function($scope, choice) {
       return function(e) {
@@ -229,26 +229,26 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
     }
   };
 
-  $scope.chooseMode = function (){
-    if($scope.selected.mode.value == "other_mode"){
-      ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
+  $scope.chooseDestination = function (){
+    if($scope.selected.destination.value == "other_destination"){
+      ConfirmHelper.checkOtherOption($scope.selected.destination, checkOtherOptionOnTap, $scope);
     }
   };
 
   $scope.secondSlide = false;
 
   $scope.nextSlide = function() {
-    if($scope.selected.mode.value == "other_mode" && $scope.selected.other_to_store.length > 0) {
+    if($scope.selected.destination.value == "other_destination" && $scope.selected.other_to_store.length > 0) {
       $scope.secondSlide = true;
       console.log($scope.selected.other_to_store);
       // store other_to_store here
-      $scope.storeMode($scope.selected.other_to_store, true /* isOther */);
+      $scope.storeDestination($scope.selected.other_to_store, true /* isOther */);
       $ionicSlideBoxDelegate.next();
-    } else if ($scope.selected.mode.value != "other_mode" && $scope.selected.mode.value.length > 0) {
+    } else if ($scope.selected.destination.value != "other_destination" && $scope.selected.destination.value.length > 0) {
       $scope.secondSlide = true;
-      console.log($scope.selected.mode);
-      // This storeMode expects a string, not an object with a value string
-      $scope.storeMode($scope.selected.mode.value, false /* isOther */);
+      console.log($scope.selected.destination);
+      // This storeDestination expects a string, not an object with a value string
+      $scope.storeDestination($scope.selected.destination.value, false /* isOther */);
       $ionicSlideBoxDelegate.next();
     }
   };
@@ -271,21 +271,21 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
    $ionicSlideBoxDelegate.enableSlide(false);
   };
 
-  ConfirmHelper.getModeOptions().then(function(modeOptions) {
-      $scope.modeOptions = modeOptions;
+  ConfirmHelper.getDestinationOptions().then(function(destinationOptions) {
+      $scope.destinationOptions = destinationOptions;
   });
 
   ConfirmHelper.getPurposeOptions().then(function(purposeOptions) {
       $scope.purposeOptions = purposeOptions;
   });
 
-   $scope.storeMode = function(mode_val, isOther) {
+   $scope.storeDestination = function(destination_val, isOther) {
       if (isOther) {
-        mode_val = ConfirmHelper.otherTextToValue(mode_val);
+        destination_val = ConfirmHelper.otherTextToValue(destination_val);
       }
-      $scope.draftMode.label = mode_val;
-      Logger.log("in storeMode, after setting mode_val = "+mode_val+", draftMode = "+JSON.stringify($scope.draftMode));
-      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode);
+      $scope.draftDestination.label = destination_val;
+      Logger.log("in storeDestination, after setting destination_val = "+destination_val+", draftDestination = "+JSON.stringify($scope.draftDestination));
+      $window.cordova.plugins.BEMUserCache.putMessage(DESTINATION_CONFIRM_KEY, $scope.draftDestination);
    }
 
    $scope.storePurpose = function(purpose_val, isOther) {

@@ -1,14 +1,14 @@
 angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, Logger) {
     var ch = {};
-    ch.otherModes = [];
+    ch.otherDestinations = [];
     ch.otherPurposes = [];
 
     var fillInOptions = function(confirmConfig) {
         if(confirmConfig.data.length == 0) {
             throw "blank string instead of missing file on dynamically served app";
         }
-        ch.modeOptions = confirmConfig.data.modeOptions;
+        ch.destinationOptions = confirmConfig.data.destinationOptions;
         ch.purposeOptions = confirmConfig.data.purposeOptions;
     }
 
@@ -32,12 +32,12 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
      * instead of an in-memory data structure so that we can return a promise
      * and not have to worry about when the data is available.
      */
-    ch.getModeOptions = function() {
-        if (!angular.isDefined(ch.modeOptions)) {
+    ch.getDestinationOptions = function() {
+        if (!angular.isDefined(ch.destinationOptions)) {
             return loadAndPopulateOptions("json/trip_confirm_options.json")
-                .then(function() { return ch.modeOptions; });
+                .then(function() { return ch.destinationOptions; });
         } else {
-            return Promise.resolve(ch.modeOptions);
+            return Promise.resolve(ch.destinationOptions);
         }
     }
 
@@ -51,15 +51,15 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
     }
 
     ch.checkOtherOption = function(choice, onTapFn, $scope) {
-        if(choice.value == 'other_mode' || choice.value == 'other_purpose') {
-          var text = choice.value == 'other_mode' ? "mode" : "purpose";
+        if(choice.value == 'other_destination' || choice.value == 'other_purpose') {
+          var text = choice.value == 'other_destination' ? "destination" : "purpose";
           $ionicPopup.show({title: "Please fill in the " + text + " not listed.",
             scope: $scope,
             template: '<input type = "text" ng-model = "selected.other.text">',
             buttons: [
                 { text: 'Cancel',
                   onTap: function(e) {
-                    $scope.selected.mode = '';
+                    $scope.selected.destination = '';
                     $scope.selected.purpose = '';
                   }
                 }, {

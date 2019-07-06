@@ -58,7 +58,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $scope.$broadcast('invalidateSize');
   };
   $scope.getIndividualSuggestion = function() {
-    Logger.log("REACHED HERE: THING IS:" + $scope.tripgj.usermode.value)
+    Logger.log("REACHED HERE: THING IS:" + $scope.tripgj.userdestination.value)
     $ionicLoading.show({
         template: 'Loading...'
         });
@@ -213,7 +213,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     checkDetailTutorialDone();
   });
   $scope.$on('$ionicView.loaded', function() {
-    Logger.log("REACHED HERE: THING IS:" + $scope.tripgj.usermode.value)
+    Logger.log("REACHED HERE: THING IS:" + $scope.tripgj.userdestination.value)
     $ionicLoading.show({
         template: 'Loading...'
         });

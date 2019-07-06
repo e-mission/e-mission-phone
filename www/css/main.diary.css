@@ -114,18 +114,18 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
-.btn-mode-confirm-green,
-.btn-mode-confirm-green:hover,
-.btn-mode-confirm-green:active,
+.btn-destination-confirm-green,
+.btn-destination-confirm-green:hover,
+.btn-destination-confirm-green:active,
 .btn-purpose-confirm-green,
 .btn-purpose-confirm-green:hover,
 .btn-purpose-confirm-green:active {
   background-color: #30A64A;
   color: white;
 }
-.btn-mode-confirm-white,
-.btn-mode-confirm-white:hover,
-.btn-mode-confirm-white:active,
+.btn-destination-confirm-white,
+.btn-destination-confirm-white:hover,
+.btn-destination-confirm-white:active,
 .btn-purpose-confirm-white,
 .btn-purpose-confirm-white:hover,
 .btn-purpose-confirm-white:active {
@@ -133,7 +133,7 @@ a.item-content {
   color: #333;
   font-size: 0.8em;
 }
-.btn-mode-confirm,
+.btn-destination-confirm,
 .btn-purpose-confirm {
   line-height: 30px;
   min-height: 30px;
@@ -141,7 +141,7 @@ a.item-content {
   width: 230px;
   padding: 0;
 }
-.mode-confirm-container,
+.destination-confirm-container,
 .purpose-confirm-container {
   margin-top: 5px;
 }

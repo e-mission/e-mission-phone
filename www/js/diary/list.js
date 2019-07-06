@@ -30,7 +30,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var DESTINATION_CONFIRM_KEY = "manual/destination_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
     var NOT_A_SERVICE_ENTRY = {"text": "Not a service", "value": "not_a_service", "rating": 0}
-    var OTHER_ENTRY = {"text": "Other", "value": "other_mode", "rating": 0}
+    var OTHER_ENTRY = {"text": "Other", "value": "other_destination", "rating": 0}
 
   // Add option
 
@@ -149,30 +149,30 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
-    $scope.addModeEntry = function(tripgj, userModeEntry) {
-      tripgj.modeOptions.push(userModeEntry);
-      tripgj.value2entryMode[userModeEntry.value] = userModeEntry;
-      tripgj.text2entryMode[userModeEntry.text] = userModeEntry;
+    $scope.addDestinationEntry = function(tripgj, userDestinationEntry) {
+      tripgj.destinationOptions.push(userDestinationEntry);
+      tripgj.value2entryDestination[userDestinationEntry.value] = userDestinationEntry;
+      tripgj.text2entryDestination[userDestinationEntry.text] = userDestinationEntry;
     };
 
     /**
-     * Embed 'mode' to the trip
+     * Embed 'destination' to the trip
      */
-    $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
-        tripgj.modeOptions = tripgj.data.destination_candidates.map(function(c) {
+    $scope.populateDestinationFromTimeline = function (tripgj, destinationList) {
+        var userDestination = DiaryHelper.getUserInputForTrip(tripgj.data.properties, destinationList);
+        tripgj.destinationOptions = tripgj.data.destination_candidates.map(function(c) {
             return {"text": c.name, "value": c.alias, "rating": c.rating}
         });
-        tripgj.modeOptions.push(OTHER_ENTRY);
-        tripgj.modeOptions.push(NOT_A_SERVICE_ENTRY);
-        var modeMaps = arrayToMap(tripgj.modeOptions);
-        tripgj.text2entryMode = modeMaps[0];
-        tripgj.value2entryMode = modeMaps[1];
-        if (angular.isDefined(userMode)) {
-            // userMode is a mode object with data + metadata
+        tripgj.destinationOptions.push(OTHER_ENTRY);
+        tripgj.destinationOptions.push(NOT_A_SERVICE_ENTRY);
+        var destinationMaps = arrayToMap(tripgj.destinationOptions);
+        tripgj.text2entryDestination = destinationMaps[0];
+        tripgj.value2entryDestination = destinationMaps[1];
+        if (angular.isDefined(userDestination)) {
+            // userDestination is a destination object with data + metadata
             // the label is the "value" from the options
-            var userModeEntry = tripgj.value2entryMode[userMode.data.label];
-            if (!angular.isDefined(userModeEntry)) {
+            var userDestinationEntry = tripgj.value2entryDestination[userDestination.data.label];
+            if (!angular.isDefined(userDestinationEntry)) {
              /* the selected entry is not one of the candidates
               * but it is a valid service
               * let's look up the bid manually
@@ -180,18 +180,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               * but it will happen once per timeline load, and only
               * if the user manually selected a destination (~ 15% of the time)
               */
-              $scope.getOtherEntry(userMode.data.label).then(function(text2val) {
-                userModeEntry = text2val;
-                $scope.addModeEntry(tripgj, text2val);
-                tripgj.usermode = userModeEntry;
+              $scope.getOtherEntry(userDestination.data.label).then(function(text2val) {
+                userDestinationEntry = text2val;
+                $scope.addDestinationEntry(tripgj, text2val);
+                tripgj.userdestination = userDestinationEntry;
               });
             } else {
-                console.log("Mapped label "+userMode.data.label+" to entry "+JSON.stringify(userModeEntry));
-                tripgj.usermode = userModeEntry;
+                console.log("Mapped label "+userDestination.data.label+" to entry "+JSON.stringify(userDestinationEntry));
+                tripgj.userdestination = userDestinationEntry;
             }
         }
-        Logger.log("Set mode" + JSON.stringify(userModeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
-        $scope.modeTripgj = angular.undefined;
+        Logger.log("Set destination" + JSON.stringify(userDestinationEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
+        $scope.destinationTripgj = angular.undefined;
     }
 
     /**
@@ -270,7 +270,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           Timeline.setTripWrappers(currDayTripWrappers);
 
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
-            $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
+            $scope.populateDestinationFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.destinations);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
@@ -294,7 +294,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
-    $scope.setColor = function(mode) {
+    $scope.setColor = function(destination) {
       var colors = {
         "icon ion-android-bicycle": 'green',
     "icon ion-android-walk":'brown',
@@ -305,7 +305,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         "icon ion-plane": "red"
       };
       return {
-        color: colors[mode]
+        color: colors[destination]
       };
     }
 
@@ -388,7 +388,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.allModes = DiaryHelper.allModes;
+    $scope.allDestinations = DiaryHelper.allDestinations;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
     $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
@@ -491,8 +491,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.toDetail = function (param) {
-      var userMode = param.usermode;
-      if (angular.isDefined(userMode)) {
+      var userDestination = param.userdestination;
+      if (angular.isDefined(userDestination)) {
         $state.go('root.main.diary-detail', {
           tripId: param.data.id //tripgj.data.id
         });
@@ -501,7 +501,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }
     };
 
-    $scope.showModes = DiaryHelper.showModes;
+    $scope.showDestinations = DiaryHelper.showDestinations;
 
     $scope.readAndFormatCandidates = function(tripgj) {
         var RADIUS = 250; // meters
@@ -534,46 +534,46 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         });
     };
 
-    $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+    $ionicPopover.fromTemplateUrl('templates/diary/destination-popover.html', {
       scope: $scope
     }).then(function (popover) {
-      $scope.modePopover = popover;
+      $scope.destinationPopover = popover;
     });
 
-    $scope.openModePopover = function ($event, tripgj) {
-      var userMode = tripgj.usermode;
-      if (angular.isDefined(userMode)) {
-        $scope.selected.mode.value = userMode.value;
+    $scope.openDestinationPopover = function ($event, tripgj) {
+      var userDestination = tripgj.userdestination;
+      if (angular.isDefined(userDestination)) {
+        $scope.selected.destination.value = userDestination.value;
       } else {
-        $scope.selected.mode.value = '';
+        $scope.selected.destination.value = '';
       }
-      $scope.draftMode = {
+      $scope.draftDest = {
         "start_ts": tripgj.data.properties.start_ts,
         "end_ts": tripgj.data.properties.end_ts
       };
-      $scope.modeTripgj = tripgj;
-      $scope.modeOptions = tripgj.modeOptions;
-      $scope.value2entryMode = tripgj.value2entryMode;
-      Logger.log("in openModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
+      $scope.destinationTripgj = tripgj;
+      $scope.destinationOptions = tripgj.destinationOptions;
+      $scope.value2entryDestination = tripgj.value2entryDestination;
+      Logger.log("in openDestinationPopover, setting draftDest = " + JSON.stringify($scope.draftDest));
+      $ionicPopover.fromTemplateUrl('templates/diary/destination-popover.html', {
           scope: $scope
       }).then(function (popover) {
-        $scope.modePopover = popover;
-        $scope.modePopover.show($event);
+        $scope.destinationPopover = popover;
+        $scope.destinationPopover.show($event);
       });
     };
 
-    var closeModePopover = function ($event, isOther) {
-      $scope.selected.mode = {
+    var closeDestinationPopover = function ($event, isOther) {
+      $scope.selected.destination = {
         value: ''
       };
       if (isOther == false) {
-        $scope.draftMode = angular.undefined;
-        $scope.modeOptions = angular.undefined;
-        $scope.value2entryMode = angular.undefined;
+        $scope.draftDest = angular.undefined;
+        $scope.destinationOptions = angular.undefined;
+        $scope.value2entryDestination = angular.undefined;
       }
-      Logger.log("in closeModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.modePopover.hide($event);
+      Logger.log("in closeDestinationPopover, setting draftDest = " + JSON.stringify($scope.draftDest));
+      $scope.destinationPopover.hide($event);
     };
 
     $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
@@ -615,7 +615,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * the value is displayed on popover selected option
      */
     $scope.selected = {
-      mode: {
+      destination: {
         value: ''
       },
       other: {
@@ -637,8 +637,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             e.preventDefault();
           } else {
             Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-            if (choice.value == 'other_mode') {
-              $scope.storeMode($scope.selected.other, true /* isOther */);
+            if (choice.value == 'other_destination') {
+              $scope.storeDestination($scope.selected.other, true /* isOther */);
               $scope.selected.other = '';
             } else if (choice.value == 'other_purpose') {
               $scope.storePurpose($scope.selected.other, true /* isOther */);
@@ -660,16 +660,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       closePurposePopover();
     };
 
-    $scope.chooseMode = function () {
+    $scope.chooseDestination = function () {
       var isOther = false
-      if ($scope.selected.mode.value != "other_mode") {
-        $scope.storeMode($scope.selected.mode, isOther);
+      if ($scope.selected.destination.value != "other_destination") {
+        $scope.storeDestination($scope.selected.destination, isOther);
       } else {
         isOther = true
         $scope.launchAutocompletePopup();
-        // ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
+        // ConfirmHelper.checkOtherOption($scope.selected.destination, checkOtherOptionOnTap, $scope);
       }
-      closeModePopover();
+      closeDestinationPopover();
     };
 
     $scope.launchAutocompletePopup = function() {
@@ -678,21 +678,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         angular.element(ionAutocompleteElement).controller('ionAutocomplete').showModal();
     }
 
-    $scope.chooseTypedMode = function (callback) {
+    $scope.chooseTypedDestination = function (callback) {
        // We used to use a $scope variable to represent the callback, but that
        // seems to be updated in a delayed fashion - e.g. if I select Thaiphoon,
        // then the scope variable is set to "". but if I open the popup again
        // and then select "Kaplan's Test Prep" then the $scope variable is set
        // to "Thaiphoon". See video in associated PR.
        // so we just use the selected value instead
-       console.log("choose typed mode with id "+callback.item.id
-        +" for trip "+$scope.modeTripgj);
+       console.log("choose typed destination with id "+callback.item.id
+        +" for trip "+$scope.destinationTripgj);
        // Note that on typing, autocomplete returns an id and not the alias.
        // however, fortunately, the API call to lookup the business works with
        // both id and alias
        return $scope.getOtherEntry(callback.item.id).then(function(text2val) {
          // text2val is now text: name, value: alias
-         $scope.storeMode(text2val, true); // isOther = true
+         $scope.storeDestination(text2val, true); // isOther = true
        });
     };
 
@@ -713,11 +713,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.$on('$ionicView.loaded', function() {
-        ConfirmHelper.getModeOptions().then(function(modeOptions) {
-            $scope.modeOptions = modeOptions;
-            var modeMaps = arrayToMap($scope.modeOptions);
-            $scope.text2entryMode = modeMaps[0];
-            $scope.value2entryMode = modeMaps[1];
+        ConfirmHelper.getDestinationOptions().then(function(destinationOptions) {
+            $scope.destinationOptions = destinationOptions;
+            var destinationMaps = arrayToMap($scope.destinationOptions);
+            $scope.text2entryDestination = destinationMaps[0];
+            $scope.value2entryDestination = destinationMaps[1];
         });
         ConfirmHelper.getPurposeOptions().then(function(purposeOptions) {
             $scope.purposeOptions = purposeOptions;
@@ -727,28 +727,28 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         });
     });
 
-    $scope.storeMode = function (mode, isOther) {
-      $scope.draftMode.label = mode.value;
-      Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
-      var tripToUpdate = $scope.modeTripgj;
-      Timeline.instantSave(DESTINATION_CONFIRM_KEY, $scope.draftMode).then(function () {
+    $scope.storeDestination = function (destination, isOther) {
+      $scope.draftDest.label = destination.value;
+      Logger.log("in storeDestination, after setting destination.value = " + destination.value + ", draftDest = " + JSON.stringify($scope.draftDest));
+      var tripToUpdate = $scope.destinationTripgj;
+      Timeline.instantSave(DESTINATION_CONFIRM_KEY, $scope.draftDest).then(function () {
         // in this callback we will use the curried value of tripToUpdate
         $scope.$apply(function() {
           if (isOther) {
-            $scope.addModeEntry(tripToUpdate, mode);
-            tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
+            $scope.addDestinationEntry(tripToUpdate, destination);
+            tripToUpdate.userdestination = tripToUpdate.value2entryDestination[destination.value];
           } else {
             Logger.log("picked shop here !!!")
-            tripToUpdate.usermode = tripToUpdate.value2entryMode[mode.value];
+            tripToUpdate.userdestination = tripToUpdate.value2entryDestination[destination.value];
           }
         });
       }).catch(function(error) {
-          Logger.displayError("Error while saving mode information", error);
+          Logger.displayError("Error while saving destination information", error);
       });
       if (isOther == true) {
-        $scope.draftMode = angular.undefined;
-        $scope.modeOptions = angular.undefined;
-        $scope.value2entryMode = angular.undefined;
+        $scope.draftDest = angular.undefined;
+        $scope.destinationOptions = angular.undefined;
+        $scope.value2entryDestination = angular.undefined;
       }
     }
 

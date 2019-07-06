@@ -940,11 +940,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }).then(function(combinedTripList) {
           var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
           return Promise.all([
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
+            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/destination_confirm', tq),
             UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
           ]).then(function(results) {
             timeline.data.unifiedConfirmsResults = {
-              modes: results[0],
+              destinations: results[0],
               purposes: results[1],
             };
             return combinedTripList;
