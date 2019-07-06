@@ -697,7 +697,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     /*
-     * Convert the array of {text, value} objects to a {value: text} map so that
+     * Convert the array of {text, value} objects to a {value: text} map so that 
      * we can look up quickly without iterating over the list for each trip
      */
 
@@ -782,7 +782,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -794,7 +794,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function
+    // Changing in_trip = bool value; in checkTripState function 
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
