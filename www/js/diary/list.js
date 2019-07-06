@@ -697,7 +697,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     /*
-     * Convert the array of {text, value} objects to a {value: text} map so that
+     * Convert the array of {text, value} objects to a {value: text} map so that 
      * we can look up quickly without iterating over the list for each trip
      */
 
