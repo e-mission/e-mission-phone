@@ -46,8 +46,8 @@
 /* ----------- iPhone 5 and 5S ----------- */
 
 /* Portrait and Landscape */
-@media only screen
-  and (min-device-width: 320px)
+@media only screen 
+  and (min-device-width: 320px) 
   and (max-device-width: 568px)
   and (-webkit-min-device-pixel-ratio: 2) {
     .angular-leaflet-map { height: 150px; width: 245px; }
