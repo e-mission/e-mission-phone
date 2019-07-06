@@ -66,10 +66,10 @@
 /* ----------- iPhone 6+ ----------- */
 
 /* Portrait and Landscape */
-@media only screen
-  and (min-device-width: 414px)
-  and (max-device-width: 736px)
-  and (-webkit-min-device-pixel-ratio: 3) {
+@media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3) { 
     .angular-leaflet-map { height: 150px; width: 330px; }
 }
 
