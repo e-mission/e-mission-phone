@@ -8,9 +8,14 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
                                         CommHelper, PostTripManualMarker) {
+
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
+  $http.get('json/yelpfusion.json').then(function(result) {
+      $scope.yelp = result.data;
+    }
+  );
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
     defaults : {
@@ -47,15 +52,13 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.mode = "Cannot Retrieve Mode";
   $scope.bid = "";
   $scope.stars = 4.5;
+  $scope.loadedReview = false;
   $scope.rating = "";
-  $http.get('json/yelpfusion.json').then(function(result) {
-        $scope.yelp = result.data;
-      }
-  )
   $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
   };
   $scope.getIndividualSuggestion = function() {
+    Logger.log("REACHED HERE: THING IS:" + $scope.tripgj.userdestination.value)
     $ionicLoading.show({
         template: 'Loading...'
         });
@@ -74,6 +77,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     });
   };
   $scope.clickReview = function() {
+    $scope.loadedReview = true;
     $ionicLoading.show({
       template: 'Loading Reviews...'
       });
@@ -85,7 +89,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       "headers": $scope.yelp.headers
     }).then(function(res) {
       $scope.revs = res.data.reviews;
-      $scope.rating = "img/small/small_"+$scope.stars+".png";
+      $ionicLoading.hide();
     }).catch(function(err) {
       Logger.displayError("Error while getting individual suggestion", err);
       $ionicLoading.hide();
@@ -207,6 +211,25 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     if(ev.targetScope !== $scope)
       return;
     checkDetailTutorialDone();
+  });
+  $scope.$on('$ionicView.loaded', function() {
+    Logger.log("REACHED HERE: THING IS:" + $scope.tripgj.userdestination.value)
+    $ionicLoading.show({
+        template: 'Loading...'
+        });
+    CommHelper.getSingleTripSuggestion($stateParams.tripId).then(function(result) {
+      console.log(result);
+      $ionicLoading.hide();
+      $scope.message = result.message;
+      $scope.question = result.question;
+      $scope.loc = result.suggested_loc;
+      $scope.mode = "Also try " + result.method + " instead.";
+      $scope.bid = result.businessid;
+      $scope.stars = result.rating;
+    }).catch(function(err) {
+      Logger.displayError("Error while getting individual suggestion", err);
+      $ionicLoading.hide();
+    });
   });
   /* END: ng-walkthrough code */
 })

@@ -10,8 +10,9 @@
             <div class="col-30">
                 <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{tripgj.display_start_time}}</div>
                 <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ tripgj.common.earlierOrLater == ''? 'none':'block';  }}"><img src="{{ tripgj.common.earlierOrLater[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{tripgj.common.displayEarlierLater}}</div>
-                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{tripgj.display_end_time}}
-                </div>
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{tripgj.display_end_time}}</div>
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">Destination</div>
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">Rating</div>
             </div>
 
             <div class="col-70">
@@ -25,6 +26,11 @@
                 <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
             {{tripgj.end_place.properties.display_name.split(',')[0]}}
                 </div>
+                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
+                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+            {{tripgj.userdestination.text}}
+                </div>
+                <img src="img/small/small_{{tripgj.userdestination.rating}}.png" width="75" />
             </div>
         </div>
         <div style="height: 10px;"></div>
@@ -57,35 +63,26 @@
           -->
 
         <div id="chart"><svg></svg></div>
-        <div style="" class="button-bar">
-            <button class="button button-stable button-block icon ion-refresh"
-                ng-click="refreshMap()">Refresh</button>
-        </div>
-        <div style="" class="button-bar">
-          <button class="button button-stable button-block"
-              ng-click="getIndividualSuggestion()">Get Suggestion</button>
-        </div>
-        <div style="" class="button-bar">
-          <button class="button button-stable button-block"
-              ng-click="clickReview()">Get Reviews</button>
-        </div>
-        <div class = "grid_layout">
-          <div class = "grid_item" id = "suggestion_title"> Suggestion </div>
-          <div class = "grid_item" id = "mode_title"> Mode </div>
-          <div class = "grid_item">
-            {{message}}<br />
-            {{question}}<br />
-            {{loc}}
-          </div>
-          <div class = "grid_item"> {{mode}} </div>
-        </div>
+        <div align="left">
+           <h4>Suggestion<br /></h4>
+           <img src="img/small/small_{{stars}}.png" width="75" /><br />
+           {{message}}<br />
+           {{loc}}<br />
+           {{mode}}<br />
+       </div>
         <div align="left">
            <h4>Reviews<br /></h4>
-           <img src={{rating}} width="75" /><br />
-           <li ng-repeat='r in revs'>
-           {{r.text}}
-           <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
-         </li>
+            <div ng-if="!loadedReview" class="destination-confirm-container">
+                <button ng-click ="clickReview()" class="button btn-destination-confirm btn-destination-confirm-white">
+                    Load Reviews
+                </button>
+            </div>
+            <div  ng-if="loadedReview" class="destination-confirm-container">
+                <li ng-repeat='r in revs'>
+                {{r.text}}
+                <img src="img/small/small_{{r.rating}}.png" width="50" /> - {{r.user.name}}
+                </li>
+            </div>
        </div>
     </ion-content>
 </ion-view>

@@ -20,19 +20,19 @@
             <div ng-if="secondSlide" class="col-50" style="background-color: #01D0A7;margin: 2px;border-radius: 10%;"></div>
         </div>
          <ion-slide-box show-pager="false" ng-init="disableSwipe()" style="background: transparent !important;">
-            <ion-slide id="modes">
+            <ion-slide id="destinations">
                     <div style="padding: 5px; font-size: 1.25em;opacity: 0.7;">
-                    How did you get here?
+                    Where did you go?
                     </div>
                     <div style="height: 100%; padding-top: 10px;" >
-                        <ion-scroll style="height: 40%;" id=mode_list>
-                            <ion-list ng-repeat="mode in modeOptions">
-                                <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value" style="color: #585858 !important ;">{{mode.text}}</ion-radio>
+                        <ion-scroll style="height: 40%;" id=destination_list>
+                            <ion-list ng-repeat="destination in destinationOptions">
+                                <ion-radio ng-click="chooseDestination()" ng-model="selected.destination.value" ng-value="destination.value" style="color: #585858 !important ;">{{destination.text}}</ion-radio>
                             </ion-list>
                         </ion-scroll>
                     </div>
             </ion-slide>
-            <ion-slide id="modes">
+            <ion-slide id="destinations">
                     <div style="padding: 5px;font-size: 1.25em;opacity: 0.7;">
                     Why did you come here?
                     </div>
