@@ -444,7 +444,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     US: {
       regionName: "United States",
       footprintData: {
-        ON_FOOT:      0,
+        WALKING:      0,
         BICYCLING:    0,
         CAR:        267/1609,
         BUS:        278/1609,
@@ -455,7 +455,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     EU: {                   // Plain average of values for the countries below (using HBEFA for car and bus, Tremod for others)
       regionName: "European Union",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.14515,
         BUS:         0.04751,
@@ -466,7 +466,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     DE: {
       regionName: "Germany",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.139,   // Tremod (passenger car)
         BUS:         0.0535,  // Tremod (average city/coach)
@@ -477,7 +477,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     FR: {
       regionName: "France",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
@@ -488,7 +488,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     AT: {
       regionName: "Austria",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
@@ -499,7 +499,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     SE: {
       regionName: "Sweden",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
@@ -510,7 +510,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     NO: {
       regionName: "Norway",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
@@ -521,7 +521,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     CH: {
       regionName: "Switzerland",
       footprintData: {
-        ON_FOOT:     0,
+        WALKING:     0,
         BICYCLING:   0,
         CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)

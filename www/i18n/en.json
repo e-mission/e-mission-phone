@@ -5,7 +5,7 @@
 
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
-    
+
     "post-trip-prompt":{
         "notification-option-mute": "Mute",
         "notification-option-snooze": "Snooze",
@@ -48,7 +48,7 @@
 
     "trip-start-hours": "Start hours",
     "trip-start-duration": "Duration",
-    
+
     "control":{
         "profile": "Profile",
         "tracking": "Tracking",
@@ -75,7 +75,7 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify"
     },
-    
+
     "general-settings":{
         "choose-date" : "Choose date to download data",
         "nuke-ui-state-only" : "UI state only",
@@ -155,7 +155,9 @@
     "user-height": "Height",
     "user-weight": "Weight",
     "user-age": "Age",
-    
+
+    "carbon-dataset": "Carbon Dataset",
+
     "main-metrics":{
         "dashboard": "Dashboard",
         "summary": "Summary",
@@ -180,7 +182,7 @@
     },
 
     "main-diary" : "Diary",
-    
+
     "main-heatmap":{
         "title": "Heatmap",
         "counts" : "Counts",
@@ -199,7 +201,7 @@
         "tour-mode": "Click here to filter your results by mode of transportation. The default is to show all modes.",
         "tour-get": "Click here to generate the heatmap."
     },
-    
+
     "details":{
         "speed": "Speed",
         "time": "Temps",
@@ -215,7 +217,7 @@
     "list-tour-datepicker-button" : "Use this to select the day you want to see.",
     "list-tour-diary-entry" : "Click on the map to see more details about each trip.",
     "list-tour-map-fix-button" : "Use this to fix the map tiles if they have not loaded properly.",
-    
+
     "service":{
         "reading-server": "Reading from server...",
         "reading-cache": "Reading from cache...",
@@ -228,9 +230,9 @@
     "recent":{
         "email-account-not-configured": "Email account is not configured, cannot send email",
         "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
-        "going-to-email": "Going to email database from {{parentDir}}/userCacheDB" 
+        "going-to-email": "Going to email database from {{parentDir}}/userCacheDB"
     },
-   
+
     "consent":{
         "button-accept": "I accept",
         "button-decline": "I refuse"

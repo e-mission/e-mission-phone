@@ -52,7 +52,7 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    $scope.carbonDatasetString = "Carbon Dataset: " + CarbonDatasetHelper.getCurrentCarbonDatasetName();
+    $scope.carbonDatasetString = $translate.instant('carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetName();
 
     $scope.emailLog = ControlHelper.emailLog;
     $scope.userData = []

@@ -5,9 +5,6 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
 .factory('FootprintHelper', function(CarbonDatasetHelper) {
   var fh = {};
 
-  var readable = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
-  }
   var mtokm = function(v) {
     return v / 1000;
   }
@@ -38,7 +35,7 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
   }
   fh.getLowestFootprintForDistance = function(distance) {
     var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
-    var lowestFootprint = 9999;
+    var lowestFootprint = Number.MAX_SAFE_INTEGER;
     for (var mode in footprint) {
       if (mode == 'WALKING' || mode == 'BICYCLING') {
         // these modes aren't considered when determining the lowest carbon footprint
