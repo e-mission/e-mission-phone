@@ -754,6 +754,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
           var filteredLocationList = sortedLocationList.filter(retainInRange);
 
+          // Fix for https://github.com/e-mission/e-mission-docs/issues/417
+          if (filteredLocationList.length == 0) {
+            return undefined;
+          }
+
           var tripStartPoint = filteredLocationList[0];
           var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
