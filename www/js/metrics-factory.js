@@ -13,7 +13,6 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
     return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
   fh.getFootprintForMetrics = function(userMetrics) {
-    console.debug("FootprintHelper.getFootprintFromMetrics() current dataset is " + CarbonDatasetHelper.getCurrentCarbonDatasetName());
     var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
     var result = 0;
     for (var i in userMetrics) {

@@ -52,7 +52,7 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    $scope.carbonDatasetString = $translate.instant('carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetName();
+    $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
     $scope.emailLog = ControlHelper.emailLog;
     $scope.userData = []
@@ -435,12 +435,12 @@ angular.module('emission.main.control',['emission.services',
     $scope.changeCarbonDataset = function() {
         $ionicActionSheet.show({
           buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
-          titleText: "Select a dataset for carbon footprint calculations",
-          cancelText: "Cancel",
+          titleText: $translate.instant('general-settings.choose-dataset'),
+          cancelText: $translate.instant('general-settings.cancel'),
           buttonClicked: function(index, button) {
             console.log("changeCarbonDataset(): chose locale " + button.value);
             CarbonDatasetHelper.setCurrentCarbonDatasetLocale(button.value);
-            $scope.carbonDatasetString = "Carbon Dataset: " + CarbonDatasetHelper.getCurrentCarbonDatasetName();
+            $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
             return true;
           }
         });

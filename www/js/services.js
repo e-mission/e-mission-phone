@@ -535,13 +535,12 @@ angular.module('emission.services', ['emission.plugin.logger',
   var currentCarbonDatasetCode;
 
   this.initialize = function() {
-    console.debug("Tiago: CarbonDatasetHelper.initialize()");
     currentCarbonDatasetCode = defaultCarbonDatasetCode;
     var value = KVStore.getDirect(CARBON_DATASET_KEY);
-    console.debug("Tiago: CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
+    Logger.log("CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
     if (!value) {
       value = defaultCarbonDatasetCode;
-      console.debug("Tiago: CarbonDatasetHelper.initialize() using [" + value + "] instead");
+      Logger.log("CarbonDatasetHelper.initialize() no value in storage, using [" + value + "] instead");
     }
     this.setCurrentCarbonDatasetLocale(value);
   };
@@ -550,7 +549,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     var options = [];
     for (var code in carbonDatasets) {
       options.push({
-        text: carbonDatasets[code].regionName,
+        text: code, //carbonDatasets[code].regionName,
         value: code
       });
     }
@@ -562,13 +561,17 @@ angular.module('emission.services', ['emission.plugin.logger',
     return carbonDatasets[currentCarbonDatasetCode].regionName;
   };
 
+  this.getCurrentCarbonDatasetCode = function () {
+    if (!currentCarbonDatasetCode) this.initialize();
+    return currentCarbonDatasetCode;
+  };
+
   this.getCurrentCarbonDatasetFootprint = function () {
     if (!currentCarbonDatasetCode) this.initialize();
     return carbonDatasets[currentCarbonDatasetCode].footprintData;
   };
 
   this.setCurrentCarbonDatasetLocale = function (localeCode) {
-    console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale()");
     var updatedDatasetCode = defaultCarbonDatasetCode;
     for (var code in carbonDatasets) {
       if (code == localeCode) {
@@ -577,9 +580,8 @@ angular.module('emission.services', ['emission.plugin.logger',
       }
     }
     currentCarbonDatasetCode = updatedDatasetCode;
-    console.debug("Tiago: CarbonDatasetHelper.setCurrentCarbonDatasetLocale() writing value to storage [" + currentCarbonDatasetCode + "]");
     KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
-    console.debug("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetCode);
+    Logger.log("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetCode);
   }
 })
 

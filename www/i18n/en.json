@@ -78,6 +78,8 @@
 
     "general-settings":{
         "choose-date" : "Choose date to download data",
+        "choose-dataset" : "Choose a dataset for carbon footprint calculations",
+        "carbon-dataset" : "Carbon dataset",
         "nuke-ui-state-only" : "UI state only",
         "nuke-native-cache-only" : "Native cache only",
         "nuke-everything" : "Everything",
@@ -155,8 +157,6 @@
     "user-height": "Height",
     "user-weight": "Weight",
     "user-age": "Age",
-
-    "carbon-dataset": "Carbon Dataset",
 
     "main-metrics":{
         "dashboard": "Dashboard",
