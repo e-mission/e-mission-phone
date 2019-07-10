@@ -36,10 +36,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           opts: JSON.stringify({
             session: {
               data_key: 'manual/confirm_survey',
-              trip_properties: {
-                start_ts: trip.data.properties.start_ts,
-                end_ts: trip.data.properties.end_ts,
-              },
             }
           }),
       });
@@ -800,21 +796,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
               // page was already loaded, reload it automatically
           readAndUpdateForDay(day);
-        }
-      });
-
-      $rootScope.$on('$stateChangeStart', function (event, toState, toStateParams, fromState, fromParams) {
-        if (
-          fromState.url === '/enketosurvey/:form_location/:opts' &&
-          toState.url === '/diary' &&
-          $rootScope.confirmSurveyTrip &&
-          $rootScope.confirmSurveyAnswer
-        ) {
-          $scope.$apply(function() {
-            $rootScope.confirmSurveyTrip.userSurveyAnswer = $rootScope.confirmSurveyAnswer;
-            $rootScope.confirmSurveyTrip = undefined;
-            $rootScope.confirmSurveyAnswer = undefined;
-          });
         }
       });
     });
