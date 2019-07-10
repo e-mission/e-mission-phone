@@ -167,7 +167,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
         if (!modeList) return;
-        var userMode = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        var userMode = ConfirmHelper.getUserInputForTrip(tripgj, modeList);
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
@@ -189,7 +189,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
         if (!purposeList) return;
-        var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+        var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj, purposeList);
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
@@ -211,7 +211,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      */
     $scope.populateSurveyAnswerFromTimeline = function (tripgj, surveyAnswers) {
       if (!surveyAnswers) return;
-      var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj.data.properties, surveyAnswers);
+      var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj, surveyAnswers);
       console.log(userSurveyAnswer);
       if (angular.isDefined(userSurveyAnswer)) {
         // userSurveyAnswer is a survey answer object with data + metadata
@@ -285,28 +285,27 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.populateSurveyAnswerFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.surveyAnswers);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
-
-            if($rootScope.displayingIncident == true && $rootScope.notificationData) {
-              console.log('tripgj =>', tripgj);
-              console.log('$rootScope.notificationData =>', $rootScope.notificationData);
-              console.log("Delta start_ts = "+
-                ($rootScope.notificationData.start_ts - tripgj.data.properties.start_ts)
-                +" and delta end_ts = "+
-                ($rootScope.notificationData.end_ts - tripgj.data.properties.end_ts));
-              if (
-                tripgj.data.properties.start_ts === $rootScope.notificationData.start_ts*1000 &&
-                tripgj.data.properties.end_ts === $rootScope.notificationData.end_ts*1000
-              ) {
-                tripFromNotification = tripgj;
-              }
-            }
           });
           if($rootScope.displayingIncident == true && $rootScope.notificationData) {
-            const trip = ConfirmHelper.getUserInputForTrip({
-              start_ts: $rootScope.notificationData.start_ts*1000,
-              end_ts: $rootScope.notificationData.end_ts*1000,
-            }, $scope.data.currDayTripWrappers);
-            console.log('trip => ', trip);
+            const matchingTrips = $scope.data.currDayTripWrappers.filter(trip => {
+              const matchingInput = ConfirmHelper.getUserInputForTrip(trip, [{
+                data: {
+                  start_ts: $rootScope.notificationData.start_ts,
+                  end_ts: $rootScope.notificationData.end_ts,
+                },
+                metadata: {
+                  time_zone: 'Asia/Bangkok'
+                }
+              }]);
+              console.log('matchingInput => ', matchingInput);
+              return (matchingInput) ? true : false;
+            });
+            if (matchingTrips.length) {
+              console.log('trip => ', matchingTrips[0]);
+              tripFromNotification = matchingTrips[0];
+            } else {
+              console.log('NO TRIP FOUND!');
+            }
           }
           $ionicScrollDelegate.scrollTop(true);
 

@@ -50,7 +50,11 @@ angular.module('emission.enketo-survey.service', [
   }
 
   function _restoreAnswer(answers) {
-    const answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
+    const answer = ConfirmHelper.getUserInputForTrip({
+      data: {
+        properties: __session.trip_properties
+      }
+    }, answers);
     return (!answer) ? null : answer.data.survey_result;
   }
 
