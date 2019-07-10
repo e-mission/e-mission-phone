@@ -32,7 +32,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.confirmSurvey = function(trip) {
       $rootScope.confirmSurveyTrip = trip;
       $state.go("root.main.enketosurvey", {
-      form_location: "json/trip-end-survey_v6.json",
+      form_location: "json/trip-end-survey_v9.json",
           opts: JSON.stringify({
             session: {
               data_key: 'manual/confirm_survey',
