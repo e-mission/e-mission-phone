@@ -32,14 +32,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.confirmSurvey = function(trip) {
       $rootScope.confirmSurveyTrip = trip;
-      EnketoSurveyLaunch.initConfirmSurvey({
-        form_location: 'json/trip-end-survey_v9.json',
-        opts: {
-          session: {
-            data_key: 'manual/confirm_survey',
-          }
-        }
-      });
+      EnketoSurveyLaunch.initConfirmSurvey();
       $scope.surveyModal.show();
     }
 

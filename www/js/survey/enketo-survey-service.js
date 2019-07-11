@@ -60,7 +60,7 @@ angular.module('emission.enketo-survey.service', [
         return answer.data.user_uuid = user_properties.uuid;
     });
     return potentialCandidates.length ?
-        potentialCandidates[potentialCandidates.length - 1] :
+        potentialCandidates[0] :
         null;
   }
 

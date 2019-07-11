@@ -6,50 +6,63 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
 ])
 .factory('EnketoSurveyLaunch', function(
-  $state, $rootScope,
-  $ionicPopup, EnketoSurvey, CommHelper
+  $rootScope, $ionicPopup, EnketoSurvey, CommHelper
 ) {
-  // CommHelper.getUser().then(function(profile){
-  //     const uuid = profile.user_id["$uuid"];
-  //     return uuid;
-  // }).then(function(uuid) {
-  //     const form_location = $rootScope.confirmSurveyFormLocation || "json/user-profile_v1.json";
-  //     const opts = Object.assign({}, $rootScope.confirmSurveyOpts) || {
-  //         session: {
-  //             data_key: "manual/user_profile_survey",
-  //             user_properties: {
-  //                 uuid: uuid,
-  //             },
-  //         },
-  //     };
-  //     $rootScope.confirmSurveyFormLocation = null;
-  //     $rootScope.confirmSurveyOpts = null;
-  //     return EnketoSurvey.init({ form_location, opts, trip: $rootScope.confirmSurveyTrip });
-  // }).then(function(){
-  //     $('.form-header').after(EnketoSurvey.getState().loaded_form);
-  //     if(!$stateParams.form_location) {
-  //       $(".previous-page").hide();
-  //       $(".form-footer__jump-nav").hide();
-  //     }
-  //     return;
-  // }).then(EnketoSurvey.displayForm
-  // ).then(function(loadErrors){
-  //   if (loadErrors.length > 0) {
-  //     $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
-  //   }
-  // });
+  var __uuid = null;
 
-  function initConfirmSurvey({form_location, opts }) {
-    EnketoSurvey.init({ form_location, opts, trip: $rootScope.confirmSurveyTrip }).then(function(){
-      $('.form-header').after(EnketoSurvey.getState().loaded_form);
-      $(".previous-page").hide();
-      $(".form-footer__jump-nav").hide();
+  function initSurvey(params) {
+    return EnketoSurvey.init({
+      form_location: params.form_location,
+      opts: params.opts,
+      trip: params.trip,
+    }).then(function(){
+      $('.enketo-plugin .form-header').after(EnketoSurvey.getState().loaded_form);
+      $(".enketo-plugin .previous-page").hide();
+      $(".enketo-plugin .form-footer__jump-nav").hide();
       return;
     }).then(EnketoSurvey.displayForm
     ).then(function(loadErrors){
       if (loadErrors.length > 0) {
         $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
       }
+    });
+  }
+
+  function initConfirmSurvey() {
+    return initSurvey({
+      form_location: 'json/trip-end-survey_v9.json',
+      opts: {
+        session: {
+          data_key: 'manual/confirm_survey',
+        },
+      },
+      trip: $rootScope.confirmSurveyTrip,
+    });
+  }
+
+  function initProfileSurvey() {
+    let promise;
+    if (__uuid) {
+      promise = Promise.resolve(__uuid);
+    } else {
+      promise = CommHelper.getUser().then(function(profile){
+        const uuid = profile.user_id['$uuid'];
+        __uuid = uuid;
+        return uuid;
+      });
+    }
+    return promise.then(function(uuid) {
+      return initSurvey({
+        form_location: 'json/user-profile_v1.json',
+        opts: {
+          session: {
+            data_key: 'manual/user_profile_survey',
+            user_properties: {
+              uuid: uuid,
+            },
+          },
+        },
+      });
     });
   }
 
@@ -73,8 +86,8 @@ angular.module('emission.survey.enketo.launch', [
           $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
           $rootScope.$broadcast('CONFIRMSURVEY_SUBMIT');
         }
-        if ($rootScope.confirmSurveyIntroMode) {
-          $rootScope.confirmSurveyIntroMode = false;
+        if ($rootScope.confirmSurveyUserProfile) {
+          $rootScope.confirmSurveyUserProfile = false;
           $rootScope.$broadcast('USERPROFILE_SUBMIT');
         }
         return;
@@ -84,6 +97,7 @@ angular.module('emission.survey.enketo.launch', [
 
   return {
     initConfirmSurvey: initConfirmSurvey,
+    initProfileSurvey: initProfileSurvey,
     validateForm: validateForm,
     resetView: resetView,
   };
