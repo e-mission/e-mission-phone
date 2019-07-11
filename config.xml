@@ -83,6 +83,9 @@
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
     </platform>
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
+    <preference name="SplashShowOnlyFirstTime" value="false" />
+    <engine name="ios" spec="^4.5.4" />
+    <engine name="android" spec="^6.4.0" />
     <plugin name="phonegap-plugin-push" spec="~1.9.2">
         <variable name="SENDER_ID" value="1096592179912" />
     </plugin>
@@ -111,7 +114,4 @@
         <variable name="UPDATE_METHOD" value="none" />
     </plugin>
     <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git" />
-    <preference name="SplashShowOnlyFirstTime" value="false" />
-    <engine name="ios" spec="^4.5.4" />
-    <engine name="android" spec="^6.4.0" />
 </widget>

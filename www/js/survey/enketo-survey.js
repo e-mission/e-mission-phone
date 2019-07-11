@@ -21,7 +21,7 @@ angular.module('emission.survey.enketo.launch', [
               },
           },
       });
-      return EnketoSurvey.init(form_location, opts);
+      return EnketoSurvey.init({ form_location, opts, trip: $rootScope.confirmSurveyTrip});
   }).then(function(){
       $('.form-header').after(EnketoSurvey.getState().loaded_form);
       if(!$stateParams.form_location) {
@@ -46,7 +46,7 @@ angular.module('emission.survey.enketo.launch', [
         const answer = EnketoSurvey.populateLabels(
           EnketoSurvey.makeAnswerFromAnswerData(data)
         );
-        $rootScope.confirmSurveyAnswer = answer;
+        $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
         if ($rootScope.confirmSurveyIntroMode) {
             $rootScope.confirmSurveyIntroMode = false;
             $rootScope.$broadcast('USERPROFILE_SUBMIT');

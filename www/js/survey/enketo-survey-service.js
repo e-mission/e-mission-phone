@@ -13,17 +13,23 @@ angular.module('emission.enketo-survey.service', [
   var __form_location = null;
   var __loaded_form = null;
   var __loaded_model = null;
+  var __trip = null;
 
-  function init(formLocParam, optsParam) {
+  function init({ form_location, opts, trip }) {
     __form = null;
     __session = {};
-    __form_location = formLocParam;
+    __form_location = form_location;
     __loaded_form = null;
     __loaded_model = null;
+    __trip = null;
 
-    const opts = JSON.parse(optsParam);
-    if (opts && opts.session) {
-      __session = opts.session;
+    __opts = JSON.parse(opts);
+    if (__opts && __opts.session) {
+      __session = __opts.session;
+    }
+
+    if (trip) {
+      __trip = trip;
     }
 
     return $http.get(__form_location)
@@ -60,8 +66,8 @@ angular.module('emission.enketo-survey.service', [
 
   function _restoreAnswer(answers) {
     let answer = null;
-    if (__session.trip_properties) {
-        answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
+    if (__trip) {
+        answer = ConfirmHelper.getUserInputForTrip(__trip, answers);
     } else if (__session.user_properties) {
         answer = getUserProfile(__session.user_properties, answers);
     }
@@ -125,9 +131,9 @@ angular.module('emission.enketo-survey.service', [
     const data = {
       survey_result: __form.getDataStr(),
     };
-    if (__session && __session.trip_properties) {
-        data.start_ts = __session.trip_properties.start_ts;
-        data.end_ts = __session.trip_properties.end_ts;
+    if (__trip && __trip.data.properties) {
+        data.start_ts = __trip.data.properties.start_ts;
+        data.end_ts = __trip.data.properties.end_ts;
     }
     if (__session && __session.user_properties) {
         data.user_uuid = __session.user_properties.uuid;
@@ -152,6 +158,7 @@ angular.module('emission.enketo-survey.service', [
       session: __session,
       loaded_form: __loaded_form,
       loaded_model: __loaded_model,
+      trip: __trip,
     };
   }
 
