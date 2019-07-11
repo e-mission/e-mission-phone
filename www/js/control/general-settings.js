@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
+                                        'emission.survey.enketo.launch',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
                                         'emission.main.control.tnotify',
@@ -21,7 +22,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
-               CalorieCal, ClientStats, CommHelper, Logger) {
+               CalorieCal, ClientStats, CommHelper, Logger, $ionicModal, EnketoSurveyLaunch) {
 
     var datepickerObject = {
       todayLabel: 'Today',  //Optional
@@ -399,22 +400,27 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
+
+    $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
+    $scope.surveyModalHide = function() {
+      EnketoSurveyLaunch.resetView();
+      $scope.surveyModal.hide();
+    }
+    $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
+      scope: $scope
+    }).then(function (modal) {
+      $scope.surveyModal = modal;
+    });
+
     $scope.editUserProfile = function() {
-        CommHelper.getUser().then(function(profile){
-            const uuid = profile.user_id["$uuid"];
-            $state.go("root.main.enketosurvey", {
-                form_location: "json/user-profile_v1.json",
-                opts: JSON.stringify({
-                    session: {
-                        data_key: "manual/user_profile_survey",
-                        user_properties: {
-                            uuid: uuid,
-                        },
-                    },
-                }),
-            });
-        });
+        $rootScope.confirmSurveyUserProfile = true;
+        EnketoSurveyLaunch.initProfileSurvey();
+        $scope.surveyModal.show();
     };
+
+    $scope.$on("USERPROFILE_SUBMIT", function(_event, _args) {
+      $scope.surveyModal.hide();
+    });
 
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
