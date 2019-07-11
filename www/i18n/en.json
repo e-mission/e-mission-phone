@@ -2,6 +2,7 @@
     "loading" : "Loading...",
     "map-refresh": "Refresh",
     "map-fixmap": "Fix Map",
+    "pull-to-refresh": "Pull to refresh",
 
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
@@ -25,7 +26,7 @@
         "keep-muted": "Keep muted"
     },
 
-    "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size='+3'>&#x263B;</font> or <font size='+3'>&#x2639;</font> incident",
+    "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a ☻ or ☹ incident",
 
     "tour-next": "Next",
     "tour-previous": "Previous",
@@ -126,7 +127,9 @@
         "calorie-data-change-decrease": " decrease over a week",
         "carbon-data-change-increase": " increase over a week",
         "carbon-data-change-decrease": " decrease over a week",
-        "pick-a-date": "Pick a date"
+        "pick-a-date": "Pick a date",
+        "trips": "trips",
+        "custom": "Custom"
     },
 
     "diary": {

@@ -110,9 +110,10 @@ angular.module('emission', ['ionic',
   // Define where we can find the .json and the fallback language
   $translateProvider
     .fallbackLanguage('en')
-    .registerAvailableLanguageKeys(['en', 'fr'], {
+    .registerAvailableLanguageKeys(['en', 'fr','it'], {
       'en_*': 'en',
       'fr_*': 'fr',
+      'it_*': 'it',
       '*': 'en'
     })
     .determinePreferredLanguage()
