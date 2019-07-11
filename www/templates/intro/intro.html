@@ -9,5 +9,11 @@
       <ion-slide>
         <ng-include src="'templates/intro/login.html'"></ng-include>
       </ion-slide>
+      <ion-slide>
+        <ng-include
+            ng-controller="EnketoSurveyCtrl as theSurvey"
+            src="'templates/survey/enketo-survey.html'">
+        </ng-include>
+      </ion-slide>
     </ion-slide-box>
 </ion-view>

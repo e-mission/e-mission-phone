@@ -5,6 +5,12 @@
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text">My Profile</div>
+      <div ng-click="editUserProfile()" class="control-icon-button control-icon-user-profile">
+        <i class="ion-person"></i>
+      </div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text">Tracking</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
@@ -24,7 +30,7 @@
     </div>
 
 
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">Dark theme</div>
       <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getDarkTheme()">
@@ -32,7 +38,7 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
+    </div> -->
     <div class="control-list-item">
       <div class="control-list-text">Force sync</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>

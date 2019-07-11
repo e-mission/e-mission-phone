@@ -14,6 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.tripconfirm.service',
                                       'emission.services',
+                                      'emission.survey.enketo.launch',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
   ])
@@ -24,20 +25,27 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
     $scope.confirmSurvey = function(trip) {
       $rootScope.confirmSurveyTrip = trip;
-      $state.go("root.main.enketosurvey", {
-      form_location: "json/trip-end-survey_v9.json",
-          opts: JSON.stringify({
-            session: {
-              data_key: 'manual/confirm_survey',
-            }
-          }),
+      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.surveyModal = modal;
+        $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
+        $scope.surveyModalHide = function() {
+          EnketoSurveyLaunch.resetView();
+          $scope.surveyModal.hide();
+          $scope.surveyModal.remove();
+          $scope.surveyModal = null;
+          $rootScope.confirmSurveyTrip = null;
+        }
+        EnketoSurveyLaunch.initConfirmSurvey();
+        $scope.surveyModal.show();
       });
     }
 
@@ -774,6 +782,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
+      // DEBUG
+      // readAndUpdateForDay(moment('2015-07-22').startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from
@@ -795,6 +805,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               // page was already loaded, reload it automatically
           readAndUpdateForDay(day);
         }
+      });
+
+      $scope.$on("CONFIRMSURVEY_SUBMIT", function(_event, _args) {
+        $scope.surveyModal.hide();
+        $scope.surveyModal.remove();
+        $scope.surveyModal = null;
+        $rootScope.confirmSurveyTrip = null;
       });
     });
 });

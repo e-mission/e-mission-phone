@@ -23,7 +23,7 @@ angular.module('emission.enketo-survey.service', [
     __loaded_model = null;
     __trip = null;
 
-    __opts = JSON.parse(opts);
+    __opts = opts;
     if (__opts && __opts.session) {
       __session = __opts.session;
     }
@@ -55,8 +55,22 @@ angular.module('emission.enketo-survey.service', [
     return loadErrors;
   }
 
+  function getUserProfile(user_properties, answers) {
+    const potentialCandidates = answers.filter(function(answer) {
+        return answer.data.user_uuid = user_properties.uuid;
+    });
+    return potentialCandidates.length ?
+        potentialCandidates[0] :
+        null;
+  }
+
   function _restoreAnswer(answers) {
-    const answer = ConfirmHelper.getUserInputForTrip(__trip, answers);
+    let answer = null;
+    if (__trip) {
+        answer = ConfirmHelper.getUserInputForTrip(__trip, answers);
+    } else if (__session.user_properties) {
+        answer = getUserProfile(__session.user_properties, answers);
+    }
     return (!answer) ? null : answer.data.survey_result;
   }
 
@@ -103,26 +117,27 @@ angular.module('emission.enketo-survey.service', [
   }
 
   function displayForm() {
-    // Load survey with previous answer
-    if (__session &&
-        __session.data_key &&
-        __session.data_key === 'manual/confirm_survey'
-    ) {
-      return getAllSurveyAnswers(__session.data_key)
-      .then(_restoreAnswer)
-      .then(function(answerData) {
-        return _loadForm({ instanceStr: answerData });
-      });
-    }
-    return _loadForm();
+    let data_key = (__session && __session.data_key) ?
+        __session.data_key :
+        "manual/confirm_survey";
+    return getAllSurveyAnswers(data_key
+    ).then(_restoreAnswer
+    ).then(function(answerData) {
+      return _loadForm({ instanceStr: answerData });
+    });
   }
 
   function _saveData() {
     const data = {
       survey_result: __form.getDataStr(),
-      start_ts: __trip.data.properties.start_ts,
-      end_ts: __trip.data.properties.end_ts,
     };
+    if (__trip && __trip.data.properties) {
+        data.start_ts = __trip.data.properties.start_ts;
+        data.end_ts = __trip.data.properties.end_ts;
+    }
+    if (__session && __session.user_properties) {
+        data.user_uuid = __session.user_properties.uuid;
+    }
     return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data
     ).then(function(){
       return data;
@@ -153,6 +168,7 @@ angular.module('emission.enketo-survey.service', [
     validateForm: validateForm,
     getAllSurveyAnswers: getAllSurveyAnswers,
     getState: getState,
+    getUserProfile: getUserProfile,
     populateLabels: populateLabels,
     makeAnswerFromAnswerData: makeAnswerFromAnswerData,
   };
