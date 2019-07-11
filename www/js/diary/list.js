@@ -283,7 +283,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.populateCommonInfo(tripgj);
           });
           if($rootScope.displayingIncident == true && $rootScope.notificationData) {
-            const matchingTrips = $scope.data.currDayTripWrappers.filter(trip => {
+            const matchingTrips = $scope.data.currDayTripWrappers.filter(function(trip) {
               const matchingInput = ConfirmHelper.getUserInputForTrip(trip, [{
                 data: {
                   start_ts: $rootScope.notificationData.start_ts,
