@@ -32,8 +32,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.confirmSurvey = function(trip) {
       $rootScope.confirmSurveyTrip = trip;
-      EnketoSurveyLaunch.initConfirmSurvey();
-      $scope.surveyModal.show();
+      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
+        scope: $scope
+      }).then(function (modal) {
+        $scope.surveyModal = modal;
+        $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
+        $scope.surveyModalHide = function() {
+          EnketoSurveyLaunch.resetView();
+          $scope.surveyModal.hide();
+          $scope.surveyModal.remove();
+          $scope.surveyModal = null;
+          $rootScope.confirmSurveyTrip = null;
+        }
+        EnketoSurveyLaunch.initConfirmSurvey();
+        $scope.surveyModal.show();
+      });
     }
 
   // Add option
@@ -539,18 +552,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover = popover;
     });
 
-    $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
-    $scope.surveyModalHide = function() {
-      EnketoSurveyLaunch.resetView();
-      $scope.surveyModal.hide();
-      $rootScope.confirmSurveyTrip = null;
-    }
-    $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
-      scope: $scope
-    }).then(function (modal) {
-      $scope.surveyModal = modal;
-    });
-
     $scope.openModePopover = function ($event, tripgj) {
       var userMode = tripgj.usermode;
       if (angular.isDefined(userMode)) {
@@ -808,6 +809,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
       $scope.$on("CONFIRMSURVEY_SUBMIT", function(_event, _args) {
         $scope.surveyModal.hide();
+        $scope.surveyModal.remove();
+        $scope.surveyModal = null;
         $rootScope.confirmSurveyTrip = null;
       });
     });
