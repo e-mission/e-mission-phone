@@ -290,7 +290,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                   end_ts: $rootScope.notificationData.end_ts,
                 },
                 metadata: {
-                  time_zone: 'Asia/Bangkok'
+                  time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone
                 }
               }]);
               console.log('matchingInput => ', matchingInput);
