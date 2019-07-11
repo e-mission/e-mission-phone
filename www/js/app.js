@@ -105,12 +105,14 @@ angular.module('emission', ['ionic',
   $urlRouterProvider.otherwise('/splash');
 
   // Allow the use of MessageForm interpolation for Gender and Plural.
-  $translateProvider.addInterpolation('$translateMessageFormatInterpolation');
+  $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
+                    .useSanitizeValueStrategy('escape');
+
 
   // Define where we can find the .json and the fallback language
   $translateProvider
     .fallbackLanguage('en')
-    .registerAvailableLanguageKeys(['en', 'fr','it'], {
+    .registerAvailableLanguageKeys(['en', 'fr', 'it'], {
       'en_*': 'en',
       'fr_*': 'fr',
       'it_*': 'it',
