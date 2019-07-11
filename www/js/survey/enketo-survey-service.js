@@ -23,7 +23,7 @@ angular.module('emission.enketo-survey.service', [
     __loaded_model = null;
     __trip = null;
 
-    __opts = JSON.parse(opts);
+    __opts = opts;
     if (__opts && __opts.session) {
       __session = __opts.session;
     }

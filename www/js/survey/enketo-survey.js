@@ -5,39 +5,56 @@ angular.module('emission.survey.enketo.launch', [
   'emission.enketo-survey.service',
   'emission.plugin.logger',
 ])
-.controller('EnketoSurveyCtrl', function($scope, $state, $stateParams, $rootScope,
+.factory('EnketoSurveyLaunch', function(
+  $state, $rootScope,
   $ionicPopup, EnketoSurvey, CommHelper
 ) {
-  CommHelper.getUser().then(function(profile){
-      const uuid = profile.user_id["$uuid"];
-      return uuid;
-  }).then(function(uuid) {
-      const form_location = $stateParams.form_location || "json/user-profile_v1.json";
-      const opts = $stateParams.opts || JSON.stringify({
-          session: {
-              data_key: "manual/user_profile_survey",
-              user_properties: {
-                  uuid: uuid,
-              },
-          },
-      });
-      return EnketoSurvey.init({ form_location, opts, trip: $rootScope.confirmSurveyTrip});
-  }).then(function(){
-      $('.form-header').after(EnketoSurvey.getState().loaded_form);
-      if(!$stateParams.form_location) {
-        $(".previous-page").hide();
-        $(".form-footer__jump-nav").hide();
-      }
-      return;
-  }).then(EnketoSurvey.displayForm
-  ).then(function(loadErrors){
-    if (loadErrors.length > 0) {
-      $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
-    }
-  });
+  // CommHelper.getUser().then(function(profile){
+  //     const uuid = profile.user_id["$uuid"];
+  //     return uuid;
+  // }).then(function(uuid) {
+  //     const form_location = $rootScope.confirmSurveyFormLocation || "json/user-profile_v1.json";
+  //     const opts = Object.assign({}, $rootScope.confirmSurveyOpts) || {
+  //         session: {
+  //             data_key: "manual/user_profile_survey",
+  //             user_properties: {
+  //                 uuid: uuid,
+  //             },
+  //         },
+  //     };
+  //     $rootScope.confirmSurveyFormLocation = null;
+  //     $rootScope.confirmSurveyOpts = null;
+  //     return EnketoSurvey.init({ form_location, opts, trip: $rootScope.confirmSurveyTrip });
+  // }).then(function(){
+  //     $('.form-header').after(EnketoSurvey.getState().loaded_form);
+  //     if(!$stateParams.form_location) {
+  //       $(".previous-page").hide();
+  //       $(".form-footer__jump-nav").hide();
+  //     }
+  //     return;
+  // }).then(EnketoSurvey.displayForm
+  // ).then(function(loadErrors){
+  //   if (loadErrors.length > 0) {
+  //     $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
+  //   }
+  // });
 
-  $scope.validateForm = function() {
-    EnketoSurvey.validateForm()
+  function initConfirmSurvey({form_location, opts }) {
+    EnketoSurvey.init({ form_location, opts, trip: $rootScope.confirmSurveyTrip }).then(function(){
+      $('.form-header').after(EnketoSurvey.getState().loaded_form);
+      $(".previous-page").hide();
+      $(".form-footer__jump-nav").hide();
+      return;
+    }).then(EnketoSurvey.displayForm
+    ).then(function(loadErrors){
+      if (loadErrors.length > 0) {
+        $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
+      }
+    });
+  }
+
+  function validateForm() {
+    return EnketoSurvey.validateForm()
     .then(function(valid){
       if (!valid) {
         $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
@@ -46,14 +63,22 @@ angular.module('emission.survey.enketo.launch', [
         const answer = EnketoSurvey.populateLabels(
           EnketoSurvey.makeAnswerFromAnswerData(data)
         );
-        $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
-        if ($rootScope.confirmSurveyIntroMode) {
-            $rootScope.confirmSurveyIntroMode = false;
-            $rootScope.$broadcast('USERPROFILE_SUBMIT');
-          return;
+        EnketoSurvey.getState().form.resetView();
+        if ($rootScope.confirmSurveyTrip) {
+          $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
+          $rootScope.$broadcast('CONFIRMSURVEY_SUBMIT');
         }
-        $state.go($rootScope.previousState, $rootScope.previousStateParams);
+        if ($rootScope.confirmSurveyIntroMode) {
+          $rootScope.confirmSurveyIntroMode = false;
+          $rootScope.$broadcast('USERPROFILE_SUBMIT');
+        }
+        return;
       }
     });
   }
+
+  return {
+    initConfirmSurvey: initConfirmSurvey,
+    validateForm: validateForm,
+  };
 });
