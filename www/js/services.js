@@ -158,6 +158,27 @@ angular.module('emission.services', ['emission.plugin.logger'])
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
       });
     };
+  
+    this.getEmailConfig = function () {
+      return new Promise(function (resolve, reject) {
+        console.log("about to get email config");
+        var address = [];
+        $http.get("json/emailConfig.json").then(function (emailConfig) {
+          console.log("emailConfigString = " + JSON.stringify(emailConfig.data));
+          address.push(emailConfig.data.address)
+          resolve(address);
+        }).catch(function (err) {
+          $http.get("json/emailConfig.json.sample").then(function (emailConfig) {
+            console.log("default emailConfigString = " + JSON.stringify(emailConfig.data));
+            address.push(emailConfig.data.address)
+            resolve(address);
+          }).catch(function (err) {
+            console.log("Error while reading default email config", err);
+            reject(err);
+          });
+        });
+      });
+    }
 })
 
 .service('ReferHelper', function($http) {
@@ -260,53 +281,61 @@ angular.module('emission.services', ['emission.plugin.logger'])
 .service('ControlHelper', function($cordovaEmailComposer,
                                    $ionicPopup,
                                    CommHelper,
-                                   Logger) {
-  this.emailLog = function() {
-        var parentDir = "unknown";
+                                   Logger,
+                                   $http,
+                                   $translate) {
+  
+  this.emailLog = function () {
+        var address = [];
+        CommHelper.getEmailConfig().then(function (address) {
+          var parentDir = "unknown";
 
-         $cordovaEmailComposer.isAvailable().then(function() {
-           // is available
-         }, function () {
-            alert("Email account is not configured, cannot send email");
-            return;
-         });
-
-        if (ionic.Platform.isAndroid()) {
-            parentDir = "app://databases";
-        }
-        if (ionic.Platform.isIOS()) {
-            alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
-            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
-        }
-
-        if (parentDir == "unknown") {
-          alert("parentDir unexpectedly = "+parentDir+"!")
-        }
-
-        /*
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "Going to export logs to "+parentDir);
-         */
-        alert("Going to email database from "+parentDir+"/loggerDB");
-
-        var email = {
-            to: ['shankari@eecs.berkeley.edu'],
-            attachments: [
-                parentDir+"/loggerDB"
-            ],
-            subject: 'emission logs',
-            body: 'please fill in what went wrong'
-        }
-
-        $cordovaEmailComposer.open(email).then(function() {
-           window.Logger.log(window.Logger.LEVEL_DEBUG,
-               "Email queued successfully");
-        },
-        function () {
-           // user cancelled email. in this case too, we want to remove the file
-           // so that the file creation earlier does not fail.
-           window.Logger.log(window.Logger.LEVEL_INFO,
-               "Email cancel reported, seems to be an error on android");
+          $cordovaEmailComposer.isAvailable().then(function() {
+            // is available
+          }, function () {
+             alert($translate.instant('recent.email-account-not-configured'));
+             return;
+          });
+ 
+         if (ionic.Platform.isAndroid()) {
+             parentDir = "app://databases";
+         }
+         if (ionic.Platform.isIOS()) {
+             alert($translate.instant('recent.email-account-mail-app'));
+             parentDir = cordova.file.dataDirectory+"../LocalDatabase";
+         }
+ 
+         if (parentDir == "unknown") {
+           alert("parentDir unexpectedly = "+parentDir+"!")
+         }
+ 
+         /*
+         window.Logger.log(window.Logger.LEVEL_INFO,
+             "Going to export logs to "+parentDir);
+          */
+         alert($translate.instant('recent.going-to-email', {parentDir: parentDir}));
+         var email = {
+             to: address,
+             attachments: [
+                 parentDir+"/loggerDB"
+             ],
+             subject: $translate.instant('recent.email.subject-logs'),
+             body: $translate.instant('recent.email.body-please-fill-in-what-is-wrong')
+         }
+ 
+         $cordovaEmailComposer.open(email).then(function() {
+            window.Logger.log(window.Logger.LEVEL_DEBUG,
+                "Email queued successfully");
+         },
+         function () {
+            // user cancelled email. in this case too, we want to remove the file
+            // so that the file creation earlier does not fail.
+            window.Logger.log(window.Logger.LEVEL_INFO,
+                "Email cancel reported, seems to be an error on android");
+         });      
+        }).catch(function (err) {
+            alert($translate.instant('recent.no-email-address-configured') + err);
+            return; 
         });
     };
 

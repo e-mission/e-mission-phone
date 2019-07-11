@@ -81,7 +81,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     $scope.refreshEntries();
 })
 
-.controller('sensedDataCtrl', function($scope, $cordovaEmailComposer, $ionicActionSheet, $translate) {
+.controller('sensedDataCtrl', function($scope, $cordovaEmailComposer, $ionicActionSheet, $translate, CommHelper) {
     var currentStart = 0;
 
     /* Let's keep a reference to the database for convenience */
@@ -103,48 +103,53 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
         },
     }
 
-    $scope.emailCache = function() {
-        var parentDir = "unknown";
+    $scope.emailCache = function () {
+        CommHelper.getEmailConfig().then(function (address) {
+            var parentDir = "unknown";
 
-         $cordovaEmailComposer.isAvailable().then(function() {
-           // is available
-         }, function () {
-            alert($translate.instant('recent.email-account-not-configured'));
-            return;
-         });
+            $cordovaEmailComposer.isAvailable().then(function () {
+                // is available
+            }, function () {
+                alert($translate.instant('recent.email-account-not-configured'));
+                return;
+            });
 
-        if (ionic.Platform.isAndroid()) {
-            parentDir = "app://databases";
-        }
-        if (ionic.Platform.isIOS()) {
-            alert($translate.instant('recent.email-account-mail-app'));
-            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
-        }
+            if (ionic.Platform.isAndroid()) {
+                parentDir = "app://databases";
+            }
+            if (ionic.Platform.isIOS()) {
+                alert($translate.instant('recent.email-account-mail-app'));
+                parentDir = cordova.file.dataDirectory + "../LocalDatabase";
+            }
 
-        /*
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "Going to export logs to "+parentDir);
-         */
-        alert($translate.instant('recent.going-to-email', {parentDir: parentDirs}));
+            /*
+            window.Logger.log(window.Logger.LEVEL_INFO,
+                "Going to export logs to "+parentDir);
+            */
+            alert($translate.instant('recent.going-to-email', { parentDir: parentDirs }));
 
-        var email = {
-            to: ['shankari@eecs.berkeley.edu'],
-            attachments: [
-                parentDir+"/userCacheDB"
-            ],
-            subject: 'emission logs',
-            body: 'please fill in what went wrong'
-        }
+            var email = {
+                to: address,
+                attachments: [
+                    parentDir + "/userCacheDB"
+                ],
+                subject: $translate.instant('recent.email.subject-logs'),
+                body: $translate.instant('recent.email.body-please-fill-in-what-is-wrong')
+            }
 
-        $cordovaEmailComposer.open(email).then(function() {
-           window.Logger.log(window.Logger.LEVEL_DEBUG,
-               "Email queued successfully");
-        },
-        function () {
-           // user cancelled email. in this case too, we want to remove the file
-           // so that the file creation earlier does not fail.
-           window.Logger.log(window.Logger.LEVEL_INFO,
-               "Email cancel reported, seems to be an error on android");
+            $cordovaEmailComposer.open(email).then(function () {
+                window.Logger.log(window.Logger.LEVEL_DEBUG,
+                    "Email queued successfully");
+            },
+                function () {
+                    // user cancelled email. in this case too, we want to remove the file
+                    // so that the file creation earlier does not fail.
+                    window.Logger.log(window.Logger.LEVEL_INFO,
+                        "Email cancel reported, seems to be an error on android");
+                });
+        }).catch(function (err) {
+            alert($translate.instant('recent.no-email-address-configured') + err);
+            return; 
         });
     }
 

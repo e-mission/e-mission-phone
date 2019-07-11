@@ -231,7 +231,12 @@
     "recent":{
         "email-account-not-configured": "Email account is not configured, cannot send email",
         "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
-        "going-to-email": "Going to email database from {{parentDir}}/userCacheDB" 
+        "going-to-email": "Going to email database from {{parentDir}}/userCacheDB",
+        "email":{
+            "subject-logs": "emission logs",
+            "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
+        },
+        "no-email-address-configured": "No email address configured."
     },
    
     "consent":{
