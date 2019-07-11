@@ -290,7 +290,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                   end_ts: $rootScope.notificationData.end_ts,
                 },
                 metadata: {
-                  time_zone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                  time_zone: moment.tz.guess()
                 }
               }]);
               console.log('matchingInput => ', matchingInput);
