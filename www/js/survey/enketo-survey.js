@@ -53,6 +53,11 @@ angular.module('emission.survey.enketo.launch', [
     });
   }
 
+  function resetView() {
+    EnketoSurvey.getState().form.resetView();
+    $('.enketo-plugin article > form').remove();
+  }
+
   function validateForm() {
     return EnketoSurvey.validateForm()
     .then(function(valid){
@@ -63,7 +68,7 @@ angular.module('emission.survey.enketo.launch', [
         const answer = EnketoSurvey.populateLabels(
           EnketoSurvey.makeAnswerFromAnswerData(data)
         );
-        EnketoSurvey.getState().form.resetView();
+        resetView();
         if ($rootScope.confirmSurveyTrip) {
           $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
           $rootScope.$broadcast('CONFIRMSURVEY_SUBMIT');
@@ -80,5 +85,6 @@ angular.module('emission.survey.enketo.launch', [
   return {
     initConfirmSurvey: initConfirmSurvey,
     validateForm: validateForm,
+    resetView: resetView,
   };
 });

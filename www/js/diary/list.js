@@ -547,6 +547,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
+    $scope.surveyModalHide = function() {
+      EnketoSurveyLaunch.resetView();
+      $scope.surveyModal.hide();
+      $rootScope.confirmSurveyTrip = null;
+    }
     $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
       scope: $scope
     }).then(function (modal) {
