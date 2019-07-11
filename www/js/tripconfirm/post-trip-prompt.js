@@ -118,8 +118,9 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   var displayCompletedTrip = function(notification, state, data) {
     $rootScope.displayingIncident = true;
-      Logger.log("About to display completed trip from Notification");
-      $state.go("root.main.tripconfirm", notification.data);
+    $rootScope.notificationData = notification.data;
+    Logger.log("About to display completed trip from Notification");
+    $state.go('root.main.diary');
   };
 
   var checkCategory = function(notification) {
@@ -210,19 +211,20 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
             return;
         }
         cleanDataIfNecessary(notification, state, data);
-        if($ionicPlatform.is('ios')) {
-            promptReport(notification, state, data).then(function(res) {
-              if (res == true) {
-                  Logger.log("About to go to prompt page");
-                displayCompletedTrip(notification, state, data);
-              } else {
-                Logger.log("Skipped confirmation reporting");
-              }
-            });
-        } else {
-          Logger.log("About to go to prompt page");
-          displayCompletedTrip(notification, state, data);
-        }
+        displayCompletedTrip(notification, state, data);
+        // if($ionicPlatform.is('ios')) {
+        //     promptReport(notification, state, data).then(function(res) {
+        //       if (res == true) {
+        //           Logger.log("About to go to prompt page");
+        //         displayCompletedTrip(notification, state, data);
+        //       } else {
+        //         Logger.log("Skipped confirmation reporting");
+        //       }
+        //     });
+        // } else {
+        //   Logger.log("About to go to prompt page");
+        //   displayCompletedTrip(notification, state, data);
+        // }
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");

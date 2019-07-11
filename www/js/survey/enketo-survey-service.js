@@ -13,17 +13,23 @@ angular.module('emission.enketo-survey.service', [
   var __form_location = null;
   var __loaded_form = null;
   var __loaded_model = null;
+  var __trip = null;
 
-  function init(formLocParam, optsParam) {
+  function init({ form_location, opts, trip }) {
     __form = null;
     __session = {};
-    __form_location = formLocParam;
+    __form_location = form_location;
     __loaded_form = null;
     __loaded_model = null;
+    __trip = null;
 
-    const opts = JSON.parse(optsParam);
-    if (opts && opts.session) {
-      __session = opts.session;
+    __opts = JSON.parse(opts);
+    if (__opts && __opts.session) {
+      __session = __opts.session;
+    }
+
+    if (trip) {
+      __trip = trip;
     }
 
     return $http.get(__form_location)
@@ -50,7 +56,7 @@ angular.module('emission.enketo-survey.service', [
   }
 
   function _restoreAnswer(answers) {
-    const answer = ConfirmHelper.getUserInputForTrip(__session.trip_properties, answers);
+    const answer = ConfirmHelper.getUserInputForTrip(__trip, answers);
     return (!answer) ? null : answer.data.survey_result;
   }
 
@@ -114,8 +120,8 @@ angular.module('emission.enketo-survey.service', [
   function _saveData() {
     const data = {
       survey_result: __form.getDataStr(),
-      start_ts: __session.trip_properties.start_ts,
-      end_ts: __session.trip_properties.end_ts,
+      start_ts: __trip.data.properties.start_ts,
+      end_ts: __trip.data.properties.end_ts,
     };
     return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data
     ).then(function(){
@@ -137,6 +143,7 @@ angular.module('emission.enketo-survey.service', [
       session: __session,
       loaded_form: __loaded_form,
       loaded_model: __loaded_model,
+      trip: __trip,
     };
   }
 
