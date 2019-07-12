@@ -66,11 +66,6 @@ angular.module('emission.survey.enketo.launch', [
     });
   }
 
-  function resetView() {
-    EnketoSurvey.getState().form.resetView();
-    $('.enketo-plugin article > form').remove();
-  }
-
   function validateForm() {
     return EnketoSurvey.validateForm()
     .then(function(valid){
@@ -99,6 +94,5 @@ angular.module('emission.survey.enketo.launch', [
     initConfirmSurvey: initConfirmSurvey,
     initProfileSurvey: initProfileSurvey,
     validateForm: validateForm,
-    resetView: resetView,
   };
 });

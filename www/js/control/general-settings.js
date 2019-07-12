@@ -409,10 +409,11 @@ angular.module('emission.main.control',['emission.services',
           $scope.surveyModal = modal;
           $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
           $scope.surveyModalHide = function() {
-            EnketoSurveyLaunch.resetView();
             $scope.surveyModal.hide();
-            $scope.surveyModal.remove();
-            $scope.surveyModal = null;
+            setTimeout(function() {
+                $scope.surveyModal.remove();
+                $scope.surveyModal = null;
+            }, 500);
           }
           EnketoSurveyLaunch.initProfileSurvey();
           $scope.surveyModal.show();
@@ -421,8 +422,10 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.$on("USERPROFILE_SUBMIT", function(_event, _args) {
       $scope.surveyModal.hide();
-      $scope.surveyModal.remove();
-      $scope.surveyModal = null;
+      setTimeout(function() {
+          $scope.surveyModal.remove();
+          $scope.surveyModal = null;
+      }, 500);
     });
 
     $scope.userStartStopTracking = function() {
