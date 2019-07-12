@@ -389,7 +389,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 $scope.calibration = {};
                 shrinkCalibrationCard();
                 KVStore.set(CALIBRATION_KEY, $scope.calibration);
-                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig().then(function() {
+                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig()).then(function() {
                     $scope.setTrackingState(false);
                 });
                 return true;
