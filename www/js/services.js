@@ -27,7 +27,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     };
 
     this.putOne = function(key, data) {
-        var now = moment().unix();
+        var now = moment().valueOf() / 1000;
         var md = {
             "write_ts": now,
             "read_ts": now,

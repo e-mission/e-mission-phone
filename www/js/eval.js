@@ -135,7 +135,8 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             var ios_val = filter_vals[1];
         }
         if (ionic.Platform.isAndroid()) {
-            config.filter_time = android_val;
+            // android values are in milliseconds
+            config.filter_time = android_val * 1000;
         } else {
             config.filter_distance = ios_val;
         }
@@ -372,7 +373,9 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 $scope.generateTransition(ETENUM.START_CALIBRATION_PERIOD,
                     $scope.calibration.curr_test.id);
                 KVStore.set(CALIBRATION_KEY, $scope.calibration);
-                $scope.applyCollectionConfig($scope.calibration.full_config);
+                $scope.setTrackingState(true).then(function() {
+                    $scope.applyCollectionConfig($scope.calibration.full_config);
+                });
                 return true;
             },
             destructiveButtonClicked: function() {
@@ -386,7 +389,9 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 $scope.calibration = {};
                 shrinkCalibrationCard();
                 KVStore.set(CALIBRATION_KEY, $scope.calibration);
-                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig());
+                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig().then(function() {
+                    $scope.setTrackingState(false);
+                });
                 return true;
             }
         });
@@ -564,7 +569,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             device_manufacturer: $scope.device_info.manufacturer,
             device_model: $scope.device_info.model,
             device_version: $scope.device_info.version,
-            ts: moment().unix()
+            ts: moment().valueOf() / 1000
         }
         xPlatformSync().then(function() {
             return $ionicPopup.alert({template: "Finished sync, saving "+EVAL_TRANSITION_KEY+" of type "+eval_transition_type})
