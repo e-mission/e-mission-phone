@@ -10,7 +10,7 @@
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.splash.updatecheck',
+    'emission.splash.updatecheck', 'emission.services.email',
   'emission.intro', 'emission.main',
   'pascalprecht.translate'])
 
