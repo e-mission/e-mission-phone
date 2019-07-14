@@ -29,20 +29,23 @@ angular.module('emission.survey.enketo.launch', [
   }
 
   function launch(scope, type, opts) {
-    reset();
-    __opts = opts;
-    __modal_scope = scope;
-    __type = type;
-    $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
-      scope: __modal_scope
-    }).then(function (modal) {
-      __modal = modal;
-      __modal_scope.enketoSurvey = {
-        validateForm: validateForm,
-        hide: function() { __modal.hide(); },
-      }
-      surveyTypeMap[type](opts);
-      __modal.show();
+    return new Promise(function(resolve, reject) {
+      reset();
+      __opts = opts;
+      __modal_scope = scope;
+      __type = type;
+      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
+        scope: __modal_scope
+      }).then(function (modal) {
+        __modal = modal;
+        __modal_scope.enketoSurvey = {
+          disableDismiss: (opts && opts.disableDismiss) ? true : false,
+          validateForm: validateForm,
+          hide: function(success = false) { __modal.hide(); resolve(success); },
+        }
+        surveyTypeMap[type](opts);
+        __modal.show();
+      });
     });
   }
 
@@ -115,7 +118,7 @@ angular.module('emission.survey.enketo.launch', [
         if (__opts && __opts.trip) {
           __opts.trip.userSurveyAnswer = answer;
         }
-        __modal_scope.enketoSurvey.hide();
+        __modal_scope.enketoSurvey.hide(true);
         return;
       }
     });

@@ -22,7 +22,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($rootScope, $scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey, EnketoSurveyLaunch) {
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };
@@ -89,16 +89,21 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       $scope.userEmail = userEmail;
       CommHelper.registerUser(function(successResult) {
           const uuid = successResult.uuid;
-          return EnketoSurvey.getAllSurveyAnswers("manual/user_profile_survey"
+          return EnketoSurvey.getAllSurveyAnswers('manual/user_profile_survey'
           ).then(function(answers){
               return EnketoSurvey.getUserProfile({ uuid }, answers);
           }).then(function(userProfile){
-              if (userProfile) {
-                ionicToast.show(userEmail, 'middle', false, 2500);
-                $scope.finish();
-              } else {
-                $rootScope.confirmSurveyIntroMode = true;
-                $scope.next();
+            if (userProfile) {
+              ionicToast.show(userEmail, 'middle', false, 2500);
+              $scope.finish();
+            } else {
+              EnketoSurveyLaunch.launch($scope, 'UserProfile', { disableDismiss: true }
+              ).then(function(success){
+                if (success) {
+                  ionicToast.show(userEmail, 'middle', false, 2500);
+                  $scope.finish();
+                }
+              });
             }
           });
       }, function(errorResult) {
@@ -111,14 +116,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.finish();
     });
   };
-
-  /**
-   * Listen for USERPROFILE_SUBMIT
-   */
-  $scope.$on("USERPROFILE_SUBMIT", function(_event, _args) {
-    ionicToast.show($scope.userEmail, "middle", false, 2500);
-    $scope.finish();
-  });
 
   // Called each time the slide changes
   $scope.slideChanged = function(index) {
