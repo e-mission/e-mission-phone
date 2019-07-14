@@ -6,10 +6,13 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
 ])
 .factory('EnketoSurveyLaunch', function(
-  $ionicPopup, EnketoSurvey, CommHelper, $ionicModal
+  $ionicPopup, EnketoSurvey, CommHelper, $ionicModal, $ionicScrollDelegate
 ) {
   var __uuid = null;
   var __modal = null;
+  // survey type and init function mapping
+  // key: survey type (string)
+  // value: init function
   var surveyTypeMap = {
     UserProfile: initProfileSurvey,
     ConfirmSurvey: initConfirmSurvey,
@@ -20,7 +23,7 @@ angular.module('emission.survey.enketo.launch', [
 
   function reset() {
     if (__modal) {
-      __modal.remove();
+      __modal.remove(); // remove modal object inorder to reset everything and makes it ready for the next launch
     }
     __modal = null;
     __type = null;
@@ -28,9 +31,18 @@ angular.module('emission.survey.enketo.launch', [
     __opts = null;
   }
 
+  // launch the survey
   function launch(scope, type, opts) {
     return new Promise(function(resolve, reject) {
       reset();
+      // survey launch options
+      // available opts
+      // {
+      //    trip: tripgj // trip object to refer to if it is a trip-related survey or the confirm survey
+      //    disableDismiss: boolean // hide dismiss button (set to true if you wanted to force user to finish the survey)
+      //    onInit: function // called when the survey is launched
+      //    onNext: function // called when user clicked on next
+      // }
       __opts = opts;
       __modal_scope = scope;
       __type = type;
@@ -39,14 +51,25 @@ angular.module('emission.survey.enketo.launch', [
       }).then(function (modal) {
         __modal = modal;
         __modal_scope.enketoSurvey = {
+          // embed functions to make it available for the template to execute them
           disableDismiss: (opts && opts.disableDismiss) ? true : false,
           validateForm: validateForm,
+          onNext: onNext,
           hide: function(success = false) { __modal.hide(); resolve(success); },
         }
-        surveyTypeMap[type](opts);
+        surveyTypeMap[type](opts); // execute the initialize function based on type
         __modal.show();
+        if (__opts && __opts.onInit) {
+          __opts.onInit();
+        }
       });
     });
+  }
+
+  function onNext() {
+    if (__opts && __opts.onNext) {
+      __opts.onNext();
+    }
   }
 
   function initSurvey(params) {
