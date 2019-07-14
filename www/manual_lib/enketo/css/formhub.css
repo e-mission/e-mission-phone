@@ -355,7 +355,8 @@
   -ms-flex-wrap: nowrap;
   -moz-flex-wrap: nowrap;
   flex-wrap: nowrap;
-  position: relative;
+  /* position: relative; */
+  position: absolute; /* fix scrolling problem */
   min-height: 100%;
 }
 
