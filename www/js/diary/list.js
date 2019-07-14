@@ -31,23 +31,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
     $scope.confirmSurvey = function(trip) {
-      $rootScope.confirmSurveyTrip = trip;
-      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
-        scope: $scope
-      }).then(function (modal) {
-        $scope.surveyModal = modal;
-        $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
-        $scope.surveyModalHide = function() {
-          $scope.surveyModal.hide();
-          setTimeout(function() {
-              $scope.surveyModal.remove();
-              $scope.surveyModal = null;
-              $rootScope.confirmSurveyTrip = null;
-          }, 500);
-        }
-        EnketoSurveyLaunch.initConfirmSurvey();
-        $scope.surveyModal.show();
-      });
+      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip });
     }
 
   // Add option
@@ -782,9 +766,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $ionicPlatform.ready().then(function() {
-      // readAndUpdateForDay(moment().startOf('day'));
+      readAndUpdateForDay(moment().startOf('day'));
       // DEBUG
-      readAndUpdateForDay(moment('2015-07-22').startOf('day'));
+      // readAndUpdateForDay(moment('2015-07-22').startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from
@@ -806,15 +790,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               // page was already loaded, reload it automatically
           readAndUpdateForDay(day);
         }
-      });
-
-      $scope.$on("CONFIRMSURVEY_SUBMIT", function(_event, _args) {
-        $scope.surveyModal.hide();
-        setTimeout(function() {
-            $scope.surveyModal.remove();
-            $scope.surveyModal = null;
-            $rootScope.confirmSurveyTrip = null;
-        }, 500);
       });
     });
 });

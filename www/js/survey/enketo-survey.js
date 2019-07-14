@@ -6,9 +6,45 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
 ])
 .factory('EnketoSurveyLaunch', function(
-  $rootScope, $ionicPopup, EnketoSurvey, CommHelper
+  $ionicPopup, EnketoSurvey, CommHelper, $ionicModal
 ) {
   var __uuid = null;
+  var __modal = null;
+  var surveyTypeMap = {
+    UserProfile: initProfileSurvey,
+    ConfirmSurvey: initConfirmSurvey,
+  };
+  var __type = null;
+  var __modal_scope = null;
+  var __opts = null;
+
+  function reset() {
+    if (__modal) {
+      __modal.remove();
+    }
+    __modal = null;
+    __type = null;
+    __modal_scope = null;
+    __opts = null;
+  }
+
+  function launch(scope, type, opts) {
+    reset();
+    __opts = opts;
+    __modal_scope = scope;
+    __type = type;
+    $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
+      scope: __modal_scope
+    }).then(function (modal) {
+      __modal = modal;
+      __modal_scope.enketoSurvey = {
+        validateForm: validateForm,
+        hide: function() { __modal.hide(); },
+      }
+      surveyTypeMap[type](opts);
+      __modal.show();
+    });
+  }
 
   function initSurvey(params) {
     return EnketoSurvey.init({
@@ -28,7 +64,7 @@ angular.module('emission.survey.enketo.launch', [
     });
   }
 
-  function initConfirmSurvey() {
+  function initConfirmSurvey(opts) {
     return initSurvey({
       form_location: 'json/trip-end-survey_v9.json',
       opts: {
@@ -36,11 +72,11 @@ angular.module('emission.survey.enketo.launch', [
           data_key: 'manual/confirm_survey',
         },
       },
-      trip: $rootScope.confirmSurveyTrip,
+      trip: opts.trip,
     });
   }
 
-  function initProfileSurvey() {
+  function initProfileSurvey(opts) {
     let promise;
     if (__uuid) {
       promise = Promise.resolve(__uuid);
@@ -76,23 +112,14 @@ angular.module('emission.survey.enketo.launch', [
         const answer = EnketoSurvey.populateLabels(
           EnketoSurvey.makeAnswerFromAnswerData(data)
         );
-        resetView();
-        if ($rootScope.confirmSurveyTrip) {
-          $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
-          $rootScope.$broadcast('CONFIRMSURVEY_SUBMIT');
+        if (__opts && __opts.trip) {
+          __opts.trip.userSurveyAnswer = answer;
         }
-        if ($rootScope.confirmSurveyUserProfile) {
-          $rootScope.confirmSurveyUserProfile = false;
-          $rootScope.$broadcast('USERPROFILE_SUBMIT');
-        }
+        __modal_scope.enketoSurvey.hide();
         return;
       }
     });
   }
 
-  return {
-    initConfirmSurvey: initConfirmSurvey,
-    initProfileSurvey: initProfileSurvey,
-    validateForm: validateForm,
-  };
+  return { launch };
 });
