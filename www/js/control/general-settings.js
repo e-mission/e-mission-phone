@@ -17,7 +17,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
-               StartPrefs, ControlHelper,
+               StartPrefs, ControlHelper, EmailHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                UpdateCheck,
@@ -51,7 +51,11 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    $scope.emailLog = ControlHelper.emailLog;
+    $scope.emailLog = function () {
+        // Passing true, we want to send logs
+        EmailHelper.sendEmail("loggerDB")
+    };
+
     $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {

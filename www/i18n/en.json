@@ -2,6 +2,7 @@
     "loading" : "Loading...",
     "map-refresh": "Refresh",
     "map-fixmap": "Fix Map",
+    "pull-to-refresh": "Pull to refresh",
 
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
@@ -25,14 +26,14 @@
         "keep-muted": "Keep muted"
     },
 
-    "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size='+3'>&#x263B;</font> or <font size='+3'>&#x2639;</font> incident",
+    "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a ☻ or ☹ incident",
 
     "tour-next": "Next",
     "tour-previous": "Previous",
     "tour-finish": "Finish",
 
     "trip-confirm": {
-        "recenttrip": "Recent trip from: {{startTime}} &rarr;  to: {{endTime}}",
+        "recenttrip": "Recent trip from: {{startTime}} → to: {{endTime}}",
         "continue": "Continue",
         "done": "Done",
         "services-please-fill-in": "Please fill in the {{text}} not listed.",
@@ -126,7 +127,9 @@
         "calorie-data-change-decrease": " decrease over a week",
         "carbon-data-change-increase": " increase over a week",
         "carbon-data-change-decrease": " decrease over a week",
-        "pick-a-date": "Pick a date"
+        "pick-a-date": "Pick a date",
+        "trips": "trips",
+        "custom": "Custom"
     },
 
     "diary": {
@@ -203,7 +206,7 @@
     "details":{
         "speed": "Speed",
         "time": "Temps",
-        "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident",
+        "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a ☻ or ☹ incident",
         "tour-sectionList-content": "Trip sections, along with times and modes",
         "tour-sectionPct-content": "% of time spent in each mode for this trip"
     },
@@ -225,10 +228,19 @@
 
     "post-trip-manual-incident-time" : "Choose incident time",
 
-    "recent":{
+    "email-service":{
         "email-account-not-configured": "Email account is not configured, cannot send email",
         "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
-        "going-to-email": "Going to email database from {{parentDir}}/userCacheDB" 
+        "going-to-email": "Going to email database from {{parentDir}}",
+        "email-log":{
+            "subject-logs": "emission logs",
+            "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
+        },
+        "no-email-address-configured": "No email address configured.",
+        "email-data":{
+            "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
+            "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
+        }
     },
    
     "consent":{
