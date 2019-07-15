@@ -26,8 +26,10 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
 
   $scope.mapCtrl.start_ts = $stateParams.start_ts;
   $scope.mapCtrl.end_ts = $stateParams.end_ts;
-  if (($scope.mapCtrl.start_ts == 0) || ($scope.mapCtrl.end_ts == 0)) {
-    Logger.log("BUG 413 check: stateParams = "+JSON.stringify($stateParams));
+  if (($scope.mapCtrl.start_ts == null) || ($scope.mapCtrl.end_ts == null)
+       || ($scope.mapCtrl.start_ts == 0) || ($scope.mapCtrl.end_ts == 0)) {
+    Logger.log("BUG 413 check: stateParams = "+JSON.stringify($stateParams)+
+        " mapCtrl = "+$state.mapCtrl.start_ts+","+$state.mapCtrl.end_ts);
   }
 
   $scope.$on('$ionicView.enter', function() {
@@ -39,8 +41,10 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
         $stateParams.start_ts+" end = "+$stateParams.end_ts);
     $scope.mapCtrl.start_ts = $stateParams.start_ts;
     $scope.mapCtrl.end_ts = $stateParams.end_ts;
-    if (($scope.mapCtrl.start_ts == 0) || ($scope.mapCtrl.end_ts == 0)) {
-      Logger.log("BUG 413 check: stateParams = "+JSON.stringify($stateParams));
+    if (($scope.mapCtrl.start_ts == null) || ($scope.mapCtrl.end_ts == null)
+         || ($scope.mapCtrl.start_ts == 0) || ($scope.mapCtrl.end_ts == 0)) {
+      Logger.log("BUG 413 check: stateParams = "+JSON.stringify($stateParams)+
+        " mapCtrl = "+$state.mapCtrl.start_ts+","+$state.mapCtrl.end_ts);
     }
     $scope.draftMode = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
     $scope.draftPurpose = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
