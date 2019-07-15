@@ -25,7 +25,6 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
             });
         }
 
-        // true if email logs, false if email cache
         this.sendEmail = function (database) {
             getEmailConfig().then(function (address) {
                 var parentDir = "unknown";
