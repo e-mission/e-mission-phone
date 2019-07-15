@@ -53,7 +53,7 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.emailLog = function () {
         // Passing true, we want to send logs
-        EmailHelper.sendEmail(true)
+        EmailHelper.sendEmail("loggerDB")
     };
 
     $scope.userData = []

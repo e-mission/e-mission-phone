@@ -77,7 +77,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     }
 
     $scope.emailLog = function () {
-        EmailHelper.sendEmail(true);
+        EmailHelper.sendEmail("loggerDB");
     }
 
     $scope.refreshEntries();
@@ -106,7 +106,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     }
 
     $scope.emailCache = function () {
-        EmailHelper.sendEmail(false);
+        EmailHelper.sendEmail("userCacheDB");
     }
 
     $scope.config.keys = []

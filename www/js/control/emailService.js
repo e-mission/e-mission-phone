@@ -26,7 +26,7 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
         }
 
         // true if email logs, false if email cache
-        this.sendEmail = function (isLog) {
+        this.sendEmail = function (database) {
             getEmailConfig().then(function (address) {
                 var parentDir = "unknown";
 
@@ -49,13 +49,8 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
                     alert("parentDir unexpectedly = " + parentDir + "!")
                 }
 
-                if (isLog == true) {
-                    window.Logger.log(window.Logger.LEVEL_INFO, "Going to email log");
-                    parentDir = parentDir + "/loggerDB";
-                } else {
-                    window.Logger.log(window.Logger.LEVEL_INFO, "Going to email user cache");
-                    parentDir = parentDir + "/userCacheDB";
-                }
+                window.Logger.log(window.Logger.LEVEL_INFO, "Going to email " + database);
+                parentDir = parentDir + "/" + database;
                 /*
                 window.Logger.log(window.Logger.LEVEL_INFO,
                     "Going to export logs to "+parentDir);
@@ -66,8 +61,8 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
                     attachments: [
                         parentDir
                     ],
-                    subject: $translate.instant('email-service.email.subject-logs'),
-                    body: $translate.instant('email-service.email.body-please-fill-in-what-is-wrong')
+                    subject: $translate.instant('email-service.email-log.subject-logs'),
+                    body: $translate.instant('email-service.email-log.body-please-fill-in-what-is-wrong')
                 }
 
                 $cordovaEmailComposer.open(email).then(function () {
