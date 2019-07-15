@@ -402,28 +402,8 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.editUserProfile = function() {
-        $rootScope.confirmSurveyUserProfile = true;
-        $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
-          scope: $scope
-        }).then(function (modal) {
-          $scope.surveyModal = modal;
-          $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
-          $scope.surveyModalHide = function() {
-            EnketoSurveyLaunch.resetView();
-            $scope.surveyModal.hide();
-            $scope.surveyModal.remove();
-            $scope.surveyModal = null;
-          }
-          EnketoSurveyLaunch.initProfileSurvey();
-          $scope.surveyModal.show();
-        });
+        EnketoSurveyLaunch.launch($scope, 'UserProfile');
     };
-
-    $scope.$on("USERPROFILE_SUBMIT", function(_event, _args) {
-      $scope.surveyModal.hide();
-      $scope.surveyModal.remove();
-      $scope.surveyModal = null;
-    });
 
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){

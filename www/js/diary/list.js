@@ -31,22 +31,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
     $scope.confirmSurvey = function(trip) {
-      $rootScope.confirmSurveyTrip = trip;
-      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
-        scope: $scope
-      }).then(function (modal) {
-        $scope.surveyModal = modal;
-        $scope.surveyValidateForm = EnketoSurveyLaunch.validateForm;
-        $scope.surveyModalHide = function() {
-          EnketoSurveyLaunch.resetView();
-          $scope.surveyModal.hide();
-          $scope.surveyModal.remove();
-          $scope.surveyModal = null;
-          $rootScope.confirmSurveyTrip = null;
-        }
-        EnketoSurveyLaunch.initConfirmSurvey();
-        $scope.surveyModal.show();
-      });
+      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip });
     }
 
   // Add option
@@ -805,13 +790,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
               // page was already loaded, reload it automatically
           readAndUpdateForDay(day);
         }
-      });
-
-      $scope.$on("CONFIRMSURVEY_SUBMIT", function(_event, _args) {
-        $scope.surveyModal.hide();
-        $scope.surveyModal.remove();
-        $scope.surveyModal = null;
-        $rootScope.confirmSurveyTrip = null;
       });
     });
 });

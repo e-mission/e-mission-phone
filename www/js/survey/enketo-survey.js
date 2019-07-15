@@ -6,9 +6,71 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
 ])
 .factory('EnketoSurveyLaunch', function(
-  $rootScope, $ionicPopup, EnketoSurvey, CommHelper
+  $ionicPopup, EnketoSurvey, CommHelper, $ionicModal, $ionicScrollDelegate
 ) {
   var __uuid = null;
+  var __modal = null;
+  // survey type and init function mapping
+  // key: survey type (string)
+  // value: init function
+  var surveyTypeMap = {
+    UserProfile: initProfileSurvey,
+    ConfirmSurvey: initConfirmSurvey,
+  };
+  var __type = null;
+  var __modal_scope = null;
+  var __opts = null;
+
+  function reset() {
+    if (__modal) {
+      __modal.remove(); // remove modal object inorder to reset everything and makes it ready for the next launch
+    }
+    __modal = null;
+    __type = null;
+    __modal_scope = null;
+    __opts = null;
+  }
+
+  // launch the survey
+  function launch(scope, type, opts) {
+    return new Promise(function(resolve, reject) {
+      reset();
+      // survey launch options
+      // available opts
+      // {
+      //    trip: tripgj // trip object to refer to if it is a trip-related survey or the confirm survey
+      //    disableDismiss: boolean // hide dismiss button (set to true if you wanted to force user to finish the survey)
+      //    onInit: function // called when the survey is launched
+      //    onNext: function // called when user clicked on next
+      // }
+      __opts = opts;
+      __modal_scope = scope;
+      __type = type;
+      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', {
+        scope: __modal_scope
+      }).then(function (modal) {
+        __modal = modal;
+        __modal_scope.enketoSurvey = {
+          // embed functions to make it available for the template to execute them
+          disableDismiss: (opts && opts.disableDismiss) ? true : false,
+          validateForm: validateForm,
+          onNext: onNext,
+          hide: function(success = false) { __modal.hide(); resolve(success); },
+        }
+        surveyTypeMap[type](opts); // execute the initialize function based on type
+        __modal.show();
+        if (__opts && __opts.onInit) {
+          __opts.onInit();
+        }
+      });
+    });
+  }
+
+  function onNext() {
+    if (__opts && __opts.onNext) {
+      __opts.onNext();
+    }
+  }
 
   function initSurvey(params) {
     return EnketoSurvey.init({
@@ -28,7 +90,7 @@ angular.module('emission.survey.enketo.launch', [
     });
   }
 
-  function initConfirmSurvey() {
+  function initConfirmSurvey(opts) {
     return initSurvey({
       form_location: 'json/trip-end-survey_v9.json',
       opts: {
@@ -36,11 +98,11 @@ angular.module('emission.survey.enketo.launch', [
           data_key: 'manual/confirm_survey',
         },
       },
-      trip: $rootScope.confirmSurveyTrip,
+      trip: opts.trip,
     });
   }
 
-  function initProfileSurvey() {
+  function initProfileSurvey(opts) {
     let promise;
     if (__uuid) {
       promise = Promise.resolve(__uuid);
@@ -66,11 +128,6 @@ angular.module('emission.survey.enketo.launch', [
     });
   }
 
-  function resetView() {
-    EnketoSurvey.getState().form.resetView();
-    $('.enketo-plugin article > form').remove();
-  }
-
   function validateForm() {
     return EnketoSurvey.validateForm()
     .then(function(valid){
@@ -81,24 +138,14 @@ angular.module('emission.survey.enketo.launch', [
         const answer = EnketoSurvey.populateLabels(
           EnketoSurvey.makeAnswerFromAnswerData(data)
         );
-        resetView();
-        if ($rootScope.confirmSurveyTrip) {
-          $rootScope.confirmSurveyTrip.userSurveyAnswer = answer;
-          $rootScope.$broadcast('CONFIRMSURVEY_SUBMIT');
+        if (__opts && __opts.trip) {
+          __opts.trip.userSurveyAnswer = answer;
         }
-        if ($rootScope.confirmSurveyUserProfile) {
-          $rootScope.confirmSurveyUserProfile = false;
-          $rootScope.$broadcast('USERPROFILE_SUBMIT');
-        }
+        __modal_scope.enketoSurvey.hide(true);
         return;
       }
     });
   }
 
-  return {
-    initConfirmSurvey: initConfirmSurvey,
-    initProfileSurvey: initProfileSurvey,
-    validateForm: validateForm,
-    resetView: resetView,
-  };
+  return { launch };
 });
