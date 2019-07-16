@@ -1,14 +1,10 @@
 'use strict';
 
 angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.kvstore",
-    "emission.services", "emission.main.control.collection",
-    "emission.main.control.sync"])
-
-.controller('EvalCtrl', function($window, $rootScope, $scope, $ionicPlatform,
+    "emission.services", "emission.eval.services"])
+.controller('EvalCtrl', function($rootScope, $scope, $ionicPlatform,
                                  $ionicModal, $ionicPopup, $ionicActionSheet,
-                                 $http, $timeout, KVStore, Config, ControlHelper,
-                                 ControlCollectionHelper, ControlSyncHelper,
-                                 Logger) {
+                                 $http, $timeout, KVStore, Config, EvalServices, Logger) {
 
     const MILLISECONDS = Math.pow(10, 6)
 
@@ -39,7 +35,6 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     const EVAL_SETTINGS_KEY = "local/eval_settings";
     const EVAL_TRIP_KEY = "local/eval_trip";
 
-    const EVAL_TRANSITION_KEY = "manual/evaluation_transition";
     const ETENUM = {
         START_CALIBRATION_PERIOD: "START_CALIBRATION_PERIOD",
         STOP_CALIBRATION_PERIOD: "STOP_CALIBRATION_PERIOD",
@@ -345,6 +340,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     }
 
     $scope.selectCalibrationTest = function() {
+        EvalServices.setNoExperimentConfig(expandForPlatform(POWER_CONTROL_SETTINGS));
         var calibrationButtons = $scope.sel_spec.full_spec.calibration_tests.map(
             function(ct) {
                 return {text: ct.id, test: ct};
@@ -355,11 +351,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             cancelText: "Cancel",
             buttons: calibrationButtons,
             buttonClicked: function(index, button) {
-                if ((angular.isDefined($scope.calibration.curr_test) &&
-                     angular.isDefined($scope.calibration.curr_test.id))) {
-                    $scope.generateTransition(ETENUM.STOP_CALIBRATION_PERIOD,
-                        $scope.calibration.curr_test.id);
-                }
+                var old_test = $scope.calibration.curr_test;
                 $scope.calibration.curr_test = button.test;
                 $scope.calibration.full_config = expandForPlatform($scope.calibration.curr_test.config.sensing_config);
                 expandCalibrationCard();
@@ -370,12 +362,23 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                     $scope.calibration.gj = {data: toGeojsonCT($scope.calibration.curr_test)};
                     $scope.calibration.gj.pointToLayer = pointFormat;
                 }
-                $scope.generateTransition(ETENUM.START_CALIBRATION_PERIOD,
-                    $scope.calibration.curr_test.id);
-                KVStore.set(CALIBRATION_KEY, $scope.calibration);
-                $scope.setTrackingState(true).then(function() {
-                    $scope.applyCollectionConfig($scope.calibration.full_config);
-                });
+                var isTrackingOn = !($scope.calibration.curr_test.config.id === "STOP_TRACKING");
+                Logger.log("New state has tracking "+isTrackingOn);
+                if ((angular.isDefined(old_test) &&
+                     angular.isDefined(old_test.id))) {
+                    // Switching directly between calibration regimes
+                    EvalServices.switchRange(
+                        EvalServices.getTransitionData(ETENUM.STOP_CALIBRATION_PERIOD,
+                            old_test.id, $scope),
+                        EvalServices.getTransitionData(ETENUM.START_CALIBRATION_PERIOD,
+                            $scope.calibration.curr_test.id, $scope),
+                        $scope.calibration.full_config, isTrackingOn);
+                } else {
+                    EvalServices.startRange(
+                        EvalServices.getTransitionData(ETENUM.START_CALIBRATION_PERIOD,
+                            $scope.calibration.curr_test.id, $scope),
+                        $scope.calibration.full_config, isTrackingOn);
+                }
                 return true;
             },
             destructiveButtonClicked: function() {
@@ -383,15 +386,13 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 // "Restore defaults" without having selected a calibration
                 // test earlier.
                 if (angular.isDefined($scope.calibration.curr_test.id)) {
-                    $scope.generateTransition(ETENUM.STOP_CALIBRATION_PERIOD,
-                        $scope.calibration.curr_test.id);
+                    EvalServices.endRange(EvalServices.getTransitionData(
+                        ETENUM.STOP_CALIBRATION_PERIOD,
+                        $scope.calibration.curr_test.id, $scope));
                 }
                 $scope.calibration = {};
                 shrinkCalibrationCard();
                 KVStore.set(CALIBRATION_KEY, $scope.calibration);
-                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig()).then(function() {
-                    $scope.setTrackingState(false);
-                });
                 return true;
             }
         });
@@ -515,114 +516,6 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     }
 
     /*
-     * BEGIN: persistence code. Everything above this that does not invoke one of these
-     * deals only with local state.
-     */
-
-    var xPlatformSync = function() {
-        if (ionic.Platform.isAndroid()) {
-            return new Promise(function(resolve, reject) {
-                ControlSyncHelper.forceSync();
-                $timeout(resolve(), 30000);
-            });
-        } else {
-            return ControlSyncHelper.forceSync();
-        }
-    }
-
-    $scope.applyCollectionConfig = function(new_config) {
-        return ControlCollectionHelper.getConfig().then(function(curr_config) {
-            if (!curr_config.is_duty_cycling && new_config.is_duty_cycling) {
-                // we want to be careful here because now that we are duty cycling,
-                // we won't push this data until the next trip is complete
-                // so let's force sync while we still can
-                return $ionicPopup.alert({template: "Moving from always on -> duty cycling, forcing sync"})
-                .then(function(result) {
-                    return xPlatformSync();
-                });
-            } else {
-                return Promise.resolve();
-            }
-        }).then(function() {
-            return ControlCollectionHelper.setConfig(new_config).then(function() {
-                $rootScope.$broadcast('control.update.complete', 'collection config');
-            }).catch(function(err) {
-                Logger.displayError("Error while setting collection config", err);
-            });
-        }).catch(function(err) {
-            Logger.displayError("Error while forcing sync", err);
-        });
-    }
-
-    // we need to pass in the trip id as well since we re-use the same function
-    // for both calibration and evaluation
-    $scope.generateTransition = function(eval_transition_type, trip_id) {
-        // we want to store the battery state on every transition to avoid
-        // gaps at the beginning or end of an evaluation period
-        // unfortunately, we don't currently expose a method to store the 
-        // battery data, so let's call force sync, which is guaranteed to 
-        // store battery data, whether or not it sends it to the server
-        var data = {
-            transition: eval_transition_type,
-            trip_id: trip_id, // either calibration or evaluation
-            spec_id: $scope.sel_spec.full_spec.id,
-            device_manufacturer: $scope.device_info.manufacturer,
-            device_model: $scope.device_info.model,
-            device_version: $scope.device_info.version,
-            ts: moment().valueOf() / 1000
-        }
-        xPlatformSync().then(function() {
-            return $ionicPopup.alert({template: "Finished sync, saving "+EVAL_TRANSITION_KEY+" of type "+eval_transition_type})
-            .then(function(result) {
-                return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY, data).then(function() {
-                    return $ionicPopup.alert({template: "Successfully saved "+EVAL_TRANSITION_KEY+" of type "+eval_transition_type});
-                });
-            });
-        }).catch(function(err) {
-            Logger.displayError("Error while saving transition", err);
-        });
-    }
-
-    $scope.setTrackingState = function(targetTrackingState) {
-        if (targetTrackingState) {
-            return ControlCollectionHelper.forceTransition('START_TRACKING');
-        } else {
-            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
-        }
-    };
-
-    $scope.readConstants = function() {
-        // returns a promise, so it can be used in both reset and restore cases
-        /*
-         * Populate device information for sending and for display
-         */
-        $scope.device_info = {
-            "manufacturer": device.manufacturer,
-            "model": device.model,
-            "version": device.version,
-        }
-        $window.cordova.plugins.BEMDataCollection.getAccuracyOptions().then(function(accuracyOptions) {
-            $scope.accuracyOptions = accuracyOptions;
-        });
-    }
-
-    $scope.readEmail = function() {
-        if (!angular.isDefined($scope.curr_phone.email)) {
-            ControlHelper.getUserEmail().then(function(response) {
-                $scope.$apply(function() {
-                    if (response == null) {
-                        $scope.curr_phone.email = "Not logged in";
-                    } else {
-                        $scope.curr_phone.email = response;
-                    }
-                });
-            }).catch(function(error) {
-                Logger.displayError("Error while reading current login", error);
-            });
-        }
-    }
-
-    /*
      * All the initialization that is not relevant to the current stored state.
      * This is mainly display stuff since we don't currently persist display state.
      */
@@ -678,8 +571,8 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
          */
 
         $ionicPlatform.ready().then(function() {
-            $scope.readConstants();
-            $scope.readEmail();
+            EvalServices.readConstants($scope);
+            EvalServices.readEmail($scope);
             KVStore.remove(SEL_SPEC_KEY);
             KVStore.remove(CURR_PHONE_KEY);
             KVStore.remove(CALIBRATION_KEY);
@@ -708,9 +601,11 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
          */
 
         $ionicPlatform.ready().then(function() {
-            $scope.readConstants();
+            EvalServices.readConstants($scope);
             readOrBlank(SEL_SPEC_KEY, "sel_spec");
-            readOrBlank(CURR_PHONE_KEY, "curr_phone").then($scope.readEmail);
+            readOrBlank(CURR_PHONE_KEY, "curr_phone").then(function() {
+                EvalServices.readEmail($scope);
+            });
             readOrBlank(CALIBRATION_KEY, "calibration");
             readOrBlank(EVAL_SETTINGS_KEY, "eval_settings");
             readOrBlank(EVAL_TRIP_KEY, "eval_trip");
@@ -720,4 +615,5 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     // Initialize on controller creation
     $scope.reloadAndRefresh();
 
-})
+
+});
