@@ -208,6 +208,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     }
 
     $scope.selectSensingSettings = function() {
+        EvalServices.setNoExperimentConfig(expandForPlatform(POWER_CONTROL_SETTINGS));
         var evaluationButtons = [];
         if ($scope.curr_phone.isAccuracyControl) {
             evaluationButtons.push({text: "fixed:ACCURACY_CONTROL",
@@ -240,34 +241,38 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             cancelText: "Cancel",
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
-                if (angular.isDefined($scope.eval_settings.name)) {
-                    $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
-                        $scope.eval_settings.config_wrapper.id);
-                    if ($scope.eval_settings.config_wrapper.id != "POWER_CONTROL") {
-                        $scope.setTrackingState(true);
-                    }
-                }
+                var old_settings = angular.copy($scope.eval_settings);
                 $scope.eval_settings.config_wrapper = button.config_wrapper;
                 $scope.eval_settings.full_config = expandForPlatform(button.config_wrapper.sensing_config);
                 $scope.eval_settings.name = button.text;
-                $scope.generateTransition(ETENUM.START_EVALUATION_PERIOD,
-                    $scope.eval_settings.config_wrapper.id);
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
-                $scope.applyCollectionConfig($scope.eval_settings.full_config);
-                if ($scope.eval_settings.config_wrapper.id == "POWER_CONTROL") {
-                    $scope.setTrackingState(false);
+                var isTrackingOn = !($scope.eval_settings.config_wrapper.id === "POWER_CONTROL");
+                if (angular.isDefined(old_settings) &&
+                        angular.isDefined(old_settings.name)) {
+                    EvalServices.switchRange(
+                        EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_PERIOD,
+                            old_settings.name, $scope),
+                        EvalServices.getTransitionData(ETENUM.START_EVALUATION_PERIOD,
+                            $scope.eval_settings.name, $scope),
+                        $scope.eval_settings.full_config, isTrackingOn);
+                } else {
+                    EvalServices.startRange(
+                        EvalServices.getTransitionData(ETENUM.START_EVALUATION_PERIOD,
+                            $scope.eval_settings.name, $scope),
+                        $scope.eval_settings.full_config, isTrackingOn);
                 }
+                old_settings = angular.undefined;
                 return true;
             },
             destructiveButtonClicked: function() {
                 if (angular.isDefined($scope.eval_settings.name)) {
-                    $scope.generateTransition(ETENUM.STOP_EVALUATION_PERIOD,
-                        $scope.eval_settings.config_wrapper.id);
+                    EvalServices.endRange(EvalServices.getTransitionData(
+                        ETENUM.STOP_EVALUATION_PERIOD,
+                        $scope.eval_settings.name, $scope));
                 }
                 $scope.eval_settings = {};
+                shrinkEvalCard();
                 KVStore.set(EVAL_SETTINGS_KEY, $scope.eval_settings);
-                $scope.applyCollectionConfig(getPlatformSpecificDefaultConfig());
-                $scope.setTrackingState(true);
                 return true;
             }
         });
@@ -379,6 +384,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                             $scope.calibration.curr_test.id, $scope),
                         $scope.calibration.full_config, isTrackingOn);
                 }
+                old_test = angular.undefined;
                 return true;
             },
             destructiveButtonClicked: function() {
@@ -502,14 +508,16 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     $scope.startEvalTrip = function() {
         $scope.eval_trip.ongoing_trip = true;
         $scope.eval_trip.waiting_for_trip_start = false;
-        $scope.generateTransition(ETENUM.START_EVALUATION_TRIP,
-            $scope.eval_trip.raw.id);
+        EvalServices.generateTransition(
+            EvalServices.getTransitionData(ETENUM.START_EVALUATION_TRIP,
+                $scope.eval_trip.raw.id, $scope));
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
     }
 
     $scope.endEvalTrip = function() {
-        $scope.generateTransition(ETENUM.STOP_EVALUATION_TRIP,
-            $scope.eval_trip.raw.id);
+        EvalServices.generateTransition(
+            EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_TRIP,
+                $scope.eval_trip.raw.id, $scope));
         $scope.eval_trip.ongoing_trip = false;
         $scope.eval_trip = {};
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);

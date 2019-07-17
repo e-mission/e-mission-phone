@@ -23,7 +23,7 @@ angular.module('emission.eval.services', ['emission.plugin.logger',
 
     // we need to pass in the trip id as well since we re-use the same function
     // for both calibration and evaluation
-    var generateTransition = function(transition_data) {
+    this.generateTransition = function(transition_data) {
         return $window.cordova.plugins.BEMUserCache.putMessage(EVAL_TRANSITION_KEY,
             transition_data);
     }
@@ -107,7 +107,7 @@ angular.module('emission.eval.services', ['emission.plugin.logger',
     }
 
     this.startRange = function(transition_data, config, tracking_state) {
-        return generateTransition(transition_data)
+        return this.generateTransition(transition_data)
             .then(Promise.all([storeBatteryReading(),
                     applyCollectionConfig(config)
                         .then(setTrackingState(tracking_state))]))
@@ -118,15 +118,15 @@ angular.module('emission.eval.services', ['emission.plugin.logger',
         return Promise.all([storeBatteryReading(),
                     setTrackingState(false)
                         .then(applyCollectionConfig(this.NO_EXP_CONFIG))])
-            .then(generateTransition(transition_data))
+            .then(this.generateTransition(transition_data))
             .then(xPlatformSync)
     }
 
     this.switchRange = function(old_transition_data, new_transition_data,
             new_config, new_tracking_state) {
         return storeBatteryReading()
-            .then(generateTransition(old_transition_data))
-            .then(generateTransition(new_transition_data))
+            .then(this.generateTransition(old_transition_data))
+            .then(this.generateTransition(new_transition_data))
             .then(storeBatteryReading())
             .then(setTrackingState(new_tracking_state))
             .then(applyCollectionConfig(new_config))
