@@ -34,6 +34,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     const CALIBRATION_KEY = "local/calibration";
     const EVAL_SETTINGS_KEY = "local/eval_settings";
     const EVAL_TRIP_KEY = "local/eval_trip";
+    const EVAL_SECTION_KEY = "local/eval_section";
 
     const ETENUM = {
         START_CALIBRATION_PERIOD: "START_CALIBRATION_PERIOD",
@@ -41,7 +42,9 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         START_EVALUATION_PERIOD: "START_EVALUATION_PERIOD",
         STOP_EVALUATION_PERIOD: "STOP_EVALUATION_PERIOD",
         START_EVALUATION_TRIP: "START_EVALUATION_TRIP",
-        STOP_EVALUATION_TRIP: "STOP_EVALUATION_TRIP"
+        STOP_EVALUATION_TRIP: "STOP_EVALUATION_TRIP",
+        START_EVALUATION_SECTION: "START_EVALUATION_SECTION",
+        STOP_EVALUATION_SECTION: "STOP_EVALUATION_SECTION"
     }
 
     /*
@@ -461,24 +464,24 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
      */
 
 
-    var toGeojsonFC = function(eval_trip) {
+    var toGeojsonFC = function(eval_section) {
         var featureList = [
-            GeoJSON.parse(eval_trip.start_loc, {Point: "coordinates", extra: {
+            GeoJSON.parse(eval_section.start_loc, {Point: "coordinates", extra: {
                 icon_style: {className: 'leaflet-div-icon-start', iconSize: [12, 12], html: "<div class='inner-icon'>"}
             }}),
-            GeoJSON.parse(eval_trip.end_loc, {Point: "coordinates", extra: {
+            GeoJSON.parse(eval_section.end_loc, {Point: "coordinates", extra: {
                 icon_style: {className: 'leaflet-div-icon-stop', iconSize: [12, 12], html: "<div class='inner-icon'>"},
             }}),
-            GeoJSON.parse(eval_trip, {LineString: "route_coords"})
+            GeoJSON.parse(eval_section, {LineString: "route_coords"})
         ]
         return {
             type: "FeatureCollection",
             features: featureList,
             properties: {
-                id: eval_trip.id,
-                name: eval_trip.name,
-                mode: eval_trip.mode,
-                waypoints: eval_trip.route_waypoints
+                id: eval_section.id,
+                name: eval_section.name,
+                mode: eval_section.mode,
+                waypoints: eval_section.route_waypoints
             }
         }
     }
@@ -495,11 +498,26 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             buttons: evaluationButtons,
             buttonClicked: function(index, button) {
                 $scope.eval_trip.waiting_for_trip_start = true;
+                $scope.eval_trip.ongoing_trip = false;
                 $scope.eval_trip.raw = button.trip;
-                var curr_fc = toGeojsonFC(button.trip);
-                $scope.eval_trip.gj = {data: curr_fc}
-                $scope.eval_trip.gj.pointToLayer = pointFormat;
+                if (!angular.isUndefined($scope.eval_trip.raw.legs)) {
+                    $scope.eval_section.raw = $scope.eval_trip.raw.legs[0];
+                    $scope.eval_section.index = 0;
+                    $scope.eval_trip.multi_leg = true;
+                    $scope.eval_trip.on_last_leg = false;
+                } else {
+                    $scope.eval_section.raw = $scope.eval_trip.raw;
+                    $scope.eval_section.index = 0;
+                    $scope.eval_trip.multi_leg = false;
+                    $scope.eval_trip.on_last_leg = true;
+                }
+                // Since we have not even started the trip, we are not at a stop
+                $scope.eval_trip.stopped = false;
+                var curr_fc = toGeojsonFC($scope.eval_section.raw);
+                $scope.eval_section.gj = {data: curr_fc}
+                $scope.eval_section.gj.pointToLayer = pointFormat;
                 KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
+                KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
                 return true;
             }
         });
@@ -508,19 +526,68 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     $scope.startEvalTrip = function() {
         $scope.eval_trip.ongoing_trip = true;
         $scope.eval_trip.waiting_for_trip_start = false;
+        $scope.eval_trip.stopped = false;
         EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.START_EVALUATION_TRIP,
-                $scope.eval_trip.raw.id, $scope));
+                $scope.eval_trip.raw.id, $scope)).then(function() {
+            // using promises to ensure proper ordering between trip start and
+            // section start
+            EvalServices.generateTransition(
+                EvalServices.getTransitionData(ETENUM.START_EVALUATION_SECTION,
+                    $scope.eval_section.raw.id, $scope));
+        });
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
+        KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
     }
 
     $scope.endEvalTrip = function() {
+        // Need to do store the old trip id because otherwise it gets reset before
+        // the async call is complete
+        var stopping_trip_id = $scope.eval_trip.raw.id;
         EvalServices.generateTransition(
-            EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_TRIP,
-                $scope.eval_trip.raw.id, $scope));
+            EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
+                $scope.eval_section.raw.id, $scope)).then(function() {
+            // using promises to ensure proper ordering between section end and trip end
+            EvalServices.generateTransition(
+                EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_TRIP,
+                    stopping_trip_id, $scope));
+        });
         $scope.eval_trip.ongoing_trip = false;
+        $scope.eval_trip.waiting_for_trip_start = true;
+        $scope.eval_trip.stopped = true;
+        $scope.eval_trip.on_last_leg = false;
+        $scope.eval_section = {};
         $scope.eval_trip = {};
+        KVStore.set(EVAL_SECTION_KEY, $scope.eval_leg);
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
+    }
+
+    $scope.enterStop = function() {
+        $scope.eval_trip.stopped = true;
+        if ($scope.eval_trip.multi_leg) {
+            var new_index = $scope.eval_section.index+1;
+            $scope.eval_section.raw = $scope.eval_trip.raw.legs[new_index];
+            $scope.eval_section.index = new_index;
+            var curr_fc = toGeojsonFC($scope.eval_section.raw);
+            $scope.eval_section.gj = {data: curr_fc}
+            $scope.eval_section.gj.pointToLayer = pointFormat;
+            if (new_index == $scope.eval_trip.raw.legs.length - 1) {
+                $scope.eval_trip.on_last_leg = true;
+            }
+        } else {
+            $ionicPopup.alert({template: "Should never stop on a single leg trip"});
+        }
+        EvalServices.generateTransition(
+            EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
+                $scope.eval_section.id, $scope));
+        KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
+    }
+
+    $scope.exitStop = function() {
+        $scope.eval_trip.stopped = false;
+        EvalServices.generateTransition(
+            EvalServices.getTransitionData(ETENUM.START_EVALUATION_SECTION,
+                $scope.eval_section.raw.id, $scope));
     }
 
     /*
@@ -571,6 +638,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         $scope.calibration = {};
         $scope.eval_settings = {};
         $scope.eval_trip = {};
+        $scope.eval_section = {};
 
         $scope.nonStateInit();
 
@@ -586,6 +654,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             KVStore.remove(CALIBRATION_KEY);
             KVStore.remove(EVAL_SETTINGS_KEY);
             KVStore.remove(EVAL_TRIP_KEY);
+            KVStore.remove(EVAL_SECTION_KEY);
         });
     }
 
@@ -617,6 +686,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             readOrBlank(CALIBRATION_KEY, "calibration");
             readOrBlank(EVAL_SETTINGS_KEY, "eval_settings");
             readOrBlank(EVAL_TRIP_KEY, "eval_trip");
+            readOrBlank(EVAL_SECTION_KEY, "eval_section");
         });
     }
 

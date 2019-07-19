@@ -42,16 +42,26 @@
                 </button>
             </button-bar>
             <div class="row" style="color:black;text-align:center">Trip</div>
-            <button-bar class="button-bar row">
-                <button class="button button-block trip-control-button"
-                    ng-disabled="!eval_trip.waiting_for_trip_start"
-                    ng-click="startEvalTrip()"> Start </button>
-                <button class="button button-block trip-control-button"
-                    ng-disabled="!eval_trip.ongoing_trip"
-                    ng-click="endEvalTrip()"> End </button>
+            <button-bar class="button-bar col">
+                <button-bar class="button-bar row">
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.waiting_for_trip_start"
+                        ng-click="startEvalTrip()"> Start </button>
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.on_last_leg"
+                        ng-click="endEvalTrip()"> End </button>
+                </button-bar>
+                <button-bar class="button-bar row">
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || eval_trip.stopped || eval_trip.on_last_leg"
+                        ng-click="enterStop()"> Stop </button>
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || !eval_trip.stopped || eval_trip.on_last_leg"
+                        ng-click="exitStop()"> Resume </button>
+                </button-bar>
             </button-bar>
             </div>
-            <leaflet ng-if="eval_trip.raw.id" geojson="eval_trip.gj"
+            <leaflet ng-if="eval_trip.raw.id" geojson="eval_section.gj"
                 id="eval-trip" defaults="mapCtrl.defaults"
             height="50%" width="100%" data-tap-disabled="true">
             </leaflet>
