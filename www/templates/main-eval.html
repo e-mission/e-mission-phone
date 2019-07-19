@@ -56,7 +56,7 @@
                         ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || eval_trip.stopped || eval_trip.on_last_leg"
                         ng-click="enterStop()"> Stop </button>
                     <button class="button button-block trip-control-button"
-                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || !eval_trip.stopped || eval_trip.on_last_leg"
+                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || !eval_trip.stopped"
                         ng-click="exitStop()"> Resume </button>
                 </button-bar>
             </button-bar>

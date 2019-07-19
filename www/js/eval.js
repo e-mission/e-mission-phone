@@ -571,9 +571,6 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
             var curr_fc = toGeojsonFC($scope.eval_section.raw);
             $scope.eval_section.gj = {data: curr_fc}
             $scope.eval_section.gj.pointToLayer = pointFormat;
-            if (new_index == $scope.eval_trip.raw.legs.length - 1) {
-                $scope.eval_trip.on_last_leg = true;
-            }
         } else {
             $ionicPopup.alert({template: "Should never stop on a single leg trip"});
         }
@@ -588,6 +585,9 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.START_EVALUATION_SECTION,
                 $scope.eval_section.raw.id, $scope));
+        if ($scope.eval_section.index == $scope.eval_trip.raw.legs.length - 1) {
+            $scope.eval_trip.on_last_leg = true;
+        }
     }
 
     /*
