@@ -71,7 +71,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     return new Promise(function(resolve, reject) {
         deploy.extract(function(res) {
             console.log("extract progress = "+res);
-            var expectedResult = $window.cordova.platformId == "ios"? "done": "true";
+            var expectedResult = "done";
             if(res == expectedResult) {
                 resolve(res);
             } else {
