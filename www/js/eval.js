@@ -232,8 +232,9 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         } else {
             evaluationButtons = $scope.sel_spec.full_spec.sensing_settings.map(
                 function(ss) {
-                    var cw = find_config(ss, $scope.curr_phone.profile)
-                    return {text: ss.name + ":"+cw.id,
+                    var pss = ss[ionic.Platform.platform()];
+                    var cw = find_config(pss, $scope.curr_phone.profile)
+                    return {text: pss.name + ":"+cw.id,
                         config_wrapper: cw};
                 });
         };
