@@ -322,6 +322,10 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
       return L.marker(latlng, {icon: L.divIcon(feature.properties.icon_style)})
     };
 
+    var styleFeature = function(feature) {
+      return feature.properties.style;
+    };
+
     var toGeojsonCT = function(calibration_test) {
         var featureList = [
             GeoJSON.parse(calibration_test.start_loc, {Point: "coordinates", extra: {
@@ -465,15 +469,13 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
      */
 
 
-    var toGeojsonFC = function(eval_section) {
+    var toGeojsonTravel = function(eval_section) {
+        eval_section.start_loc.properties.style = {color: 'green', fill: true}
+        eval_section.end_loc.properties.style = {color: 'red', fill: true}
         var featureList = [
-            GeoJSON.parse(eval_section.start_loc, {Point: "coordinates", extra: {
-                icon_style: {className: 'leaflet-div-icon-start', iconSize: [12, 12], html: "<div class='inner-icon'>"}
-            }}),
-            GeoJSON.parse(eval_section.end_loc, {Point: "coordinates", extra: {
-                icon_style: {className: 'leaflet-div-icon-stop', iconSize: [12, 12], html: "<div class='inner-icon'>"},
-            }}),
-            GeoJSON.parse(eval_section, {LineString: "route_coords"})
+            eval_section.start_loc,
+            eval_section.end_loc,
+            eval_section.route_coords
         ]
         return {
             type: "FeatureCollection",
@@ -484,6 +486,32 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 mode: eval_section.mode,
                 waypoints: eval_section.route_waypoints
             }
+        }
+    }
+
+    var toGeojsonShim = function(eval_section) {
+        eval_section.loc.properties.style = {color: "purple",
+            fill: true}
+        var featureList = [
+            eval_section.loc
+        ]
+        return {
+            type: "FeatureCollection",
+            features: featureList,
+            properties: {
+                id: eval_section.id,
+                name: eval_section.name,
+                mode: eval_section.mode,
+                waypoints: eval_section.route_waypoints
+            }
+        }
+    }
+
+    var toGeojsonFC = function(eval_section) {
+        if(eval_section.type == "TRAVEL") {
+            return toGeojsonTravel(eval_section);
+        } else {
+            return toGeojsonShim(eval_section);
         }
     }
 
@@ -501,22 +529,20 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
                 $scope.eval_trip.waiting_for_trip_start = true;
                 $scope.eval_trip.ongoing_trip = false;
                 $scope.eval_trip.raw = button.trip;
-                if (!angular.isUndefined($scope.eval_trip.raw.legs)) {
-                    $scope.eval_section.raw = $scope.eval_trip.raw.legs[0];
-                    $scope.eval_section.index = 0;
-                    $scope.eval_trip.multi_leg = true;
-                    $scope.eval_trip.on_last_leg = false;
-                } else {
-                    $scope.eval_section.raw = $scope.eval_trip.raw;
-                    $scope.eval_section.index = 0;
+                $scope.eval_section.raw = $scope.eval_trip.raw.legs[0];
+                $scope.eval_section.index = 0;
+                if($scope.eval_trip.raw.legs.length == 1) {
                     $scope.eval_trip.multi_leg = false;
                     $scope.eval_trip.on_last_leg = true;
+                } else {
+                    $scope.eval_trip.multi_leg = true;
+                    $scope.eval_trip.on_last_leg = false;
                 }
                 // Since we have not even started the trip, we are not at a stop
                 $scope.eval_trip.stopped = false;
                 var curr_fc = toGeojsonFC($scope.eval_section.raw);
                 $scope.eval_section.gj = {data: curr_fc}
-                $scope.eval_section.gj.pointToLayer = pointFormat;
+                $scope.eval_section.gj.style = styleFeature;
                 KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
                 KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
                 return true;
@@ -563,32 +589,34 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
     }
 
-    $scope.enterStop = function() {
-        $scope.eval_trip.stopped = true;
+    var endSection = function() {
         if ($scope.eval_trip.multi_leg) {
             var new_index = $scope.eval_section.index+1;
             $scope.eval_section.raw = $scope.eval_trip.raw.legs[new_index];
             $scope.eval_section.index = new_index;
             var curr_fc = toGeojsonFC($scope.eval_section.raw);
             $scope.eval_section.gj = {data: curr_fc}
-            $scope.eval_section.gj.pointToLayer = pointFormat;
+            $scope.eval_section.gj.style = styleFeature;
         } else {
             $ionicPopup.alert({template: "Should never stop on a single leg trip"});
         }
-        EvalServices.generateTransition(
+        KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
+        return EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
                 $scope.eval_section.id, $scope));
-        KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
     }
 
-    $scope.exitStop = function() {
-        $scope.eval_trip.stopped = false;
-        EvalServices.generateTransition(
-            EvalServices.getTransitionData(ETENUM.START_EVALUATION_SECTION,
-                $scope.eval_section.raw.id, $scope));
+    var startSection = function() {
         if ($scope.eval_section.index == $scope.eval_trip.raw.legs.length - 1) {
             $scope.eval_trip.on_last_leg = true;
         }
+        return EvalServices.generateTransition(
+            EvalServices.getTransitionData(ETENUM.START_EVALUATION_SECTION,
+                $scope.eval_section.raw.id, $scope));
+    }
+
+    $scope.moveToNextSection = function() {
+        return endSection().then(startSection());
     }
 
     /*

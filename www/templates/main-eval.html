@@ -41,7 +41,13 @@
                     {{eval_trip.raw.name}}
                 </button>
             </button-bar>
-            <div class="row" style="color:black;text-align:center">Trip</div>
+            <div class="row" style="color:black;text-align:center">
+                <div ng-if="eval_trip.waiting_for_trip_start">Start the trip when ready </div>
+                <div ng-if="eval_trip.ongoing_trip">
+                    <span ng-if="eval_section.raw.type == 'TRAVEL'">{{eval_section.raw.mode}} : </span>
+                     {{eval_section.raw.name}}
+                </div>
+            </div>
             <button-bar class="button-bar col">
                 <button-bar class="button-bar row">
                     <button class="button button-block trip-control-button"
@@ -54,10 +60,10 @@
                 <button-bar class="button-bar row">
                     <button class="button button-block trip-control-button"
                         ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || eval_trip.stopped || eval_trip.on_last_leg"
-                        ng-click="enterStop()"> Stop </button>
+                        ng-click="moveToNextSection()"> Next </button>
                     <button class="button button-block trip-control-button"
-                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || !eval_trip.stopped"
-                        ng-click="exitStop()"> Resume </button>
+                        ng-disabled="true"
+                        ng-click="exitStop()"> Stop </button>
                 </button-bar>
             </button-bar>
             </div>
