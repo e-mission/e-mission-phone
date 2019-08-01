@@ -144,7 +144,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
         usercacheFn = $scope.config.key_data_mapping[$scope.selected.key]["fn"]
         usercacheKey = $scope.config.key_data_mapping[$scope.selected.key]["key"]
     }
-    usercacheFn(usercacheKey).then(function(entryList) {
+    usercacheFn(usercacheKey, true).then(function(entryList) {
       $scope.entries = [];
       $scope.$apply(function() {
           for (i = 0; i < entryList.length; i++) {
