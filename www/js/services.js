@@ -532,18 +532,35 @@ angular.module('emission.services', ['emission.plugin.logger',
   };
 
   var defaultCarbonDatasetCode = 'US';
-  var currentCarbonDatasetCode;
+  var currentCarbonDatasetCode = defaultCarbonDatasetCode;
 
-  this.initialize = function() {
-    currentCarbonDatasetCode = defaultCarbonDatasetCode;
-    var value = KVStore.getDirect(CARBON_DATASET_KEY);
-    Logger.log("CarbonDatasetHelper.initialize() obtained value from storage [" + value + "]");
-    if (!value) {
-      value = defaultCarbonDatasetCode;
-      Logger.log("CarbonDatasetHelper.initialize() no value in storage, using [" + value + "] instead");
+  // we need to call the method from within a promise in initialize()
+  // and using this.setCurrentCarbonDatasetLocale doesn't seem to work
+  var setCurrentCarbonDatasetLocale = function(localeCode) {
+    for (var code in carbonDatasets) {
+      if (code == localeCode) {
+        currentCarbonDatasetCode = localeCode;
+        break;
+      }
     }
-    this.setCurrentCarbonDatasetLocale(value);
-  };
+  }
+
+  this.loadCarbonDatasetLocale = function() {
+    return KVStore.get(CARBON_DATASET_KEY).then(function(localeCode) {
+      Logger.log("CarbonDatasetHelper.loadCarbonDatasetLocale() obtained value from storage [" + localeCode + "]");
+      if (!localeCode) {
+        localeCode = defaultCarbonDatasetCode;
+        Logger.log("CarbonDatasetHelper.loadCarbonDatasetLocale() no value in storage, using [" + localeCode + "] instead");
+      }
+      setCurrentCarbonDatasetLocale(localeCode);
+    });
+  }
+
+  this.saveCurrentCarbonDatasetLocale = function (localeCode) {
+    setCurrentCarbonDatasetLocale(localeCode);
+    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
+    Logger.log("CarbonDatasetHelper.saveCurrentCarbonDatasetLocale() saved value [" + currentCarbonDatasetCode + "] to storage");
+  }
 
   this.getCarbonDatasetOptions = function() {
     var options = [];
@@ -556,33 +573,13 @@ angular.module('emission.services', ['emission.plugin.logger',
     return options;
   };
 
-  this.getCurrentCarbonDatasetName = function () {
-    if (!currentCarbonDatasetCode) this.initialize();
-    return carbonDatasets[currentCarbonDatasetCode].regionName;
-  };
-
   this.getCurrentCarbonDatasetCode = function () {
-    if (!currentCarbonDatasetCode) this.initialize();
     return currentCarbonDatasetCode;
   };
 
   this.getCurrentCarbonDatasetFootprint = function () {
-    if (!currentCarbonDatasetCode) this.initialize();
     return carbonDatasets[currentCarbonDatasetCode].footprintData;
   };
-
-  this.setCurrentCarbonDatasetLocale = function (localeCode) {
-    var updatedDatasetCode = defaultCarbonDatasetCode;
-    for (var code in carbonDatasets) {
-      if (code == localeCode) {
-        updatedDatasetCode = localeCode;
-        break;
-      }
-    }
-    currentCarbonDatasetCode = updatedDatasetCode;
-    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
-    Logger.log("CarbonDatasetHelper.setCurrentCarbonDatasetLocale() requested " + localeCode + ", using " + currentCarbonDatasetCode);
-  }
 })
 
 // common configuration methods across all screens

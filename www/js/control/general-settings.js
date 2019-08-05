@@ -439,7 +439,7 @@ angular.module('emission.main.control',['emission.services',
           cancelText: $translate.instant('general-settings.cancel'),
           buttonClicked: function(index, button) {
             console.log("changeCarbonDataset(): chose locale " + button.value);
-            CarbonDatasetHelper.setCurrentCarbonDatasetLocale(button.value);
+            CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
             $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
             return true;
           }

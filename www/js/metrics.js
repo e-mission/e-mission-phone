@@ -10,7 +10,7 @@ angular.module('emission.main.metrics',['nvd3',
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore,
+                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                     $rootScope, $location, $state, ReferHelper, $http, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
@@ -38,6 +38,10 @@ angular.module('emission.main.metrics',['nvd3',
     };
 
     $ionicPlatform.ready(function() {
+        CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
+          // refresh the page so that all metrics are re-calculated with the correct footprint dataset
+          $scope.doRefresh();
+        });
         $scope.onCurrentTrip();
     });
 
