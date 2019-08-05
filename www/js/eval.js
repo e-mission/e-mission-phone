@@ -603,7 +603,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
         return EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
-                $scope.eval_section.id, $scope));
+                $scope.eval_section.raw.id, $scope));
     }
 
     var startSection = function() {
