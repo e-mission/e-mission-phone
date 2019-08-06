@@ -9,8 +9,7 @@
     "moment-timezone": "^0.5.0",
     "leaflet": "^0.7.7",
     "ui-leaflet": "^1.0.0",
-    "Leaflet.awesome-markers": "^2.0.2",
-    "ionic-datepicker": "git://github.com/rajeshwarpatlolla/ionic-datepicker.git#d87c2ffc09d31d0468740ddff6b91e8b2c0635d1"
+    "Leaflet.awesome-markers": "^2.0.2"
   },
   "resolutions": {
     "angular": "1.5.3",
