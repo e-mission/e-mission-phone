@@ -554,31 +554,23 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         $scope.eval_trip.ongoing_trip = true;
         $scope.eval_trip.waiting_for_trip_start = false;
         $scope.eval_trip.stopped = false;
-        EvalServices.generateTransition(
+        KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
+        KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
+        return EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.START_EVALUATION_TRIP,
                 $scope.eval_trip.raw.id, $scope)).then(function() {
             // using promises to ensure proper ordering between trip start and
             // section start
-            EvalServices.generateTransition(
+            return EvalServices.generateTransition(
                 EvalServices.getTransitionData(ETENUM.START_EVALUATION_SECTION,
                     $scope.eval_section.raw.id, $scope));
         });
-        KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
-        KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
     }
 
     $scope.endEvalTrip = function() {
         // Need to do store the old trip id because otherwise it gets reset before
         // the async call is complete
         var stopping_trip_id = $scope.eval_trip.raw.id;
-        EvalServices.generateTransition(
-            EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
-                $scope.eval_section.raw.id, $scope)).then(function() {
-            // using promises to ensure proper ordering between section end and trip end
-            EvalServices.generateTransition(
-                EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_TRIP,
-                    stopping_trip_id, $scope));
-        });
         $scope.eval_trip.ongoing_trip = false;
         $scope.eval_trip.waiting_for_trip_start = true;
         $scope.eval_trip.stopped = true;
@@ -587,9 +579,20 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         $scope.eval_trip = {};
         KVStore.set(EVAL_SECTION_KEY, $scope.eval_leg);
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
+        return EvalServices.generateTransition(
+            EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
+                $scope.eval_section.raw.id, $scope)).then(function() {
+            // using promises to ensure proper ordering between section end and trip end
+            return EvalServices.generateTransition(
+                EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_TRIP,
+                    stopping_trip_id, $scope));
+        });
     }
 
     var endSection = function() {
+        // Need to store the old section id because otherwise it gets reset
+        // before the async call is complete
+        var stopping_section_id = $scope.eval_section.raw.id;
         if ($scope.eval_trip.multi_leg) {
             var new_index = $scope.eval_section.index+1;
             $scope.eval_section.raw = $scope.eval_trip.raw.legs[new_index];
@@ -603,7 +606,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         KVStore.set(EVAL_SECTION_KEY, $scope.eval_section);
         return EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
-                $scope.eval_section.raw.id, $scope));
+                stopping_section_id, $scope));
     }
 
     var startSection = function() {
