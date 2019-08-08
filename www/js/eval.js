@@ -571,6 +571,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         // Need to do store the old trip id because otherwise it gets reset before
         // the async call is complete
         var stopping_trip_id = $scope.eval_trip.raw.id;
+        var stopping_section_id = $scope.eval_section.raw.id;
         $scope.eval_trip.ongoing_trip = false;
         $scope.eval_trip.waiting_for_trip_start = true;
         $scope.eval_trip.stopped = true;
@@ -581,7 +582,7 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
         KVStore.set(EVAL_TRIP_KEY, $scope.eval_trip);
         return EvalServices.generateTransition(
             EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_SECTION,
-                $scope.eval_section.raw.id, $scope)).then(function() {
+                stopping_section_id, $scope)).then(function() {
             // using promises to ensure proper ordering between section end and trip end
             return EvalServices.generateTransition(
                 EvalServices.getTransitionData(ETENUM.STOP_EVALUATION_TRIP,
