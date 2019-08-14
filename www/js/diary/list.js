@@ -281,6 +281,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         "icon ion-android-train": "navy",
         "icon fas fa-tram": "darkslateblue",
         "icon fas fa-subway": "darkcyan",
+        "icon lightrail fas fa-subway": "blue",
         "icon ion-android-car": "salmon",
         "icon ion-plane": "red"
       };
@@ -392,7 +393,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.userModes = [
-        "walk", "bicycle", "car", "bus", "train", "tram", "subway", "unicorn"
+        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
     ];
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 

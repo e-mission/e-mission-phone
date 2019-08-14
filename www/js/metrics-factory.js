@@ -9,7 +9,8 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     BICYCLING:    0,
     CAR:        267/1609,
     BUS:        278/1609,
-    TRAIN:      92/1609,
+    LIGHT_RAIL: 120/1609,
+    TRAIN:      74/1609,
     TRAM:       90/1609,
     SUBWAY:     84/1609,
     AIR_OR_HSR: 217/1609
@@ -32,7 +33,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
         result += footprint[mode] * mtokm(userMetrics[i].values);
       }
       else if (mode == 'IN_VEHICLE') {
-        result += ((footprint['CAR'] + footprint['BUS'] + footprint['TRAIN'] + footprint['TRAM'] + footprint['SUBWAY']) / 5) * mtokm(userMetrics[i].values);
+        result += ((footprint['CAR'] + footprint['BUS'] + footprint["LIGHT_RAIL"] + footprint['TRAIN'] + footprint['TRAM'] + footprint['SUBWAY']) / 6) * mtokm(userMetrics[i].values);
       }
       else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
@@ -210,6 +211,12 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
       }
     },
     "BUS": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "LIGHT_RAIL": {
       "ALL": {
         range: [0, Number.MAX_VALUE],
         mets: 0
