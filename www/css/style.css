@@ -842,6 +842,9 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Diary list tab */
 
+.lightrail {
+  color: blue
+}
 .dev-zone-input {
   padding: 7px 0; font-size: 16px; line-height: 22px; height: 36px;
 }
