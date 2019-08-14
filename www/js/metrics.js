@@ -39,8 +39,7 @@ angular.module('emission.main.metrics',['nvd3',
 
     $ionicPlatform.ready(function() {
         CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
-          // refresh the page so that all metrics are re-calculated with the correct footprint dataset
-          $scope.doRefresh();
+          getData();
         });
         $scope.onCurrentTrip();
     });
@@ -595,7 +594,7 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.chartDataAggr.count = aggCount? aggCount : [];
         $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
 
-        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed)
+        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed);
         $scope.fillFootprintAggVals(aggDistance);
    }
 
@@ -1063,10 +1062,6 @@ angular.module('emission.main.metrics',['nvd3',
 
   $scope.selectCtrl = {}
   initSelect();
-
-  $ionicPlatform.ready(function() {
-      getData();
-  });
 
   $scope.doRefresh = function() {
     first = true;
