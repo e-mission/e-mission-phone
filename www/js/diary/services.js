@@ -404,14 +404,62 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }
       };
 
-  var printUserInput = function(ui) {
-    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
-        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  var fmtTs = function(ts_in_secs, tz) {
+    return moment(ts_in_secs * 1000).tz(tz).format();
   }
 
-  dh.getUserInputForTrip = function(tripProp, userInputList) {
+  var printUserInput = function(ui) {
+    return fmtTs(ui.data.start_ts, ui.metadata.time_zone) + "("+ui.data.start_ts + ") -> "+
+           fmtTs(ui.data.end_ts, ui.metadata.time_zone) + "("+ui.data.end_ts + ")"+
+           " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  }
+
+  dh.getUserInputForTrip = function(tripgj, userInputList) {
+    console.log("Input list = "+userInputList.map(printUserInput));
+    var tripProp = tripgj.data.properties;
+    var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
-        return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
+        /*
+        console.log("startDelta "+userInput.data.label+
+            "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
+        console.log("endDelta = "+userInput.data.label+
+            "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
+        */
+        // logic described in
+        // https://github.com/e-mission/e-mission-docs/issues/423
+        if (isDraft) {
+            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
+                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+            console.log(logStr);
+            // Logger.log(logStr);
+            return (userInput.data.start_ts >= tripProp.start_ts
+                    || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                && userInput.data.end_ts <= tripProp.end_ts;
+        } else {
+            // we know that the trip is cleaned so we can use the fmt_time
+            // but the confirm objects are not necessarily filled out
+            var logStr = "Cleaned trip: comparing user = "
+                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+tripProp.start_fmt_time
+                +" -> "+tripProp.end_fmt_time
+                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
+                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
+            Logger.log(logStr);
+            return userInput.data.start_ts >= tripProp.start_ts
+                && (userInput.data.end_ts <= tripProp.end_ts ||
+                    (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
+        }
     });
     if (potentialCandidates.length === 0)  {
         Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
@@ -754,6 +802,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
           var filteredLocationList = sortedLocationList.filter(retainInRange);
 
+          // Fix for https://github.com/e-mission/e-mission-docs/issues/417
+          if (filteredLocationList.length == 0) {
+            return undefined;
+          }
+
           var tripStartPoint = filteredLocationList[0];
           var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
@@ -780,8 +833,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             properties: angular.copy(section_gj.features[0].properties)
           }
 
-          Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
-            " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
+          // Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
+          //  " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
           // customize to trip versus section properties
           trip_gj.properties.feature_type = "trip";
           trip_gj.properties.start_loc = features[0].geometry;
@@ -863,7 +916,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             var sortedTransitionList = transitionList.sort(tsEntrySort);
             /*
             sortedTransitionList.forEach(function(transition) {
-                console.log(JSON.stringify(transition));
+                console.log(moment(transition.data.ts * 1000).format()+":" + JSON.stringify(transition.data));
             });
             */
             var tripsList = transition2Trip(transitionList);

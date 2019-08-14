@@ -14,7 +14,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
     }
 })
 
-.controller('logCtrl', function(ControlHelper, $scope, $cordovaFile, $cordovaEmailComposer, $ionicPopup) {
+.controller('logCtrl', function(ControlHelper, $scope, EmailHelper) {
     console.log("Launching logCtr");
     var RETRIEVE_COUNT = 100;
     $scope.logCtrl = {};
@@ -76,12 +76,14 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
         }
     }
 
-    $scope.emailLog = ControlHelper.emailLog;
+    $scope.emailLog = function () {
+        EmailHelper.sendEmail("loggerDB");
+    }
 
     $scope.refreshEntries();
 })
 
-.controller('sensedDataCtrl', function($scope, $cordovaEmailComposer, $ionicActionSheet, $translate) {
+.controller('sensedDataCtrl', function($scope, $ionicActionSheet, EmailHelper) {
     var currentStart = 0;
 
     /* Let's keep a reference to the database for convenience */
@@ -103,49 +105,8 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
         },
     }
 
-    $scope.emailCache = function() {
-        var parentDir = "unknown";
-
-         $cordovaEmailComposer.isAvailable().then(function() {
-           // is available
-         }, function () {
-            alert($translate.instant('recent.email-account-not-configured'));
-            return;
-         });
-
-        if (ionic.Platform.isAndroid()) {
-            parentDir = "app://databases";
-        }
-        if (ionic.Platform.isIOS()) {
-            alert($translate.instant('recent.email-account-mail-app'));
-            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
-        }
-
-        /*
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "Going to export logs to "+parentDir);
-         */
-        alert($translate.instant('recent.going-to-email', {parentDir: parentDirs}));
-
-        var email = {
-            to: ['shankari@eecs.berkeley.edu'],
-            attachments: [
-                parentDir+"/userCacheDB"
-            ],
-            subject: 'emission logs',
-            body: 'please fill in what went wrong'
-        }
-
-        $cordovaEmailComposer.open(email).then(function() {
-           window.Logger.log(window.Logger.LEVEL_DEBUG,
-               "Email queued successfully");
-        },
-        function () {
-           // user cancelled email. in this case too, we want to remove the file
-           // so that the file creation earlier does not fail.
-           window.Logger.log(window.Logger.LEVEL_INFO,
-               "Email cancel reported, seems to be an error on android");
-        });
+    $scope.emailCache = function () {
+        EmailHelper.sendEmail("userCacheDB");
     }
 
     $scope.config.keys = []
@@ -201,7 +162,7 @@ angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
       // This should really be within a try/catch/finally block
       $scope.$broadcast('scroll.refreshComplete');
     }, function(error) {
-        window.logger.Logger.displayError("Error updating entries", error);
+        window.Logger.log(window.Logger.LEVEL_ERROR, "Error updating entries"+ error);
     })
   }
 

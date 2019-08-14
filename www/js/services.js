@@ -260,57 +260,10 @@ angular.module('emission.services', ['emission.plugin.logger',
 })
 .service('ControlHelper', function($cordovaEmailComposer,
                                    $ionicPopup,
+                                   $translate,
                                    CommHelper,
                                    Logger) {
-  this.emailLog = function() {
-        var parentDir = "unknown";
-
-         $cordovaEmailComposer.isAvailable().then(function() {
-           // is available
-         }, function () {
-            alert("Email account is not configured, cannot send email");
-            return;
-         });
-
-        if (ionic.Platform.isAndroid()) {
-            parentDir = "app://databases";
-        }
-        if (ionic.Platform.isIOS()) {
-            alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
-            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
-        }
-
-        if (parentDir == "unknown") {
-          alert("parentDir unexpectedly = "+parentDir+"!")
-        }
-
-        /*
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "Going to export logs to "+parentDir);
-         */
-        alert("Going to email database from "+parentDir+"/loggerDB");
-
-        var email = {
-            to: ['shankari@eecs.berkeley.edu'],
-            attachments: [
-                parentDir+"/loggerDB"
-            ],
-            subject: 'emission logs',
-            body: 'please fill in what went wrong'
-        }
-
-        $cordovaEmailComposer.open(email).then(function() {
-           window.Logger.log(window.Logger.LEVEL_DEBUG,
-               "Email queued successfully");
-        },
-        function () {
-           // user cancelled email. in this case too, we want to remove the file
-           // so that the file creation earlier does not fail.
-           window.Logger.log(window.Logger.LEVEL_INFO,
-               "Email cancel reported, seems to be an error on android");
-        });
-    };
-
+  
     this.writeFile = function(fileEntry, resultList) {
       // Create a FileWriter object for our FileEntry (log.txt).
     }
@@ -380,19 +333,15 @@ angular.module('emission.services', ['emission.plugin.logger',
                           attachFile = "app://cache/"+dumpFile;
                         }
                         if (ionic.Platform.isIOS()) {
-                          alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
+                          alert($translate.instant('email-service.email-account-mail-app'));
                         }
                         var email = {
                           to: [userEmail],
                           attachments: [
                             attachFile
                           ],
-                          subject: 'Data dump from '+startMoment.format(fmt)
-                          + " to " + endMoment.format(fmt),
-                          body: 'Data consists of a list of entries.\n'
-                          + 'Entry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \n'
-                          + 'Data can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n'
-                          + ' and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb'
+                          subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
+                          body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
                         }
                         $cordovaEmailComposer.open(email).then(resolve());
                       }

@@ -17,7 +17,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
-               StartPrefs, ControlHelper,
+               StartPrefs, ControlHelper, EmailHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
@@ -54,7 +54,11 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
-    $scope.emailLog = ControlHelper.emailLog;
+    $scope.emailLog = function () {
+        // Passing true, we want to send logs
+        EmailHelper.sendEmail("loggerDB")
+    };
+
     $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
