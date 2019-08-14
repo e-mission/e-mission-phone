@@ -1,11 +1,16 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.plugin.kvstore', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3',
+                                        'emission.services',
+                                        'ionic-datepicker',
+                                        'emission.main.metrics.factory',
+                                        'emission.plugin.kvstore',
+                                        'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore,
+                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                     $rootScope, $location, $state, ReferHelper, $http, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
@@ -33,6 +38,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     };
 
     $ionicPlatform.ready(function() {
+        CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
+          getData();
+        });
         $scope.onCurrentTrip();
     });
 
@@ -588,7 +596,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.chartDataAggr.count = aggCount? aggCount : [];
         $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
 
-        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed)
+        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed);
         $scope.fillFootprintAggVals(aggDistance);
    }
 
@@ -1056,10 +1064,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
   $scope.selectCtrl = {}
   initSelect();
-
-  $ionicPlatform.ready(function() {
-      getData();
-  });
 
   $scope.doRefresh = function() {
     first = true;

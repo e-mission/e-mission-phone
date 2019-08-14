@@ -6,7 +6,7 @@
 
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
-    
+
     "post-trip-prompt":{
         "notification-option-mute": "Mute",
         "notification-option-snooze": "Snooze",
@@ -49,7 +49,7 @@
 
     "trip-start-hours": "Start hours",
     "trip-start-duration": "Duration",
-    
+
     "control":{
         "profile": "Profile",
         "tracking": "Tracking",
@@ -76,9 +76,11 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify"
     },
-    
+
     "general-settings":{
         "choose-date" : "Choose date to download data",
+        "choose-dataset" : "Choose a dataset for carbon footprint calculations",
+        "carbon-dataset" : "Carbon dataset",
         "nuke-ui-state-only" : "UI state only",
         "nuke-native-cache-only" : "Native cache only",
         "nuke-everything" : "Everything",
@@ -158,7 +160,7 @@
     "user-height": "Height",
     "user-weight": "Weight",
     "user-age": "Age",
-    
+
     "main-metrics":{
         "dashboard": "Dashboard",
         "summary": "Summary",
@@ -183,7 +185,7 @@
     },
 
     "main-diary" : "Diary",
-    
+
     "main-heatmap":{
         "title": "Heatmap",
         "counts" : "Counts",
@@ -202,7 +204,7 @@
         "tour-mode": "Click here to filter your results by mode of transportation. The default is to show all modes.",
         "tour-get": "Click here to generate the heatmap."
     },
-    
+
     "details":{
         "speed": "Speed",
         "time": "Temps",
@@ -218,7 +220,7 @@
     "list-tour-datepicker-button" : "Use this to select the day you want to see.",
     "list-tour-diary-entry" : "Click on the map to see more details about each trip.",
     "list-tour-map-fix-button" : "Use this to fix the map tiles if they have not loaded properly.",
-    
+
     "service":{
         "reading-server": "Reading from server...",
         "reading-cache": "Reading from cache...",
@@ -242,7 +244,7 @@
             "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
         }
     },
-   
+
     "consent":{
         "button-accept": "I accept",
         "button-decline": "I refuse"
