@@ -4,7 +4,6 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
 
 .factory('FootprintHelper', function(CarbonDatasetHelper) {
   var fh = {};
-
   var mtokm = function(v) {
     return v / 1000;
   }
@@ -24,7 +23,7 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
         result += footprint[mode] * mtokm(userMetrics[i].values);
       }
       else if (mode == 'IN_VEHICLE') {
-        result += ((footprint['CAR'] + footprint['BUS'] + footprint['TRAIN']) / 3) * mtokm(userMetrics[i].values);
+        result += ((footprint['CAR'] + footprint['BUS'] + footprint["LIGHT_RAIL"] + footprint['TRAIN'] + footprint['TRAM'] + footprint['SUBWAY']) / 6) * mtokm(userMetrics[i].values);
       }
       else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
@@ -205,7 +204,25 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
         mets: 0
       }
     },
+    "LIGHT_RAIL": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
     "TRAIN": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "TRAM": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "SUBWAY": {
       "ALL": {
         range: [0, Number.MAX_VALUE],
         mets: 0

@@ -391,8 +391,6 @@ angular.module('emission.main.metrics',['nvd3',
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
-          console.log($scope.selectCtrl.fromDateTimestamp);
-          console.log($scope.selectCtrl.toDateTimestamp);
         }
         data = {
           freq: $scope.selectCtrl.pandaFreq,
@@ -1076,8 +1074,11 @@ angular.module('emission.main.metrics',['nvd3',
     "WALKING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "CAR":"ion-android-car",
-    "BUS":"ion-android-bus",
-    "TRAIN":"ion-android-train",
+    "BUS": "ion-android-bus",
+    "LIGHT_RAIL":"lightrail fas fa-subway",
+    "TRAIN": "ion-android-train",
+    "TRAM": "fas fa-tram",
+    "SUBWAY":"fas fa-subway",
     "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[key];
