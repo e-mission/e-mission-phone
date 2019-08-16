@@ -1,20 +1,9 @@
 'use strict';
 
-angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
+angular.module('emission.main.metrics.factory', ['emission.services', 'emission.plugin.kvstore'])
 
-.factory('FootprintHelper', function() {
+.factory('FootprintHelper', function(CarbonDatasetHelper) {
   var fh = {};
-  var footprint = {
-    WALKING:      0,
-    BICYCLING:    0,
-    CAR:        267/1609,
-    BUS:        278/1609,
-    LIGHT_RAIL: 120/1609,
-    TRAIN:      74/1609,
-    TRAM:       90/1609,
-    SUBWAY:     84/1609,
-    AIR_OR_HSR: 217/1609
-  }
   var mtokm = function(v) {
     return v / 1000;
   }
@@ -23,6 +12,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
   fh.getFootprintForMetrics = function(userMetrics) {
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;
@@ -42,9 +32,8 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return result;
   }
   fh.getLowestFootprintForDistance = function(distance) {
-    // Find the mode with the lowest carbon footprint (excluding non-motorized modes).
-    // Another option would be to pre-calculate and store this value only once.
-    var lowestFootprint = Number.MAX_VALUE;
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    var lowestFootprint = Number.MAX_SAFE_INTEGER;
     for (var mode in footprint) {
       if (mode == 'WALKING' || mode == 'BICYCLING') {
         // these modes aren't considered when determining the lowest carbon footprint
@@ -56,8 +45,7 @@ angular.module('emission.main.metrics.factory', ['emission.plugin.kvstore'])
     return lowestFootprint * mtokm(distance);
   }
   fh.getHighestFootprintForDistance = function(distance) {
-    // Find the mode with the highest carbon footprint.
-    // Another option would be to pre-calculate and store this value only once.
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
     var highestFootprint = 0;
     for (var mode in footprint) {
       highestFootprint = Math.max(highestFootprint, footprint[mode]);
