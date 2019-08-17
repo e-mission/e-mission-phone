@@ -398,8 +398,8 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:        267/1609,
         BUS:        278/1609,
         LIGHT_RAIL: 120/1609,
-        TRAIN:      74/1609,
-        TRAM:       90/1609,
+        SUBWAY:      74/1609,
+        TRAM:        90/1609,
         TRAIN:       92/1609,
         AIR_OR_HSR: 217/1609
       }
@@ -412,6 +412,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.14515,
         BUS:         0.04751,
         LIGHT_RAIL:  0.064,
+        SUBWAY:      0.064,
         TRAM:        0.064,
         TRAIN:       0.048,
         AIR_OR_HSR:  0.201
@@ -425,6 +426,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.139,   // Tremod (passenger car)
         BUS:         0.0535,  // Tremod (average city/coach)
         LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
         TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
         TRAIN:       0.048,   // Tremod (DE average short/long distance)
         AIR_OR_HSR:  0.201    // Tremod (DE airplane)
@@ -438,6 +440,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
         LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
         TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
         TRAIN:       0.048,   // Tremod (DE average short/long distance)
         AIR_OR_HSR:  0.201    // Tremod (DE airplane)
@@ -451,6 +454,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
         LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
         TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
         TRAIN:       0.048,   // Tremod (DE average short/long distance)
         AIR_OR_HSR:  0.201    // Tremod (DE airplane)
@@ -464,6 +468,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
         LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
         TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
         TRAIN:       0.048,   // Tremod (DE average short/long distance)
         AIR_OR_HSR:  0.201    // Tremod (DE airplane)
@@ -477,6 +482,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
         LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
         TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
         TRAIN:       0.048,   // Tremod (DE average short/long distance)
         AIR_OR_HSR:  0.201    // Tremod (DE airplane)
@@ -490,6 +496,7 @@ angular.module('emission.services', ['emission.plugin.logger',
         CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)
         LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
         TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
         TRAIN:       0.048,   // Tremod (DE average short/long distance)
         AIR_OR_HSR:  0.201    // Tremod (DE airplane)
