@@ -263,7 +263,7 @@ angular.module('emission.services', ['emission.plugin.logger',
                                    $translate,
                                    CommHelper,
                                    Logger) {
-  
+
     this.writeFile = function(fileEntry, resultList) {
       // Create a FileWriter object for our FileEntry (log.txt).
     }
@@ -411,9 +411,8 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.14515,
         BUS:         0.04751,
-        LIGHT_RAIL:  120/1609,// US Value
-        TRAIN:       74/1609, // US Value
-        TRAM:        90/1609, // US Value
+        LIGHT_RAIL:  0.064,
+        TRAM:        0.064,
         TRAIN:       0.048,
         AIR_OR_HSR:  0.201
       }
@@ -425,11 +424,10 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.139,   // Tremod (passenger car)
         BUS:         0.0535,  // Tremod (average city/coach)
-        LIGHT_RAIL:  120/1609,// US Value
-        TRAIN:       74/1609, // US Value
-        TRAM:        90/1609, // US Value
-        TRAIN:       0.048,   // Tremod (average short/long distance)
-        AIR_OR_HSR:  0.201    // Tremod (airplane)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
       }
     },
     FR: {
@@ -439,11 +437,10 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
-        LIGHT_RAIL:  120/1609,// US Value
-        TRAIN:       74/1609, // US Value
-        TRAM:        90/1609, // US Value
-        TRAIN:       0.048,   // Tremod (DE value)
-        AIR_OR_HSR:  0.201    // Tremod (airplane)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
       }
     },
     AT: {
@@ -453,11 +450,10 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
-        LIGHT_RAIL:  120/1609,// US Value
-        TRAIN:       74/1609, // US Value
-        TRAM:        90/1609, // US Value
-        TRAIN:       0.048,   // Tremod (DE value)
-        AIR_OR_HSR:  0.201    // Tremod (airplane)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
       }
     },
     SE: {
@@ -467,11 +463,10 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
-        LIGHT_RAIL:  120/1609,// US Value
-        TRAIN:       74/1609, // US Value
-        TRAM:        90/1609, // US Value
-        TRAIN:       0.048,   // Tremod (DE value)
-        AIR_OR_HSR:  0.201    // Tremod (airplane)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
       }
     },
     NO: {
@@ -481,8 +476,10 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
-        TRAIN:       0.048,   // Tremod (DE value)
-        AIR_OR_HSR:  0.201    // Tremod (airplane)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
       }
     },
     CH: {
@@ -492,11 +489,10 @@ angular.module('emission.services', ['emission.plugin.logger',
         BICYCLING:   0,
         CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
         BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)
-        LIGHT_RAIL:  120/1609, // US Value
-        TRAIN:       74/1609, // US Value
-        TRAM:        90/1609, // US Value
-        TRAIN:       0.048,   // Tremod (DE value)
-        AIR_OR_HSR:  0.201    // Tremod (airplane)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
       }
     }
   };
