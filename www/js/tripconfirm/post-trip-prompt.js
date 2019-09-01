@@ -238,10 +238,10 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     });
   };
 
-  $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
-  });
+  // $ionicPlatform.ready().then(function() {
+  //   ptap.registerTripEnd();
+  //   ptap.registerUserResponse();
+  // });
 
   return ptap;
 

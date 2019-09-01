@@ -245,10 +245,10 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
    * because they want to make it opt-in. Since the base app registers by
    * default, we need to explicitly unregister, not just comment out.
    */
-  $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
-  });
+  // $ionicPlatform.ready().then(function() {
+  //   ptap.registerTripEnd();
+  //   ptap.registerUserResponse();
+  // });
 
   return ptap;
 
