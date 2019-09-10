@@ -3,7 +3,7 @@
 angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
                                                'emission.plugin.kvstore'])
 
-.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, KVStore) {
+.factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, KVStore, $translate) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
 
@@ -122,7 +122,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     }
     $rootScope.progress = 0;
     var downloadPop = $ionicPopup.show({
-      title: "Downloading UI-only update",
+      title: $translate.instant('updatecheck.downloading-update'),
       template: '<progress class="download" value="{{progress}}" max="100"></progress>',
       scope: $rootScope,
       buttons: []
@@ -132,7 +132,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
       downloadPop.close();
       // alert("download -> extract");
       var extractPop = $ionicPopup.show({
-        title: "Extracting UI-only update",
+        title: $translate.instant('updatecheck.extracting-update'),
         template: '<progress class="download" value="{{progress}}" max="100"></progress>',
         scope: $rootScope,
         buttons: []
@@ -142,7 +142,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
           // alert("extract -> reload");
           Logger.log('Ionic Deploy: Update Success! ' + res);
           var reloadAlert = $ionicPopup.alert({
-            title: "Update done, reloading..."
+            title: $translate.instant('updatecheck.done')
           });
           reloadAlert.then(function(res) {
             uc.redirectPromise();
@@ -172,14 +172,14 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         Logger.log('Ionic Deploy: found update, asking user: ');
 
         $ionicPopup.show({
-            title: "Download new UI-only update?",
+            title: $translate.instant('updatecheck.download-new-ui'),
             templateUrl: 'templates/splash/release-notes.html',
             scope: $rootScope,
             buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.
-              text: 'Not now',
+              text: $translate.instant('updatecheck.download-not-now'),
               type: 'button-default',
         }, {
-              text: 'Apply',
+              text: $translate.instant('updatecheck.download-apply'),
               type: 'button-positive',
               onTap: function(e) {
                 return true;

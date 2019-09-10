@@ -406,7 +406,7 @@ img.center {
   color: #54DCC1;
   border-radius: 5px;
   display: block;
-  height: 140px;
+  /* height: 140px; */
   margin: 10px;
   margin-top:0px;
   position: relative;
@@ -554,9 +554,9 @@ h4.dashboard-headers{
   font-size: 20px;
 }
 
-#modes.slider{
-  height:145px !important;
-}
+/* #modes.slider{
+  height:245px !important;
+} */
 
 #modes.slider-slide{
   padding-top: 0 !important;
@@ -845,6 +845,9 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Diary list tab */
 
+.lightrail {
+  color: blue
+}
 .dev-zone-input {
   padding: 7px 0; font-size: 16px; line-height: 22px; height: 36px;
 }

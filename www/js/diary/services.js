@@ -4,7 +4,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.enketo-survey.service',
     'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker){
+.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
   //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
@@ -40,7 +40,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "BUS": "ion-android-bus",
+    "LIGHT_RAIL": "lightrail fas fa-subway",
     "TRAIN": "ion-android-train",
+    "TRAM": "fas fa-tram",
+    "SUBWAY": "fas fa-subway",
     "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
@@ -73,7 +76,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     //  RUNNING has been filtered in function above
     "IN_VEHICLE":"ion-speedometer",
     "BUS": "ion-android-bus",
+    "LIGHT_RAIL": "lightrail fas fa-subway",
     "TRAIN": "ion-android-train",
+    "TRAM": "fas fa-tram",
+    "SUBWAY": "fas fa-subway",
     "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
@@ -129,7 +135,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "IN_VEHICLE":"ion-speedometer",
     "CAR": "ion-android-car",
     "BUS": "ion-android-bus",
+    "LIGHT_RAIL": "lightrail fas fa-subway",
     "TRAIN": "ion-android-train",
+    "TRAM": "fas fa-tram",
+    "SUBWAY": "fas fa-subway",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
@@ -167,12 +176,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     return retVal;
   };
 
-  dh.getLocalTimeString = function(dt) {
-      var hr = ((dt.hour > 12))? dt.hour - 12 : dt.hour;
-      var post = ((dt.hour >= 12))? " pm" : " am";
-      var min = (dt.minute.toString().length == 1)? "0" + dt.minute.toString() : dt.minute.toString();
-      return hr + ":" + min + post;
-    }
+  dh.getLocalTimeString = function (dt) {
+    return moment(dt).format("LT");
+  };
 
   dh.getFormattedTime = function(ts_in_secs) {
     if (angular.isDefined(ts_in_secs)) {
@@ -310,7 +316,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.userModes = [
-        "walk", "bicycle", "car", "bus", "train", "unicorn"
+        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
     ];
   dh.showModes = function(section) {
     return function() {
@@ -398,7 +404,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             case "RUNNING": return getColoredStyle(baseDict, 'brown');
             case "BICYCLING": return getColoredStyle(baseDict, 'green');
             case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
+            case "LIGHT_RAIL": return getColoredStyle(baseDict, 'blue');
             case "TRAIN": return getColoredStyle(baseDict, 'skyblue');
+            case "TRAM": return getColoredStyle(baseDict, 'slateblue');
+            case "SUBWAY": return getColoredStyle(baseDict, 'darkcyan');
             case "BUS": return getColoredStyle(baseDict, 'navy');
             case "CAR": return getColoredStyle(baseDict, 'salmon');
             case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
@@ -408,10 +417,87 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         }
       };
 
+  var fmtTs = function(ts_in_secs, tz) {
+    return moment(ts_in_secs * 1000).tz(tz).format();
+  }
+
+  var printUserInput = function(ui) {
+    return fmtTs(ui.data.start_ts, ui.metadata.time_zone) + "("+ui.data.start_ts + ") -> "+
+           fmtTs(ui.data.end_ts, ui.metadata.time_zone) + "("+ui.data.end_ts + ")"+
+           " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  }
+
+  dh.getUserInputForTrip = function(tripgj, userInputList) {
+    console.log("Input list = "+userInputList.map(printUserInput));
+    var tripProp = tripgj.data.properties;
+    var isDraft = dh.isDraft(tripgj);
+    var potentialCandidates = userInputList.filter(function(userInput) {
+        /*
+        console.log("startDelta "+userInput.data.label+
+            "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
+        console.log("endDelta = "+userInput.data.label+
+            "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
+        */
+        // logic described in
+        // https://github.com/e-mission/e-mission-docs/issues/423
+        if (isDraft) {
+            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
+                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+            console.log(logStr);
+            // Logger.log(logStr);
+            return (userInput.data.start_ts >= tripProp.start_ts
+                    || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                && userInput.data.end_ts <= tripProp.end_ts;
+        } else {
+            // we know that the trip is cleaned so we can use the fmt_time
+            // but the confirm objects are not necessarily filled out
+            var logStr = "Cleaned trip: comparing user = "
+                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+tripProp.start_fmt_time
+                +" -> "+tripProp.end_fmt_time
+                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
+                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
+            Logger.log(logStr);
+            return userInput.data.start_ts >= tripProp.start_ts
+                && (userInput.data.end_ts <= tripProp.end_ts ||
+                    (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
+        }
+    });
+    if (potentialCandidates.length === 0)  {
+        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        return undefined;
+    }
+
+    if (potentialCandidates.length === 1)  {
+        Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  "+ printUserInput(potentialCandidates[0]));
+        return potentialCandidates[0];
+    }
+
+    Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
+    var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
+        return pc2.metadata.write_ts - pc1.metadata.write_ts;
+    });
+    var mostRecentEntry = sortedPC[0];
+    Logger.log("Returning mostRecentEntry "+printUserInput(mostRecentEntry));
+    return mostRecentEntry;
+  }
+
+
   return dh;
 })
 .factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, EnketoSurvey, Logger) {
+    $rootScope, CommonGraph, UnifiedDataLoader, EnketoSurvey, Logger, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -428,7 +514,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.updateFromDatabase = function(day) {
       console.log("About to show 'Reading from cache'");
       $ionicLoading.show({
-        template: 'Reading from cache...'
+        template: $translate.instant('service.reading-cache')
       });
       return window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
       .then(function (timelineDoc) {
@@ -449,7 +535,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.updateFromServer = function(day) {
       console.log("About to show 'Reading from server'");
       $ionicLoading.show({
-        template: 'Reading from server...'
+        template: $translate.instant('service.reading-server')
       });
       return CommHelper.getTimelineForDay(day).then(function(response) {
         var tripList = response.timeline;
@@ -729,9 +815,24 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
           var filteredLocationList = sortedLocationList.filter(retainInRange);
 
+          // Fix for https://github.com/e-mission/e-mission-docs/issues/417
+          if (filteredLocationList.length == 0) {
+            return undefined;
+          }
+
           var tripStartPoint = filteredLocationList[0];
           var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
+          // if we get a list but our start and end are undefined
+          // let's print out the complete original list to get a clue
+          // this should help with debugging 
+          // https://github.com/e-mission/e-mission-docs/issues/417
+          // if it ever occurs again
+          if (angular.isUndefined(tripStartPoint) || angular.isUndefined(tripEndPoint)) {
+            Logger.log("BUG 417 check: locationList = "+JSON.stringify(locationList));
+            Logger.log("transitions: start = "+JSON.stringify(tripStartTransition.data)
+                + " end = "+JSON.stringify(tripEndTransition.data.ts));
+          }
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
             place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
@@ -745,8 +846,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             properties: angular.copy(section_gj.features[0].properties)
           }
 
-          Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
-            " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
+          // Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
+          //  " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
           // customize to trip versus section properties
           trip_gj.properties.feature_type = "trip";
           trip_gj.properties.start_loc = features[0].geometry;
@@ -802,7 +903,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
        * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284312004
        */
         $ionicLoading.show({
-          template: 'Reading unprocessed data...'
+          template: $translate.instant('service.reading-unprocessed-data')
         });
        if (tripListForDay.length == 0) {
          var last_processed_ts = moment(day).startOf("day").unix();
@@ -828,7 +929,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             var sortedTransitionList = transitionList.sort(tsEntrySort);
             /*
             sortedTransitionList.forEach(function(transition) {
-                console.log(JSON.stringify(transition));
+                console.log(moment(transition.data.ts * 1000).format()+":" + JSON.stringify(transition.data));
             });
             */
             var tripsList = transition2Trip(transitionList);

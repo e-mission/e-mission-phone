@@ -25,7 +25,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, $translate) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
@@ -47,6 +47,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
     Timeline.updateForDay(day);
+    // This will be used to show the date of datePicker in the user language.
+    $scope.currDay = moment(day).format('LL');
     // CommonGraph.updateCurrent();
   };
 
@@ -64,23 +66,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     angular.extend($scope.defaults, Config.getMapTiles())
 
-    moment.locale('en', {
-      relativeTime: {
-        future: "in %s",
-        past: "%s ago",
-        s: "secs",
-        m: "a min",
-        mm: "%d m",
-        h: "an hr",
-        hh: "%d h",
-        d: "a day",
-        dd: "%d days",
-        M: "a month",
-        MM: "%d months",
-        y: "a year",
-        yy: "%d years"
-      }
-    });
+//   moment.locale('en', {
+//   relativeTime : {
+//       future: "in %s",
+//       past:   "%s ago",
+//       s:  "secs",
+//       m:  "a min",
+//       mm: "%d m",
+//       h:  "an hr",
+//       hh: "%d h",
+//       d:  "a day",
+//       dd: "%d days",
+//       M:  "a month",
+//       MM: "%d months",
+//       y:  "a year",
+//       yy: "%d years"
+//   }
+// });
 
     /*
     * While working with dates, note that the datepicker needs a javascript date because it uses
@@ -128,13 +130,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.datepickerObject = {
 
-      todayLabel: 'Today', //Optional
-      closeLabel: 'Close', //Optional
-      setLabel: 'Set', //Optional
-      setButtonType: 'button-positive', //Optional
-      todayButtonType: 'button-stable', //Optional
-      closeButtonType: 'button-stable', //Optional
-      inputDate: new Date(), //Optional
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      monthsList: moment.monthsShort(),
+      weeksList: moment.weekdaysMin(),
+      titleLabel: $translate.instant('diary.list-pick-a-date'),
+      setButtonType : 'button-positive',  //Optional
+      todayButtonType : 'button-stable',  //Optional
+      closeButtonType : 'button-stable',  //Optional
+      inputDate: new Date(),  //Optional
       from: new Date(2015, 1, 1),
       to: new Date(),
       mondayFirst: true, //Optional
@@ -249,7 +254,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
-        template: "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong."
+        template: $translate.instant('list-explainDraft-alert')
       });
       // don't want to go to the detail screen
     }
@@ -325,11 +330,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.setColor = function(mode) {
       var colors = {
         "icon ion-android-bicycle": 'green',
-    "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'purple',
-    "icon ion-android-bus": "purple",
-    "icon ion-android-train": "navy",
-    "icon ion-android-car": "salmon",
+        "icon ion-android-walk":'brown',
+        "icon ion-speedometer":'purple',
+        "icon ion-android-bus": "purple",
+        "icon ion-android-train": "navy",
+        "icon fas fa-tram": "darkslateblue",
+        "icon fas fa-subway": "darkcyan",
+        "icon lightrail fas fa-subway": "blue",
+        "icon ion-android-car": "salmon",
         "icon ion-plane": "red"
       };
       return {
@@ -440,7 +448,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.userModes = [
-      "walk", "bicycle", "car", "bus", "train", "unicorn"
+        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
     ];
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
@@ -457,20 +465,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       config: {
         mask: {
           visibleOnNoTarget: true,
-          clickExit: true
-        }
+          clickExit: true,
+        },
+        previousText: $translate.instant('tour-previous'),
+        nextText: $translate.instant('tour-next'),
+        finishText: $translate.instant('tour-finish')
       },
       steps: [{
         target: '#date-picker-button',
-        content: 'Use this to select the day you want to see.'
+        content: $translate.instant('list-tour-datepicker-button')
       },
       {
         target: '.diary-entry',
-        content: 'Click on the map to see more details about each trip.'
+        content: $translate.instant('list-tour-diary-entry')
       },
       {
         target: '#map-fix-button',
-        content: 'Use this to fix the map tiles if they have not loaded properly.'
+        content: $translate.instant('list-tour-diary-entry')
         }
       ]
     };
