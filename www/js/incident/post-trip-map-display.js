@@ -9,7 +9,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup) {
+                                        UnifiedDataLoader, PostTripManualMarker, $ionicSlideBoxDelegate, $ionicPopup, $translate) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
@@ -73,7 +73,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     };
     Logger.log("About to query buffer for "+JSON.stringify(tq));
     $ionicLoading.show({
-      template: 'Loading...'
+      template: $translate.instant('loading')
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       // .then(PostTripManualMarker.addLatLng)
@@ -172,11 +172,14 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       mask: {
         visibleOnNoTarget: true,
         clickExit: true
-      }
+      },
+      previousText: $translate.instant('tour-previous'),
+      nextText: $translate.instant('tour-next'),
+      finishText: $translate.instant('tour-finish')
     },
     steps: [{
-      target: '#mode_list',
-      content: 'Scroll for more options'
+      target: '#incident',
+      content: $translate.instant('post-trip-map-display-tour-incident')
     }]
   };
 

@@ -2,7 +2,7 @@
 
 angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'])
 .factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
-    $ionicPopup, Logger) {
+    $ionicPopup, Logger, $translate) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
   var TRIP_CONFIRM_TEXT = 'TRIP_CONFIRM';
@@ -10,12 +10,12 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe left or tap to add information about this trip.",
-      "android": "See options or tap to add information about this trip."
+      "ios": $translate.instant('post-trip-prompt.platform-specific-message-ios'),
+      "android": $translate.instant('post-trip-prompt.platform-specific-message-android')
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Tap to add information about this trip.";
+      selMessage = $translate.instant('post-trip-prompt.platform-specific-message-other');
     }
     return selMessage;
   };
@@ -23,21 +23,21 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
   var getTripEndReportNotification = function() {
     var actions = [{
        identifier: 'MUTE',
-       title: 'Mute',
+       title: $translate.instant('post-trip-prompt.notification-option-mute'),
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
        identifier: 'SNOOZE',
-       title: 'Snooze',
+       title: $translate.instant('post-trip-prompt.notification-option-snooze'),
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
         identifier: 'CHOOSE',
-        title: 'Choose',
+        title: $translate.instant('post-trip-prompt.notification-option-choose'),
         icon: 'res://ic_signin',
         activationMode: 'foreground',
         destructive: false,
@@ -46,7 +46,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "How and why did you come here?",
+      title: $translate.instant('post-trip-prompt.notification-title'),
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
@@ -93,14 +93,14 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
         buttons: [{
-          text: 'Choose Mode',
+          text: $translate.instant('post-trip-prompt.choose-mode'),
           type: 'button-positive',
           onTap: function(e) {
             // e.preventDefault() will stop the popup from closing when tapped.
             return true;
           }
         }, {
-          text: 'Skip',
+          text: $translate.instant('post-trip-prompt.skip'),
           type: 'button-positive',
           onTap: function(e) {
             return false;
@@ -118,9 +118,10 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   var displayCompletedTrip = function(notification, state, data) {
     $rootScope.displayingIncident = true;
-    $rootScope.notificationData = notification.data;
-    Logger.log("About to display completed trip from Notification");
-    $state.go('root.main.diary');
+    $rootScope.tripConfirmParams = notification.data;
+    Logger.log("About to display completed trip from notification "+
+      JSON.stringify(notification.data));
+    $state.go("root.main.tripconfirm", notification.data);
   };
 
   var checkCategory = function(notification) {
@@ -150,8 +151,8 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
         $window.cordova.plugins.notification.local.schedule([after_30_mins_prompt]);
         if ($ionicPlatform.is('android')) {
             $ionicPopup.alert({
-                title: "Snoozed reminder",
-                template: "Will reappear in 30 mins"
+              title: $translate.instant('post-trip-prompt.snoozed-reminder'),
+              template: $translate.instant('post-trip-prompt.snoozed-reapper-message')
             });
         }
       } else if (data.identifier === 'MUTE') {
@@ -162,23 +163,23 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
             if ($ionicPlatform.is('ios')) {
                 $window.cordova.plugins.notification.local.schedule([{
                     id: REPORT,
-                    title: "Notifications for TRIP_END incident report muted",
-                    text: "Can be re-enabled from the Profile -> Developer Zone screen. Select to re-enable now, clear to ignore",
+                    title: $translate.instant('post-trip-prompt.notifications-muted'),
+                    text: $translate.instant('post-trip-prompt.notifications-reenabled'),
                     at: _1_min_from_now,
                     data: {redirectTo: "root.main.control"}
                 }]);
             } else if ($ionicPlatform.is('android')) {
                 $ionicPopup.show({
-                    title: "Muted",
-                    template: "Notifications for TRIP_END incident report muted",
+                    title: $translate.instant('post-trip-prompt.muted'),
+                    template: $translate.instant('post-trip-prompt.notifications-muted'),
                     buttons: [{
-                      text: 'Unmute',
+                      text: $translate.instant('post-trip-prompt.unmute'),
                       type: 'button-positive',
                       onTap: function(e) {
                         return true;
                       }
                     }, {
-                      text: 'Keep muted',
+                      text: $translate.instant('post-trip-prompt.keep-muted'),
                       type: 'button-positive',
                       onTap: function(e) {
                         return false;

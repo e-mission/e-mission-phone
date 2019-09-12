@@ -10,8 +10,9 @@
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.splash.updatecheck',
-    'emission.intro', 'emission.main'])
+    'emission.splash.updatecheck', 'emission.services.email',
+  'emission.intro', 'emission.main',
+  'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
     CustomURLScheme, ReferralHandler, UpdateCheck) {
@@ -72,7 +73,7 @@ angular.module('emission', ['ionic',
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $translateProvider) {
   console.log("Starting config");
   // alert("config");
 
@@ -104,5 +105,26 @@ angular.module('emission', ['ionic',
   // alert("about to fall back to otherwise");
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/splash');
+
+  // Allow the use of MessageForm interpolation for Gender and Plural.
+  $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
+                    .useSanitizeValueStrategy('escape');
+
+
+  // Define where we can find the .json and the fallback language
+  $translateProvider
+    .fallbackLanguage('en')
+    .registerAvailableLanguageKeys(['en', 'fr', 'it'], {
+      'en_*': 'en',
+      'fr_*': 'fr',
+      'it_*': 'it',
+      '*': 'en'
+    })
+    .determinePreferredLanguage()
+    .useStaticFilesLoader({
+      prefix: 'i18n/',
+      suffix: '.json'
+    });
+  
   console.log("Ending config");
 });

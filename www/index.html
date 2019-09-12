@@ -27,6 +27,7 @@
     <link href="manual_lib/enketo/css/formhub-print.css" media="print" rel="stylesheet">
     <!--<link type="text/css" href="manual_lib/enketo/css/plain-print.css" media="print" rel="stylesheet" />-->
     <!--<link type="text/css" href="manual_lib/enketo/css/grid-print.css" media="print" rel="stylesheet" />-->
+    <link href="manual_lib/fontawesome/css/all.min.css" rel="stylesheet">
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -36,7 +37,13 @@
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
+    <script src="lib/angular-translate/angular-translate.min.js"></script>
+    <script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="lib/messageformat/messageformat.min.js"></script>
+    <script src="lib/angular-translate-interpolation-messageformat/angular-translate-interpolation-messageformat.min.js"></script>
     <script src="lib/moment/min/moment.min.js"></script>
+    <script src="lib/moment/min/locales.min.js"></script>
+    <script src="lib/moment/min/moment-with-locales.min.js"></script>
     <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <script src="lib/angular-animate/angular-animate.js"></script>
@@ -49,7 +56,7 @@
     <!-- Made a copy to deal with proper directives -->
     <script src="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
     <script src="lib/leaflet-plugins/layer/Marker.Rotate.js"></script>
-    <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
+    <script src="manual_lib/ionic-datepicker/ionic-datepicker.bundle.min.js"></script>
     <script src="non-bower-lib/simple-leaflet-plugins/leaflet-heat.js"></script>
     <script src="lib/d3/d3.js"></script>
     <script src="lib/nvd3/build/nv.d3.min.js"></script>
@@ -101,6 +108,7 @@
     <script src="js/metrics.js"></script>
     <script src="js/goals.js"></script>
     <script src="js/control/general-settings.js"></script>
+    <script src="js/control/emailService.js"></script>
     <script src="js/control/collect-settings.js"></script>
     <script src="js/control/sync-settings.js"></script>
     <script src="js/control/transition-notify-settings.js"></script>

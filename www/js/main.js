@@ -9,7 +9,8 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.metrics',
                                  'emission.survey.enketo.launch',
                                  'emission.tripconfirm.posttrip.map',
-                                 'emission.services'])
+                                 'emission.services',
+                                 'emission.services.email'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
 
@@ -160,10 +161,13 @@ angular.module('emission.main', ['emission.main.recent',
     }
 })
 
-.controller('MainCtrl', function($scope, $state, $rootScope) {
+.controller('MainCtrl', function($scope, $state, $rootScope, $translate) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
+
+    moment.locale($translate.use());
+
     $scope.tabsCustomClass = function() {
         return "tabs-icon-top tabs-custom";
     }

@@ -2,7 +2,7 @@ angular.module('emission.enketo-survey.service', [
   'ionic',
   'emission.services',
   'emission.plugin.logger',
-  'emission.tripconfirm.service',
+  'emission.tripconfirm.services',
 ])
 .factory('EnketoSurvey', function(
   $window, $http, UnifiedDataLoader, Logger,

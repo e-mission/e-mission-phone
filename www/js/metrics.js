@@ -1,19 +1,25 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-datepicker', 'emission.main.metrics.factory', 'emission.plugin.kvstore', 'emission.plugin.logger'])
+angular.module('emission.main.metrics',['nvd3',
+                                        'emission.services',
+                                        'ionic-datepicker',
+                                        'emission.main.metrics.factory',
+                                        'emission.plugin.kvstore',
+                                        'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore,
-                                    $rootScope, $location,  $state, ReferHelper, $http, Logger) {
+                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
+                                    $rootScope, $location, $state, ReferHelper, $http, Logger,
+                                    $translate) {
     var lastTwoWeeksQuery = true;
     var first = true;
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
     var twoWeeksAgoCarbon = "";
-    var lastWeekCarbonInt = [];
-    var twoWeeksAgoCarbonInt = [];
+    var lastWeekCarbonInt = 0;
+    var twoWeeksAgoCarbonInt = 0;
     var twoWeeksAgoCalories = 0;
 
     var DURATION = "duration";
@@ -24,7 +30,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""|| 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           $state.go("root.main.current");
         }
@@ -32,6 +38,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     };
 
     $ionicPlatform.ready(function() {
+        CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
+          getData();
+        });
         $scope.onCurrentTrip();
     });
 
@@ -96,7 +105,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       showFilter: false,
       showVis: true,
       showResult: true,
-      current: "Last week",
+      current: true,
+      currentString: $translate.instant('metrics.last-week'),
       showChart: false,
       showSummary: true,
       showMe: true,
@@ -192,10 +202,10 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return $scope.userData.weightUnit == 0? "unit-toggle-right-active hvcenter" : "unit-toggle-right hvcenter";
     }
     $scope.currentQueryForCalorie = function() {
-      return $scope.uictrl.current == "Last week"? "user-calorie-percentage" : "user-calorie-no-percentage";
+      return $scope.uictrl.current ? "user-calorie-percentage" : "user-calorie-no-percentage";
     }
     $scope.currentQueryForCarbon = function() {
-      return $scope.uictrl.current == "Last week"? "user-carbon-percentage" : "user-carbon-no-percentage";
+      return $scope.uictrl.current ? "user-carbon-percentage" : "user-carbon-no-percentage";
     }
     $scope.showRange = function() {
       if ($scope.uictrl.showFilter) {
@@ -266,6 +276,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 bottom: 40,
                 left: 55
             },
+            noData: $translate.instant('metrics.chart-no-data'),
             showControls: false,
             showValues: true,
             stacked: false,
@@ -287,7 +298,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
             xAxis: {
                 axisLabelDistance: 3,
-                axisLabel: 'Date',
+                axisLabel: $translate.instant('metrics.chart-xaxis-date'),
                 tickFormat: function(d) {
                     var day = new Date(d * 1000)
                     day.setDate(day.getDate()+1) // Had to add a day to match date with data
@@ -297,7 +308,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
                 staggerLabels: true
             },
             yAxis: {
-              axisLabel: "Number",
+              axisLabel: $translate.instant('metrics.trips-yaxis-number'),
               axisLabelDistance: -10
             },
             callback: function(chart) {
@@ -380,8 +391,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
-          console.log($scope.selectCtrl.fromDateTimestamp);
-          console.log($scope.selectCtrl.toDateTimestamp);
         }
         data = {
           freq: $scope.selectCtrl.pandaFreq,
@@ -426,10 +435,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
    var getMetrics = function() {
       $ionicLoading.show({
-        template: 'Loading...'
+        template: $translate.instant('loading')
       });
       if(!first){
-        $scope.uictrl.current = "Custom";
+        $scope.uictrl.currentString = $translate.instant('metrics.custom');
+        $scope.uictrl.current = false;
       }
       //$scope.uictrl.showRange = false;
       //$scope.uictrl.showFilter = false;
@@ -444,15 +454,15 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
       $scope.caloriesData.changeInPercentage = "0%"
-      $scope.caloriesData.change = " change";
+      $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change');
 
       $scope.carbonData.userCarbon = "0 kg CO₂";
-      $scope.carbonData.aggrCarbon = "Calculating...";
+      $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-calculating');;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
       $scope.carbonData.worstCarbon = "0 kg CO₂";
       $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
       $scope.carbonData.changeInPercentage = "0%";
-      $scope.carbonData.change = " change";
+      $scope.carbonData.change = $translate.instant('metrics.carbon-data-change');
 
       $scope.summaryData.userSummary = [];
       $scope.chartDataUser = {};
@@ -512,8 +522,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       })
       .catch(function(error) {
         $ionicLoading.hide();
-        $scope.carbonData.aggrCarbon = "Unknown";
-        $scope.caloriesData.aggrCalories = "Unknown...";
+        $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-unknown');
+        $scope.caloriesData.aggrCalories = $translate.instant('metrics.calorie-data-unknown');
         Logger.displayError("Error loading aggregate data, averages not available",
             error);
       });
@@ -584,7 +594,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         $scope.chartDataAggr.count = aggCount? aggCount : [];
         $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
 
-        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed)
+        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed);
         $scope.fillFootprintAggVals(aggDistance);
    }
 
@@ -644,11 +654,11 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
        if (isValidNumber(calorieCalculation)) {
           $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
           if(lastWeekCalories > twoWeeksAgoCalories){
-            $scope.caloriesData.change = " increase over a week";
+            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-increase');
             $scope.caloriesUp = true;
             $scope.caloriesDown = false;
           } else {
-            $scope.caloriesData.change = " decrease over a week"
+            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-decrease');
             $scope.caloriesUp = false;
             $scope.caloriesDown = true;
           }
@@ -675,7 +685,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
        if ($scope.userDataSaved()) {
          // this is safe because userDataSaved will never be set unless there
          // is stored user data that we have loaded
-         var userDataFromStorage = $scope.storedUserData;
+         var userDataFromStorage = $scope.savedUserData;
          var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
          var gender = userDataFromStorage.gender;
          var heightUnit = userDataFromStorage.heightUnit;
@@ -692,87 +702,85 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
    $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
       if (userDistance) {
         var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
+
         var optimalDistance = getOptimalFootprintDistance(userDistance);
-        var worstDistance = getWorstFootprintDistance(userDistance);
+        var worstDistance   = getWorstFootprintDistance(userDistance);
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
         var duration = moment.duration(date2.diff(date1));
         var days = duration.asDays();
-        //$scope.ca2020 = 43.771628 / 5 * days; // kg/day
+
         $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
-        //$scope.carbonData.userCarbon = [];
-        for (var i in userCarbonData) {
-          //$scope.carbonData.userCarbon.push({key: userCarbonData[i].key, values: FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key)});
-          if (userCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.userCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-            $scope.carbonData.optimalCarbon = FootprintHelper.getFootprint(optimalDistance, userCarbonData[i].key);
-            $scope.carbonData.worstCarbon = FootprintHelper.getFootprint(worstDistance, userCarbonData[i].key);
-            lastWeekCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-          }
-        }
+
+        $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
+        $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
+        $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
+        lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
       }
 
       if (first) {
         if (twoWeeksAgoDistance) {
-          var userCarbonData = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-          for (var i in userCarbonData) {
-            if (userCarbonData[i].key === "IN_VEHICLE") {
-              twoWeeksAgoCarbon = FootprintHelper.getFootprint(userCarbonData[i].values, userCarbonData[i].key);
-              twoWeeksAgoCarbonInt = FootprintHelper.getFootprintRaw(userCarbonData[i].values, userCarbonData[i].key);
-              if(first){
-                lastWeekCarbon = twoWeeksAgoCarbon;
-              }
-              $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-            }
-          }
+          var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
+          twoWeeksAgoCarbon    = 0;
+          twoWeeksAgoCarbonInt = 0;
+
+          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
+
+          twoWeeksAgoCarbon = FootprintHelper.readableFormat(twoWeeksAgoCarbonInt);
+          lastWeekCarbon    = twoWeeksAgoCarbon;
         }
       }
+      $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
 
       var change = "";
-      console.log("Running calculation with "
-                    + (lastWeekCarbonInt[0] + lastWeekCarbonInt[1])
-                    + " and "
-                    + (twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]))
-      var calculation = (((lastWeekCarbonInt[0] + lastWeekCarbonInt[1]) / 2)
-                        / ((twoWeeksAgoCarbonInt[0] + twoWeeksAgoCarbonInt[1]) / 2))
-                        * 100 - 100;
+      console.log("Running calculation with " + lastWeekCarbonInt + " and " + twoWeeksAgoCarbonInt);
+      var calculation = (lastWeekCarbonInt/twoWeeksAgoCarbonInt) * 100 - 100;
 
       // TODO: Refactor this so that we can filter out bad values ahead of time
       // instead of having to work around it here
       if (isValidNumber(calculation)) {
-          if(lastWeekCarbonInt[0] > twoWeeksAgoCarbonInt[0]){
-            $scope.carbonData.change = " increase over a week";
-            $scope.carbonUp = true;
-            $scope.carbonDown = false;
-          } else {
-            $scope.carbonData.change = " decrease over a week"
-            $scope.carbonUp = false;
-            $scope.carbonDown = true;
-          }
-          $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+        if(lastWeekCarbonInt > twoWeeksAgoCarbonInt){
+          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-increase');
+          $scope.carbonUp = true;
+          $scope.carbonDown = false;
+        } else {
+          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-decrease');
+          $scope.carbonUp = false;
+          $scope.carbonDown = true;
+        }
+        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
+      }
+      else {
+        $scope.carbonData.change = "";
+        $scope.carbonData.changeInPercentage = "0%";
       }
    };
 
    $scope.fillFootprintAggVals = function(aggDistance) {
       if (aggDistance) {
         var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
+
+        // Issue 422:
+        // https://github.com/e-mission/e-mission-docs/issues/422
         for (var i in aggrCarbonData) {
-          if (aggrCarbonData[i].key === "IN_VEHICLE") {
-            $scope.carbonData.aggrVehicleRange = FootprintHelper.getFootprintRaw(aggrCarbonData[i].values, aggrCarbonData[i].key);
-            $scope.carbonData.aggrCarbon = FootprintHelper.getFootprint(aggrCarbonData[i].values, aggrCarbonData[i].key);
+          if (isNaN(aggrCarbonData[i].values)) {
+            console.warn("WARNING fillFootprintAggVals(): value is NaN for mode " + aggrCarbonData[i].key + ", changing to 0");
+            aggrCarbonData[i].values = 0;
           }
         }
+
+        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
       }
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data.count = getDataFromMetrics(agg_metrics.count);
-      $scope.data.distance = getDataFromMetrics(agg_metrics.distance);
-      $scope.data.duration = getDataFromMetrics(agg_metrics.duration);
-      $scope.data.speed = getDataFromMetrics(agg_metrics.speed);
+      $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
+      $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);
+      $scope.data.duration = getDataFromMetrics(agg_metrics.duration, metric2valUser);
+      $scope.data.speed = getDataFromMetrics(agg_metrics.speed, metric2valUser);
       $scope.countOptions = angular.copy($scope.options)
-      $scope.countOptions.chart.yAxis.axisLabel = 'Number';
+      $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)
       $scope.distanceOptions.chart.yAxis.axisLabel = 'm';
       $scope.durationOptions = angular.copy($scope.options)
@@ -781,35 +789,65 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.speedOptions.chart.yAxis.axisLabel = 'm/sec'
     };
     $scope.pandaFreqOptions = [
-      {text: "DAILY", value: 'D'},
-      {text: "WEEKLY", value: 'W'},
-      {text: "BIWEEKLY", value: '2W'},
-      {text: "MONTHLY", value: 'M'},
-      {text: "YEARLY", value: 'A'}
+      {text: $translate.instant('metrics.pandafreqoptions-daily'), value: 'D'},
+      {text: $translate.instant('metrics.pandafreqoptions-weekly'), value: 'W'},
+      {text: $translate.instant('metrics.pandafreqoptions-biweekly'), value: '2W'},
+      {text: $translate.instant('metrics.pandafreqoptions-monthly'), value: 'M'},
+      {text: $translate.instant('metrics.pandafreqoptions-yearly'), value: 'A'}
     ];
     $scope.freqOptions = [
-      {text: "DAILY", value:'DAILY'},
-      {text: "MONTHLY", value: 'MONTHLY'},
-      {text: "YEARLY", value: 'YEARLY'}
+      {text: $translate.instant('metrics.freqoptions-daily'), value:'DAILY'},
+      {text: $translate.instant('metrics.freqoptions-monthly'), value: 'MONTHLY'},
+      {text: $translate.instant('metrics.freqoptions-yearly'), value: 'YEARLY'}
     ];
-    var getAvgDataFromMetrics = function(metrics) {
+
+    /*
+     * metric2val is a function that takes a metric entry and a field and returns
+     * the appropriate value.
+     * for regular data (user-specific), this will return the field value
+     * for avg data (aggregate), this will return the field value/nUsers
+     */
+
+    var metric2valUser = function(metric, field) {
+        return metric[field];
+    }
+
+    var metric2valAvg = function(metric, field) {
+        return metric[field]/metric.nUsers;
+    }
+
+    var getDataFromMetrics = function(metrics, metric2val) {
         var mode_bins = {};
-        var nUsers = 0;
         metrics.forEach(function(metric) {
+            var on_foot_val = 0;
             for (var field in metric) {
                 // TODO: Consider creating a prefix such as M_ to signal
                 // modes. Is that really less fragile than caps, though?
                 // Here, we check if the string is all upper case by
                 // converting it to upper case and seeing if it is changed
                 if (field == field.toUpperCase()) {
-                    if (field === "WALKING" || field === "RUNNING") {
+                    // since we can have multiple possible ON_FOOT modes, we
+                    // add all of them up here
+                    // see https://github.com/e-mission/e-mission-docs/issues/422
+                    if (field === "WALKING" || field === "RUNNING" || field === "ON_FOOT") {
+                      on_foot_val = on_foot_val + metric2val(metric, field);
                       field = "ON_FOOT";
                     }
                     if (field in mode_bins == false) {
                         mode_bins[field] = []
                     }
-                    mode_bins[field].push([metric.ts, Math.round(metric[field] / metric.nUsers), metric.fmt_time]);
+                    // since we can have multiple on_foot entries, let's hold
+                    // off on handling them until we have considered all fields
+                    if (field != "ON_FOOT") {
+                        mode_bins[field].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
+                    }
                 }
+            }
+            // here's where we handle the ON_FOOT
+            if ("ON_FOOT" in mode_bins == true) {
+                // we must have received one of the on_foot modes, so we can
+                // boldly insert the value
+                mode_bins["ON_FOOT"].push([metric.ts, Math.round(on_foot_val), metric.fmt_time]);
             }
         });
         var rtn = [];
@@ -819,36 +857,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return rtn;
     }
 
-    var getDataFromMetrics = function(metrics) {
-        var mode_bins = {};
-        var fieldPhone = "";
-        metrics.forEach(function(metric) {
-            for (var field in metric) {
-                // TODO: Consider creating a prefix such as M_ to signal
-                // modes. Is that really less fragile than caps, though?
-                // Here, we check if the string is all upper case by
-                // converting it to upper case and seeing if it is changed
-                if (field == field.toUpperCase()) {
-                    if (field === "WALKING" || field === "RUNNING") {
-                      fieldPhone = "ON_FOOT";
-                    } else {
-                      fieldPhone = field;
-                    }
-                    if (fieldPhone in mode_bins == false) {
-                        mode_bins[fieldPhone] = []
-                    }
-                    mode_bins[fieldPhone].push([metric.ts, metric[field], metric.fmt_time]);
-                }
-            }
-        });
-        var rtn = [];
-        for (var mode in mode_bins) {
-          var val_arrays = rtn.push({key: mode, values: mode_bins[mode]});
-        }
-        return rtn;
-    }
     var getSummaryDataRaw = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics);
+        var data = getDataFromMetrics(metrics, metric2valUser);
         for (var i = 0; i < data.length; i++) {
           var temp = 0;
           for (var j = 0; j < data[i].values.length; j++) {
@@ -863,15 +873,18 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         }
         return data;
     }
+
     /*var sortNumber = function(a,b) {
       return a - b;
     }*/
+
     var getOptimalFootprintDistance = function(metrics){
-      var data = getDataFromMetrics(metrics);
+      var data = getDataFromMetrics(metrics, metric2valUser);
       var distance = 0;
       var longTrip = 5000;
+      // total distance for long trips using motorized vehicles
       for(var i = 0; i < data.length; i++) {
-        if(data[i].key == "IN_VEHICLE") {
+        if(data[i].key == "CAR" || data[i].key == "BUS" || data[i].key == "TRAIN" || data[i].key == "AIR_OR_HSR") {
           for(var j = 0; j < data[i].values.length; j++){
             if(data[i].values[j][1] >= longTrip){
               distance += data[i].values[j][1];
@@ -882,7 +895,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return distance;
     }
     var getWorstFootprintDistance = function(metrics){
-      var data = getDataFromMetrics(metrics);
+      var data = getDataFromMetrics(metrics, metric2valUser);
       var distance = 0;
       for(var i = 0; i < data.length; i++) {
         for(var j = 0; j < data[i].values.length; j++){
@@ -892,7 +905,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       return distance;
     }
     var getAvgSummaryDataRaw = function(metrics, metric) {
-        var data = getAvgDataFromMetrics(metrics);
+        var data = getDataFromMetrics(metrics, metric2valAvg);
         for (var i = 0; i < data.length; i++) {
           var temp = 0;
           for (var j = 0; j < data[i].values.length; j++) {
@@ -908,7 +921,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return data;
     }
     var getSummaryData = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics);
+        var data = getDataFromMetrics(metrics, metric2valUser);
         for (var i = 0; i < data.length; i++) {
           var temp = 0;
           for (var j = 0; j < data[i].values.length; j++) {
@@ -917,7 +930,7 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
           var unit = "";
           switch(metric) {
             case "count":
-              unit = "trips";
+              unit = $translate.instant('metrics.trips');
               break;
             case "distance":
               unit = "m";
@@ -961,19 +974,19 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
 
     $scope.changeWeekday = function(stringSetFunction, target) {
       var weekdayOptions = [
-        {text: "All", value: null},
-        {text: "Monday", value: 0},
-        {text: "Tuesday", value: 1},
-        {text: "Wednesday", value: 2},
-        {text: "Thursday", value: 3},
-        {text: "Friday", value: 4},
-        {text: "Saturday", value: 5},
-        {text: "Sunday", value: 6}
+        {text: $translate.instant('weekdays-all'), value: null},
+        {text: moment.weekdays(1), value: 0},
+        {text: moment.weekdays(2), value: 1},
+        {text: moment.weekdays(3), value: 2},
+        {text: moment.weekdays(4), value: 3},
+        {text: moment.weekdays(5), value: 4},
+        {text: moment.weekdays(6), value: 5},
+        {text: moment.weekdays(0), value: 6}
       ];
       $ionicActionSheet.show({
         buttons: weekdayOptions,
-        titleText: "Select day of the week",
-        cancelText: "Cancel",
+        titleText: $translate.instant('weekdays-select'),
+        cancelText: $translate.instant('metrics.cancel'),
         buttonClicked: function(index, button) {
           stringSetFunction(button.text);
           if (target === 'from') {
@@ -990,8 +1003,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.changeFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.freqOptions,
-          titleText: "Select summary freqency",
-          cancelText: "Cancel",
+          titleText: $translate.instant('metrics.select-frequency'),
+          cancelText: $translate.instant('metrics.cancel'),
           buttonClicked: function(index, button) {
             $scope.selectCtrl.freqString = button.text;
             $scope.selectCtrl.freq = button.value;
@@ -1003,8 +1016,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
     $scope.changePandaFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.pandaFreqOptions,
-          titleText: "Select summary freqency",
-          cancelText: "Cancel",
+          titleText: $translate.instant('metrics.select-pandafrequency'),
+          cancelText: $translate.instant('metrics.cancel'),
           buttonClicked: function(index, button) {
             $scope.selectCtrl.pandaFreqString = button.text;
             $scope.selectCtrl.pandaFreq = button.value;
@@ -1027,9 +1040,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       var now = moment().utc();
       var weekAgoFromNow = moment().utc().subtract(7, 'd');
       $scope.selectCtrl.freq = 'DAILY';
-      $scope.selectCtrl.freqString = "DAILY";
+      $scope.selectCtrl.freqString = $translate.instant('metrics.freqoptions-daily');
       $scope.selectCtrl.pandaFreq = 'D';
-      $scope.selectCtrl.pandaFreqString = "DAILY";
+      $scope.selectCtrl.pandaFreqString = $translate.instant('metrics.pandafreqoptions-daily');
       // local_date saved as localdate
       $scope.selectCtrl.fromDateLocalDate = moment2Localdate(weekAgoFromNow);
       $scope.selectCtrl.toDateLocalDate = moment2Localdate(now);
@@ -1037,8 +1050,8 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       $scope.selectCtrl.fromDateTimestamp= weekAgoFromNow;
       $scope.selectCtrl.toDateTimestamp = now;
 
-      $scope.selectCtrl.fromDateWeekdayString = "All"
-      $scope.selectCtrl.toDateWeekdayString = "All"
+      $scope.selectCtrl.fromDateWeekdayString = $translate.instant('weekdays-all');
+      $scope.selectCtrl.toDateWeekdayString = $translate.instant('weekdays-all');
 
       $scope.selectCtrl.fromDateWeekdayValue = null;
       $scope.selectCtrl.toDateWeekdayValue = null;
@@ -1050,10 +1063,6 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.selectCtrl = {}
   initSelect();
 
-  $ionicPlatform.ready(function() {
-      getData();
-  });
-
   $scope.doRefresh = function() {
     first = true;
     getMetrics();
@@ -1062,10 +1071,14 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.modeIcon = function(key) {
     var icons = {"BICYCLING":"ion-android-bicycle",
     "ON_FOOT":" ion-android-walk",
+    "WALKING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "CAR":"ion-android-car",
-    "BUS":"ion-android-bus",
-    "TRAIN":"ion-android-train",
+    "BUS": "ion-android-bus",
+    "LIGHT_RAIL":"lightrail fas fa-subway",
+    "TRAIN": "ion-android-train",
+    "TRAM": "fas fa-tram",
+    "SUBWAY":"fas fa-subway",
     "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[key];
@@ -1104,9 +1117,9 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
       title: '',
       scope: $scope,
       buttons: [
-        { text: 'Cancel' },
+        { text: $translate.instant('metrics.cancel') },
         {
-          text: '<b>Confirm</b>',
+          text: '<b>'+ $translate.instant('metrics.confirm') +'</b>',
           type: 'button-positive',
           onTap: function(e) {
             if (!($scope.userData.gender != -1 && $scope.userData.age && $scope.userData.weight && $scope.userData.height)) {
@@ -1123,34 +1136,36 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
   $scope.datepickerObjFrom = {
       callback: $scope.setCurDayFrom,
       inputDate: $scope.selectCtrl.fromDateTimestamp.toDate(),
-      setLabel: 'Set',
-      todayLabel: 'Today',
-      closeLabel: 'Close',
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
       mondayFirst: false,
-      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),
       templateType: 'popup',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMM dd yyyy',
+      dateFormat: 'dd/MM/yyyy',
       closeOnSelect: false,
-      disableWeekdays: [6]
+      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
   $scope.datepickerObjTo = {
       callback: $scope.setCurDayTo,
       inputDate: $scope.selectCtrl.toDateTimestamp.toDate(),
-      setLabel: 'Set',
-      todayLabel: 'Today',
-      closeLabel: 'Close',
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
       mondayFirst: false,
-      weeksList: ["S", "M", "T", "W", "T", "F", "S"],
-      monthsList: ["Jan", "Feb", "March", "April", "May", "June", "July", "Aug", "Sept", "Oct", "Nov", "Dec"],
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),
       templateType: 'popup',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'MMM dd yyyy',
+      dateFormat: 'dd/MM/yyyy',
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
@@ -1192,5 +1207,5 @@ angular.module('emission.main.metrics',['nvd3', 'emission.services', 'ionic-date
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
 
-  
+
 });

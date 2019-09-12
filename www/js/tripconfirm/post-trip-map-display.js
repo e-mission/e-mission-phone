@@ -2,7 +2,7 @@
 angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.plugin.kvstore',
                                       'emission.services',
-                                      'emission.tripconfirm.service',
+                                      'emission.tripconfirm.services',
                                       'emission.plugin.logger',
                                       'emission.main.diary.services'])
 
@@ -10,7 +10,8 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
                                         $stateParams, $ionicLoading,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, DiaryHelper, ConfirmHelper, Config,
-                                        UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup) {
+                                        UnifiedDataLoader, $ionicSlideBoxDelegate, $ionicPopup,
+                                        $translate) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   var MODE_CONFIRM_KEY = "manual/mode_confirm";
@@ -25,13 +26,26 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
 
   $scope.mapCtrl.start_ts = $stateParams.start_ts;
   $scope.mapCtrl.end_ts = $stateParams.end_ts;
+  if (($scope.mapCtrl.start_ts == null) || ($scope.mapCtrl.end_ts == null)
+       || ($scope.mapCtrl.start_ts == 0) || ($scope.mapCtrl.end_ts == 0)) {
+    Logger.log("BUG 413 check: stateParams = "+JSON.stringify($stateParams)+
+        " mapCtrl = "+$state.mapCtrl.start_ts+","+$state.mapCtrl.end_ts);
+  }
 
   $scope.$on('$ionicView.enter', function() {
     // we want to initialize these while entering the screen instead of while 
     // creating the controller, because the app may stick around for a while,
     // and then when the user clicks on a notification, they will re-enter this
     // screen.
-    Logger.log("entered post-trip map screen, prompting for values");
+    Logger.log("entered post-trip map screen, resetting start = "+
+        $stateParams.start_ts+" end = "+$stateParams.end_ts);
+    $scope.mapCtrl.start_ts = $stateParams.start_ts;
+    $scope.mapCtrl.end_ts = $stateParams.end_ts;
+    if (($scope.mapCtrl.start_ts == null) || ($scope.mapCtrl.end_ts == null)
+         || ($scope.mapCtrl.start_ts == 0) || ($scope.mapCtrl.end_ts == 0)) {
+      Logger.log("BUG 413 check: stateParams = "+JSON.stringify($stateParams)+
+        " mapCtrl = "+$state.mapCtrl.start_ts+","+$state.mapCtrl.end_ts);
+    }
     $scope.draftMode = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
     $scope.draftPurpose = {"start_ts": $stateParams.start_ts, "end_ts": $stateParams.end_ts};
   });
@@ -74,7 +88,7 @@ angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthroug
     };
     Logger.log("About to query buffer for "+JSON.stringify(tq));
     $ionicLoading.show({
-      template: 'Loading...'
+      template: $translate.instant('loading')
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       .then(function(resultList) {
