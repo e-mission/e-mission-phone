@@ -115,7 +115,7 @@ angular.module('emission.survey.enketo.launch', [
     }
     return promise.then(function(uuid) {
       return initSurvey({
-        form_location: 'json/user-profile_v1.json',
+        form_location: 'json/user-profile_v4.json',
         opts: {
           session: {
             data_key: 'manual/user_profile_survey',
