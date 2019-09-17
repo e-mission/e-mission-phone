@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>user profile</h:title>
+    <model>
+      <instance>
+        <data id="snapshot_xml">
+          <start/>
+          <end/>
+          <today/>
+          <deviceid/>
+          <group_uy6od86>
+            <age/>
+            <gender/>
+            <home_location_001/>
+            <employment/>
+            <work_location/>
+            <study/>
+            <school_location/>
+          </group_uy6od86>
+          <group_my6jo52>
+            <hh_size/>
+            <num_workers/>
+            <num_adults/>
+            <num_kids/>
+          </group_my6jo52>
+          <group_lm5fq00>
+            <num_vehicles/>
+            <driver_licence/>
+            <drive/>
+            <Vehicle_year/>
+            <veh_make/>
+            <veh_model/>
+          </group_lm5fq00>
+          <meta>
+            <instanceID/>
+          </meta>
+        </data>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/data/start" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/data/end" type="dateTime"/>
+      <bind jr:preload="date" jr:preloadParams="today" nodeset="/data/today" type="date"/>
+      <bind jr:preload="property" jr:preloadParams="deviceid" nodeset="/data/deviceid" type="string"/>
+      <bind nodeset="/data/group_uy6od86" required="false()"/>
+      <bind nodeset="/data/group_uy6od86/age" required="true()" type="select1"/>
+      <bind nodeset="/data/group_uy6od86/gender" required="true()" type="select1"/>
+      <bind nodeset="/data/group_uy6od86/home_location_001" required="true()" type="string"/>
+      <bind nodeset="/data/group_uy6od86/employment" required="true()" type="select1"/>
+      <bind nodeset="/data/group_uy6od86/work_location" required="true()" type="string"/>
+      <bind nodeset="/data/group_uy6od86/study" required="true()" type="select1"/>
+      <bind nodeset="/data/group_uy6od86/school_location" required="true()" type="string"/>
+      <bind nodeset="/data/group_my6jo52" required="false()"/>
+      <bind nodeset="/data/group_my6jo52/hh_size" required="true()" type="int"/>
+      <bind constraint=". &lt;=  /data/group_my6jo52/hh_size " jr:constraintMsg="The number of workers in your household must be less than the total number of persons in the household" nodeset="/data/group_my6jo52/num_workers" required="true()" type="int"/>
+      <bind constraint=". &lt;=  /data/group_my6jo52/hh_size " jr:constraintMsg="The number of workers in your household must be less than the total number of persons in the household" nodeset="/data/group_my6jo52/num_adults" required="true()" type="int"/>
+      <bind constraint=". &lt;= ( /data/group_my6jo52/hh_size  -  /data/group_my6jo52/num_adults )" jr:constraintMsg="Total number of adults and children in your household must equal to total number of persons in your household" nodeset="/data/group_my6jo52/num_kids" required="true()" type="int"/>
+      <bind nodeset="/data/group_lm5fq00" required="false()"/>
+      <bind nodeset="/data/group_lm5fq00/num_vehicles" required="true()" type="int"/>
+      <bind nodeset="/data/group_lm5fq00/driver_licence" required="false()" type="select1"/>
+      <bind nodeset="/data/group_lm5fq00/drive" relevant=" /data/group_lm5fq00/driver_licence  = 'yes'" required="true()" type="select1"/>
+      <bind nodeset="/data/group_lm5fq00/Vehicle_year" relevant=" /data/group_lm5fq00/drive  = 'yes'" required="false()" type="string"/>
+      <bind nodeset="/data/group_lm5fq00/veh_make" relevant=" /data/group_lm5fq00/drive  = 'yes'" required="false()" type="string"/>
+      <bind nodeset="/data/group_lm5fq00/veh_model" relevant=" /data/group_lm5fq00/drive  = 'yes'" required="false()" type="string"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body class="pages">
+    <group ref="/data/group_uy6od86">
+      <label>Personal information</label>
+      <select1 ref="/data/group_uy6od86/age">
+        <label>Age</label>
+        <item>
+          <label>Under 5 Years old</label>
+          <value>5_minus</value>
+        </item>
+        <item>
+          <label>5-15 years</label>
+          <value>5_15</value>
+        </item>
+        <item>
+          <label>16-17 years</label>
+          <value>16_17</value>
+        </item>
+        <item>
+          <label>18-24 years</label>
+          <value>18_24</value>
+        </item>
+        <item>
+          <label>25-33 years</label>
+          <value>25_33</value>
+        </item>
+        <item>
+          <label>34-44 years</label>
+          <value>34_44</value>
+        </item>
+        <item>
+          <label>45-54 years</label>
+          <value>45_54</value>
+        </item>
+        <item>
+          <label>55-64 years</label>
+          <value>55_64</value>
+        </item>
+        <item>
+          <label>65-74 years</label>
+          <value>65_74</value>
+        </item>
+        <item>
+          <label>75 or older</label>
+          <value>75_plus</value>
+        </item>
+      </select1>
+      <select1 ref="/data/group_uy6od86/gender">
+        <label>Gender</label>
+        <item>
+          <label>Male</label>
+          <value>male</value>
+        </item>
+        <item>
+          <label>Female</label>
+          <value>female</value>
+        </item>
+        <item>
+          <label>Others</label>
+          <value>others</value>
+        </item>
+      </select1>
+      <input ref="/data/group_uy6od86/home_location_001">
+        <label>Place of residence?</label>
+      </input>
+      <select1 ref="/data/group_uy6od86/employment">
+        <label>Employment</label>
+        <item>
+          <label>Employed full-time (paid)</label>
+          <value>option_1</value>
+        </item>
+        <item>
+          <label>Employed part-time (paid)</label>
+          <value>option_2</value>
+        </item>
+        <item>
+          <label>Self employed</label>
+          <value>self_employed</value>
+        </item>
+        <item>
+          <label>Not currently employed</label>
+          <value>not_currently_</value>
+        </item>
+        <item>
+          <label>Unpaid volunteer or intern</label>
+          <value>unpaid_volunte</value>
+        </item>
+      </select1>
+      <input ref="/data/group_uy6od86/work_location">
+        <label>Place of work?</label>
+      </input>
+      <select1 ref="/data/group_uy6od86/study">
+        <label>Currently studying?</label>
+        <item>
+          <label>Study full-time</label>
+          <value>study_full_time</value>
+        </item>
+        <item>
+          <label>Study part-time</label>
+          <value>study_part_time</value>
+        </item>
+        <item>
+          <label>Not studying</label>
+          <value>not_studying</value>
+        </item>
+      </select1>
+      <input ref="/data/group_uy6od86/school_location">
+        <label>Place of education?</label>
+      </input>
+    </group>
+    <group ref="/data/group_my6jo52">
+      <label>Household characteristics</label>
+      <input ref="/data/group_my6jo52/hh_size">
+        <label>Number of persons in your household?</label>
+      </input>
+      <input ref="/data/group_my6jo52/num_workers">
+        <label>Number of workers?</label>
+      </input>
+      <input ref="/data/group_my6jo52/num_adults">
+        <label>Number of adults?</label>
+      </input>
+      <input ref="/data/group_my6jo52/num_kids">
+        <label>Number of kids? (aged below 15)</label>
+      </input>
+    </group>
+    <group ref="/data/group_lm5fq00">
+      <label>Vehicle ownership</label>
+      <input ref="/data/group_lm5fq00/num_vehicles">
+        <label>How many cars does your household own?</label>
+      </input>
+      <select1 ref="/data/group_lm5fq00/driver_licence">
+        <label>Do you have a driver license? *</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <select1 ref="/data/group_lm5fq00/drive">
+        <label>Do you drive?</label>
+        <item>
+          <label>Yes</label>
+          <value>yes</value>
+        </item>
+        <item>
+          <label>No</label>
+          <value>no</value>
+        </item>
+      </select1>
+      <input ref="/data/group_lm5fq00/Vehicle_year">
+        <label>Vehicle year</label>
+        <hint>Please answer for the main vehicle that you use, if any.</hint>
+      </input>
+      <input ref="/data/group_lm5fq00/veh_make">
+        <label>Vehicle make</label>
+        <hint>Please answer for the main vehicle that you use, if any.</hint>
+      </input>
+      <input ref="/data/group_lm5fq00/veh_model">
+        <label>Vehicle model</label>
+        <hint>Please answer for the main vehicle that you use, if any.</hint>
+      </input>
+    </group>
+  </h:body>
+</h:html>
