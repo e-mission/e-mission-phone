@@ -84,6 +84,14 @@ angular.module('emission.survey.enketo.launch', [
       return;
     }).then(EnketoSurvey.displayForm
     ).then(function(loadErrors){
+			
+			// Ignore 'Different root nodes' error: START
+			const idx = loadErrors.findIndex((errTxt) => errTxt.includes('Different root nodes'));
+			if (idx !== -1) {
+        loadErrors.splice(idx, 1);
+			}
+			// Ignore 'Different root nodes' error: END
+
       if (loadErrors.length > 0) {
         $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
       }
