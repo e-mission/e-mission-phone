@@ -317,7 +317,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             prepopulateMessage = {
                 message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
                 subject: 'Help Berkeley become more bikeable and walkable',
-                url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
+                url: 'http://localhost:8080/redirect/join?groupid=' + partyId + '&userid=' + userId
+                //url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
             };
             $ionicLoading.hide();
             }, function(error){

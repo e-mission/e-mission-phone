@@ -420,7 +420,8 @@ angular.module('emission.main.metrics',['nvd3',
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = true;
       var getMetricsResult = $http.post(
-        "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
+        "http://localhost:8080/result/metrics/timestamp",
+        //"https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
         clonedData)
       return getMetricsResult;
    }
