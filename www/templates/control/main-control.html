@@ -1,9 +1,9 @@
 <ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
-    </div>
+    </div> -->
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
@@ -13,7 +13,8 @@
         </div>
       </label>
     </div>
-    <div class="control-list-item">
+    <!------------------- START profile settings we don't really need -------------------->
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
@@ -52,9 +53,9 @@
       <div class="control-list-text" translate>{{'.download-json-dump'}}</div>
       <div ng-click="openDatePicker()" class="control-icon-button">
         <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
-      </div>
+      </div> -->
       <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div> -->
-    </div>
+    <!-- </div>
 
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.email-log'}}</div>
@@ -64,9 +65,9 @@
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text" translate>{{'.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
-    </div>
+    </div> -->
     <!-- Begin user data -->
-    <div class="" ng-show="userDataExpanded()">
+    <!-- <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.erase-data'}}</div>
         <div ng-click="eraseUserData()" id="gray" class=" control-icon-button"><i class="ion-trash-b"></i></div>
@@ -84,7 +85,9 @@
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.dev-zone'}}</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
-    </div>
+    </div> -->
+
+    <!------------------- END profile settings we don't really need -------------------->
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
