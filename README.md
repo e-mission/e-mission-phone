@@ -82,6 +82,9 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
     ```
     
 1. Configure values if necessary - e.g.
+What you need to do here is e.g. copy "physical_device" json sample to the connectionConfig.json
+The connectionConfig.json is a necessary file. Just copy connectionConfig.physical_device2localhost.json.sample,
+replace the host with your own server on any other working server and then name it connectionConfig.json
 
     ```
     $ ls www/json/*.sample
