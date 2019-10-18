@@ -376,6 +376,22 @@ angular.module('emission.services', ['emission.plugin.logger',
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
 
+    /**
+    * get the connectUrl (server url)
+    * It could be the connectUrl of the connectionConfig.json file,
+    * or if doens't exist, it get the default settings 
+    */
+    this.getConnectUrlAsync = async function() {
+      return window.cordova.plugins.BEMConnectionSettings.getSettings()
+              .then((resp)=>{
+                return resp.connectUrl;
+              })
+              .catch((err)=>{
+                console.error(err);
+                throw err;
+              })
+    }
+
 })
 
 .service('CarbonDatasetHelper', function(KVStore) {

@@ -8,7 +8,7 @@ angular.module('emission.main.metrics',['nvd3',
                                         'emission.plugin.logger'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, $ionicPopup,
+                                    CommHelper, ControlHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                     $rootScope, $location, $state, ReferHelper, $http, Logger,
@@ -414,13 +414,19 @@ angular.module('emission.main.metrics',['nvd3',
       var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
       return getMetricsResult;
    }
-   var getAggMetricsFromServer = function() {
+   
+   /**
+    * create a post request to get metrics from the server
+    */
+   var getAggMetricsFromServer = async function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = true;
+
+      var url = await ControlHelper.getConnectUrlAsync()
       var getMetricsResult = $http.post(
-        "http://localhost:8080/result/metrics/timestamp",
+        url+"/result/metrics/timestamp",
         //"https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
         clonedData)
       return getMetricsResult;

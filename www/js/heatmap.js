@@ -35,7 +35,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
    * Hotter for more counts.
    */
 
-  $scope.getPopRoute = function() {
+  $scope.getPopRoute = async function() {
     $scope.countData.isLoading = true;
     var data = {
       modes: $scope.selectCtrl.modes,
@@ -43,8 +43,9 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       to_local_date: $scope.selectCtrl.toDate,
       sel_region: null
     };
+    var url = await ControlHelper.getConnectUrlAsync()
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("http://localhost:8080/result/heatmap/pop.route/local_date", data)
+    return $http.post(url+"/result/heatmap/pop.route/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.lnglat)) {
         Logger.log("Got points in heatmap "+response.data.lnglat.length);
@@ -277,7 +278,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
    * BEGIN: Stress map code
    */
 
-  $scope.getIncidents = function() {
+  $scope.getIncidents = async function() {
     $scope.stressData.isLoading = true;
     var data = {
       modes: $scope.selectCtrl.modes,
@@ -285,8 +286,9 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       to_local_date: $scope.selectCtrl.toDate,
       sel_region: null
     };
+    var url = await ControlHelper.getConnectUrlAsync()
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("http://localhost:8080/result/heatmap/incidents/local_date", data)
+    return $http.post(url+"/result/heatmap/incidents/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.incidents)) {
         Logger.log("Got incidents"+response.data.incidents.length);
