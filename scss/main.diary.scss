@@ -1,0 +1,153 @@
+.no-margin {
+  margin:0px !important;
+  padding:0px !important;
+}
+
+/*.item {
+  border:0px !important;
+
+}*/
+
+.main {
+    padding-top:50px;
+    padding-bottom:50px !important;
+}
+
+.row {
+    padding:0px;
+}
+
+.col {
+   padding:0px !important;
+}
+
+.small {
+  font-size:7px;
+}
+.bg-color{
+  background:#71bc98!important;
+  color:whitesmoke !important;
+}
+.summary-color{
+  background:#1b9e77!important;
+  color:whitesmoke !important;
+}
+.place-color{
+  background:#7570b3!important;
+  color:whitesmoke !important;
+}
+
+
+/* leaflet */
+/* ----------- iPhone 5 and 5S ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 320px) 
+  and (max-device-width: 568px)
+  and (-webkit-min-device-pixel-ratio: 2) {
+    .angular-leaflet-map { height: 150px; width: 245px; }
+}
+
+/* ----------- iPhone 6 ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 375px) 
+  and (max-device-width: 667px) 
+  and (-webkit-min-device-pixel-ratio: 2) { 
+    .angular-leaflet-map { height: 150px; width: 295px; }
+}
+
+/* ----------- iPhone 6+ ----------- */
+
+/* Portrait and Landscape */
+@media only screen 
+  and (min-device-width: 414px) 
+  and (max-device-width: 736px) 
+  and (-webkit-min-device-pixel-ratio: 3) { 
+    .angular-leaflet-map { height: 150px; width: 330px; }
+}
+
+
+.list .item.item-accordion {
+
+  transition: 0.09s all linear;
+}
+.list .item.item-accordion.ng-hide {
+  line-height: 0px;
+}
+.list .item.item-accordion.ng-hide-add,
+.list .item.item-accordion.ng-hide-remove {
+  display: block !important;
+}
+a.item-content {
+  padding: 0 !important;
+  background-color: transparent !important;
+}
+.leaflet-div-icon {
+  background-color: white;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+  border-color: white;  
+}
+.leaflet-div-icon-start {
+  background-color: #33e0bb;
+  border-radius: 6px;
+}
+.leaflet-div-icon-stop {
+  background-color: #ff5251;
+  border-radius: 6px;
+}
+.inner-icon {
+  background-color: white;
+  width: 6px;
+  height: 6px;
+  border-radius: 3px;
+  margin-left: 3px;
+  margin-top: 3px;
+}
+.btn-mode-confirm-green,
+.btn-mode-confirm-green:hover,
+.btn-mode-confirm-green:active,
+.btn-purpose-confirm-green,
+.btn-purpose-confirm-green:hover,
+.btn-purpose-confirm-green:active {
+  background-color: #30A64A;
+  color: white;
+}
+.btn-mode-confirm-white,
+.btn-mode-confirm-white:hover,
+.btn-mode-confirm-white:active,
+.btn-purpose-confirm-white,
+.btn-purpose-confirm-white:hover,
+.btn-purpose-confirm-white:active {
+  background-color: #ddd;
+  color: #333;
+  font-size: 0.8em;
+}
+.btn-mode-confirm,
+.btn-purpose-confirm {
+  line-height: 30px;
+  min-height: 30px;
+  font-size: 0.8em !important;
+  width: 115px;
+  padding: 0;
+}
+.mode-confirm-container,
+.purpose-confirm-container {
+  margin-top: 5px;
+}
+
+.popover {
+  height: 297px;
+  width: 230px;
+}
+
+#diary-item {
+  padding: 0;
+  border-width: 0;
+}
