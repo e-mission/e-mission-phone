@@ -162,6 +162,7 @@
     "user-age": "Age",
 
     "main-metrics":{
+        "co2-status": "CO2 Status",
         "dashboard": "Dashboard",
         "summary": "Summary",
         "chart": "Chart",

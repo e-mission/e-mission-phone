@@ -28,10 +28,18 @@ $light: $light-dfki;
 $energized: $attention;
 
 
-// The path for our ionicons font files, relative to the built CSS in www/css
+/*
+ * other, non-brand customizations to Ionic css
+ */
+$bar-height: 70px;
+$tabs-height: 70px;
+$tabs-text-font-size:             16px !default;
+$tabs-text-font-size-side-icon:   16px !default;
+
+
+
+  // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic
 @import "../www/lib/ionic/scss/ionic";
-
-
