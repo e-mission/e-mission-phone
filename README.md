@@ -80,6 +80,11 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
     ```
     $ bower install
     ```
+ 1. Compile sass files to www/css
+
+    ```
+    $ npm run sass-build
+    ```
     
 1. Configure values if necessary - e.g.
 What you need to do here is e.g. copy "physical_device" json sample to the connectionConfig.json
