@@ -1,19 +1,15 @@
 <ion-view ng-class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
+        
     </ion-nav-bar>
     <!-- NO Walkthrough for DFKI <ion-nav-buttons side="right">
         <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>  -->
-    <ion-nav-buttons side="left">
-        <!-- Map Fix doesn't do anything? <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
-        <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-            <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-            </button>
-            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-            <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-            </button>
-        </div>
-    </ion-nav-buttons>
+    <ion-header-bar>
+            <h1 class = "title">Rides</h1>
+    </ion-header-bar>
+
+
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">
         <ion-refresher
@@ -26,6 +22,29 @@
             <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
         </div>
         -->
+
+
+        <div>
+                <div class="item item-divider">
+                    <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
+                        <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+                        </button>
+                        <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}}</button>
+                        <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
+                        </button>
+                    </div>
+                </div>
+                <ion-item collection-repeat="tripgj in data.currDayTripWrappers" >
+                    <div ng-click="toDetail(tripgj.data.id)">{{tripgj.display_start_time}}</div>
+                    <div>
+                        <span  ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0; color: #afafaf;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></span>
+                        <i class="{{mode}}" ng-repeat="mode in tripgj.percentages[0]" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="setColor(mode)"></i>
+                    </div>
+                </ion-item>
+
+        </div>
+
+
 		<ion-list>
         <ion-nav-view ></ion-nav-view>
         <!--
@@ -38,6 +57,8 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
+
+
 
 		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
            <div class="start-time-tag">{{tripgj.display_start_time}}</div>
