@@ -2,6 +2,16 @@
 
 @import "diary";
 
+/** remove vertical lines from nvd3 charts, see https://github.com/novus/nvd3/issues/59
+.nvd3.nv-lineChart .nv-y.nv-axis line { stroke: none; fill: none; }**/
+
+
+.back-button {
+  position: absolute;
+  top: 17px;
+  left: 16px;
+}
+
 
 /******** START radio buttons time selection ********/
 
@@ -791,10 +801,6 @@ img.center {
   padding: 2px 4px !important;
 }
 
-.ion-view-background{
-  background-color: #ededed !important;
-}
-
 .title.title-center.header-item {
   color: #303030;
 }
@@ -900,9 +906,6 @@ button.button.back-button.buttons.button-clear.header-item {
 .bg-light {
   background-color: #ffffff;
 }
-.bg-unprocessed {
-  background-color: #9eb2aa;
-}
 .list-card-sm {
   width: 95%;
 }
@@ -934,6 +937,7 @@ button.button.back-button.buttons.button-clear.header-item {
   left: 1%;
   top: 15px;
   line-height: 16px;
+  z-index: 9;
 }
 .stop-time-tag {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
@@ -948,6 +952,7 @@ button.button.back-button.buttons.button-clear.header-item {
   left: 1%;
   bottom: 15px;
   line-height: 16px;
+  z-index: 9;
 }
 .stop-time-tag-lower {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);

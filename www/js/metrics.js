@@ -267,9 +267,9 @@ angular.module('emission.main.metrics',['nvd3',
 
     $scope.options = {
         chart: {
-            type: 'multiBarChart',
-            width: $window.screen.width - 30,
-            height: $window.screen.height - 220,
+            type: 'lineChart',
+            width: $window.screen.width - 20, // to account for row and col padding
+            height: $window.screen.height / 3,
             margin : {
                 top: 20,
                 right: 20,
@@ -309,11 +309,11 @@ angular.module('emission.main.metrics',['nvd3',
             },
             yAxis: {
               axisLabel: $translate.instant('metrics.trips-yaxis-number'),
-              axisLabelDistance: -10
+              axisLabelDistance: 0
             },
             callback: function(chart) {
               chart.multibar.dispatch.on('elementClick', function(bar) {
-                  var date = bar.data[2].slice(0,10);
+                  var date = bar.data[2].slice(-7); // get the last week
                   $rootScope.barDetailDate = moment(date);
                   $rootScope.barDetail = true;
                   $state.go('root.main.diary');
@@ -414,7 +414,7 @@ angular.module('emission.main.metrics',['nvd3',
       var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
       return getMetricsResult;
    }
-   
+
    /**
     * create a post request to get metrics from the server
     */

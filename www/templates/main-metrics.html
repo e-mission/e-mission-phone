@@ -1,6 +1,6 @@
 <ion-view view-title="{{'main-metrics.co2-status' | translate}}" class="ion-view-background" translate-namespace="main-metrics">
-  <ion-nav-bar class="bar-stable">
-  </ion-nav-bar>
+  <ion-navbar class="bar-header bar-stable">
+  </ion-navbar>
   <!-- <ion-nav-buttons side="primary">
       <button class="button button-icon" ng-click="share()">
         <i class="icon ion-share"></i>
@@ -10,16 +10,15 @@
       <button class="button button-icon" ng-click="doRefresh()">
         <i class="icon ion-refresh"></i>
       </button>
-    <button class="button button-icon">
+    <button class="button button-icon" href="#/root/main/control">
       <i class="icon ion-more"></i>
     </button>
   </ion-nav-buttons>
   <ion-content class="has-header">
 
-    <ul class="list">
-      <li class="item stable-bg">
+
         <form>
-          <div class="row">
+          <div class="row stable-bg">
             <div class="col text-center">
               <input type="radio" name="timeframe" id="day" checked>
               <label class="radio-pill-button" for="day">Day</label>
@@ -42,23 +41,41 @@
             </div>
           </div>
         </form>
-      </li>
-      <li class="item stable-bg">
-        Todays CO2 status:  <!-- only that it's last week's but for now we're good -->
-        <br><br>
-        <button class="button button-stable">
-          {{carbonData.userCarbon}}
-        </button>
-      </li>
-      <li class="item">
-        Overview
 
-        <div>
-          <img src="img/dashboard-graph-placeholder.png" />
-          <!-- something like this: <nvd3 options="countOptions" data="data.count" style="padding: 10px;"></nvd3> -->
+
+    <!-- today's CO2 status -->
+      <div class="row stable-bg">
+        <div class="col">
+
+          Todays CO2 status:  <!-- only that it's last week's but for now we're good -->
+          <br><br>
+          <button class="button button-stable">
+            {{carbonData.userCarbon}}
+          </button>
+
         </div>
-      </li>
-      <li class="item">
+      </div>
+
+    <!-- fake chart -->
+    <div class="row">
+      <div class="col">
+
+        Overview
+        <img src="img/dashboard-graph-placeholder.png" />
+
+      </div>
+    </div>
+
+    <!-- nvd3 chart -->
+    <div class="row">
+      <div class="col">
+        <nvd3 options="distanceOptions" data="data.distance"></nvd3>
+      </div>
+    </div>
+
+    <!-- daily mobility detail -->
+    <div class="row">
+      <div class="col">
         Daily mobility detail
 
         <div>
@@ -73,9 +90,9 @@
           <div class="col text-center">WALK</div>
           <div class="col text-center">BIKE</div>
         </div>
+      </div>
+    </div>
 
-      </li>
-    </ul>
 
 
     <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control -->

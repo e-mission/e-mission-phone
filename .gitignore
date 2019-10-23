@@ -20,3 +20,8 @@ package.json
 
 # ignore css from scss compiled files
 www/css/*.css
+*.css
+*.css.map
+
+**/.sass-cache/**
+
