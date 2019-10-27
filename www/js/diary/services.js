@@ -1009,15 +1009,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         } else {
             return tripList;
         }
-      }).then(function(combinedTripList) {
-          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
-          return Promise.all([
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
-          ]).then(function(results) {
+      }).then(function([combinedTripList, modes, purposes]) {
+          return EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true }).then(function(surveyAnswers) {
             timeline.data.unifiedConfirmsResults = {
-              modes: results[0],
-              purposes: results[1],
+              modes: modes,
+              purposes: purposes,
+              surveyAnswers: surveyAnswers,
             };
             return combinedTripList;
           });
