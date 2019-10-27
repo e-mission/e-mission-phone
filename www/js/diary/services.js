@@ -992,17 +992,23 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var tripsFromServerPromise = timeline.updateFromServer(day);
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
 
-      // Also mode/purpose
+      // Also mode/purpose and survey answers
       var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
       const modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
       const purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+      const surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
 
       // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise])
-        .then(function([processedTripList, completeStatus, modes, purposes]) {
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise, surveyAnswersPromise])
+        .then(function([processedTripList, completeStatus, modes, purposes, surveyAnswers]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
         var tripList = processedTripList;
+        timeline.data.unifiedConfirmsResults = {
+          modes: modes,
+          purposes: purposes,
+          surveyAnswers: surveyAnswers,
+        };
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -1010,20 +1016,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                          +"unprocessedTripList.length = "+unprocessedTripList.length);
               Array.prototype.push.apply(tripList, unprocessedTripList);
               console.log("After merge, returning trip list of size "+tripList.length);
-              return [tripList, modes, purposes];
+              return tripList;
             });
         } else {
-            return [tripList, modes, purposes];
+            return tripList;
         }
-      }).then(function([combinedTripList, modes, purposes]) {
-          return EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true }).then(function(surveyAnswers) {
-            timeline.data.unifiedConfirmsResults = {
-              modes: modes,
-              purposes: purposes,
-              surveyAnswers: surveyAnswers,
-            };
-            return combinedTripList;
-          });
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
