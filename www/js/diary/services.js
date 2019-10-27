@@ -993,10 +993,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
 
       // Also mode/purpose and survey answers
-      var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
-      const modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
-      const purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
-      const surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+      var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+      var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
+      var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+      var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
 
       // Deal with all the trip retrieval
       Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise, surveyAnswersPromise])
