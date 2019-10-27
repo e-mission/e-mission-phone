@@ -1016,11 +1016,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return [tripList, modes, purposes];
         }
       }).then(function([combinedTripList, modes, purposes]) {
-          return EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true }).then(function(results) {
+          return EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true }).then(function(surveyAnswers) {
             timeline.data.unifiedConfirmsResults = {
               modes: modes,
               purposes: purposes,
-              surveyAnswers: results[2],
+              surveyAnswers: surveyAnswers,
             };
             return combinedTripList;
           });
