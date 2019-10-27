@@ -1003,6 +1003,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         .then(function([processedTripList, completeStatus, modes, purposes, surveyAnswers]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
+        console.log(` with ${modes.length} modes, ${purposes.length} purposes,  ${surveyAnswers.length} surveyAnswers`);
         var tripList = processedTripList;
         timeline.data.unifiedConfirmsResults = {
           modes: modes,
