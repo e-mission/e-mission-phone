@@ -1,6 +1,11 @@
 @import "variables";
-
 @import "diary";
+
+
+.bar-header .title {
+  text-align: center!important;
+}
+
 
 /** remove vertical lines from nvd3 charts, see https://github.com/novus/nvd3/issues/59
 .nvd3.nv-lineChart .nv-y.nv-axis line { stroke: none; fill: none; }**/
@@ -16,7 +21,7 @@
 /******** START radio buttons time selection ********/
 
 $radioBtn-size: 100%;
-$active-color: #e44;
+$active-color: $primary;
 $inactive-color: white;
 
 
@@ -42,12 +47,13 @@ input[type="radio"]{
 }
 
 label.radio-pill-button {
-  padding: 5px 15px;
-  background: $primary;
+  padding: 10px 15px;
+  background: $inactive-color;
   cursor: pointer;
   backface-visibility: hidden;
   border-radius: 20px;
   will-change: transform;
+  font-size: 12px;
 
   &:checked {
     animation: active 1s ease forwards;
@@ -57,7 +63,7 @@ label.radio-pill-button {
 
 @keyframes active {
   100% {
-    background: white;
+    background: $active-color;
   }
 }
 
@@ -924,50 +930,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .list-col-right {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
-.start-time-tag {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  text-align: center;
-  background-color: #33e0bb;
-  color: black;
-  width: 16%;
-  height: 16px;
-  border-radius: 8px;
-  font-size: 9px;
-  position: absolute;
-  left: 1%;
-  top: 15px;
-  line-height: 16px;
-  z-index: 9;
-}
-.stop-time-tag {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  text-align: center;
-  background-color: #ff5251;
-  color: black;
-  width: 16%;
-  height: 16px;
-  border-radius: 8px;
-  font-size: 9px;
-  position: absolute;
-  left: 1%;
-  bottom: 15px;
-  line-height: 16px;
-  z-index: 9;
-}
-.stop-time-tag-lower {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  text-align: center;
-  background-color: #ff5251;
-  color: black;
-  width: 16%;
-  height: 16px;
-  border-radius: 8px;
-  font-size: 9px;
-  position: absolute;
-  left: 1%;
-  top: 310px;
-  line-height: 16px;
-}
+
 
 .start-end-addresses-container {
   display: inline-block;

@@ -1,3 +1,70 @@
+@import "variables";
+
+/* modifications to ionic-own item-avatar */
+.diary-item-content .item-avatar {
+  padding-top: 7px;
+  padding-bottom: 7px;
+  min-height: 40px;
+  height: 40px;
+  border: none;
+}
+.diary-item-content .item-avatar > img:first-child {
+  max-height: 26px;
+  top: 7px;
+  width: initial;
+  max-width: 26px;
+  left: 40px;
+}
+.diary-item-content .item-avatar p {
+  font-size: 8px;
+  line-height: 11px;
+}
+
+.start-time-tag, .stop-time-tag {
+  text-align: center;
+  color: black;
+  width: 60px;
+  height: 20px;
+  border-radius: 10px;
+  font-size: 8px;
+  font-weight: 500;
+  line-height: 18px;
+  z-index: 9;
+}
+.start-time-tag {
+  background-color: $primary;
+}
+.stop-time-tag {
+  background-color: #00B6FF;
+}
+
+
+.diary-timeline {
+  background-color: #0D9C80;
+  background: linear-gradient(0deg, #00B6FF 0%, #33e0bb 100%);
+
+  &::before, &::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    position:absolute;
+    left: -2px;
+    display:inline-block;
+    border-radius: 50%;
+    background-color: blue;
+  }
+
+  &::before {
+    top: -2px;
+    background-color: #33e0bb;
+  }
+
+  &::after {
+    bottom: -2px;
+    background-color: #00B6FF;
+  }
+}
+
 .no-margin {
   margin:0px !important;
   padding:0px !important;
@@ -13,13 +80,6 @@
     padding-bottom:50px !important;
 }
 
-.row {
-    padding:0px;
-}
-
-.col {
-   padding:0px !important;
-}
 
 .small {
   font-size:7px;
@@ -41,9 +101,9 @@
 /* leaflet */
 /* ----------- iPhone 5 and 5S ----------- */
 
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 320px) 
+/* Portrait and Landscape
+@media only screen
+  and (min-device-width: 320px)
   and (max-device-width: 568px)
   and (-webkit-min-device-pixel-ratio: 2) {
     .angular-leaflet-map { height: 150px; width: 245px; }
@@ -51,24 +111,29 @@
 
 /* ----------- iPhone 6 ----------- */
 
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 375px) 
-  and (max-device-width: 667px) 
-  and (-webkit-min-device-pixel-ratio: 2) { 
+/* Portrait and Landscape
+@media only screen
+  and (min-device-width: 375px)
+  and (max-device-width: 667px)
+  and (-webkit-min-device-pixel-ratio: 2) {
     .angular-leaflet-map { height: 150px; width: 295px; }
 }
 
 /* ----------- iPhone 6+ ----------- */
 
-/* Portrait and Landscape */
-@media only screen 
-  and (min-device-width: 414px) 
-  and (max-device-width: 736px) 
-  and (-webkit-min-device-pixel-ratio: 3) { 
+/* Portrait and Landscape
+@media only screen
+  and (min-device-width: 414px)
+  and (max-device-width: 736px)
+  and (-webkit-min-device-pixel-ratio: 3) {
     .angular-leaflet-map { height: 150px; width: 330px; }
 }
+*/
 
+.angular-leaflet-map {
+  width: 360px;
+  height: 150px;
+}
 
 .list .item.item-accordion {
 
@@ -92,7 +157,7 @@ a.item-content {
   border-radius: 3px;
   margin-left: 3px;
   margin-top: 3px;
-  border-color: white;  
+  border-color: white;
 }
 .leaflet-div-icon-start {
   background-color: #33e0bb;
@@ -147,7 +212,7 @@ a.item-content {
   width: 230px;
 }
 
-#diary-item {
+.diary-item {
   padding: 0;
   border-width: 0;
 }

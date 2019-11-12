@@ -111,9 +111,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.differentCommon = function(tripgj) {
         return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
-    $scope.stopTimeTagClass = function(tripgj) {
-      return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
-    }
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
           window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
@@ -211,7 +208,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.common.different = $scope.differentCommon(tripgj);
         tripgj.common.longerOrShorter = $scope.getLongerOrShorter(tripgj.data, tripgj.data.id);
         tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
-        tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
         tripgj.common.arrowColor = $scope.arrowColor(tripgj.common.longerOrShorter[0]);
         tripgj.common.arrowClass = $scope.getArrowClass(tripgj.common.longerOrShorter[0]);
 
@@ -610,7 +606,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     /*
-     * Convert the array of {text, value} objects to a {value: text} map so that 
+     * Convert the array of {text, value} objects to a {value: text} map so that
      * we can look up quickly without iterating over the list for each trip
      */
 
@@ -694,7 +690,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -706,7 +702,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
