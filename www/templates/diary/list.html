@@ -147,7 +147,7 @@
           </ion-item>
 -->
 
-      <ion-item collection-repeat="tripgj in data.currDayTripWrappers" style="padding-top: 32px;">
+      <ion-item collection-repeat="tripgj in data.currDayTripWrappers" style="padding-top: 32px;" ng-click="toDetail(tripgj.data.id)">
 
         <!-- fancy line on the left -->
         <div class="diary-timeline" style="height: calc(100% - 71px); width: 2px; position: absolute; left: 16px;">
@@ -192,6 +192,16 @@
 
           <div class="row">
             <div class="col" style="border-top: 1px solid black;">
+
+              <!-- some legacy code here for debugging / help -->
+              <i class="{{mode}}" ng-repeat="mode in tripgj.percentages[0]"
+                 style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;"
+                 ng-style="setColor(mode)"></i>
+              <div style="margin-top: -5px;">
+                <a ng-class="listTextClass" ng-repeat="percentage in tripgj.percentages[1]"
+                   style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
+              </div>
+
             </div>
           </div>
 
@@ -200,7 +210,7 @@
               <div class="col text-center">
                 <input type="radio" name="timeframe-details" id="day-details" checked>
                 <label class="radio-pill-button" for="day-details">
-                  <img src="img/modes/car-front.png" height="16px"> Car
+                  <img src="img/icons/modes/car-front.png" height="16px"> Car
                 </label>
               </div>
               <div class="col text-center">

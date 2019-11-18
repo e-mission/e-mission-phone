@@ -1,6 +1,13 @@
 @import "variables";
 @import "diary";
 
+/* flex-row item for e.g. the settings / controls view */
+.item-flex {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+}
 
 .bar-header .title {
   text-align: center!important;
@@ -887,9 +894,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .control-list-text {
   background-color: white! important; padding: 15px; float: left;
 }
-.control-list-toggle {
-  float: right; margin-top: 5px; margin-right: 2px;
-}
+
 /* Diary list tab */
 
 .lightrail {

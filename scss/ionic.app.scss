@@ -22,10 +22,13 @@ $dark:                            #444 !default;
 /*
  * customize Ionic with our theme colors
  */
-$stable: $primary;
 $button-color: $primary;
-$light: $light-dfki;
+$toggle-on-default-bg: $primary;
+
+$stable: $dfki-stable;
+$light: white;
 $energized: $attention;
+
 
 
 /*
@@ -40,6 +43,7 @@ $tabs-text-font-size-side-icon:   16px !default;
 
   // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
+
 
 // Include all of Ionic
 @import "../www/lib/ionic/scss/ionic";
