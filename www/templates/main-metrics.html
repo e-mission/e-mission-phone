@@ -6,16 +6,37 @@
       </button>
   </ion-nav-buttons> -->
   <ion-nav-buttons side="secondary">
-      <button class="button button-icon" ng-click="doRefresh()">
+      <!--<button class="button button-icon" ng-click="doRefresh()">
         <i class="icon ion-refresh"></i>
-      </button>
+      </button>-->
     <button class="button button-icon" href="#/root/main/control">
       <i class="icon ion-more"></i>
     </button>
   </ion-nav-buttons>
   <ion-content class="has-header">
 
-        <form>
+    <div class="tabs-striped tabs-background-light tabs-color-balanced">
+      <div class="tabs" style="position: relative; top: 0;">
+        <a class="tab-item active" href="#">
+          Day
+        </a>
+        <a class="tab-item" href="#">
+          Week
+        </a>
+        <a class="tab-item" href="#">
+          Month
+        </a>
+        <a class="tab-item" href="#">
+          Year
+        </a>
+        <a class="tab-item" href="#">
+          All
+        </a>
+      </div>
+    </div>
+
+    <!-- legacy selection form
+    <form>
           <div class="row stable-bg">
             <div class="col text-center">
               <input type="radio" name="timeframe" id="day" checked>
@@ -38,31 +59,20 @@
               <label class="radio-pill-button" for="all">All</label>
             </div>
           </div>
-        </form>
+    </form>-->
 
 
     <!-- today's CO2 status -->
       <div class="row stable-bg">
         <div class="col">
 
-          Todays CO2 status:  <!-- only that it's last week's but for now we're good -->
-          <br><br>
-          <button class="button button-stable">
-            {{carbonData.userCarbon}}
-          </button>
+          Today's CO₂ emission:  <!-- only that it's last week's but for now we're good -->
+
+          <nvd3 options="optionsdonutchart" data="summaryData.defaultSummary.distance"></nvd3>
 
         </div>
       </div>
 
-    <!-- fake chart -->
-    <div class="row">
-      <div class="col">
-
-        Overview
-        <img src="img/dashboard-graph-placeholder.png" />
-
-      </div>
-    </div>
 
     <!-- nvd3 chart -->
     <div class="row">
@@ -71,25 +81,11 @@
       </div>
     </div>
 
-    <!-- daily mobility detail -->
-    <div class="row">
-      <div class="col">
-        Daily mobility detail
 
-        <div>
-          <img src="img/dashboard-detail-placeholder.png" />
-          <!-- something like this: <nvd3 options="countOptions" data="data.count" style="padding: 10px;"></nvd3> -->
-        </div>
 
-        <div class="row">
-          <div class="col text-center">CAR</div>
-          <div class="col text-center">BUS</div>
-          <div class="col text-center">TRAIN</div>
-          <div class="col text-center">WALK</div>
-          <div class="col text-center">BIKE</div>
-        </div>
-      </div>
-    </div>
+
+
+    <!--------- old part of the code with date controls etc.... -->
 
 
 

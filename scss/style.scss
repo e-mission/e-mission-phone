@@ -1,6 +1,33 @@
 @import "variables";
 @import "diary";
 
+
+/*
+ * some adjustments to the tab design because that's just how our design is (DFKI / mcqdev)
+ */
+.tabs-striped.tabs-color-balanced .tab-item {
+  color: $dfki-stable;
+  font-weight: 600;
+}
+.tabs-striped.tabs-color-balanced .tab-item.active {
+  color: black;
+  font-weight: 600;
+}
+
+
+/***
+ * styles for nvd3 charts on dahsboard / main-metrics.js
+ */
+/* hide vertical lines showing x-axis units (because design says so) */
+.nv-x .tick line {
+  display: none;
+}
+/* hide y-axis line */
+.nv-y .domain {
+  display: none;
+}
+
+
 /* flex-row item for e.g. the settings / controls view */
 .item-flex {
   display: flex;
