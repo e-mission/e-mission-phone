@@ -5,13 +5,25 @@
 /*
  * some adjustments to the tab design because that's just how our design is (DFKI / mcqdev)
  */
-.tabs-striped.tabs-color-balanced .tab-item {
-  color: $dfki-stable;
-  font-weight: 600;
+.tabs {
+  line-height: 50px;
 }
-.tabs-striped.tabs-color-balanced .tab-item.active {
-  color: black;
-  font-weight: 600;
+.tabs-striped {
+  &.tabs-color-balanced {
+    .tab-item {
+      color: $dfki-stable;
+      font-weight: 500;
+
+      &.tab-item-active,
+      &.active,
+      &.activated {
+        color: $default-text;
+      }
+    }
+  }
+}
+.tabs-top > .tab-nav.tabs {
+  top:0px;
 }
 
 
@@ -25,6 +37,18 @@
 /* hide y-axis line */
 .nv-y .domain {
   display: none;
+}
+/* label background styles */
+.nvd3.nv-pie .nv-label rect {
+  fill-opacity: 1;
+  stroke-opacity: 1;
+  stroke: #91F2DC !important;
+  width: 66px;
+  height: 19px;
+  transform: translate(-33px, -13px);
+}
+.nvd3 text {
+  font-size: 10px;
 }
 
 
@@ -62,18 +86,6 @@ $inactive-color: white;
 input[type="radio"]{
   appearance: none;
   display: none;
-  /*
-  width: $radioBtn-size;
-  height: $radioBtn-size;
-  margin: 0 $radioBtn-size / 2;
-  outline: $radioBtn-size / 2 solid $inactive-color;
-  outline-offset: $radioBtn-size / -2;
-  cursor: pointer;
-  backface-visibility: hidden;
-  border-radius: 50%;
-  transform: rotate(45deg) scale(1);
-  will-change: transform;
-  */
 
   &:checked ~ label {
     animation: active 1s ease forwards;
@@ -88,10 +100,6 @@ label.radio-pill-button {
   border-radius: 20px;
   will-change: transform;
   font-size: 12px;
-
-  &:checked {
-    animation: active 1s ease forwards;
-  }
 }
 
 

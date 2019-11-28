@@ -9,7 +9,7 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
   }
 
   fh.readableFormat = function(v) {
-    return v > 999? Math.round(v / 1000) + 'k kg' : Math.round(v) + ' kg';
+    return Number.parseFloat(v).toFixed(1) + " kg";
   }
   fh.getFootprintForMetrics = function(userMetrics) {
     var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();

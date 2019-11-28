@@ -249,6 +249,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
+          console.log("========= WATCH OUT. ALL TRIPS ARE IN HERE =============");
+          console.log(JSON.stringify($scope.data.currDayTripWrappers));
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -596,6 +598,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.chooseMode = function () {
       var isOther = false
+      console.log("========== WTF IS scope.selected: ============");
+      console.log(JSON.stringify($scope.selected));
       if ($scope.selected.mode.value != "other_mode") {
         $scope.storeMode($scope.selected.mode, isOther);
       } else {
@@ -636,7 +640,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         });
     });
 
+    // crappy legacy version that uses a global scope variable for defining the current trip
     $scope.storeMode = function (mode, isOther) {
+      console.log("========= HERE COMES THE MODE ===========" + JSON.stringify(mode));
       if(isOther) {
         // Let's make the value for user entered modes look consistent with our
         // other values
@@ -659,6 +665,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if (isOther == true)
         $scope.draftMode = angular.undefined;
     }
+
+  $scope.storeModeToTrip = function (tripgj, mode, isOther) {
+    // create necessary objects for storeMode to store mode with. This is not good but it was in the code and I don't have time for refactoring.
+    // this would happen inside openModePopover in the "vanilla" app
+    $scope.draftMode = {
+      "start_ts": tripgj.data.properties.start_ts,
+      "end_ts": tripgj.data.properties.end_ts
+    };
+    $scope.modeTripgj = tripgj;
+
+    $scope.storeMode(mode, isOther);
+
+    // same thing, a little 'cleanup', this would normally happen inside closeModePopover in the "vanilla" app
+    $scope.draftMode = angular.undefined;
+  }
 
     $scope.storePurpose = function (purpose, isOther) {
       if (isOther) {

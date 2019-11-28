@@ -1,18 +1,14 @@
-<ion-view view-title="Options" ng-class="ion-view-background" translate-namespace="control">
-
-  <ion-nav-buttons side="left">
-    <button class="button button-icon icon ion-android-arrow-back" ng-click="doSomething()"></button>
-  </ion-nav-buttons>
+<ion-view ng-class="ion-view-background" translate-namespace="control">
 
   <ion-content>
-    <!--
-    <div class="control-list-item">
-      <div class="control-list-text">{{settings.auth.email}}</div>
-      <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
-    </div> -->
 
 
     <ul class="list">
+
+      <li class="item item-toggle">
+        {{settings.auth.email}}
+        <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
+      </li>
 
       <li class="item item-toggle">
         Live Tracking
@@ -24,6 +20,7 @@
         </label>
       </li>
 
+      <!--
       <li class="item item-flex">
         <div class="item-flex">
           <img src="img/icons/contract.png" height="20px">
@@ -54,7 +51,7 @@
           &nbsp;&nbsp;Privacy Policy
         </div>
         <img src="img/icons/arrow-right.png" height="10px" style="float: right;">
-      </li>
+      </li>-->
 
     </ul>
 

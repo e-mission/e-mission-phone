@@ -1,37 +1,32 @@
-<ion-view view-title="{{'main-metrics.co2-status' | translate}}" class="ion-view-background" translate-namespace="main-metrics">
+<ion-view class="ion-view-background" translate-namespace="main-metrics">
 
   <!-- <ion-nav-buttons side="primary">
       <button class="button button-icon" ng-click="share()">
         <i class="icon ion-share"></i>
       </button>
   </ion-nav-buttons> -->
-  <ion-nav-buttons side="secondary">
-      <!--<button class="button button-icon" ng-click="doRefresh()">
-        <i class="icon ion-refresh"></i>
-      </button>-->
-    <button class="button button-icon" href="#/root/main/control">
-      <i class="icon ion-more"></i>
-    </button>
-  </ion-nav-buttons>
-  <ion-content class="has-header">
 
-    <div class="tabs-striped tabs-background-light tabs-color-balanced">
-      <div class="tabs" style="position: relative; top: 0;">
-        <a class="tab-item active" href="#">
-          Day
-        </a>
-        <a class="tab-item" href="#">
-          Week
-        </a>
-        <a class="tab-item" href="#">
-          Month
-        </a>
-        <a class="tab-item" href="#">
-          Year
-        </a>
-        <a class="tab-item" href="#">
-          All
-        </a>
+  <ion-content>
+
+    <ion-tabs class="tabs-striped tabs-background-light tabs-color-balanced tabs-top"
+              style="top: 0px;"
+              delegate-handle="timeframe-tabs">
+      <ion-tab title="Day" on-select="getLastDaysMetrics(1)">
+      </ion-tab>
+      <ion-tab title="Week" on-select="getLastDaysMetrics(7)">
+      </ion-tab>
+      <ion-tab title="Month" on-select="getLastDaysMetrics(31)">
+      </ion-tab>
+      <ion-tab title="Year" on-select="getLastDaysMetrics(365)">
+      </ion-tab>
+      <ion-tab title="All" on-select="getLastDaysMetrics(1000)">
+      </ion-tab>
+    </ion-tabs>
+
+    <!-- this is a spacer that will lie behind the tabs. Since the tabs are positioned absolute, they would not
+          move the other elements down, resulting in the tabs occluding the content / graph -->
+    <div class="row" style="height: 65px;">
+      <div class="col">
       </div>
     </div>
 
@@ -66,7 +61,7 @@
       <div class="row stable-bg">
         <div class="col">
 
-          Today's CO₂ emission:  <!-- only that it's last week's but for now we're good -->
+          Your CO₂ emission:  <!-- only that it's last week's but for now we're good -->
 
           <nvd3 options="optionsdonutchart" data="summaryData.defaultSummary.distance"></nvd3>
 
@@ -85,11 +80,11 @@
 
 
 
-    <!--------- old part of the code with date controls etc.... -->
+    <!--------- old part of the code with date controls etc....
 
 
 
-    <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control -->
+    <div style="height: 40px; width: 100%; padding: 10px;" ng-if="uictrl.showVis"> <!-- visualization control
       <div class="metric-half">
         <div ng-class="summaryButtonClass()" ng-click="showSummary()" translate>{{'.summary'}}</div>
         <div ng-class="chartButtonClass()" ng-click="showChart()" translate>{{'.chart'}}</div>
@@ -105,7 +100,7 @@
       <div class="metric-second-half">
           <i class="icon ion-ios-person metric-icon"></i>
           <label ng-click="toggle()" class="toggle metric-me-toggle">
-            <input type="checkbox" ng-checked="!uictrl.showMe" ng-disabled="!uictrl.hasAggr"> <!-- me on left, off -->
+            <input type="checkbox" ng-checked="!uictrl.showMe" ng-disabled="!uictrl.hasAggr"> <!-- me on left, off
             <div class="track toggle-color">
               <div class="handle"></div>
             </div>
@@ -150,12 +145,12 @@
                 <div class="card dashboard-list"><b translate>{{'.lastweek'}}</b> {{carbonData.lastWeekUserCarbon}}</div>
                 <div class="card dashboard-list"><b>CA 2035:</b> {{carbonData.ca2035}}</div>
                 <div class="card dashboard-list"><b>CA 2050:</b> {{carbonData.ca2050}}</div>
-              </div>-->
+              </div>
           </div>
           <!-- no dropdown arrow needed
           <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
             <i ng-class="checkFootprintCardExpanded()"></i>
-          </div> -->
+          </div>
         </div>
         <!-- we don't need a calorie tracking feature, so disabled -->
         <!-- <div ng-class="changeCalorieCardHeight()" id="dashboard-calorie" class="card">
@@ -203,7 +198,7 @@
           <div ng-click="extendCalorieCard()" class="arrow-position">
             <i ng-class="checkCalorieCardExpanded()"></i>
           </div>
-        </div> -->
+        </div>
         <ion-slide-box show-pager="false" id="modes">
           <ion-slide id="modes">
             <div id="dashboard-bottom" class="card">
@@ -295,6 +290,11 @@
           </ion-slide>
         </ion-slide-box>
         </div>
-    </div>
+    </div>-->
+    <!-- END of unneeded elements for DFKI -->
+
+
+
   </ion-content>
 </ion-view>
+

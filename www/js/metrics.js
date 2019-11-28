@@ -12,8 +12,15 @@ angular.module('emission.main.metrics',['nvd3',
                                       ionicDatePicker, $ionicPlatform,
                                       FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                       $rootScope, $location, $state, ReferHelper, $http, Logger,
-                                      $translate) {
-    var lastTwoWeeksQuery = true;
+                                      $translate, $ionicTabsDelegate) {
+
+
+    var queryLastDays = true; // we want to query the last days when starting
+    var queryLastDays_amount = 7; //  how many days in the past from today do we want to query?
+    // this will set the default tab to "week", which we want. We need to wrap it inside a $timeout since
+    // this is not the actual tabs-controller so we need to wait until the tabs component is processed
+    $timeout(() => {$ionicTabsDelegate.$getByHandle('timeframe-tabs').select(1)});
+
     var first = true;
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
@@ -270,11 +277,11 @@ angular.module('emission.main.metrics',['nvd3',
         chart: {
             type: 'lineChart',
             width: $window.screen.width - 20, // to account for row and col padding
-            height: $window.screen.width * 2/3,
+            height: $window.screen.width * 3/4,
             margin : {
-                top: 20,
+                top: 0,
                 right: 20,
-                bottom: 40,
+                bottom: 20,
                 left: 20
             },
             noData: $translate.instant('metrics.chart-no-data'),
@@ -318,8 +325,15 @@ angular.module('emission.main.metrics',['nvd3',
               showMaxMin: false,
             },
             legend: {
-                maxKeyLength: 10,
-                padding: 25,
+              maxKeyLength: 10,
+              padding: 25,
+              "width": $window.screen.width - 20,
+              "margin": {
+                "top": 10,
+                "right": 0,
+                "bottom": 0,
+                "left": 0
+              }
             },
             callback: function(chart) {
               chart.multibar.dispatch.on('elementClick', function(bar) {
@@ -338,9 +352,9 @@ angular.module('emission.main.metrics',['nvd3',
       "chart": {
         "type": "pieChart",
         "width": $window.screen.width - 20, // to account for row and col padding
-        "height": $window.screen.width * 5/7,
+        "height": $window.screen.width * 4/5,
         "margin": {
-          "top": 0,
+          "top": 20,
           "left": 0,
           "right": 0,
           "bottom": 0
@@ -353,8 +367,9 @@ angular.module('emission.main.metrics',['nvd3',
         "showLabels": true,
         "showLegend": false,
         "pie": {
-          "startAngle": null,
-          "endAngle": null
+          "startAngle": function(d) { return d.startAngle + 4*Math.PI/5 },
+          "endAngle": function(d) { return d.endAngle + 4*Math.PI/5 },
+          "labelsOutside": true,
         },
         "duration": 500,
         "legend": {
@@ -365,12 +380,11 @@ angular.module('emission.main.metrics',['nvd3',
           console.log(chart);
           d3.select(".nv-pieLabels")
             .append("circle")
-            .attr("r", "100")
+            .attr("r", "110")
             .style("fill", "#91F2DC");
-          // since I don't know how to add dynamic data to the chart with nvd3, I will add the label without any binding
-          // this'll probably cause a bunch of bugs in the future because the value of $scope.carbonData.userCarbon could
-          // potentially not yet have been initialized / written. Sorry bro.
-          if (typeof $scope.carbonData !== 'undefined') {
+          // since I don't know how to add dynamic data to the chart / SVG, I will add the label without any binding
+          d3.select(".nv-pieLabels > text").remove();
+          if (typeof $scope.carbonData != 'undefined') {
             d3.select(".nv-pieLabels")
               .append("text")
               .style("font-size", "53px")
@@ -378,39 +392,15 @@ angular.module('emission.main.metrics',['nvd3',
               .style("alignment-baseline", "middle")
               .text($scope.carbonData.userCarbon);
           }
+
+          // add stronger border radius to all labels
+          //d3.selectAll(".nv-label rect")
+          //  .attr("rx", "10px")
+          //  .attr("ry", "10px");
         }
       }
     };
-    $scope.datadonutchart = [
-      {
-        key: "One",
-        y: 5
-      },
-      {
-        key: "Two",
-        y: 2
-      },
-      {
-        key: "Three",
-        y: 9
-      },
-      {
-        key: "Four",
-        y: 7
-      },
-      {
-        key: "Five",
-        y: 4
-      },
-      {
-        key: "Six",
-        y: 3
-      },
-      {
-        key: "Seven",
-        y: .5
-      }
-    ];
+
 
     var moment2Localdate = function(momentObj) {
       return {
@@ -472,17 +462,21 @@ angular.module('emission.main.metrics',['nvd3',
           end_time: tempTo,
           metric: ""
         };
+
       } else if (mode === 'timestamp') { // timestamp range
-        if(lastTwoWeeksQuery) {
-          var tempFrom = moment2Timestamp(moment().utc().startOf('day').subtract(14, 'days'));
-          var tempTo = moment2Timestamp(moment().utc().startOf('day').subtract(1, 'days'))
-          lastTwoWeeksQuery = false; // Only get last week's data once
+        if(queryLastDays) {
+          var tempFrom = moment2Timestamp(moment().utc().startOf('day').subtract(queryLastDays_amount, 'days'));
+          var tempTo = moment2Timestamp(moment().utc());
+          queryLastDays = false; // Only get last week's data once
+          console.log("======== went through queryLastDays==========");
         } else {
+          console.log("====AAAAAAAAAAAAAAAAAAAAAAAAAAAAA================= " + moment2Timestamp(moment().utc().startOf('day').subtract(14, 'days')));
+
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
         }
         data = {
-          freq: $scope.selectCtrl.pandaFreq,
+          freq: (queryLastDays_amount == 1) ? "H" : "D", // if we are querying the last day, get hourly data, otherwise get daily data
           start_time: tempFrom,
           end_time: tempTo,
           metric: ""
@@ -494,6 +488,13 @@ angular.module('emission.main.metrics',['nvd3',
       console.log("Sending data "+JSON.stringify(data));
       callback()
     };
+
+    // this is a helper function to call when we want to show the last two week's data
+    $scope.getLastDaysMetrics = function(amount) {
+      queryLastDays = true;
+      queryLastDays_amount = amount;
+      setMetrics("timestamp", getMetrics);
+    }
 
     var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
@@ -578,7 +579,7 @@ angular.module('emission.main.metrics',['nvd3',
           // Don't store the any other data as last we data
         }
         $scope.fillUserValues(results.user_metrics);
-        console.log("asdasdfasdfasfd===================");
+        console.log("===== getted User Metrics from Server in metrics.js line 573 getUserMetricsFromServer() ===================");
         console.log(results);
         $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
         console.log("=================== summary data format =======");
@@ -604,6 +605,8 @@ angular.module('emission.main.metrics',['nvd3',
         })
 
       getAggMetricsFromServer().then(function(results) {
+        console.log("===== getted Aggregated Metrics from Server in metrics.js line 607 getAggMetricsFromServer() ===================");
+        console.log(results);
         $scope.fillAggregateValues(results.data.aggregate_metrics);
         $scope.uictrl.hasAggr = true;
         if (angular.isDefined($scope.chartDataAggr)) { //Only have to check one because
@@ -815,6 +818,7 @@ angular.module('emission.main.metrics',['nvd3',
 
         $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
         console.log("========== carbon footprint: " + $scope.carbonData.userCarbon);
+        d3.select(".nv-pieLabels > text").remove();
         d3.select(".nv-pieLabels")
           .append("text")
           .style("font-size", "53px")
@@ -880,6 +884,7 @@ angular.module('emission.main.metrics',['nvd3',
         }
 
         $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
+        console.log("============== after getFootprintForMetrics: " + FootprintHelper.getFootprintForMetrics(aggrCarbonData));
       }
     };
 
@@ -1362,5 +1367,7 @@ angular.module('emission.main.metrics',['nvd3',
       return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
     }
 
-
   });
+
+
+

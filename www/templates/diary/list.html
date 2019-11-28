@@ -1,18 +1,18 @@
-<ion-view view-title="Trips" class="ion-view-background" translate-namespace="diary">
+<ion-view class="ion-view-background" translate-namespace="diary">
 
   <ion-content class="diary-entry">
 
-    <ion-refresher
-      pulling-text="{{'pull-to-refresh' | translate}}"
-      on-refresh="refresh()">
-    </ion-refresher>
+        <ion-refresher
+          pulling-text="{{'pull-to-refresh' | translate}}"
+          on-refresh="refresh()">
+        </ion-refresher>
 
     <!--
-    <div  ng-if="inTrip()" class="control-list-item">
-        <div class="control-list-text">Current Trip</div>
-        <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
-    </div>
-    -->
+            <div  ng-if="inTrip()" class="control-list-item">
+                <div class="control-list-text">Current Trip</div>
+                <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+            </div>
+            -->
 
     <!-- date selection -->
     <div>
@@ -27,6 +27,7 @@
         </div>
       </div>
     </div>
+
 
 
     <ion-list>
@@ -147,7 +148,8 @@
           </ion-item>
 -->
 
-      <ion-item collection-repeat="tripgj in data.currDayTripWrappers" style="padding-top: 32px;" ng-click="toDetail(tripgj.data.id)">
+
+      <ion-item collection-repeat="tripgj in data.currDayTripWrappers" style="padding-top: 32px;"   >
 
         <!-- fancy line on the left -->
         <div class="diary-timeline" style="height: calc(100% - 71px); width: 2px; position: absolute; left: 16px;">
@@ -190,10 +192,11 @@
             </div>
           </div>
 
-          <div class="row">
-            <div class="col" style="border-top: 1px solid black;">
 
-              <!-- some legacy code here for debugging / help -->
+          <!-- some legacy code here for debugging / help -->
+          <div class="row">
+
+            <div class="col-50" style="border-top: 1px solid black;">
               <i class="{{mode}}" ng-repeat="mode in tripgj.percentages[0]"
                  style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;"
                  ng-style="setColor(mode)"></i>
@@ -201,44 +204,86 @@
                 <a ng-class="listTextClass" ng-repeat="percentage in tripgj.percentages[1]"
                    style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
               </div>
-
             </div>
+
+              <div class="col-50" style="text-align: center;">
+                <div ng-if="tripgj.usermode" class="mode-confirm-container">
+                  <button ng-click="openModePopover($event, tripgj)"
+                          class="button btn-mode-confirm btn-mode-confirm-green">
+                    {{tripgj.usermode.text}}
+                  </button>
+                </div>
+                <div ng-if="!tripgj.usermode" class="mode-confirm-container">
+                  <button ng-click="openModePopover($event, tripgj)"
+                          class="button btn-mode-confirm btn-mode-confirm-white" translate>
+                    {{'.choose-mode'}}
+                  </button>
+                </div>
+              </div>
+
           </div>
 
-          <form>
-            <div class="row">
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="day-details" checked>
-                <label class="radio-pill-button" for="day-details">
-                  <img src="img/icons/modes/car-front.png" height="16px"> Car
-                </label>
+
+
+
+          <ion-scroll  overflow-scroll="false" zooming="true" direction="x" style="width: calc(100% + 14px); margin-left: 2px; height: 50px;">
+
+            <form style="width: 650px;">
+              <div class="row">
+
+                <!-- template
+
+                <ion-list ng-repeat="mode in modeOptions">
+                  <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value">{{mode.text}}</ion-radio>
+                </ion-list>
+
+                -->
+
+
+
+                <div class="col text-center" ng-repeat="mode in modeOptions">
+                  <!--
+                  <ion-radio ng-click="storeModeToTrip(tripgj, mode, false)" ng-model="selected.mode.value" ng-value="{{mode.value}}" name="timeframe-details-{{tripgj.data.id}}">
+                    {{mode.text}}
+                  </ion-radio>-->
+                  <input ng-click="storeModeToTrip(tripgj, mode, false)"
+                         type="radio"
+                         name="timeframe-details-{{tripgj.data.id}}"
+                         id="{{mode.value}}-tag-{{tripgj.data.id}}"
+                         value="{{mode.value}}">
+                  <label class="radio-pill-button" for="{{mode.value}}-tag-{{tripgj.data.id}}">{{mode.text}}</label>
+                </div>
+
+<!--
+                <div class="col text-center">
+                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="walk-tag-{{tripgj.data.id}}">
+                  <label class="radio-pill-button" for="walk-tag-{{tripgj.data.id}}">Walk</label>
+                </div>
+                <div class="col text-center">
+                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="bike-tag-{{tripgj.data.id}}">
+                  <label class="radio-pill-button" for="bike-tag-{{tripgj.data.id}}">Bike</label>
+                </div>
+                <div class="col text-center">
+                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="scooter-tag-{{tripgj.data.id}}">
+                  <label class="radio-pill-button" for="scooter-tag-{{tripgj.data.id}}">Scooter</label>
+                </div>
+                <div class="col text-center">
+                  <input type="radio" name="timeframe-details-{{tripgj.data.id}} id="publictrans-tag-{{tripgj.data.id}}">
+                  <label class="radio-pill-button" for="publictrans-tag-{{tripgj.data.id}}">Public Transport</label>
+                </div>
+                <div class="col text-center">
+                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="train-tag-{{tripgj.data.id}}">
+                  <label class="radio-pill-button" for="train-tag-{{tripgj.data.id}}">Train</label>
+                </div>
+                <div class="col text-center">
+                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="plane-tag-{{tripgj.data.id}}">
+                  <label class="radio-pill-button" for="plane-tag-{{tripgj.data.id}}">Plane</label>
+                </div>-->
               </div>
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="week-details">
-                <label class="radio-pill-button" for="week-details">Walk</label>
-              </div>
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="month-details">
-                <label class="radio-pill-button" for="month-details">Bike</label>
-              </div>
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="year-details">
-                <label class="radio-pill-button" for="year-details">Scooter</label>
-              </div>
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="all-details">
-                <label class="radio-pill-button" for="all-details">Public Transport</label>
-              </div>
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="train">
-                <label class="radio-pill-button" for="train">Train</label>
-              </div>
-              <div class="col text-center">
-                <input type="radio" name="timeframe-details" id="plain">
-                <label class="radio-pill-button" for="plain">Plain</label>
-              </div>
-            </div>
-          </form>
+            </form>
+
+          </ion-scroll>
+
 
           <div class="row">
             <div class="col col-25">

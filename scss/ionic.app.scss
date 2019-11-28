@@ -36,14 +36,14 @@ $balanced: $primary;
  * other, non-brand customizations to Ionic css
  */
 $bar-height: 70px;
-$tabs-height: 70px;
-$tabs-text-font-size:             16px !default;
-$tabs-text-font-size-side-icon:   16px !default;
-
+$tabs-height: 60px;
+$tabs-text-font-size:             16px;
+$tabs-text-font-size-side-icon:   16px;
+$tabs-striped-border-width:       5px;
 
 
   // The path for our ionicons font files, relative to the built CSS in www/css
-$ionicons-font-path: "../lib/ionic/fonts" !default;
+$ionicons-font-path: "../lib/ionic/fonts";
 
 
 // Include all of Ionic
