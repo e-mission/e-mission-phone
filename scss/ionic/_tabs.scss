@@ -1,0 +1,71 @@
+/*
+ * some adjustments to the tab design because that's just how our design is (DFKI / mcqdev)
+ */
+ .tabs {
+    line-height: 50px;
+  }
+  .tabs-striped {
+    &.tabs-color-balanced {
+      .tab-item {
+        color: rgba($default-text,.5);
+        font-weight: 500;
+  
+        &.tab-item-active,
+        &.active,
+        &.activated {
+          color: $default-text;
+        }
+
+        // only for control tab item
+        &.tab-item-control {
+            flex: 0 0 50px;
+            
+            .icon {
+                transform: rotate(90deg);
+                padding-right: 0;
+                vertical-align: middle;
+                margin-top: 0;
+                line-height: 0px;
+                &:before {
+                    font-size: 18px;
+                    line-height: 30px;
+                }
+            }
+        }
+
+        .icon {
+            padding-right: 7px;
+            &:before {
+                font-size: 18px;
+                line-height: 55px;
+            }
+        }
+      }
+    }
+  }
+  .tabs-top > .tab-nav.tabs {
+    top:0px;
+  }
+
+  .platform-ios.platform-cordova {
+    // iOS has a status bar which sits on top of the header.
+    // Bump down everything to make room for it. However, if
+    // if its in Cordova, and set to fullscreen, then disregard the bump.
+    &:not(.fullscreen) {
+      .bar-header:not(.bar-subheader) {
+        height: $bar-height + $ios-statusbar-height;
+  
+        &.item-input-inset .item-input-wrapper {
+          margin-top: 19px !important;
+        }
+  
+        > * {
+          margin-top: $ios-statusbar-height;
+        }
+      }
+      .tabs-top > .tabs,
+      .tabs.tabs-top {
+        top: 0;
+      }
+    }
+  }

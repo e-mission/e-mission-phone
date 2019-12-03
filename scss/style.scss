@@ -1,30 +1,6 @@
 @import "variables";
 @import "diary";
-
-
-/*
- * some adjustments to the tab design because that's just how our design is (DFKI / mcqdev)
- */
-.tabs {
-  line-height: 50px;
-}
-.tabs-striped {
-  &.tabs-color-balanced {
-    .tab-item {
-      color: $dfki-stable;
-      font-weight: 500;
-
-      &.tab-item-active,
-      &.active,
-      &.activated {
-        color: $default-text;
-      }
-    }
-  }
-}
-.tabs-top > .tab-nav.tabs {
-  top:0px;
-}
+@import "icons";
 
 
 /***
@@ -126,6 +102,7 @@ h4.dashboard-headers{
 
 .stable-bg {
   border-color: black;
+  padding-top: 60px;
 }
 
 .button.button-stable {
