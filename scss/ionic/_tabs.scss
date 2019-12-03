@@ -52,17 +52,6 @@
     // Bump down everything to make room for it. However, if
     // if its in Cordova, and set to fullscreen, then disregard the bump.
     &:not(.fullscreen) {
-      .bar-header:not(.bar-subheader) {
-        height: $bar-height + $ios-statusbar-height;
-  
-        &.item-input-inset .item-input-wrapper {
-          margin-top: 19px !important;
-        }
-  
-        > * {
-          margin-top: $ios-statusbar-height;
-        }
-      }
       .tabs-top > .tabs,
       .tabs.tabs-top {
         top: 0;
