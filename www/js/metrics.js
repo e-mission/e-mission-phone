@@ -288,7 +288,7 @@ angular.module('emission.main.metrics',['nvd3',
             showControls: false,
             showValues: true,
             x: function(d){ return d[0]; },
-            y: function(d){ return d[1]; },
+            y: function(d) { return d[1]; },
 
 
             color: d3.scale.category10().range(),
@@ -320,7 +320,7 @@ angular.module('emission.main.metrics',['nvd3',
             },
             yAxis: {
               tickFormat: function(d) {
-                return d / 1000; // TODO insert actual carbon dioxide calculation here or better yet manipulate the data before feeding to chart
+                return d; // TODO insert actual carbon dioxide calculation here or better yet manipulate the data before feeding to chart
               },
               showMaxMin: false,
             },
@@ -400,7 +400,6 @@ angular.module('emission.main.metrics',['nvd3',
         }
       }
     };
-
 
     var moment2Localdate = function(momentObj) {
       return {
@@ -547,6 +546,7 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
+      $scope.datadonutchart = [];
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
@@ -582,6 +582,7 @@ angular.module('emission.main.metrics',['nvd3',
         console.log("===== getted User Metrics from Server in metrics.js line 573 getUserMetricsFromServer() ===================");
         console.log(results);
         $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
+        distance2emission(); // convert to co2 values see function definition
         console.log("=================== summary data format =======");
         console.log($scope.summaryData.defaultSummary);
         first = false; //If there is data from last week store the data only first time
@@ -630,6 +631,30 @@ angular.module('emission.main.metrics',['nvd3',
           Logger.displayError("Error loading aggregate data, averages not available",
             error);
         });
+    };
+
+    var d2e_table = {
+      "ON_FOOT": 3,
+      "BICYCLING": 21,
+      "CAR": 139,
+      "AIR_OR_HSR": 201,
+      "BUS": 65
+    };
+    var distance2emission = function() {
+      console.log("============= here we go distance2emission ========");
+      console.log($scope.summaryData.defaultSummary.distance);
+
+      var factor = 1;
+
+      $scope.summaryData.defaultSummary.distance.forEach(entry => {
+        console.log("key " + entry.key);
+        console.log(d2e_table[entry.key]);
+
+        factor = (typeof d2e_table[entry.key] !== 'undefined') ? d2e_table[entry.key] : 1;
+        entry.values = ((entry.values / 1000) * factor) / 1000; //convert to km, then get grams of co2, then convert to kg
+      });
+
+      console.log($scope.summaryData.defaultSummary.distance);
     };
 
     $scope.fillUserValues = function(user_metrics_arr) {
@@ -891,6 +916,22 @@ angular.module('emission.main.metrics',['nvd3',
     $scope.showCharts = function(agg_metrics) {
       $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
       $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);// we replaced this line with some dummy data:
+
+      // convert distance to co2 values
+      $scope.data.distance.forEach ( entry => {
+
+        var factor = (typeof d2e_table[entry.key] !== 'undefined') ? d2e_table[entry.key] : 1; // multiply by co2 per km factor;
+
+        entry.values.forEach (distance => {
+          distance[1] /= 1000; // convert to km
+          distance[1] *= factor; // get grams of emission
+          distance[1] /= 1000; // convert g to kg
+        });
+
+      });
+
+
+
       console.log("=================start stuff");
       console.log($scope.data.distance);
       console.log(agg_metrics);
