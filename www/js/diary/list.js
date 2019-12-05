@@ -199,7 +199,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.isDraft = $scope.isDraft(tripgj);
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
-        tripgj.percentages = $scope.getPercentages(tripgj)
+        tripgj.percentages = $scope.getPercentages(tripgj);
     }
 
     $scope.populateCommonInfo = function(tripgj) {

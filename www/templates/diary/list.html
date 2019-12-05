@@ -194,96 +194,41 @@
 
 
           <!-- some legacy code here for debugging / help -->
-          <div class="row">
-
-            <div class="col-50" style="border-top: 1px solid black;">
-              <i class="{{mode}}" ng-repeat="mode in tripgj.percentages[0]"
-                 style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;"
-                 ng-style="setColor(mode)"></i>
-              <div style="margin-top: -5px;">
-                <a ng-class="listTextClass" ng-repeat="percentage in tripgj.percentages[1]"
-                   style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
-              </div>
+          <div class="row " ng-repeat="item in tripgj.percentages[0]">
+            <div class="col" style="border-top: 1px solid black;">
+              <div class="mode-tag"><i class="{{item[1]}}" ng-style="setColor(item[0])"></i> <span>{{item[0]}}</span></div>
             </div>
 
-              <div class="col-50" style="text-align: center;">
-                <div ng-if="tripgj.usermode" class="mode-confirm-container">
-                  <button ng-click="openModePopover($event, tripgj)"
-                          class="button btn-mode-confirm btn-mode-confirm-green">
-                    {{tripgj.usermode.text}}
-                  </button>
-                </div>
-                <div ng-if="!tripgj.usermode" class="mode-confirm-container">
-                  <button ng-click="openModePopover($event, tripgj)"
-                          class="button btn-mode-confirm btn-mode-confirm-white" translate>
-                    {{'.choose-mode'}}
-                  </button>
-                </div>
-              </div>
+            <div class="col" style="border-top: 1px solid black; text-align: center">
+                <div ng-class="listTextClass"
+                   style="font-size: 0.6em; line-height: 1.6; margin-right: 0.4em;">{{item[2]}} km<br>DISTANCE</div>
+            </div>
+
+            <div class="col" style="border-top: 1px solid black; text-align: center">
+                <div ng-class="listTextClass"
+                   style="font-size: 0.6em; line-height: 1.6; margin-right: 0.4em;">{{item[3]}}<br>TIME</div>
+            </div>
 
           </div>
 
+          <div class="row">
 
-
-
-          <ion-scroll  overflow-scroll="false" zooming="true" direction="x" style="width: calc(100% + 14px); margin-left: 2px; height: 50px;">
-
-            <form style="width: 650px;">
-              <div class="row">
-
-                <!-- template
-
-                <ion-list ng-repeat="mode in modeOptions">
-                  <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value">{{mode.text}}</ion-radio>
-                </ion-list>
-
-                -->
-
-
-
-                <div class="col text-center" ng-repeat="mode in modeOptions">
-                  <!--
-                  <ion-radio ng-click="storeModeToTrip(tripgj, mode, false)" ng-model="selected.mode.value" ng-value="{{mode.value}}" name="timeframe-details-{{tripgj.data.id}}">
-                    {{mode.text}}
-                  </ion-radio>-->
-                  <input ng-click="storeModeToTrip(tripgj, mode, false)"
-                         type="radio"
-                         name="timeframe-details-{{tripgj.data.id}}"
-                         id="{{mode.value}}-tag-{{tripgj.data.id}}"
-                         value="{{mode.value}}">
-                  <label class="radio-pill-button" for="{{mode.value}}-tag-{{tripgj.data.id}}">{{mode.text}}</label>
-                </div>
-
-<!--
-                <div class="col text-center">
-                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="walk-tag-{{tripgj.data.id}}">
-                  <label class="radio-pill-button" for="walk-tag-{{tripgj.data.id}}">Walk</label>
-                </div>
-                <div class="col text-center">
-                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="bike-tag-{{tripgj.data.id}}">
-                  <label class="radio-pill-button" for="bike-tag-{{tripgj.data.id}}">Bike</label>
-                </div>
-                <div class="col text-center">
-                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="scooter-tag-{{tripgj.data.id}}">
-                  <label class="radio-pill-button" for="scooter-tag-{{tripgj.data.id}}">Scooter</label>
-                </div>
-                <div class="col text-center">
-                  <input type="radio" name="timeframe-details-{{tripgj.data.id}} id="publictrans-tag-{{tripgj.data.id}}">
-                  <label class="radio-pill-button" for="publictrans-tag-{{tripgj.data.id}}">Public Transport</label>
-                </div>
-                <div class="col text-center">
-                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="train-tag-{{tripgj.data.id}}">
-                  <label class="radio-pill-button" for="train-tag-{{tripgj.data.id}}">Train</label>
-                </div>
-                <div class="col text-center">
-                  <input type="radio" name="timeframe-details-{{tripgj.data.id}}" id="plane-tag-{{tripgj.data.id}}">
-                  <label class="radio-pill-button" for="plane-tag-{{tripgj.data.id}}">Plane</label>
-                </div>-->
+            <div class="col" style="text-align: center;">
+              <div ng-if="tripgj.usermode" class="mode-confirm-container">
+                <button ng-click="openModePopover($event, tripgj)"
+                        class="button btn-mode-confirm btn-mode-confirm-green">
+                  {{tripgj.usermode.text}}
+                </button>
               </div>
-            </form>
+              <div ng-if="!tripgj.usermode" class="mode-confirm-container">
+                <button ng-click="openModePopover($event, tripgj)"
+                        class="button btn-mode-confirm btn-mode-confirm-white" translate>
+                  {{'.choose-mode'}}
+                </button>
+              </div>
+            </div>
 
-          </ion-scroll>
-
+          </div>
 
           <div class="row">
             <div class="col col-25">
