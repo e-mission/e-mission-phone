@@ -7,12 +7,12 @@ navigation history that also transitions its views in and out.
 <ion-tabs class="tabs-icon-left tabs-striped tabs-color-balanced">
 
   <!-- Dashboard Tab -->
-  <ion-tab title="{{'main-metrics.dashboard' | translate}}" icon="ion-stats-bars" href="#/root/main/metrics">
+  <ion-tab title="{{'main-metrics.dashboard' | translate}}" icon="icon-dashboard" href="#/root/main/metrics">
     <ion-nav-view name="main-metrics"></ion-nav-view>
   </ion-tab>
 
   <!-- Diary Tab -->
-  <ion-tab title="Trips" icon="ion-map" href="#/root/main/diary">
+  <ion-tab title="Trips" icon="icon-trips" href="#/root/main/diary">
     <ion-nav-view name="main-diary"></ion-nav-view>
   </ion-tab>
 
@@ -37,7 +37,7 @@ navigation history that also transitions its views in and out.
   </ion-tab>  -->
 
   <!-- Controls Tab -->
-  <ion-tab title="" icon="ion-more" href="#/root/main/control">
+  <ion-tab class="tab-item-control" title="" icon="ion-more" href="#/root/main/control">
     <ion-nav-view name="main-control"></ion-nav-view>
   </ion-tab>
 

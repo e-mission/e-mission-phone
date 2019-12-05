@@ -46,5 +46,12 @@ $tabs-striped-border-width:       5px;
 $ionicons-font-path: "../lib/ionic/fonts";
 
 
+// avatar
+$item-avatar-border-radius:       0;
+
+
 // Include all of Ionic
 @import "../www/lib/ionic/scss/ionic";
+
+// customize
+@import "ionic/tabs";
