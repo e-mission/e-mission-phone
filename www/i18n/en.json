@@ -147,9 +147,9 @@
         "time": "Time",
         "mode": "Mode",
         "purpose": "Purpose",
-        "choose-mode": "Choose Mode",
+        "choose-mode": "Overwrite detected transportation mode",
         "choose-purpose": "Choose Purpose",
-        "how-did-you-get-here": "How did you get here?",
+        "how-did-you-get-here": "Choose corect transportation",
         "why-did-you-come-here": "Why did you come here?",
         "list-pick-a-date": "Pick a date"
     },
