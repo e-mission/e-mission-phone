@@ -272,6 +272,18 @@ angular.module('emission.main.metrics',['nvd3',
       };
     }
 
+    var modeTranslations = {
+      "CAR": "Auto",
+      "UNKNOWN": "unbekannt",
+      "ON_FOOT": "zu Fuß",
+      "BICYCLING": "Fahrrad",
+      "BUS": "Bus",
+      "SUBWAY": "U-Bahn",
+      "TRAIN": "Zug",
+      "TRAM": "Tram",
+      "AIR_OR_HSR": "Flugzeug"
+    };
+
     /* options for the main NVD3 chart on the dashboard view for displaying carbon offset over time. */
     $scope.options = {
         chart: {
@@ -333,7 +345,9 @@ angular.module('emission.main.metrics',['nvd3',
                 "right": 0,
                 "bottom": 0,
                 "left": 0
-              }
+              },
+              "key" : function(d){
+                return modeTranslations[d.key]; }
             },
             callback: function(chart) {
               chart.multibar.dispatch.on('elementClick', function(bar) {
@@ -354,27 +368,28 @@ angular.module('emission.main.metrics',['nvd3',
         "width": $window.screen.width - 20, // to account for row and col padding
         "height": $window.screen.width * 4/5,
         "margin": {
-          "top": 20,
+          "top": 25,
           "left": 0,
           "right": 0,
-          "bottom": 0
+          "bottom": 10
         },
         "donut": true,
         "donutRatio": 0.75,
-        "x": function(d){return d.key;},
+        "x": function(d){
+          return modeTranslations[d.key]; },
         "y": function(d){return d.values;},
         "color": ["#9B9B9B",  "#000000", "#DCDDE1", "#FFFFFF", "#DCDDE1", "#ADADAD"],
         "showLabels": true,
         "showLegend": false,
+        "legend": {
+          "key": function(d){ return d.key; }
+        },
         "pie": {
           "startAngle": function(d) { return d.startAngle + 4*Math.PI/5 },
           "endAngle": function(d) { return d.endAngle + 4*Math.PI/5 },
           "labelsOutside": true,
         },
         "duration": 500,
-        "legend": {
-          "key": function(d) { return d.key }
-        },
         callback: function(chart) {
           console.log("============= chart output ============");
           console.log(chart);
@@ -385,6 +400,7 @@ angular.module('emission.main.metrics',['nvd3',
           // since I don't know how to add dynamic data to the chart / SVG, I will add the label without any binding
           d3.select(".nv-pieLabels > text").remove();
           if (typeof $scope.carbonData != 'undefined') {
+            console.log("updated usercarbon in chart callback to: ===== : " + $scope.carbonData.userCarbon);
             d3.select(".nv-pieLabels")
               .append("text")
               .style("font-size", "53px")
@@ -546,7 +562,6 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
-      $scope.datadonutchart = [];
       $scope.caloriesData.userCalories = 0;
       $scope.caloriesData.aggrCalories = 0;
       $scope.caloriesData.lastWeekUserCalories = 0;
@@ -579,12 +594,22 @@ angular.module('emission.main.metrics',['nvd3',
           // Don't store the any other data as last we data
         }
         $scope.fillUserValues(results.user_metrics);
+
         console.log("===== getted User Metrics from Server in metrics.js line 573 getUserMetricsFromServer() ===================");
         console.log(results);
         $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
         distance2emission(); // convert to co2 values see function definition
         console.log("=================== summary data format =======");
         console.log($scope.summaryData.defaultSummary);
+        d3.select(".nv-pieLabels > text").remove();
+        console.log("updated usercarbon in getMetrics to: ===== : " + $scope.carbonData.userCarbon);
+        d3.select(".nv-pieLabels")
+          .append("text")
+          .style("font-size", "53px")
+          .style("text-anchor", "middle")
+          .style("alignment-baseline", "middle")
+          .text($scope.carbonData.userCarbon);
+
         first = false; //If there is data from last week store the data only first time
         $scope.uictrl.showContent = true;
         if (angular.isDefined($scope.chartDataUser)) {
@@ -633,18 +658,24 @@ angular.module('emission.main.metrics',['nvd3',
         });
     };
 
+    // this is the km to co2 grams factor we received from DFKI
     var d2e_table = {
       "ON_FOOT": 3,
       "BICYCLING": 21,
       "CAR": 139,
       "AIR_OR_HSR": 201,
-      "BUS": 65
+      "BUS": 65,
+      "TRAIN": 36,
+      "UNKNOWN": 3, // same as walking because we don't know the mode so let's assume it was the lightest
+      "SUBWAY": 65, // same as Bus because part of group public transit
+      "TRAM": 65,// same as Bus because part of group public transit
     };
     var distance2emission = function() {
       console.log("============= here we go distance2emission ========");
       console.log($scope.summaryData.defaultSummary.distance);
 
       var factor = 1;
+      var allEmissionSum = 0;
 
       $scope.summaryData.defaultSummary.distance.forEach(entry => {
         console.log("key " + entry.key);
@@ -652,7 +683,12 @@ angular.module('emission.main.metrics',['nvd3',
 
         factor = (typeof d2e_table[entry.key] !== 'undefined') ? d2e_table[entry.key] : 1;
         entry.values = ((entry.values / 1000) * factor) / 1000; //convert to km, then get grams of co2, then convert to kg
+
+        allEmissionSum +=  entry.values; // add co2 value to allEmissionSum which will be shown inside donut chart
       });
+
+      $scope.carbonData.userCarbon = allEmissionSum.toFixed(1) + " kg"; // cut value to two decimal digits and make it a string
+
 
       console.log($scope.summaryData.defaultSummary.distance);
     };
@@ -701,7 +737,6 @@ angular.module('emission.main.metrics',['nvd3',
       // Fill in user calorie information
       $scope.fillCalorieCardUserVals(userDuration, userMedianSpeed,
         twoWeeksAgoDuration, twoWeeksAgoMedianSpeed);
-      $scope.fillFootprintCardUserVals(userDistance, twoWeeksAgoDistance);
     }
 
     $scope.fillAggregateValues = function(agg_metrics_arr) {
@@ -842,15 +877,6 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg';
 
         $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
-        console.log("========== carbon footprint: " + $scope.carbonData.userCarbon);
-        d3.select(".nv-pieLabels > text").remove();
-        d3.select(".nv-pieLabels")
-          .append("text")
-          .style("font-size", "53px")
-          .style("text-anchor", "middle")
-          .style("alignment-baseline", "middle")
-          .text($scope.carbonData.userCarbon);
-
 
         $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
         $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
