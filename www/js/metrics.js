@@ -291,34 +291,28 @@ angular.module('emission.main.metrics',['nvd3',
             width: $window.screen.width - 20, // to account for row and col padding
             height: $window.screen.width * 3/4,
             margin : {
-                top: 0,
+                top: 20,
                 right: 20,
                 bottom: 20,
-                left: 20
+                left: 30
             },
             noData: $translate.instant('metrics.chart-no-data'),
             showControls: false,
             showValues: true,
-            x: function(d){ return d[0]; },
-            y: function(d) { return d[1]; },
-
-
-            color: d3.scale.category10().range(),
-
+            x: function(d){ 
+              return d[0];
+            },
+            y: function(d) {
+              return d[1];
+            },
+            yDomain: [0, 8],
+            isArea: true,
+            showLegend: false,
+            color: ["#DF284B"],
             /* diable features that we don't use / are unusable on mobile anyway */
             useInteractiveGuideline: false,
             // duration: 300,
             // clipVoronoi: false,
-            /*
-            average: function(d) {
-                var vals = d.values.map(function(item){
-                    return item[1];
-                });
-                return d3.mean(vals);
-            },
-            */
-
-
             xAxis: {
                 tickFormat: function(d) {
                     var day = new Date(d * 1000)
@@ -335,19 +329,10 @@ angular.module('emission.main.metrics',['nvd3',
                 return d; // TODO insert actual carbon dioxide calculation here or better yet manipulate the data before feeding to chart
               },
               showMaxMin: false,
-            },
-            legend: {
-              maxKeyLength: 10,
-              padding: 25,
-              "width": $window.screen.width - 20,
-              "margin": {
-                "top": 10,
-                "right": 0,
-                "bottom": 0,
-                "left": 0
-              },
-              "key" : function(d){
-                return modeTranslations[d.key]; }
+              axisLabel: 'kg',
+              axisLabelDistance: -10,
+              ticks: 8,
+              width: 50
             },
             callback: function(chart) {
               chart.multibar.dispatch.on('elementClick', function(bar) {
@@ -363,33 +348,33 @@ angular.module('emission.main.metrics',['nvd3',
 
     /* settings and data for the big donut chart on dashboard / main*/
     $scope.optionsdonutchart = {
-      "chart": {
-        "type": "pieChart",
-        "width": $window.screen.width - 20, // to account for row and col padding
-        "height": $window.screen.width * 4/5,
-        "margin": {
-          "top": 25,
-          "left": 0,
-          "right": 0,
-          "bottom": 10
+      chart: {
+        type: "pieChart",
+        width: $window.screen.width - 20, // to account for row and col padding
+        height: $window.screen.width * 4/5,
+        margin: {
+          top: 25,
+          left: 0,
+          right: 0,
+          bottom: 10
         },
-        "donut": true,
-        "donutRatio": 0.75,
-        "x": function(d){
+        donut: true,
+        donutRatio: 0.75,
+        x: function(d){
           return modeTranslations[d.key]; },
-        "y": function(d){return d.values;},
-        "color": ["#9B9B9B",  "#000000", "#DCDDE1", "#FFFFFF", "#DCDDE1", "#ADADAD"],
-        "showLabels": true,
-        "showLegend": false,
-        "legend": {
-          "key": function(d){ return d.key; }
+        y: function(d){return d.values;},
+        color: ["#9B9B9B",  "#000000", "#DCDDE1", "#FFFFFF", "#DCDDE1", "#ADADAD"],
+        showLabels: true,
+        showLegend: false,
+        legend: {
+          key: function(d){ return d.key; }
         },
-        "pie": {
-          "startAngle": function(d) { return d.startAngle + 4*Math.PI/5 },
-          "endAngle": function(d) { return d.endAngle + 4*Math.PI/5 },
-          "labelsOutside": true,
+        pie: {
+          startAngle: function(d) { return d.startAngle + 4*Math.PI/5 },
+          endAngle: function(d) { return d.endAngle + 4*Math.PI/5 },
+          labelsOutside: true,
         },
-        "duration": 500,
+        duration: 500,
         callback: function(chart) {
           console.log("============= chart output ============");
           console.log(chart);
@@ -939,22 +924,45 @@ angular.module('emission.main.metrics',['nvd3',
       }
     };
 
+
     $scope.showCharts = function(agg_metrics) {
       $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
       $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);// we replaced this line with some dummy data:
 
+      // a helper object  to store the index of a distance entry to a given timestamp
+      // e.g. our distances are [..., {key: 1389723497, values: 34566}, ...] where this shown entry is index 4 of the array
+      // then the helper array will show { ..., '1389723497' : 4, ... }
+      $scope.cumulatedDataHelper = {};
+      $scope.cumulatedData = [];
+
       // convert distance to co2 values
+      var i = 0;
       $scope.data.distance.forEach ( entry => {
-
         var factor = (typeof d2e_table[entry.key] !== 'undefined') ? d2e_table[entry.key] : 1; // multiply by co2 per km factor;
-
         entry.values.forEach (distance => {
           distance[1] /= 1000; // convert to km
           distance[1] *= factor; // get grams of emission
           distance[1] /= 1000; // convert g to kg
-        });
 
+          let distanceTimeStamp = distance[0];
+          if ($scope.cumulatedDataHelper[distanceTimeStamp] != undefined) {
+            $scope.cumulatedData[$scope.cumulatedDataHelper[distanceTimeStamp]][1] += distance[1];
+          } else {
+            $scope.cumulatedDataHelper[distanceTimeStamp] = i;
+            $scope.cumulatedData[i] = [
+              distanceTimeStamp,
+              distance[1] ];
+            i++;
+          }
+        });
       });
+
+
+      console.log('array: ' + JSON.stringify($scope.cumulatedData))
+      $scope.cumulatedData.sort(function(a, b){return a[0] - b[0]});
+      console.log('sort array: ' + JSON.stringify($scope.cumulatedData))
+      
+      $scope.chartData = [{key: "everything", values: $scope.cumulatedData}];
 
 
 
