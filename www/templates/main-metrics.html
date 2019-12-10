@@ -54,7 +54,7 @@
       <div class="row stable-bg">
         <div class="col">
 
-          Your CO₂ emission:  <!-- only that it's last week's but for now we're good -->
+          <strong>Todays CO2 Emission</strong>  <!-- only that it's last week's but for now we're good -->
 
           <nvd3 options="optionsdonutchart" data="summaryData.defaultSummary.distance"></nvd3>
 
@@ -63,9 +63,20 @@
 
 
     <!-- nvd3 chart -->
-    <div class="row">
-      <div class="col">
-        <nvd3 options="distanceOptions" data="chartData" class="nvd3-linechart-dashboard"></nvd3>
+    <div class="nvd3-linechart-dashboard"> 
+      <div class="row">
+        <div class="col legend">
+          <strong>History</strong>
+          <div>
+            <span>Germany average</span>
+            <span>Planet Survival Goal</span>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col">
+          <nvd3 options="distanceOptions" data="chartData"></nvd3>
+        </div>
       </div>
     </div>
 

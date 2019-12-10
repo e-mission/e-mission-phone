@@ -292,9 +292,9 @@ angular.module('emission.main.metrics',['nvd3',
             height: $window.screen.width * 3/4,
             margin : {
                 top: 20,
-                right: 20,
+                right: 0,
                 bottom: 20,
-                left: 40
+                left: 35
             },
             noData: $translate.instant('metrics.chart-no-data'),
             showControls: false,
@@ -315,9 +315,18 @@ angular.module('emission.main.metrics',['nvd3',
             // clipVoronoi: false,
             xAxis: {
                 tickFormat: function(d) {
+                    console.log('io sono una date', queryLastDays_amount);
                     var day = new Date(d * 1000)
                     day.setDate(day.getDate()+1) // Had to add a day to match date with data
-                    return d3.time.format('%a')(day)
+                    let format;
+                    if (queryLastDays_amount <= 7) {
+                      format = '%a'
+                    } else if (queryLastDays_amount > 7 && queryLastDays_amount <= 31) {
+                      format = '%d %a'
+                    } else {
+                      format = '%b'
+                    }
+                    return d3.time.format(format)(day)
                 },
                 ticks: 7,
                 fontSize: 10,
@@ -330,12 +339,19 @@ angular.module('emission.main.metrics',['nvd3',
               },
               showMaxMin: false,
               axisLabel: 'kg CO₂',
-              axisLabelDistance: -10,
+              axisLabelDistance: 0,
               ticks: 4,
               tickPadding: 10,
-              width: 60
+              width: 50
             },
             callback: function(chart) {
+              let linearGradient = `<linearGradient id="grad" x1="0%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" style="stop-color:#DF284B;stop-opacity:1" />
+                <stop offset="100%" style="stop-color:#DF284B;stop-opacity:0" />
+              </linearGradient>`;
+              d3.select(".nv-lineChart")
+                .append("defs")
+                .html(linearGradient);
               chart.multibar.dispatch.on('elementClick', function(bar) {
                   var date = bar.data[2].slice(-7); // get the last week
                   $rootScope.barDetailDate = moment(date);
