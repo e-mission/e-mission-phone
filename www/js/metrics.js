@@ -329,7 +329,7 @@ angular.module('emission.main.metrics',['nvd3',
                 return d; // TODO insert actual carbon dioxide calculation here or better yet manipulate the data before feeding to chart
               },
               showMaxMin: false,
-              axisLabel: 'kg',
+              axisLabel: 'kg CO₂',
               axisLabelDistance: -10,
               ticks: 4,
               tickPadding: 10,
@@ -966,9 +966,9 @@ angular.module('emission.main.metrics',['nvd3',
       let toTime = $scope.cumulatedData[$scope.cumulatedData.length - 1][0];
       
       $scope.chartData = [
-        {key: "everything", values: $scope.cumulatedData},
         {key: "average", values: [[fromTime,1],[toTime,1]]},
-        {key: "goal", values: [[fromTime,4.5],[toTime,4.5]]}
+        {key: "goal", values: [[fromTime,4.5],[toTime,4.5]]},
+        {key: "everything", values: $scope.cumulatedData}
       ];
 
 
