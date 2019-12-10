@@ -1,0 +1,65 @@
+
+// line chart on dashboard
+
+.nvd3-linechart-dashboard {
+    // position: relative;
+    // display: block;
+    // width: 100%;
+    // &:before {
+    //     content: '';
+    //     position: absolute;
+    //     top: 44%;
+    //     left: 0;
+    //     width: 100%;
+    //     height: 1px;
+    //     //background: red;
+    //     border: none;
+    //     border-top: 1px dashed #DF284B;
+    // }
+
+    // &:after {
+    //     content: '';
+    //     position: absolute;
+    //     top: 82%;
+    //     left: 0;
+    //     width: 100%;
+    //     height: 1px;
+    //     //background: red;
+    //     border: none;
+    //     border-top: 1px dashed #91F2DC;
+    // }
+    .nvd3 {
+        .nv-axis {
+            .tick {
+                line {
+                    stroke-dasharray: 10;
+                }
+            }
+        }
+    }
+    // .nv-series-0 {
+    //     .nv-area {
+    //         fill-opacity: 1!important;
+    //     }
+    // }
+    .nv-series-0 {
+        stroke-width: 1!important;
+        stroke: #91F2DC!important;
+        stroke-dasharray: 5;
+        fill: none;
+        .nv-area {
+            display: none;
+        }
+    }
+    .nv-series-1 {
+        stroke-width: 1!important;
+        stroke: #DF284B!important;
+        stroke-dasharray: 5;
+        fill: none;
+        .nv-area {
+            display: none;
+
+        }
+    }
+
+}
