@@ -273,15 +273,15 @@ angular.module('emission.main.metrics',['nvd3',
     }
 
     var modeTranslations = {
-      "CAR": "Auto",
-      "UNKNOWN": "unbekannt",
-      "ON_FOOT": "zu Fuß",
-      "BICYCLING": "Fahrrad",
-      "BUS": "Bus",
-      "SUBWAY": "U-Bahn",
-      "TRAIN": "Zug",
-      "TRAM": "Tram",
-      "AIR_OR_HSR": "Flugzeug"
+      "CAR": "car",
+      "UNKNOWN": "unknown",
+      "ON_FOOT": "walk",
+      "BICYCLING": "bike",
+      "BUS": "bus",
+      "SUBWAY": "subway",
+      "TRAIN": "train",
+      "TRAM": "tram",
+      "AIR_OR_HSR": "plane"
     };
 
     /* options for the main NVD3 chart on the dashboard view for displaying carbon offset over time. */
@@ -299,7 +299,7 @@ angular.module('emission.main.metrics',['nvd3',
             noData: $translate.instant('metrics.chart-no-data'),
             showControls: false,
             showValues: true,
-            x: function(d){ 
+            x: function(d){
               return d[0];
             },
             y: function(d) {
@@ -964,7 +964,7 @@ angular.module('emission.main.metrics',['nvd3',
       console.log('sort array: ' + $scope.cumulatedData[7])
       let fromTime = $scope.cumulatedData[0][0];
       let toTime = $scope.cumulatedData[$scope.cumulatedData.length - 1][0];
-      
+
       $scope.chartData = [
         {key: "average", values: [[fromTime,1],[toTime,1]]},
         {key: "goal", values: [[fromTime,4.5],[toTime,4.5]]},
