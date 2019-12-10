@@ -294,7 +294,7 @@ angular.module('emission.main.metrics',['nvd3',
                 top: 20,
                 right: 20,
                 bottom: 20,
-                left: 30
+                left: 40
             },
             noData: $translate.instant('metrics.chart-no-data'),
             showControls: false,
@@ -331,8 +331,9 @@ angular.module('emission.main.metrics',['nvd3',
               showMaxMin: false,
               axisLabel: 'kg',
               axisLabelDistance: -10,
-              ticks: 8,
-              width: 50
+              ticks: 4,
+              tickPadding: 10,
+              width: 60
             },
             callback: function(chart) {
               chart.multibar.dispatch.on('elementClick', function(bar) {
@@ -960,9 +961,15 @@ angular.module('emission.main.metrics',['nvd3',
 
       console.log('array: ' + JSON.stringify($scope.cumulatedData))
       $scope.cumulatedData.sort(function(a, b){return a[0] - b[0]});
-      console.log('sort array: ' + JSON.stringify($scope.cumulatedData))
+      console.log('sort array: ' + $scope.cumulatedData[7])
+      let fromTime = $scope.cumulatedData[0][0];
+      let toTime = $scope.cumulatedData[$scope.cumulatedData.length - 1][0];
       
-      $scope.chartData = [{key: "everything", values: $scope.cumulatedData}];
+      $scope.chartData = [
+        {key: "everything", values: $scope.cumulatedData},
+        {key: "average", values: [[fromTime,1],[toTime,1]]},
+        {key: "goal", values: [[fromTime,4.5],[toTime,4.5]]}
+      ];
 
 
 
