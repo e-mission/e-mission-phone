@@ -395,30 +395,13 @@ angular.module('emission.main.metrics',['nvd3',
         callback: function(chart) {
           console.log("============= chart output ============");
           console.log(chart);
-          let radius;
-          // let circle =($window.screen.width * 4/5) - 110;
-          // let innerCircle = circle / 100 * 75;
-          // radius = circle / 2;
-          
-          d3.select('.nv-pieWrap .nv-pie .nv-pie').each(function(d){
-            let circle = this.getBBox().width;
-            let innerCircle = circle / 100 * 75;
-            radius = innerCircle / 2;  
-            console.log('pie:' + this.getBBox().width)
-          });
-          d3.select(".nv-pieLabels")
-            .append("circle")
-            .attr("r", radius)
-            .style("fill", "#91F2DC");
-          // since I don't know how to add dynamic data to the chart / SVG, I will add the label without any binding
-          d3.select(".nv-pieLabels-text").remove();
-          if (typeof $scope.carbonData != 'undefined') {
-            console.log("updated usercarbon in chart callback to: ===== : " + $scope.carbonData.userCarbon);
-            let html = '<text>' + $scope.carbonData.userCarbon + '</text><text style="transform: translateY('+ (radius / 2) +'px);">kg CO₂</text>';
+          let radiusDonutChart = getRadiusDonutChart();
+          if (radiusDonutChart != 0) {
             d3.select(".nv-pieLabels")
-              .append("g")
-              .attr('class','nv-pieLabels-text')
-              .html(html);
+              .append("circle")
+              .attr("r", radiusDonutChart)
+              .style("fill", "#91F2DC");
+            addTextToLabelDonutChart(radiusDonutChart);
           }
 
           // add stronger border radius to all labels
@@ -428,6 +411,31 @@ angular.module('emission.main.metrics',['nvd3',
         }
       }
     };
+
+    var getRadiusDonutChart = function() {
+      let donut = d3.select('.nv-pieWrap .nv-pie .nv-pie');
+      let radius = 0;
+      if (donut) {
+        donut.each(function(){
+          let circle = this.getBBox().width;
+          let innerCircle = circle / 100 * 75;
+          radius = innerCircle / 2;  
+        });
+        return radius;
+      }
+    }
+
+    var addTextToLabelDonutChart = function(radius) {
+      d3.select(".nv-pieLabels-text").remove();
+      if (typeof $scope.carbonData != 'undefined' && radius != 0) {
+        console.log("updated usercarbon in chart callback to: ===== : " + $scope.carbonData.userCarbon);
+        let html = '<text>' + $scope.carbonData.userCarbon + '</text><text style="transform: translateY('+ (radius / 2) +'px);">kg CO₂</text>';
+        d3.select(".nv-pieLabels")
+          .append("g")
+          .attr('class','nv-pieLabels-text')
+          .html(html);
+      }
+    }
 
     var moment2Localdate = function(momentObj) {
       return {
@@ -613,14 +621,11 @@ angular.module('emission.main.metrics',['nvd3',
         distance2emission(); // convert to co2 values see function definition
         console.log("=================== summary data format =======");
         console.log($scope.summaryData.defaultSummary);
-        d3.select(".nv-pieLabels > text").remove();
-        console.log("updated usercarbon in getMetrics to: ===== : " + $scope.carbonData.userCarbon);
-        d3.select(".nv-pieLabels")
-          .append("text")
-          .style("font-size", "53px")
-          .style("text-anchor", "middle")
-          .style("alignment-baseline", "middle")
-          .text($scope.carbonData.userCarbon);
+        
+        let radiusDonutChart = getRadiusDonutChart();
+        if (radiusDonutChart != 0) {
+          addTextToLabelDonutChart(radiusDonutChart);
+        }
 
         first = false; //If there is data from last week store the data only first time
         $scope.uictrl.showContent = true;
