@@ -315,11 +315,13 @@ angular.module('emission.main.metrics',['nvd3',
             // clipVoronoi: false,
             xAxis: {
                 tickFormat: function(d) {
-                    console.log('io sono una date', queryLastDays_amount);
                     var day = new Date(d * 1000)
                     day.setDate(day.getDate()+1) // Had to add a day to match date with data
                     let format;
-                    if (queryLastDays_amount <= 7) {
+                    console.log('ciao sono format:',queryLastDays_amount);
+                    if (queryLastDays_amount <= 1) {
+                      format = '%H:%M'
+                    } else if (queryLastDays_amount > 1 && queryLastDays_amount <= 7) {
                       format = '%a'
                     } else if (queryLastDays_amount > 7 && queryLastDays_amount <= 31) {
                       format = '%d %a'
