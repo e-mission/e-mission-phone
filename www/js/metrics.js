@@ -395,9 +395,13 @@ angular.module('emission.main.metrics',['nvd3',
         callback: function(chart) {
           console.log("============= chart output ============");
           console.log(chart);
+          let radius;
+          let circle =($window.screen.width * 4/5) - 110;
+          let innerCircle = circle / 100 * 75;
+          radius = circle / 2;
           d3.select(".nv-pieLabels")
             .append("circle")
-            .attr("r", "110")
+            .attr("r", radius)
             .style("fill", "#91F2DC");
           // since I don't know how to add dynamic data to the chart / SVG, I will add the label without any binding
           d3.select(".nv-pieLabels > text").remove();
