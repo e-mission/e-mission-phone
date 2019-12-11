@@ -396,23 +396,29 @@ angular.module('emission.main.metrics',['nvd3',
           console.log("============= chart output ============");
           console.log(chart);
           let radius;
-          let circle =($window.screen.width * 4/5) - 110;
-          let innerCircle = circle / 100 * 75;
-          radius = circle / 2;
+          // let circle =($window.screen.width * 4/5) - 110;
+          // let innerCircle = circle / 100 * 75;
+          // radius = circle / 2;
+          
+          d3.select('.nv-pieWrap .nv-pie .nv-pie').each(function(d){
+            let circle = this.getBBox().width;
+            let innerCircle = circle / 100 * 75;
+            radius = innerCircle / 2;  
+            console.log('pie:' + this.getBBox().width)
+          });
           d3.select(".nv-pieLabels")
             .append("circle")
             .attr("r", radius)
             .style("fill", "#91F2DC");
           // since I don't know how to add dynamic data to the chart / SVG, I will add the label without any binding
-          d3.select(".nv-pieLabels > text").remove();
+          d3.select(".nv-pieLabels-text").remove();
           if (typeof $scope.carbonData != 'undefined') {
             console.log("updated usercarbon in chart callback to: ===== : " + $scope.carbonData.userCarbon);
+            let html = '<text>' + $scope.carbonData.userCarbon + '</text><text style="transform: translateY('+ (radius / 2) +'px);">kg CO₂</text>';
             d3.select(".nv-pieLabels")
-              .append("text")
-              .style("font-size", "53px")
-              .style("text-anchor", "middle")
-              .style("alignment-baseline", "middle")
-              .text($scope.carbonData.userCarbon);
+              .append("g")
+              .attr('class','nv-pieLabels-text')
+              .html(html);
           }
 
           // add stronger border radius to all labels
@@ -693,7 +699,7 @@ angular.module('emission.main.metrics',['nvd3',
         allEmissionSum +=  entry.values; // add co2 value to allEmissionSum which will be shown inside donut chart
       });
 
-      $scope.carbonData.userCarbon = allEmissionSum.toFixed(1) + " kg"; // cut value to two decimal digits and make it a string
+      $scope.carbonData.userCarbon = allEmissionSum.toFixed(1); // cut value to two decimal digits and make it a string
 
 
       console.log($scope.summaryData.defaultSummary.distance);

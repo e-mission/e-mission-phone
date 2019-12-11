@@ -63,3 +63,17 @@
         }
     }
 }
+
+.nv-pieLabels-text {
+    text:nth-child(1) {
+        font-size: 52px;
+        text-anchor: middle;
+        alignment-baseline: middle;
+    }
+
+    text:nth-child(2) {
+        text-anchor: middle;
+        fill: rgba(0,0,0,0.5);
+    }
+    
+}
