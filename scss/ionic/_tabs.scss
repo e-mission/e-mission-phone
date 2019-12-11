@@ -1,59 +1,126 @@
 /*
  * some adjustments to the tab design because that's just how our design is (DFKI / mcqdev)
  */
- .tabs {
-    line-height: 50px;
+
+.tabs-striped {
+  .tabs {
+    background-color: $dfki-stable;
+    padding: 0;
   }
-  .tabs-striped {
-    &.tabs-color-balanced {
-      .tab-item {
-        color: rgba($default-text,.5);
-        font-weight: 500;
-  
-        &.tab-item-active,
-        &.active,
-        &.activated {
-          color: $default-text;
-        }
 
-        // only for control tab item
-        &.tab-item-control {
-            flex: 0 0 50px;
-            
-            .icon {
-                transform: rotate(90deg);
-                padding-right: 0;
-                vertical-align: middle;
-                margin-top: 0;
-                line-height: 0px;
-                &:before {
-                    font-size: 18px;
-                    line-height: 30px;
-                }
-            }
-        }
+  &.tabs-dashboard > .tabs, &.tabs-app > .tabs {
+    .tab-item {
+      font-weight: 500;
+      position: relative;
 
-        .icon {
-            padding-right: 7px;
-            &:before {
-                font-size: 18px;
-                line-height: 55px;
-            }
+      &.tab-item-active,
+      &.active,
+      &.activated {
+        color: $default-text;
+        margin-top: 0;
+        .tab-title {
+          margin-top: 0;
         }
+        &:after {
+          content: '';
+          position: absolute;
+          left: 0;
+          width: 100%;
+          height: 4px;
+          background: $primary;
+          border-radius: 2px;
+        }
+        // border: none;
+      }
+
+      .tab-title {
+        margin-top: 0!important;
+      }
+
+
+
+    }
+  }
+
+  &.tabs-dashboard > .tabs {
+    .tab-item {
+      color: rgba($default-text,.1);
+      &.tab-item-active,
+      &.active,
+      &.activated {
+        &:after {
+          bottom: 0;
+        }
+        // border: none;
       }
     }
   }
-  .tabs-top > .tab-nav.tabs {
-    top:0px;
+
+  &.tabs-app > .tabs {
+    // &:before {
+    //   content: '';
+    //   position: absolute;
+    //   top: 0;
+    //   left: 0;
+    //   width: 100%;
+    //   height: 1px;
+    //   background: #000;
+    // }
+    border-top: 1px solid #000 !important;
+
+    .tab-item {
+      color: rgba($default-text,.5);
+
+      &.tab-item-active,
+      &.active,
+      &.activated {
+        &:after {
+          top: 0;
+        }
+      }
+
+      // only for control tab item
+      &.tab-item-control {
+          flex: 0 0 50px;
+          
+          .icon {
+              transform: rotate(90deg);
+              padding-right: 0;
+              vertical-align: middle;
+              margin-top: 0;
+              line-height: 0px;
+              &:before {
+                  font-size: 18px;
+                  line-height: 30px;
+              }
+          }
+      }
+
+      
+      .icon {
+        vertical-align: baseline;
+          padding-right: 7px;
+          margin-top: 4px;
+          &:before {
+              font-size: 18px;
+              line-height: 55px;
+          }
+      }
+    }
   }
+}
+  
+  // .tabs-dashboard > .tab-nav.tabs {
+  //   top:0px;
+  // }
 
   .platform-ios.platform-cordova {
     // iOS has a status bar which sits on top of the header.
     // Bump down everything to make room for it. However, if
     // if its in Cordova, and set to fullscreen, then disregard the bump.
     &:not(.fullscreen) {
-      .tabs-top > .tabs,
-      .tabs.tabs-top {
+      .tabs-dashboard > .tabs,
+      .tabs.tabs-dashboard {
         top: 0;
       }
     }
