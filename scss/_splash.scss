@@ -1,0 +1,14 @@
+.splash {
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-color: #4febb6;
+    background-position: center;
+    center {
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+    }
+}
