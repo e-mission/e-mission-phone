@@ -705,8 +705,8 @@ angular.module('emission.main.metrics',['nvd3',
 
         allEmissionSum +=  entry.values; // add co2 value to allEmissionSum which will be shown inside donut chart
       });
-
-      $scope.carbonData.userCarbon = allEmissionSum.toFixed(1); // cut value to two decimal digits and make it a string
+      console.log('emission:', allEmissionSum);
+      $scope.carbonData.userCarbon = allEmissionSum < 1 ? allEmissionSum.toFixed(2) : allEmissionSum.toFixed(1); // cut value to two decimal digits and make it a string
 
 
       console.log($scope.summaryData.defaultSummary.distance);
