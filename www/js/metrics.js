@@ -388,6 +388,11 @@ angular.module('emission.main.metrics',['nvd3',
         legend: {
           key: function(d){ return d.key; }
         },
+        tooltip: {
+          valueFormatter: function(d, i) {
+            return (d < 1 ? d.toFixed(2) : d.toFixed(1)) + ' km';
+          }
+        },
         pie: {
           startAngle: function(d) { return d.startAngle + 4*Math.PI/5 },
           endAngle: function(d) { return d.endAngle + 4*Math.PI/5 },
