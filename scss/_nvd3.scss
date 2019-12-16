@@ -1,4 +1,30 @@
 
+/***
+ * styles for nvd3 charts on dahsboard / main-metrics.js
+ */
+/* hide vertical lines showing x-axis units (because design says so) */
+.nv-x .tick line {
+    display: none;
+  }
+  /* hide y-axis line */
+  .nv-y .domain {
+    display: none;
+  }
+  /* label background styles */
+  .nvd3.nv-pie .nv-label {
+      rect {
+        fill-opacity: 1;
+        stroke-opacity: 1;
+        stroke: #91F2DC !important;
+        width: 66px;
+        height: 19px;
+        transform: translate(-33px, -13px);
+      }
+  }
+  .nvd3 text {
+    font-size: 10px;
+  }
+
 // line chart on dashboard
 
 .nvd3-linechart-dashboard {
