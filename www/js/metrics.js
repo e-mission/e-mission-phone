@@ -390,8 +390,8 @@ angular.module('emission.main.metrics',['nvd3',
         },
         tooltip: {
           valueFormatter: function(d, i) {
-            return (d < 1 ? d.toFixed(2) : d.toFixed(1)) + ' km';
-          }
+            return  emission2distance(d);
+          },
         },
         pie: {
           startAngle: function(d) { return d.startAngle + 4*Math.PI/5 },
@@ -694,7 +694,7 @@ angular.module('emission.main.metrics',['nvd3',
       "SUBWAY": 65, // same as Bus because part of group public transit
       "TRAM": 65,// same as Bus because part of group public transit
     };
-    var distance2emission = function() {
+    var distance2emission = function(value) {
       console.log("============= here we go distance2emission ========");
       console.log($scope.summaryData.defaultSummary.distance);
 
@@ -715,6 +715,41 @@ angular.module('emission.main.metrics',['nvd3',
 
 
       console.log($scope.summaryData.defaultSummary.distance);
+    };
+
+    var findKey = function(obj, value)
+    {
+      var key = null;
+
+      for (var prop in obj)
+      {
+        if (obj.hasOwnProperty(prop))
+        {
+          if (obj[prop] === value)
+          {
+            key = prop;
+          }
+        }
+      }
+
+      return key;
+    };
+    
+
+    var emission2distance = function(value) {
+      console.log("============= here we go emission2distance ========");
+      let tooltip = document.querySelector('.nvtooltip');
+      let keyElement = tooltip.querySelector('.key');
+      let result;
+
+      if (keyElement) {
+        let keyText = keyElement.innerText;
+        let key = findKey(modeTranslations, keyText)
+        let factor = d2e_table[key];
+        let km = value / factor;
+        result = (km < 1 ? km.toFixed(2) : km.toFixed(1)) + ' km';
+      }
+      return result
     };
 
     $scope.fillUserValues = function(user_metrics_arr) {
