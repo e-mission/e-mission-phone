@@ -115,7 +115,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       rtn0[i] = "icon " + icons[rtn0[i]];
       rtn1[i] = (rtn1[i] / 1000);
       rtn2[i] = convertHMS(rtn2[i]);
-      trips.push([name, rtn0[i], rtn1[i].toFixed(3), rtn2[i]]);
+      trips.push([name, rtn0[i], rtn1[i].toFixed(1), rtn2[i]]);
     }
     console.log('tette e culi: ' + trips);
     return [trips];

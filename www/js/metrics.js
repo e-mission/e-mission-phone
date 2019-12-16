@@ -746,7 +746,7 @@ angular.module('emission.main.metrics',['nvd3',
         let keyText = keyElement.innerText;
         let key = findKey(modeTranslations, keyText)
         let factor = d2e_table[key];
-        let km = value / factor;
+        let km = value / factor * 1000;
         result = (km < 1 ? km.toFixed(2) : km.toFixed(1)) + ' km';
       }
       return result
