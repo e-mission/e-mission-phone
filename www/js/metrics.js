@@ -426,7 +426,7 @@ angular.module('emission.main.metrics',['nvd3',
         donut.each(function(){
           let circle = this.getBBox().width;
           let innerCircle = circle / 100 * 75;
-          radius = innerCircle / 2;  
+          radius = innerCircle / 2;
         });
         return radius;
       }
@@ -558,7 +558,7 @@ angular.module('emission.main.metrics',['nvd3',
 
       var url = await ControlHelper.getConnectUrlAsync()
       var getMetricsResult = $http.post(
-        "http://134.209.237.178/result/metrics/timestamp",
+        url+"/result/metrics/timestamp",
         //"https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
         clonedData)
       return getMetricsResult;
@@ -628,7 +628,7 @@ angular.module('emission.main.metrics',['nvd3',
         distance2emission(); // convert to co2 values see function definition
         console.log("=================== summary data format =======");
         console.log($scope.summaryData.defaultSummary);
-        
+
         let radiusDonutChart = getRadiusDonutChart();
         if (radiusDonutChart != 0) {
           addTextToLabelDonutChart(radiusDonutChart);
