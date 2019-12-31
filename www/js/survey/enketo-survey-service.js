@@ -130,6 +130,7 @@ angular.module('emission.enketo-survey.service', [
   function _saveData() {
     const data = {
       survey_result: __form.getDataStr(),
+      timestamp: new Date(),
     };
     if (__trip && __trip.data.properties) {
         data.start_ts = __trip.data.properties.start_ts;
