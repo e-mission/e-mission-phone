@@ -214,12 +214,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
-        tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
+        const start_dt = Object.assign({}, tripgj.data.properties.start_local_dt);
+        const end_dt = Object.assign({}, tripgj.data.properties.end_local_dt);
+        tripgj.isDraft = $scope.isDraft(tripgj);
+        // Fix "Invalid date" for processed trips
+        if (!tripgj.isDraft) {
+          start_dt.month = start_dt.month - 1;
+          end_dt.month = end_dt.month - 1;
+        }
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(start_dt);
+        tripgj.display_end_time = DiaryHelper.getLocalTimeString(end_dt);
         tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
-        tripgj.isDraft = $scope.isDraft(tripgj);
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         tripgj.percentages = $scope.getPercentages(tripgj)
