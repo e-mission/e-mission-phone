@@ -216,6 +216,10 @@ $ pod setup
 To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
 https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
 
+**Note about cocoapods 1.9, there seems to be an issue which breaks ```pod setup```:** 
+https://github.com/flutter/flutter/issues/41253
+1.75 seems to work: ```sudo gem install cocoapods -v 1.7.5```
+
 Configure values if necessary - e.g.
 
 ```
