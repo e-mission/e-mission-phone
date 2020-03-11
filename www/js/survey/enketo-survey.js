@@ -6,10 +6,11 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
   'emission.stats.clientstats',
   'emission.main.control.sync',
+  'emission.splash.startprefs',
 ])
 .factory('EnketoSurveyLaunch', function(
   $ionicPopup, EnketoSurvey, CommHelper, $ionicModal, $ionicScrollDelegate,
-  $rootScope, $state, Logger, ClientStats, ControlSyncHelper
+  $rootScope, $window, $state, Logger, ClientStats, ControlSyncHelper, StartPrefs
 ) {
   var __uuid = null;
   var __modal = null;
@@ -206,6 +207,7 @@ angular.module('emission.survey.enketo.launch', [
         console.log("Added " + ClientStats.getStatKeys().BUTTON_FORCE_SYNC + " event");
       });
     return ControlSyncHelper.forceSync().then(function () {
+      console.log('forceSync start');
       /*
        * Change to sensorKey to "background/location" after fixing issues
        * with getLastSensorData and getLastMessages in the usercache
