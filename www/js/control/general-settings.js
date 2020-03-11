@@ -415,6 +415,10 @@ angular.module('emission.main.control',['emission.services',
         EnketoSurveyLaunch.launch($scope, 'UserProfile');
     };
 
+    $scope.launchEndSurvey = function() {
+        EnketoSurveyLaunch.launch($scope, 'EndSurvey');
+    }
+
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');

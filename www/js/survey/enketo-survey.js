@@ -16,6 +16,7 @@ angular.module('emission.survey.enketo.launch', [
   var surveyTypeMap = {
     UserProfile: initProfileSurvey,
     ConfirmSurvey: initConfirmSurvey,
+    EndSurvey: initEndSurvey,
   };
   var __type = null;
   var __modal_scope = null;
@@ -127,6 +128,32 @@ angular.module('emission.survey.enketo.launch', [
         opts: {
           session: {
             data_key: 'manual/user_profile_survey',
+            user_properties: {
+              uuid: uuid,
+            },
+          },
+        },
+      });
+    });
+  }
+
+  function initEndSurvey(opts) {
+    let promise;
+    if (__uuid) {
+      promise = Promise.resolve(__uuid);
+    } else {
+      promise = CommHelper.getUser().then(function(profile){
+        const uuid = profile.user_id['$uuid'];
+        __uuid = uuid;
+        return uuid;
+      });
+    }
+    return promise.then(function(uuid) {
+      return initSurvey({
+        form_location: 'json/post-experience-survey-v1.json',
+        opts: {
+          session: {
+            data_key: 'manual/user_end_survey',
             user_properties: {
               uuid: uuid,
             },

@@ -11,6 +11,12 @@
       </div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text">End Survey</div>
+      <div ng-click="launchEndSurvey()" class="control-icon-button control-icon-user-profile">
+        <i class="ion-person"></i>
+      </div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
