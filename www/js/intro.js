@@ -109,7 +109,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       $scope.userEmail = userEmail;
       CommHelper.registerUser(function(successResult) {
           const uuid = successResult.uuid;
-          return CommHelper.updateUser({branch: 'rk-unsw'}
+          return CommHelper.updateUser({branch: 'rciti3'}
           ).then(function() {
               return EnketoSurvey.getAllSurveyAnswers('manual/user_profile_survey');
           }).then(function(answers){
