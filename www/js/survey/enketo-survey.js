@@ -4,9 +4,12 @@ angular.module('emission.survey.enketo.launch', [
   'emission.services',
   'emission.enketo-survey.service',
   'emission.plugin.logger',
+  'emission.stats.clientstats',
+  'emission.main.control.sync',
 ])
 .factory('EnketoSurveyLaunch', function(
-  $ionicPopup, EnketoSurvey, CommHelper, $ionicModal, $ionicScrollDelegate
+  $ionicPopup, EnketoSurvey, CommHelper, $ionicModal, $ionicScrollDelegate,
+  $rootScope, $state, Logger, ClientStats, ControlSyncHelper
 ) {
   var __uuid = null;
   var __modal = null;
@@ -179,8 +182,85 @@ angular.module('emission.survey.enketo.launch', [
         __modal_scope.enketoSurvey.hide(true);
         return;
       }
+    }).then(() => {
+      // Post-save flow (only for EndSurvey)
+      // 1. Force-Sync
+      // 2. Logout
+      if (__type === 'EndSurvey') {
+        return forceSync().then(res => {
+          console.log('forceSync done.');
+          if (res === undefined) {
+            return $ionicPopup.alert({template: 'Cannot save data! Please try again.'}).then(() => data);
+          }
+          returnToIntro();
+          return data;
+        });
+      }
     });
   }
+
+  // forceSync function from general-settings.js
+  function forceSync() {
+    ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
+      function () {
+        console.log("Added " + ClientStats.getStatKeys().BUTTON_FORCE_SYNC + " event");
+      });
+    return ControlSyncHelper.forceSync().then(function () {
+      /*
+       * Change to sensorKey to "background/location" after fixing issues
+       * with getLastSensorData and getLastMessages in the usercache
+       * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+       */
+      var sensorKey = "statemachine/transition";
+      return $window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+    }).then(function (sensorDataList) {
+      Logger.log("sensorDataList = " + JSON.stringify(sensorDataList));
+      // If everything has been pushed, we should
+      // only have one entry for the battery, which is the one that was
+      // inserted on the last successful push.
+      var isTripEnd = function (entry) {
+        if (entry.metadata.key == getEndTransitionKey()) {
+          return true;
+        } else {
+          return false;
+        }
+      };
+      var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+      var syncPending = (syncLaunchedCalls.length > 0);
+      Logger.log("sensorDataList.length = " + sensorDataList.length +
+        ", syncLaunchedCalls.length = " + syncLaunchedCalls.length +
+        ", syncPending? = " + syncPending);
+      return syncPending;
+    }).then(function (syncPending) {
+      Logger.log("sync launched = " + syncPending);
+      if (syncPending) {
+        Logger.log("data is pending, showing confirm dialog");
+        return $ionicPopup.confirm({ template: 'data pending for push' }).then(function (res) {
+          if (res) {
+            return forceSync();
+          }
+          Logger.log("user refused to re-sync");
+          return undefined;
+        });
+      }
+      return $ionicPopup.alert({ template: 'Thank you for your participation! Logging out now.' });
+    }).catch(function (error) {
+      Logger.displayError("Error while forcing sync", error);
+      return undefined;
+    });
+  }
+
+  // returnToIntro function from general-settings.js
+  function returnToIntro() {
+    var testReconsent = false;
+    if (testReconsent) {
+      $rootScope.req_consent.approval_date = Math.random();
+      StartPrefs.loadPreferredScreen();
+    } else {
+      $state.go("root.intro");
+    }
+  }
+  
 
   return { launch };
 });
