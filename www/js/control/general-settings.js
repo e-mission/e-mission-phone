@@ -415,6 +415,14 @@ angular.module('emission.main.control',['emission.services',
         EnketoSurveyLaunch.launch($scope, 'UserProfile');
     };
 
+    $scope.launchEndSurvey = function() {
+        CommHelper.getUser().then(profile => {
+            const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
+            const returnURL = 'https://reward.amarin.dev';
+            cordova.InAppBrowser.open(`https://ee.kobotoolbox.org/single/::T9bEosso?d[/aDHunALXzzHXAUMrvkvRT9/_user_id]=${uuid}&returnURL=${returnURL}`);
+        });
+    }
+
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');

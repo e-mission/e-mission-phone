@@ -692,6 +692,9 @@ background-image: none !important; }
 .control-icon-user-profile {
   background-color: rgb(201, 217, 236);
 }
+.control-icon-end-survey {
+  background-color: rgb(169, 226, 186);
+}
 
 
 #switch-user.control-icon-button{
