@@ -18,6 +18,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
+               $cordovaInAppBrowser,
                StartPrefs, ControlHelper, EmailHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
@@ -416,10 +417,11 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.launchEndSurvey = function() {
-        CommHelper.getUser().then(profile => {
+        CommHelper.getUser().then(function(profile) {
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
+            const fieldPath = '/aDHunALXzzHXAUMrvkvRT9/_user_id';
             const returnURL = 'https://reward.amarin.dev';
-            cordova.InAppBrowser.open(`https://ee.kobotoolbox.org/single/::T9bEosso?d[/aDHunALXzzHXAUMrvkvRT9/_user_id]=${uuid}&returnURL=${returnURL}`);
+            $cordovaInAppBrowser.open(`https://ee.kobotoolbox.org/single/::T9bEosso?d[${fieldPath}]=${uuid}&returnURL=${returnURL}`, '_blank');
         });
     }
 
