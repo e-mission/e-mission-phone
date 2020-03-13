@@ -1,16 +1,22 @@
 <ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
     <div class="control-list-item">
-      <div class="control-list-text">{{settings.auth.email}}</div>
-      <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
+      <div class="control-list-text">Logged in as: {{settings.auth.email}}</div>
+      <!-- <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div> -->
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">My Profile</div>
+      <div class="control-list-text">Edit User Profile</div>
       <div ng-click="editUserProfile()" class="control-icon-button control-icon-user-profile">
         <i class="ion-person"></i>
       </div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text">End Survey</div>
+      <div ng-click="launchEndSurvey()" class="control-icon-button control-icon-end-survey">
+        <i class="ion-document-text"></i>
+      </div>
+    </div>
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
@@ -18,8 +24,8 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
-    <div class="control-list-item">
+    </div> -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
@@ -27,7 +33,7 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
+    </div> -->
     <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.dark-theme'}}</div>
       <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle toggle-color">
