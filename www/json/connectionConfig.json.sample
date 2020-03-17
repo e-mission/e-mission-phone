@@ -1,5 +1,5 @@
 {
-    "connectUrl": "http://134.209.237.178:80",
+    "connectUrl": "SERVER_HOSTNAME_OR_IP",
     "android": {
         "auth": {
             "method": "prompted-auth",
