@@ -17,3 +17,11 @@ www/js/control/sync-settings.js
 www/js/control/transition-notify-settings.js
 config.xml
 package.json
+
+# ignore css from scss compiled files
+www/css/*.css
+*.css
+*.css.map
+
+**/.sass-cache/**
+

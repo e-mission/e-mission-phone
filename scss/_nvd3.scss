@@ -1,0 +1,106 @@
+
+/***
+ * styles for nvd3 charts on dahsboard / main-metrics.js
+ */
+/* hide vertical lines showing x-axis units (because design says so) */
+.nv-x .tick line {
+    display: none;
+  }
+  /* hide y-axis line */
+  .nv-y .domain {
+    display: none;
+  }
+  /* label background styles */
+  .nvd3.nv-pie .nv-label {
+      rect {
+        fill-opacity: 1;
+        stroke-opacity: 1;
+        stroke: #91F2DC !important;
+        width: 66px;
+        height: 19px;
+        transform: translate(-33px, -13px);
+      }
+  }
+  .nvd3 text {
+    font-size: 10px;
+  }
+
+// line chart on dashboard
+
+.nvd3-linechart-dashboard {
+    .nvd3 {
+        .nv-axis {
+            .tick {
+                line {
+                    stroke-dasharray: 12;
+                }
+            }
+        }
+    }
+
+    .nv-series-0 {
+        stroke-width: 1!important;
+        stroke: #91F2DC!important;
+        stroke-dasharray: 4;
+        fill: none;
+        .nv-area {
+            display: none;
+        }
+    }
+    .nv-series-1 {
+        stroke-width: 1!important;
+        stroke: #DF284B!important;
+        stroke-dasharray: 4;
+        fill: none;
+        .nv-area {
+            display: none;
+        }
+    }
+
+    .nv-series-2 {
+        .nv-area {
+            fill: url(#grad)
+        }
+    }
+
+    .legend {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+        span {
+            margin-left: 10px;
+            font-size: 12px;
+            text-decoration: underline;
+            &:before {
+                content: '';
+                width: 20px;
+                height: 5px;
+                margin-right: 3px;
+                border: none;
+                border-top: 2px dashed;
+                display: inline-block;
+            }
+            &:first-child:before {
+                border-color: #DF284B;
+            }
+            &:last-child:before {
+                border-color: #91F2DC;
+            }
+        }
+    }
+}
+
+.nv-pieLabels-text {
+    text:nth-child(1) {
+        font-size: 52px;
+        text-anchor: middle;
+        alignment-baseline: middle;
+    }
+
+    text:nth-child(2) {
+        text-anchor: middle;
+        font-size: 16px;
+        fill: rgba(0,0,0,0.5);
+    }
+    
+}

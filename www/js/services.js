@@ -93,6 +93,9 @@ angular.module('emission.services', ['emission.plugin.logger',
                 message[key] = metrics_query[key]
             };
         };
+        console.log("=========== timeType: " + timeType);
+        console.log("=========== about to send following request content ===========");
+        console.log(metrics_query);
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
       })
     };
@@ -375,6 +378,22 @@ angular.module('emission.services', ['emission.plugin.logger',
     this.getSettings = function() {
       return window.cordova.plugins.BEMConnectionSettings.getSettings();
     };
+
+    /**
+    * get the connectUrl (server url)
+    * It could be the connectUrl of the connectionConfig.json file,
+    * or if doens't exist, it get the default settings
+    */
+    this.getConnectUrlAsync = async function() {
+      return window.cordova.plugins.BEMConnectionSettings.getSettings()
+              .then((resp)=>{
+                return resp.connectUrl;
+              })
+              .catch((err)=>{
+                console.error(err);
+                throw err;
+              })
+    }
 
 })
 

@@ -6,24 +6,29 @@
     <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com 'unsafe-inline'">
     <title></title>
 
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/intro.css" rel="stylesheet">
-    <link href="css/main.recent.css" rel="stylesheet">
-    <link href="css/main.diary.css" rel="stylesheet">
+    <!-- let's customize Ionic <link href="lib/ionic/css/ionic.css" rel="stylesheet"> -->
+    <link href="css/ionic.app.css" rel="stylesheet">
+
+
     <link href="lib/animate.css/animate.min.css" rel="stylesheet">
     <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
     <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
     <link href="lib/nz-tour/dist/nz-tour.min.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
     <link href="build/app.css" rel="stylesheet">
-    <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
+    <!--<link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet"> -->
     <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
     <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
     <link href="manual_lib/fontawesome/css/all.min.css" rel="stylesheet">
 
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/intro.css" rel="stylesheet">
+    <link href="css/main.recent.css" rel="stylesheet">
+    <link href="css/main.diary.css" rel="stylesheet">
+
+    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above // mcqdev: "There is no gulp in this project anymore"
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
@@ -114,17 +119,9 @@
     <script src="lib/nvd3/build/nv.d3.min.js"></script>
     <script src="lib/angular-nvd3/dist/angular-nvd3.min.js"></script>
     <script src="lib/nz-tour/dist/nz-tour.min.js"></script>
-    <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
   </head>
 
   <body ng-app="emission">
-    <!--
-      The nav bar that will be updated as we navigate between views.
-    -->
-    <ion-nav-bar class="bar-stable" style="background-color: #212121 !important;">
-      <ion-nav-back-button>
-      </ion-nav-back-button>
-    </ion-nav-bar>
     <!--
       The views will be rendered in the <ion-nav-view> directive below
       Templates are in the /templates folder (but you could also

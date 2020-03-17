@@ -8,7 +8,7 @@
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, KVStore, $ionicPlatform, $translate) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, ControlHelper, $http, KVStore, $ionicPlatform, $translate) {
     
   console.log("controller CurrMapCtrl called from current.js");
   var _map;
@@ -230,9 +230,12 @@
     });
   };
 
-  var getServerIncidents = function() {
+  var getServerIncidents = async function() {
       Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
-      $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/timestamp", incidentServerCalldata).then(function(res){
+
+      var url = await ControlHelper.getConnectUrlAsync();
+
+      $http.post( url +"/result/heatmap/incidents/timestamp", incidentServerCalldata).then(function(res){
           Logger.log("Server incidents result is "+JSON.stringify(res));
           // Need to remove existing markers before adding new ones
           // https://github.com/e-mission/e-mission-phone/pull/263#issuecomment-322669042

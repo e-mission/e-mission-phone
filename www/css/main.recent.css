@@ -1,12 +1,11 @@
 /* Empty. Add your own CSS if you like */
-
 .timestamp {
-    background: whitesmoke;
-    font-size: small;
-    font-family: monospace;
-}
+  background: whitesmoke;
+  font-size: small;
+  font-family: monospace; }
 
 .detail {
-    font-size: x-small;
-    font-family: monospace;
-}
+  font-size: x-small;
+  font-family: monospace; }
+
+/*# sourceMappingURL=main.recent.css.map */

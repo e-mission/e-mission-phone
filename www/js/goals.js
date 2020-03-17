@@ -7,7 +7,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 'emission.splash.referral',
                 'ng-walkthrough', 'nzTour'])
 
-.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $ionicPlatform, $scope, $rootScope, $ionicModal, nzTour,
+.controller('GoalsCtrl', function(CommHelper, ControlHelper, $state, $ionicLoading, $ionicPlatform, $scope, $rootScope, $ionicModal, nzTour,
                                 $window, $http, $ionicPopup, $timeout, KVStore, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
@@ -266,7 +266,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         var callOpts = {'method': 'GET', 'method_url': "/api/v3/user",
                         'method_args': null};
 
-        CommHelper.habiticaProxy(callOpts).then(function(response){
+        CommHelper.habiticaProxy(callOpts).then(async function(response){
             localStorage.setItem("habit-mobile-settings", JSON.stringify({'auth': response.auth}));
             $scope.screen = response.success;
             $scope.$apply(function() {
@@ -314,10 +314,12 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
             getParty();
             getChallenges();
             console.log($scope.profile);
+            var url = await ControlHelper.getConnectUrlAsync();
             prepopulateMessage = {
                 message: 'Fight the global warming monster with me (link joins group, reshare responsibly)',
                 subject: 'Help Berkeley become more bikeable and walkable',
-                url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
+                url: url+'/redirect/join?groupid=' + partyId + '&userid=' + userId
+                //url: 'https://e-mission.eecs.berkeley.edu/redirect/join?groupid=' + partyId + '&userid=' + userId
             };
             $ionicLoading.hide();
             }, function(error){

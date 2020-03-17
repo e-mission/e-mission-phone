@@ -1,18 +1,63 @@
-<ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
+<ion-view ng-class="ion-view-background" translate-namespace="control">
+
   <ion-content>
-    <div class="control-list-item">
-      <div class="control-list-text">{{settings.auth.email}}</div>
-      <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
-    </div>
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.tracking'}}</div>
-      <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
-        <input type="checkbox" ng-checked="settings.collect.trackingOn">
-        <div class="track">
-          <div class="handle"></div>
+
+
+    <ul class="list">
+
+      <li class="item">
+        {{settings.auth.email}}
+        <div ng-click="returnToIntro()" id="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
+      </li>
+
+      <li class="item item-toggle">
+        Live Tracking
+        <label ng-click="userStartStopTracking()" class="toggle toggle-primary">
+          <input type="checkbox" ng-checked="settings.collect.trackingOn">
+          <div class="track">
+            <div class="handle"></div>
+          </div>
+        </label>
+      </li>
+
+      <!--
+      <li class="item item-flex">
+        <div class="item-flex">
+          <img src="img/icons/contract.png" height="20px">
+          &nbsp;&nbsp;Contact
         </div>
-      </label>
-    </div>
+        <img src="img/icons/arrow-right.png" height="10px" style="float: right;">
+      </li>
+
+      <li class="item item-flex">
+        <div class="item-flex">
+          <img src="img/icons/contract.png" height="20px">
+          &nbsp;&nbsp;Imprint
+        </div>
+        <img src="img/icons/arrow-right.png" height="10px" style="float: right;">
+      </li>
+
+      <li class="item item-flex">
+        <div class="item-flex">
+          <img src="img/icons/contract.png" height="20px">
+          &nbsp;&nbsp;Terms of Use
+        </div>
+        <img src="img/icons/arrow-right.png" height="10px" style="float: right;">
+      </li>
+
+      <li class="item item-flex">
+        <div class="item-flex">
+          <img src="img/icons/contract.png" height="20px">
+          &nbsp;&nbsp;Privacy Policy
+        </div>
+        <img src="img/icons/arrow-right.png" height="10px" style="float: right;">
+      </li>-->
+
+    </ul>
+
+
+
+    <!--
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
@@ -53,7 +98,7 @@
       <div ng-click="openDatePicker()" class="control-icon-button">
         <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
       </div>
-      <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div> -->
+      <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div>
     </div>
 
     <div class="control-list-item">
@@ -64,7 +109,7 @@
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text" translate>{{'.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
-    </div>
+    </div> -->
     <!-- Begin user data -->
     <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
@@ -86,7 +131,10 @@
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
     </div>
 
+
+
     <!-- Begin developer zone -->
+
     <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.refresh'}}</div>

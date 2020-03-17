@@ -111,9 +111,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.differentCommon = function(tripgj) {
         return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
-    $scope.stopTimeTagClass = function(tripgj) {
-      return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
-    }
     $scope.setCurrDay = function(val) {
         if (typeof(val) === 'undefined') {
           window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
@@ -202,7 +199,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.isDraft = $scope.isDraft(tripgj);
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
-        tripgj.percentages = $scope.getPercentages(tripgj)
+        tripgj.percentages = $scope.getPercentages(tripgj);
     }
 
     $scope.populateCommonInfo = function(tripgj) {
@@ -211,7 +208,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.common.different = $scope.differentCommon(tripgj);
         tripgj.common.longerOrShorter = $scope.getLongerOrShorter(tripgj.data, tripgj.data.id);
         tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
-        tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
         tripgj.common.arrowColor = $scope.arrowColor(tripgj.common.longerOrShorter[0]);
         tripgj.common.arrowClass = $scope.getArrowClass(tripgj.common.longerOrShorter[0]);
 
@@ -253,6 +249,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
+          console.log("========= WATCH OUT. ALL TRIPS ARE IN HERE =============");
+          console.log(JSON.stringify($scope.data.currDayTripWrappers));
           $ionicScrollDelegate.scrollTop(true);
       });
     });
@@ -600,6 +598,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.chooseMode = function () {
       var isOther = false
+      console.log("========== WTF IS scope.selected: ============");
+      console.log(JSON.stringify($scope.selected));
       if ($scope.selected.mode.value != "other_mode") {
         $scope.storeMode($scope.selected.mode, isOther);
       } else {
@@ -610,7 +610,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     /*
-     * Convert the array of {text, value} objects to a {value: text} map so that 
+     * Convert the array of {text, value} objects to a {value: text} map so that
      * we can look up quickly without iterating over the list for each trip
      */
 
@@ -640,7 +640,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         });
     });
 
+    // crappy legacy version that uses a global scope variable for defining the current trip
     $scope.storeMode = function (mode, isOther) {
+      console.log("========= HERE COMES THE MODE ===========" + JSON.stringify(mode));
       if(isOther) {
         // Let's make the value for user entered modes look consistent with our
         // other values
@@ -663,6 +665,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if (isOther == true)
         $scope.draftMode = angular.undefined;
     }
+
+  $scope.storeModeToTrip = function (tripgj, mode, isOther) {
+    // create necessary objects for storeMode to store mode with. This is not good but it was in the code and I don't have time for refactoring.
+    // this would happen inside openModePopover in the "vanilla" app
+    $scope.draftMode = {
+      "start_ts": tripgj.data.properties.start_ts,
+      "end_ts": tripgj.data.properties.end_ts
+    };
+    $scope.modeTripgj = tripgj;
+
+    $scope.storeMode(mode, isOther);
+
+    // same thing, a little 'cleanup', this would normally happen inside closeModePopover in the "vanilla" app
+    $scope.draftMode = angular.undefined;
+  }
 
     $scope.storePurpose = function (purpose, isOther) {
       if (isOther) {
@@ -694,7 +711,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -706,7 +723,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {

@@ -63,14 +63,16 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     Logger.log( "registertripEnd received!" );
     // iOS
     var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
-    notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
+    /* we (DFKI / mcqdev) don't want to use the post trimp notifications
+     *
+       notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
         .then(function(result) {
             // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
             Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
         })
         .catch(function(error) {
             Logger.displayError("Unable to register notifications for trip end", error);
-        });
+        });*/
   }
 
   var getFormattedTime = function(ts_in_secs) {

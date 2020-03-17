@@ -65,9 +65,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return mode;
     }
   }
+  var convertHMS = function(value) {
+      const sec = parseInt(value, 10); // convert value to number if it's string
+      let hours   = Math.floor(sec / 3600); // get hours
+      let minutes = Math.floor((sec - (hours * 3600)) / 60); // get minutes
+      let seconds = sec - (hours * 3600) - (minutes * 60); //  get seconds
+      // add 0 if value < 10
+      if (hours   < 10) {hours   = "0"+hours;}
+      if (minutes < 10) {minutes = "0"+minutes;}
+      if (seconds < 10) {seconds = "0"+seconds;}
+      return hours+':'+minutes+':'+seconds; // Return is HH : MM : SS
+  }
   dh.getPercentages = function(trip) {
     var rtn0 = []; // icons
     var rtn1 = []; //percentages
+    var rtn2 = []; //duration
+    var trips = [];
 
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":"ion-android-walk",
@@ -88,17 +101,24 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
         rtn0.push(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)));
         rtn1.push(trip.sections[i].properties.distance);
+        rtn2.push(trip.sections[i].properties.duration);
         total += trip.sections[i].properties.distance;
       } else {
         rtn1[rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)))] += trip.sections[i].properties.distance;
+        rtn2[rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)))] += trip.sections[i].properties.duration;
         total += trip.sections[i].properties.distance;
       }
+      //rtn2.push(trip.sections[i].properties.duration);
     }
     for (var i=0; i<rtn0.length; i++) {
+      var name = rtn0[i];
       rtn0[i] = "icon " + icons[rtn0[i]];
-      rtn1[i] = Math.floor((rtn1[i] / total) * 100);
+      rtn1[i] = (rtn1[i] / 1000);
+      rtn2[i] = convertHMS(rtn2[i]);
+      trips.push([name, rtn0[i], rtn1[i].toFixed(1), rtn2[i]]);
     }
-    return [rtn0, rtn1];
+    console.log('tette e culi: ' + trips);
+    return [trips];
   }
   dh.starColor = function(num) {
     if (num >= 3) {

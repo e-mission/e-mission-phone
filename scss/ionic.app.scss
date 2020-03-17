@@ -15,9 +15,43 @@ $royal:                           #886aea !default;
 $dark:                            #444 !default;
 */
 
-// The path for our ionicons font files, relative to the built CSS in www/css
-$ionicons-font-path: "../lib/ionic/fonts" !default;
+
+@import "variables";
+
+
+/*
+ * customize Ionic with our theme colors
+ */
+$button-color: $primary;
+$toggle-on-default-bg: $primary;
+
+$stable: $dfki-stable;
+$light: white;
+$energized: $attention;
+$balanced: $primary;
+
+
+
+/*
+ * other, non-brand customizations to Ionic css
+ */
+$bar-height: 0;
+$tabs-height: 60px;
+$tabs-text-font-size:             16px;
+$tabs-text-font-size-side-icon:   16px;
+$tabs-striped-border-width:       0;
+
+
+  // The path for our ionicons font files, relative to the built CSS in www/css
+$ionicons-font-path: "../lib/ionic/fonts";
+
+
+// avatar
+$item-avatar-border-radius:       0;
+
 
 // Include all of Ionic
-@import "www/lib/ionic/scss/ionic";
+@import "../www/lib/ionic/scss/ionic";
 
+// customize
+@import "ionic/tabs";

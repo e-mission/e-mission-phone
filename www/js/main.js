@@ -154,7 +154,4 @@ angular.module('emission.main', ['emission.main.recent',
 
     moment.locale($translate.use());
 
-    $scope.tabsCustomClass = function() {
-        return "tabs-icon-top tabs-custom";
-    }
 });

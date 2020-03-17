@@ -4,9 +4,12 @@
   "displayName": "emission",
   "scripts": {
     "setup-serve": "./bin/download_settings_controls.js",
-    "serve": "phonegap --verbose serve"
+    "serve": "phonegap --verbose serve",
+    "sass-watch": "npm run sass-build && node-sass --watch scss -o www/css",
+    "sass-build": "node-sass scss -o www/css"
   },
   "devDependencies": {
+    "node-sass": "^4.12.0",
     "phonegap": "7.1.1"
   },
   "dependencies": {

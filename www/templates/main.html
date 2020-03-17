@@ -4,40 +4,40 @@ Each tab's child <ion-nav-view> directive will have its own
 navigation history that also transitions its views in and out.
 -->
 <ion-view>
-<ion-tabs ng-class="tabsCustomClass()">
+<ion-tabs class="tabs-icon-left tabs-striped tabs-color-balanced tabs-app">
+
+  <!-- Dashboard Tab -->
+  <ion-tab title="{{'main-metrics.dashboard' | translate}}" icon="icon-dashboard" href="#/root/main/metrics">
+    <ion-nav-view name="main-metrics"></ion-nav-view>
+  </ion-tab>
 
   <!-- Diary Tab -->
-  <ion-tab title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/diary">
+  <ion-tab title="Trips" icon="icon-trips" href="#/root/main/diary">
     <ion-nav-view name="main-diary"></ion-nav-view>
   </ion-tab>
 
   <!-- Game Tab  -->
-  <ion-tab title="Goals" icon="ion-android-checkbox" href="#/root/main/goals">
+  <!-- <ion-tab title="Goals" icon="ion-android-checkbox" href="#/root/main/goals">
     <ion-nav-view name="main-goals"></ion-nav-view>
-  </ion-tab>
-
-  <!-- Common Patterns Tab
-  <ion-tab title="Common" icon="ion-star" href="#/root/main/common/map">
-    <ion-nav-view name="main-common"></ion-nav-view>
   </ion-tab> -->
 
-  <!-- Dashboard Tab -->
-  <ion-tab title="{{'main-metrics.dashboard' | translate}}" icon="ion-ios-analytics" href="#/root/main/metrics">
-    <ion-nav-view name="main-metrics"></ion-nav-view>
-  </ion-tab>
+  <!-- Common Patterns Tab -->
+  <!-- <ion-tab title="Common" icon="ion-star" href="#/root/main/common/map">
+    <ion-nav-view name="main-common"></ion-nav-view>
+  </ion-tab>  -->
 
   <!-- Heatmap Tab -->
-  <ion-tab title="{{'main-heatmap.title' | translate}}" icon="ion-fireball" href="#/root/main/heatmap">
+  <!-- <ion-tab title="{{'main-heatmap.title' | translate}}" icon="ion-fireball" href="#/root/main/heatmap">
     <ion-nav-view name="main-heatmap"></ion-nav-view>
-  </ion-tab>
-
-  <!-- Debug Tab -->
-<!--   <ion-tab title="Recent" icon="ion-android-stopwatch" href="#/root/main/recent/log">
-    <ion-nav-view name="main-recent"></ion-nav-view>
   </ion-tab> -->
 
+  <!-- Debug Tab -->
+  <!-- <ion-tab title="Recent" icon="ion-android-stopwatch" href="#/root/main/recent/log">
+    <ion-nav-view name="main-recent"></ion-nav-view>
+  </ion-tab>  -->
+
   <!-- Controls Tab -->
-  <ion-tab title="{{'control.profile' | translate}}" icon="ion-person" href="#/root/main/control">
+  <ion-tab class="tab-item-control" title="" icon="ion-more" href="#/root/main/control">
     <ion-nav-view name="main-control"></ion-nav-view>
   </ion-tab>
 
