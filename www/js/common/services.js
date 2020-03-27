@@ -151,6 +151,11 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         if (angular.isDefined(address)) {
             if (address["road"]) {
               name = address["road"];
+            //sometimes it occurs that we cannot display street name because they are pedestrian or suburb places so we added them.
+            } else if (address["pedestrian"]) {
+            name = address["pedestrian"]
+            } else if (address["suburb"]) {
+            name = address["suburb"]
             } else if (address["neighbourhood"]) {
               name = address["neighbourhood"];
             }
