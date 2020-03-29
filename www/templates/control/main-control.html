@@ -1,9 +1,9 @@
 <ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
-    <div class="control-list-item">
+   <!-- <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
-    </div>
+    </div> -->
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
@@ -31,10 +31,10 @@
         </div>
       </label>
     </div>
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">{{carbonDatasetString}}</div>
       <div ng-click="changeCarbonDataset()" class="control-icon-button" ><i class="ion-stats-bars"></i></div>
-    </div>
+    </div> -->
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.force-sync'}}</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
@@ -43,10 +43,10 @@
       <div class="control-list-text" translate>{{'.share'}}</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
     </div>
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.check-ui-updates'}}</div>
       <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
-    </div>
+    </div> -->
 
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.download-json-dump'}}</div>

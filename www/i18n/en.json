@@ -51,7 +51,7 @@
     "trip-start-duration": "Duration",
 
     "control":{
-        "profile": "Profile",
+        "profile": "Settings",
         "tracking": "Tracking",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",
