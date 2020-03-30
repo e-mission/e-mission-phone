@@ -72,7 +72,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     StartPrefs.markConsented().then(function(response) {
       $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
-        $scope.next();
+        $scope.finish();
       } else {
         StartPrefs.loadPreferredScreen();
       }
