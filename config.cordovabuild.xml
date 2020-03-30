@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="39" version="2.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="39" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="39" version="2.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>emission</name>
     <description>
         A commute pattern tracker and carbon footprint estimator.
@@ -106,7 +106,7 @@
     <plugin name="cordova-plugin-x-socialsharing" spec="~5.2.1" />
     <plugin name="cordova-plugin-inappbrowser" spec="https://github.com/shankari/cordova-plugin-inappbrowser.git" />
     <plugin name="de.appplant.cordova.plugin.local-notification-ios9-fix" spec="https://github.com/shankari/cordova-plugin-local-notifications.git" />
-    <plugin name="cordova-plugin-ionic" spec="https://github.com/e-mission/cordova-plugin-ionic.git#3.2.0">
+    <plugin name="cordova-plugin-ionic" spec="https://github.com/e-mission/cordova-plugin-ionic.git#remove_swift_class">
         <variable name="APP_ID" value="e0d8cdec" />
         <variable name="CHANNEL_NAME" value="Production" />
         <variable name="UPDATE_METHOD" value="none" />
