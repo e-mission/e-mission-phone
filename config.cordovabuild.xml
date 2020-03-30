@@ -24,6 +24,21 @@
     <preference name="xwalkMode" value="embedded" />
     <preference name="xwalkMultipleApk" value="true" />
     <preference name="emSensorDataCollectionProtocolApprovalDate" value="2016-07-14" />
+    <config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_ssaid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="false" />
+    </config-file>
+    <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
+        <true />
+    </config-file>
+    <config-file parent="GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED" target="*-Info.plist">
+        <false />
+    </config-file>
+    <config-file parent="GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS" target="*-Info.plist">
+        <false />
+    </config-file>
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
