@@ -152,6 +152,19 @@ Pre-requisites
     - to install a particular version, use [xcode-select](https://www.unix.com/man-page/OSX/1/xcode-select/)
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
 - git
+- the most recent version of android studio
+
+Important
+---
+Most of the recent issues encountered have been due to incompatible setup. We
+have now:
+- locked down the dependencies,
+- created setup and teardown scripts to setup self-contained environments with
+  those dependencies, and
+- CI enabled to validate that they continue work.
+
+If you have setup failures, please compare the configuration in the passing CI
+builds with your configuration. That is almost certainly the source of the error.
 
 Installing
 ---
