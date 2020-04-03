@@ -145,6 +145,9 @@ One advantage of using `skip` authentication in development mode is that any use
 
 Updating the e-mission-\* plugins or adding new plugins
 ---
+=======
+![osx-build-ios](https://github.com/covid19database/phone-app/workflows/osx-build-ios/badge.svg)
+![osx-ubuntu-build-android](https://github.com/covid19database/phone-app/workflows/osx-ubuntu-build-android/badge.svg)
 
 Pre-requisites
 ---
