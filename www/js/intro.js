@@ -18,12 +18,31 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
+.controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate, $cordovaFile) {
+
+  $scope.platform = $window.device.platform;
+  $scope.osver = $window.device.version.split(".")[0];
+  if($scope.platform.toLowerCase() == "android") {
+    if($scope.osver < 6) {
+        $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-6");
+    }
+  }
+
+  if($scope.platform.toLowerCase() == "ios") {
+    if($scope.osver < 13) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-lt-13");
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
+    }
+  }
+  console.log("Explanation = "+$scope.locationPermExplanation);
   
   $scope.getConsentFile = function () {
     var lang = $translate.use();
-    $scope.consentFile = "templates/intro/consent.html";
+    $scope.consentFile = "templates/intro/sensor_explanation.html";
     if (lang != 'en') {
       var url = "www/i18n/intro/consent-" + lang + ".html";
       $cordovaFile.checkFile(cordova.file.applicationDirectory, url).then( function(result){
@@ -33,7 +52,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       }, function (err) {
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "Consent file not found, loading english version, error is " + JSON.stringify(err));
-          $scope.consentFile = "templates/intro/consent.html";
+          $scope.consentFile = "templates/intro/sensor_explanation.html";
         });
     }
   }
