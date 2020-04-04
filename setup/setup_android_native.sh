@@ -35,3 +35,4 @@ source ~/.sdkman/bin/sdkman-init.sh
 echo "Setting up gradle using SDKMan"
 sdk install gradle 4.1
 
+source setup/setup_shared_native.sh
