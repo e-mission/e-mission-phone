@@ -199,7 +199,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
       };
       switch (mode) {
         case 'place':
-          var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1]
+          var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1]
           + "&lon=" + obj.geometry.coordinates[0];
           $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
@@ -210,7 +210,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
           });
           break;
         case 'cplace':
-        var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
+        var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
         + "&lon=" + obj.location.coordinates[0];
 
           $http.get(url).then(function(response) {
@@ -222,7 +222,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
           });
           break;
         case 'ctrip':
-          var url0 = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.start_loc.coordinates[1]
+          var url0 = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.start_loc.coordinates[1]
           + "&lon=" + obj.start_loc.coordinates[0];
           console.log("About to make call "+url0);
           $http.get(url0).then(function(response) {
@@ -232,7 +232,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
           });
-          var url1 = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.end_loc.coordinates[1]
+          var url1 = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.end_loc.coordinates[1]
           + "&lon=" + obj.end_loc.coordinates[0];
           console.log("About to make call "+url1);
           $http.get(url1).then(function(response) {
