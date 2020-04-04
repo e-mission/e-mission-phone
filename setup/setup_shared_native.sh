@@ -18,3 +18,22 @@ echo "hack to make the local cordova fail on error"
 sed -i -e "s|/usr/bin/env node|/usr/bin/env node --unhandled-rejections=strict|" node_modules/cordova/bin/cordova
 
 npx cordova prepare
+
+EXPECTED_COUNT=16
+INSTALLED_COUNT=`npx cordova plugin list | wc -l`
+echo "Found $INSTALLED_COUNT plugins, expected $EXPECTED_COUNT"
+if [ $INSTALLED_COUNT -lt $EXPECTED_COUNT ];
+then
+    echo "Found $INSTALLED_COUNT plugins, expected $EXPECTED_COUNT, retrying" 
+    sleep 5
+    npx cordova prepare
+elif [ $INSTALLED_COUNT -gt $EXPECTED_COUNT ];
+then
+    echo "Found extra plugins!"
+    npx cordova plugin list
+    echo "Failing for investigation"
+    exit 1
+else
+    echo "All plugins installed successfully!"
+fi
+
