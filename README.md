@@ -85,7 +85,7 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 
     ```
     $ ls www/json/*.sample
-    $ cp www/json/setupConfig.json.sample www/json/setupConfig.json
+    $ cp www/json/startupConfig.json.sample www/json/startupConfig.json
     $ cp ..... www/json/connectionConfig.json
     ```
   
