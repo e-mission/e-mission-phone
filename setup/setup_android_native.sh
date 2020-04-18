@@ -35,6 +35,4 @@ source ~/.sdkman/bin/sdkman-init.sh
 echo "Setting up gradle using SDKMan"
 sdk install gradle 4.1
 
-cp setup/google-services.fake.for_ci.json google-services.json
-
 source setup/setup_shared_native.sh

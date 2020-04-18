@@ -11,6 +11,4 @@ echo "Installing cocoapods"
 export PATH=~/.gem/ruby/2.6.0/bin:$PATH
 gem install --no-document --user-install cocoapods -v $COCOAPODS_VERSION
 
-cp setup/GoogleService-Info.fake.for_ci.plist setup/GoogleService-Info.plist
-
 source setup/setup_shared_native.sh
