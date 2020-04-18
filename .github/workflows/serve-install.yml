@@ -43,7 +43,7 @@ jobs:
       run: |
         source setup/setup_serve.sh
         npx cordova -version
-        npx ionic -version
+        npx ionic --version
 
 # TODO: figure out how to check that a server started correctly
 #    - name: Try starting it

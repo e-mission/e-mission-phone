@@ -7,7 +7,10 @@
     "serve": "phonegap --verbose serve"
   },
   "devDependencies": {
-    "phonegap": "7.1.1"
+    "phonegap": "7.1.1",
+    "cordova": "8.0.0",
+    "ionic": "5.4.16",
+    "bower": "1.8.8"
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
