@@ -139,8 +139,6 @@ Troubleshooting
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
-Create a remote to pull updates from upstream
-
 Beta-testing debugging
 ---
 If users run into problems, they have the ability to email logs to the
