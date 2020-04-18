@@ -12,94 +12,26 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 Updating the UI only
 ---
+[![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-serve-install)
+
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
 
-### Dependencies
-1. node.js: You probably want to install this using [nvm](https://github.com/creationix/nvm), to ensure that you can pick a particular [version of node](https://github.com/creationix/nvm#usage).
-    ```
-    $ node -v
-    v9.4.0
-    $ npm -v
-    6.0.0
-    ```
-    
-  Make sure that the permissions are set correctly - npm and node need to be owned by `root` or another admin user.
+### Installing
 
-  ```
-  $ which npm
-  /usr/local/bin/npm
-  $ ls -al /usr/local/bin/npm
-  lrwxr-xr-x  1 root  wheel  38 May  8 10:04 /usr/local/bin/npm -> ../lib/node_modules/npm/bin/npm-cli.js
-  $ ls -al /usr/local/lib/node_modules/npm/bin/npm-cli.js
-  -rwxr-xr-x  1 cusgadmin  staff  4295 Oct 26  1985 /usr/local/lib/node_modules/npm/bin/npm-cli.js
-  ```
-  
-2. [bower](https://bower.io/):
+Run the setup script
 
-  ```
-  $ bower -v
-  1.8.4
-  ```
+```
+$ source setup/setup_serve.sh
+```
 
-### Installation
-1. Install the most recent release of the em-devapp (https://github.com/e-mission/e-mission-devapp)
+**(optional)** Configure by changing the files in `www/json`.
+Defaults are in `www/json/*.sample`
 
-1. Get the current version of the phone UI code
-
-    1. Fork this repo using the github UI
-
-    1. Clone your fork
-
-    ```
-    $ git clone <your repo URL>
-    ```
-
-    ```
-    $ cd e-mission-phone
-    ```
-    
-1. Create a remote to pull updates from upstream
-
-    ```
-    $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
-    ```
-    
-1. Setup the config
-
-    ```
-    $ ./bin/configure_xml_and_json.js serve
-    ```
-
-1. Install all required node modules 
-
-    ```
-    $ npm install
-    ```
- 1. Install javascript dependencies
- 
-    ```
-    $ bower install
-    ```
-    
-1. Configure values if necessary - e.g.
-
-    ```
-    $ ls www/json/*.sample
-    $ cp www/json/startupConfig.json.sample www/json/startupConfig.json
-    $ cp ..... www/json/connectionConfig.json
-    ```
-  
-1. Run the setup script
-
-    ```
-    $ npm run setup-serve
-    > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
-    > ./bin/download_settings_controls.js
-
-    Sync collection settings updated
-    Data collection settings updated
-    Transition notify settings updated
-    ```
+```
+$ ls www/json/*.sample
+$ cp www/json/startupConfig.json.sample www/json/startupConfig.json
+$ cp ..... www/json/connectionConfig.json
+```
   
 ### Running
 
@@ -123,7 +55,7 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
     - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
     - Chrome: chrome://inspect -> Remote target (emulator)
     
-**Ta-da!** If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app.
+**Ta-da!** :gift: If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app :tada:
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
 
@@ -178,6 +110,15 @@ AND/OR
 $ source setup/setup_ios_native.sh
 ```
 
+**(optional)** Configure by changing the files in `www/json`.
+Defaults are in `www/json/*.sample`
+
+```
+$ ls www/json/*.sample
+$ cp www/json/startupConfig.json.sample www/json/startupConfig.json
+$ cp ..... www/json/connectionConfig.json
+```
+
 Run in the emulator
 
 ```
@@ -198,8 +139,6 @@ Troubleshooting
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
-Create a remote to pull updates from upstream
-
 Beta-testing debugging
 ---
 If users run into problems, they have the ability to email logs to the
@@ -218,6 +157,10 @@ $ less /tmp/loggerDB.<issue>.withdate.log
 
 Contributing
 ---
+
+Add the main repo as upstream
+
+    $ git remote add upstream https://github.com/covid19database/phone-app.git
 
 Create a new branch (IMPORTANT). Please do not submit pull requests from master
 

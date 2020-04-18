@@ -23,5 +23,3 @@ then
     echo "Invalid npm version, expected $NPM_VERSION, got $CURR_NPM_VERSION"
     exit 1
 fi
-
-git remote add upstream https://github.com/covid19database/phone-app.git
