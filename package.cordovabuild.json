@@ -9,7 +9,7 @@
   "devDependencies": {
     "phonegap": "7.1.1",
     "cordova": "8.0.0",
-    "ionic": "3.19.1",
+    "ionic": "5.4.16",
     "bower": "1.8.8",
     "xml2js": "0.4.23"
   },
