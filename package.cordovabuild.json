@@ -7,7 +7,11 @@
     "serve": "phonegap --verbose serve"
   },
   "devDependencies": {
-    "phonegap": "7.1.1"
+    "phonegap": "7.1.1",
+    "cordova": "8.0.0",
+    "ionic": "5.4.16",
+    "bower": "1.8.8",
+    "xml2js": "0.4.23"
   },
   "cordova": {
     "platforms": [
@@ -28,13 +32,16 @@
       "cordova-plugin-email-composer": {},
       "cordova-plugin-x-socialsharing": {},
       "cordova-plugin-inappbrowser": {},
-      "de.appplant.cordova.plugin.local-notification-ios9-fix": {},
+      "cordova-plugin-local-notification": {},
       "cordova-plugin-ionic": {
         "APP_ID": "e0d8cdec",
         "CHANNEL_NAME": "Production",
         "UPDATE_METHOD": "none",
         "UPDATE_API": "https://api.ionicjs.com",
         "MAX_STORE": "2"
+      },
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-whitelist": {},
       "edu.berkeley.eecs.emission.cordova.auth": {},
@@ -50,29 +57,30 @@
     }
   },
   "dependencies": {
-    "cordova-android": "^6.4.0",
-    "cordova-ios": "^4.5.4",
+    "cordova-android": "^8.1.0",
+    "cordova-ios": "^5.1.1",
     "cordova-plugin-app-version": "~0.1.9",
     "cordova-plugin-customurlscheme": "~4.3.0",
     "cordova-plugin-device": "~2.0.1",
     "cordova-plugin-email-composer": "^0.8.15",
-    "cordova-plugin-file": "~6.0.1",
-    "cordova-plugin-inappbrowser": "https://github.com/shankari/cordova-plugin-inappbrowser.git",
-    "cordova-plugin-ionic": "git+https://github.com/e-mission/cordova-plugin-ionic.git#remove_swift_class",
+    "cordova-plugin-file": "~6.0.2",
+    "cordova-plugin-inappbrowser": "^3.2.0",
+    "cordova-plugin-ionic-webview": "^4.1.3",
+    "cordova-plugin-ionic": "5.4.7",
     "cordova-plugin-whitelist": "~1.3.3",
-    "cordova-plugin-x-socialsharing": "~5.2.1",
-    "de.appplant.cordova.plugin.local-notification-ios9-fix": "https://github.com/shankari/cordova-plugin-local-notifications.git",
-    "e-mission-data-collection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.4",
-    "em-cordova-connection-settings": "git+https://github.com/e-mission/cordova-connection-settings.git#v1.2.0",
-    "em-cordova-jwt-auth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.5.0",
-    "em-cordova-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.1",
-    "em-cordova-server-sync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.2",
-    "em-cordova-transition-notify": "git+https://github.com/e-mission/e-mission-transition-notify.git#v1.2.0",
-    "em-cordova-unified-logger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.3.1",
-    "em-cordova-usercache": "git+https://github.com/e-mission/cordova-usercache.git#v1.1.1",
+    "cordova-plugin-x-socialsharing": "~5.6.5",
+    "cordova-plugin-local-notification": "^0.9.0-beta.2",
+    "e-mission-data-collection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.4.3",
+    "em-cordova-connection-settings": "git+https://github.com/e-mission/cordova-connection-settings.git#v1.2.1",
+    "em-cordova-jwt-auth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.6.2-alpha1",
+    "em-cordova-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.2",
+    "em-cordova-server-sync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.2.3",
+    "em-cordova-transition-notify": "git+https://github.com/e-mission/e-mission-transition-notify.git#v1.2.5",
+    "em-cordova-unified-logger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.3.2",
+    "em-cordova-usercache": "git+https://github.com/e-mission/cordova-usercache.git#v1.1.2",
     "fs-extra": "^5.0.0",
     "ionic-plugin-keyboard": "~2.2.1",
     "klaw-sync": "^3.0.2",
-    "phonegap-plugin-push": "=2.1.2"
+    "phonegap-plugin-push": "=2.3.0"
   }
 }

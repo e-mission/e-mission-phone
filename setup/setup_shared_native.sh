@@ -1,5 +1,9 @@
 ./bin/configure_xml_and_json.js cordovabuild
 
+echo "Copying fake FCM configurations for android and iOS"
+cp setup/GoogleService-Info.fake.for_ci.plist GoogleService-Info.plist
+cp setup/google-services.fake.for_ci.json google-services.json
+
 echo "Setting up all npm packages"
 npm install
 
@@ -19,7 +23,7 @@ sed -i -e "s|/usr/bin/env node|/usr/bin/env node --unhandled-rejections=strict|"
 
 npx cordova prepare
 
-EXPECTED_COUNT=18
+EXPECTED_COUNT=25
 INSTALLED_COUNT=`npx cordova plugin list | wc -l`
 echo "Found $INSTALLED_COUNT plugins, expected $EXPECTED_COUNT"
 if [ $INSTALLED_COUNT -lt $EXPECTED_COUNT ];
