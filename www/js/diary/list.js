@@ -15,6 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.tripconfirm.services',
                                       'emission.services',
                                       'emission.survey.enketo.launch',
+                                      'emission.enketo-survey.service',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
   ])
@@ -25,7 +26,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurvey, EnketoSurveyLaunch, CommHelper, $translate) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
@@ -214,12 +215,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
-        tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
+        const start_dt = Object.assign({}, tripgj.data.properties.start_local_dt);
+        const end_dt = Object.assign({}, tripgj.data.properties.end_local_dt);
+        tripgj.isDraft = $scope.isDraft(tripgj);
+        // Fix "Invalid date" for processed trips
+        if (!tripgj.isDraft) {
+          start_dt.month = start_dt.month - 1;
+          end_dt.month = end_dt.month - 1;
+        }
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(start_dt);
+        tripgj.display_end_time = DiaryHelper.getLocalTimeString(end_dt);
         tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
-        tripgj.isDraft = $scope.isDraft(tripgj);
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         tripgj.percentages = $scope.getPercentages(tripgj)
@@ -699,6 +707,20 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.value2entryPurpose = purposeMaps[1];
         });
     });
+
+    $scope.$on('$ionicView.afterEnter', function() {
+      CommHelper.getUser().then(function(user) {
+        const uuid = user.user_id['$uuid'];
+        return EnketoSurvey.getAllSurveyAnswers('manual/user_profile_survey'
+        ).then(function(answers){
+            return EnketoSurvey.getFirstUserProfile({ uuid }, answers);
+        }).then(function(userProfile){
+          if (userProfile && userProfile.data.timestamp) {
+            $scope.datepickerObject.from = moment(userProfile.data.timestamp).startOf('day').toDate();
+          }
+        });
+      });
+    })
 
     $scope.storeMode = function (mode, isOther) {
       if(isOther) {

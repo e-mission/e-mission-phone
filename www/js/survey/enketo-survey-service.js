@@ -64,6 +64,15 @@ angular.module('emission.enketo-survey.service', [
         null;
   }
 
+  function getFirstUserProfile(user_properties, answers) {
+    const potentialCandidates = answers.filter(function(answer) {
+        return answer.data.user_uuid = user_properties.uuid;
+    });
+    return potentialCandidates.length ?
+        potentialCandidates[potentialCandidates.length - 1] :
+        null;
+  }
+
   function _restoreAnswer(answers) {
     let answer = null;
     if (__trip) {
@@ -170,6 +179,7 @@ angular.module('emission.enketo-survey.service', [
     getAllSurveyAnswers: getAllSurveyAnswers,
     getState: getState,
     getUserProfile: getUserProfile,
+    getFirstUserProfile: getFirstUserProfile,
     populateLabels: populateLabels,
     makeAnswerFromAnswerData: makeAnswerFromAnswerData,
   };
