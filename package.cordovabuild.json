@@ -40,6 +40,9 @@
         "UPDATE_API": "https://api.ionicjs.com",
         "MAX_STORE": "2"
       },
+      "cordova-plugin-advanced-http": {
+        "OKHTTP_VERSION": "3.10.0"
+      },
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
@@ -59,6 +62,7 @@
   "dependencies": {
     "cordova-android": "^8.1.0",
     "cordova-ios": "^5.1.1",
+    "cordova-plugin-advanced-http": "^2.4.1",
     "cordova-plugin-app-version": "~0.1.9",
     "cordova-plugin-customurlscheme": "~4.3.0",
     "cordova-plugin-device": "~2.0.1",
