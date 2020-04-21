@@ -100,7 +100,7 @@ angular.module('emission.survey.enketo.launch', [
 
   function initConfirmSurvey(opts) {
     return initSurvey({
-      form_location: 'json/20200420-01-trip-end-survey.json',
+      form_location: 'json/trip-end-survey.json',
       opts: {
         session: {
           data_key: 'manual/confirm_survey',
@@ -123,7 +123,7 @@ angular.module('emission.survey.enketo.launch', [
     }
     return promise.then(function(uuid) {
       return initSurvey({
-        form_location: 'json/20200420-01-user-profile.json',
+        form_location: 'json/user-profile.json',
         opts: {
           session: {
             data_key: 'manual/user_profile_survey',
