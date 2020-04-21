@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" 
+  xmlns:ev="http://www.w3.org/2001/xml-events" 
+  xmlns:h="http://www.w3.org/1999/xhtml" 
+  xmlns:jr="http://openrosa.org/javarosa" 
+  xmlns:odk="http://www.opendatakit.org/xforms" 
+  xmlns:orx="http://openrosa.org/xforms" 
+  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>Trip end survey</h:title>
+    <model>
+      <instance>
+        <data id="snapshot_xml">
+          <start/>
+          <end/>
+          <group_vs9ga59>
+            <d_purpose_main>go_home</d_purpose_main>
+          </group_vs9ga59>
+          <group_ee9rk21>
+            <travel_mode_main>vehicle_driver</travel_mode_main>
+            <Total_people_in_trip_party>1</Total_people_in_trip_party>
+            <Non_household_member_s_on_trip>0</Non_household_member_s_on_trip>
+            <Transit_fees_AUD/>
+            <Taxi_fees/>
+          </group_ee9rk21>
+          <group_bn3jd79>
+            <Vehicle_trip_Parking_location>1</Vehicle_trip_Parking_location>
+            <Parking_cost/>
+            <Total_toll_charges_p_ng_the_trip_AUD/>
+          </group_bn3jd79>
+          <meta>
+            <instanceID/>
+          </meta>
+        </data>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/data/start" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/data/end" type="dateTime"/>
+      <bind nodeset="/data/group_vs9ga59" required="false()"/>
+      <bind nodeset="/data/group_vs9ga59/d_purpose_main" required="true()" type="select1"/>
+      <bind nodeset="/data/group_ee9rk21" required="false()"/>
+      <bind nodeset="/data/group_ee9rk21/travel_mode_main" required="true()" type="select1"/>
+      <bind nodeset="/data/group_ee9rk21/Total_people_in_trip_party" required="true()" type="select1"/>
+      <bind nodeset="/data/group_ee9rk21/Non_household_member_s_on_trip" relevant=" /data/group_ee9rk21/Total_people_in_trip_party != '1'" required="true()" type="select1"/>
+      <bind nodeset="/data/group_ee9rk21/Transit_fees_AUD" relevant=" /data/group_ee9rk21/travel_mode_main  = 'bus' or  /data/group_ee9rk21/travel_mode_main  = 'train' or  /data/group_ee9rk21/travel_mode_main  = 'ferry'" required="true()" type="decimal"/>
+      <bind nodeset="/data/group_ee9rk21/Taxi_fees" relevant=" /data/group_ee9rk21/travel_mode_main  = 'taxi_and_ride_'" required="true()" type="decimal"/>
+      <bind nodeset="/data/group_bn3jd79" required="false()"/>
+      <bind nodeset="/data/group_bn3jd79/Vehicle_trip_Parking_location" relevant=" /data/group_ee9rk21/travel_mode_main  = 'vehicle_driver'" required="true()" type="select1"/>
+      <bind nodeset="/data/group_bn3jd79/Parking_cost" relevant=" /data/group_bn3jd79/Vehicle_trip_Parking_location  = '4' or  /data/group_bn3jd79/Vehicle_trip_Parking_location  = '3' or  /data/group_bn3jd79/Vehicle_trip_Parking_location  = '5' or  /data/group_bn3jd79/Vehicle_trip_Parking_location  = '997'" required="false()" type="decimal"/>
+      <bind nodeset="/data/group_bn3jd79/Total_toll_charges_p_ng_the_trip_AUD" relevant=" /data/group_ee9rk21/travel_mode_main  = 'vehicle_driver'" required="false()" type="decimal"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body>
+    <group ref="/data/group_vs9ga59">
+      <label>Trip purpose</label>
+      <select1 ref="/data/group_vs9ga59/d_purpose_main">
+        <label>What is the purpose of this trip?</label>
+        <item>
+          <label>Go home</label>
+          <value>go_home</value>
+        </item>
+        <item>
+          <label>Work</label>
+          <value>work</value>
+        </item>
+        <item>
+          <label>Work related</label>
+          <value>work_related</value>
+        </item>
+        <item>
+          <label>Education</label>
+          <value>education</value>
+        </item>
+        <item>
+          <label>Shopping</label>
+          <value>shopping</value>
+        </item>
+        <item>
+          <label>Social/recreation</label>
+          <value>social_recreation</value>
+        </item>
+        <item>
+          <label>Personal business/services</label>
+          <value>personal_business_services</value>
+        </item>
+        <item>
+          <label>Serve passenger (e.g. drop-off, taxi or Uber)</label>
+          <value>AUTOMATIC</value>
+        </item>
+        <item>
+          <label>Other</label>
+          <value>other</value>
+        </item>
+      </select1>
+    </group>
+    <group ref="/data/group_ee9rk21">
+      <label>Mode choice</label>
+      <select1 ref="/data/group_ee9rk21/travel_mode_main">
+        <label>What is your main mode of travel for this trip?</label>
+        <hint>Choose one that covers the longest distance</hint>
+        <item>
+          <label>Vehicle driver</label>
+          <value>vehicle_driver</value>
+        </item>
+        <item>
+          <label>Vehicle passenger</label>
+          <value>vehicle_passenger</value>
+        </item>
+        <item>
+          <label>Walk</label>
+          <value>walk</value>
+        </item>
+        <item>
+          <label>Bus</label>
+          <value>bus</value>
+        </item>
+        <item>
+          <label>Train or Tram</label>
+          <value>train</value>
+        </item>
+        <item>
+          <label>Ferry</label>
+          <value>ferry</value>
+        </item>
+        <item>
+          <label>Taxi and ride-sharing services (e.g. Uber)</label>
+          <value>taxi_and_ride_</value>
+        </item>
+        <item>
+          <label>Other</label>
+          <value>AUTOMATIC</value>
+        </item>
+      </select1>
+      <select1 ref="/data/group_ee9rk21/Total_people_in_trip_party">
+        <label>Total people in trip party</label>
+        <hint>Including yourself</hint>
+        <item>
+          <label>Just me</label>
+          <value>1</value>
+        </item>
+        <item>
+          <label>2 Travelers</label>
+          <value>2</value>
+        </item>
+        <item>
+          <label>3 Travelers</label>
+          <value>3</value>
+        </item>
+        <item>
+          <label>4 Travelers</label>
+          <value>4</value>
+        </item>
+        <item>
+          <label>5 Travelers</label>
+          <value>5</value>
+        </item>
+        <item>
+          <label>6 Travelers</label>
+          <value>6</value>
+        </item>
+        <item>
+          <label>7 Travelers</label>
+          <value>7</value>
+        </item>
+        <item>
+          <label>8+ Travelers</label>
+          <value>8</value>
+        </item>
+      </select1>
+      <select1 ref="/data/group_ee9rk21/Non_household_member_s_on_trip">
+        <label>Non-household member(s) on trip</label>
+        <item>
+          <label>Nobody (0 people)</label>
+          <value>0</value>
+        </item>
+        <item>
+          <label>1 person</label>
+          <value>1</value>
+        </item>
+        <item>
+          <label>2 people</label>
+          <value>2</value>
+        </item>
+        <item>
+          <label>3 people</label>
+          <value>3</value>
+        </item>
+        <item>
+          <label>4 people</label>
+          <value>4</value>
+        </item>
+        <item>
+          <label>5 or more people</label>
+          <value>5</value>
+        </item>
+      </select1>
+      <input ref="/data/group_ee9rk21/Transit_fees_AUD">
+        <label>Transit fees ($AUD)</label>
+        <hint>Only for yourself</hint>
+      </input>
+      <input ref="/data/group_ee9rk21/Taxi_fees">
+        <label>Taxi fees ($AUD)</label>
+      </input>
+    </group>
+    <group ref="/data/group_bn3jd79">
+      <label>Vehicle</label>
+      <select1 ref="/data/group_bn3jd79/Vehicle_trip_Parking_location">
+        <label>Vehicle trip: Parking location</label>
+        <item>
+          <label>Own driveway/garage</label>
+          <value>1</value>
+        </item>
+        <item>
+          <label>Someone else's driveway</label>
+          <value>2</value>
+        </item>
+        <item>
+          <label>Parking lot/garage</label>
+          <value>3</value>
+        </item>
+        <item>
+          <label>On street parking</label>
+          <value>4</value>
+        </item>
+        <item>
+          <label>Park &amp; ride lot</label>
+          <value>5</value>
+        </item>
+        <item>
+          <label>Didn't park (waited, drop-off, drive-thru)</label>
+          <value>6</value>
+        </item>
+        <item>
+          <label>Other</label>
+          <value>997</value>
+        </item>
+      </select1>
+      <input ref="/data/group_bn3jd79/Parking_cost">
+        <label>Parking cost ($AUD)</label>
+        <hint>(If none, put 0 or leave blank )</hint>
+      </input>
+      <input ref="/data/group_bn3jd79/Total_toll_charges_p_ng_the_trip_AUD">
+        <label>Total toll charges paid during the trip? ($AUD)</label>
+        <hint>(If none, put 0 or leave blank )</hint>
+      </input>
+    </group>
+  </h:body>
+</h:html>
