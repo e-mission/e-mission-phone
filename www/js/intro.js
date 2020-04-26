@@ -22,8 +22,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
+    $cordovaInAppBrowser,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey, EnketoSurveyLaunch, $translate, $cordovaFile) {
 
+  $scope.socketURL = 'https://emission-socket.byamarin.com';
+  $scope.socket = io($scope.socketURL, { autoConnect: false });
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
   if($scope.platform.toLowerCase() == "android") {
@@ -137,18 +140,46 @@ angular.module('emission.intro', ['emission.splash.startprefs',
           }).then(function(answers){
               return EnketoSurvey.getUserProfile({ uuid }, answers);
           }).then(function(userProfile){
-            if (userProfile) {
-              ionicToast.show(userEmail, 'middle', false, 2500);
-              $scope.finish();
-            } else {
-              EnketoSurveyLaunch.launch($scope, 'UserProfile', { disableDismiss: true }
-              ).then(function(success){
-                if (success) {
-                  ionicToast.show(userEmail, 'middle', false, 2500);
+            // if (userProfile) {
+            //   ionicToast.show(userEmail, 'middle', false, 2500);
+            //   $scope.finish();
+            // } else {
+              $scope.socket.open();
+              $scope.socket.on('up-submit', function(data) {
+                console.log('up-submit');
+                $scope.socket.close();
+                $cordovaInAppBrowser.close();
+                $scope.socket.removeAllListeners('up-submit');
+                setTimeout(function() {
+                  ionicToast.show(data, 'middle', false, 2500);
                   $scope.finish();
-                }
+                }, 20);
               });
-            }
+              const thisUuid = uuid ? uuid : 'undefined';
+              $scope.socket.emit('up-listen', thisUuid);
+              // const returnURL = 'https://htmlpreview.github.io/?https://gist.githubusercontent.com/atton16/7305f4cb843089ede8dcbf0a69f00d40/raw/3120c4a696a0981666e858f1fd54012eaae49b0c/user-profile-success.html';
+              const returnURL = $scope.socketURL + '/up-submit/' + thisUuid + '/' + userEmail;
+              console.log('returnURL', returnURL);
+              $cordovaInAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
+
+              // $rootScope.$on('$cordovaInAppBrowser:message', function(params){
+              //   console.log(params);
+              //   if(params.data.action == 'close') {
+              //     $cordovaInAppBrowser.close();
+              //     setTimeout(function() {
+              //       ionicToast.show(userEmail, 'middle', false, 2500);
+              //       $scope.finish();
+              //     }, 20);
+              //   }
+              // });
+              // EnketoSurveyLaunch.launch($scope, 'UserProfile', { disableDismiss: true }
+              // ).then(function(success){
+              //   if (success) {
+              //     ionicToast.show(userEmail, 'middle', false, 2500);
+              //     $scope.finish();
+              //   }
+              // });
+            // }
           });
       }, function(errorResult) {
         ionicToast.show(userEmail, 'middle', false, 2500);
