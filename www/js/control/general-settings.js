@@ -413,7 +413,11 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.editUserProfile = function() {
-        EnketoSurveyLaunch.launch($scope, 'UserProfile');
+        // EnketoSurveyLaunch.launch($scope, 'UserProfile');
+        CommHelper.getUser().then(function(profile) {
+            const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
+            $cordovaInAppBrowser.open(`https://up.byamarin.com/${uuid}`, '_blank');
+        });
     };
 
     $scope.launchEndSurvey = function() {
