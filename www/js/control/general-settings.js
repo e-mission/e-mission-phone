@@ -421,7 +421,7 @@ angular.module('emission.main.control',['emission.services',
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
             const fieldPath = '/aDHunALXzzHXAUMrvkvRT9/_user_id';
             const returnURL = 'https://reward.amarin.dev';
-            $cordovaInAppBrowser.open(`https://ee.kobotoolbox.org/single/::T9bEosso?d[${fieldPath}]=${uuid}&returnURL=${returnURL}`, '_blank');
+            $cordovaInAppBrowser.open(`https://pe.byamarin.com/?d[${fieldPath}]=${uuid}&returnURL=${returnURL}`, '_blank');
         });
     }
 
