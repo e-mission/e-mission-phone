@@ -245,11 +245,18 @@
         }
     },
 
+    "intro": {
+        "permissions": {
+            "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
+            "locationPermExplanation-android-gte-6": "please select 'allow'",
+            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to protect you even when you are not actively using the app",
+            "locationPermExplanation-ios-gte-13": "please open emTripLog in Settings and change the location permission to 'Always'. This allows us to protect you even when you are not actively using the app. After a few days, you will be asked whether you want to give the app background permission. Please continue to say 'Always Allow' whenever that comes up."
+        }
+    },
     "consent":{
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
-
     "updatecheck":{
         "downloading-update": "Downloading UI-only update",
         "extracting-update": "Extracting UI-only update",
@@ -257,5 +264,9 @@
         "download-new-ui": "Download new UI-only update?.",
         "download-not-now": "Not now",
         "download-apply": "Apply"
+    },
+    "sensor_explanation":{
+        "button-accept": "OK",
+        "button-decline": "Stop"
     }
 }
