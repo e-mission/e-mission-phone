@@ -1,11 +1,5 @@
 <?xml version="1.0"?>
-<h:html xmlns="http://www.w3.org/2002/xforms" 
-  xmlns:ev="http://www.w3.org/2001/xml-events" 
-  xmlns:h="http://www.w3.org/1999/xhtml" 
-  xmlns:jr="http://openrosa.org/javarosa" 
-  xmlns:odk="http://www.opendatakit.org/xforms" 
-  xmlns:orx="http://openrosa.org/xforms" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
     <h:title>Trip end survey</h:title>
     <model>
@@ -40,7 +34,7 @@
       <bind nodeset="/data/group_ee9rk21" required="false()"/>
       <bind nodeset="/data/group_ee9rk21/travel_mode_main" required="true()" type="select1"/>
       <bind nodeset="/data/group_ee9rk21/Total_people_in_trip_party" required="true()" type="select1"/>
-      <bind nodeset="/data/group_ee9rk21/Non_household_member_s_on_trip" relevant=" /data/group_ee9rk21/Total_people_in_trip_party != '1'" required="true()" type="select1"/>
+      <bind nodeset="/data/group_ee9rk21/Non_household_member_s_on_trip" relevant=" /data/group_ee9rk21/Total_people_in_trip_party  != '1'" required="true()" type="select1"/>
       <bind nodeset="/data/group_ee9rk21/Transit_fees_AUD" relevant=" /data/group_ee9rk21/travel_mode_main  = 'bus' or  /data/group_ee9rk21/travel_mode_main  = 'train' or  /data/group_ee9rk21/travel_mode_main  = 'ferry'" required="true()" type="decimal"/>
       <bind nodeset="/data/group_ee9rk21/Taxi_fees" relevant=" /data/group_ee9rk21/travel_mode_main  = 'taxi_and_ride_'" required="true()" type="decimal"/>
       <bind nodeset="/data/group_bn3jd79" required="false()"/>
@@ -50,7 +44,7 @@
       <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
     </model>
   </h:head>
-  <h:body>
+  <h:body class="pages">
     <group ref="/data/group_vs9ga59">
       <label>Trip purpose</label>
       <select1 ref="/data/group_vs9ga59/d_purpose_main">
