@@ -425,6 +425,7 @@ angular.module('emission.main.control',['emission.services',
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
             const returnURL = 'https://reward.amarin.dev';
             $cordovaInAppBrowser.open(`https://pe.byamarin.com/${uuid}&returnURL=${returnURL}`, '_blank');
+            $scope.endForceSync();
         });
     }
 
