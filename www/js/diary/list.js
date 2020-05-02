@@ -522,6 +522,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         readAndUpdateForDay(prevDay);
     };
 
+    $scope.nextDay = function() {
+      console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
+      var nextDay = moment(Timeline.data.currDay).add(1, 'days');
+      if (moment(nextDay).isSameOrBefore(moment(), 'day')) {
+        console.log("nextDay = "+nextDay.format('YYYY-MM-DD'));
+        readAndUpdateForDay(nextDay);
+        return;
+      }
+      console.log('I am resisting to display the future day. Sorry bro.');
+    }
+
     $scope.choosePurpose = function () {
       $scope.chosen.purpose = $scope.selected.purpose;
       var isOther = false;
