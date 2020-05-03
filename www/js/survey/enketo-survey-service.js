@@ -225,7 +225,6 @@ angular.module('emission.enketo-survey.service', [
     }
     return $window.cordova.plugins.BEMUserCache.putMessage(__session.data_key, data
     ).then(function(){
-      _sync_endForceSync();
       return data;
     });
   }
