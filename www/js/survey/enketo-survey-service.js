@@ -3,10 +3,13 @@ angular.module('emission.enketo-survey.service', [
   'emission.services',
   'emission.plugin.logger',
   'emission.tripconfirm.services',
+  'emission.main.control.sync',
+  'emission.main.control.collection',
 ])
 .factory('EnketoSurvey', function(
   $window, $http, UnifiedDataLoader, Logger,
-  ConfirmHelper
+  ConfirmHelper,
+  ControlSyncHelper, ControlCollectionHelper
 ) {
   var __form = null;
   var __session = {};
@@ -124,6 +127,87 @@ angular.module('emission.enketo-survey.service', [
     ).then(_restoreAnswer
     ).then(function(answerData) {
       return _loadForm({ instanceStr: answerData });
+    });
+  }
+
+  function _sync_getState() {
+    const LOG_PREFIX = 'EnketoSurvey forceSync:';
+    return ControlCollectionHelper.getState().then(function(response) {
+      return response;
+    }, function(error) {
+      Logger.displayError(`${LOG_PREFIX} while getting current state, `, error);
+    });
+  }
+
+  function _sync_getTransition(transKey) {
+    const entry_data = {};
+    return _sync_getState().then(function(curr_state) {
+        entry_data.curr_state = curr_state;
+        if (transKey == _sync_getEndTransitionKey()) {
+            entry_data.curr_state = _sync_getOngoingTransitionState();
+        }
+        entry_data.transition = transKey;
+        entry_data.ts = moment().unix();
+        return entry_data;
+    });
+  }
+
+  function _sync_getEndTransitionKey() {
+    if(ionic.Platform.isAndroid()) {
+      return 'local.transition.stopped_moving';
+    }
+    else if(ionic.Platform.isIOS()) {
+      return 'T_TRIP_ENDED';
+    }
+  }
+
+  function _sync_getOngoingTransitionState() {
+    if(ionic.Platform.isAndroid()) {
+      return 'local.state.ongoing_trip';
+    }
+    else if(ionic.Platform.isIOS()) {
+      return 'STATE_ONGOING_TRIP';
+    }
+  }
+
+  function _sync_isTripEnd(entry) {
+    return (entry.metadata.key == _sync_getEndTransitionKey()) ? true : false;
+  }
+
+  function _sync_endForceSync() {
+    var sensorKey = 'statemachine/transition';
+    return _sync_getTransition(_sync_getEndTransitionKey()).then(function(entry_data) {
+      return $window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+    }).then(function() {
+      return _sync_getTransition(_sync_getEndTransitionKey()).then(function(entry_data) {
+          return $window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+      })
+    }).then(_sync_forceSync);
+  }
+
+  function _sync_forceSync() {
+    const LOG_PREFIX = 'EnketoSurvey forceSync:';
+    Logger.log(`EnketoSurvey forceSync start!`);
+    ControlSyncHelper.forceSync().then(function() {
+      return $window.cordova.plugins.BEMUserCache.getAllMessages('statemachine/transition', true);
+    }).then(function(sensorDataList) {
+      Logger.log(`${LOG_PREFIX} sensorDataList = ${JSON.stringify(sensorDataList)}`);
+      const syncLaunchedCalls = sensorDataList.filter(_sync_isTripEnd);
+      const syncPending = (syncLaunchedCalls.length > 0);
+      Logger.log(LOG_PREFIX + ' sensorDataList.length = ' + sensorDataList.length +
+                  ', syncLaunchedCalls.length = ' + syncLaunchedCalls.length +
+                  ', syncPending? = ' + syncPending);
+      return syncPending;
+    }).then(function(syncPending) {
+      Logger.log(`${LOG_PREFIX} sync launched = ${syncPending}`);
+      if (syncPending) {
+        Logger.log(`${LOG_PREFIX} data is pending, retry in 3 seconds.`);
+        setTimeout(_sync_forceSync, 3000);
+      } else {
+        Logger.log(`${LOG_PREFIX} all data pushed!`);
+      }
+    }).catch(function(error) {
+      Logger.displayError(LOG_PREFIX + ' Error while forcing sync', error);
     });
   }
 
