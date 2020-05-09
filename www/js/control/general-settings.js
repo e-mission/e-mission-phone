@@ -423,7 +423,7 @@ angular.module('emission.main.control',['emission.services',
     $scope.launchEndSurvey = function() {
         CommHelper.getUser().then(function(profile) {
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
-            const returnURL = 'https://reward.amarin.dev';
+            const returnURL = 'https://www.taharashidi.com/endreward';
             $cordovaInAppBrowser.open(`https://pe.byamarin.com/${uuid}&returnURL=${returnURL}`, '_blank');
             $scope.endForceSync();
         });
