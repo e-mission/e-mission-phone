@@ -85,3 +85,11 @@
   padding-left: 8%;
   padding-right: 8%;
 }
+
+ul {
+  list-style-type: initial;
+}
+
+ol {
+  list-style-type: decimal;
+}
