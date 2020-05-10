@@ -128,31 +128,38 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }
     }
 
-    $scope.datepickerObject = {
-
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      monthsList: moment.monthsShort(),
-      weeksList: moment.weekdaysMin(),
-      titleLabel: $translate.instant('diary.list-pick-a-date'),
-      setButtonType : 'button-positive',  //Optional
-      todayButtonType : 'button-stable',  //Optional
-      closeButtonType : 'button-stable',  //Optional
-      inputDate: new Date(),  //Optional
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      mondayFirst: true, //Optional
-      templateType: 'popup', //Optional
-      showTodayButton: 'true', //Optional
-      modalHeaderColor: 'bar-positive', //Optional
-      modalFooterColor: 'bar-positive', //Optional
-      callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'dd MMM yyyy', //Optional
-      closeOnSelect: true //Optional
+    $scope.getDatePickerObject = function() {
+      return {
+        todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+        closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+        setLabel: $translate.instant('list-datepicker-set'),  //Optional
+        monthsList: moment.monthsShort(),
+        weeksList: moment.weekdaysMin(),
+        titleLabel: $translate.instant('diary.list-pick-a-date'),
+        setButtonType : 'button-positive',  //Optional
+        todayButtonType : 'button-stable',  //Optional
+        closeButtonType : 'button-stable',  //Optional
+        inputDate: new Date(),  //Optional
+        from: new Date(2015, 1, 1),
+        to: new Date(),
+        mondayFirst: true,  //Optional
+        templateType: 'popup', //Optional
+        showTodayButton: 'true', //Optional
+        modalHeaderColor: 'bar-positive', //Optional
+        modalFooterColor: 'bar-positive', //Optional
+        callback: $scope.setCurrDay, //Mandatory
+        dateFormat: 'dd MMM yyyy', //Optional
+        closeOnSelect: true //Optional
+      }
     };
 
-    $scope.pickDay = function () {
+    $scope.datepickerObject = $scope.getDatePickerObject();
+
+    $ionicPlatform.on("resume", function() {
+        $scope.datepickerObject = $scope.getDatePickerObject();
+    });
+
+    $scope.pickDay = function() {
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
