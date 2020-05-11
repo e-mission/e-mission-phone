@@ -20,6 +20,14 @@ We need this permission in order to determine your travel mode and include your
 exposure on public transit. Please allow.
 </div>
 
+<div ng-if="backgroundRestricted">
+<h3> Allow background restrictions </h3>
+Your phone restricts app operation in the background. This prevents the app
+from tracking your location or pushing it to the server. Please enable
+background operation for this app with the following instructions:
+{{allowBackgroundRestrictions}}.
+</div>
+
 <div class="row" style="margin-top: 20px;" translate-namespace="consent">
   <div class="col" style="margin-right: 5px">
       <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button"><span translate>{{'.button-decline'}}</span></button>
