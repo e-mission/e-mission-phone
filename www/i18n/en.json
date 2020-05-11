@@ -253,6 +253,10 @@
             "locationPermExplanation-ios-gte-13": "please open emTripLog in Settings and change the location permission to 'Always'. This allows us to protect you even when you are not actively using the app. After a few days, you will be asked whether you want to give the app background permission. Please continue to say 'Always Allow' whenever that comes up."
         }
     },
+    "allow_background": {
+        "samsung": "Settings → Power mode → High performance",
+        "huawei": "Settings → Battery manager → Protected apps → Enable protection for emTripLog"
+    },
     "consent":{
         "button-accept": "I accept",
         "button-decline": "I refuse"
