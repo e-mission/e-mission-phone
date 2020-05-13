@@ -143,7 +143,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       $scope.userEmail = userEmail;
       CommHelper.registerUser(function(successResult) {
           const uuid = successResult.uuid;
-          return CommHelper.updateUser({branch: 'rciti2'}
+          return CommHelper.updateUser({branch: 'rciti1'}
           ).then(function() {
               const thisUuid = uuid ? uuid : 'undefined';
               const returnURL = `https://emission-app.byamarin.com/survey-success-static/`;
