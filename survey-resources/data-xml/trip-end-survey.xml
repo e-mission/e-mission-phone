@@ -1,11 +1,5 @@
 <?xml version="1.0"?>
-<h:html xmlns="http://www.w3.org/2002/xforms" 
-  xmlns:ev="http://www.w3.org/2001/xml-events" 
-  xmlns:h="http://www.w3.org/1999/xhtml" 
-  xmlns:jr="http://openrosa.org/javarosa" 
-  xmlns:odk="http://www.opendatakit.org/xforms" 
-  xmlns:orx="http://openrosa.org/xforms" 
-  xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
     <h:title>Trip end survey</h:title>
     <model>
@@ -40,9 +34,9 @@
       <bind nodeset="/data/group_ee9rk21" required="false()"/>
       <bind nodeset="/data/group_ee9rk21/travel_mode_main" required="true()" type="select1"/>
       <bind nodeset="/data/group_ee9rk21/Total_people_in_trip_party" required="true()" type="select1"/>
-      <bind nodeset="/data/group_ee9rk21/Non_household_member_s_on_trip" relevant=" /data/group_ee9rk21/Total_people_in_trip_party != '1'" required="true()" type="select1"/>
-      <bind nodeset="/data/group_ee9rk21/Transit_fees_AUD" relevant=" /data/group_ee9rk21/travel_mode_main  = 'bus' or  /data/group_ee9rk21/travel_mode_main  = 'train' or  /data/group_ee9rk21/travel_mode_main  = 'ferry'" required="true()" type="decimal"/>
-      <bind nodeset="/data/group_ee9rk21/Taxi_fees" relevant=" /data/group_ee9rk21/travel_mode_main  = 'taxi_and_ride_'" required="true()" type="decimal"/>
+      <bind nodeset="/data/group_ee9rk21/Non_household_member_s_on_trip" relevant=" /data/group_ee9rk21/Total_people_in_trip_party  != '1'" required="true()" type="select1"/>
+      <bind nodeset="/data/group_ee9rk21/Transit_fees_AUD" relevant=" /data/group_ee9rk21/travel_mode_main  = 'bus' or  /data/group_ee9rk21/travel_mode_main  = 'train' or  /data/group_ee9rk21/travel_mode_main  = 'ferry' or  /data/group_ee9rk21/travel_mode_main  = 'taxi_and_ride'" required="true()" type="decimal"/>
+      <bind nodeset="/data/group_ee9rk21/Taxi_fees" relevant=" /data/group_ee9rk21/travel_mode_main  = 'taxi_and_ride_sharing_services'" required="true()" type="decimal"/>
       <bind nodeset="/data/group_bn3jd79" required="false()"/>
       <bind nodeset="/data/group_bn3jd79/Vehicle_trip_Parking_location" relevant=" /data/group_ee9rk21/travel_mode_main  = 'vehicle_driver'" required="true()" type="select1"/>
       <bind nodeset="/data/group_bn3jd79/Parking_cost" relevant=" /data/group_bn3jd79/Vehicle_trip_Parking_location  = '4' or  /data/group_bn3jd79/Vehicle_trip_Parking_location  = '3' or  /data/group_bn3jd79/Vehicle_trip_Parking_location  = '5' or  /data/group_bn3jd79/Vehicle_trip_Parking_location  = '997'" required="false()" type="decimal"/>
@@ -50,46 +44,58 @@
       <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
     </model>
   </h:head>
-  <h:body>
+  <h:body class="pages">
     <group ref="/data/group_vs9ga59">
       <label>Trip purpose</label>
       <select1 ref="/data/group_vs9ga59/d_purpose_main">
         <label>What is the purpose of this trip?</label>
         <item>
-          <label>Go home</label>
+          <label>Go Home</label>
           <value>go_home</value>
         </item>
         <item>
-          <label>Work</label>
-          <value>work</value>
+          <label>Work Related</label>
+          <value>work_related</value>
         </item>
         <item>
-          <label>Work related</label>
-          <value>work_related</value>
+          <label>Pick-up or Drop-off Someone</label>
+          <value>pick_up_or_dro</value>
+        </item>
+        <item>
+          <label>Buy Something</label>
+          <value>buy_something</value>
         </item>
         <item>
           <label>Education</label>
           <value>education</value>
         </item>
         <item>
-          <label>Shopping</label>
-          <value>shopping</value>
+          <label>Social (eg. dine out, visit someone)</label>
+          <value>social_eg_di</value>
         </item>
         <item>
-          <label>Social/recreation</label>
-          <value>social_recreation</value>
+          <label>Recreational (eg. exercise)</label>
+          <value>recreational</value>
         </item>
         <item>
-          <label>Personal business/services</label>
-          <value>personal_business_services</value>
+          <label>Personal Business</label>
+          <value>personal_busin</value>
         </item>
         <item>
-          <label>Serve passenger (e.g. drop-off, taxi or Uber)</label>
-          <value>AUTOMATIC</value>
+          <label>Accompany Someone</label>
+          <value>accompany_some</value>
         </item>
         <item>
-          <label>Other</label>
-          <value>other</value>
+          <label>Pick-up or Deliver Something</label>
+          <value>pick_up_or_del</value>
+        </item>
+        <item>
+          <label>Change Mode</label>
+          <value>change_mode</value>
+        </item>
+        <item>
+          <label>Other Purpose</label>
+          <value>other_purpose</value>
         </item>
       </select1>
     </group>
@@ -115,7 +121,7 @@
           <value>bus</value>
         </item>
         <item>
-          <label>Train or Tram</label>
+          <label>Train</label>
           <value>train</value>
         </item>
         <item>
@@ -123,12 +129,24 @@
           <value>ferry</value>
         </item>
         <item>
+          <label>Tram</label>
+          <value>taxi_and_ride</value>
+        </item>
+        <item>
           <label>Taxi and ride-sharing services (e.g. Uber)</label>
-          <value>taxi_and_ride_</value>
+          <value>taxi_and_ride_sharing_services</value>
+        </item>
+        <item>
+          <label>Bicycle</label>
+          <value>bicycle</value>
+        </item>
+        <item>
+          <label>Motorcycle</label>
+          <value>motorcycle</value>
         </item>
         <item>
           <label>Other</label>
-          <value>AUTOMATIC</value>
+          <value>option_9</value>
         </item>
       </select1>
       <select1 ref="/data/group_ee9rk21/Total_people_in_trip_party">
