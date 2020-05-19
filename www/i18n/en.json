@@ -213,7 +213,7 @@
         "tour-sectionPct-content": "% of time spent in each mode for this trip"
     },
 
-    "list-explainDraft-alert": "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong.",
+    "list-explainDraft-alert": "This trip has not yet been analysed. Once it is analysed you will be able to add your trip details. Normally, all draft trips get analysed at 10.00am and 8.30pm everyday.",
     "list-datepicker-today": "Today",
     "list-datepicker-close": "Close",
     "list-datepicker-set": "Set",
@@ -245,11 +245,22 @@
         }
     },
 
+    "intro": {
+        "permissions": {
+            "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
+            "locationPermExplanation-android-gte-6": "please select 'allow'",
+            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to protect you even when you are not actively using the app",
+            "locationPermExplanation-ios-gte-13": "please open emTripLog in Settings and change the location permission to 'Always'. This allows us to protect you even when you are not actively using the app. After a few days, you will be asked whether you want to give the app background permission. Please continue to say 'Always Allow' whenever that comes up."
+        }
+    },
+    "allow_background": {
+        "samsung": "Settings → Power mode → High performance",
+        "huawei": "Settings → Battery manager → Protected apps → Enable protection for emTripLog"
+    },
     "consent":{
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
-
     "updatecheck":{
         "downloading-update": "Downloading UI-only update",
         "extracting-update": "Extracting UI-only update",
@@ -257,5 +268,9 @@
         "download-new-ui": "Download new UI-only update?.",
         "download-not-now": "Not now",
         "download-apply": "Apply"
+    },
+    "sensor_explanation":{
+        "button-accept": "OK",
+        "button-decline": "Stop"
     }
 }
