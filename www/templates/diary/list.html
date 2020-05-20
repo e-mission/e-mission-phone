@@ -95,9 +95,7 @@
                     class="button btn-trip-confirm btn-trip-confirm-green"
                     ng-click="confirmSurvey(tripgj)"
                     >
-                    <b>{{tripgj.userSurveyAnswer.travel_mode_main}}</b>
-                    to
-                    <b>{{tripgj.userSurveyAnswer.d_purpose_main}}</b>
+                    <b>{{tripgj.customSurveyLabel}}</b>
                   </button>
                   <button
                     ng-if="!tripgj.userSurveyAnswer"
