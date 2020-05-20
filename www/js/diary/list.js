@@ -223,7 +223,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           tripgj.userSurveyAnswer.destination_purpose === '<null>' ||
           tripgj.userSurveyAnswer.travel_mode === '<null>'
         ) {
-          tripgj.customSurveyLabel = 'Trip not valid';
+          if (
+            tripgj.userSurveyAnswer.travel_mode_main !== '<null>' &&
+            tripgj.userSurveyAnswer.d_purpose_main !== '<null>'
+          ) {
+            const mode = tripgj.userSurveyAnswer.travel_mode_main.replace(/_/g, ' ');
+            const purpose = tripgj.userSurveyAnswer.d_purpose_main.replace(/_/g, ' ');
+            tripgj.customSurveyLabel = `${mode} to ${purpose}`;
+          } else {
+            tripgj.customSurveyLabel = 'Trip not valid';
+          }
         } else {
           const purposes = tripgj.userSurveyAnswer.destination_purpose.split(' ').length;
           const modes = tripgj.userSurveyAnswer.travel_mode.split(' ').length;
