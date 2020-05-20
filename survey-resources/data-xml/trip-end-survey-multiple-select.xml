@@ -1,0 +1,253 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>Trip-end survey</h:title>
+    <model>
+      <instance>
+        <data id="snapshot_xml">
+          <start/>
+          <end/>
+          <destination_purpose/>
+          <travel_mode/>
+          <Total_people_in_trip_party>1</Total_people_in_trip_party>
+          <Non_household_member_s_on_trip>0</Non_household_member_s_on_trip>
+          <Vehicle_trip_Parking_location>1</Vehicle_trip_Parking_location>
+          <Parking_cost>0</Parking_cost>
+          <Total_toll_charges_p_uring_the_trip_AUD>0</Total_toll_charges_p_uring_the_trip_AUD>
+          <Transit_fees_AUD/>
+          <Taxi_fees/>
+          <meta>
+            <instanceID/>
+          </meta>
+        </data>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/data/start" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/data/end" type="dateTime"/>
+      <bind nodeset="/data/destination_purpose" required="true()" type="select"/>
+      <bind nodeset="/data/travel_mode" relevant="not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select"/>
+      <bind nodeset="/data/Total_people_in_trip_party" relevant="not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select1"/>
+      <bind nodeset="/data/Non_household_member_s_on_trip" relevant="not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select1"/>
+      <bind nodeset="/data/Vehicle_trip_Parking_location" relevant="selected( /data/travel_mode , 'driver') and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select1"/>
+      <bind nodeset="/data/Parking_cost" relevant="( /data/Vehicle_trip_Parking_location  = '4' or  /data/Vehicle_trip_Parking_location  = '3' or  /data/Vehicle_trip_Parking_location  = '5' or  /data/Vehicle_trip_Parking_location  = '997') and  /data/destination_purpose  != 'trip_not_valid'" required="true()" type="decimal"/>
+      <bind nodeset="/data/Total_toll_charges_p_uring_the_trip_AUD" relevant="selected( /data/travel_mode , 'driver') and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="decimal"/>
+      <bind nodeset="/data/Transit_fees_AUD" relevant="(selected( /data/travel_mode , 'bus') or selected( /data/travel_mode , 'train') or selected( /data/travel_mode , 'tram') or selected( /data/travel_mode , 'ferry')) and not(selected( /data/travel_mode , 'trip_not_valid'))" required="true()" type="decimal"/>
+      <bind nodeset="/data/Taxi_fees" relevant="selected( /data/travel_mode , 'taxi') and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="decimal"/>
+      <bind calculate="concat('uuid:', uuid())" nodeset="/data/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body class="pages">
+    <select ref="/data/destination_purpose">
+      <label>What were the purposes of this trip?</label>
+      <hint>More than one purpose can be selected.</hint>
+      <item>
+        <label>Go Home</label>
+        <value>go_home</value>
+      </item>
+      <item>
+        <label>Work Related</label>
+        <value>work_related</value>
+      </item>
+      <item>
+        <label>Pick-up or Drop-off Someone</label>
+        <value>pick_up_or_drop_off_someone</value>
+      </item>
+      <item>
+        <label>Buy Something</label>
+        <value>buy_something</value>
+      </item>
+      <item>
+        <label>Education</label>
+        <value>education</value>
+      </item>
+      <item>
+        <label>Social (eg. dine out, visit someone)</label>
+        <value>social__eg__dine_out__visit_so</value>
+      </item>
+      <item>
+        <label>Recreational (eg. exercise)</label>
+        <value>recreational__eg__exercise</value>
+      </item>
+      <item>
+        <label>Personal Business</label>
+        <value>personal_business</value>
+      </item>
+      <item>
+        <label>Accompany Someone</label>
+        <value>accompany_someone</value>
+      </item>
+      <item>
+        <label>Pick-up or Deliver Something</label>
+        <value>pick_up_or_deliver_something</value>
+      </item>
+      <item>
+        <label>Change Mode</label>
+        <value>change_mode</value>
+      </item>
+      <item>
+        <label>Other Purpose</label>
+        <value>other_purpose</value>
+      </item>
+      <item>
+        <label>Trip not valid</label>
+        <value>trip_not_valid</value>
+      </item>
+    </select>
+    <select ref="/data/travel_mode">
+      <label>What were the modes of transport used in this trip?</label>
+      <hint>More than one transport mode can be selected.</hint>
+      <item>
+        <label>Vehicle driver</label>
+        <value>driver</value>
+      </item>
+      <item>
+        <label>Vehicle passenger</label>
+        <value>passenger</value>
+      </item>
+      <item>
+        <label>Walk</label>
+        <value>walk</value>
+      </item>
+      <item>
+        <label>Bus</label>
+        <value>bus</value>
+      </item>
+      <item>
+        <label>Train</label>
+        <value>train</value>
+      </item>
+      <item>
+        <label>Ferry</label>
+        <value>ferry</value>
+      </item>
+      <item>
+        <label>Tram</label>
+        <value>tram</value>
+      </item>
+      <item>
+        <label>Taxi and ride-sharing (e.g. Uber)</label>
+        <value>taxi</value>
+      </item>
+      <item>
+        <label>Bicycle</label>
+        <value>bike</value>
+      </item>
+      <item>
+        <label>Motorcycle</label>
+        <value>motorbike</value>
+      </item>
+      <item>
+        <label>Other</label>
+        <value>other</value>
+      </item>
+    </select>
+    <select1 ref="/data/Total_people_in_trip_party">
+      <label>Total people in trip party</label>
+      <hint>Including yourself</hint>
+      <item>
+        <label>Just me</label>
+        <value>1</value>
+      </item>
+      <item>
+        <label>2 Travelers</label>
+        <value>2</value>
+      </item>
+      <item>
+        <label>3 Travelers</label>
+        <value>3</value>
+      </item>
+      <item>
+        <label>4 Travelers</label>
+        <value>4</value>
+      </item>
+      <item>
+        <label>5 Travelers</label>
+        <value>5</value>
+      </item>
+      <item>
+        <label>6 Travelers</label>
+        <value>6</value>
+      </item>
+      <item>
+        <label>7 Travelers</label>
+        <value>7</value>
+      </item>
+      <item>
+        <label>8+ Travelers</label>
+        <value>8</value>
+      </item>
+    </select1>
+    <select1 ref="/data/Non_household_member_s_on_trip">
+      <label>Non-household member(s) on trip</label>
+      <item>
+        <label>Nobody (0 people)</label>
+        <value>0</value>
+      </item>
+      <item>
+        <label>1 person</label>
+        <value>1</value>
+      </item>
+      <item>
+        <label>2 people</label>
+        <value>2</value>
+      </item>
+      <item>
+        <label>3 people</label>
+        <value>3</value>
+      </item>
+      <item>
+        <label>4 people</label>
+        <value>4</value>
+      </item>
+      <item>
+        <label>5 or more people</label>
+        <value>5</value>
+      </item>
+    </select1>
+    <select1 ref="/data/Vehicle_trip_Parking_location">
+      <label>Vehicle trip: Parking location</label>
+      <item>
+        <label>Own driveway/garage</label>
+        <value>1</value>
+      </item>
+      <item>
+        <label>Someone else's driveway</label>
+        <value>2</value>
+      </item>
+      <item>
+        <label>Parking lot/garage</label>
+        <value>3</value>
+      </item>
+      <item>
+        <label>On street parking</label>
+        <value>4</value>
+      </item>
+      <item>
+        <label>Park &amp; ride lot</label>
+        <value>5</value>
+      </item>
+      <item>
+        <label>Didn't park (waited, drop-off, drive-thru)</label>
+        <value>6</value>
+      </item>
+      <item>
+        <label>Other</label>
+        <value>997</value>
+      </item>
+    </select1>
+    <input ref="/data/Parking_cost">
+      <label>Parking cost ($AUD)</label>
+      <hint>(If none, put 0 )</hint>
+    </input>
+    <input ref="/data/Total_toll_charges_p_uring_the_trip_AUD">
+      <label>Total toll charges paid during the trip? ($AUD)</label>
+      <hint>(If none, put 0)</hint>
+    </input>
+    <input ref="/data/Transit_fees_AUD">
+      <label>Transit fees ($AUD)</label>
+      <hint>Only for yourself</hint>
+    </input>
+    <input ref="/data/Taxi_fees">
+      <label>Taxi fees ($AUD)</label>
+    </input>
+  </h:body>
+</h:html>

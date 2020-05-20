@@ -217,6 +217,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       if (angular.isDefined(userSurveyAnswer)) {
         // userSurveyAnswer is a survey answer object with data + metadata
         tripgj.userSurveyAnswer = userSurveyAnswer;
+
+        // custom survey label
+        if (
+          tripgj.userSurveyAnswer.destination_purpose === '<null>' ||
+          tripgj.userSurveyAnswer.travel_mode === '<null>'
+        ) {
+          tripgj.customSurveyLabel = 'Trip not valid';
+        } else {
+          const purposes = tripgj.userSurveyAnswer.destination_purpose.split(' ').length;
+          const modes = tripgj.userSurveyAnswer.travel_mode.split(' ').length;
+          tripgj.customSurveyLabel = `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
+        }
       }
     }
 

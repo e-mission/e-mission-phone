@@ -81,7 +81,8 @@ angular.module('emission.enketo-survey.service', [
     const vals = answerXml.getElementsByTagName(tagName);
     const val = vals.length ? vals[0].innerHTML : null;
     if (!val) return '<null>';
-    return val.replace(/_/g, ' ');
+    // return val.replace(/_/g, ' ');
+    return val;
   }
 
   function makeAnswerFromAnswerData(data) {
@@ -94,9 +95,11 @@ angular.module('emission.enketo-survey.service', [
     const xmlStr = answer.data.survey_result;
     const xml = xmlParser.parseFromString(xmlStr, 'text/xml');
     // Data injection
-    answer.travel_mode_main = _parseAnswerByTagName(xml, 'travel_mode_main');
-    answer.o_purpose_main = _parseAnswerByTagName(xml, 'o_purpose_main');
-    answer.d_purpose_main = _parseAnswerByTagName(xml, 'd_purpose_main');
+    // answer.travel_mode_main = _parseAnswerByTagName(xml, 'travel_mode_main');
+    // answer.o_purpose_main = _parseAnswerByTagName(xml, 'o_purpose_main');
+    // answer.d_purpose_main = _parseAnswerByTagName(xml, 'd_purpose_main');
+    answer.destination_purpose = _parseAnswerByTagName(xml, 'destination_purpose');
+    answer.travel_mode = _parseAnswerByTagName(xml, 'travel_mode');
     return answer;
   }
 
