@@ -15,6 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.tripconfirm.services',
                                       'emission.services',
                                       'emission.survey.enketo.launch',
+                                      'emission.enketo-survey.service',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
   ])
@@ -25,13 +26,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, EnketoSurvey, $translate) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
     $scope.confirmSurvey = function(trip) {
-      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip });
+      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip }).then(function() {
+        return EnketoSurvey.getAllLocalSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+      }).then(function(surveyAnswers) {
+        $scope.$apply(function() {
+          $scope.populateSurveyAnswerFromTimeline(trip, surveyAnswers);
+        });
+      });
     }
 
   // Add option
