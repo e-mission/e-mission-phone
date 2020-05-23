@@ -33,10 +33,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.confirmSurvey = function(trip) {
       EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip }).then(function() {
-        return EnketoSurvey.getAllLocalSurveyAnswers("manual/confirm_survey", { populateLabels: true });
-      }).then(function(surveyAnswers) {
         $scope.$apply(function() {
-          $scope.populateSurveyAnswerFromTimeline(trip, surveyAnswers);
+          $scope.updateCustomSurveyLabelForTrip(trip);
         });
       });
     }
@@ -218,42 +216,48 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'surveyAnswer' to the trip
      */
     $scope.populateSurveyAnswerFromTimeline = function (tripgj, surveyAnswers) {
-      tripgj.customSurveyLabel = '';
-      if (!surveyAnswers) return;
-      var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj, surveyAnswers);
-      if (angular.isDefined(userSurveyAnswer)) {
-        // userSurveyAnswer is a survey answer object with data + metadata
-        tripgj.userSurveyAnswer = userSurveyAnswer;
-
-        // custom survey label
-        if (
-          tripgj.userSurveyAnswer.destination_purpose.includes('trip_not_valid') ||
-          tripgj.userSurveyAnswer.travel_mode.includes('trip_not_valid')
-        ) {
-          // User reported trip not valid
-          tripgj.customSurveyLabel = 'Trip not valid';
-        } else if (
-          tripgj.userSurveyAnswer.destination_purpose === '<null>' ||
-          tripgj.userSurveyAnswer.travel_mode === '<null>'
-        ) {
-          if (
-            tripgj.userSurveyAnswer.travel_mode_main !== '<null>' &&
-            tripgj.userSurveyAnswer.d_purpose_main !== '<null>'
-          ) {
-            // Invalid answer, falling back to older version
-            const mode = tripgj.userSurveyAnswer.travel_mode_main.replace(/_/g, ' ');
-            const purpose = tripgj.userSurveyAnswer.d_purpose_main.replace(/_/g, ' ');
-            tripgj.customSurveyLabel = `${mode} to ${purpose}`;
-          } else {
-            // Invalid answer for both versions.
-            tripgj.customSurveyLabel = 'Trip not valid';
-          }
-        } else {
-          // Answer found (new version)
-          const purposes = tripgj.userSurveyAnswer.destination_purpose.split(' ').length;
-          const modes = tripgj.userSurveyAnswer.travel_mode.split(' ').length;
-          tripgj.customSurveyLabel = `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
+      if (surveyAnswers) {
+        var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj, surveyAnswers);
+        if (angular.isDefined(userSurveyAnswer)) {
+          // userSurveyAnswer is a survey answer object with data + metadata
+          tripgj.userSurveyAnswer = userSurveyAnswer;
         }
+      }
+      $scope.updateCustomSurveyLabelForTrip(tripgj);
+    }
+
+    $scope.updateCustomSurveyLabelForTrip = function(trip) {
+      if (!trip.userSurveyAnswer) {
+        trip.customSurveyLabel = null;
+        return;
+      }
+      if (
+        trip.userSurveyAnswer.destination_purpose.includes('trip_not_valid') ||
+        trip.userSurveyAnswer.travel_mode.includes('trip_not_valid')
+      ) {
+        // User reported trip not valid
+        trip.customSurveyLabel = 'Trip not valid';
+      } else if (
+        trip.userSurveyAnswer.destination_purpose === '<null>' ||
+        trip.userSurveyAnswer.travel_mode === '<null>'
+      ) {
+        if (
+          trip.userSurveyAnswer.travel_mode_main !== '<null>' &&
+          trip.userSurveyAnswer.d_purpose_main !== '<null>'
+        ) {
+          // Invalid answer, falling back to older version
+          const mode = trip.userSurveyAnswer.travel_mode_main.replace(/_/g, ' ');
+          const purpose = trip.userSurveyAnswer.d_purpose_main.replace(/_/g, ' ');
+          trip.customSurveyLabel = `${mode} to ${purpose}`;
+        } else {
+          // Invalid answer for both versions.
+          trip.customSurveyLabel = 'Trip not valid';
+        }
+      } else {
+        // Answer found (new version)
+        const purposes = trip.userSurveyAnswer.destination_purpose.split(' ').length;
+        const modes = trip.userSurveyAnswer.travel_mode.split(' ').length;
+        trip.customSurveyLabel = `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
       }
     }
 
