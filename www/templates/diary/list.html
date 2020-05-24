@@ -91,14 +91,14 @@
              </div>
              <div ng-if="isAnalyzed(tripgj)" class="row trip-confirm-container">
                   <button
-                    ng-if="tripgj.userSurveyAnswer"
+                    ng-if="tripgj.customSurveyLabel"
                     class="button btn-trip-confirm btn-trip-confirm-green"
                     ng-click="confirmSurvey(tripgj)"
                     >
                     <b>{{tripgj.customSurveyLabel}}</b>
                   </button>
                   <button
-                    ng-if="!tripgj.userSurveyAnswer"
+                    ng-if="!tripgj.customSurveyLabel"
                     class="button btn-trip-confirm btn-trip-confirm-white"
                     ng-click="confirmSurvey(tripgj)"
                     >
