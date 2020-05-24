@@ -15,6 +15,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.tripconfirm.services',
                                       'emission.services',
                                       'emission.survey.enketo.launch',
+                                      'emission.enketo-survey.service',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
   ])
@@ -25,13 +26,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, EnketoSurvey, $translate) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
     $scope.confirmSurvey = function(trip) {
-      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip });
+      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip }).then(function() {
+        $scope.$apply(function() {
+          $scope.updateCustomSurveyLabelForTrip(trip);
+        });
+      });
     }
 
   // Add option
@@ -211,12 +216,48 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'surveyAnswer' to the trip
      */
     $scope.populateSurveyAnswerFromTimeline = function (tripgj, surveyAnswers) {
-      if (!surveyAnswers) return;
-      var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj, surveyAnswers);
-      console.log(userSurveyAnswer);
-      if (angular.isDefined(userSurveyAnswer)) {
-        // userSurveyAnswer is a survey answer object with data + metadata
-        tripgj.userSurveyAnswer = userSurveyAnswer;
+      if (surveyAnswers) {
+        var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj, surveyAnswers);
+        if (angular.isDefined(userSurveyAnswer)) {
+          // userSurveyAnswer is a survey answer object with data + metadata
+          tripgj.userSurveyAnswer = userSurveyAnswer;
+        }
+      }
+      $scope.updateCustomSurveyLabelForTrip(tripgj);
+    }
+
+    $scope.updateCustomSurveyLabelForTrip = function(trip) {
+      if (!trip.userSurveyAnswer) {
+        trip.customSurveyLabel = null;
+        return;
+      }
+      if (
+        trip.userSurveyAnswer.destination_purpose.includes('trip_not_valid') ||
+        trip.userSurveyAnswer.travel_mode.includes('trip_not_valid')
+      ) {
+        // User reported trip not valid
+        trip.customSurveyLabel = 'Trip not valid';
+      } else if (
+        trip.userSurveyAnswer.destination_purpose === '<null>' ||
+        trip.userSurveyAnswer.travel_mode === '<null>'
+      ) {
+        if (
+          trip.userSurveyAnswer.travel_mode_main !== '<null>' &&
+          trip.userSurveyAnswer.d_purpose_main !== '<null>'
+        ) {
+          // Invalid answer, falling back to older version
+          const mode = trip.userSurveyAnswer.travel_mode_main.replace(/_/g, ' ');
+          const purpose = trip.userSurveyAnswer.d_purpose_main.replace(/_/g, ' ');
+          trip.customSurveyLabel = `${mode} to ${purpose}`;
+        } else {
+          // Invalid answer for both versions.
+          trip.customSurveyLabel = 'Trip not valid';
+        }
+      } else {
+        // Answer found (new version)
+        const purposes = trip.userSurveyAnswer.destination_purpose.split(' ').length;
+        const modes = trip.userSurveyAnswer.travel_mode.split(' ').length;
+        trip.customSurveyLabel = `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
       }
     }
 
