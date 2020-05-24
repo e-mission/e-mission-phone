@@ -249,8 +249,8 @@
         "permissions": {
             "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
             "locationPermExplanation-android-gte-6": "please select 'allow'",
-            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to protect you even when you are not actively using the app",
-            "locationPermExplanation-ios-gte-13": "please open emTripLog in Settings and change the location permission to 'Always'. This allows us to protect you even when you are not actively using the app. After a few days, you will be asked whether you want to give the app background permission. Please continue to say 'Always Allow' whenever that comes up."
+            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to detect your location even when you are not actively using the app",
+            "locationPermExplanation-ios-gte-13": "please open emTripLog in Settings and change the location permission to 'Always'. This allows us to detect your location even when you are not actively using the app. After a few days, you will be asked whether you want to give the app background permission. Please continue to say 'Always Allow' whenever that comes up."
         }
     },
     "allow_background": {
