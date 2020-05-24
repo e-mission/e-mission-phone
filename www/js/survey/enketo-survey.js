@@ -100,7 +100,7 @@ angular.module('emission.survey.enketo.launch', [
 
   function initConfirmSurvey(opts) {
     return initSurvey({
-      form_location: 'json/trip-end-survey.json',
+      form_location: 'json/trip-end-survey-multiple-select.json',
       opts: {
         session: {
           data_key: 'manual/confirm_survey',
