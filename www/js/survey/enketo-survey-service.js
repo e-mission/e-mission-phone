@@ -103,18 +103,6 @@ angular.module('emission.enketo-survey.service', [
     return answer;
   }
 
-  function _processSurveyAnswers(answers, key, opt_populateLabels = false) {
-    if (!opt_populateLabels) return answers;
-
-    const xmlParser = new $window.DOMParser();
-    if (key === 'manual/confirm_survey') {
-      return answers.map(function(answer){
-        return populateLabels(answer, xmlParser);
-      });
-    }
-
-    return answers;
-  }
 
   function getAllSurveyAnswers(key = 'manual/confirm_survey', opts = {}) {
     const _opts_populateLabels = opts.populateLabels || false;
@@ -122,18 +110,12 @@ angular.module('emission.enketo-survey.service', [
     const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
     return UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq)
     .then(function(answers){
-      return _processSurveyAnswers(answers, key, _opts_populateLabels);
-    });
-  }
-
-  function getAllLocalSurveyAnswers(key = 'manual/confirm_survey', opts = {}) {
-    const _opts_populateLabels = opts.populateLabels || false;
-
-    const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-    return $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true)
-    .then(function(answers){
-      return _processSurveyAnswers(answers, key, _opts_populateLabels);
-    });
+      if (!_opts_populateLabels) return answers;
+      const xmlParser = new $window.DOMParser();
+      if (key === 'manual/confirm_survey') {
+        return answers.map(function(answer){
+          return populateLabels(answer, xmlParser);
+        });
   }
 
   function displayForm() {
@@ -188,7 +170,6 @@ angular.module('emission.enketo-survey.service', [
     displayForm: displayForm,
     validateForm: validateForm,
     getAllSurveyAnswers: getAllSurveyAnswers,
-    getAllLocalSurveyAnswers: getAllLocalSurveyAnswers,
     getState: getState,
     getUserProfile: getUserProfile,
     populateLabels: populateLabels,
