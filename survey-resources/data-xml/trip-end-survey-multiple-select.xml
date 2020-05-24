@@ -11,7 +11,7 @@
           <travel_mode/>
           <Total_people_in_trip_party>1</Total_people_in_trip_party>
           <Non_household_member_s_on_trip>0</Non_household_member_s_on_trip>
-          <Vehicle_trip_Parking_location/>
+          <Vehicle_trip_Parking_location>1</Vehicle_trip_Parking_location>
           <Parking_cost>0</Parking_cost>
           <Total_toll_charges_p_uring_the_trip_AUD>0</Total_toll_charges_p_uring_the_trip_AUD>
           <Transit_fees_AUD/>
@@ -27,7 +27,7 @@
       <bind nodeset="/data/travel_mode" relevant="not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select"/>
       <bind nodeset="/data/Total_people_in_trip_party" relevant="not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select1"/>
       <bind nodeset="/data/Non_household_member_s_on_trip" relevant="not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select1"/>
-      <bind nodeset="/data/Vehicle_trip_Parking_location" relevant="selected( /data/travel_mode , 'driver') and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="false()" type="select1"/>
+      <bind nodeset="/data/Vehicle_trip_Parking_location" relevant="selected( /data/travel_mode , 'driver') and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="select1"/>
       <bind nodeset="/data/Parking_cost" relevant="( /data/Vehicle_trip_Parking_location  = '4' or  /data/Vehicle_trip_Parking_location  = '3' or  /data/Vehicle_trip_Parking_location  = '5' or  /data/Vehicle_trip_Parking_location  = '997') and  /data/destination_purpose  != 'trip_not_valid'" required="true()" type="decimal"/>
       <bind nodeset="/data/Total_toll_charges_p_uring_the_trip_AUD" relevant="selected( /data/travel_mode , 'driver') and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="decimal"/>
       <bind nodeset="/data/Transit_fees_AUD" relevant="(selected( /data/travel_mode , 'bus') or selected( /data/travel_mode , 'train') or selected( /data/travel_mode , 'tram') or selected( /data/travel_mode , 'ferry')) and not(selected( /data/destination_purpose , 'trip_not_valid'))" required="true()" type="decimal"/>
