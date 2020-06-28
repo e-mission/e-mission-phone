@@ -49,14 +49,16 @@ based on bugs. TODO: Go through the modules, determine the changes and submit th
 | `www/lib/angular-translate-loader-static-files` | MIT |
 | `www/lib/angular-translate-interpolation-messageformat` | MIT |
 
-## Javascript dev dependencies installed via npm `package.json`
+## Javascript dependencies installed via npm `package.json`
 
-Note that these are only required for development, not for proper operation.
+Note that some of these are only required for development, not for proper operation.
 Not sure whether we should list them or not, but it doesn't hurt.
 
 | Module | License |
 |--------|---------|
 | phonegap | Apache |
+| fs-extra | MIT |
+| klaw-sync | MIT |
 
 ## Javascript dependencies installed via npm command line
 
