@@ -3,6 +3,8 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
+:sparkles: As part of experimenting with a COVID-19 reference app, we upgraded to the most recent cordova version and added CI :sparkles: We are now porting this over to the main e-mission repo. The ported code is currently in https://github.com/e-mission/e-mission-phone/tree/upgrade_to_latest_cordova and the current status is in https://github.com/e-mission/e-mission-docs/issues/519. The branch is usable although not all functionality has been tested. Please contribute your testing results so that we feel confident promoting it to master.
+
 Additional Documentation
 ---
 Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
