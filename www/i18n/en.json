@@ -253,6 +253,9 @@
             "locationPermExplanation-ios-gte-13": "please select 'when in use' now. After a few days, you will be asked whether you want to give the app background permission. Please say 'Always Allow' at that time. This allows us to protect you even when you are not actively using the app"
         }
     },
+    "allow_background": {
+        "samsung": "Disable 'Medium power saving mode'"
+    },
     "consent":{
         "button-accept": "I accept",
         "button-decline": "I refuse"

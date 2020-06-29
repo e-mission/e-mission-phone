@@ -38,6 +38,13 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
     }
   }
+
+  $scope.backgroundRestricted = false;
+  if($window.device.manufacturer.toLowerCase() == "samsung") {
+    $scope.backgroundRestricted = true;
+    $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
+  }
+
   console.log("Explanation = "+$scope.locationPermExplanation);
 
   // The language comes in between the first and second part
