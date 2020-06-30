@@ -1,0 +1,155 @@
+<ion-view view-title="Evaluation" ng-class="ion-view-background">
+    <ion-nav-buttons side="left">
+      <button ng-if="!sel_spec.author_email" class="button button-icon ion-gear-a" ng-click="author_spec_sel_modal.show()">
+        Select evaluation spec
+      </button>
+      <div ng-if="sel_spec.author_email">
+        <button class="button button-icon ion-refresh" side="left" ng-click="reloadAndRefresh()"></button>
+        <button class="button button-icon ion-edit" side="right" ng-click="author_spec_sel_modal.show()">
+        </button>
+        <button class="button button-icon ion-trash-a" side="right"
+            ng-click="resetAndRefresh()"
+            ng-disabled="(calibration.curr_test.id) || (eval_settings.name)">
+        </button>
+      </div>
+    </ion-nav-buttons>
+    <ion-content class="has-header">
+        <ion-title style="font-size: large; color: green">{{sel_spec.full_spec.name}}</ion-title>
+        <ion-card ng-if="(sel_spec.full_spec)
+                         && (curr_phone.registered)
+                         && (curr_phone.isAccuracyControl)
+                         && (eval_settings.name)"
+            id="eval-settings"
+            class="card {{trip_settings_card_display.class}}">
+            <ion-item class="item-divider">
+            Select trip in experiment
+            <div ng-if="eval_trip.raw.id"
+                ng-click="toggleTripCardDisplay()"
+                class="arrow-position">
+                <i class="icon {{trip_settings_card_display.icon}}"></i>
+            </div>
+            </ion-item>
+            <button-bar class="button-bar">
+                <button ng-if="!eval_trip.raw.id"
+                    class="button button-block"
+                    ng-click="selectEvaluationTrip()">
+                    Select trip
+                </button>
+                <button ng-if="eval_trip.raw.id"
+                    class="button button-block"
+                    ng-click="selectEvaluationTrip()">
+                    {{eval_trip.raw.name}}
+                </button>
+            </button-bar>
+            <div class="row" style="color:black;text-align:center">
+                <div ng-if="eval_trip.waiting_for_trip_start">Start the trip when ready </div>
+                <div ng-if="eval_trip.ongoing_trip">
+                    <span ng-if="eval_section.raw.type == 'TRAVEL'">{{eval_section.raw.mode}} : </span>
+                     {{eval_section.raw.name}}
+                </div>
+            </div>
+            <button-bar class="button-bar col">
+                <button-bar class="button-bar row">
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.waiting_for_trip_start"
+                        ng-click="startEvalTrip()"> Start </button>
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.on_last_leg"
+                        ng-click="endEvalTrip()"> End </button>
+                </button-bar>
+                <button-bar class="button-bar row">
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="!eval_trip.ongoing_trip || !eval_trip.multi_leg || eval_trip.stopped || eval_trip.on_last_leg"
+                        ng-click="moveToNextSection()"> Next </button>
+                    <button class="button button-block trip-control-button"
+                        ng-disabled="true"
+                        ng-click="exitStop()"> Stop </button>
+                </button-bar>
+            </button-bar>
+            </div>
+            <leaflet ng-if="eval_trip.raw.id" geojson="eval_section.gj"
+                id="eval-trip" defaults="mapCtrl.defaults"
+            height="50%" width="100%" data-tap-disabled="true">
+            </leaflet>
+        </ion-card>
+        <ion-card ng-if="sel_spec.full_spec
+                            && (curr_phone.registered)
+                            && (!eval_settings.name)"
+            id="eval-settings"
+            class="card {{calibration_settings_card_display.class}}">
+            <ion-item class="item-divider">
+            <div class="row">
+                <div class="col-90">
+                    Calibrate phones
+                </div>
+                <div ng-if="calibration.curr_test.id"
+                    ng-click="toggleCalibrationCardDisplay()"
+                    class="col-10 arrow-position">
+                    <i class="icon {{calibration_settings_card_display.icon}}"></i>
+                </div>
+            </div>
+            </ion-item>
+            <button-bar class="row">
+                <button class="button button-block col-70"
+                    ng-click="selectCalibrationTest()">
+                    {{calibration.curr_test.id}}
+                </button>
+                <select-bar class="col-30" ng-if="calibration.curr_test.id">
+                    <ion-radio type="radio" ng-model="calibration.expandedView" value="settings">
+                    <i class="icon ion-information-circled"></i>
+                    </ion-radio>
+                    <ion-radio type="radio" ng-model="calibration.expandedView"
+                        value="map" ng-disabled="!calibration.moving">
+                    <i class="icon ion-map"></i>
+                    </ion-radio>
+                </select-bar>
+            </button-bar>
+            <ion-list ng-if="calibration.expandedView == 'settings'">
+                <ion-item ng-repeat="(k,v) in calibration.full_config">
+                        <b>{{k}}:</b> {{v}}
+                </ion-item>
+            </ion-list>
+            <leaflet ng-if="calibration.expandedView == 'map'"
+                geojson="calibration.gj"
+                id="eval-calibration" defaults="mapCtrl.defaults"
+                height="80%" width="100%" data-tap-disabled="true">
+            </leaflet>
+        </ion-card>
+        <ion-card id="eval-settings"
+            ng-if="sel_spec.full_spec && !calibration.curr_test.id"
+            class="card {{sensing_settings_card_display.class}}">
+            <ion-item class="item-divider">Select regimes to compare
+            <div ng-click="toggleSensingCardDisplay()" class="arrow-position">
+                <i class="{{sensing_settings_card_display.icon}}"></i>
+            </div>
+            </ion-item>
+            <button class="button button-block"
+                ng-click="selectSensingSettings()">
+                <div ng-if="!eval_settings.name">
+                Select sensing regime
+                </div>
+                <div ng-if="eval_settings.name">
+                {{eval_settings.name}}
+                </div>
+            </button>
+            <ion-item ng-repeat="(k,v) in eval_settings.full_config">
+                <b>{{k}}:</b> {{v}}
+            </ion-item>
+        </ion-card>
+        <ion-card id="eval-settings" class="card {{eval_settings_card_display.class}}">
+            <ion-item class="item-divider">Choose experiment spec
+            <div ng-click="toggleEvalCardDisplay()" class="arrow-position">
+                <i class="{{eval_settings_card_display.icon}}"></i>
+            </div>
+            </ion-item>
+            <ion-item ng-style="$scope.curr_phone.registered ? {} : {color: 'red'}">
+                {{curr_phone.email}} ({{curr_phone.profile}})
+            </ion-item>
+            <ion-item>Author: {{sel_spec.author_email}}</ion-item>
+            <ion-item>Start: {{sel_spec.full_spec.start_fmt_date}} to End: {{sel_spec.full_spec.end_fmt_date}}</ion-item>
+            <ion-item>Manufacturer: {{device_info.manufacturer}}</ion-item>
+            <ion-item>Model: {{device_info.model}}</ion-item>
+            <ion-item>Version: {{device_info.version}}</ion-item>
+        </ion-card>
+    </ion-content>
+</ion-view>

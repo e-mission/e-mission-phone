@@ -7,6 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.main.eval',
                                  'emission.tripconfirm.posttrip.map',
                                  'emission.services'])
 
@@ -18,6 +19,17 @@ angular.module('emission.main', ['emission.main.recent',
     abstract: true,
     templateUrl: 'templates/main.html',
     controller: 'MainCtrl'
+  })
+
+  // setup an abstract state for the tabs directive
+    .state('root.main.eval', {
+    url: '/eval',
+    views: {
+      'main-eval': {
+        templateUrl: 'templates/main-eval.html',
+        controller: 'EvalCtrl'
+      }
+    }
   })
 
   .state('root.main.common', {

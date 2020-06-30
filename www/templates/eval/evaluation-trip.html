@@ -1,0 +1,31 @@
+<ion-modal-view>
+    <ion-header-bar side="right">
+         <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+         <button ng-if="sel_author_spec.sel_spec.name" side="right" class="button button-icon ion-close" ng-click="evaluation_trip_modal.hide()"/>
+    </ion-header-bar>
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
+        <button-bar class="button-bar">
+            <button class="button button-block trip-control-button">Start trip</button>
+            <button class="button button-block trip-control-button">End trip</button>
+        </button-bar>
+        <button-bar class="button-bar">
+            <button class="button button-block trip-control-button">Enter stop</button>
+            <button class="button button-block trip-control-button">Exit stop</button>
+        </button-bar>
+
+        <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 10px; margin-bottom: 10px;">
+        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+            {{curr_regime.evaluation.curr_tripgj.data.features[0].properties.name}}
+
+        </div>
+        <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 10px; margin-bottom: 10px;">
+        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+            {{curr_regime.evaluation.curr_tripgj.data.features[1].properties.name}}
+        </div>
+        <div style="height: 10px;"></div>
+        <leaflet geojson="curr_regime.evaluation.curr_tripgj" id="eval" defaults="mapCtrl.defaults" 
+            height="50%" width="100%" data-tap-disabled="true">
+        </leaflet>
+        <div style="height: 15px;"></div>
+    </ion-content>
+</ion-modal-view>

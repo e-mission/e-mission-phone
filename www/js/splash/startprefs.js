@@ -176,7 +176,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectTo = undefined;
             return redirState;
           } else {
-            return 'root.main.control';
+            return 'root.main.eval';
           }
         } else {
           return result;
