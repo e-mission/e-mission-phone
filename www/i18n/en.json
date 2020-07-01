@@ -264,7 +264,7 @@
         "downloading-update": "Downloading UI-only update",
         "extracting-update": "Extracting UI-only update",
         "done": "Update done, reloading...",
-        "download-new-ui": "Download new UI-only update?.",
+        "download-new-ui": "Download new UI-only update to build {{build}}?",
         "download-not-now": "Not now",
         "download-apply": "Apply"
     },
