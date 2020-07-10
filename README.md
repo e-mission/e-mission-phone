@@ -3,6 +3,16 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
+:sparkles: This has now been upgraded to cordova android@8.1.0 and iOS@5.1.1 (details). It also now supports CI, so we should not have any build issues.
+
+The current limitations are:
+- [trip end notifications have some minor issues](https://github.com/e-mission/e-mission-transition-notify/issues/25): I will handle this as part of the upcoming upgrade to even newer cordova versions
+- [OpenID auth code has not been tested](https://github.com/e-mission/e-mission-docs/issues/519): It would be great if somebody who is using OpenIDAuth is able to report on testing results
+- [Push notifications on iOS require setting `IS_GCM_ENABLED` to `<false>` in `GoogleServices.json`](https://github.com/e-mission/e-mission-docs/issues/437#issuecomment-513506146)
+
+:construction: There are now newer versions of cordova available. Since I am making these changes anyway, I plan to spend a day or two finishing the upgrade to cordova-android@9.0.0 (released 29 Jun 2020) and cordova-ios@6.1.0 (released 23 Jun 2020). Hopefully, that will keep us going for a while longer without needing maintenance updates.
+
+
 Additional Documentation
 ---
 Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:

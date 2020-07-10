@@ -132,6 +132,9 @@
         <variable name="UPDATE_API" value="https://api.ionicjs.com" />
         <variable name="MAX_STORE" value="2" />
     </plugin>
+    <plugin name="cordova-plugin-advanced-http" spec="^2.4.1">
+        <variable name="OKHTTP_VERSION" value="3.10.0" />
+    </plugin>
     <preference name="SplashShowOnlyFirstTime" value="false" />
     <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git#v1.6.2-alpha1" />
     <plugin name="edu.berkeley.eecs.emission.cordova.comm" spec="https://github.com/e-mission/cordova-server-communication.git#v1.2.2" />

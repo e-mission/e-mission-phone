@@ -3,7 +3,7 @@
 angular.module('emission.services', ['emission.plugin.logger',
                                      'emission.plugin.kvstore'])
 
-.service('CommHelper', function($http) {
+.service('CommHelper', function($rootScope) {
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
@@ -158,6 +158,26 @@ angular.module('emission.services', ['emission.plugin.logger',
           console.log("getting pipeline complete timestamp");
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
       });
+    };
+
+    // host is automatically read from $rootScope.connectUrl, which is set in app.js
+    this.getAggregateData = function(path, data) {
+        return new Promise(function(resolve, reject) {
+          const full_url = $rootScope.connectUrl+"/"+path;
+          console.log("getting aggregate data without user authentication from "
+            + full_url +" with arguments "+JSON.stringify(data));
+          const options = {
+              method: 'post',
+              data: data,
+              responseType: 'json'
+          }
+          cordova.plugin.http.sendRequest(full_url, options,
+          function(response) {
+            resolve(response);
+          }, function(error) {
+            reject(error);
+          });
+        });
     };
 })
 
@@ -564,7 +584,7 @@ angular.module('emission.services', ['emission.plugin.logger',
 
     config.getMapTiles = function() {
       return {
-          tileLayer: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
+          tileLayer: 'https://stamen-tiles.a.ssl.fastly.net/terrain/{z}/{x}/{y}.png',
           tileLayerOptions: {
               attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
               opacity: 0.9,

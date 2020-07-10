@@ -18,7 +18,6 @@
   },
   "dependencies": {
     "angular-nvd3": "^1.0.7",
-    "string.startsWith": "*",
     "angularLocalStorage": "^0.3.2",
     "ng-walkthrough": "^1.0.0",
     "animate.css": "^3.5.2",
