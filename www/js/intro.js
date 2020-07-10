@@ -18,27 +18,56 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
+.controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate, $cordovaFile) {
-  
-  $scope.getConsentFile = function () {
+
+  $scope.platform = $window.device.platform;
+  $scope.osver = $window.device.version.split(".")[0];
+  if($scope.platform.toLowerCase() == "android") {
+    if($scope.osver < 6) {
+        $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-6");
+    }
+  }
+
+  if($scope.platform.toLowerCase() == "ios") {
+    if($scope.osver < 13) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-lt-13");
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
+    }
+  }
+
+  $scope.backgroundRestricted = false;
+  if($window.device.manufacturer.toLowerCase() == "samsung") {
+    $scope.backgroundRestricted = true;
+    $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
+  }
+
+  console.log("Explanation = "+$scope.locationPermExplanation);
+
+  // The language comes in between the first and second part
+  $scope.geti18nFile = function (fpFirstPart, fpSecondPart) {
     var lang = $translate.use();
-    $scope.consentFile = "templates/intro/consent.html";
+    var defaultVal = fpFirstPart + fpSecondPart;
     if (lang != 'en') {
-      var url = "www/i18n/intro/consent-" + lang + ".html";
+      var url = fpFirstPart + lang + fpSecondPart;
       $cordovaFile.checkFile(cordova.file.applicationDirectory, url).then( function(result){
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "Successfully found the consent file, result is " + JSON.stringify(result));
-        $scope.consentFile = url.replace("www/", "");
+        return url.replace("www/", "");
       }, function (err) {
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "Consent file not found, loading english version, error is " + JSON.stringify(err));
-          $scope.consentFile = "templates/intro/consent.html";
+           return defaultVal;
         });
     }
+    return defaultVal;
   }
   
-  $scope.getConsentFile();
+  $scope.consentFile = $scope.geti18nFile("templates/intro/consent", ".html");
+  $scope.explainFile = $scope.geti18nFile("templates/intro/sensor_explanation", ".html");
 
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
