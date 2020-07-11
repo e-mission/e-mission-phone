@@ -100,10 +100,10 @@ Pre-requisites
 - the version of xcode used by the CI
     - to install a particular version, use [xcode-select](https://www.unix.com/man-page/OSX/1/xcode-select/)
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
-    - **NOTE**: the basic xcode install was messed up for me due to issues with the command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
-    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
+    - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
 - the most recent version of android studio
+    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK 1.8 using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
 
 Important
 ---
