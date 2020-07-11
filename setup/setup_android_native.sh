@@ -33,6 +33,6 @@ curl -s "https://get.sdkman.io" | bash
 source ~/.sdkman/bin/sdkman-init.sh
 
 echo "Setting up gradle using SDKMan"
-sdk install gradle 4.1
+sdk install gradle $GRADLE_VERSION
 
 source setup/setup_shared_native.sh

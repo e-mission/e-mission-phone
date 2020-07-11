@@ -3,6 +3,7 @@ export NODE_VERSION=13.12.0
 export NPM_VERSION=6.14.4
 export RUBY_VERSION=2.6.0
 export COCOAPODS_VERSION=1.9.1
+export GRADLE_VERSION=4.10.3
 
 export NVM_DIR="$HOME/.nvm"
 export RUBY_PATH=$HOME/.gem/ruby/$RUBY_VERSION/bin
