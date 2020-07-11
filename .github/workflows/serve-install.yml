@@ -41,7 +41,8 @@ jobs:
     - name: Setup the serve environment
       shell: bash -l {0}
       run: |
-        source setup/setup_serve.sh
+        bash setup/setup_serve.sh
+        source setup/activate_serve.sh
         npx cordova -version
         npx ionic --version
 

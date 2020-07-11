@@ -1,7 +1,6 @@
 echo "Ensure we exit on error"
 set -e
 
-export COCOAPODS_VERSION=1.9.1
 source setup/teardown_shared.sh
 
 echo "Uninstalling cocoapods"

@@ -41,22 +41,27 @@ jobs:
     - name: Setup the cordova environment
       shell: bash -l {0}
       run: |
-        source setup/setup_ios_native.sh
+        bash setup/setup_ios_native.sh
+        source setup/activate_native.sh
         npx cordova -version
         npx ionic -version
+
+    - name: Access cordova with a specified shell
+      shell: bash -l {0}
+      run: |
+        source setup/activate_native.sh
+        npx cordova -version
 
     - name: Access cordova directly
       run: npx cordova -version
 
-    - name: Access cordova with a specified shell
-      shell: bash -l {0}
-      run: npx cordova -version
-
     - name: Build ios
       shell: bash -l {0}
-      run: npx cordova build ios
+      run: |
+        source setup/activate_native.sh
+        npx cordova build ios
 
     - name: Cleanup the cordova environment
       shell: bash -l {0}
-      run: source setup/teardown_ios_native.sh
+      run: bash setup/teardown_ios_native.sh
 

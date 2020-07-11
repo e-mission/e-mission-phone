@@ -1,15 +1,9 @@
-export NVM_VERSION=0.35.3
-export NODE_VERSION=13.12.0
-export NPM_VERSION=6.14.4
-
-echo "Is this in a CI environment? $CI"
-export CI="true"
+source setup/export_shared_dep_versions.sh
 
 echo "Installing the correct version of nvm"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash
 
 echo "Setting up the variables to run nvm"
-export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 

@@ -37,13 +37,15 @@ jobs:
     - name: Setup the cordova environment
       shell: bash -l {0}
       run: |
-        source setup/setup_android_native.sh
+        bash setup/setup_android_native.sh
+        source setup/activate_native.sh
         npx cordova -version
         npx ionic -version
 
     - name: Access cordova with a specified shell
       shell: bash -l {0}
       run: |
+        source setup/activate_native.sh
         npx cordova -version
         which gradle
         gradle -version
@@ -54,8 +56,8 @@ jobs:
         echo $PATH
         which gradle
         gradle -version
-        echo "Let's rerun the sdkman again"
-        source ~/.sdkman/bin/sdkman-init.sh
+        echo "Let's rerun the activation"
+        source setup/activate_native.sh
         echo $PATH
         which gradle
         gradle --version
