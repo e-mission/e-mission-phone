@@ -26,12 +26,12 @@ Updating the UI only
 
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
 
-### Installing
+### Installing (one-time)
 
 Run the setup script
 
 ```
-$ source setup/setup_serve.sh
+$ bash setup/setup_serve.sh
 ```
 
 **(optional)** Configure by changing the files in `www/json`.
@@ -41,6 +41,12 @@ Defaults are in `www/json/*.sample`
 $ ls www/json/*.sample
 $ cp www/json/startupConfig.json.sample www/json/startupConfig.json
 $ cp ..... www/json/connectionConfig.json
+```
+
+### Activation (after install, and in every new shell)
+
+```
+$ source setup/activate_serve.sh
 ```
   
 ### Running
@@ -69,7 +75,6 @@ $ cp ..... www/json/connectionConfig.json
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
 
-
 End to end testing
 ---
 A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
@@ -95,6 +100,8 @@ Pre-requisites
 - the version of xcode used by the CI
     - to install a particular version, use [xcode-select](https://www.unix.com/man-page/OSX/1/xcode-select/)
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
+    - **NOTE**: the basic xcode install was messed up for me due to issues with the command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
+    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
 - git
 - the most recent version of android studio
 
@@ -110,14 +117,14 @@ have now:
 If you have setup failures, please compare the configuration in the passing CI
 builds with your configuration. That is almost certainly the source of the error.
 
-Installing
+Installing (one time only)
 ---
 Run the setup script for the platform you want to build
 
 ```
-$ source setup/setup_android_native.sh
+$ bash setup/setup_android_native.sh
 AND/OR
-$ source setup/setup_ios_native.sh
+$ bash setup/setup_ios_native.sh
 ```
 
 **(optional)** Configure by changing the files in `www/json`.
@@ -128,6 +135,14 @@ $ ls www/json/*.sample
 $ cp www/json/startupConfig.json.sample www/json/startupConfig.json
 $ cp ..... www/json/connectionConfig.json
 ```
+
+### Activation (after install, and in every new shell)
+
+```
+$ source setup/activate_native.sh
+```
+
+
 
 Run in the emulator
 
