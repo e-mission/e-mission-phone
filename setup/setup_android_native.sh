@@ -20,12 +20,12 @@ TARGET_SDK_VERSION=28
 # Setup the development environment
 source setup/setup_shared.sh
 
-if [ -z $ANDROID_HOME ];
+if [ -z $ANDROID_HOME ] && [ -z $ANDROID_SDK_ROOT ];
 then
-    echo "ANDROID_HOME not set, android SDK not found, exiting"
+    echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found, exiting"
     exit 1
 else
-    echo "ANDROID_HOME found at $ANDROID_HOME"
+    echo "ANDROID_HOME = $ANDROID_HOME; ANDROID_SDK_ROOT=$ANDROID_SDK_ROOT"
 fi
 
 echo "Setting up sdkman"
