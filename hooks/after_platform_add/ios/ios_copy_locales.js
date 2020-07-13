@@ -2,6 +2,7 @@
 
 var fs = require('fs-extra');
 var path = require('path');
+var et = require('elementtree');
 
 const LOG_NAME = "Copying locales: ";
 
@@ -14,7 +15,6 @@ module.exports = function (context) {
     
     console.log(LOG_NAME + "Retrieving application name...")
     var config_xml = path.join(context.opts.projectRoot, 'config.xml');
-    var et = context.requireCordovaModule('elementtree');
     var data = fs.readFileSync(config_xml).toString();
     // If no data then no config.xml
     if (data) {
@@ -42,7 +42,7 @@ module.exports = function (context) {
                 var platformlproj = platformRes + lproj;
                 if (!fs.existsSync(platformlproj)) {
                     console.log(LOG_NAME + platformlproj + "does not exist, I will create it.");
-                    fs.mkdirSync(platformlproj);
+                    fs.mkdirSync(platformlproj, {recursive: true} );
                 }
 
                 fs.copySync(lprojFolder, platformlproj);
