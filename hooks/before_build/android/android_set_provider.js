@@ -76,7 +76,7 @@ var changeAccountTypeAndProvider = function (file, accountType, providerName, ne
 
 module.exports = function (context) {
     // If Android platform is not installed, don't even execute
-    if (!ctx.opts.platforms.includes('android')) return;
+    if (!context.opts.platforms.includes('android')) return;
 
     console.log(LOG_NAME + "Retrieving application name...")
     var config_xml = path.join(context.opts.projectRoot, 'config.xml');
