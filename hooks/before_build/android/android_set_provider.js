@@ -4,6 +4,8 @@
 
 var fs = require('fs');
 var path = require('path');
+var et = require('elementtree');
+
 const PROVIDER = "edu.berkeley.eecs.emission.provider";
 const ACCOUNT_TYPE = "eecs.berkeley.edu";
 const LOG_NAME = "Changing Providers: ";
@@ -74,12 +76,10 @@ var changeAccountTypeAndProvider = function (file, accountType, providerName, ne
 
 module.exports = function (context) {
     // If Android platform is not installed, don't even execute
-    if (context.opts.cordova.platforms.indexOf('android') < 0)
-        return;
+    if (!context.opts.platforms.includes('android')) return;
 
     console.log(LOG_NAME + "Retrieving application name...")
     var config_xml = path.join(context.opts.projectRoot, 'config.xml');
-    var et = context.requireCordovaModule('elementtree');
     var data = fs.readFileSync(config_xml).toString();
     // If no data then no config.xml
     if (data) {

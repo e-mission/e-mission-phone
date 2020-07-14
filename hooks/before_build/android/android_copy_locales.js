@@ -30,7 +30,7 @@ module.exports = function (context) {
             var platformValues = platformRes + values;
             if (!fs.existsSync(platformValues)) {
                 console.log(LOG_NAME + platformValues + "does not exist, I will create it.");
-                fs.mkdirSync(platformValues);
+                fs.mkdirSync(platformValues, {recursive: true});
             }
 
             fs.copySync(valuesFolder, platformValues);
