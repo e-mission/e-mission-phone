@@ -76,6 +76,7 @@
         <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
         <preference name="android-minSdkVersion" value="22" />
         <preference name="android-targetSdkVersion" value="28" />
+        <preference name="AndroidXEnabled" value="true" />
         <resource-file src="google-services.json" target="app/google-services.json" />
         <hook src="hooks/before_build/android/android_set_provider.js" type="before_build" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />

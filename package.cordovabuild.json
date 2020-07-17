@@ -19,7 +19,7 @@
     ],
     "plugins": {
       "phonegap-plugin-push": {
-        "FCM_VERSION": "11.0.1"
+        "FCM_VERSION": "17.0.0"
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-app-version": {},
@@ -50,23 +50,25 @@
       },
       "cordova-plugin-whitelist": {},
       "cordova-plugin-em-jwt-auth": {
-        "AUTH_VERSION": "11.0.1"
+        "AUTH_VERSION": "17.0.0"
       },
       "cordova-plugin-em-server-communication": {},
       "cordova-plugin-em-datacollection": {
-        "LOCATION_VERSION": "11.0.1"
+        "LOCATION_VERSION": "17.0.0"
       },
       "cordova-plugin-em-serversync": {},
       "cordova-plugin-em-settings": {},
       "cordova-plugin-em-transition-notify": {},
       "cordova-plugin-em-unifiedlogger": {},
-      "cordova-plugin-em-usercache": {}
+      "cordova-plugin-em-usercache": {},
+      "cordova-plugin-androidx-adapter": {}
     }
   },
   "dependencies": {
     "cordova-android": "9.0.0",
     "cordova-ios": "5.1.1",
     "cordova-plugin-advanced-http": "3.0.0",
+    "cordova-plugin-androidx-adapter": "git+https://github.com/dpa99c/cordova-plugin-androidx-adapter.git",
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-customurlscheme": "5.0.1",
     "cordova-plugin-device": "2.0.1",
