@@ -49,7 +49,9 @@
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
       "cordova-plugin-whitelist": {},
-      "cordova-plugin-em-jwt-auth": {},
+      "cordova-plugin-em-jwt-auth": {
+        "AUTH_VERSION": "11.0.1"
+      },
       "cordova-plugin-em-server-communication": {},
       "cordova-plugin-em-datacollection": {
         "LOCATION_VERSION": "11.0.1"
