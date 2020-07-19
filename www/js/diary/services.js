@@ -991,12 +991,23 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var tripsFromServerPromise = timeline.updateFromServer(day);
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
 
+      // Also mode/purpose and (currently disabled) survey answers
+      var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+      var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
+      var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+
       // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise])
-        .then(function([processedTripList, completeStatus]) {
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise])
+        .then(function([processedTripList, completeStatus, modes, purposes]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
+        console.log(' with ${modes.length} modes, ${purposes.length} purposes');
         var tripList = processedTripList;
+        timeline.data.unifiedConfirmsResults = {
+          modes: modes,
+          purposes: purposes
+        };
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -1009,19 +1020,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         } else {
             return tripList;
         }
-      }).then(function(combinedTripList) {
-          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
-          return Promise.all([
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
-          ]).then(function(results) {
-            timeline.data.unifiedConfirmsResults = {
-              modes: results[0],
-              purposes: results[1],
-            };
-            return combinedTripList;
-          });
-        return combinedTripList;
       }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
