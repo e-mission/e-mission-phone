@@ -564,7 +564,7 @@ angular.module('emission.services', ['emission.plugin.logger',
 
     config.getMapTiles = function() {
       return {
-          tileLayer: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           tileLayerOptions: {
               attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
               opacity: 0.9,
