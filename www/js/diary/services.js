@@ -991,23 +991,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var tripsFromServerPromise = timeline.updateFromServer(day);
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
 
-      // Also mode/purpose and survey answers
+      // Also mode/purpose and (currently disabled) survey answers
       var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
       var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
       var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
-      var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
 
       // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise, surveyAnswersPromise])
-        .then(function([processedTripList, completeStatus, modes, purposes, surveyAnswers]) {
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise])
+        .then(function([processedTripList, completeStatus, modes, purposes]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
-        console.log(` with ${modes.length} modes, ${purposes.length} purposes,  ${surveyAnswers.length} surveyAnswers`);
+        console.log(' with ${modes.length} modes, ${purposes.length} purposes');
         var tripList = processedTripList;
         timeline.data.unifiedConfirmsResults = {
           modes: modes,
-          purposes: purposes,
-          surveyAnswers: surveyAnswers,
+          purposes: purposes
         };
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
