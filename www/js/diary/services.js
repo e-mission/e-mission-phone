@@ -176,6 +176,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.getLocalTimeString = function (dt) {
+    //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
+    dt.month = dt.month - 1
     return moment(dt).format("LT");
   };
 
@@ -666,7 +668,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return {
             timezone: tz,
             year: currMoment.year(),
-            month: currMoment.month(),
+            //the months of the draft trips match the one format needed for moment function however now that is modified we need to also modify the months value here
+            month: currMoment.month() + 1,
             day: currMoment.day(),
             weekday: currMoment.weekday(),
             hour: currMoment.hour(),
