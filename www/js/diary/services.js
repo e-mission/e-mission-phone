@@ -667,7 +667,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             timezone: tz,
             year: currMoment.year(),
             month: currMoment.month(),
-            day: currMoment.day(),
+            day: currMoment.date(),
             weekday: currMoment.weekday(),
             hour: currMoment.hour(),
             minute: currMoment.minute(),
@@ -1027,8 +1027,21 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
         console.log("About to hide loading overlay");
         $ionicLoading.hide();
-        localCacheReadFn(day).then(function(processedTripList) {
+
+        var tripsFromCachePromise = localCacheReadFn(day);
+
+        // Also mode/purpose and (currently disabled) survey answers
+        var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+        var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
+        var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+        Promise.all([tripsFromCachePromise, modesPromise, purposesPromise]).then(function(
+            [processedTripList, modes, purposes]) {
+          console.log(' in local cache, found ${modes.length} modes, ${purposes.length} purposes');
           var tripList = processedTripList;
+          timeline.data.unifiedConfirmsResults = {
+            modes: modes,
+            purposes: purposes
+          };
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
               Logger.log("tripList.length = "+tripList.length
