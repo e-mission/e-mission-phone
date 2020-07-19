@@ -22,21 +22,21 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   var getTripEndReportNotification = function() {
     var actions = [{
-       identifier: 'MUTE',
+       id: 'MUTE',
        title: $translate.instant('post-trip-prompt.notification-option-mute'),
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-       identifier: 'SNOOZE',
+       id: 'SNOOZE',
        title: $translate.instant('post-trip-prompt.notification-option-snooze'),
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-        identifier: 'CHOOSE',
+        id: 'CHOOSE',
         title: $translate.instant('post-trip-prompt.notification-option-choose'),
         icon: 'res://ic_signin',
         activationMode: 'foreground',
@@ -133,69 +133,77 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   ptap.registerUserResponse = function() {
     Logger.log( "registerUserResponse received!" );
-    $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('CHOOSE', function (notification, state, data) {
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
-      if (data.identifier === 'CHOOSE') {
-          Logger.log("Notification, action event");
-          cleanDataIfNecessary(notification, state, data);
-          displayCompletedTrip(notification, state, data);
-      } else if (data.identifier == 'SNOOZE') {
-        var now = new Date().getTime(),
-            _30_mins_from_now = new Date(now + 30 * 60 * 1000);
-        var after_30_mins_prompt = getTripEndReportNotification();
-        after_30_mins_prompt.at = _30_mins_from_now;
-        $window.cordova.plugins.notification.local.schedule([after_30_mins_prompt]);
-        if ($ionicPlatform.is('android')) {
-            $ionicPopup.alert({
-              title: $translate.instant('post-trip-prompt.snoozed-reminder'),
-              template: $translate.instant('post-trip-prompt.snoozed-reapper-message')
-            });
-        }
-      } else if (data.identifier === 'MUTE') {
-        var now = new Date().getTime(),
-            _1_min_from_now = new Date(now + 60 * 1000);
-        var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
-        notifyPlugin.disableEventListener(notifyPlugin.TRIP_END, notification).then(function() {
-            if ($ionicPlatform.is('ios')) {
-                $window.cordova.plugins.notification.local.schedule([{
-                    id: REPORT,
-                    title: $translate.instant('post-trip-prompt.notifications-muted'),
-                    text: $translate.instant('post-trip-prompt.notifications-reenabled'),
-                    at: _1_min_from_now,
-                    data: {redirectTo: "root.main.control"}
-                }]);
-            } else if ($ionicPlatform.is('android')) {
-                $ionicPopup.show({
-                    title: $translate.instant('post-trip-prompt.muted'),
-                    template: $translate.instant('post-trip-prompt.notifications-muted'),
-                    buttons: [{
-                      text: $translate.instant('post-trip-prompt.unmute'),
-                      type: 'button-positive',
-                      onTap: function(e) {
-                        return true;
-                      }
-                    }, {
-                      text: $translate.instant('post-trip-prompt.keep-muted'),
-                      type: 'button-positive',
-                      onTap: function(e) {
-                        return false;
-                      }
-                    }]
-                }).then(function(res) {
-                    if(res == true) {
-                        notifyPlugin.enableEventListener(notifyPlugin.TRIP_END, notification);
-                    } else {
-                        Logger.log("User chose to keep the transition muted");
-                    }
-                });
-            }
-        }).catch(function(error) {
-            Logger.displayError("Error while muting notifications for trip end. Try again later.", error);
-        });
+      Logger.log("Notification, action event");
+      cleanDataIfNecessary(notification, state, data);
+      displayCompletedTrip(notification, state, data);
+    });
+    $window.cordova.plugins.notification.local.on('SNOOZE', function (notification, state, data) {
+      if (!checkCategory(notification)) {
+          Logger.log("notification "+notification+" is not an mode choice, returning...");
+          return;
       }
+      var now = new Date().getTime(),
+          _30_mins_from_now = new Date(now + 30 * 60 * 1000);
+      var after_30_mins_prompt = getTripEndReportNotification();
+      after_30_mins_prompt.at = _30_mins_from_now;
+      $window.cordova.plugins.notification.local.schedule([after_30_mins_prompt]);
+      if ($ionicPlatform.is('android')) {
+          $ionicPopup.alert({
+            title: $translate.instant('post-trip-prompt.snoozed-reminder'),
+            template: $translate.instant('post-trip-prompt.snoozed-reapper-message')
+          });
+      }
+    });
+    $window.cordova.plugins.notification.local.on('MUTE', function (notification, state, data) {
+      if (!checkCategory(notification)) {
+          Logger.log("notification "+notification+" is not an mode choice, returning...");
+          return;
+      }
+      var now = new Date().getTime(),
+          _1_min_from_now = new Date(now + 60 * 1000);
+      var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
+      notifyPlugin.disableEventListener(notifyPlugin.TRIP_END, notification).then(function() {
+          if ($ionicPlatform.is('ios')) {
+              $window.cordova.plugins.notification.local.schedule([{
+                  id: REPORT,
+                  title: $translate.instant('post-trip-prompt.notifications-muted'),
+                  text: $translate.instant('post-trip-prompt.notifications-reenabled'),
+                  at: _1_min_from_now,
+                  data: {redirectTo: "root.main.control"}
+              }]);
+          } else if ($ionicPlatform.is('android')) {
+              $ionicPopup.show({
+                  title: $translate.instant('post-trip-prompt.muted'),
+                  template: $translate.instant('post-trip-prompt.notifications-muted'),
+                  buttons: [{
+                    text: $translate.instant('post-trip-prompt.unmute'),
+                    type: 'button-positive',
+                    onTap: function(e) {
+                      return true;
+                    }
+                  }, {
+                    text: $translate.instant('post-trip-prompt.keep-muted'),
+                    type: 'button-positive',
+                    onTap: function(e) {
+                      return false;
+                    }
+                  }]
+              }).then(function(res) {
+                  if(res == true) {
+                      notifyPlugin.enableEventListener(notifyPlugin.TRIP_END, notification);
+                  } else {
+                      Logger.log("User chose to keep the transition muted");
+                  }
+              });
+            }
+      }).catch(function(error) {
+          Logger.displayError("Error while muting notifications for trip end. Try again later.", error);
+      });
     });
     $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
         // alert("notification cleared, no report");
