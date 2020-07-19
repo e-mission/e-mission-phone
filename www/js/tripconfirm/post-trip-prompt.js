@@ -109,14 +109,14 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     })
   }
 
-  var cleanDataIfNecessary = function(notification, state, data) {
+  var cleanDataIfNecessary = function(notification, eventOpts) {
     if ($ionicPlatform.is('ios') && angular.isDefined(notification.data)) {
       Logger.log("About to parse "+notification.data);
       notification.data = JSON.parse(notification.data);
     }
   };
 
-  var displayCompletedTrip = function(notification, state, data) {
+  var displayCompletedTrip = function(notification, eventOpts) {
     $rootScope.tripConfirmParams = notification.data;
       Logger.log("About to display completed trip from notification "+
         JSON.stringify(notification.data));
@@ -133,16 +133,16 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   ptap.registerUserResponse = function() {
     Logger.log( "registerUserResponse received!" );
-    $window.cordova.plugins.notification.local.on('CHOOSE', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('CHOOSE', function (notification, eventOpts) {
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
       Logger.log("Notification, action event");
-      cleanDataIfNecessary(notification, state, data);
-      displayCompletedTrip(notification, state, data);
+      cleanDataIfNecessary(notification, eventOpts);
+      displayCompletedTrip(notification, eventOpts);
     });
-    $window.cordova.plugins.notification.local.on('SNOOZE', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('SNOOZE', function (notification, eventOpts) {
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
@@ -159,7 +159,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
           });
       }
     });
-    $window.cordova.plugins.notification.local.on('MUTE', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('MUTE', function (notification, eventOpts) {
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
@@ -205,43 +205,43 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
           Logger.displayError("Error while muting notifications for trip end. Try again later.", error);
       });
     });
-    $window.cordova.plugins.notification.local.on('clear', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('clear', function (notification, eventOpts) {
         // alert("notification cleared, no report");
     });
-    $window.cordova.plugins.notification.local.on('cancel', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('cancel', function (notification, eventOpts) {
         // alert("notification cancelled, no report");
     });
-    $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('trigger', function (notification, eventOpts) {
         // alert("triggered, no action");
         Logger.log("Notification triggered");
         if (!checkCategory(notification)) {
             Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
         }
-        cleanDataIfNecessary(notification, state, data);
+        cleanDataIfNecessary(notification, eventOpts);
         if($ionicPlatform.is('ios')) {
-            promptReport(notification, state, data).then(function(res) {
+            promptReport(notification, eventOpts).then(function(res) {
               if (res == true) {
                   Logger.log("About to go to prompt page");
-                displayCompletedTrip(notification, state, data);
+                displayCompletedTrip(notification, eventOpts);
               } else {
                 Logger.log("Skipped confirmation reporting");
               }
             });
         } else {
           Logger.log("About to go to prompt page");
-          displayCompletedTrip(notification, state, data);
+          displayCompletedTrip(notification, eventOpts);
         }
     });
-    $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
+    $window.cordova.plugins.notification.local.on('click', function (notification, eventOpts) {
       // alert("clicked, no action");
       Logger.log("Notification, click event");
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
-      cleanDataIfNecessary(notification, state, data);
-      displayCompletedTrip(notification, state, data);
+      cleanDataIfNecessary(notification, eventOpts);
+      displayCompletedTrip(notification, eventOpts);
     });
   };
 
