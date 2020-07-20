@@ -23,23 +23,26 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
   var getTripEndReportNotification = function() {
     var actions = [{
        id: 'MUTE',
+       type: 'button',
        title: $translate.instant('post-trip-prompt.notification-option-mute'),
        icon: 'res://ic_moreoptions',
-       activationMode: 'background',
+       launch: true,
        destructive: false,
        authenticationRequired: false
     }, {
        id: 'SNOOZE',
+       type: 'button',
        title: $translate.instant('post-trip-prompt.notification-option-snooze'),
        icon: 'res://ic_moreoptions',
-       activationMode: 'background',
+       launch: true,
        destructive: false,
        authenticationRequired: false
     }, {
         id: 'CHOOSE',
+        type: 'button',
         title: $translate.instant('post-trip-prompt.notification-option-choose'),
         icon: 'res://ic_signin',
-        activationMode: 'foreground',
+        launch: true,
         destructive: false,
         authenticationRequired: false
     }];
@@ -52,7 +55,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
       smallIcon: 'res://ic_mood_question.png',
       sound: null,
       actions: actions,
-      category: TRIP_CONFIRM_TEXT,
+      actionGroupId: TRIP_CONFIRM_TEXT,
       autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
@@ -123,7 +126,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
   };
 
   var checkCategory = function(notification) {
-    if (notification.category == TRIP_CONFIRM_TEXT) {
+    if (notification.actionGroupId == TRIP_CONFIRM_TEXT) {
         return true;
     } else {
         return false;
