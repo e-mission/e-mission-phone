@@ -211,6 +211,36 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    $scope.testTripEndNotify = function() {
+        $ionicPopup.alert({template: 'test for local notification 0.9.0-beta.3+ only'});
+        /*
+        var testCfg = {
+            id: 737678,
+            title: $translate.instant('post-trip-prompt.notification-title'),
+            text: "Testing if this works",
+            icon: 'file://img/icon.png',
+            actions: "TRIP_CONFIRM"
+        };
+        $window.cordova.plugins.notification.local.addActions('TRIP_CONFIRM', [{
+            id: 'MUTE',
+            type: 'button',
+            title: 'Mute',
+            ui: 'decline'
+        },{
+            id: 'SNOOZE',
+            type: 'button',
+            title: 'Snooze',
+            launch: true
+        },{
+            id: 'CHOOSE',
+            type: 'button',
+            title: "Choose",
+            launch: true
+        }]);
+        $window.cordova.plugins.notification.local.schedule(testCfg);
+        */
+    }
+
     $scope.invalidateCache = function() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
             $scope.$apply(function() {
@@ -532,4 +562,5 @@ angular.module('emission.main.control',['emission.services',
             console.log("Sharing failed with message: " + msg);
         });
     }
+
 });
