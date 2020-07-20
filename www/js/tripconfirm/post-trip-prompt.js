@@ -110,10 +110,9 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
   }
 
   var cleanDataIfNecessary = function(notification, eventOpts) {
-    if ($ionicPlatform.is('ios') && angular.isDefined(notification.data)) {
-      Logger.log("About to parse "+notification.data);
-      notification.data = JSON.parse(notification.data);
-    }
+    // as of version 0.9.0-beta.4, cleaning data is not necessary, since iOS also returns
+    // pre-parsed notification data. Let's leave this here for a bit in case we need it
+    // later, but we can also remove it if we don't need it for a year or so
   };
 
   var displayCompletedTrip = function(notification, eventOpts) {
