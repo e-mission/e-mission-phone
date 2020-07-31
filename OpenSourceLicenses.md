@@ -31,7 +31,6 @@ based on bugs. TODO: Go through the modules, determine the changes and submit th
 |--------|---------|
 | `www/lib/ionic` | MIT (from [`bower.json`](https://github.com/ionic-team/ionic-bower/blob/v1.3.0/bower.json)) |
 | `www/lib/ionic-toast` | MIT |
-| `www/lib/ngCordova` | MIT |
 | `www/lib/moment` | MIT |
 | `www/lib/moment-timezone` | MIT |
 | `www/lib/Leaflet.awesome-markers` | MIT |

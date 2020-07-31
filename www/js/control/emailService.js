@@ -2,9 +2,9 @@
 
 angular.module('emission.services.email', ['emission.plugin.logger'])
 
-    .service('EmailHelper', function ($cordovaEmailComposer, $translate, $http, Logger) {
+    .service('EmailHelper', function ($window, $translate, $http, Logger) {
 
-        var getEmailConfig = function () {
+        const getEmailConfig = function () {
             return new Promise(function (resolve, reject) {
                 window.Logger.log(window.Logger.LEVEL_INFO, "About to get email config");
                 var address = [];
@@ -25,16 +25,21 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
             });
         }
 
-        this.sendEmail = function (database) {
-            getEmailConfig().then(function (address) {
-                var parentDir = "unknown";
+        const hasAccount = function() {
+            return new Promise(function(resolve, reject) {
+                $window.cordova.plugins.email.hasAccount(function (hasAct) {
+                  resolve(hasAct);
+                });
+            });
+        }
 
-                $cordovaEmailComposer.isAvailable().then(function () {
-                    // is available
-                }, function () {
+        this.sendEmail = function (database) {
+            Promise.all([getEmailConfig(), hasAccount()]).then(function([address, hasAct]) {
+                var parentDir = "unknown";
+                if (!hasAct) {
                     alert($translate.instant('email-service.email-account-not-configured'));
                     return;
-                });
+                }
 
                 if (ionic.Platform.isAndroid()) {
                     parentDir = "app://databases";
@@ -64,19 +69,11 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
                     body: $translate.instant('email-service.email-log.body-please-fill-in-what-is-wrong')
                 }
 
-                $cordovaEmailComposer.open(email).then(function () {
-                    window.Logger.log(window.Logger.LEVEL_DEBUG,
-                        "Email queued successfully");
-                },
-                    function () {
-                        // user cancelled email. in this case too, we want to remove the file
-                        // so that the file creation earlier does not fail.
-                        window.Logger.log(window.Logger.LEVEL_INFO,
-                            "Email cancel reported, seems to be an error on android");
-                    });
-            }).catch(function (err) {
-                alert($translate.instant('email-service.no-email-address-configured') + err);
-                return;
+                $window.cordova.plugins.email.open(email, function () {
+                  Logger.log("email app closed while sending, "+JSON.stringify(email)+" not sure if we should do anything");
+                  // alert($translate.instant('email-service.no-email-address-configured') + err);
+                  return;
+                });
             });
         };
-    });
+});

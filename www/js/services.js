@@ -278,7 +278,7 @@ angular.module('emission.services', ['emission.plugin.logger',
       return combinedPromise(localPromise, remotePromise, combineWithDedup);
     }
 })
-.service('ControlHelper', function($cordovaEmailComposer,
+.service('ControlHelper', function($window,
                                    $ionicPopup,
                                    $translate,
                                    CommHelper,
@@ -363,7 +363,7 @@ angular.module('emission.services', ['emission.plugin.logger',
                           subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
                           body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
                         }
-                        $cordovaEmailComposer.open(email).then(resolve());
+                        $window.cordova.plugins.email.open(email).then(resolve());
                       }
                       reader.readAsText(file);
                     }, function(error) {
