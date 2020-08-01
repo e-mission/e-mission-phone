@@ -1,3 +1,6 @@
+echo "Ensure that we fail on error"
+
+set -e
 ./bin/configure_xml_and_json.js cordovabuild
 
 echo "Copying fake FCM configurations for android and iOS"
