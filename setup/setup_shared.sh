@@ -1,5 +1,8 @@
 source setup/export_shared_dep_versions.sh
 
+echo "Ensure that we fail on error"
+set -e
+
 echo "Installing the correct version of nvm"
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v$NVM_VERSION/install.sh | bash
 

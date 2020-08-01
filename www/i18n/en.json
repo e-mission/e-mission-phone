@@ -68,6 +68,7 @@
         "check-consent": "Check consent",
         "invalidate-cached-docs": "Invalidate cached docs",
         "nuke-all": "Nuke all buffers and cache",
+        "test-notification": "Test local notification",
         "set-ui-channel": "Set UI channel",
         "check-log": "Check log",
         "check-sensed-data": "Check sensed data",

@@ -1,4 +1,4 @@
-angular.module('emission.main.recent', ['ngCordova', 'emission.services'])
+angular.module('emission.main.recent', ['emission.services'])
 
 
 .controller('appCtrl', function($scope, $timeout) {

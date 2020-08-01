@@ -1,5 +1,4 @@
  angular.module('emission.main.diary.current', ['ui-leaflet',
-                                                'ngCordova', 
                                                 'emission.services', 
                                                 'ionic',
                                                 'emission.incident.posttrip.manual',

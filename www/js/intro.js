@@ -19,7 +19,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate, $cordovaFile) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate) {
 
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
@@ -45,6 +45,31 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
   }
 
+  // copy-pasted from ngCordova, and updated to promises
+  $scope.checkFile = function(directory, fn) {
+    return new Promise(function(resolve, reject) {
+      if ((/^\//.test(file))) {
+        reject('directory cannot start with \/');
+      }
+
+      try {
+        var directory = path + file;
+        $window.resolveLocalFileSystemURL(directory, function (fileSystem) {
+          if (fileSystem.isFile === true) {
+            resolve(fileSystem);
+          } else {
+            reject({code: 13, message: 'input is not a file'});
+          }
+        }, function (error) {
+          reject({code: error.code, message: "error while resolving URL "+directory});
+        });
+      } catch (err) {
+        err.message = "$window.resolveLocalFileSystemURL not found";
+        reject(err);
+      }
+    });
+  }
+
   console.log("Explanation = "+$scope.locationPermExplanation);
 
   // The language comes in between the first and second part
@@ -53,7 +78,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     var defaultVal = fpFirstPart + fpSecondPart;
     if (lang != 'en') {
       var url = fpFirstPart + lang + fpSecondPart;
-      $cordovaFile.checkFile(cordova.file.applicationDirectory, url).then( function(result){
+      $scope.checkFile(cordova.file.applicationDirectory, url).then( function(result){
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "Successfully found the consent file, result is " + JSON.stringify(result));
         return url.replace("www/", "");
