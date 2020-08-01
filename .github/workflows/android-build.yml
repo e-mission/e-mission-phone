@@ -38,16 +38,17 @@ jobs:
       shell: bash -l {0}
       run: |
         bash setup/setup_android_native.sh
-        source setup/activate_native.sh
-        npx cordova -version
-        npx ionic -version
 
-    - name: Access cordova with a specified shell
+    - name: Check tool versions
       shell: bash -l {0}
       run: |
         source setup/activate_native.sh
+        echo "cordova version"
         npx cordova -version
+        echo "ionic version"
+        npx ionic --version
         which gradle
+        echo "gradle version"
         gradle -version
 
     - name: Build android

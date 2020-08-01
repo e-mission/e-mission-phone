@@ -42,18 +42,15 @@ jobs:
       shell: bash -l {0}
       run: |
         bash setup/setup_ios_native.sh
-        source setup/activate_native.sh
-        npx cordova -version
-        npx ionic -version
 
-    - name: Access cordova with a specified shell
+    - name: Check tool versions
       shell: bash -l {0}
       run: |
         source setup/activate_native.sh
+        echo "cordova version"
         npx cordova -version
-
-    - name: Access cordova directly
-      run: npx cordova -version
+        echo "ionic version"
+        npx ionic --version
 
     - name: Build ios
       shell: bash -l {0}
