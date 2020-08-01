@@ -36,7 +36,23 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
         this.sendEmail = function (database) {
             Promise.all([getEmailConfig(), hasAccount()]).then(function([address, hasAct]) {
                 var parentDir = "unknown";
-                if (!hasAct) {
+
+                // Check this only for ios, since for android, the check always fails unless
+                // the user grants the "GET_ACCOUNTS" dynamic permission
+                // without the permission, we only see the e-mission account which is not valid
+                //
+                //  https://developer.android.com/reference/android/accounts/AccountManager#getAccounts()
+                //
+                //  Caller targeting API level below Build.VERSION_CODES.O that
+                //  have not been granted the Manifest.permission.GET_ACCOUNTS
+                //  permission, will only see those accounts managed by
+                //  AbstractAccountAuthenticators whose signature matches the
+                //  client. 
+                // and on android, if the account is not configured, the gmail app will be launched anyway
+                // on iOS, nothing will happen. So we perform the check only on iOS so that we can
+                // generate a reasonably relevant error message
+
+                if (ionic.Platform.isIOS() && !hasAct) {
                     alert($translate.instant('email-service.email-account-not-configured'));
                     return;
                 }
