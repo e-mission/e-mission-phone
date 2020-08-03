@@ -11,7 +11,7 @@ then
 fi
 
 echo "Activating sdkman, and by default, gradle"
-source "/Users/kshankar/.sdkman/bin/sdkman-init.sh"
+source ~/.sdkman/bin/sdkman-init.sh
 
 echo "Configuring the repo for building native code"
 ./bin/configure_xml_and_json.js cordovabuild
