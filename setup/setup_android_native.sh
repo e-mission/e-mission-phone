@@ -32,7 +32,13 @@ echo "Setting up sdkman"
 curl -s "https://get.sdkman.io" | bash
 source ~/.sdkman/bin/sdkman-init.sh
 
-echo "Setting up gradle using SDKMan"
-sdk install gradle $GRADLE_VERSION
+CURR_GRADLE_VER=`sdk current gradle | cut -d " " -f 4`
+
+if [ $CURR_GRADLE_VER == $GRADLE_VERSION ]; then
+    echo "Already have gradle version $GRADLE_VERSION"
+else
+    echo "Setting up gradle using SDKMan"
+    sdk install gradle $GRADLE_VERSION
+fi
 
 source setup/setup_shared_native.sh
