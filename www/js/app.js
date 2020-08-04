@@ -70,7 +70,7 @@ angular.module('emission', ['ionic',
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider, $translateProvider) {
+.config(function($stateProvider, $urlRouterProvider, $translateProvider, $compileProvider) {
   console.log("Starting config");
   // alert("config");
 
@@ -79,6 +79,7 @@ angular.module('emission', ['ionic',
   // Set a few states which the app can be in.
   // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|ionic):|data:image/);  
   $stateProvider
   // set up a state for the splash screen. This has no parents and no children
   // because it is basically just used to load the user's preferred screen.
