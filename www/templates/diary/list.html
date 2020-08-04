@@ -38,7 +38,7 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-        <ion-item style="background-color: transparent;" id="no-border" class="list-item">
+        <ion-item ng-if="data.currDayTripWrappers.length == 0" style="background-color: transparent;" id="no-border" class="list-item">
                <div ng-if="data.currDayTripWrappers.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
                  <h3>No trips recorded on this day.</h3>
                </div>
@@ -54,7 +54,7 @@
                 </div>
 
 
-                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
+                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '355px'}">
                 <div ng-click="toDetail(tripgj.data.id)">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common.count) }};"></i> -->
 
@@ -94,7 +94,7 @@
                     </div>
                 </div>
              </div>
-             <div class="row" style="padding-left: 5px;padding-right: 5px;">
+             <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
                 <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{'.mode'}}
                 </div>
