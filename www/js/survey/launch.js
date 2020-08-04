@@ -125,7 +125,7 @@ angular.module('emission.survey.launch', ['emission.services',
         if (String(event.url).includes('formResponse')) {
             $cordovaInAppBrowser.close();
         }
-        replace_uuid(uuidElementId);
+        replace_uuid(iab, uuidElementId);
         console.log("succesfully replaced UUIDs")
       });
 
