@@ -52,7 +52,7 @@
 
     "control":{
         "profile": "Profile",
-        "username": "username",
+        "username": "Username {{usernamedata}}",
         "tracking": "Tracking",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",

@@ -5,7 +5,7 @@
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text" translate>{{.username}}: {{settings.username}}</div>
+      <div class="control-list-text" translate=".username" translate-values="{usernamedata: settings.username}"></div>
       <div ng-click="showUsernamePopup()" id ="switch-user" class="control-icon-button"><i class="icon ion-edit"></i></div>
     </div>
     <div class="control-list-item">
