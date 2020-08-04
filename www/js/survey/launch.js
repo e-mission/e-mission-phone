@@ -4,11 +4,11 @@ angular.module('emission.survey.launch', ['emission.services',
                     'emission.plugin.logger',
                     'emission.stats.clientstats'])
 
-.factory('SurveyLaunch', function($http, $cordovaInAppBrowser, $ionicPopup, $rootScope, ClientStats,
+.factory('SurveyLaunch', function($http, $window, $ionicPopup, $rootScope, ClientStats,
     CommHelper, Logger) {
 
     var surveylaunch = {};
-    var replace_uuid = function(uuidElementId) {
+    var replace_uuid = function(iab, uuidElementId) {
         return Promise.all([$http.get("js/survey/uuid_insert.js"),
                      CommHelper.getUser()])
           .then(function([scriptText, userProfile]) {
@@ -24,11 +24,11 @@ angular.module('emission.survey.launch', ['emission.services',
             var codeTemplate = scriptText.data;
             var codeString = codeTemplate.replace("SCRIPT_REPLACE_VALUE", uuid)
                                 .replace("SCRIPT_REPLACE_ELEMENT_ID", uuidElementId);
-            $cordovaInAppBrowser.executeScript({ code: codeString });
+            iab.executeScript({ code: codeString });
           });
     };
 
-    var replace_time = function(tsElementId, fmtTimeElementId, ts, label) {
+    var replace_time = function(iab, tsElementId, fmtTimeElementId, ts, label) {
         // we don't need to get the user because we have the timestamp right here
         return Promise.all([$http.get("js/survey/time_insert.js")])
           .then(function([scriptText]) {
@@ -52,19 +52,22 @@ angular.module('emission.survey.launch', ['emission.services',
                                 .replace("SCRIPT_REPLACE_ELEMENT_ID", fmtTimeElementId)
                                 .replace(/LABEL/g, label+"FmtTime");
             Logger.log("After fmtTimeCode replace" + tsCodeString);
-            $cordovaInAppBrowser.executeScript({ code: fmtTimeCodeString });
+            iab.executeScript({ code: fmtTimeCodeString });
           });
     };
 
 
     // BEGIN: startSurveyForCompletedTrip
-    // Put the launch in one place so that
+    // Put the launch in one place so that 
+    surveylaunch.options = "location=yes,clearcache=no,toolbar=yes,hideurlbar=yes";
+    /*
     surveylaunch.options = {
         location: window.cordova.platformId == 'ios'? 'no' : 'yes',
         clearcache: 'no',
         toolbar: 'no',
         hideurlbar: 'yes'
     };
+    */
 
     surveylaunch.startSurveyForCompletedTrip = function (url, uuidElementId,
                                                          startTsElementId,
@@ -74,27 +77,30 @@ angular.module('emission.survey.launch', ['emission.services',
                                                          startTs,
                                                          endTs) {
       // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open(url, '_blank', surveylaunch.options)
-          .then(function(event) {
-            console.log("successfully opened page with result "+JSON.stringify(event));
-            // success
-            Promise.all([replace_uuid(uuidElementId),
-                         replace_time(startTsElementId, startFmtTimeElementId, startTs, "Start"),
-                         replace_time(endTsElementId, endFmtTimeElementId, endTs, "End")])
-            .catch(function(error) { // catch for all promises
-              $ionicPopup.alert({"template": "Relaunching survey - while replacing uuid, got error "+ JSON.stringify(error)})
-              .then(function() {
-                surveylaunch.startSurvey(url, uuidElementId,
-                    startTsElementId, endTsElementId,
-                    startFmtTimeElementId, endTsElementId,
-                    startTs, endTs);
-              });
-            });
-          })
-          .catch(function(event) {
-            // error
+      let iab = $window.cordova.InAppBrowser.open(url, '_blank', surveylaunch.options);
+
+      iab.addEventListener("loadstop", function(event) {
+        console.log("successfully opened page with result "+JSON.stringify(event));
+        // success
+        Promise.all([replace_uuid(iab, uuidElementId),
+                     replace_time(iab, startTsElementId, startFmtTimeElementId, startTs, "Start"),
+                     replace_time(iab, endTsElementId, endFmtTimeElementId, endTs, "End")])
+        .catch(function(error) { // catch for all promises
+          $ionicPopup.alert({"template": "Relaunching survey - while replacing uuid, got error "+ JSON.stringify(error)})
+          .then(function() {
+            surveylaunch.startSurvey(url, uuidElementId,
+                startTsElementId, endTsElementId,
+                startFmtTimeElementId, endTsElementId,
+                startTs, endTs);
           });
-      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+        });
+      })
+
+      iab.addEventListener('loaderror', function(event) {
+            Logger.displayError("Unable to launch survey", JSON.stringify(error));
+      });
+
+      iab.addEventListener('loadstart', function(event) {
         console.log("started loading, event = "+JSON.stringify(event));
         /*
         if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
@@ -102,7 +108,7 @@ angular.module('emission.survey.launch', ['emission.services',
         }
         */
       });
-      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+      iab.addEventListener('exit', function(event) {
         console.log("exiting, event = "+JSON.stringify(event));
         // we could potentially restore the close-on-bic2cal functionality above
         // if we unregistered here
@@ -110,36 +116,30 @@ angular.module('emission.survey.launch', ['emission.services',
     }
     // END: startSurveyForCompletedTrip
 
-    surveylaunch.startSurvey = function (url, uuidElementId) {
+    surveylaunch.startSurvey = function (url, uuidElementId) 
       // THIS LINE FOR inAppBrowser
-      $cordovaInAppBrowser.open(url, '_blank', surveylaunch.options)
-          .then(function(event) {
-            console.log("successfully opened page with result "+JSON.stringify(event));
-            // success
-            //replace_uuid(uuidElementId)
-          })
-          .catch(function(event) {
-            // error
-          });
-      $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-        console.log("started loading, event = "+JSON.stringify(event));
-
-
-      });
-      $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event) {
-        console.log("stopped loading, event = "+JSON.stringify(event));
+      let iab = $window.cordova.InAppBrowser.open(url, '_blank', surveylaunch.options);
+      iab.addEventListener("loadstop", function(event) {
+        console.log("successfully opened page with result "+JSON.stringify(event));
+        // success
         if (String(event.url).includes('formResponse')) {
             $cordovaInAppBrowser.close();
         }
         replace_uuid(uuidElementId);
         console.log("succesfully replaced UUIDs")
-        /*
-        if (event.url == 'https://bic2cal.eecs.berkeley.edu/') {
-            $cordovaInAppBrowser.close();
-        }
-        */
       });
-      $rootScope.$on('$cordovaInAppBrowser:exit', function(e, event) {
+
+      iab.addEventListener('loaderror', function(event) {
+        Logger.displayError("Unable to launch survey", error);
+      });
+
+      iab.addEventListener("loadstart", function(event) {
+        console.log("started loading, event = "+JSON.stringify(event));
+
+
+      });
+
+      iab.addEventListener('exit', function(event) {
         console.log("exiting, event = "+JSON.stringify(event));
         // we could potentially restore the close-on-bic2cal functionality above
         // if we unregistered here
@@ -171,26 +171,4 @@ angular.module('emission.survey.launch', ['emission.services',
 
     surveylaunch.init();
     return surveylaunch;
-
-    /*var showUserId = function() {
-        console.log("Showing user id");
-        $ionicPopup.show({
-          title: 'Bic2Cal Survey',
-          templateUrl: 'templates/goals/uid.html',
-          scope: $scope,
-            buttons: [{
-              text: 'Copy user id and open survey',
-              type: 'button-positive',
-              onTap: function(e) {
-                $cordovaClipboard.copy(userId).then(function () {
-                    console.log("copying to clipboard "+userId);
-                    startSurvey();
-                }, function () {
-                    // error
-                });
-              }
-            }]
-        });
-    };*/
-
 });

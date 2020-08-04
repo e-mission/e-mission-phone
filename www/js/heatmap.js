@@ -2,11 +2,11 @@
 
 angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
                'emission.plugin.logger', 'emission.incident.posttrip.manual',
-               'ng-walkthrough', 'nzTour', 'angularLocalStorage'])
+               'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore'])
 
-.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http,
-        leafletData, Logger, Config, PostTripManualMarker,
-        $window, nzTour, storage) {
+.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet,
+        leafletData, Logger, Config, PostTripManualMarker, CommHelper,
+        $window, nzTour, KVStore, $translate) {
   $scope.mapCtrl = {};
 
   angular.extend($scope.mapCtrl, {
@@ -44,18 +44,19 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/pop.route/local_date", data)
+    return CommHelper.getAggregateData("result/heatmap/pop.route/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.lnglat)) {
         Logger.log("Got points in heatmap "+response.data.lnglat.length);
-        $scope.showHeatmap(response.data.lnglat);
+        $scope.$apply(function() {
+            $scope.showHeatmap(response.data.lnglat);
+        });
       } else {
         Logger.log("did not find latlng in response data "+JSON.stringify(response.data));
       }
       $scope.countData.isLoading = false;
     }, function(error) {
-      Logger.log("Got error %s while trying to read heatmap data" +
-        JSON.stringify(error));
+      Logger.displayError("Error while trying to read heatmap data", error);
       $scope.countData.isLoading = false;
     });
   };
@@ -85,18 +86,18 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
    */
 
   $scope.modeOptions = [
-      {text: "ALL", value:null},
-      {text: "NONE", value:[]},
-      {text: "BICYCLING", value:["BICYCLING"]},
-      {text: "WALKING", value:["WALKING", "ON_FOOT"]},
-      {text: "IN_VEHICLE", value:["IN_VEHICLE"]}
+      {text: $translate.instant('main-heatmap.all'), value:null},
+      {text: $translate.instant('main-heatmap.none'), value:[]},
+      {text: $translate.instant('main-heatmap.bicycling'), value:["BICYCLING"]},
+      {text: $translate.instant('main-heatmap.walking'), value:["WALKING", "ON_FOOT"]},
+      {text: $translate.instant('main-heatmap.in-vehicle'), value:["IN_VEHICLE"]}
     ];
 
   $scope.changeMode = function() {
     $ionicActionSheet.show({
       buttons: $scope.modeOptions,
-      titleText: "Select travel mode",
-      cancelText: "Cancel",
+      titleText: $translate.instant('main-heatmap.select-travel-mode'),
+      cancelText: $translate.instant('main-heatmap.cancel'),
       buttonClicked: function(index, button) {
         $scope.selectCtrl.modeString = button.text;
         $scope.selectCtrl.modes = button.value;
@@ -121,19 +122,19 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
 
   $scope.changeWeekday = function(stringSetFunction, localDateObj) {
     var weekdayOptions = [
-      {text: "All", value: null},
-      {text: "Monday", value: 0},
-      {text: "Tuesday", value: 1},
-      {text: "Wednesday", value: 2},
-      {text: "Thursday", value: 3},
-      {text: "Friday", value: 4},
-      {text: "Saturday", value: 5},
-      {text: "Sunday", value: 6}
+      {text: $translate.instant('weekdays-all'), value: null},
+      {text: moment.weekdays(1), value: 0},
+      {text: moment.weekdays(2), value: 1},
+      {text: moment.weekdays(3), value: 2},
+      {text: moment.weekdays(4), value: 3},
+      {text: moment.weekdays(5), value: 4},
+      {text: moment.weekdays(6), value: 5},
+      {text: moment.weekdays(0), value: 6}
     ];
     $ionicActionSheet.show({
       buttons: weekdayOptions,
-      titleText: "Select day of the week",
-      cancelText: "Cancel",
+      titleText: $translate.instant('weekdays-select'),
+      cancelText: $translate.instant('main-heatmap.cancel'),
       buttonClicked: function(index, button) {
         stringSetFunction(button.text);
         localDateObj.weekday = button.value;
@@ -174,11 +175,11 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     $scope.selectCtrl.showStress = false;
     $scope.selectCtrl.showCount = true;
     $scope.selectCtrl.modes = null;
-    $scope.selectCtrl.modeString = "ALL";
-    $scope.selectCtrl.fromDate = moment2Localdate(dayago)
+    $scope.selectCtrl.modeString = $translate.instant('main-heatmap.all');
+    $scope.selectCtrl.fromDate = moment2Localdate(dayago);
     $scope.selectCtrl.toDate = moment2Localdate(now);
-    $scope.selectCtrl.fromDateWeekdayString = "All"
-    $scope.selectCtrl.toDateWeekdayString = "All"
+    $scope.selectCtrl.fromDateWeekdayString = $translate.instant('weekdays-all');
+    $scope.selectCtrl.toDateWeekdayString = $translate.instant('weekdays-all');
     $scope.selectCtrl.region = null;
   };
 
@@ -236,12 +237,15 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   var setSelData = function(map, selData) {
     if (selData.isLoading == true) {
       $ionicLoading.show({
-          template: 'Loading...'
+        template: $translate.instant('loading')
       });
       // Don't set any layer - it will be filled in when the load completes
     } else {
       $ionicLoading.hide();
-      if (angular.isDefined(selData) && angular.isDefined(selData.layer)) {
+      if (angular.isDefined(selData) &&
+            angular.isDefined(selData.layer) &&
+            angular.isDefined(selData.bounds) &&
+            selData.bounds.isValid()) {
         selData.layer.addTo(map);
         map.fitBounds(selData.bounds);
         $scope.selData = selData;
@@ -287,18 +291,19 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", data)
+    return CommHelper.getAggregateData("result/heatmap/incidents/local_date", data)
     .then(function(response) {
       if (angular.isDefined(response.data.incidents)) {
-        Logger.log("Got incidents"+response.data.incidents.length);
-        $scope.showIncidents(response.data.incidents);
+        $scope.$apply(function() {
+            Logger.log("Got incidents"+response.data.incidents.length);
+            $scope.showIncidents(response.data.incidents);
+        });
       } else {
         Logger.log("did not find incidents in response data "+JSON.stringify(response.data));
       }
       $scope.stressData.isLoading = false;
     }, function(error) {
-      Logger.log("Got error %s while trying to read heatmap data" +
-        JSON.stringify(error));
+      Logger.displayError("Error while trying to read stress data", error);
       $scope.stressData.isLoading = false;
     });
   };
@@ -341,19 +346,23 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       mask: {
         visibleOnNoTarget: true,
         clickExit: true
-      }
+      },
+      previousText: $translate.instant('tour-previous'),
+      nextText: $translate.instant('tour-next'),
+      finishText: $translate.instant('tour-finish')
     },
     steps: [{
       target: '.datepicker',
-      content: 'This heatmap shows the aggregate data for all E-mission users. Select the dates you want to see, and filter by hours of the day (24h format) and days of the week. For example, if you enter 16 and 19 in the last field, and select Monday and Friday, you\'ll see the Heatmap filtered to show the traffic on weekdays between 4pm and 7pm.'
+      content: $translate.instant('main-heatmap.tour-datepicker')
     },
-    {
+      {
       target: '.heatmap-mode-button',
-      content: 'Click here to filter your results by mode of transportation. The default is to show all modes.'
+      content: $translate.instant('main-heatmap.tour-mode')
+
     },
-    {
+      {
       target: '.heatmap-get-button',
-      content: 'Click here to generate the heatmap.'
+      content: $translate.instant('main-heatmap.tour-get')
     }]
   };
 
@@ -361,7 +370,7 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     nzTour.start(tour).then(function(result) {
       Logger.log("heatmap walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("heatmap walkthrough start errored" + err);
+      Logger.displayError("Error in heatmap walkthrough", err);
     });
   };
 
@@ -371,10 +380,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   */
   var checkHeatmapTutorialDone = function () {
     var HEATMAP_DONE_KEY = 'heatmap_tutorial_done';
-    var heatmapTutorialDone = storage.get(HEATMAP_DONE_KEY);
+    var heatmapTutorialDone = KVStore.getDirect(HEATMAP_DONE_KEY);
     if (!heatmapTutorialDone) {
       startWalkthrough();
-      storage.set(HEATMAP_DONE_KEY, true);
+      KVStore.set(HEATMAP_DONE_KEY, true);
     }
   };
 

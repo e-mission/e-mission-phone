@@ -3,7 +3,7 @@
 angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
   'emission.main.diary.services'])
 .factory('PostTripManualMarker', function($window, $state, $ionicActionSheet, $ionicPlatform,
-                                          Logger, Timeline) {
+                                          Logger, Timeline, $translate) {
   var ptmm = {};
 
   var MULTI_PASS_THRESHOLD = 90;
@@ -279,10 +279,12 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
       Logger.log("section "+feature.properties.start_fmt_time
                   + " -> "+feature.properties.end_fmt_time
                   + " bound incident addition ");
-      var allPoints = getSectionPoints(feature);
-      var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
-      var featureArray = trip.features;
-      return ptmm.startAddingIncidentToPoints(layer, allPoints, featureArray);
+      return function(e) {
+          var allPoints = getSectionPoints(feature);
+          var trip = Timeline.getTrip(feature.properties.trip_id.$oid);
+          var featureArray = trip.features;
+          startAddingIncidentToPointsImpl(e, layer, allPoints, featureArray);
+      }
   }
 
   var getAllPointsForTrip = function(trip) {
@@ -304,9 +306,11 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
       Logger.log("section "+trip.properties.start_fmt_time
                   + " -> "+trip.properties.end_fmt_time
                   + " bound incident addition ");
-      var allPoints = getAllPointsForTrip(trip);
-      var featureArray = trip.features;
-      return ptmm.startAddingIncidentToPoints(map, allPoints, featureArray);
+      return function(e) {
+          var allPoints = getAllPointsForTrip(trip);
+          var featureArray = trip.features;
+          startAddingIncidentToPointsImpl(e, map, allPoints, featureArray);
+      }
   }
 
   /*
@@ -334,6 +338,21 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                   + " bound incident addition ");
 
       return function(e) {
+          startAddingIncidentToPointsImpl(e, layer, allPoints, geojsonFeatureArray);
+      }
+      };
+
+   /*
+    * This is the implementation of `startAddingIncidentToSection`,
+    * `startAddingIncidentToTrip` and `startAddingIncidentToPoints`
+    * It is typically wrapped in a curried function that takes only the event
+    * (`e`) as the input and gets the other parameters through currying. Before
+    * this, we used have only one curried function and have the others call it, 
+    * but then the points were read when we registered the function instead of
+    * when it was invoked.
+    */
+
+   var startAddingIncidentToPointsImpl = function(e, layer, allPoints, geojsonFeatureArray) {
           Logger.log("points "+getFormattedTime(allPoints[0].ts)
                       + " -> "+getFormattedTime(allPoints[allPoints.length -1].ts)
                       + " received click event, adding stress popup at "
@@ -390,7 +409,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
               return {text: getFormattedTime(ts),
                       selValue: ts};
             });
-            $ionicActionSheet.show({titleText: "Choose incident time",
+            $ionicActionSheet.show({titleText: $translate.instant('post-trip-manual-incident-time'),
               buttons: timeSelActions,
               buttonClicked: function(index, button) {
                 var ts = button.selValue;
@@ -398,8 +417,7 @@ angular.module('emission.incident.posttrip.manual', ['emission.plugin.logger',
                 return true;
               }
             });
-          }
-      };
+          };
   };
 
   // END: Adding incidents

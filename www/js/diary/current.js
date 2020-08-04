@@ -1,20 +1,21 @@
  angular.module('emission.main.diary.current', ['ui-leaflet',
-                                                'ngCordova', 
                                                 'emission.services', 
                                                 'ionic',
                                                 'emission.incident.posttrip.manual',
                                                 'rzModule',
-                                                'angularLocalStorage',
+                                                'emission.plugin.kvstore',
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, storage, $ionicPlatform) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, KVStore, $ionicPlatform, $translate) {
     
-  Logger.log("controller CurrMapCtrl called from current.js");
+  console.log("controller CurrMapCtrl called from current.js");
   var _map;
   var _localIncidentMarkers = [];
   var _serverIncidentMarkers = [];
-  var db = window.cordova.plugins.BEMUserCache;
+  var db = function() {
+    return window.cordova.plugins.BEMUserCache;
+  }
   MANUAL_INCIDENT = "manual/incident";
   BACKGROUND_LOCATION = "background/location";
   INCIDENT_CONFIG = 'incident_config';
@@ -32,7 +33,7 @@
   });
 
   angular.extend($scope.mapCtrl.defaults, Config.getMapTiles());
-  Logger.log("mapCtrl", $scope.mapCtrl);
+  console.log("mapCtrl", $scope.mapCtrl);
 
   $scope.verticalSlider = {
     options: {
@@ -44,27 +45,35 @@
       hideLimitLabels: true,
       translate: function(value) {
           if (value === 1) {
-            return "Yesterday";
+            return $translate.instant('diary.current-yesterday');
           } else if (value === 7) {
-            return "Week ago";
+            return $translate.instant('diary.current-weekagos');
           }
         return "";
       }
     }
   };
 
-  var incident_value = storage.get(INCIDENT_CONFIG);
-  if(incident_value != null) {
-    $scope.verticalSlider.value = incident_value;
-  } else {
-    $scope.verticalSlider.value = 1;
+  var loadSliderValue = function() {
+      KVStore.get(INCIDENT_CONFIG).then(function(incident_value) {
+      Logger.log("in current screen, read incident_value = "+incident_value);
+      if(incident_value != null) {
+        $scope.verticalSlider.value = incident_value;
+      } else {
+        $scope.verticalSlider.value = 1;
+      }
+      });
   }
 
   var fromIncidentDate = moment().subtract($scope.verticalSlider.value, 'd');
 
 
   $scope.$watch('verticalSlider.value', function(newVal, oldVal){
-    storage.set(INCIDENT_CONFIG, newVal);
+    $ionicPlatform.ready().then(function() {
+    if (angular.isDefined(newVal) && !isNaN(newVal)) {
+        KVStore.set(INCIDENT_CONFIG, newVal);
+    }
+    });
     incidentServerCalldata.start_time = CommHelper.moment2Timestamp(moment().subtract(newVal, 'd'));
   }, true);
 
@@ -74,15 +83,9 @@
       sel_region: null
   };
 
-  var startTimeFn = function(ts) {
-    var date = new Date(ts*1000);
-    var hours = date.getHours();
-    var minutes = date.getMinutes();
-    var amOrPm = hours < 12 ? 'AM' : 'PM';
-    hours = hours % 12;
-    hours = hours ? hours : 12;
-    minutes = minutes < 10 ? '0'+ minutes : minutes;
-    return hours + ':' + minutes + ' ' + amOrPm;
+  var startTimeFn = function (ts) {
+    var date = new Date(ts * 1000);
+    return moment(date).format("LT");
   };
 
   var getSpeed = function(curr_lglat, last_lglat, curr_ts, last_ts) {
@@ -106,7 +109,7 @@
   });
 
   var refreshTrip = function() {
-    db.getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
+    db().getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
       $scope.$apply(function() {
         Logger.log("current location data" + JSON.stringify(result[0].data));
         var coordinates = result.map(function(locWrapper, index, locList) {
@@ -168,15 +171,16 @@
         });  
       });
     }).catch(function(error) {
-        Logger.log("While loading location data, error "+JSON.stringify(error));
-        $ionicPopup.alert({"template": "While loading location data, error = "+ JSON.stringify(error)})
+        Logger.displayError("Error while loading location data", error);
     });
     console.log($scope.mapCtrl);
   };
 
   $scope.$on('leafletDirectiveMap.current.resize', function(event, data) {
-        Logger.log("current/map received resize event, invalidating map size");
-        data.leafletObject.invalidateSize();
+        $ionicPlatform.ready().then(function() {
+            Logger.log("current/map received resize event, invalidating map size");
+            data.leafletObject.invalidateSize();
+        });
   });
 
   var addIncidentLayer = function(stress, marker, map) {
@@ -217,7 +221,7 @@
 
   var getLocalIncidents = function() {
     // No metadata, to make it consistent with the server incidents
-    db.getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
+    db().getAllMessages(MANUAL_INCIDENT, false).then(function(incidents) {
       Logger.log("Incidents stored locally" + JSON.stringify(incidents));
       if(incidents.length > 0) {
         addIncidents(incidents, _map, _localIncidentMarkers);
@@ -227,7 +231,9 @@
 
   var getServerIncidents = function() {
       Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
-      $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/timestamp", incidentServerCalldata).then(function(res){
+      CommHelper.getAggregateData("result/heatmap/incidents/timestamp", incidentServerCalldata)
+        .then(function(res){
+          $scope.$apply(function() {
           Logger.log("Server incidents result is "+JSON.stringify(res));
           // Need to remove existing markers before adding new ones
           // https://github.com/e-mission/e-mission-phone/pull/263#issuecomment-322669042
@@ -236,15 +242,16 @@
           if(res.data.incidents.length > 0) {
             addIncidents(res.data.incidents, _map, _serverIncidentMarkers);
           }
+          });
       }, function(error){
           Logger.log("Error when getting incidents");
-          Logger.log(error);
+          Logger.log(JSON.stringify(error));
     });
   };
 
   var marker;
   $scope.showIncidentSheet = function() {
-    db.getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
+    db().getAllSensorData(BACKGROUND_LOCATION, true).then(function(result) {
             both = [result[0].data.latitude, result[0].data.longitude];
             var ts = result[0].data.ts;
             var latlng = L.latLng(both);
@@ -254,7 +261,7 @@
             PostTripManualMarker.showSheet($scope.features, latlng, ts, marker, _map);
     })
     .catch(function(error) {
-      Logger.log("error while getting map current from leafletData");
+      Logger.displayError("Error while getting selected map location ", error);
     });
   };
 
@@ -281,9 +288,12 @@
   };
 
   $scope.$on('$ionicView.enter', function() {
-    Logger.log("entered current screen, starting incident refresh");
-    refreshTripLoop();
-    getIncidentsLoop();
+    $ionicPlatform.ready().then(function() {
+        Logger.log("entered current screen, starting incident refresh");
+        loadSliderValue();
+        refreshTripLoop();
+        getIncidentsLoop();
+    });
   });
 
   $scope.$on('$ionicView.leave', function() {
@@ -303,6 +313,9 @@
     clearTimeout(mapRunning);
     clearTimeout(gettingIncidents);
   }); 
-  getLocalIncidents();
 
+  $ionicPlatform.ready().then(function() {
+      Logger.log("ionicPlatform.ready in current screen, getting local incidents");
+      getLocalIncidents();
+  });
 });

@@ -70,11 +70,30 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'emission.stat
           console.log("Failed");
       });
     ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
+        $scope.startTime = moment().utc();
         function() {
             console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
         }
     );
   });
+
+  $scope.$on('$ionicView.leave',function() {
+    var timeOnPage = moment().utc() - $scope.startTime;
+    ClientStats.addReading(ClientStats.getStatKeys().BEAR_TIME, timeOnPage);
+  });
+
+  $ionicPlatform.on("pause", function() {
+    if ($state.$current == "root.main.metrics") {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().BEAR_TIME, timeOnPage);
+    }
+  })
+
+  $ionicPlatform.on("resume", function() {
+    if ($state.$current == "root.main.metrics") {
+      $scope.startTime = moment().utc()
+    }
+  })
 
   $scope.getPolarBears = function(){
       console.log($scope.myBear);

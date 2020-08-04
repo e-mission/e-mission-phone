@@ -10,3 +10,11 @@ package-hooks/
 app-settings.json
 .idea/
 .io-config.json
+*.apk
+*.app.zip
+*.ipa
+www/js/control/collect-settings.js
+www/js/control/sync-settings.js
+www/js/control/transition-notify-settings.js
+config.xml
+package.json

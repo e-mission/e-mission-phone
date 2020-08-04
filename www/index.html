@@ -3,11 +3,7 @@
   <head>
     <meta charset="utf-8">
     <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com http://nominatim.openstreetmap.org https://e-mission.eecs.berkeley.edu https://api.ionic.io/push/tokens emission: 'unsafe-eval';
-            style-src 'self' 'unsafe-inline';
-            script-src 'self' 'unsafe-inline' 'unsafe-eval';
-            img-src 'self' data: http://*.tile.openstreetmap.org http://tile.stamen.com https://*.tile.stamen.com http://*.tile.stamen.com
-            'unsafe-inline'">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com https://api.ionicjs.com https://pro-deploy.ionicjs.com https://nominatim.openstreetmap.org emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' data: https://*.tile.openstreetmap.org https://stamen-tiles-*.a.ssl.fastly.net 'unsafe-inline'">
     <title></title>
 
     <link href="lib/ionic/css/ionic.css" rel="stylesheet">
@@ -25,6 +21,7 @@
     <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
     <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
+    <link href="manual_lib/fontawesome/css/all.min.css" rel="stylesheet">
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
@@ -34,7 +31,13 @@
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
+    <script src="lib/angular-translate/angular-translate.min.js"></script>
+    <script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+    <script src="lib/messageformat/messageformat.min.js"></script>
+    <script src="lib/angular-translate-interpolation-messageformat/angular-translate-interpolation-messageformat.min.js"></script>
     <script src="lib/moment/min/moment.min.js"></script>
+    <script src="lib/moment/min/locales.min.js"></script>
+    <script src="lib/moment/min/moment-with-locales.min.js"></script>
     <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
     <script src="lib/ngCordova/dist/ng-cordova.js"></script>
     <script src="lib/angular-animate/angular-animate.js"></script>
@@ -47,19 +50,17 @@
     <!-- Made a copy to deal with proper directives -->
     <script src="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
     <script src="lib/leaflet-plugins/layer/Marker.Rotate.js"></script>
-    <script src="lib/ionic-datepicker/dist/ionic-datepicker.bundle.min.js"></script>
+    <script src="manual_lib/ionic-datepicker/ionic-datepicker.bundle.min.js"></script>
     <script src="non-bower-lib/simple-leaflet-plugins/leaflet-heat.js"></script>
     <script src="lib/d3/d3.js"></script>
     <script src="lib/nvd3/build/nv.d3.min.js"></script>
     <script src="lib/angular-nvd3/dist/angular-nvd3.min.js"></script>
-    <script src="lib/string.startsWith/src/string.startsWith.js"></script>
     <script src="lib/angular-cookies/angular-cookies.min.js"></script>
     <script src="lib/angularLocalStorage/dist/angularLocalStorage.min.js"></script>
-    <script src="manual_lib/leaflet-plugins/leaflet.textpath.js"></script>
     <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
     <!-- Manually installed javascript for libraries that are not published through bower -->
     <!-- cordova script (this will be a 404 in the browser) -->
-    <script src="cordova.js"></script>
+    <script type="text/javascript" src="cordova.js"></script>
 
     <!-- your app's js -->
     <script src="js/app.js"></script>
@@ -78,8 +79,9 @@
     <script src="js/main.js"></script>
     <script src="js/recent.js"></script>
     <script src="js/incident/post-trip-manual.js"></script>
-    <script src="js/incident/post-trip-prompt.js"></script>
-    <script src="js/incident/post-trip-map-display.js"></script>
+    <script src="js/tripconfirm/post-trip-prompt.js"></script>
+    <script src="js/tripconfirm/post-trip-map-display.js"></script>
+    <script src="js/tripconfirm/trip-confirm-services.js"></script>
     <script src="js/diary.js"></script>
     <script src="js/diary/list.js"></script>
     <script src="js/diary/current.js"></script>
@@ -97,6 +99,7 @@
     <script src="js/metrics.js"></script>
     <script src="js/goals.js"></script>
     <script src="js/control/general-settings.js"></script>
+    <script src="js/control/emailService.js"></script>
     <script src="js/control/collect-settings.js"></script>
     <script src="js/control/sync-settings.js"></script>
     <script src="js/control/transition-notify-settings.js"></script>
@@ -104,6 +107,7 @@
     <!--script src="js/goals/party.js"></script-->
     <script src="js/goals/signup.js"></script>
     <script src="js/plugin/logger.js"></script>
+    <script src="js/plugin/storage.js"></script>
 
 
     <script src="lib/d3/d3.js"></script>

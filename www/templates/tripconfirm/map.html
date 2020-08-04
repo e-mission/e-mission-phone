@@ -1,0 +1,61 @@
+<ion-view view-title="Incident" class="ion-view-background" translate-namespace="trip-confirm">
+    <ion-nav-buttons side="right">
+      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+    </ion-nav-buttons>
+    <!--ion-nav-buttons side="left">
+      <button class="button button-icon ion-close" ng-click="closeView()"></button>
+    </ion-nav-buttons-->
+    <ion-nav-title>{{ getFormattedDate(mapCtrl.start_ts) }}</ion-nav-title> 
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
+        <div class="row" style="text-align: center;display: block;">
+            <div style="font-size: 1em;opacity: 0.7;" translate=".recenttrip" translate-values="{startTime: getFormattedTime(mapCtrl.start_ts), endTime: getFormattedTime(mapCtrl.end_ts)}"></div>
+        </div>
+        <div style="height: 10px;"></div>
+            <leaflet geojson="mapCtrl.geojson" id="incident" defaults="mapCtrl.defaults" 
+                height="30%" width="100%" data-tap-disabled="true">
+            </leaflet>
+        <div class="row" style="height: 10px;width: 75%;margin: auto;margin-top: 10px;">
+            <div class="col-50" style="background-color: #01D0A7;margin: 2px;border-radius: 10%;"></div>
+            <div ng-if="!secondSlide" class="col-50" style="background-color: #A6A6A6;margin: 2px;border-radius: 10%;"></div>
+            <div ng-if="secondSlide" class="col-50" style="background-color: #01D0A7;margin: 2px;border-radius: 10%;"></div>
+        </div>
+         <ion-slide-box show-pager="false" ng-init="disableSwipe()" style="background: transparent !important;">
+            <ion-slide id="modes">
+                    <div style="padding: 5px; font-size: 1.25em;opacity: 0.7;" translate>
+                    {{'diary.how-did-you-get-here'}}
+                    </div>
+                    <div style="height: 100%; padding-top: 10px;" >
+                        <ion-scroll style="height: 40%;" id=mode_list>
+                            <ion-list ng-repeat="mode in modeOptions">
+                                <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value" style="color: #585858 !important ;">{{mode.text}}</ion-radio>
+                            </ion-list>
+                        </ion-scroll>
+                    </div>
+            </ion-slide>
+            <ion-slide id="modes">
+                    <div style="padding: 5px;font-size: 1.25em;opacity: 0.7;" translate>
+                    {{'diary.why-did-you-come-here'}}
+                    </div>
+                    <div style="height: 100%;padding-top: 10px;">
+                        <ion-scroll style="height: 40%;">
+                            <ion-list ng-repeat="purpose in purposeOptions">
+                                <ion-radio ng-click="choosePurpose()" ng-value="purpose.value" ng-model="selected.purpose.value" style="color: #585858 !important ;">{{purpose.text}}</ion-radio>
+                            </ion-list>
+                        </ion-scroll>
+                    </div>
+            </ion-slide>
+        </ion-slide-box>
+        <div style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;" ng-if="!secondSlide">
+            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="nextSlide()" translate>{{'.continue'}}</button>
+        </div>
+        <div style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;" ng-if="secondSlide">
+            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="doneSlide()" translate>{{'.done'}}</button>
+        </div>
+        <!--div style="" class="button-bar">
+            <button class="button button-stable button-block icon ion-refresh"
+                ng-click="refreshWholeMap()">Refresh</button>
+            <button class="button button-stable button-block"
+                ng-click="refreshTiles()">Fix Map</button>
+        </div-->
+    </ion-content>
+</ion-view>

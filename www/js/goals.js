@@ -1,13 +1,14 @@
 'use strict';
 
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
+                'emission.plugin.kvstore',
                 'emission.survey.launch',
                 'ngSanitize', 'ngAnimate',
-                'emission.splash.referral', 'angularLocalStorage',
+                'emission.splash.referral',
                 'ng-walkthrough', 'nzTour'])
 
-.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicPopup, $timeout, storage, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
+.controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $ionicPlatform, $scope, $rootScope, $ionicModal, nzTour,
+                                $window, $http, $ionicPopup, $timeout, KVStore, ReferralHandler, ReferHelper, Logger, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -23,6 +24,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var floatGold;
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
+    var iab;
     //var challengeMembersId = [];
     
     // THIS BLOCK FOR inAppBrowser
@@ -122,7 +124,8 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
      */
     var handlePendingRefer = function() {
         Logger.log("About to handle pending referral");
-        if (storage.get(HABITICA_REGISTERED_KEY) == true) {
+        KVStore.get(HABITICA_REGISTERED_KEY).then(function(stored_val) {
+        if (stored_val == true) {
             Logger.log("Registered with habitica - checking pending registration");
             if (ReferralHandler.hasPendingRegistration() == true) {
                 Logger.log("Registration is pending, calling joinGroup");
@@ -140,6 +143,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 showNeedRegister();
             }
         }
+        });
     }
 
     //var element = angular.element(document.querySelector('#todo'));
@@ -147,35 +151,31 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
-    $scope.toBrowser = function() {     
-            var options = {       
-              location: 'no',     
-              clearcache: 'no',       
-              toolbar: 'yes'      
-            };        
+    $scope.toBrowser = function() {
+            var options = {
+              location: 'no',
+              clearcache: 'no',
+              toolbar: 'yes'
+            };
+
+            var settings = localStorage.getItem("habit-mobile-settings");
       
-            var settings = localStorage.getItem("habit-mobile-settings");     
-      
-          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){     
-            // insert Javascript via code / file      
-            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||      
-                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {       
-                $cordovaInAppBrowser.executeScript({      
-                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');"      
-                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"     
-                });       
-            } else {      
-                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");     
-            }     
-          });     
-        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)     
-          .then(function(event) {     
-            // success        
-          })      
-          .catch(function(event) {        
-            // error      
-          });
-       
+        iab = $window.cordova.InAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options);
+        iab.addEventListener('loadstop', function(event){
+            // insert Javascript via code / file
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||
+                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
+                iab.executeScript({
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');"
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+                });
+            } else {
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");
+            }
+        });
+        iab.addEventListener('loaderror', function(event){
+            Logger.displayError("Error while launching habitica website", JSON.stringify(event));
+        });
     };
 
     $scope.openLeaderboard = function() {
@@ -240,9 +240,10 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
         CommHelper.habiticaRegister(regConfig).then(function(response) {
             console.log("Success!");
             console.log(response);
-            storage.set('party_id',response.habitica_group_id);
-            storage.set(HABITICA_REGISTERED_KEY, true);
-            refreshInfo();
+            Promise.all([KVStore.set('party_id',response.habitica_group_id),
+                         KVStore.set(HABITICA_REGISTERED_KEY, true)]).then(function() {
+                refreshInfo();
+            });
         }, function(error) {
             $ionicLoading.hide();
             $ionicPopup.alert({title: "<h4 class='center-align'>Username is Required</h4>",
@@ -279,7 +280,9 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 Math.floor($scope.profile.stats.gp))*100);
             if(!('_id' in $scope.profile.party)){
                 $scope.hasParty = false;
-                partyId = storage.get('party_id');
+                KVStore.get('party_id').then(function(ret_val) {
+                    partyId = ret_val;
+                });
             } else{
                 $scope.hasParty = true;
                 partyId = $scope.profile.party._id;
@@ -845,21 +848,20 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     var refreshInfo = function(){
         console.log("Refreshing information");
-        console.log("Party ID = " + storage.get('party_id'));
         refresh = true;
-        if (storage.get(HABITICA_REGISTERED_KEY) == true) {
+        Promise.all([KVStore.get('party_id'),
+            KVStore.get(HABITICA_REGISTERED_KEY)]).then(function([party_id, is_registered]) {
+        console.log("Party ID = " + party_id);
+        if (is_registered == true) {
             getUserInfo();
             getUserTask();
         } else {
             $ionicLoading.hide();
         }
+        // TODO: Does this need to be within refreshInfo?
         handlePendingRefer();
+        });
     };
-
-    //if (storage.get(HABITICA_REGISTERED_KEY) == true) {
-       // getChallenges();
-    //}
-    refreshInfo();
 
     $scope.refreshPage = function() {
         console.log("Refreshing page");
@@ -927,23 +929,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
       startWalkthrough();
     }
 
-    /*
-    * Checks if it is the first time the user has loaded the goals tab. If it is then
-    * show a walkthrough and store the info that the user has seen the tutorial.
-    */
-    /*var checkGoalsTutorialDone = function () {
-      var GOALS_DONE_KEY = 'goals_tutorial_done';
-      var goalsTutorialDone = storage.get(GOALS_DONE_KEY);
-      if (!goalsTutorialDone) {
-        startWalkthrough();
-        storage.set(GOALS_DONE_KEY, true);
-      }
-    };*/
-
-    /*
-     * Just to clean everything up.
-     * TODO: Remove after a few releases.
-     */
-    var SURVEY_DONE_KEY = 'survey_done';
-    storage.remove(SURVEY_DONE_KEY);
+    $ionicPlatform.ready().then(function() {
+        refreshInfo();
+    });
 });

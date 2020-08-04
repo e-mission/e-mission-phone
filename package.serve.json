@@ -1,0 +1,24 @@
+{
+  "name": "edu.berkeley.eecs.emission",
+  "version": "2.5.0",
+  "displayName": "emission",
+  "license": "BSD-3-Clause",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/e-mission/e-mission-phone.git"
+  },
+  "scripts": {
+    "setup-serve": "./bin/download_settings_controls.js",
+    "serve": "phonegap --verbose serve"
+  },
+  "devDependencies": {
+    "phonegap": "9.0.0+cordova.9.0.0",
+    "cordova": "9.0.0",
+    "@ionic/cli": "6.10.1",
+    "bower": "1.8.8"
+  },
+  "dependencies": {
+    "fs-extra": "^9.0.1",
+    "klaw-sync": "^6.0.0"
+  }
+}

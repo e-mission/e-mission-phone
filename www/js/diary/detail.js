@@ -1,15 +1,15 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
-                                      'nvd3', 'angularLocalStorage',
+                                      'nvd3', 'emission.plugin.kvstore',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
                                         $ionicPlatform, ClientStats,
-                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        CommHelper, PostTripManualMarker) {
+                                        CommHelper, PostTripManualMarker, $translate) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -63,18 +63,14 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
   $scope.getSectionDetails = DiaryHelper.getSectionDetails;
   $scope.getFormattedTime = DiaryHelper.getFormattedTime;
+  $scope.getLocalTimeString = DiaryHelper.getLocalTimeString;
   $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
   $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
   $scope.getTripDetails = DiaryHelper.getTripDetails
-  $scope.tripgj = DiaryHelper.directiveForTrip($scope.trip);
+  $scope.tripgj = Timeline.getTripWrapper($stateParams.tripId);
 
   $scope.getFormattedDistanceInMiles = function(input) {
     return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
-  }
-
-  $scope.getTripBackground = function() {
-     var ret_val = DiaryHelper.getTripBackground($rootScope.dark_theme, $scope.tripgj);
-     return ret_val;
   }
 
   console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
@@ -95,7 +91,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   }
   var dataset = {
       values: data,
-      key: 'Speed',
+      key: $translate.instant('details.speed'),
       color: '#7777ff',
     }
   var chart = nv.models.lineChart()
@@ -107,10 +103,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                 .showXAxis(true);        //Show the x-axis
   chart.xAxis
     .tickFormat(d3.format(".1f"))
-    .axisLabel('Time (mins)');
+    .axisLabel($translate.instant('details.time') + ' (mins)');
 
   chart.yAxis     //Chart y-axis settings
-      .axisLabel('Speed (m/s)')
+      .axisLabel($translate.instant('details.speed') + ' (m/s)')
       .tickFormat(d3.format('.1f'));
 
   d3.select('#chart svg')    //Select the <svg> element you want to render the chart in.
@@ -129,17 +125,20 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       mask: {
         visibleOnNoTarget: true,
         clickExit: true
-      }
+      },
+      previousText: $translate.instant('tour-previous'),
+      nextText: $translate.instant('tour-next'),
+      finishText: $translate.instant('tour-finish')
     },
     steps: [{
       target: '#detail',
-      content: 'To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a &#x263B; or &#x2639; incident'
+      content: $translate.instant('details.tour-detail-content')
     }, {
       target: '#sectionList',
-      content: 'Trip sections, along with times and modes'
+      content: $translate.instant('details.tour-sectionList-content')
     }, {
       target: '#sectionPct',
-      content: '% of time spent in each mode for this trip'
+      content: $translate.instant('details.tour-sectionPct-content')
     }]
   };
 
@@ -147,17 +146,17 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
     nzTour.start(tour).then(function(result) {
       Logger.log("detail walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("detail walkthrough start errored" + err);
+      Logger.displayError("detail walkthrough start errored", err);
     });
   };
 
 
   var checkDetailTutorialDone = function () {
     var DETAIL_DONE_KEY = 'detail_tutorial_done';
-    var detailTutorialDone = storage.get(DETAIL_DONE_KEY);
+    var detailTutorialDone = KVStore.getDirect(DETAIL_DONE_KEY);
     if (!detailTutorialDone) {
       startWalkthrough();
-      storage.set(DETAIL_DONE_KEY, true);
+      KVStore.set(DETAIL_DONE_KEY, true);
     }
   };
 

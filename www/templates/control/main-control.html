@@ -1,24 +1,24 @@
-<ion-view view-title="Settings" ng-class="ionViewBackgroundClass()">
+<ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
     <div class="control-list-item">
       <div class="control-list-text">{{settings.auth.email}}</div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Username: {{settings.username}}</div>
+      <div class="control-list-text" translate>{{.username}}: {{settings.username}}</div>
       <div ng-click="showUsernamePopup()" id ="switch-user" class="control-icon-button"><i class="icon ion-edit"></i></div>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Tracking</div>
+      <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
-        <input type="checkbox" ng-checked="trackingOn()">
+        <input type="checkbox" ng-checked="settings.collect.trackingOn">
         <div class="track">
           <div class="handle"></div>
         </div>
       </label>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Medium accuracy</div>
+      <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
         <div class="track">
@@ -26,10 +26,8 @@
         </div>
       </label>
     </div>
-
-
     <div class="control-list-item">
-      <div class="control-list-text">Dark theme</div>
+      <div class="control-list-text" translate>{{'.dark-theme'}}</div>
       <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getDarkTheme()">
         <div class="track">
@@ -38,20 +36,24 @@
       </label>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Force sync</div>
+      <div class="control-list-text">{{carbonDatasetString}}</div>
+      <div ng-click="changeCarbonDataset()" class="control-icon-button" ><i class="ion-stats-bars"></i></div>
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.force-sync'}}</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Share</div>
+      <div class="control-list-text" translate>{{'.share'}}</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
     </div>
     <div class="control-list-item">
-      <div class="control-list-text">Check for UI updates</div>
+      <div class="control-list-text" translate>{{'.check-ui-updates'}}</div>
       <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
     </div>
 
     <div class="control-list-item">
-      <div class="control-list-text">Download json dump</div>
+      <div class="control-list-text" translate>{{'.download-json-dump'}}</div>
       <div ng-click="openDatePicker()" class="control-icon-button">
         <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
       </div>
@@ -59,18 +61,18 @@
     </div>
 
     <div class="control-list-item">
-      <div class="control-list-text">Email log</div>
+      <div class="control-list-text" translate>{{'.email-log'}}</div>
       <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
     </div>
 
     <div class="control-list-item" ng-show="userDataSaved()">
-      <div class="control-list-text">User data</div>
+      <div class="control-list-text" translate>{{'.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
     </div>
     <!-- Begin user data -->
     <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
-        <div class="control-list-text">Erase data</div>
+        <div class="control-list-text" translate>{{'.erase-data'}}</div>
         <div ng-click="eraseUserData()" id="gray" class=" control-icon-button"><i class="ion-trash-b"></i></div>
       </div>
       <ion-list>
@@ -84,30 +86,38 @@
 
 
     <div class="control-list-item">
-      <div class="control-list-text">Developer zone</div>
+      <div class="control-list-text" translate>{{'.dev-zone'}}</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
     </div>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
-        <div class="control-list-text">Refresh</div>
+        <div class="control-list-text" translate>{{'.refresh'}}</div>
         <div ng-click="refreshScreen()" class="control-icon-button"><i class="ion-refresh"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Check consent</div>
+          <div class="control-list-text" translate>{{'.end-trip-sync'}}</div>
+          <div ng-click="endForceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text" translate>{{'.check-consent'}}</div>
         <div ng-click="checkConsent()" class="control-icon-button"><i class="ion-checkmark-circled"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Invalidate cached docs</div>
+        <div class="control-list-text" translate>{{'.invalidate-cached-docs'}}</div>
         <div ng-click="invalidateCache()" class="control-icon-button"><i class="ion-backspace"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Nuke all buffers and cache</div>
-        <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-trash-a"></i></div>
+        <div class="control-list-text" translate>{{'.nuke-all'}}</div>
+        <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Set UI channel</div>
+        <div class="control-list-text" translate> {{'.test-notification'}}</div>
+        <div ng-click="testTripEndNotify()" class="control-icon-button"><i class="ion-android-note"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text" translate>{{'.set-ui-channel'}}</div>
         <input type="text" name="userName"
           ng-model="settings.channel"
           ng-model-options="{ getterSetter: true }" />
@@ -117,20 +127,19 @@
         <div ng-click="forceState()" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Check log</div>
+        <div class="control-list-text" translate>{{'.check-log'}}</div>
         <div ng-click="showLog()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Check sensed data</div>
+        <div class="control-list-text" translate>{{'.check-sensed-data'}}</div>
         <div ng-click="showSensed()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text">Check map</div>
+        <div class="control-list-text" translate>{{'.check-map'}}</div>
         <div ng-click="showMap()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
-
       <div class="control-list-item">
-        <div class="control-list-text">Collection</div>
+        <div class="control-list-text" translate>{{'.collection'}}</div>
         <div ng-click="editCollectionConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
@@ -142,7 +151,7 @@
       </ion-list>
 
       <div class="control-list-item">
-        <div class="control-list-text">Sync</div>
+        <div class="control-list-text" translate>{{'.sync'}}</div>
         <div ng-click="editSyncConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
@@ -157,7 +166,7 @@
       </ion-list>
 
       <div class="control-list-item">
-        <div class="control-list-text">Transition Notify</div>
+        <div class="control-list-text" translate>{{'.transition-notify'}}</div>
         <div ng-click="editTNotifyConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>

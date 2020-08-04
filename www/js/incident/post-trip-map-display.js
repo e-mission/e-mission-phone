@@ -1,15 +1,15 @@
 'use strict';
 angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
-                                      'angularLocalStorage',
+                                      'emission.plugin.kvstore',
                                       'emission.services', 'emission.plugin.logger',
                                       'emission.main.diary.services',
                                       'emission.incident.posttrip.manual'])
 
 .controller("PostTripMapCtrl", function($scope, $window, $state,
                                         $stateParams, $ionicLoading,
-                                        leafletData, leafletMapEvents, nzTour, storage,
+                                        leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config,
-                                        UnifiedDataLoader, PostTripManualMarker) {
+                                        UnifiedDataLoader, PostTripManualMarker, $translate) {
   Logger.log("controller PostTripMapDisplay called with params = "+
     JSON.stringify($stateParams));
   $scope.mapCtrl = {};
@@ -54,7 +54,7 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     };
     Logger.log("About to query buffer for "+JSON.stringify(tq));
     $ionicLoading.show({
-      template: 'Loading...'
+      template: $translate.instant('loading')
     });
     UnifiedDataLoader.getUnifiedSensorDataForInterval(LOC_KEY, tq)
       // .then(PostTripManualMarker.addLatLng)
@@ -135,13 +135,8 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
         $ionicLoading.hide();
     })
     .catch(function(error) {
-        var errStr = JSON.stringify(error);
         $ionicLoading.hide();
-        Logger.log(errStr);
-        $ionicPopup.alert({
-            title: "Unable to retrieve data",
-            template: errStr
-        });
+        Logger.displayError("Unable to retrieve location data for map", error);
     });
   }
 
@@ -164,11 +159,14 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
       mask: {
         visibleOnNoTarget: true,
         clickExit: true
-      }
+      },
+      previousText: $translate.instant('tour-previous'),
+      nextText: $translate.instant('tour-next'),
+      finishText: $translate.instant('tour-finish')
     },
     steps: [{
       target: '#incident',
-      content: 'Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a <font size="+3">&#x263B;</font> or <font size="+3">&#x2639;</font> incident'
+      content: $translate.instant('post-trip-map-display-tour-incident')
     }]
   };
 
@@ -176,17 +174,17 @@ angular.module('emission.incident.posttrip.map',['ui-leaflet', 'ng-walkthrough',
     nzTour.start(tour).then(function(result) {
       Logger.log("list walkthrough start completed, no error");
     }).catch(function(err) {
-      Logger.log("incident walkthrough start errored" + err);
+      Logger.displayError("incident walkthrough start errored", err);
     });
   };
 
 
   var checkIncidentTutorialDone = function () {
     var INCIDENT_DONE_KEY = 'incident_tutorial_done';
-    var incidentTutorialDone = storage.get(INCIDENT_DONE_KEY);
+    var incidentTutorialDone = KVStore.getDirect(INCIDENT_DONE_KEY);
     if (!incidentTutorialDone) {
       startWalkthrough();
-      storage.set(INCIDENT_DONE_KEY, true);
+      KVStore.set(INCIDENT_DONE_KEY, true);
     }
   };
 

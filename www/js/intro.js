@@ -18,8 +18,83 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     controller: 'IntroCtrl'
   });
 })
-.controller('IntroCtrl', function($scope, $state, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch) {
+
+.controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, $translate) {
+
+  $scope.platform = $window.device.platform;
+  $scope.osver = $window.device.version.split(".")[0];
+  if($scope.platform.toLowerCase() == "android") {
+    if($scope.osver < 6) {
+        $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-6");
+    }
+  }
+
+  if($scope.platform.toLowerCase() == "ios") {
+    if($scope.osver < 13) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-lt-13");
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
+    }
+  }
+
+  $scope.backgroundRestricted = false;
+  if($window.device.manufacturer.toLowerCase() == "samsung") {
+    $scope.backgroundRestricted = true;
+    $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
+  }
+
+  // copy-pasted from ngCordova, and updated to promises
+  $scope.checkFile = function(directory, fn) {
+    return new Promise(function(resolve, reject) {
+      if ((/^\//.test(file))) {
+        reject('directory cannot start with \/');
+      }
+
+      try {
+        var directory = path + file;
+        $window.resolveLocalFileSystemURL(directory, function (fileSystem) {
+          if (fileSystem.isFile === true) {
+            resolve(fileSystem);
+          } else {
+            reject({code: 13, message: 'input is not a file'});
+          }
+        }, function (error) {
+          reject({code: error.code, message: "error while resolving URL "+directory});
+        });
+      } catch (err) {
+        err.message = "$window.resolveLocalFileSystemURL not found";
+        reject(err);
+      }
+    });
+  }
+
+  console.log("Explanation = "+$scope.locationPermExplanation);
+
+  // The language comes in between the first and second part
+  $scope.geti18nFile = function (fpFirstPart, fpSecondPart) {
+    var lang = $translate.use();
+    var defaultVal = fpFirstPart + fpSecondPart;
+    if (lang != 'en') {
+      var url = fpFirstPart + lang + fpSecondPart;
+      $scope.checkFile(cordova.file.applicationDirectory, url).then( function(result){
+        window.Logger.log(window.Logger.LEVEL_DEBUG,
+          "Successfully found the consent file, result is " + JSON.stringify(result));
+        return url.replace("www/", "");
+      }, function (err) {
+        window.Logger.log(window.Logger.LEVEL_DEBUG,
+          "Consent file not found, loading english version, error is " + JSON.stringify(err));
+           return defaultVal;
+        });
+    }
+    return defaultVal;
+  }
+  
+  $scope.consentFile = $scope.geti18nFile("templates/intro/consent", ".html");
+  $scope.explainFile = $scope.geti18nFile("templates/intro/sensor_explanation", ".html");
+
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
   };

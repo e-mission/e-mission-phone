@@ -1,4 +1,4 @@
-<ion-view view-title="Dashboard" class="ion-view-background">
+<ion-view view-title="{{'main-metrics.dashboard' | translate}}" class="ion-view-background" translate-namespace="main-metrics">
   <ion-nav-bar class="bar-stable">
   </ion-nav-bar>
   <ion-nav-buttons side="primary">
@@ -11,43 +11,42 @@
         <i class="icon ion-refresh"></i>
       </button>
   </ion-nav-buttons>
-
   <ion-content>
     <div class="card" id="suggestion-card" ng-click="linkToMaps()">
-      <h4 class="dashboard-headers">Suggestion</h4>
+      <h4 class="dashboard-headers" translate>{{'.suggestion'}}</h4>
       <div class="user-carbon">
         {{suggestionData.suggestion}}
       </div>
-      <div id="percentage-change">
-        You can save {{suggestionData.savings}} in a month
+      <div id="percentage-change" translate>
+        {{.suggestion-savings}}
       </div>
     </div>
 
     <div ng-class="changeFootprintCardHeight()" id="dashboard-stats" class="card">
-      <h4 class="dashboard-headers">Weekly Stats</h4>
+      <h4 class="dashboard-headers" translate>{{.weekly-stats}}</h4>
       <div class="row">
-        <div class="col-left"><b>CO₂ Consumption: </b></div>
+        <div class="col-left"><b translate>CO₂ {{.footprint}}: </b></div>
         <div class="col-right">{{carbonData.userCarbon}}</div>
       </div>
       <div class="row">
-        <div class="col-left"><b>Change from Last Week: </b></div>
+        <div class="col-left"><b translate>{{.lastweek}}: </b></div>
         <div class="col-right">{{carbonData.lastWeekUserCarbon}}</div>
       </div>
       <div class="row">
-        <div class="col-left"><b>Total Distance: </b></div>
+        <div class="col-left"><b translate>{{.distance}}: </b></div>
         <div class="col-right">{{summaryData.defaultSummary.totalDistance}}</div>
       </div>
       <div class="row">
-        <div class="col-left"><b>Favorite Mode: </b></div>
+        <div class="col-left"><b translate>{{.fav-mode}}: </b></div>
         <div class="col-right">{{summaryData.defaultSummary.favMode}}</div>
       </div>
     </div>
 
     <div id="dashboard-bottom" class="card">
-      <h4 class="dashboard-headers">Recent Trips</h4>
+      <h4 class="dashboard-headers" translate>{{.recent-trips}}</h4>
       <!-- Links to trip detail page -->
-      <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;">
-        No available recent trips
+      <div ng-if="summaryData.userSummary.recentTrips.length == 0" style="height:20px;" translate>
+        {{.no-available-recent-trips}}
       </div>
       <div ng-if="summaryData.userSummary.recentTrips.length > 0">
         <div ng-repeat="recentTrip in summaryData.userSummary.recentTrips">

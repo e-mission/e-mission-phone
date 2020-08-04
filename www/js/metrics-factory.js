@@ -1,79 +1,92 @@
 'use strict';
 
-angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
+angular.module('emission.main.metrics.factory', ['emission.services', 'emission.plugin.kvstore'])
 
-.factory('FootprintHelper', function() {
+.factory('FootprintHelper', function(CarbonDatasetHelper) {
   var fh = {};
-  var footprint = {
-    TRAIN: 92/1609,
-    CAR: 287/1609,
-    BUS: 3/4 * 287/1609,
-    ON_FOOT: 0,
-    BICYCLING: 0
-  }
-  var readable = function(v) {
-    return v > 9999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
-  }
   var mtokm = function(v) {
     return v / 1000;
   }
-  fh.getFootprintRaw = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return [footprint.TRAIN * mtokm(distance), footprint.CAR * mtokm(distance)];
-    } else {
-      return footprint[mode] * mtokm(distance);
-    }
+
+  fh.readableFormat = function(v) {
+    return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprint = function(distance, mode) {
-    if (mode === "IN_VEHICLE") {
-      return readable(footprint.TRAIN * mtokm(distance)) + ' ~ ' + readable(footprint.CAR * mtokm(distance));
-    } else {
-      return readable(footprint[mode] * mtokm(distance));
+  fh.getFootprintForMetrics = function(userMetrics) {
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    var result = 0;
+    for (var i in userMetrics) {
+      var mode = userMetrics[i].key;
+      if (mode == 'ON_FOOT') {
+        mode = 'WALKING';
+      }
+      if (mode in footprint) {
+        result += footprint[mode] * mtokm(userMetrics[i].values);
+      }
+      else if (mode == 'IN_VEHICLE') {
+        result += ((footprint['CAR'] + footprint['BUS'] + footprint["LIGHT_RAIL"] + footprint['TRAIN'] + footprint['TRAM'] + footprint['SUBWAY']) / 6) * mtokm(userMetrics[i].values);
+      }
+      else {
+        console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+      }
     }
+    return result;
+  }
+  fh.getLowestFootprintForDistance = function(distance) {
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    var lowestFootprint = Number.MAX_SAFE_INTEGER;
+    for (var mode in footprint) {
+      if (mode == 'WALKING' || mode == 'BICYCLING') {
+        // these modes aren't considered when determining the lowest carbon footprint
+      }
+      else {
+        lowestFootprint = Math.min(lowestFootprint, footprint[mode]);
+      }
+    }
+    return lowestFootprint * mtokm(distance);
+  }
+  fh.getHighestFootprintForDistance = function(distance) {
+    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    var highestFootprint = 0;
+    for (var mode in footprint) {
+      highestFootprint = Math.max(highestFootprint, footprint[mode]);
+    }
+    return highestFootprint * mtokm(distance);
   }
   return fh;
 })
 
-.factory('CalorieCal', function(storage){
+.factory('CalorieCal', function(KVStore){
 
   var cc = {};
+  var USER_DATA_KEY = "user-data";
+
   cc.set = function(info) {
-    for(var key in info){
-      storage.set(key, info[key])
-    }
+    return KVStore.set(USER_DATA_KEY, info);
   };
   cc.get = function() {
-    var userData = {
-        'gender': storage.get('gender'),
-        'heightUnit': storage.get('heightUnit'),
-        'height': storage.get('height'),
-        'weightUnit': storage.get('weightUnit'),
-        'weight': storage.get('weight'),
-        'age': storage.get('age'),
-        'userDataSaved': storage.get('userDataSaved')
-      }
-      return userData;
+    return KVStore.get(USER_DATA_KEY);
   };
   cc.delete = function() {
-    storage.remove('gender');
-        storage.remove('height');
-        storage.remove('heightUnit');
-        storage.remove('weight');
-        storage.remove('weightUnit');
-        storage.remove('age');
-        storage.remove('userDataSaved');
+    return KVStore.remove(USER_DATA_KEY);
   };
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
   };
   cc.getMet = function(mode, speed) {
+    if (mode == 'ON_FOOT') {
+      console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
+      mode = 'WALKING';
+    }
     if (!standardMETs[mode]) {
-      console.log("Illegal mode");
+      console.log("CalorieCal.getMet() Illegal mode: " + mode);
       return 0; //So the calorie sum does not break with wrong return type
     }
     for (var i in standardMETs[mode]) {
       if (mpstomph(speed).between(standardMETs[mode][i].range[0], standardMETs[mode][i].range[1])) {
         return standardMETs[mode][i].mets;
+      } else if (mpstomph(speed) < 0 ) {
+        console.log("CalorieCal.getMet() Negative speed: " + mpstomph(speed));
+        return 0;
       }
     }
   }
@@ -104,7 +117,7 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
     return weightInKg * durationInMin * met;
   }
   var standardMETs = {
-    "ON_FOOT": {
+    "WALKING": {
       "VERY_SLOW": {
         range: [0, 2.0],
         mets: 2.0
@@ -146,12 +159,6 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
         mets: 9.8
       }
     },
-    "IN_VEHICLE": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
     "BICYCLING": {
       "VERY_VERY_SLOW": {
         range: [0, 5.5],
@@ -180,6 +187,54 @@ angular.module('emission.main.metrics.factory', ['angularLocalStorage'])
       "RACING": {
         range: [20, Number.MAX_VALUE],
         mets: 15.8
+      }
+    },
+    "IN_VEHICLE": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "CAR": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "BUS": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "LIGHT_RAIL": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "TRAIN": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "TRAM": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "SUBWAY": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
+      }
+    },
+    "AIR_OR_HSR": {
+      "ALL": {
+        range: [0, Number.MAX_VALUE],
+        mets: 0
       }
     }
   }

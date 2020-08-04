@@ -10,8 +10,9 @@
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.splash.updatecheck',
-    'emission.intro', 'emission.main'])
+    'emission.splash.updatecheck', 'emission.services.email',
+  'emission.intro', 'emission.main',
+  'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
     CustomURLScheme, ReferralHandler, UpdateCheck) {
@@ -37,11 +38,7 @@ angular.module('emission', ['ionic',
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     Logger.log("ionicPlatform is ready");
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
 
-    }
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
@@ -50,23 +47,32 @@ angular.module('emission', ['ionic',
     // Configure the connection settings
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
+        if(connectionConfig.data.length == 0) {
+            throw "blank string instead of missing file on dynamically served app";
+        }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
+        $rootScope.connectUrl = connectionConfig.data.connectUrl;
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
-        Logger.log("error "+err+" while reading connection config, reverting to defaults");
+        // not displaying the error here since we have a backup
+        Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
-            Logger.log("defaultConfig = "+defaultConfig);
+            Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
+            $rootScope.connectUrl = defaultConfig.connectUrl;
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
-            Logger.log("error "+err+" reading or setting defaults, giving up");
+            // displaying the error here since we don't have a backup
+            Logger.displayError("Error reading or setting connection defaults", err);
         });
     });
+    cordova.plugin.http.setDataSerializer('json');
   });
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider) {
+.config(function($stateProvider, $urlRouterProvider, $translateProvider) {
   console.log("Starting config");
+  // alert("config");
 
   // Ionic uses AngularUI Router which uses the concept of states
   // Learn more here: https://github.com/angular-ui/ui-router
@@ -96,5 +102,26 @@ angular.module('emission', ['ionic',
   // alert("about to fall back to otherwise");
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/splash');
+
+  // Allow the use of MessageForm interpolation for Gender and Plural.
+  $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
+                    .useSanitizeValueStrategy('escape');
+
+
+  // Define where we can find the .json and the fallback language
+  $translateProvider
+    .fallbackLanguage('en')
+    .registerAvailableLanguageKeys(['en', 'fr', 'it'], {
+      'en_*': 'en',
+      'fr_*': 'fr',
+      'it_*': 'it',
+      '*': 'en'
+    })
+    .determinePreferredLanguage()
+    .useStaticFilesLoader({
+      prefix: 'i18n/',
+      suffix: '.json'
+    });
+  
   console.log("Ending config");
 });

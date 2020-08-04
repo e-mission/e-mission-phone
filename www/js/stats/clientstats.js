@@ -17,6 +17,8 @@ angular.module('emission.stats.clientstats', [])
       CHECKED_DIARY: "checked_diary",
       EXPANDED_TRIP: "expanded_trip",
       NOTIFICATION_OPEN: "notification_open",
+      METRICS_TIME: "metrics_time",
+      BEAR_TIME: "bear_time",
       DIARY_TIME: "diary_time"
     };
   }

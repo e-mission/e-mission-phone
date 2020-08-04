@@ -8,8 +8,9 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
                                  'emission.main.bear',
-                                 'emission.incident.posttrip.map',
-                                 'emission.services'])
+                                 'emission.tripconfirm.posttrip.map',
+                                 'emission.services',
+                                 'emission.services.email'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -126,6 +127,20 @@ angular.module('emission.main', ['emission.main.recent',
       }
   })
 
+  .state('root.main.tripconfirm', {
+      url: "/tripconfirm",
+      params: {
+        start_ts: null,
+        end_ts: null
+      },
+      views: {
+        'main-control': {
+          templateUrl: "templates/tripconfirm/map.html",
+          controller: 'PostTripMapCtrl'
+        }
+      }
+  })
+
   .state('root.main.log', {
     url: '/log',
     views: {
@@ -153,12 +168,14 @@ angular.module('emission.main', ['emission.main.recent',
     }
 })
 
-.controller('MainCtrl', function($scope, $state, $rootScope) {
+.controller('MainCtrl', function($scope, $state, $rootScope, $translate) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
-    $scope.dark_theme = $rootScope.dark_theme;
+
+    moment.locale($translate.use());
+
     $scope.tabsCustomClass = function() {
-        return ($scope.dark_theme)? "tabs-icon-top tabs-custom-dark" : "tabs-icon-top tabs-custom";
+        return "tabs-icon-top tabs-custom";
     }
 });
