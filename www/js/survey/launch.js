@@ -116,7 +116,7 @@ angular.module('emission.survey.launch', ['emission.services',
     }
     // END: startSurveyForCompletedTrip
 
-    surveylaunch.startSurvey = function (url, uuidElementId) 
+    surveylaunch.startSurvey = function (url, uuidElementId) {
       // THIS LINE FOR inAppBrowser
       let iab = $window.cordova.InAppBrowser.open(url, '_blank', surveylaunch.options);
       iab.addEventListener("loadstop", function(event) {

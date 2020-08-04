@@ -70,8 +70,8 @@ angular.module('emission.main.bear',['nvd3', 'emission.services', 'emission.stat
           console.log("Failed");
       });
     ClientStats.addEvent(ClientStats.getStatKeys().OPENED_APP).then(
-        $scope.startTime = moment().utc();
         function() {
+            $scope.startTime = moment().utc();
             console.log("Added "+ClientStats.getStatKeys().OPENED_APP+" event");
         }
     );
