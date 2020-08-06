@@ -8,7 +8,7 @@
     "url": "git+https://github.com/e-mission/cordova-connection-settings.git"
   },
   "devDependencies": {
-    "cordova": "9.0.0",
+    "cordova": "10.0.0",
     "@ionic/cli": "6.10.1",
     "bower": "1.8.8"
   },

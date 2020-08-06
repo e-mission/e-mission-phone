@@ -18,5 +18,5 @@ CURR_NPM_VERSION=`npm --version`
 if [ $CURR_NPM_VERSION != $NPM_VERSION ];
 then
     echo "Invalid npm version, expected $NPM_VERSION, got $CURR_NPM_VERSION"
-    exit 1
+    npm install npm@$NPM_VERSION
 fi
