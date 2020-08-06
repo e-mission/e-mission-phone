@@ -26,8 +26,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   if($scope.platform.toLowerCase() == "android") {
     if($scope.osver < 6) {
         $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
-    } else {
+    } else if ($scope.osver < 10) {
         $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-6");
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-10");
     }
   }
 
