@@ -3,7 +3,7 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
-:sparkles: This has now been upgraded to cordova android@9.0.0 and iOS@6.0.1 ([details](https://github.com/e-mission/e-mission-docs/issues/554)). It also now supports CI, so we should not have any build issues in the future. The limitations from the [previous upgrade](https://github.com/e-mission/e-mission-docs/issues/519) have all been resolved. This should be ready to build out of the box, after all the configuration files are changed.
+:sparkles: This has now been upgraded to cordova android@9.0.0 and iOS@6.0.1 ([details](https://github.com/e-mission/e-mission-docs/issues/554)). It has also been upgraded to android API 29 (https://github.com/e-mission/e-mission-phone/pull/707/), cordova-lib@10.0.0 and the most recent node and npm versions (https://github.com/e-mission/e-mission-phone/pull/708)It also now supports CI, so we should not have any build issues in the future. The limitations from the [previous upgrade](https://github.com/e-mission/e-mission-docs/issues/519) have all been resolved. This should be ready to build out of the box, after all the configuration files are changed.
 
 Additional Documentation
 ---
