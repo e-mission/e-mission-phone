@@ -1,11 +1,11 @@
 {
-  "name": "edu.berkeley.eecs.emission",
-  "version": "2.9.0",
-  "displayName": "emission",
+  "name": "gov.colorado.energyoffice.emission",
+  "version": "0.0.1",
+  "displayName": "CEO e-bike evaluation",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/e-mission/cordova-connection-settings.git"
+    "url": "git+https://github.com/e-mission/e-mission-phone.git"
   },
   "devDependencies": {
     "cordova": "10.0.0",
