@@ -154,7 +154,7 @@ angular.module('emission.survey.launch', ['emission.services',
     };
 
     surveylaunch.startSurveyWithID = function (url, uuidElementId) {
-        startSurveyCommon(url, uuidElementId, "js/survey/uuid_insert.js");
+        startSurveyCommon(url, uuidElementId, "js/survey/uuid_insert_id.js");
     }
 
     surveylaunch.startSurveyWithXPath = function (url, elementXPath) {
