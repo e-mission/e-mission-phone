@@ -136,7 +136,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
   $scope.startSurvey = function () {
-      SurveyLaunch.startSurvey('https://docs.google.com/forms/d/e/1FAIpQLSd47sf_0bieu81-HtXO5PV3EmOdUfDjWE5xrLSzQ-1hVrgLgQ/viewform?usp=sf_link', 'QR~QID3');
+      SurveyLaunch.startSurveyWithXPath(
+        'https://docs.google.com/forms/d/e/1FAIpQLSd_7VICYb8AfLQPIt8pg9AYsXW_rrHQBfsv-NSviO7Dgk7fyg/viewform',
+        '/html/body/div/div[2]/form/div[2]/div/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div[1]/input');
   };
 
   $scope.next = function() {
