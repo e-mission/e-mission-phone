@@ -7,8 +7,8 @@ angular.module('emission.survey.launch', ['emission.services',
     CommHelper, Logger) {
 
     var surveylaunch = {};
-    var replace_uuid = function(iab, uuidElementId) {
-        return Promise.all([$http.get("js/survey/uuid_insert.js"),
+    var replace_uuid= function(iab, elementSelector, scriptFile) {
+        return Promise.all([$http.get(scriptFile),
                      CommHelper.getUser()])
           .then(function([scriptText, userProfile]) {
             // alert("finished loading script");
@@ -19,11 +19,12 @@ angular.module('emission.survey.launch', ['emission.services',
             // file, but the callback function was never invoked. So I edit the
             // script file directly and insert the userId.
             Logger.log("inserting user id into survey. userId = "+ uuid
-                        +" element id = "+uuidElementId);
+                        +" element selector = "+elementSelector);
             var codeTemplate = scriptText.data;
             var codeString = codeTemplate.replace("SCRIPT_REPLACE_VALUE", uuid)
-                                .replace("SCRIPT_REPLACE_ELEMENT_ID", uuidElementId);
-            iab.executeScript({ code: codeString });
+                                .replace("SCRIPT_REPLACE_ELEMENT_SEL", elementSelector);
+            Logger.log(codeString);
+            return iab.executeScript({ code: codeString });
           });
     };
 
@@ -82,7 +83,7 @@ angular.module('emission.survey.launch', ['emission.services',
       iab.addEventListener("loadstop", function(event) {
         console.log("successfully opened page with result "+JSON.stringify(event));
         // success
-        Promise.all([replace_uuid(iab, uuidElementId),
+        Promise.all([replace_uuid(iab, uuidElementId, "js/survey/uuid_insert.js"),
                      replace_time(iab, startTsElementId, startFmtTimeElementId, startTs, "Start"),
                      replace_time(iab, endTsElementId, endFmtTimeElementId, endTs, "End")])
         .catch(function(error) { // catch for all promises
@@ -97,7 +98,7 @@ angular.module('emission.survey.launch', ['emission.services',
       })
 
       iab.addEventListener('loaderror', function(event) {
-            Logger.displayError("Unable to launch survey", JSON.stringify(error));
+            Logger.displayError("Unable to launch survey", JSON.stringify(event));
       });
 
       iab.addEventListener('loadstart', function(event) {
@@ -116,23 +117,24 @@ angular.module('emission.survey.launch', ['emission.services',
     }
     // END: startSurveyForCompletedTrip
 
-    surveylaunch.startSurvey = function (url, uuidElementId) {
+    var startSurveyCommon = function (url, elementSelector, elementSelScriptFile) {
       // THIS LINE FOR inAppBrowser
       let iab = $window.cordova.InAppBrowser.open(url, '_blank', surveylaunch.options);
       iab.addEventListener("loadstop", function(event) {
         console.log("successfully opened page with result "+JSON.stringify(event));
         // success
-        replace_uuid(iab, uuidElementId)
+        replace_uuid(iab, elementSelector, elementSelScriptFile)
         .catch(function(error) {
-          $ionicPopup.alert({"template": "Relaunching survey - while replacing uuid, got error "+ JSON.stringify(error)})
+          iab.close();
+          $ionicPopup.alert({"template": "Relaunching survey - while replacing uuid, got error "+ error})
           .then(function() {
-            surveylaunch.startSurvey(url, uuidElementId);
+            startSurveyCommon(url,elementSelector, elementSelScriptFile);
           });
         });
       });
 
       iab.addEventListener('loaderror', function(event) {
-        Logger.displayError("Unable to launch survey", error);
+        Logger.displayError("Unable to launch survey", event);
       });
 
       iab.addEventListener("loadstart", function(event) {
@@ -151,6 +153,14 @@ angular.module('emission.survey.launch', ['emission.services',
       });
     };
 
+    surveylaunch.startSurveyWithID = function (url, uuidElementId) {
+        startSurveyCommon(url, uuidElementId, "js/survey/uuid_insert.js");
+    }
+
+    surveylaunch.startSurveyWithXPath = function (url, elementXPath) {
+        startSurveyCommon(url, elementXPath, "js/survey/uuid_insert_xpath.js");
+    }
+
     surveylaunch.init = function() {
       $rootScope.$on('cloud:push:notification', function(event, data) {
         Logger.log("data = "+JSON.stringify(data));
@@ -160,9 +170,14 @@ angular.module('emission.survey.launch', ['emission.services',
             data.additionalData.payload.alert_type == "survey") {
             var survey_spec = data.additionalData.payload.spec;
             if (angular.isDefined(survey_spec) &&
-                angular.isDefined(survey_spec.url) &&
-                angular.isDefined(survey_spec.uuidElementId)) {
-                surveylaunch.startSurvey(survey_spec.url, survey_spec.uuidElementId);
+                angular.isDefined(survey_spec.url)) {
+                if (angular.isDefined(survey_spec.uuidElementId)) {
+                  surveylaunch.startSurveyWithID(survey_spec.url, survey_spec.uuidElementId);
+                } else if (angular.isDefined(survey_spec.uuidXPath)) {
+                  surveylaunch.startSurveyWithXPath(survey_spec.url, survey_spec.uuidXPath);
+                } else {
+                    $ionicPopup.alert("survey was not specified correctly. spec is "+JSON.stringify(survey_spec));
+                }
             } else {
                 $ionicPopup.alert("survey was not specified correctly. spec is "+JSON.stringify(survey_spec));
             }
