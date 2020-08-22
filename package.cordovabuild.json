@@ -1,7 +1,7 @@
 {
   "name": "gov.colorado.energyoffice.emission",
   "version": "0.0.1",
-  "displayName": "CEO e-bike evaluation",
+  "displayName": "CoBike",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
