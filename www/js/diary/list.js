@@ -220,10 +220,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.purposeTripgj = angular.undefined;
     }
 
+    $scope.getFormattedDistanceInMiles = function(input) {
+      return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
+    }
+
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
-        tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_distance = $scope.getFormattedDistanceInMiles(tripgj.data.properties.distance);
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = $scope.isDraft(tripgj);
@@ -298,24 +302,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           };
       });
     });
-
-    $scope.setColor = function(mode) {
-      var colors = {
-        "icon ion-android-bicycle": 'green',
-        "icon ion-android-walk":'brown',
-        "icon ion-speedometer":'purple',
-        "icon ion-android-bus": "purple",
-        "icon ion-android-train": "navy",
-        "icon fas fa-tram": "darkslateblue",
-        "icon fas fa-subway": "darkcyan",
-        "icon lightrail fas fa-subway": "blue",
-        "icon ion-android-car": "salmon",
-        "icon ion-plane": "red"
-      };
-      return {
-        color: colors[mode]
-      };
-    }
 
     var showNoTripsAlert = function() {
       var buttons = [{
@@ -396,7 +382,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
     $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
