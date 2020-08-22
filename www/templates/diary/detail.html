@@ -36,23 +36,23 @@
           <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.distance'}}</p>{{tripgj.display_distance}} km</div>
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.time'}}</p>{{tripgj.display_time}}</div>
           <div id="sectionPct" class="col">
-            <i class="{{mode}}" ng-repeat="mode in tripgj.percentages[0]" style="margin-left: 15px; margin-right: 15px; font-size: 15px;"></i>
+            <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in tripgj.percentages" style="margin-left: 10px; margin-right: 10px; font-size: 15px;" ng-style="{{sectionPct.color}}"></i>
             <br>
-            <a ng-repeat="percentage in tripgj.percentages[1]" style="font-size: 10px; margin-left: 10px; margin-right: 10px;">{{percentage}}%</a>
+            <a ng-repeat="sectionPct in tripgj.percentages" style="font-size: 10px; margin-left: 10px; margin-right: 10px;">{{sectionPct.pct}}%</a>
 
           </div>
         </div>
         <div style="height: 20px;"></div>
          <div id="sectionList" class="col button-small">
 
-              <div class="row" ng-repeat="section in trip.sections" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
-                  <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{getLocalTimeString(section.properties.start_local_dt)}}</p><p>{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</p>
+              <div class="row" ng-repeat="sectionFmt in formattedSectionProperties" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
+                  <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;"><p style="margin-bottom: 0; font-weight: 500;">{{sectionFmt.fmt_time}}</p><p>{{sectionFmt.fmt_time_range}}</p>
 
                   </div>
 
 
-                  <div class="col" style="font-size: 22px;">{{getFormattedDistance(section.properties.distance)}} km</div>
-                  <div class="col" style="text-align: center"><i class="{{getIcon(section)}}", style="font-size: 25px;"></i></div>
+                  <div class="col" style="font-size: 22px;">{{sectionFmt.fmt_distance}} km</div>
+                  <div class="col" style="text-align: center"><i class="{{sectionFmt.icon}}", style="font-size: 25px;" ng-style="{{sectionFmt.colorStyle}}"></i></div>
 
               </div>
           </div>

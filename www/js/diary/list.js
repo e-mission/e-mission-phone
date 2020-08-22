@@ -279,24 +279,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
-    $scope.setColor = function(mode) {
-      var colors = {
-        "icon ion-android-bicycle": 'green',
-        "icon ion-android-walk":'brown',
-        "icon ion-speedometer":'purple',
-        "icon ion-android-bus": "purple",
-        "icon ion-android-train": "navy",
-        "icon fas fa-tram": "darkslateblue",
-        "icon fas fa-subway": "darkcyan",
-        "icon lightrail fas fa-subway": "blue",
-        "icon ion-android-car": "salmon",
-        "icon ion-plane": "red"
-      };
-      return {
-        color: colors[mode]
-      };
-    }
-
     var showNoTripsAlert = function() {
       var buttons = [{
           text: 'New',
@@ -376,7 +358,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
     $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
