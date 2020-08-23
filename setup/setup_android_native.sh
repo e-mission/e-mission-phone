@@ -32,9 +32,11 @@ echo "Setting up sdkman"
 curl -s "https://get.sdkman.io" | bash
 source ~/.sdkman/bin/sdkman-init.sh
 
-CURR_GRADLE_VER=`sdk current gradle | cut -d " " -f 4`
+CURR_GRADLE_VER=`sdk current gradle | cut -d " " -f 4 | xargs`
 
-if [ $CURR_GRADLE_VER == $GRADLE_VERSION ]; then
+echo "CURR_GRADLE_VER = '$CURR_GRADLE_VER', expected $GRADLE_VERSION"
+
+if [[ $CURR_GRADLE_VER == $GRADLE_VERSION ]]; then
     echo "Already have gradle version $GRADLE_VERSION"
 else
     echo "Setting up gradle using SDKMan"
