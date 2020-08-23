@@ -71,6 +71,8 @@ var changeAccountTypeAndProvider = function (file, accountType, providerName, ne
                 console.log(LOG_NAME + "" + file + " updated...")
             });
         });
+    } else {
+        console.error(LOG_NAME + "File "+file+" does not exist");
     }
 }
 
@@ -87,7 +89,7 @@ module.exports = function (context) {
         var applicationName = etree._root.attrib.id;
         console.log(LOG_NAME + "Your application is " + applicationName);
 
-        var platformRoot = path.join(context.opts.projectRoot, 'platforms/android/')
+        var platformRoot = path.join(context.opts.projectRoot, 'platforms/android/app/src/main')
 
         console.log(LOG_NAME + "Updating AndroidManifest.xml...");
         var androidManifest = path.join(platformRoot, 'AndroidManifest.xml');
@@ -102,12 +104,8 @@ module.exports = function (context) {
         changeAccountType(authenticator, ACCOUNT_TYPE, applicationName);
 
         console.log(LOG_NAME + "Updating ServerSyncPlugin.java");
-        var serverSyncPlugin = path.join(platformRoot, 'src/edu/berkeley/eecs/emission/cordova/serversync/ServerSyncPlugin.java');
+        var serverSyncPlugin = path.join(platformRoot, 'java/edu/berkeley/eecs/emission/cordova/serversync/ServerSyncPlugin.java');
         changeAccountTypeAndProvider(serverSyncPlugin, ACCOUNT_TYPE, PROVIDER, applicationName);
-
-        console.log(LOG_NAME + "Updating android.json");
-        var androidJson = path.join(platformRoot, 'android.json');
-        changeProvider(androidJson, PROVIDER, applicationName);
     } else {
         throw new Error(LOG_NAME + "Could not retrieve application name.");
     }
