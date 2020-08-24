@@ -5,39 +5,39 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     $ionicPopup, Logger) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
-  var REPORT_INCIDENT_TEXT = 'REPORT_INCIDENT';
+  var CHOOSE_MODE_TEXT = 'CHOOSE_MODE';
   var TRIP_END_EVENT = "trip_ended";
 
   var reportMessage = function(platform) {
     var platformSpecificMessage = {
-      "ios": "Swipe right to report any positive or negative experiences on this trip. Swipe left for more - Busy? Snooze 30 mins. Annoyed? Mute.",
-      "android": "Touch to report any positive or negative experiences on this trip. See options for more - Busy? Snooze 30 mins. Annoyed? Mute."
+      "ios": "Swipe left or tap to pick the mode of transportation.",
+      "android": "See options or tap to pick the mode of transportation."
     };
     var selMessage = platformSpecificMessage[platform];
     if (!angular.isDefined(selMessage)) {
-      selMessage = "Select to report any positive or negative experiences on this trip. More options - Busy? Snooze 30 mins. Annoyed? Mute.";
+      selMessage = "Tap to pick the mode of transportation.";
     }
     return selMessage;
   };
 
   var getTripEndReportNotification = function() {
     var actions = [{
-       identifier: 'MUTE',
-       title: 'Mute',
+       identifier: 'WALK',
+       title: 'Walk',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-       identifier: 'SNOOZE',
-       title: 'Snooze',
+       identifier: 'BIKE',
+       title: 'Bike',
        icon: 'res://ic_moreoptions',
        activationMode: 'background',
        destructive: false,
        authenticationRequired: false
     }, {
-        identifier: 'REPORT',
-        title: 'Yes',
+        identifier: 'MORE',
+        title: 'More',
         icon: 'res://ic_signin',
         activationMode: 'foreground',
         destructive: false,
@@ -46,13 +46,13 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
 
     var reportNotifyConfig = {
       id: REPORT,
-      title: "Incident to report?",
+      title: "How did you get here?",
       text: reportMessage(ionic.Platform.platform()),
       icon: 'file://img/icon.png',
       smallIcon: 'res://ic_mood_question.png',
       sound: null,
       actions: actions,
-      category: REPORT_INCIDENT_TEXT,
+      category: CHOOSE_MODE_TEXT,
       autoClear: true
     };
     Logger.log("Returning notification config "+JSON.stringify(reportNotifyConfig));
@@ -82,18 +82,18 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   };
 
   var promptReport = function(notification, state, data) {
-    Logger.log("About to prompt whether to report a trip");
+    Logger.log("About to prompt choose the mode for the trip");
     var newScope = $rootScope.$new();
     angular.extend(newScope, notification.data);
     newScope.getFormattedTime = getFormattedTime;
     Logger.log("notification = "+JSON.stringify(notification));
     Logger.log("state = "+JSON.stringify(state));
     Logger.log("data = "+JSON.stringify(data));
-    return $ionicPopup.show({title: "Report incident for trip",
+    return $ionicPopup.show({title: "Choose the transportation mode you took on trip",
         scope: newScope,
         template: "{{getFormattedTime(start_ts)}} -> {{getFormattedTime(end_ts)}}",
         buttons: [{
-          text: 'Report',
+          text: 'Choose Mode',
           type: 'button-positive',
           onTap: function(e) {
             // e.preventDefault() will stop the popup from closing when tapped.
@@ -117,26 +117,14 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
   };
 
   var displayCompletedTrip = function(notification, state, data) {
-    Logger.log("About to display completed trip");
-
-    /*
-    promptReport(notification, state, data).then(function(res) {
-      if (res == true) {
-        console.log("About to go to incident map page");
-        $state.go("root.main.incident", notification.data);
-      } else {
-        console.log("Skipped incident reporting");
-      }
-    });
-    */
-
-    Logger.log("About to go to diary, which now displays draft information");
-    $rootScope.displayingIncident = true;
-    $state.go("root.main.diary");
+      $rootScope.displayingIncident = true;
+      $rootScope.notificationData = notification.data;
+      Logger.log("About to display completed trip from Notification");
+      $state.go('root.main.diary');
   };
 
   var checkCategory = function(notification) {
-    if (notification.category == REPORT_INCIDENT_TEXT) {
+    if (notification.category == CHOOSE_MODE_TEXT) {
         return true;
     } else {
         return false;
@@ -147,11 +135,11 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     Logger.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('action', function (notification, state, data) {
       if (!checkCategory(notification)) {
-          Logger.log("notification "+notification+" is not an incident report, returning...");
+          Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
-      if (data.identifier === 'REPORT') {
-          // alert("About to report");
+      if (data.identifier === 'MORE') {
+          Logger.log("Notification, action event");
           cleanDataIfNecessary(notification, state, data);
           displayCompletedTrip(notification, state, data);
       } else if (data.identifier == 'SNOOZE') {
@@ -219,40 +207,48 @@ angular.module('emission.incident.posttrip.prompt', ['emission.plugin.logger'])
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
         // alert("triggered, no action");
-        Logger.log("triggered, no action");
-        if (!$ionicPlatform.is('ios')) {
-            Logger.log("notification is displayed even when app is in foreground, ignoring trigger");
-            return;
-        }
+        Logger.log("Notification triggered");
         if (!checkCategory(notification)) {
-            Logger.log("notification "+notification+" is not an incident report, returning...");
+            Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
         }
         cleanDataIfNecessary(notification, state, data);
-        promptReport(notification, state, data).then(function(res) {
-          if (res == true) {
-            Logger.log("About to go to incident map page");
-            displayCompletedTrip(notification, state, data);
-          } else {
-            Logger.log("Skipped incident reporting");
-          }
-        });
+        displayCompletedTrip(notification, state, data);
+        // if($ionicPlatform.is('ios')) {
+        //   promptReport(notification, state, data).then(function(res) {
+        //     if(res == true) {
+        //       Logger.log("About to go to prompt page");
+        //       displayCompletedTrip(notification, state, data);
+        //     } else {
+        //       Logger.log("Skipped incident reporting");
+        //     }
+        //   });
+        // } else {
+        //   Logger.log("About to go to prompt page");
+        //   displayCompletedTrip(notification, state, data);
+        // }
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       // alert("clicked, no action");
+      Logger.log("Notification, click event");
       if (!checkCategory(notification)) {
-          Logger.log("notification "+notification+" is not an incident report, returning...");
+          Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
       }
       cleanDataIfNecessary(notification, state, data);
       displayCompletedTrip(notification, state, data);
     });
-  }
+  };
 
-  $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
-  });
+  /*
+   * Unregister the post-trip notification for cci-berkeley
+   * because they want to make it opt-in. Since the base app registers by
+   * default, we need to explicitly unregister, not just comment out.
+   */
+  // $ionicPlatform.ready().then(function() {
+  //   ptap.registerTripEnd();
+  //   ptap.registerUserResponse();
+  // });
 
   return ptap;
 

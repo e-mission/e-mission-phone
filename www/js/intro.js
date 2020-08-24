@@ -1,7 +1,10 @@
 'use strict';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'ionic-toast'])
+                                  'ionic-toast',
+                                  'emission.survey.enketo.launch',
+                                  'emission.enketo-survey.service',
+                                ])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -159,10 +162,27 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
-      ionicToast.show(userEmail, 'middle', false, 2500);
+      $scope.userEmail = userEmail;
       CommHelper.registerUser(function(successResult) {
-        $scope.finish();
+          const uuid = successResult.uuid;
+          return CommHelper.updateUser({branch: 'rciti1'}
+          ).then(function() {
+              const thisUuid = uuid ? uuid : 'undefined';
+              const returnURL = `https://emission-app.byamarin.com/survey-success-static/`;
+              console.log('returnURL', returnURL);
+              $cordovaInAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
+              const unsub = $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
+                console.log("started loading, event = "+JSON.stringify(event));
+                if (event.url == 'https://emission-app.byamarin.com/survey-success-static/') {
+                    $cordovaInAppBrowser.close();
+                    ionicToast.show(userEmail, 'middle', false, 2500);
+                    $scope.finish();
+                    unsub();
+                }
+              });
+          });
       }, function(errorResult) {
+        ionicToast.show(userEmail, 'middle', false, 2500);
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
       });

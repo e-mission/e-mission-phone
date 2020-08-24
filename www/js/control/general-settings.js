@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
+                                        'emission.survey.enketo.launch',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
                                         'emission.main.control.tnotify',
@@ -17,12 +18,13 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
+               $cordovaInAppBrowser,
                StartPrefs, ControlHelper, EmailHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
                UpdateCheck,
-               CalorieCal, ClientStats, CommHelper, Logger,
+               CalorieCal, ClientStats, CommHelper, Logger, $ionicModal, EnketoSurveyLaunch,
                $translate) {
 
     var datepickerObject = {
@@ -439,6 +441,24 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
+
+    $scope.editUserProfile = function() {
+        // EnketoSurveyLaunch.launch($scope, 'UserProfile');
+        CommHelper.getUser().then(function(profile) {
+            const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
+            $cordovaInAppBrowser.open(`https://up.byamarin.com/${uuid}`, '_blank');
+        });
+    };
+
+    $scope.launchEndSurvey = function() {
+        CommHelper.getUser().then(function(profile) {
+            const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
+            const returnURL = 'https://www.taharashidi.com/endsurvey';
+            $cordovaInAppBrowser.open(`https://pe.byamarin.com/${uuid}&returnURL=${returnURL}`, '_blank');
+            $scope.endForceSync();
+        });
+    }
+
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');

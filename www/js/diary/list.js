@@ -14,6 +14,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.tripconfirm.services',
                                       'emission.services',
+                                      'emission.survey.enketo.launch',
+                                      'emission.enketo-survey.service',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
   ])
@@ -24,17 +26,25 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, EnketoSurvey, $translate) {
   console.log("controller DiaryListCtrl called");
     var MODE_CONFIRM_KEY = "manual/mode_confirm";
     var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
+
+    $scope.confirmSurvey = function(trip) {
+      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip }).then(function() {
+        $scope.$apply(function() {
+          $scope.updateCustomSurveyLabelForTrip(trip);
+        });
+      });
+    }
 
   // Add option
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {
       console.log("diary/list received resize event, invalidating map size");
       data.leafletObject.invalidateSize();
-  });
+    });
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -49,17 +59,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
   angular.extend($scope, {
       defaults: {
-          zoomControl: false,
-          dragging: false,
-          zoomAnimation: true,
-          touchZoom: false,
-          scrollWheelZoom: false,
-          doubleClickZoom: false,
-          boxZoom: false,
+        zoomControl: false,
+        dragging: false,
+        zoomAnimation: true,
+        touchZoom: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
       }
-  });
+    });
 
-  angular.extend($scope.defaults, Config.getMapTiles())
+    angular.extend($scope.defaults, Config.getMapTiles())
 
 //   moment.locale('en', {
 //   relativeTime : {
@@ -91,15 +101,15 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.listCardClass = function(tripgj) {
       var background = tripgj.background;
       if ($window.screen.width <= 320) {
-        return "list card list-card "+ background +" list-card-sm";
+        return "list card list-card " + background + " list-card-sm";
       } else if ($window.screen.width <= 375) {
-        return "list card list-card "+ background +" list-card-md";
+        return "list card list-card " + background + " list-card-md";
       } else {
-        return "list card list-card "+background+" list-card-lg";
+        return "list card list-card " + background + " list-card-lg";
       }
 
     }
-    $scope.listColLeftClass = function(margin) {
+    $scope.listColLeftClass = function (margin) {
       if (margin == 0) {
         return "col-50 list-col-left";
       } else {
@@ -111,16 +121,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.differentCommon = function(tripgj) {
         return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
-    $scope.stopTimeTagClass = function(tripgj) {
-      return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
+    $scope.stopTimeTagClass = function (tripgj) {
+      return ($scope.differentCommon(tripgj)) ? "stop-time-tag-lower" : "stop-time-tag";
     }
-    $scope.setCurrDay = function(val) {
-        if (typeof(val) === 'undefined') {
-          window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
-        } else {
-          window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
-          readAndUpdateForDay(moment(val));
-        }
+    $scope.setCurrDay = function (val) {
+      if (typeof (val) === 'undefined') {
+        window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
+      } else {
+        window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
+        readAndUpdateForDay(moment(val));
+      }
     }
 
     $scope.getDatePickerObject = function() {
@@ -162,7 +172,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = DiaryHelper.getUserInputForTrip(tripgj, modeList);
+        if (!modeList) return;
+        var userMode = ConfirmHelper.getUserInputForTrip(tripgj, modeList);
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
@@ -183,7 +194,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'purpose' to the trip
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
-        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj, purposeList);
+        if (!purposeList) return;
+        var userPurpose = ConfirmHelper.getUserInputForTrip(tripgj, purposeList);
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
@@ -198,6 +210,55 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
         Logger.log("Set purpose " + JSON.stringify(userPurposeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
         $scope.purposeTripgj = angular.undefined;
+    }
+
+    /**
+     * Embed 'surveyAnswer' to the trip
+     */
+    $scope.populateSurveyAnswerFromTimeline = function (tripgj, surveyAnswers) {
+      if (surveyAnswers) {
+        var userSurveyAnswer = ConfirmHelper.getUserInputForTrip(tripgj, surveyAnswers);
+        if (angular.isDefined(userSurveyAnswer)) {
+          // userSurveyAnswer is a survey answer object with data + metadata
+          tripgj.userSurveyAnswer = userSurveyAnswer;
+        }
+      }
+      $scope.updateCustomSurveyLabelForTrip(tripgj);
+    }
+
+    $scope.updateCustomSurveyLabelForTrip = function(trip) {
+      if (!trip.userSurveyAnswer) {
+        trip.customSurveyLabel = null;
+        return;
+      }
+      if (
+        trip.userSurveyAnswer.destination_purpose.includes('trip_not_valid') ||
+        trip.userSurveyAnswer.travel_mode.includes('trip_not_valid')
+      ) {
+        // User reported trip not valid
+        trip.customSurveyLabel = 'Trip not valid';
+      } else if (
+        trip.userSurveyAnswer.destination_purpose === '<null>' ||
+        trip.userSurveyAnswer.travel_mode === '<null>'
+      ) {
+        if (
+          trip.userSurveyAnswer.travel_mode_main !== '<null>' &&
+          trip.userSurveyAnswer.d_purpose_main !== '<null>'
+        ) {
+          // Invalid answer, falling back to older version
+          const mode = trip.userSurveyAnswer.travel_mode_main.replace(/_/g, ' ');
+          const purpose = trip.userSurveyAnswer.d_purpose_main.replace(/_/g, ' ');
+          trip.customSurveyLabel = `${mode} to ${purpose}`;
+        } else {
+          // Invalid answer for both versions.
+          trip.customSurveyLabel = 'Trip not valid';
+        }
+      } else {
+        // Answer found (new version)
+        const purposes = trip.userSurveyAnswer.destination_purpose.split(' ').length;
+        const modes = trip.userSurveyAnswer.travel_mode.split(' ').length;
+        trip.customSurveyLabel = `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
+      }
     }
 
     $scope.populateBasicClasses = function(tripgj) {
@@ -234,6 +295,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       return false;
     };
 
+    $scope.isAnalyzed = function (trip) {
+      return (trip.data.id.indexOf('unprocessed_') === -1);
+    }
+
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
@@ -254,13 +319,44 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             DiaryHelper.directiveForTrip);
           Timeline.setTripWrappers(currDayTripWrappers);
 
+          let tripFromNotification = null;
+
           $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
             $scope.populateModeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.modes);
             $scope.populatePurposeFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.purposes);
+            $scope.populateSurveyAnswerFromTimeline(tripgj, $scope.data.unifiedConfirmsResults.surveyAnswers);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
+          if($rootScope.displayingIncident == true && $rootScope.notificationData) {
+            const matchingTrips = $scope.data.currDayTripWrappers.filter(function(trip) {
+              const matchingInput = ConfirmHelper.getUserInputForTrip(trip, [{
+                data: {
+                  start_ts: $rootScope.notificationData.start_ts,
+                  end_ts: $rootScope.notificationData.end_ts,
+                },
+                metadata: {
+                  time_zone: moment.tz.guess()
+                }
+              }]);
+              console.log('matchingInput => ', matchingInput);
+              return (matchingInput) ? true : false;
+            });
+            if (matchingTrips.length) {
+              console.log('trip => ', matchingTrips[0]);
+              tripFromNotification = matchingTrips[0];
+            } else {
+              console.log('NO TRIP FOUND!');
+            }
+          }
           $ionicScrollDelegate.scrollTop(true);
+
+          if (tripFromNotification) {
+            console.log('tripFromNotification =>', tripFromNotification);
+            $scope.confirmSurvey(tripFromNotification);
+            $rootScope.displayingIncident = false;
+            $rootScope.notificationData = null;
+          }
       });
     });
 
@@ -336,23 +432,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     /* For UI control */
     $scope.groups = [];
-    for (var i=0; i<10; i++) {
+    for (var i = 0; i < 10; i++) {
       $scope.groups[i] = {
         name: i,
         items: ["good1", "good2", "good3"]
       };
-      for (var j=0; j<3; j++) {
+      for (var j = 0; j < 3; j++) {
         $scope.groups[i].items.push(i + '-' + j);
       }
     }
-    $scope.toggleGroup = function(group) {
+    $scope.toggleGroup = function (group) {
       if ($scope.isGroupShown(group)) {
         $scope.shownGroup = null;
       } else {
         $scope.shownGroup = group;
       }
     };
-    $scope.isGroupShown = function(group) {
+    $scope.isGroupShown = function (group) {
       return $scope.shownGroup === group;
     };
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
@@ -385,11 +481,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     ];
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
-    $scope.getTimeSplit = function(tripList) {
-        var retVal = {};
-        var tripTimes = tripList.map(function(dt) {
-            return dt.data.properties.duration;
-        });
+    $scope.getTimeSplit = function (tripList) {
+      var retVal = {};
+      var tripTimes = tripList.map(function (dt) {
+        return dt.data.properties.duration;
+      });
 
     };
 
@@ -420,21 +516,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     var startWalkthrough = function () {
-      nzTour.start(tour).then(function(result) {
+      nzTour.start(tour).then(function (result) {
         Logger.log("list walkthrough start completed, no error");
       }).catch(function(err) {
         Logger.displayError("list walkthrough start errored", err);
       });
     };
 
-    $scope.refreshTiles = function() {
+    $scope.refreshTiles = function () {
       $scope.$broadcast('invalidateSize');
     };
 
     /*
-    * Checks if it is the first time the user has loaded the diary tab. If it is then
-    * show a walkthrough and store the info that the user has seen the tutorial.
-    */
+     * Checks if it is the first time the user has loaded the diary tab. If it is then
+     * show a walkthrough and store the info that the user has seen the tutorial.
+     */
     var checkDiaryTutorialDone = function () {
       var DIARY_DONE_KEY = 'diary_tutorial_done';
       var diaryTutorialDone = KVStore.getDirect(DIARY_DONE_KEY);
@@ -456,10 +552,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $scope.nextDay = function() {
-        console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-        var nextDay = moment(Timeline.data.currDay).add(1, 'days');
-        console.log("nextDay = "+nextDay);
+      console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
+      var nextDay = moment(Timeline.data.currDay).add(1, 'days');
+      if (moment(nextDay).isSameOrBefore(moment(), 'day')) {
+        console.log("nextDay = "+nextDay.format('YYYY-MM-DD'));
         readAndUpdateForDay(nextDay);
+        return;
+      }
+      console.log('I am resisting to display the future day. Sorry bro.');
+    }
+
+    $scope.choosePurpose = function () {
+      $scope.chosen.purpose = $scope.selected.purpose;
+      var isOther = false;
+      if ($scope.selected.purpose.label != "other_purpose") {
+        $scope.storePurpose($scope.selected.purpose, isOther);
+      } else {
+        isOther = true
+        checkOtherOption($scope.selected.purpose, isOther);
+      }
+      closePurposePopover();
     };
 
     $scope.toDetail = function (param) {
@@ -679,11 +791,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     var in_trip;
-    $scope.checkTripState = function() {
-      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+    $scope.checkTripState = function () {
+      window.cordova.plugins.BEMDataCollection.getState().then(function (result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
-          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+        if (JSON.stringify(result) == "\"STATE_ONGOING_TRIP\"" ||
+          JSON.stringify(result) == "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
           in_trip = false;
@@ -706,6 +818,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
+      // DEBUG
+      // readAndUpdateForDay(moment('2015-07-22').startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from
@@ -721,13 +835,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $rootScope.barDetail = false;
           }
         if($rootScope.displayingIncident == true) {
-          if (angular.isDefined(Timeline.data.currDay)) {
+          const tripProp = $rootScope.notificationData;
+          const day = moment(tripProp.start_ts*1000).startOf('day');
+
               // page was already loaded, reload it automatically
-              readAndUpdateForDay(Timeline.data.currDay);
-          } else {
-             Logger.log("currDay is not defined, load not complete");
-          }
-          $rootScope.displayingIncident = false;
+          readAndUpdateForDay(day);
         }
       });
     });

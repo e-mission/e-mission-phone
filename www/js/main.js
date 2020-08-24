@@ -7,11 +7,13 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.survey.enketo.launch',
                                  'emission.tripconfirm.posttrip.map',
                                  'emission.services',
                                  'emission.services.email'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
+
   $stateProvider
   // setup an abstract state for the tabs directive
     .state('root.main', {
@@ -60,6 +62,17 @@ angular.module('emission.main', ['emission.main.recent',
         controller: 'ControlCtrl'
       }
     }
+  })
+
+  .state('root.main.enketosurvey', {
+    // if we have this the param here, we don't need the params in the definition
+    url: '/enketosurvey/:form_location/:opts',
+    views: {
+      'main-diary': {
+        templateUrl: 'templates/survey/enketo-survey.html',
+        controller: 'EnketoSurveyCtrl'
+      },
+    },
   })
 
   .state('root.main.goals', {
@@ -135,6 +148,7 @@ angular.module('emission.main', ['emission.main.recent',
 })
 
 .controller('appCtrl', function($scope, $ionicModal, $timeout) {
+
     $scope.openNativeSettings = function() {
         window.Logger.log(window.Logger.LEVEL_DEBUG, "about to open native settings");
         window.cordova.plugins.BEMLaunchNative.launch("NativeSettings", function(result) {

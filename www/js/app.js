@@ -47,9 +47,6 @@ angular.module('emission', ['ionic',
     // Configure the connection settings
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
-        if(connectionConfig.data.length == 0) {
-            throw "blank string instead of missing file on dynamically served app";
-        }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
         $rootScope.connectUrl = connectionConfig.data.connectUrl;
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);

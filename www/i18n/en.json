@@ -93,9 +93,9 @@
         "consent-found": "Consent found!",
         "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
         "consented-ok": "OK",
-        "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
-        "share-subject": "Emission - UC Berkeley Research Project",
-        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
+        "share-message": "Join me in making transportation better \nDownload the travel app using the link below:",
+        "share-subject": "UNSW Travel Survey",
+        "share-url": "https://www.taharashidi.com/travel-survey"
     },
 
     "metrics":{
@@ -214,7 +214,7 @@
         "tour-sectionPct-content": "% of time spent in each mode for this trip"
     },
 
-    "list-explainDraft-alert": "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong.",
+    "list-explainDraft-alert": "This trip has not yet been analysed. Once it is analysed you will be able to add your trip details. Normally, all draft trips get analysed at 10.00am and 8.30pm everyday.",
     "list-datepicker-today": "Today",
     "list-datepicker-close": "Close",
     "list-datepicker-set": "Set",

@@ -1,8 +1,20 @@
 <ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
     <div class="control-list-item">
-      <div class="control-list-text">{{settings.auth.email}}</div>
-      <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
+      <div class="control-list-text">Logged in as: {{settings.auth.email}}</div>
+      <!-- <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div> -->
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text">Edit User Profile</div>
+      <div ng-click="editUserProfile()" class="control-icon-button control-icon-user-profile">
+        <i class="ion-person"></i>
+      </div>
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text">End Survey</div>
+      <div ng-click="launchEndSurvey()" class="control-icon-button control-icon-end-survey">
+        <i class="ion-document-text"></i>
+      </div>
     </div>
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
@@ -13,7 +25,7 @@
         </div>
       </label>
     </div>
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
@@ -21,8 +33,8 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
-    <div class="control-list-item">
+    </div> -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.dark-theme'}}</div>
       <label ng-click="toggleDarkTheme()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getDarkTheme()">
@@ -30,11 +42,11 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
-    <div class="control-list-item">
+    </div> -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text">{{carbonDatasetString}}</div>
       <div ng-click="changeCarbonDataset()" class="control-icon-button" ><i class="ion-stats-bars"></i></div>
-    </div>
+    </div> -->
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.force-sync'}}</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
@@ -81,13 +93,13 @@
     </div>
 
 
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.dev-zone'}}</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
-    </div>
+    </div> -->
 
     <!-- Begin developer zone -->
-    <div class="" ng-show="collectionExpanded()">
+    <!-- <div class="" ng-show="collectionExpanded()">
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.refresh'}}</div>
         <div ng-click="refreshScreen()" class="control-icon-button"><i class="ion-refresh"></i></div>
@@ -171,6 +183,6 @@
         </ion-item>
       </ion-list>
 
-    </div>
+    </div> -->
   </ion-content>
 </ion-view>

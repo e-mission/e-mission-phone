@@ -110,6 +110,23 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
+.trip-confirm-container {
+  padding-left: 5px;
+  padding-right: 5px;
+  display: flex;
+  flex: 1;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+}
+.trip-confirm-title {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+}
+.btn-trip-confirm-green,
+.btn-trip-confirm-green:hover,
+.btn-trip-confirm-green:active,
 .btn-mode-confirm-green,
 .btn-mode-confirm-green:hover,
 .btn-mode-confirm-green:active,
@@ -119,6 +136,9 @@ a.item-content {
   background-color: #30A64A;
   color: white;
 }
+.btn-trip-confirm-white,
+.btn-trip-confirm-white:hover,
+.btn-trip-confirm-white:active,
 .btn-mode-confirm-white,
 .btn-mode-confirm-white:hover,
 .btn-mode-confirm-white:active,
@@ -129,6 +149,7 @@ a.item-content {
   color: #333;
   font-size: 0.8em;
 }
+.btn-trip-confirm,
 .btn-mode-confirm,
 .btn-purpose-confirm {
   line-height: 30px;
@@ -136,6 +157,10 @@ a.item-content {
   font-size: 0.8em !important;
   width: 115px;
   padding: 0;
+}
+.btn-trip-confirm {
+  /* margin-left: 5px; */
+  width: 100%;
 }
 .mode-confirm-container,
 .purpose-confirm-container {

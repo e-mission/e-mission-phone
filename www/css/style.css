@@ -689,6 +689,13 @@ background-image: none !important; }
   width: 64px;
   font-size:20px;
 }
+.control-icon-user-profile {
+  background-color: rgb(201, 217, 236);
+}
+.control-icon-end-survey {
+  /* background-color: rgb(169, 226, 186); */
+  background-color: #E0A1A1 !important;
+}
 
 
 #switch-user.control-icon-button{
@@ -1779,6 +1786,10 @@ span.rz-bar-wrapper {
   margin-right: auto;
   margin-bottom: 10px;
 }
+#channel-field{
+  margin-right: 1.5px;
+  margin-top: auto;
+}
 .item.item-input.item-select {
   border-width: 1px !important;
 }
@@ -1796,4 +1807,18 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+.popover {
+  height: 297px;
+  width: 230px;
+}
+
+/* #diary-card{
+  height: 335px;
+} */
+
+#diary-item {
+  padding: 0;
+  border-width: 0;
 }

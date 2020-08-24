@@ -120,9 +120,9 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
 
   var displayCompletedTrip = function(notification, eventOpts) {
     $rootScope.tripConfirmParams = notification.data;
-      Logger.log("About to display completed trip from notification "+
-        JSON.stringify(notification.data));
-      $state.go("root.main.tripconfirm", notification.data);
+    Logger.log("About to display completed trip from notification "+
+      JSON.stringify(notification.data));
+    $state.go("root.main.tripconfirm", notification.data);
   };
 
   var checkCategory = function(notification) {
@@ -220,6 +220,23 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
             Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
         }
+<<<<<<< HEAD
+        cleanDataIfNecessary(notification, state, data);
+        displayCompletedTrip(notification, state, data);
+        // if($ionicPlatform.is('ios')) {
+        //     promptReport(notification, state, data).then(function(res) {
+        //       if (res == true) {
+        //           Logger.log("About to go to prompt page");
+        //         displayCompletedTrip(notification, state, data);
+        //       } else {
+        //         Logger.log("Skipped confirmation reporting");
+        //       }
+        //     });
+        // } else {
+        //   Logger.log("About to go to prompt page");
+        //   displayCompletedTrip(notification, state, data);
+        // }
+=======
         cleanDataIfNecessary(notification, eventOpts);
         if($ionicPlatform.is('ios')) {
             promptReport(notification, eventOpts).then(function(res) {
@@ -234,6 +251,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
           Logger.log("About to go to prompt page");
           displayCompletedTrip(notification, eventOpts);
         }
+>>>>>>> master
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, eventOpts) {
       // alert("clicked, no action");
@@ -247,10 +265,10 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     });
   };
 
-  $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
-  });
+  // $ionicPlatform.ready().then(function() {
+  //   ptap.registerTripEnd();
+  //   ptap.registerUserResponse();
+  // });
 
   return ptap;
 
