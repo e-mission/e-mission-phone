@@ -77,24 +77,24 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   // The language comes in between the first and second part
   $scope.geti18nFile = function (fpFirstPart, fpSecondPart) {
     var lang = $translate.use();
-    var defaultVal = fpFirstPart + fpSecondPart;
+    var defaultVal = "templates/intro/" + fpFirstPart + fpSecondPart;
     if (lang != 'en') {
-      var url = fpFirstPart + lang + fpSecondPart;
+      var url = "www/i18n/intro/" + fpFirstPart + "-" + lang + fpSecondPart;
       $scope.checkFile(cordova.file.applicationDirectory, url).then( function(result){
         window.Logger.log(window.Logger.LEVEL_DEBUG,
-          "Successfully found the consent file, result is " + JSON.stringify(result));
+          "Successfully found the "+fpfile+", result is " + JSON.stringify(result));
         return url.replace("www/", "");
       }, function (err) {
         window.Logger.log(window.Logger.LEVEL_DEBUG,
-          "Consent file not found, loading english version, error is " + JSON.stringify(err));
+          fpFirstPart+" file not found, loading english version, error is " + JSON.stringify(err));
            return defaultVal;
         });
     }
     return defaultVal;
   }
   
-  $scope.consentFile = $scope.geti18nFile("templates/intro/consent", ".html");
-  $scope.explainFile = $scope.geti18nFile("templates/intro/sensor_explanation", ".html");
+  $scope.consentFile = $scope.geti18nFile("consent", ".html");
+  $scope.explainFile = $scope.geti18nFile("sensor_explanation", ".html");
 
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
