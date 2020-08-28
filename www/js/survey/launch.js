@@ -123,9 +123,6 @@ angular.module('emission.survey.launch', ['emission.services',
       iab.addEventListener("loadstop", function(event) {
         console.log("successfully opened page with result "+JSON.stringify(event));
         // success
-        if (String(event.url).includes('formResponse')) {
-            $cordovaInAppBrowser.close();
-        }
         replace_uuid(iab, elementSelector, elementSelScriptFile)
         .catch(function(error) {
           iab.close();
