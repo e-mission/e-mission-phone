@@ -74,7 +74,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.formattedSectionProperties = $scope.tripgj.sections.map(function(s) {
     return {"fmt_time": DiaryHelper.getLocalTimeString(s.properties.start_local_dt),
             "fmt_time_range": DiaryHelper.getFormattedTimeRange(s.properties.end_ts, s.properties.start_ts),
-            "fmt_distance": DiaryHelper.getFormattedDistanceInMiles(s.properties.distance),
+            "fmt_distance": $scope.getFormattedDistanceInMiles(s.properties.distance),
             "icon": DiaryHelper.getIcon(s.properties.sensed_mode),
             "colorStyle": {color: DiaryHelper.getColor(s.properties.sensed_mode)}
             };
