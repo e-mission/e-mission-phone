@@ -48,14 +48,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   // copy-pasted from ngCordova, and updated to promises
-  $scope.checkFile = function(directory, fn) {
+  $scope.checkFile = function(path, fn) {
     return new Promise(function(resolve, reject) {
-      if ((/^\//.test(file))) {
+      if ((/^\//.test(fn))) {
         reject('directory cannot start with \/');
       }
 
       try {
-        var directory = path + file;
+        var directory = path + fn;
         $window.resolveLocalFileSystemURL(directory, function (fileSystem) {
           if (fileSystem.isFile === true) {
             resolve(fileSystem);
@@ -80,9 +80,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     var defaultVal = "templates/intro/" + fpFirstPart + fpSecondPart;
     if (lang != 'en') {
       var url = "www/i18n/intro/" + fpFirstPart + "-" + lang + fpSecondPart;
-      $scope.checkFile(cordova.file.applicationDirectory, url).then( function(result){
+      return $scope.checkFile(cordova.file.applicationDirectory, url).then( function(result){
         window.Logger.log(window.Logger.LEVEL_DEBUG,
-          "Successfully found the "+fpfile+", result is " + JSON.stringify(result));
+          "Successfully found the "+fpFirstPart+", result is " + JSON.stringify(result));
         return url.replace("www/", "");
       }, function (err) {
         window.Logger.log(window.Logger.LEVEL_DEBUG,
@@ -92,9 +92,20 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     }
     return defaultVal;
   }
-  
-  $scope.consentFile = $scope.geti18nFile("consent", ".html");
-  $scope.explainFile = $scope.geti18nFile("sensor_explanation", ".html");
+
+  var allIntroFiles = Promise.all([
+    $scope.geti18nFile("summary", ".html"),
+    $scope.geti18nFile("consent", ".html"),
+    $scope.geti18nFile("sensor_explanation", ".html"),
+    $scope.geti18nFile("login", ".html")
+  ]);
+  allIntroFiles.then(function(allIntroFilePaths) {
+    console.log("intro files are "+allIntroFilePaths);
+    $scope.summaryFile = allIntroFilePaths[0];
+    $scope.consentFile = allIntroFilePaths[1];
+    $scope.explainFile = allIntroFilePaths[2];
+    $scope.loginFile = allIntroFilePaths[3];
+  });
 
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
