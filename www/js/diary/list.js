@@ -528,14 +528,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover.show($event);
     };
 
-    var closeModePopover = function ($event, isOther) {
+    var closeModePopover = function () {
       $scope.selected.mode = {
         value: ''
       };
-      if (isOther == false)
-        $scope.draftMode = angular.undefined;
-      Logger.log("in closeModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.modePopover.hide($event);
+      $scope.modePopover.hide();
     };
 
     $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
@@ -561,14 +558,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover.show($event);
     };
 
-    var closePurposePopover = function ($event, isOther) {
+    var closePurposePopover = function () {
       $scope.selected.purpose = {
         value: ''
       };
-      if (isOther == false)
-        $scope.draftPurpose = angular.undefined;
-      Logger.log("in closePurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
-      $scope.purposePopover.hide($event);
+      $scope.purposePopover.hide();
     };
 
     /**
