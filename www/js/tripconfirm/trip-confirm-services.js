@@ -70,8 +70,8 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
             buttons: [
                 { text: $translate.instant('trip-confirm.services-cancel'),
                   onTap: function(e) {
-                    $scope.selected.mode = '';
-                    $scope.selected.purpose = '';
+                    $scope.selected.mode = {value: ''};
+                    $scope.selected.purpose = {value: ''};
                   }
                 }, {
                    text: '<b>' + $translate.instant('trip-confirm.services-save') + '</b>',
