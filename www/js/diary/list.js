@@ -245,7 +245,12 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
-          $ionicScrollDelegate.scrollTop(true);
+          if ($rootScope.displayingIncident) {
+            $ionicScrollDelegate.scrollBottom(true);
+            $rootScope.displayingIncident = false;
+          } else {
+              $ionicScrollDelegate.scrollTop(true);
+          }
       });
     });
 
@@ -610,7 +615,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           } else {
              Logger.log("currDay is not defined, load not complete");
           }
-          $rootScope.displayingIncident = false;
         }
       });
     });
