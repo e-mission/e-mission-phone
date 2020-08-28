@@ -150,8 +150,8 @@
         "purpose": "Purpose",
         "choose-mode": "Choose Mode",
         "choose-purpose": "Choose Purpose",
-        "how-did-you-get-here": "How did you get here?",
-        "why-did-you-come-here": "Why did you come here?",
+        "select-mode-scroll": "Mode (Scroll for more)",
+        "select-purpose-scroll": "Purpose (👇 for more)",
         "list-pick-a-date": "Pick a date"
     },
 
