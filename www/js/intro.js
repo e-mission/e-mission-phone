@@ -27,8 +27,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   if($scope.platform.toLowerCase() == "android") {
     if($scope.osver < 6) {
         $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
-    } else {
+    } else if ($scope.osver < 10) {
         $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-6");
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-10");
     }
   }
 
@@ -134,7 +136,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
   $scope.startSurvey = function () {
-      SurveyLaunch.startSurvey('https://docs.google.com/forms/d/e/1FAIpQLSd47sf_0bieu81-HtXO5PV3EmOdUfDjWE5xrLSzQ-1hVrgLgQ/viewform?usp=sf_link', 'QR~QID3');
+      SurveyLaunch.startSurveyWithXPath(
+        'https://docs.google.com/forms/d/e/1FAIpQLSfA-JCnD5Tb2olZn0UAO91_juU-wuToxJc6uHdMjEQoSi-YTw/viewform',
+        '/html/body/div/div[2]/form/div[2]/div/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div[1]/input');
   };
 
   $scope.next = function() {

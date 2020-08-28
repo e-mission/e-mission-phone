@@ -33,7 +33,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
   }
-  dh.getIcon = function(section) {
+  dh.getIcon = function(sensed_mode) {
+    var mode_string = dh.getHumanReadable(sensed_mode);
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
@@ -47,7 +48,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
-    return icons[dh.getHumanReadable(section.properties.sensed_mode)];
+    return icons[mode_string];
   }
   dh.getHumanReadable = function(sensed_mode) {
     var ret_string = sensed_mode.split('.')[1];
@@ -59,47 +60,64 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
   // Temporary function to avoid repear in getPercentages ret val.
   var filterRunning = function(mode) {
-    if (mode == 'RUNNING') {
-      return 'WALKING';
+    if (mode == 'MotionTypes.RUNNING') {
+      return 'MotionTypes.WALKING';
     } else {
       return mode;
     }
   }
   dh.getPercentages = function(trip) {
-    var rtn0 = []; // icons
-    var rtn1 = []; //percentages
+    // we use a Map here to make it easier to work with the for loop below
+    let dists = {};
 
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":"ion-android-walk",
-    // "RUNNING":" ion-android-walk",
-    //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-speedometer",
-    "BUS": "ion-android-bus",
-    "LIGHT_RAIL": "lightrail fas fa-subway",
-    "TRAIN": "ion-android-train",
-    "TRAM": "fas fa-tram",
-    "SUBWAY": "fas fa-subway",
-    "CAR": "ion-android-car",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    var total = 0;
+    var totalDist = 0;
     for (var i=0; i<trip.sections.length; i++) {
-      if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
-        rtn0.push(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)));
-        rtn1.push(trip.sections[i].properties.distance);
-        total += trip.sections[i].properties.distance;
+      let filteredMode = filterRunning(trip.sections[i].properties.sensed_mode);
+      if (filteredMode in dists) {
+        dists[filteredMode] += trip.sections[i].properties.distance;
+        totalDist += trip.sections[i].properties.distance;
       } else {
-        rtn1[rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)))] += trip.sections[i].properties.distance;
-        total += trip.sections[i].properties.distance;
+        dists[filteredMode] = trip.sections[i].properties.distance;
+        totalDist += trip.sections[i].properties.distance;
       }
     }
-    for (var i=0; i<rtn0.length; i++) {
-      rtn0[i] = "icon " + icons[rtn0[i]];
-      rtn1[i] = Math.floor((rtn1[i] / total) * 100);
-    }
-    return [rtn0, rtn1];
+
+    let sectionPcts = Object.keys(dists).map(function(mode) {
+        return {
+            mode: mode,
+            icon: "icon " + dh.getIcon(mode),
+            color: {color: dh.getColor(mode)},
+            pct: Math.floor((dists[mode] / totalDist) * 100)
+        };
+    });
+
+    return sectionPcts;
   }
+
+  dh.getColor = function(sensed_mode) {
+    var mode_string = dh.getHumanReadable(sensed_mode);
+    var colors = {
+      "WALKING": 'brown',
+      "RUNNING": 'brown',
+      "BICYCLING": 'green',
+      "IN_VEHICLE": 'purple',
+      "LIGHT_RAIL": 'blue',
+      "BUS": 'navy',
+      "TRAIN": 'skyblue',
+      "TRAM": 'slateblue',
+      "SUBWAY": 'darkcyan',
+      "CAR": 'salmon',
+      "UNKNOWN": 'orange',
+      "UNPROCESSED": 'orange',
+      "AIR_OR_HSR": "red"
+    };
+    if (mode_string in colors) {
+        return colors[mode_string];
+    } else {
+        return "black";
+    }
+  }
+
   dh.starColor = function(num) {
     if (num >= 3) {
       return 'yellow';
@@ -124,32 +142,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         background = "bg-unprocessed";
       }
       return background;
-  }
-
-  dh.allModes = function(trip) {
-    var rtn = [];
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":"ion-android-walk",
-    "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",
-    "CAR": "ion-android-car",
-    "BUS": "ion-android-bus",
-    "LIGHT_RAIL": "lightrail fas fa-subway",
-    "TRAIN": "ion-android-train",
-    "TRAM": "fas fa-tram",
-    "SUBWAY": "fas fa-subway",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    for (var i=0; i<trip.sections.length; i++) {
-      if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
-        rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));
-      }
-    }
-    for (var i=0; i<rtn.length; i++) {
-      rtn[i] = "icon " + icons[rtn[i]];
-    }
-    return rtn;
   }
 
   dh.getKmph = function(section) {
@@ -177,8 +169,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   dh.getLocalTimeString = function (dt) {
     //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
-    dt.month = dt.month - 1
-    return moment(dt).format("LT");
+    let mdt = angular.copy(dt)
+    mdt.month = mdt.month - 1
+    return moment(mdt).format("LT");
   };
 
   dh.getFormattedTime = function(ts_in_secs) {
@@ -399,23 +392,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 weight: 5,
                 opacity: 1,
         };
-        var mode_string = dh.getHumanReadable(feature.properties.sensed_mode);
-        switch(mode_string) {
-            case "WALKING": return getColoredStyle(baseDict, 'brown');
-            case "RUNNING": return getColoredStyle(baseDict, 'brown');
-            case "BICYCLING": return getColoredStyle(baseDict, 'green');
-            case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
-            case "LIGHT_RAIL": return getColoredStyle(baseDict, 'blue');
-            case "TRAIN": return getColoredStyle(baseDict, 'skyblue');
-            case "TRAM": return getColoredStyle(baseDict, 'slateblue');
-            case "SUBWAY": return getColoredStyle(baseDict, 'darkcyan');
-            case "BUS": return getColoredStyle(baseDict, 'navy');
-            case "CAR": return getColoredStyle(baseDict, 'salmon');
-            case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
-            case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
-            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
-            default: return getColoredStyle(baseDict, 'black');
-        }
+        return getColoredStyle(baseDict, dh.getColor(feature.properties.sensed_mode));
       };
 
   var fmtTs = function(ts_in_secs, tz) {

@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="40" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="40" version="2.9.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>emission</name>
+<widget android-versionCode="3" id="gov.colorado.energyoffice.emission" ios-CFBundleVersion="3" version="0.0.3" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>CoBike</name>
     <description>
-        A commute pattern tracker and carbon footprint estimator.
+        Evaluate the Colorado Energy Office e-bike program.
     </description>
     <author email="shankari@eecs.berkeley.edu" href="https://e-mission.eecs.berkeley.edu">
         E-Mission Team
@@ -78,7 +78,7 @@
     <platform name="android">
         <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
         <preference name="android-minSdkVersion" value="22" />
-        <preference name="android-targetSdkVersion" value="28" />
+        <preference name="android-targetSdkVersion" value="29" />
         <preference name="AndroidXEnabled" value="true" />
         <resource-file src="google-services.json" target="app/google-services.json" />
         <hook src="hooks/before_build/android/android_set_provider.js" type="before_build" />
