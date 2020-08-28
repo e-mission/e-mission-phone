@@ -47,26 +47,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // CommonGraph.updateCurrent();
   };
 
-  $scope.$on('$ionicView.afterEnter', function() {
-    ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(
-       function() {
-           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
-       });
-    if($rootScope.barDetail){
-      readAndUpdateForDay($rootScope.barDetailDate);
-      $rootScope.barDetail = false;
-    };
-    if($rootScope.displayingIncident == true) {
-      if (angular.isDefined(Timeline.data.currDay)) {
-          // page was already loaded, reload it automatically
-          readAndUpdateForDay(Timeline.data.currDay);
-      } else {
-         Logger.log("currDay is not defined, load not complete");
-      }
-      $rootScope.displayingIncident = false;
-    }
-  });
-
   angular.extend($scope, {
       defaults: {
           zoomControl: false,
@@ -767,6 +747,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
 
       $scope.$on('$ionicView.afterEnter', function() {
+        ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {
+           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+        });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;
