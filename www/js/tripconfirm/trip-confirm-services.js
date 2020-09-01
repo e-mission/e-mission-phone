@@ -1,7 +1,7 @@
 angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, $translate, Logger) {
     var ch = {};
-    ch.INPUTS = ["MODE", "PURPOSE"]
+    ch.INPUTS = ["MODE", "PURPOSE", "REPLACED_MODE"]
     ch.inputDetails = {
         "MODE": {
             key: "manual/mode_confirm",
@@ -9,6 +9,10 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
         },
         "PURPOSE": {
             key: "manual/purpose_confirm",
+            otherVals: {}
+        },
+        "REPLACED_MODE": {
+            key: "manual/replaced_mode",
             otherVals: {}
         }
     }

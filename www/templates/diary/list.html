@@ -95,15 +95,18 @@
                 </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{'.mode'}}
                 </div>
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600; word-wrap: break-word;" translate>
+                {{'.replaces'}}
+                </div>
+                <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{'.purpose'}}
                 </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-50" style="text-align: center;">
+                <div class="col-33" style="text-align: center;">
                     <div ng-if="tripgj.userInput.MODE" class="mode-confirm-container">
                         <button ng-click ="openPopover($event, tripgj, 'MODE')" class="button btn-mode-confirm btn-mode-confirm-green">
                             {{tripgj.userInput.MODE.text}}
@@ -115,7 +118,19 @@
                         </button>
                     </div>
                 </div>
-                <div class="col-50" style="text-align: center;">
+                <div class="col-33" style="text-align: center;">
+                    <div ng-if="tripgj.userInput.REPLACED_MODE" class="mode-confirm-container">
+                        <button ng-click ="openPopover($event, tripgj, 'REPLACED_MODE')" class="button btn-mode-confirm btn-mode-confirm-green">
+                            {{tripgj.userInput.REPLACED_MODE.text}}
+                        </button>
+                    </div>
+                    <div  ng-if="!tripgj.userInput.REPLACED_MODE" class="mode-confirm-container">
+                        <button ng-click ="openPopover($event, tripgj, 'REPLACED_MODE')" class="button btn-mode-confirm btn-mode-confirm-white" translate>
+                        {{'.choose-replaced-mode'}}
+                        </button>
+                    </div>
+                </div>
+                <div class="col-33" style="text-align: center;">
                     <div ng-if="tripgj.userInput.PURPOSE" class="purpose-confirm-container">
                         <button ng-click="openPopover($event, tripgj, 'PURPOSE')" class="button btn-purpose-confirm btn-purpose-confirm-green">
                             {{tripgj.userInput.PURPOSE.text}}
