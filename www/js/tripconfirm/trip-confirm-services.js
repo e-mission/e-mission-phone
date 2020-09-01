@@ -97,7 +97,6 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
                   onTap: function(e) {
                     ch.INPUTS.forEach(function(item) {
                         $scope.selected[item] = {value: ''};
-                        $scope.selected[item] = {value: ''};
                     });
                   }
                 }, {
