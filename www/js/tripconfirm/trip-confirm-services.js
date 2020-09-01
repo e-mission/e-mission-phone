@@ -1,15 +1,41 @@
 angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, $translate, Logger) {
     var ch = {};
-    ch.otherModes = [];
-    ch.otherPurposes = [];
+    ch.INPUTS = ["MODE", "PURPOSE"]
+    ch.inputDetails = {
+        "MODE": {
+            key: "manual/mode_confirm",
+            otherVals: {}
+        },
+        "PURPOSE": {
+            key: "manual/purpose_confirm",
+            otherVals: {}
+        }
+    }
 
     var fillInOptions = function(confirmConfig) {
         if(confirmConfig.data.length == 0) {
             throw "blank string instead of missing file on dynamically served app";
         }
-        ch.modeOptions = confirmConfig.data.modeOptions;
-        ch.purposeOptions = confirmConfig.data.purposeOptions;
+        ch.INPUTS.forEach(function(i) {
+            ch.inputDetails[i].options = confirmConfig.data[i]
+        });
+    }
+
+    /*
+     * Convert the array of {text, value} objects to a {value: text} map so that 
+     * we can look up quickly without iterating over the list for each trip
+     */
+
+    var arrayToMap = function(optionsArray) {
+        var text2entryMap = {};
+        var value2entryMap = {};
+
+        optionsArray.forEach(function(text2val) {
+            text2entryMap[text2val.text] = text2val;
+            value2entryMap[text2val.value] = text2val;
+        });
+        return [text2entryMap, value2entryMap];
     }
 
     var loadAndPopulateOptions = function (lang) {
@@ -35,52 +61,51 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
             });
         });
     }
+
+    ch.getOptionsAndMaps = function(inputType) {
+        return ch.getOptions(inputType).then(function(inputOptions) {
+            var inputMaps = arrayToMap(inputOptions);
+            return {
+                options: inputOptions,
+                text2entry: inputMaps[0],
+                value2entry: inputMaps[1]
+            };
+        });
+    };
     
     /*
      * Lazily loads the options and returns the chosen one. Using this option
      * instead of an in-memory data structure so that we can return a promise
      * and not have to worry about when the data is available.
      */
-    ch.getModeOptions = function() {
-        if (!angular.isDefined(ch.modeOptions)) {
+    ch.getOptions = function(inputType) {
+        if (!angular.isDefined(ch.inputDetails[inputType].options)) {
             var lang = $translate.use();
             return loadAndPopulateOptions(lang)
-                .then(function () { return ch.modeOptions; });
+                .then(function () { return ch.inputDetails[inputType].options; });
         } else {
-            return Promise.resolve(ch.modeOptions);
+            return Promise.resolve(ch.inputDetails[inputType].options);
         }
     }
 
-    ch.getPurposeOptions = function() {
-        if (!angular.isDefined(ch.purposeOptions)) {
-            var lang = $translate.use();
-            return loadAndPopulateOptions(lang)
-                .then(function () { return ch.purposeOptions; });
-        } else {
-            return Promise.resolve(ch.purposeOptions);
-        }
-    }
-
-    ch.checkOtherOption = function(choice, onTapFn, $scope) {
-        if(choice.value == 'other_mode' || choice.value == 'other_purpose') {
-          var text = choice.value == 'other_mode' ? "mode" : "purpose";
-          $ionicPopup.show({title: $translate.instant("trip-confirm.services-please-fill-in",{text: text}),
+    ch.checkOtherOption = function(inputType, onTapFn, $scope) {
+          $ionicPopup.show({title: $translate.instant("trip-confirm.services-please-fill-in",{text: inputType.toLowerCase()}),
             scope: $scope,
             template: '<input type = "text" ng-model = "selected.other.text">',
             buttons: [
                 { text: $translate.instant('trip-confirm.services-cancel'),
                   onTap: function(e) {
-                    $scope.selected.mode = {value: ''};
-                    $scope.selected.purpose = {value: ''};
+                    ch.INPUTS.forEach(function(item) {
+                        $scope.selected[item] = {value: ''};
+                    });
                   }
                 }, {
                    text: '<b>' + $translate.instant('trip-confirm.services-save') + '</b>',
                    type: 'button-positive',
-                   onTap: onTapFn($scope, choice)
+                   onTap: onTapFn($scope, inputType)
                 }
             ]
           });
-        }
     }
 
     ch.otherTextToValue = function(otherText) {
@@ -103,4 +128,4 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
     }
 
     return ch;
-})
+});

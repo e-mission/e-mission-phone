@@ -2,7 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual'])
+    'emission.incident.posttrip.manual', 'emission.tripconfirm.services'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -474,7 +474,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
+.factory('Timeline', function(CommHelper, ConfirmHelper, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -975,21 +975,26 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
       // Also mode/purpose and (currently disabled) survey answers
       var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-      var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
-      var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+        return UnifiedDataLoader.getUnifiedMessagesForInterval(
+            ConfirmHelper.inputDetails[inp].key, tq);
+      });
       // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
 
       // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise])
-        .then(function([processedTripList, completeStatus, modes, purposes]) {
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise].concat(manualPromises))
+        .then(function([processedTripList, completeStatus, ...manualResults]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
-        console.log(' with ${modes.length} modes, ${purposes.length} purposes');
+        var mrString = 'with ' + manualResults.map(function(item, index) {
+            return ' ${mr.length} ${ConfirmHelper.INPUTS[index]}';
+        });
+        console.log(mrString);
         var tripList = processedTripList;
-        timeline.data.unifiedConfirmsResults = {
-          modes: modes,
-          purposes: purposes
-        };
+        timeline.data.unifiedConfirmsResults = {}
+        manualResults.forEach(function(mr, index) {
+          timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
+        });
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -1014,16 +1019,18 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
         // Also mode/purpose and (currently disabled) survey answers
         var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-        var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
-        var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
-        Promise.all([tripsFromCachePromise, modesPromise, purposesPromise]).then(function(
-            [processedTripList, modes, purposes]) {
+        var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+          return UnifiedDataLoader.getUnifiedMessagesForInterval(
+            ConfirmHelper.inputDetails[inp].key, tq);
+        });
+        Promise.all([tripsFromCachePromise].concat(manualPromises)).then(function(
+            [processedTripList, ...manualResults]) {
           console.log(' in local cache, found ${modes.length} modes, ${purposes.length} purposes');
           var tripList = processedTripList;
-          timeline.data.unifiedConfirmsResults = {
-            modes: modes,
-            purposes: purposes
-          };
+          timeline.data.unifiedConfirmsResults = {}
+          manualResults.forEach(function(mr, index) {
+            timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
+          });
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
               Logger.log("tripList.length = "+tripList.length
