@@ -141,6 +141,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
   ptap.registerUserResponse = function() {
     Logger.log( "registerUserResponse received!" );
     $window.cordova.plugins.notification.local.on('CHOOSE', function (notification, eventOpts) {
+      Logger.log("Trip End Notification CHOOSE received");
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
@@ -150,6 +151,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
       displayCompletedTrip(notification, eventOpts);
     });
     $window.cordova.plugins.notification.local.on('SNOOZE', function (notification, eventOpts) {
+      Logger.log("Trip End Notification SNOOZE received");
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
@@ -167,6 +169,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
       }
     });
     $window.cordova.plugins.notification.local.on('MUTE', function (notification, eventOpts) {
+      Logger.log("Trip End Notification MUTE received");
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
@@ -214,13 +217,15 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     });
     $window.cordova.plugins.notification.local.on('clear', function (notification, eventOpts) {
         // alert("notification cleared, no report");
+        Logger.log("Trip End Notification cleared");
     });
     $window.cordova.plugins.notification.local.on('cancel', function (notification, eventOpts) {
         // alert("notification cancelled, no report");
+        Logger.log("Trip End Notification cancelled");
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, eventOpts) {
         // alert("triggered, no action");
-        Logger.log("Notification triggered");
+        Logger.log("Trip End Notification triggered");
         if (!checkCategory(notification)) {
             Logger.log("notification "+notification+" is not an mode choice, returning...");
             return;
@@ -242,7 +247,7 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, eventOpts) {
       // alert("clicked, no action");
-      Logger.log("Notification, click event");
+      Logger.log("Trip End Notification, click event");
       if (!checkCategory(notification)) {
           Logger.log("notification "+notification+" is not an mode choice, returning...");
           return;
