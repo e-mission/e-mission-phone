@@ -483,9 +483,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * $scope.selected is for display only
      * the value is displayed on popover selected option
      */
-    $scope.selected = Object.fromEntries(ConfirmHelper.INPUTS.map(function(item, index) {
-        return [item, {value: ''}];
-    }));
+    $scope.selected = {}
+    ConfirmHelper.INPUTS.forEach(function(item, index) {
+        $scope.selected[item] = {value: ''};
+    });
     $scope.selected.other = {text: '', value: ''};
 
     /*
