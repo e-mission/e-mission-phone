@@ -175,7 +175,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectTo = undefined;
             return {state: redirState, params: {}};
           } else {
-            return {state: 'root.main.bear', params: {}};
+            return {state: 'root.main.diary', params: {}};
           }
         } else {
           return {state: result, params: {}};
