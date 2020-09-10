@@ -22,7 +22,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, $translate) {
 
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
@@ -138,6 +138,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
 
+  $scope.startSurvey = function () {
+      SurveyLaunch.startSurveyWithXPath(
+        'https://ee.kobotoolbox.org/x/hEkHk50v',
+        '/html/body/div[1]/article/form/section[2]/label[1]/input');
+  };
+
   $scope.next = function() {
     $scope.getIntroBox().next();
   };
@@ -160,29 +166,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.login = function() {
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
-      // ionicToast.show(message, position, stick, time);
-      // $scope.next();
-      $scope.userEmail = userEmail;
+      $scope.startSurvey()
+      ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
-          const uuid = successResult.uuid;
-          return CommHelper.updateUser({branch: 'rciti1'}
+        return CommHelper.updateUser({phone_app_version: 'nrel-lh-v0'}
           ).then(function() {
-              const thisUuid = uuid ? uuid : 'undefined';
-              const returnURL = `https://emission-app.byamarin.com/survey-success-static/`;
-              console.log('returnURL', returnURL);
-              $cordovaInAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
-              const unsub = $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-                console.log("started loading, event = "+JSON.stringify(event));
-                if (event.url == 'https://emission-app.byamarin.com/survey-success-static/') {
-                    $cordovaInAppBrowser.close();
-                    ionicToast.show(userEmail, 'middle', false, 2500);
-                    $scope.finish();
-                    unsub();
-                }
-              });
+            $scope.finish();
           });
       }, function(errorResult) {
-        ionicToast.show(userEmail, 'middle', false, 2500);
         $scope.alertError('User registration error', errorResult);
         $scope.finish();
       });
