@@ -169,7 +169,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       $scope.startSurvey()
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
-        return CommHelper.updateUser({phone_app_version: 'nrel-lh-v0'}
+        return CommHelper.updateUser({branch: 'nrel-lh-v0'}
           ).then(function() {
             $scope.finish();
           });
