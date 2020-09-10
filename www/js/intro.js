@@ -166,11 +166,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.login = function() {
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
-      $scope.startSurvey()
       ionicToast.show(userEmail, 'middle', false, 2500);
       CommHelper.registerUser(function(successResult) {
         return CommHelper.updateUser({branch: 'nrel-lh-v0'}
           ).then(function() {
+            $scope.startSurvey()
             $scope.finish();
           });
       }, function(errorResult) {
