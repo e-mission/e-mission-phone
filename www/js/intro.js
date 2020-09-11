@@ -188,11 +188,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         }
       }, function(errorResult) {
         $scope.alertError('User registration error', errorResult);
-        $scope.finish();
+        // $scope.finish();
       });
     }, function(error) {
         $scope.alertError('Sign in error', error);
-        $scope.finish();
+        // $scope.finish();
     });
   };
   $scope.showUsernamePopup = function() {
