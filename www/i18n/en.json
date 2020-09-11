@@ -144,7 +144,7 @@
         "began": "Began {{startTime}}",
         "report-incident": "Report Incident",
         "draft": "DRAFT",
-        "distance-in-time": "{{distance}} km in {{time}}",
+        "distance-in-time": "{{distance}} mi in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
