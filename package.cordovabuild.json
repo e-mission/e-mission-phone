@@ -1,7 +1,7 @@
 {
   "name": "gov.colorado.energyoffice.emission",
-  "version": "0.0.4",
-  "displayName": "CoBike",
+  "version": "1.0.0",
+  "displayName": "CanBikeCO",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
