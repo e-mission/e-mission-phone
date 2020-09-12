@@ -6,14 +6,17 @@
 We will now ask you for permissions to access the following sensors.
 
 <h3> Location </h3>
-We need this permission in order to track your location and generate your personalized travel diary. Since you are running
-{{platform}} {{osver}}, when prompted, {{locationPermExplanation}}.
+We need this permission in order to track your location and determine your travel
+patterns.  Since you are running {{platform}} {{osver}}, when prompted,
+{{locationPermExplanation}}.
 
 <div ng-if="platform.toLowerCase() == 'ios'">
 <h3> Notifications </h3>
 We need this permission in order to prompt you for your travel mode and purpose.
 Please allow.
+</div>
 
+<div ng-if="fitnessPermNeeded">
 <h3> Motion and Fitness </h3>
 We need this permission in order to separate the parts of multi-modal travel
 such as transit. Please allow.
