@@ -27,7 +27,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         return Promise.resolve(null);
     } else {
         var config = {
-            appId: "e0d8cdec",
+            appId: "9f7dc506",
             channel: currChannel
         }
         return deploy.configure(config);
