@@ -1,6 +1,6 @@
 {
   "name": "gov.colorado.energyoffice.emission",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "displayName": "CanBikeCO",
   "license": "BSD-3-Clause",
   "repository": {
@@ -38,7 +38,7 @@
       "cordova-plugin-inappbrowser": {},
       "cordova-plugin-local-notification": {},
       "cordova-plugin-ionic": {
-        "APP_ID": "e0d8cdec",
+        "APP_ID": "9f7dc506",
         "CHANNEL_NAME": "Production",
         "UPDATE_METHOD": "none",
         "UPDATE_API": "https://api.ionicjs.com",
