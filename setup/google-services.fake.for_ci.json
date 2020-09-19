@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1111111111111",
+    "firebase_url": "https://fake.for_ci.firebaseio.com",
+    "project_id": "fake.for_ci",
+    "storage_bucket": "fake.for_ci.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1111111111111:android:1111111111111111",
+        "android_client_info": {
+          "package_name": "edu.berkeley.eecs.emission"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1111111111111-11111111111111111111111111111111.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklm"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,65 @@
+# This is a basic workflow to help you get started with Actions
+
+name: osx-ubuntu-build-android
+
+# Controls when the action will run. Triggers the workflow on push or pull request
+# events but only for the master branch
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  schedule:
+    # * is a special character in YAML so you have to quote this string
+    - cron:  '5 4 * * 0'
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: macos-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v2
+
+    # Runs a single command using the runners shell
+    - name: Print the java version
+      run: java -version
+
+    - name: Tries to figure out where android is installed
+      run: |
+        echo "Android listed at $ANDROID_HOME"
+        ls -al /opt/
+
+    - name: Setup the cordova environment
+      shell: bash -l {0}
+      run: |
+        bash setup/setup_android_native.sh
+
+    - name: Check tool versions
+      shell: bash -l {0}
+      run: |
+        source setup/activate_native.sh
+        echo "cordova version"
+        npx cordova -version
+        echo "ionic version"
+        npx ionic --version
+        which gradle
+        echo "gradle version"
+        gradle -version
+
+    - name: Build android
+      shell: bash -l {0}
+      run: |
+        echo $PATH
+        which gradle
+        gradle -version
+        echo "Let's rerun the activation"
+        source setup/activate_native.sh
+        echo $PATH
+        which gradle
+        gradle --version
+        npx cordova build android

@@ -17,9 +17,10 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
-               StartPrefs, ControlHelper,
+               StartPrefs, ControlHelper, EmailHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
+               CarbonDatasetHelper,
                UpdateCheck,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
@@ -51,7 +52,13 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    $scope.emailLog = ControlHelper.emailLog;
+    $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+
+    $scope.emailLog = function () {
+        // Passing true, we want to send logs
+        EmailHelper.sendEmail("loggerDB")
+    };
+
     $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
@@ -90,7 +97,7 @@ angular.module('emission.main.control',['emission.services',
             // config not loaded when loading ui, set default as false
             // TODO: Read the value if it is not defined.
             // Otherwise, don't we have a race with reading?
-            // we don't really $apply on this field... 
+            // we don't really $apply on this field...
             return false;
         } else {
             return isMediumAccuracy;
@@ -204,6 +211,36 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    $scope.testTripEndNotify = function() {
+        $ionicPopup.alert({template: 'test for local notification 0.9.0-beta.3+ only'});
+        /*
+        var testCfg = {
+            id: 737678,
+            title: $translate.instant('post-trip-prompt.notification-title'),
+            text: "Testing if this works",
+            icon: 'file://img/icon.png',
+            actions: "TRIP_CONFIRM"
+        };
+        $window.cordova.plugins.notification.local.addActions('TRIP_CONFIRM', [{
+            id: 'MUTE',
+            type: 'button',
+            title: 'Mute',
+            ui: 'decline'
+        },{
+            id: 'SNOOZE',
+            type: 'button',
+            title: 'Snooze',
+            launch: true
+        },{
+            id: 'CHOOSE',
+            type: 'button',
+            title: "Choose",
+            launch: true
+        }]);
+        $window.cordova.plugins.notification.local.schedule(testCfg);
+        */
+    }
+
     $scope.invalidateCache = function() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
             $scope.$apply(function() {
@@ -242,7 +279,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.channel = function(newName) {
           return arguments.length ? (UpdateCheck.setChannel(newName)) : $scope.settings.storedChannel;
         };
-        UpdateCheck.getChannel().then(function(retVal) { 
+        UpdateCheck.getChannel().then(function(retVal) {
             $scope.$apply(function() {
                 $scope.settings.storedChannel = retVal;
             });
@@ -429,6 +466,19 @@ angular.module('emission.main.control',['emission.services',
             }
         }
     }
+    $scope.changeCarbonDataset = function() {
+        $ionicActionSheet.show({
+          buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
+          titleText: $translate.instant('general-settings.choose-dataset'),
+          cancelText: $translate.instant('general-settings.cancel'),
+          buttonClicked: function(index, button) {
+            console.log("changeCarbonDataset(): chose locale " + button.value);
+            CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
+            $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+            return true;
+          }
+        });
+    };
     $scope.expandDeveloperZone = function() {
         if ($scope.collectionExpanded()) {
             $scope.expanded = false;
@@ -512,4 +562,5 @@ angular.module('emission.main.control',['emission.services',
             console.log("Sharing failed with message: " + msg);
         });
     }
+
 });

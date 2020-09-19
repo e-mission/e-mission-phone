@@ -33,18 +33,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
   }
-  dh.getIcon = function(section) {
+  dh.getIcon = function(sensed_mode) {
+    var mode_string = dh.getHumanReadable(sensed_mode);
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
     "BUS": "ion-android-bus",
+    "LIGHT_RAIL": "lightrail fas fa-subway",
     "TRAIN": "ion-android-train",
+    "TRAM": "fas fa-tram",
+    "SUBWAY": "fas fa-subway",
     "CAR": "ion-android-car",
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
-    return icons[dh.getHumanReadable(section.properties.sensed_mode)];
+    return icons[mode_string];
   }
   dh.getHumanReadable = function(sensed_mode) {
     var ret_string = sensed_mode.split('.')[1];
@@ -56,44 +60,64 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
   // Temporary function to avoid repear in getPercentages ret val.
   var filterRunning = function(mode) {
-    if (mode == 'RUNNING') {
-      return 'WALKING';
+    if (mode == 'MotionTypes.RUNNING') {
+      return 'MotionTypes.WALKING';
     } else {
       return mode;
     }
   }
   dh.getPercentages = function(trip) {
-    var rtn0 = []; // icons
-    var rtn1 = []; //percentages
+    // we use a Map here to make it easier to work with the for loop below
+    let dists = {};
 
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":"ion-android-walk",
-    // "RUNNING":" ion-android-walk",
-    //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-speedometer",
-    "BUS": "ion-android-bus",
-    "TRAIN": "ion-android-train",
-    "CAR": "ion-android-car",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    var total = 0;
+    var totalDist = 0;
     for (var i=0; i<trip.sections.length; i++) {
-      if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
-        rtn0.push(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)));
-        rtn1.push(trip.sections[i].properties.distance);
-        total += trip.sections[i].properties.distance;
+      let filteredMode = filterRunning(trip.sections[i].properties.sensed_mode);
+      if (filteredMode in dists) {
+        dists[filteredMode] += trip.sections[i].properties.distance;
+        totalDist += trip.sections[i].properties.distance;
       } else {
-        rtn1[rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)))] += trip.sections[i].properties.distance;
-        total += trip.sections[i].properties.distance;
+        dists[filteredMode] = trip.sections[i].properties.distance;
+        totalDist += trip.sections[i].properties.distance;
       }
     }
-    for (var i=0; i<rtn0.length; i++) {
-      rtn0[i] = "icon " + icons[rtn0[i]];
-      rtn1[i] = Math.floor((rtn1[i] / total) * 100);
-    }
-    return [rtn0, rtn1];
+
+    let sectionPcts = Object.keys(dists).map(function(mode) {
+        return {
+            mode: mode,
+            icon: "icon " + dh.getIcon(mode),
+            color: {color: dh.getColor(mode)},
+            pct: Math.floor((dists[mode] / totalDist) * 100)
+        };
+    });
+
+    return sectionPcts;
   }
+
+  dh.getColor = function(sensed_mode) {
+    var mode_string = dh.getHumanReadable(sensed_mode);
+    var colors = {
+      "WALKING": 'brown',
+      "RUNNING": 'brown',
+      "BICYCLING": 'green',
+      "IN_VEHICLE": 'purple',
+      "LIGHT_RAIL": 'blue',
+      "BUS": 'navy',
+      "TRAIN": 'skyblue',
+      "TRAM": 'slateblue',
+      "SUBWAY": 'darkcyan',
+      "CAR": 'salmon',
+      "UNKNOWN": 'orange',
+      "UNPROCESSED": 'orange',
+      "AIR_OR_HSR": "red"
+    };
+    if (mode_string in colors) {
+        return colors[mode_string];
+    } else {
+        return "black";
+    }
+  }
+
   dh.starColor = function(num) {
     if (num >= 3) {
       return 'yellow';
@@ -120,29 +144,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return background;
   }
 
-  dh.allModes = function(trip) {
-    var rtn = [];
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":"ion-android-walk",
-    "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",
-    "CAR": "ion-android-car",
-    "BUS": "ion-android-bus",
-    "TRAIN": "ion-android-train",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    for (var i=0; i<trip.sections.length; i++) {
-      if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
-        rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));
-      }
-    }
-    for (var i=0; i<rtn.length; i++) {
-      rtn[i] = "icon " + icons[rtn[i]];
-    }
-    return rtn;
-  }
-
   dh.getKmph = function(section) {
     var metersPerSec = section.properties.distance / section.properties.duration;
     return (metersPerSec * 3.6).toFixed(2);
@@ -167,7 +168,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.getLocalTimeString = function (dt) {
-    return moment(dt).format("LT");
+    //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
+    let mdt = angular.copy(dt)
+    mdt.month = mdt.month - 1
+    return moment(mdt).format("LT");
   };
 
   dh.getFormattedTime = function(ts_in_secs) {
@@ -306,7 +310,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.userModes = [
-        "walk", "bicycle", "car", "bus", "train", "unicorn"
+        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
     ];
   dh.showModes = function(section) {
     return function() {
@@ -388,30 +392,65 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 weight: 5,
                 opacity: 1,
         };
-        var mode_string = dh.getHumanReadable(feature.properties.sensed_mode);
-        switch(mode_string) {
-            case "WALKING": return getColoredStyle(baseDict, 'brown');
-            case "RUNNING": return getColoredStyle(baseDict, 'brown');
-            case "BICYCLING": return getColoredStyle(baseDict, 'green');
-            case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
-            case "TRAIN": return getColoredStyle(baseDict, 'skyblue');
-            case "BUS": return getColoredStyle(baseDict, 'navy');
-            case "CAR": return getColoredStyle(baseDict, 'salmon');
-            case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
-            case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
-            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
-            default: return getColoredStyle(baseDict, 'black');
-        }
+        return getColoredStyle(baseDict, dh.getColor(feature.properties.sensed_mode));
       };
 
-  var printUserInput = function(ui) {
-    return ui.data.start_ts + " -> "+ ui.data.end_ts + 
-        " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  var fmtTs = function(ts_in_secs, tz) {
+    return moment(ts_in_secs * 1000).tz(tz).format();
   }
 
-  dh.getUserInputForTrip = function(tripProp, userInputList) {
+  var printUserInput = function(ui) {
+    return fmtTs(ui.data.start_ts, ui.metadata.time_zone) + "("+ui.data.start_ts + ") -> "+
+           fmtTs(ui.data.end_ts, ui.metadata.time_zone) + "("+ui.data.end_ts + ")"+
+           " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
+  }
+
+  dh.getUserInputForTrip = function(tripgj, userInputList) {
+    console.log("Input list = "+userInputList.map(printUserInput));
+    var tripProp = tripgj.data.properties;
+    var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
-        return userInput.data.start_ts >= tripProp.start_ts && userInput.data.end_ts <= tripProp.end_ts;
+        /*
+        console.log("startDelta "+userInput.data.label+
+            "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
+        console.log("endDelta = "+userInput.data.label+
+            "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
+            ") - trip("+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
+        */
+        // logic described in
+        // https://github.com/e-mission/e-mission-docs/issues/423
+        if (isDraft) {
+            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
+                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+            console.log(logStr);
+            // Logger.log(logStr);
+            return (userInput.data.start_ts >= tripProp.start_ts
+                    || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                && userInput.data.end_ts <= tripProp.end_ts;
+        } else {
+            // we know that the trip is cleaned so we can use the fmt_time
+            // but the confirm objects are not necessarily filled out
+            var logStr = "Cleaned trip: comparing user = "
+                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                +" trip = "+tripProp.start_fmt_time
+                +" -> "+tripProp.end_fmt_time
+                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
+                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
+            Logger.log(logStr);
+            return userInput.data.start_ts >= tripProp.start_ts
+                && (userInput.data.end_ts <= tripProp.end_ts ||
+                    (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
+        }
     });
     if (potentialCandidates.length === 0)  {
         Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
@@ -606,8 +645,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return {
             timezone: tz,
             year: currMoment.year(),
-            month: currMoment.month(),
-            day: currMoment.day(),
+            //the months of the draft trips match the one format needed for
+            //moment function however now that is modified we need to also
+            //modify the months value here
+            month: currMoment.month() + 1,
+            day: currMoment.date(),
             weekday: currMoment.weekday(),
             hour: currMoment.hour(),
             minute: currMoment.minute(),
@@ -754,9 +796,24 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
           var filteredLocationList = sortedLocationList.filter(retainInRange);
 
+          // Fix for https://github.com/e-mission/e-mission-docs/issues/417
+          if (filteredLocationList.length == 0) {
+            return undefined;
+          }
+
           var tripStartPoint = filteredLocationList[0];
           var tripEndPoint = filteredLocationList[filteredLocationList.length-1];
           Logger.log("tripStartPoint = "+JSON.stringify(tripStartPoint)+"tripEndPoint = "+JSON.stringify(tripEndPoint));
+          // if we get a list but our start and end are undefined
+          // let's print out the complete original list to get a clue
+          // this should help with debugging 
+          // https://github.com/e-mission/e-mission-docs/issues/417
+          // if it ever occurs again
+          if (angular.isUndefined(tripStartPoint) || angular.isUndefined(tripEndPoint)) {
+            Logger.log("BUG 417 check: locationList = "+JSON.stringify(locationList));
+            Logger.log("transitions: start = "+JSON.stringify(tripStartTransition.data)
+                + " end = "+JSON.stringify(tripEndTransition.data.ts));
+          }
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
             place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
@@ -770,8 +827,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             properties: angular.copy(section_gj.features[0].properties)
           }
 
-          Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
-            " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
+          // Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
+          //  " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
           // customize to trip versus section properties
           trip_gj.properties.feature_type = "trip";
           trip_gj.properties.start_loc = features[0].geometry;
@@ -853,7 +910,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             var sortedTransitionList = transitionList.sort(tsEntrySort);
             /*
             sortedTransitionList.forEach(function(transition) {
-                console.log(JSON.stringify(transition));
+                console.log(moment(transition.data.ts * 1000).format()+":" + JSON.stringify(transition.data));
             });
             */
             var tripsList = transition2Trip(transitionList);
@@ -916,12 +973,23 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var tripsFromServerPromise = timeline.updateFromServer(day);
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
 
+      // Also mode/purpose and (currently disabled) survey answers
+      var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+      var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
+      var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+
       // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise])
-        .then(function([processedTripList, completeStatus]) {
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise])
+        .then(function([processedTripList, completeStatus, modes, purposes]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
+        console.log(' with ${modes.length} modes, ${purposes.length} purposes');
         var tripList = processedTripList;
+        timeline.data.unifiedConfirmsResults = {
+          modes: modes,
+          purposes: purposes
+        };
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -935,27 +1003,27 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return tripList;
         }
       }).then(function(combinedTripList) {
-          var tq = { key: 'write_ts', startTs: 0, endTs: moment().endOf('day').unix(), };
-          return Promise.all([
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq),
-            UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq)
-          ]).then(function(results) {
-            timeline.data.unifiedConfirmsResults = {
-              modes: results[0],
-              purposes: results[1],
-            };
-            return combinedTripList;
-          });
-        return combinedTripList;
-      }).then(function(combinedTripList) {
         processOrDisplayNone(day, combinedTripList);
       }).catch(function(error) {
         // If there is any error reading from the server, we fallback on the local cache
         Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
         console.log("About to hide loading overlay");
         $ionicLoading.hide();
-        localCacheReadFn(day).then(function(processedTripList) {
+
+        var tripsFromCachePromise = localCacheReadFn(day);
+
+        // Also mode/purpose and (currently disabled) survey answers
+        var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+        var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
+        var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+        Promise.all([tripsFromCachePromise, modesPromise, purposesPromise]).then(function(
+            [processedTripList, modes, purposes]) {
+          console.log(' in local cache, found ${modes.length} modes, ${purposes.length} purposes');
           var tripList = processedTripList;
+          timeline.data.unifiedConfirmsResults = {
+            modes: modes,
+            purposes: purposes
+          };
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
               Logger.log("tripList.length = "+tripList.length
