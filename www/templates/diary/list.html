@@ -17,7 +17,7 @@
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">
         <ion-refresher
-        pulling-text="Pull to refresh"
+        pulling-text="{{'pull-to-refresh' | translate}}"
         on-refresh="refresh()">
         </ion-refresher>
         <!--
@@ -62,9 +62,9 @@
 
                     <div ng-class="listColRightClass">
                         <div ng-if="!tripgj.isDraft">
-                            <i class="{{mode}}" ng-repeat="mode in tripgj.percentages[0]" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="setColor(mode)"></i>
+                            <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="{{sectionPct.color}}"></i>
                             <div style="margin-top: -5px;">
-                                <a ng-class="listTextClass" ng-repeat="percentage in tripgj.percentages[1]" style="font-size: 0.6em; margin-right: 0.4em;">{{percentage}}%</a>
+                                <a ng-class="listTextClass" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.6em; margin-right: 0.4em;">{{sectionPct.pct}}%</a>
                             </div>
                         </div>
                         <button ng-if="tripgj.isDraft" class="button bg-unprocessed button-outline button-dark button-small icon-right ion-loop" ng-click="explainDraft($event)" style="font-size: 0.6em; margin-right: 0.4em" translate> {{'.draft'}} </button>

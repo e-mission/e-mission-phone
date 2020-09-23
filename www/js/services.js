@@ -1,8 +1,9 @@
 'use strict';
 
-angular.module('emission.services', ['emission.plugin.logger'])
+angular.module('emission.services', ['emission.plugin.logger',
+                                     'emission.plugin.kvstore'])
 
-.service('CommHelper', function($http) {
+.service('CommHelper', function($rootScope) {
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
@@ -158,6 +159,26 @@ angular.module('emission.services', ['emission.plugin.logger'])
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
       });
     };
+
+    // host is automatically read from $rootScope.connectUrl, which is set in app.js
+    this.getAggregateData = function(path, data) {
+        return new Promise(function(resolve, reject) {
+          const full_url = $rootScope.connectUrl+"/"+path;
+          console.log("getting aggregate data without user authentication from "
+            + full_url +" with arguments "+JSON.stringify(data));
+          const options = {
+              method: 'post',
+              data: data,
+              responseType: 'json'
+          }
+          cordova.plugin.http.sendRequest(full_url, options,
+          function(response) {
+            resolve(response);
+          }, function(error) {
+            reject(error);
+          });
+        });
+    };
 })
 
 .service('ReferHelper', function($http) {
@@ -196,7 +217,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
           var remoteResult = [];
           var remoteError = null;
-      
+
           var localPromiseDone = false;
           var remotePromiseDone = false;
 
@@ -257,58 +278,11 @@ angular.module('emission.services', ['emission.plugin.logger'])
       return combinedPromise(localPromise, remotePromise, combineWithDedup);
     }
 })
-.service('ControlHelper', function($cordovaEmailComposer,
+.service('ControlHelper', function($window,
                                    $ionicPopup,
+                                   $translate,
                                    CommHelper,
                                    Logger) {
-  this.emailLog = function() {
-        var parentDir = "unknown";
-
-         $cordovaEmailComposer.isAvailable().then(function() {
-           // is available
-         }, function () {
-            alert("Email account is not configured, cannot send email");
-            return;
-         });
-
-        if (ionic.Platform.isAndroid()) {
-            parentDir = "app://databases";
-        }
-        if (ionic.Platform.isIOS()) {
-            alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
-            parentDir = cordova.file.dataDirectory+"../LocalDatabase";
-        }
-
-        if (parentDir == "unknown") {
-          alert("parentDir unexpectedly = "+parentDir+"!")
-        }
-
-        /*
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "Going to export logs to "+parentDir);
-         */
-        alert("Going to email database from "+parentDir+"/loggerDB");
-
-        var email = {
-            to: ['shankari@eecs.berkeley.edu'],
-            attachments: [
-                parentDir+"/loggerDB"
-            ],
-            subject: 'emission logs',
-            body: 'please fill in what went wrong'
-        }
-
-        $cordovaEmailComposer.open(email).then(function() {
-           window.Logger.log(window.Logger.LEVEL_DEBUG,
-               "Email queued successfully");
-        },
-        function () {
-           // user cancelled email. in this case too, we want to remove the file
-           // so that the file creation earlier does not fail.
-           window.Logger.log(window.Logger.LEVEL_INFO,
-               "Email cancel reported, seems to be an error on android");
-        });
-    };
 
     this.writeFile = function(fileEntry, resultList) {
       // Create a FileWriter object for our FileEntry (log.txt).
@@ -379,21 +353,17 @@ angular.module('emission.services', ['emission.plugin.logger'])
                           attachFile = "app://cache/"+dumpFile;
                         }
                         if (ionic.Platform.isIOS()) {
-                          alert("You must have the mail app on your phone configured with an email address. Otherwise, this won't work");
+                          alert($translate.instant('email-service.email-account-mail-app'));
                         }
                         var email = {
                           to: [userEmail],
                           attachments: [
                             attachFile
                           ],
-                          subject: 'Data dump from '+startMoment.format(fmt)
-                          + " to " + endMoment.format(fmt),
-                          body: 'Data consists of a list of entries.\n'
-                          + 'Entry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \n'
-                          + 'Data can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n'
-                          + ' and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb'
+                          subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
+                          body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
                         }
-                        $cordovaEmailComposer.open(email).then(resolve());
+                        $window.cordova.plugins.email.open(email).then(resolve());
                       }
                       reader.readAsText(file);
                     }, function(error) {
@@ -428,6 +398,183 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
 })
 
+.service('CarbonDatasetHelper', function(KVStore) {
+  var CARBON_DATASET_KEY = 'carbon_dataset_locale';
+
+  // Values are in Kg/PKm (kilograms per passenger-kilometer)
+  // Sources for EU values:
+  //  - Tremod: 2017, CO2, CH4 and N2O in CO2-equivalent
+  //  - HBEFA: 2020, CO2 (per country)
+  // German data uses Tremod. Other EU countries (and Switzerland) use HBEFA for car and bus,
+  // and Tremod for train and air (because HBEFA doesn't provide these).
+  // EU data is an average of the Tremod/HBEFA data for the countries listed;
+  // for this average the HBEFA data was used also in the German set (for car and bus).
+  var carbonDatasets = {
+    US: {
+      regionName: "United States",
+      footprintData: {
+        WALKING:      0,
+        BICYCLING:    0,
+        CAR:        267/1609,
+        BUS:        278/1609,
+        LIGHT_RAIL: 120/1609,
+        SUBWAY:      74/1609,
+        TRAM:        90/1609,
+        TRAIN:       92/1609,
+        AIR_OR_HSR: 217/1609
+      }
+    },
+    EU: {                   // Plain average of values for the countries below (using HBEFA for car and bus, Tremod for others)
+      regionName: "European Union",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.14515,
+        BUS:         0.04751,
+        LIGHT_RAIL:  0.064,
+        SUBWAY:      0.064,
+        TRAM:        0.064,
+        TRAIN:       0.048,
+        AIR_OR_HSR:  0.201
+      }
+    },
+    DE: {
+      regionName: "Germany",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.139,   // Tremod (passenger car)
+        BUS:         0.0535,  // Tremod (average city/coach)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
+      }
+    },
+    FR: {
+      regionName: "France",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.13125, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04838, // HBEFA (average short/long distance, considering 16/25 passengers)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
+      }
+    },
+    AT: {
+      regionName: "Austria",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.14351, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04625, // HBEFA (average short/long distance, considering 16/25 passengers)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
+      }
+    },
+    SE: {
+      regionName: "Sweden",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.13458, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04557, // HBEFA (average short/long distance, considering 16/25 passengers)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
+      }
+    },
+    NO: {
+      regionName: "Norway",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.13265, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04185, // HBEFA (average short/long distance, considering 16/25 passengers)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
+      }
+    },
+    CH: {
+      regionName: "Switzerland",
+      footprintData: {
+        WALKING:     0,
+        BICYCLING:   0,
+        CAR:         0.17638, // HBEFA (passenger car, considering 1 passenger)
+        BUS:         0.04866, // HBEFA (average short/long distance, considering 16/25 passengers)
+        LIGHT_RAIL:  0.064,   // Tremod (DE tram, urban rail and subway)
+        SUBWAY:      0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAM:        0.064,   // Tremod (DE tram, urban rail and subway)
+        TRAIN:       0.048,   // Tremod (DE average short/long distance)
+        AIR_OR_HSR:  0.201    // Tremod (DE airplane)
+      }
+    }
+  };
+
+  var defaultCarbonDatasetCode = 'US';
+  var currentCarbonDatasetCode = defaultCarbonDatasetCode;
+
+  // we need to call the method from within a promise in initialize()
+  // and using this.setCurrentCarbonDatasetLocale doesn't seem to work
+  var setCurrentCarbonDatasetLocale = function(localeCode) {
+    for (var code in carbonDatasets) {
+      if (code == localeCode) {
+        currentCarbonDatasetCode = localeCode;
+        break;
+      }
+    }
+  }
+
+  this.loadCarbonDatasetLocale = function() {
+    return KVStore.get(CARBON_DATASET_KEY).then(function(localeCode) {
+      Logger.log("CarbonDatasetHelper.loadCarbonDatasetLocale() obtained value from storage [" + localeCode + "]");
+      if (!localeCode) {
+        localeCode = defaultCarbonDatasetCode;
+        Logger.log("CarbonDatasetHelper.loadCarbonDatasetLocale() no value in storage, using [" + localeCode + "] instead");
+      }
+      setCurrentCarbonDatasetLocale(localeCode);
+    });
+  }
+
+  this.saveCurrentCarbonDatasetLocale = function (localeCode) {
+    setCurrentCarbonDatasetLocale(localeCode);
+    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
+    Logger.log("CarbonDatasetHelper.saveCurrentCarbonDatasetLocale() saved value [" + currentCarbonDatasetCode + "] to storage");
+  }
+
+  this.getCarbonDatasetOptions = function() {
+    var options = [];
+    for (var code in carbonDatasets) {
+      options.push({
+        text: code, //carbonDatasets[code].regionName,
+        value: code
+      });
+    }
+    return options;
+  };
+
+  this.getCurrentCarbonDatasetCode = function () {
+    return currentCarbonDatasetCode;
+  };
+
+  this.getCurrentCarbonDatasetFootprint = function () {
+    return carbonDatasets[currentCarbonDatasetCode].footprintData;
+  };
+})
+
 // common configuration methods across all screens
 // e.g. maps
 // for consistent L&F
@@ -437,9 +584,9 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
     config.getMapTiles = function() {
       return {
-          tileLayer: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
+          tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           tileLayerOptions: {
-              attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
               opacity: 0.9,
               detectRetina: true,
               reuseTiles: true,

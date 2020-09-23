@@ -10,7 +10,7 @@
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.splash.updatecheck',
+    'emission.splash.updatecheck', 'emission.services.email',
   'emission.intro', 'emission.main',
   'pascalprecht.translate'])
 
@@ -38,11 +38,7 @@ angular.module('emission', ['ionic',
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     Logger.log("ionicPlatform is ready");
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
 
-    }
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
@@ -55,23 +51,26 @@ angular.module('emission', ['ionic',
             throw "blank string instead of missing file on dynamically served app";
         }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
+        $rootScope.connectUrl = connectionConfig.data.connectUrl;
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
         // not displaying the error here since we have a backup
         Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
             Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
+            $rootScope.connectUrl = defaultConfig.connectUrl;
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
             // displaying the error here since we don't have a backup
             Logger.displayError("Error reading or setting connection defaults", err);
         });
     });
+    cordova.plugin.http.setDataSerializer('json');
   });
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider, $translateProvider) {
+.config(function($stateProvider, $urlRouterProvider, $translateProvider, $compileProvider) {
   console.log("Starting config");
   // alert("config");
 
@@ -80,6 +79,7 @@ angular.module('emission', ['ionic',
   // Set a few states which the app can be in.
   // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|ionic):|data:image/);  
   $stateProvider
   // set up a state for the splash screen. This has no parents and no children
   // because it is basically just used to load the user's preferred screen.
@@ -105,14 +105,17 @@ angular.module('emission', ['ionic',
   $urlRouterProvider.otherwise('/splash');
 
   // Allow the use of MessageForm interpolation for Gender and Plural.
-  $translateProvider.addInterpolation('$translateMessageFormatInterpolation');
+  $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
+                    .useSanitizeValueStrategy('escape');
+
 
   // Define where we can find the .json and the fallback language
   $translateProvider
     .fallbackLanguage('en')
-    .registerAvailableLanguageKeys(['en', 'fr'], {
+    .registerAvailableLanguageKeys(['en', 'fr', 'it'], {
       'en_*': 'en',
       'fr_*': 'fr',
+      'it_*': 'it',
       '*': 'en'
     })
     .determinePreferredLanguage()

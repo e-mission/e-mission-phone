@@ -123,29 +123,36 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
     }
 
-    $scope.datepickerObject = {
-
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      monthsList: moment.monthsShort(),
-      weeksList: moment.weekdaysMin(),
-      titleLabel: $translate.instant('diary.list-pick-a-date'),
-      setButtonType : 'button-positive',  //Optional
-      todayButtonType : 'button-stable',  //Optional
-      closeButtonType : 'button-stable',  //Optional
-      inputDate: new Date(),  //Optional
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      mondayFirst: true,  //Optional
-      templateType: 'popup', //Optional
-      showTodayButton: 'true', //Optional
-      modalHeaderColor: 'bar-positive', //Optional
-      modalFooterColor: 'bar-positive', //Optional
-      callback: $scope.setCurrDay, //Mandatory
-      dateFormat: 'dd MMM yyyy', //Optional
-      closeOnSelect: true //Optional
+    $scope.getDatePickerObject = function() {
+      return {
+        todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+        closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+        setLabel: $translate.instant('list-datepicker-set'),  //Optional
+        monthsList: moment.monthsShort(),
+        weeksList: moment.weekdaysMin(),
+        titleLabel: $translate.instant('diary.list-pick-a-date'),
+        setButtonType : 'button-positive',  //Optional
+        todayButtonType : 'button-stable',  //Optional
+        closeButtonType : 'button-stable',  //Optional
+        inputDate: new Date(),  //Optional
+        from: new Date(2015, 1, 1),
+        to: new Date(),
+        mondayFirst: true,  //Optional
+        templateType: 'popup', //Optional
+        showTodayButton: 'true', //Optional
+        modalHeaderColor: 'bar-positive', //Optional
+        modalFooterColor: 'bar-positive', //Optional
+        callback: $scope.setCurrDay, //Mandatory
+        dateFormat: 'dd MMM yyyy', //Optional
+        closeOnSelect: true //Optional
+      }
     };
+
+    $scope.datepickerObject = $scope.getDatePickerObject();
+
+    $ionicPlatform.on("resume", function() {
+        $scope.datepickerObject = $scope.getDatePickerObject();
+    });
 
     $scope.pickDay = function() {
       ionicDatePicker.openDatePicker($scope.datepickerObject);
@@ -155,7 +162,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'mode' to the trip
      */
     $scope.populateModeFromTimeline = function (tripgj, modeList) {
-        var userMode = DiaryHelper.getUserInputForTrip(tripgj.data.properties, modeList);
+        var userMode = DiaryHelper.getUserInputForTrip(tripgj, modeList);
         if (angular.isDefined(userMode)) {
             // userMode is a mode object with data + metadata
             // the label is the "value" from the options
@@ -176,7 +183,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
      * Embed 'purpose' to the trip
      */
     $scope.populatePurposeFromTimeline = function (tripgj, purposeList) {
-        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj.data.properties, purposeList);
+        var userPurpose = DiaryHelper.getUserInputForTrip(tripgj, purposeList);
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
@@ -272,21 +279,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
-    $scope.setColor = function(mode) {
-      var colors = {
-        "icon ion-android-bicycle": 'green',
-    "icon ion-android-walk":'brown',
-    "icon ion-speedometer":'purple',
-    "icon ion-android-bus": "purple",
-    "icon ion-android-train": "navy",
-    "icon ion-android-car": "salmon",
-        "icon ion-plane": "red"
-      };
-      return {
-        color: colors[mode]
-      };
-    }
-
     var showNoTripsAlert = function() {
       var buttons = [{
           text: 'New',
@@ -366,7 +358,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
     $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
@@ -390,7 +381,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.userModes = [
-        "walk", "bicycle", "car", "bus", "train", "unicorn"
+        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
     ];
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
@@ -501,14 +492,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.modePopover.show($event);
     };
 
-    var closeModePopover = function ($event, isOther) {
+    var closeModePopover = function () {
       $scope.selected.mode = {
         value: ''
       };
-      if (isOther == false)
-        $scope.draftMode = angular.undefined;
-      Logger.log("in closeModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.modePopover.hide($event);
+      $scope.modePopover.hide();
     };
 
     $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
@@ -534,14 +522,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       $scope.purposePopover.show($event);
     };
 
-    var closePurposePopover = function ($event, isOther) {
+    var closePurposePopover = function () {
       $scope.selected.purpose = {
         value: ''
       };
-      if (isOther == false)
-        $scope.draftPurpose = angular.undefined;
-      Logger.log("in closePurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
-      $scope.purposePopover.hide($event);
+      $scope.purposePopover.hide();
     };
 
     /**

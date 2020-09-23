@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget android-versionCode="39" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="39" version="2.8.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget android-versionCode="40" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="40" version="2.9.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>emission</name>
     <description>
         A commute pattern tracker and carbon footprint estimator.
@@ -9,25 +9,39 @@
   </author>
     <content src="index.html" />
     <access origin="*" />
-    <allow-navigation href="https://em-game.eecs.berkeley.edu/*" />
-    <hook src="package-hooks/ios9_allow_http.sh" type="after_prepare" />
+    <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />
     <preference name="DisallowOverscroll" value="true" />
-    <preference name="android-minSdkVersion" value="18" />
+    <preference name="android-minSdkVersion" value="22" />
     <preference name="BackupWebStorage" value="none" />
-    <preference name="SplashScreen" value="screen" />
-    <preference name="SplashScreenDelay" value="100" />
-    <preference name="xwalkVersion" value="19+" />
-    <preference name="xwalkCommandLine" value="--disable-pull-to-refresh-effect" />
-    <preference name="xwalkMode" value="embedded" />
-    <preference name="xwalkMultipleApk" value="true" />
     <preference name="emSensorDataCollectionProtocolApprovalDate" value="2016-07-14" />
+    <preference name="GradlePluginGoogleServicesEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.3.3" />
+    <config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_ssaid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="false" />
+    </config-file>
+    <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
+        <true />
+    </config-file>
+    <config-file parent="GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED" target="*-Info.plist">
+        <false />
+    </config-file>
+    <config-file parent="GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS" target="*-Info.plist">
+        <false />
+    </config-file>
     <feature name="StatusBar">
         <param name="ios-package" onload="true" value="CDVStatusBar" />
     </feature>
     <platform name="ios">
+        <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
         <resource-file src="GoogleService-Info.plist" />
+        <preference name="WKWebViewOnly" value="true" />
+        <preference name="WKSuspendInBackground" value="false" />
+        <preference name="AutoHideSplashScreen" value="true" />
         <icon height="57" src="resources/ios/icon/icon.png" width="57" />
         <icon height="114" src="resources/ios/icon/icon@2x.png" width="114" />
         <icon height="40" src="resources/ios/icon/icon-40.png" width="40" />
@@ -62,9 +76,12 @@
         <splash height="2732" src="resources/ios/splash/Default@2x~universal~anyany.png" width="2732" />
     </platform>
     <platform name="android">
-        <preference name="android-minSdkVersion" value="18" />
-        <preference name="android-targetSdkVersion" value="26" />
-        <resource-file src="google-services.json" target="google-services.json" />
+        <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
+        <preference name="android-minSdkVersion" value="22" />
+        <preference name="android-targetSdkVersion" value="29" />
+        <preference name="AndroidXEnabled" value="true" />
+        <resource-file src="google-services.json" target="app/google-services.json" />
+        <hook src="hooks/before_build/android/android_set_provider.js" type="before_build" />
         <icon density="ldpi" src="resources/android/icon/drawable-ldpi-icon.png" />
         <icon density="mdpi" src="resources/android/icon/drawable-mdpi-icon.png" />
         <icon density="hdpi" src="resources/android/icon/drawable-hdpi-icon.png" />
@@ -83,41 +100,9 @@
         <splash density="port-xhdpi" src="resources/android/splash/drawable-port-xhdpi-screen.png" />
         <splash density="port-xxhdpi" src="resources/android/splash/drawable-port-xxhdpi-screen.png" />
         <splash density="port-xxxhdpi" src="resources/android/splash/drawable-port-xxxhdpi-screen.png" />
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        </config-file>
     </platform>
     <icon src="resources/android/icon/drawable-xhdpi-icon.png" />
-    <plugin name="phonegap-plugin-push" spec="=2.1.2">
-         <variable name="FCM_VERSION" value="11.0.1" />
-    </plugin>
-    <plugin name="ionic-plugin-keyboard" spec="~2.2.1" />
-    <plugin name="cordova-plugin-app-version" spec="~0.1.9" />
-    <plugin name="cordova-plugin-file" spec="~6.0.1" />
-    <plugin name="cordova-plugin-device" spec="~2.0.1" />
-    <plugin name="cordova-plugin-whitelist" spec="~1.3.3" />
-    <plugin name="cordova-plugin-customurlscheme" spec="~4.3.0">
-        <variable name="URL_SCHEME" value="emission" />
-    </plugin>
-    <plugin name="cordova-plugin-email-composer" spec="^0.8.15" />
-    <plugin name="cordova-plugin-x-socialsharing" spec="~5.2.1" />
-    <plugin name="cordova-plugin-inappbrowser" spec="https://github.com/shankari/cordova-plugin-inappbrowser.git" />
-    <plugin name="de.appplant.cordova.plugin.local-notification-ios9-fix" spec="https://github.com/shankari/cordova-plugin-local-notifications.git" />
-    <plugin name="cordova-plugin-ionic" spec="https://github.com/e-mission/cordova-plugin-ionic.git#3.2.0">
-        <variable name="APP_ID" value="e0d8cdec" />
-        <variable name="CHANNEL_NAME" value="Production" />
-        <variable name="UPDATE_METHOD" value="none" />
-        <variable name="UPDATE_API" value="https://api.ionicjs.com" />
-        <variable name="MAX_STORE" value="2" />
-    </plugin>
-    <preference name="SplashShowOnlyFirstTime" value="false" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.auth" spec="https://github.com/e-mission/cordova-jwt-auth.git#v1.5.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.comm" spec="https://github.com/e-mission/cordova-server-communication.git#v1.2.1" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.datacollection" spec="https://github.com/e-mission/e-mission-data-collection.git#v1.3.3">
-        <variable name="LOCATION_VERSION" value="11.0.1" />
-    </plugin>
-    <plugin name="edu.berkeley.eecs.emission.cordova.serversync" spec="https://github.com/e-mission/cordova-server-sync.git#v1.1.2" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.settings" spec="https://github.com/e-mission/cordova-connection-settings.git#v1.2.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.transitionnotify" spec="https://github.com/e-mission/e-mission-transition-notify.git#v1.2.0" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.unifiedlogger" spec="https://github.com/e-mission/cordova-unified-logger.git#v1.3.1" />
-    <plugin name="edu.berkeley.eecs.emission.cordova.usercache" spec="https://github.com/e-mission/cordova-usercache.git#v1.1.0" />
-    <engine name="ios" spec="^4.5.4" />
-    <engine name="android" spec="^6.4.0" />
 </widget>
