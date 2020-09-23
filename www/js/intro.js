@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
+                                  'emission.splash.updatecheck',
                                   'ionic-toast'])
 
 .config(function($stateProvider) {
@@ -19,7 +20,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, UpdateCheck, $translate) {
 
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
@@ -171,15 +172,22 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
-      CommHelper.registerUser(function(successResult) {
-        $scope.finish();
-      }, function(errorResult) {
-        $scope.alertError('User registration error', errorResult);
-        $scope.finish();
-      });
+      if (userEmail == "null" || userEmail == "") {
+        $scope.alertError("Invalid login "+userEmail);
+      } else {
+        CommHelper.registerUser(function(successResult) {
+          UpdateCheck.getChannel().then(function(retVal) {
+            CommHelper.updateUser({
+             client: retVal
+            });
+          });
+          $scope.finish();
+        }, function(errorResult) {
+          $scope.alertError('User registration error', errorResult);
+        });
+      }
     }, function(error) {
         $scope.alertError('Sign in error', error);
-        $scope.finish();
     });
   };
 
