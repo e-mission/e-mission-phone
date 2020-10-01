@@ -120,7 +120,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
+    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken($scope.randomToken).then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
