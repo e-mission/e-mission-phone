@@ -180,7 +180,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
-<<<<<<< HEAD
       if (userEmail == "null" || userEmail == "") {
         $scope.alertError("Invalid login "+userEmail);
       } else {
