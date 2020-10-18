@@ -150,9 +150,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
   $scope.startSurvey = function () {
-      SurveyLaunch.startSurveyWithXPath(
+      SurveyLaunch.startSurveyPrefilled(
         'https://docs.google.com/forms/d/e/1FAIpQLSfA-JCnD5Tb2olZn0UAO91_juU-wuToxJc6uHdMjEQoSi-YTw/viewform',
-        '/html/body/div/div[2]/form/div[2]/div/div[2]/div[1]/div/div/div[2]/div/div[1]/div/div[1]/input');
+        'entry.779873496');
   };
 
   $scope.next = function() {
