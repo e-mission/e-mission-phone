@@ -2,8 +2,8 @@
 
 
 angular.module('emission.intro', ['emission.splash.startprefs',
+                                  'emission.splash.updatecheck',
                                   'ionic-toast', 'angularLocalStorage'])
-
 .config(function($stateProvider) {
   $stateProvider
   // setup an abstract state for the intro directive
@@ -20,7 +20,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate) {
 
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
@@ -180,24 +180,30 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
-      CommHelper.registerUser(function(successResult) {
-        CommHelper.updateUser({
-          client: "urap-2017-emotion"
+<<<<<<< HEAD
+      if (userEmail == "null" || userEmail == "") {
+        $scope.alertError("Invalid login "+userEmail);
+      } else {
+        CommHelper.registerUser(function(successResult) {
+          UpdateCheck.getChannel().then(function(retVal) {
+            CommHelper.updateUser({
+             client: retVal
+            });
+          });
+          if (localStorage.getItem('username') != null) {
+            $scope.finish();
+          } else {
+            $scope.showUsernamePopup();
+          }
+        }, function(errorResult) {
+          $scope.alertError('User registration error', errorResult);
         });
-        if (localStorage.getItem('username') != null) {
-          $scope.finish();
-        } else {
-          $scope.showUsernamePopup();
-        }
-      }, function(errorResult) {
-        $scope.alertError('User registration error', errorResult);
-        // $scope.finish();
-      });
+      }
     }, function(error) {
         $scope.alertError('Sign in error', error);
-        // $scope.finish();
     });
   };
+
   $scope.showUsernamePopup = function() {
   $scope.data = {};
 
