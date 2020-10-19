@@ -21,7 +21,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
-               UpdateCheck,
+               SurveyLaunch, UpdateCheck,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
 
@@ -479,6 +479,13 @@ angular.module('emission.main.control',['emission.services',
           }
         });
     };
+
+    $scope.launchWeeklySurvey = function() {
+      SurveyLaunch.startSurveyPrefilled(
+        'https://docs.google.com/forms/d/e/1FAIpQLSfJ7qNRtHTYjobW6qFGMmtC8-axg_6MZU0HDCIYfD78ru8RBg/viewform',
+        'entry.1942864803');
+    }
+
     $scope.expandDeveloperZone = function() {
         if ($scope.collectionExpanded()) {
             $scope.expanded = false;
