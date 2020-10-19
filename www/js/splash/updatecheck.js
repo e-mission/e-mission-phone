@@ -6,6 +6,7 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
 .factory('UpdateCheck', function($ionicPopup, $ionicPlatform, $rootScope, $window, Logger, KVStore, $translate) {
   var uc = {};
   var CHANNEL_KEY = 'deploy_channel';
+  var DEFAULT_CHANNEL = "Production";
 
 
   /*
@@ -23,8 +24,12 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
   uc.initChannelPromise = function(currChannel) {
     var deploy = $window.IonicCordova.deploy;
     if (currChannel == null) {
-        Logger.log("currChannel == null, skipping deploy init");
-        return Promise.resolve(null);
+        Logger.log("currChannel == null, using default channel "+DEFAULT_CHANNEL);
+        var config = {
+            appId: "9f7dc506",
+            channel: DEFAULT_CHANNEL
+        }
+        return deploy.configure(config);
     } else {
         var config = {
             appId: "9f7dc506",
