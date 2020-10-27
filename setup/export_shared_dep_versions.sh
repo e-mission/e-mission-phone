@@ -1,4 +1,4 @@
-export NVM_VERSION=0.35.3
+export NVM_VERSION=0.36.0
 export NODE_VERSION=14.7.0
 export NPM_VERSION=6.14.7
 export RUBY_VERSION=2.6.0
