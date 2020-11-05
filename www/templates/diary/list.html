@@ -40,7 +40,7 @@
         -->
         <ion-item ng-if="data.currDayTripWrappers.length == 0" style="background-color: transparent;" id="no-border" class="list-item">
                <div ng-if="data.currDayTripWrappers.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
-                 <h3>No trips recorded on this day.</h3>
+                 <h3>{{'diary.no-trips-today' | translate}}</h3>
                </div>
          </ion-item>
 
