@@ -156,7 +156,8 @@
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
-        "list-pick-a-date": "Pick a date"
+        "list-pick-a-date": "Pick a date",
+        "no-trips-today": "No trips recorded on this day"
     },
 
     "user-gender": "Gender",
@@ -170,6 +171,10 @@
         "dashboard": "Dashboard",
         "mybear": "My Bear",
         "leaderboard": "Leaderboard",
+        "carbon-usage": "Carbon Usage Past 7 Days",
+        "gold-tier": "Gold tier",
+        "silver-tier": "Silver tier",
+        "bronze-tier": "Bronze tier",
         "suggestion": "Suggestion",
         "suggestion-savings": "You can save {{suggestionData.savings}} in a month",
         "recent-trips": "Recent Trips",
