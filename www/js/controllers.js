@@ -3,6 +3,7 @@
 angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.startprefs',
                                         'emission.splash.pushnotify',
+                                        'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
                                         'emission.survey.launch',
                                         'emission.stats.clientstats',
@@ -12,8 +13,8 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('SplashCtrl', function($scope, $state, $interval, $rootScope,
-    UpdateCheck, StartPrefs, PushNotify,
+.controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
+    UpdateCheck, StartPrefs, PushNotify, StoreDeviceSettings,
     LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");

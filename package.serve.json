@@ -8,7 +8,7 @@
     "url": "git+https://github.com/e-mission/e-mission-phone.git"
   },
   "scripts": {
-    "setup-serve": "./bin/download_settings_controls.js",
+    "setup-serve": "./bin/download_settings_controls.js && ./bin/setup_autodeploy.js",
     "serve": "phonegap --verbose serve"
   },
   "devDependencies": {
