@@ -49,6 +49,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
   }
 
+  $scope.fitnessPermNeeded = ($scope.platform.toLowerCase() == "ios" ||
+    (($scope.platform.toLowerCase() == "android") && ($scope.osver >= 10)));
+
   // copy-pasted from ngCordova, and updated to promises
   $scope.checkFile = function(path, fn) {
     return new Promise(function(resolve, reject) {
