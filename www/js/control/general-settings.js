@@ -480,10 +480,10 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.launchWeeklySurvey = function() {
+    $scope.launchDemographicSurvey = function() {
       SurveyLaunch.startSurveyPrefilled(
-        'https://docs.google.com/forms/d/e/1FAIpQLSfJ7qNRtHTYjobW6qFGMmtC8-axg_6MZU0HDCIYfD78ru8RBg/viewform',
-        'entry.1942864803');
+        'https://ee.kobotoolbox.org/x/hEkHk50v',
+        'd[/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Here_is_your_UUID_wh_ake_any_change_to_it]');
     }
 
     $scope.expandDeveloperZone = function() {
