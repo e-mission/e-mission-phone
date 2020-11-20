@@ -184,8 +184,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $scope.startSurvey = function () {
-    SurveyLaunch.startSurveyWithXPath(
-        'https://ee.kobotoolbox.org/x/hEkHk50v',
+    SurveyLaunch.startSurveyPrefilled(
+        'https://ee.kobotoolbox.org/hEkHk50v',
         'd[/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Here_is_your_UUID_wh_ake_any_change_to_it]');
   }
 
