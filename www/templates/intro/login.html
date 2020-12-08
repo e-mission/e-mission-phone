@@ -10,7 +10,11 @@ Nobody other than you knows that you are associated with this token. If you
 want to communicate with the research team about the data collected about you,
 please be prepared to provide this token.
 <div class="intro-space"></div>
-<button class="button button-block button-balanced" ng-click="login()">Login as {{randomToken}}</button>
+<button class="button button-block button-balanced" ng-click="loginNew()">Login as {{randomToken}}</button>
+
+If you already have a token from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a token that does not match an existing one, we will create a new account.
+<div class="intro-space"></div>
+<button class="button button-block button-energized" ng-click="loginExisting()">Login with existing token</button>
 </div>
 
 </ion-content>
