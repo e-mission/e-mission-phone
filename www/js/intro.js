@@ -119,8 +119,49 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       });
   }
 
-  $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken($scope.randomToken).then(function(userEmail) {
+  $scope.loginNew = function() {
+    $scope.login($scope.randomToken);
+  };
+
+  $scope.loginExisting = function() {
+    $scope.data = {};
+    const tokenPopup = $ionicPopup.show({
+        template: '<input type="String" ng-model="data.existing_token">',
+        title: 'Enter the existing token that you have',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>OK</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              if (!$scope.data.existing_token) {
+                //don't allow the user to close unless he enters a username
+
+                e.preventDefault();
+              } else {
+                return $scope.data.existing_token;
+              }
+            }
+          },{
+            text: '<b>Cancel</b>',
+            type: 'button-stable',
+            onTap: function(e) {
+              return null;
+            }
+          }
+        ]
+    });
+    tokenPopup.then(function(token) {
+        if (token != null) {
+            $scope.login($scope.randomToken);
+        }
+    }).catch(function(err) {
+        $scope.alertError(err);
+    });
+  };
+
+  $scope.login = function(token) {
+    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
