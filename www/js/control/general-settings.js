@@ -487,7 +487,7 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.launchDemographicSurvey = function() {
       SurveyLaunch.startSurveyPrefilled(
-        'https://ee.kobotoolbox.org/hEkHk50v',
+        'https://ee.kobotoolbox.org/x/hEkHk50v',
         'd[/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Here_is_your_UUID_wh_ake_any_change_to_it]');
     }
 
