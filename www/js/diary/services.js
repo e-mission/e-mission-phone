@@ -461,15 +461,23 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 userInput.data.start_ts <= tripProp.end_ts;
             var endChecks = (userInput.data.end_ts <= tripProp.end_ts ||
                     (userInput.data.end_ts - tripProp.end_ts) <= 15 * 60);
-            if (!endChecks) {
+            if (startChecks && !endChecks) {
                 if (angular.isDefined(nextTripgj)) {
-                    endChecks = userInput.data.end_ts <= nextTripgj.start_ts;
-                    Logger.log("Second level of end checks when the next trip is defined "+endChecks);
+                    endChecks = userInput.data.end_ts <= nextTripgj.data.properties.start_ts;
+                    Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextTripgj.data.properties.start_ts+") = "+endChecks);
                 } else {
                     // next trip is not defined, last trip
                     endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
                     Logger.log("Second level of end checks for the last trip of the day");
                     Logger.log("compare "+userInput.data.end_local_dt.day + " with " + userInput.data.start_local_dt.day + " = " + endChecks);
+                }
+                if (endChecks) {
+                    // If we have flipped the values, check to see that there
+                    // is sufficient overlap
+                    const overlapDuration = Math.min(userInput.data.end_ts, tripProp.end_ts) - Math.max(userInput.data.start_ts, tripProp.start_ts)
+                    Logger.log("Flipped endCheck, overlap("+overlapDuration+
+                        ")/trip("+tripProp.duration+") = "+ (overlapDuration / tripProp.duration));
+                    endChecks = (overlapDuration/tripProp.duration) > 0.5;
                 }
             }
             return startChecks && endChecks;
