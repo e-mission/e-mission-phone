@@ -158,8 +158,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     /**
      * Embed 'inputType' to the trip
      */
-    $scope.populateInputFromTimeline = function (tripgj, inputType, inputList) {
-        var userInput = DiaryHelper.getUserInputForTrip(tripgj, inputList);
+    $scope.populateInputFromTimeline = function (tripgj, nextTripgj, inputType, inputList) {
+        var userInput = DiaryHelper.getUserInputForTrip(tripgj, nextTripgj, inputList);
         if (angular.isDefined(userInput)) {
             // userInput is an object with data + metadata
             // the label is the "value" from the options
@@ -230,10 +230,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             DiaryHelper.directiveForTrip);
           Timeline.setTripWrappers(currDayTripWrappers);
 
-          $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
+          $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
             tripgj.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline(tripgj, item, $scope.data.unifiedConfirmsResults[item]);
+                $scope.populateInputFromTimeline(tripgj, array[tripIndex+1], item, $scope.data.unifiedConfirmsResults[item]);
             });
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
