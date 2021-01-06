@@ -62,14 +62,14 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     return reportNotifyConfig;
   }
 
-  ptap.registerTripEnd = function() {
-    Logger.log( "registertripEnd received!" );
+  ptap.unregisterTripEnd = function() {
+    Logger.log( "unregistertripEnd received!" );
     // iOS
     var notifyPlugin = $window.cordova.plugins.BEMTransitionNotification;
-    notifyPlugin.addEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
+    notifyPlugin.removeEventListener(notifyPlugin.TRIP_END, getTripEndReportNotification())
         .then(function(result) {
             // $window.broadcaster.addEventListener("TRANSITION_NAME",  function(result) {
-            Logger.log("Finished registering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
+            Logger.log("Finished unregistering "+notifyPlugin.TRIP_END+" with result "+JSON.stringify(result));
         })
         .catch(function(error) {
             Logger.displayError("Unable to register notifications for trip end", error);
@@ -138,8 +138,9 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
     }
   }
 
-  ptap.registerUserResponse = function() {
-    Logger.log( "registerUserResponse received!" );
+  ptap.skipregisterUserResponse = function() {
+    Logger.log( "registerUserResponse received, skipping!" );
+    return;
     $window.cordova.plugins.notification.local.on('CHOOSE', function (notification, eventOpts) {
       Logger.log("Trip End Notification CHOOSE received");
       if (!checkCategory(notification)) {
@@ -258,8 +259,8 @@ angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'
   };
 
   $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
+    ptap.unregisterTripEnd();
+    ptap.skipregisterUserResponse();
   });
 
   return ptap;
