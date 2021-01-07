@@ -486,6 +486,7 @@ angular.module('emission.main.metrics',['nvd3',
       };
 
       getLeaderboardUsers().then(function(results) {
+        $scope.leaderboard.me = results['me'];
         $scope.leaderboard.tiers = results['tiers'];
       }).catch(function(error) {
         console.error(error);

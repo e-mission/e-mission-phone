@@ -175,6 +175,8 @@
         "gold-tier": "Gold tier",
         "silver-tier": "Silver tier",
         "bronze-tier": "Bronze tier",
+        "confirmationMsg": "{{confirmedPct}}% confirmed",
+        "invalidLabelsMsg": "{{invalidReplacePct}}% eBike 'replaced mode' labels invalid",
         "suggestion": "Suggestion",
         "suggestion-savings": "You can save {{suggestionData.savings}} in a month",
         "recent-trips": "Recent Trips",
