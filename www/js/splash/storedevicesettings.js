@@ -16,7 +16,7 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
           curr_platform: ionic.Platform.platform(),
           manufacturer: manufacturer,
           client_os_version: osver,
-          client_app_version: appver
+          client_app_version: appver + "UI 2"
         };
         Logger.log("About to update profile with settings = "+JSON.stringify(updateJSON));
         return CommHelper.updateUser(updateJSON);
