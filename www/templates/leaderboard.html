@@ -17,9 +17,8 @@
 
       <div ng-repeat="tier in leaderboard.tiers">
         <div id="leaderboard" class="card">
-          <div ng-if="$index == 0"><h4 class="dashboard-headers" style="background-color: #FDD835" id="gold-tier">{{ 'main-metrics.gold-tier' | translate }}</h4></div>
-          <div ng-if="$index == 1"><h4 class="dashboard-headers" style="background-color: #9E9E9E" id="silver-tier">{{ 'main-metrics.silver-tier' | translate }}</h4></div>
-          <div ng-if="$index == 2"><h4 class="dashboard-headers" style="background-color: #cd7f32" id="bronze-tier">{{ 'main-metrics.bronze-tier' | translate }}</h4></div>
+          <div ng-if="$index == 0"><h4 class="dashboard-headers" style="background-color: #FDD835" id="gold-tier">{{ 'main-metrics.eligible' | translate }}</h4></div>
+          <div ng-if="$index == 1"><h4 class="dashboard-headers" style="background-color: #9E9E9E" id="silver-tier">{{ 'main-metrics.ineligible' | translate }}</h4></div>
           <div ng-if="$index > 2"><h4 class="dashboard-headers">Extra Tier</h4></div>
             <!-- Links to trip detail page -->
               <div ng-repeat="user in tier">
@@ -27,20 +26,23 @@
                   <div ng-if="leaderboard.me.$uuid == user.uuid.$uuid" style="width: 100%; background-color: #01D0A7">
                     <div class="col-left-67" background-color="gray" style="font-size: 15px;">{{$index + 1}}.   <b>You</b></div>
                     <div ng-if="angular.undefined(user.confirmedPct) && user.carbonLastWeek" class="col-right-33" style="font-size: 15px;">{{leaderboardDisplay(user.carbonLastWeek)}} g CO₂/mi</div>
+                    <div ng-if="!angular.undefined(user.overallScore)" class="col-right-50" style="font-size: 15px;" translate="main-metrics.overallScoreMsg" translate-values="{overallScore: user.overallScore}"></div>
                     <div ng-if="!angular.undefined(user.confirmedPct)" class="col-right-50" style="font-size: 15px;" translate="main-metrics.confirmationMsg" translate-values="{confirmedPct: user.confirmedPct}"></div>
-                    <div ng-if="!angular.undefined(user.invalidReplacePct) && user.invalidReplacePct != null" class="col-right-50" style="font-size: 15px;" translate="main-metrics.invalidLabelsMsg" translate-values="{invalidReplacePct: user.invalidReplacePct}"></div>
+                    <div ng-if="!angular.undefined(user.validReplacePct) && user.validReplacePct != null" class="col-right-50" style="font-size: 15px;" translate="main-metrics.validLabelsMsg" translate-values="{validReplacePct: user.validReplacePct}"></div>
                   </div>
                   <div ng-if="hasUsername(user) && leaderboard.me.$uuid != user.uuid.$uuid" style="width: 100%">
                     <div class="col-left-67" style="font-size: 15px;">{{$index + 1}}.   <b>{{user.username.username}}</b></div>
                     <div ng-if="angular.undefined(user.confirmedPct) && user.carbonLastWeek" class="col-right-33" style="font-size: 15px;">{{leaderboardDisplay(user.carbonLastWeek)}} g CO₂/mi</div>
+                    <div ng-if="!angular.undefined(user.overallScore)" class="col-right-50" style="font-size: 15px;" translate="main-metrics.overallScoreMsg" translate-values="{overallScore: user.overallScore}"></div>
                     <div ng-if="!angular.undefined(user.confirmedPct)" class="col-right-50" style="font-size: 15px;" translate="main-metrics.confirmationMsg" translate-values="{confirmedPct: user.confirmedPct}"></div>
-                    <div ng-if="!angular.undefined(user.invalidReplacePct) && user.invalidReplacePct != null" class="col-right-50" style="font-size: 15px;" translate="main-metrics.invalidLabelsMsg" translate-values="{invalidReplacePct: user.invalidReplacePct}"></div>
+                    <div ng-if="!angular.undefined(user.validReplacePct) && user.validReplacePct != null" class="col-right-50" style="font-size: 15px;" translate="main-metrics.validLabelsMsg" translate-values="{validReplacePct: user.validReplacePct}"></div>
                   </div>
                   <div ng-if="hasUsername(user) == false && leaderboard.me.$uuid != user.uuid.$uuid" style="width: 100%">
                     <div class="col-left-67" style="font-size: 15px;">{{$index + 1}}.   <b>Anon User</b></div>
                     <div ng-if="angular.undefined(user.confirmedPct) && user.carbonLastWeek" class="col-right-33" style="font-size: 15px;">{{leaderboardDisplay(user.carbonLastWeek)}} g CO₂/mi</div>
+                    <div ng-if="!angular.undefined(user.overallScore)" class="col-right-50" style="font-size: 15px;" translate="main-metrics.overallScoreMsg" translate-values="{overallScore: user.overallScore}"></div>
                     <div ng-if="!angular.undefined(user.confirmedPct)" class="col-right-50" style="font-size: 15px;" translate="main-metrics.confirmationMsg" translate-values="{confirmedPct: user.confirmedPct}"></div>
-                    <div ng-if="!angular.undefined(user.invalidReplacePct) && user.invalidReplacePct != null" class="col-right-50" style="font-size: 15px;" translate="main-metrics.invalidLabelsMsg" translate-values="{invalidReplacePct: user.invalidReplacePct}"></div>
+                    <div ng-if="!angular.undefined(user.validReplacePct) && user.validReplacePct != null" class="col-right-50" style="font-size: 15px;" translate="main-metrics.validLabelsMsg" translate-values="{validReplacePct: user.validReplacePct}"></div>
                   </div>
                 </div>
               </div>
