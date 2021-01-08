@@ -19,6 +19,7 @@
         <div id="leaderboard" class="card">
           <div ng-if="$index == 0"><h4 class="dashboard-headers" style="background-color: #FDD835" id="gold-tier">{{ 'main-metrics.gold-tier' | translate }}</h4></div>
           <div ng-if="$index == 1"><h4 class="dashboard-headers" style="background-color: #9E9E9E" id="silver-tier">{{ 'main-metrics.silver-tier' | translate }}</h4></div>
+          <div ng-if="$index == 2"><h4 class="dashboard-headers" style="background-color: #cd7f32" id="bronze-tier">{{ 'main-metrics.bronze-tier' | translate }}</h4></div>
           <div ng-if="$index > 2"><h4 class="dashboard-headers">Extra Tier</h4></div>
             <!-- Links to trip detail page -->
               <div ng-repeat="user in tier">
