@@ -548,6 +548,11 @@ angular.module('emission.main.metrics',['nvd3',
       });
    };
 
+
+  $scope.calculateIncentive = function(overallScore) {
+    return 0.25 * overallScore;
+  }
+
    $scope.fillUserValues = function(user_metrics_arr) {
         var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
         var twoWeeksAgoDuration = [];
