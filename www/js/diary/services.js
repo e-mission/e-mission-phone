@@ -491,7 +491,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     timeline.readAllConfirmedTrips = function() {
       const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-      return CommHelper.getRawEntries(["analysis/confirmed_trip"], tq);
+      return CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs).then((ctList) => {
+            return ctList.phone_data.map((ct) => ct.data);
+        });
     };
 
     timeline.updateFromDatabase = function(day) {
