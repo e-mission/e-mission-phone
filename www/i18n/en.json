@@ -188,6 +188,10 @@
 
     "main-diary" : "Diary",
 
+    "main-inf-scroll" : {
+        "tab": "Label"
+    },
+
     "main-heatmap":{
         "title": "Heatmap",
         "counts" : "Counts",

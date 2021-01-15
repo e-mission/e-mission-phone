@@ -489,6 +489,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
+    timeline.readAllConfirmedTrips = function() {
+      const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+      return CommHelper.getRawEntries(["analysis/confirmed_trip"], tq);
+    };
+
     timeline.updateFromDatabase = function(day) {
       console.log("About to show 'Reading from cache'");
       $ionicLoading.show({
