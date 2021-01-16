@@ -489,15 +489,26 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
-    timeline.readAllConfirmedTrips = function() {
+    timeline.readAllConfirmedTripsAndLabels = function() {
       const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
       $ionicLoading.show({
         template: $translate.instant('service.reading-server')
       });
-      return CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs)
-        .then((ctList) => {
+      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+        return UnifiedDataLoader.getUnifiedMessagesForInterval(
+            ConfirmHelper.inputDetails[inp].key, tq);
+      });
+      const readPromises = [
+        CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs),
+      ].concat(manualPromises);
+      return Promise.all(readPromises)
+        .then(([ctList, ...manualResults]) => {
             $ionicLoading.hide();
-            return ctList.phone_data.map((ct) => ct.data);
+            const manualConfirmResults = {};
+            manualResults.forEach(function(mr, index) {
+              manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
+            });
+            return [ctList.phone_data.map((ct) => ct.data), manualConfirmResults];
         })
         .catch((err) => {
             Logger.displayError("while reading confirmed trips", err);

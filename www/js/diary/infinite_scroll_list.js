@@ -38,12 +38,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.data = {};
   var readDataFromServer = function() {
-    Timeline.readAllConfirmedTrips().then((ctList) => {
+    Timeline.readAllConfirmedTripsAndLabels().then(([ctList, manualConfirmResults]) => {
         $scope.data.allTrips = ctList.map($scope.populateBasicClasses);
         $scope.data.allTrips.forEach((trip) => {
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline(trip, item);
+                $scope.populateInputFromTimeline(trip, item, manualConfirmResults[item]);
             });
         });
         $scope.data.displayTrips = $scope.data.allTrips;
@@ -210,6 +210,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // manual/mode_confirm becomes mode_confirm
         const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
         var userInputLabel = tripgj.user_input[retKey];
+        if (!angular.isDefined(userInputLabel)) {
+            // Check unprocessed labels instead
+            // Massage the input to meet getUserInputForTrip expectations
+            const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
+                {data: {properties: tripgj, features: [{}, {}, {}]}},
+                inputList);
+            userInputLabel = unprocessedLabelEntry.data.label;
+        }
         if (angular.isDefined(userInputLabel)) {
             var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
             if (!angular.isDefined(userInputEntry)) {
