@@ -5,17 +5,19 @@
       <button class="button button-icon" ng-click="refresh()">
         <i class="icon ion-refresh"></i>
       </button>
-        <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>
     <ion-nav-buttons side="left">
-        <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
-        <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-            <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-            </button>
-            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-            <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-            </button>
-        </div>
+       <div class="row buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
+          <button ng-click="selectUnlabeled()" class="col-50 button" ng-class="{on:filterInputs.unlabeled}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{'.unlabeled'}}
+          </button>
+          <button ng-click="selectInvalid()" class="col-75 button" ng-class="{on:filterInputs.invalid}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{'.invalid-ebike'}}
+          </button>
+          <button ng-click="resetSelection()" class="col-25 button" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{'.reset'}}
+          </button>
+       </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">
@@ -37,22 +39,22 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-        <ion-item ng-if="data.allTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item">
-               <div ng-if="data.allTrips.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
-                 <h3>{{'diary.no-trips-today' | translate}}</h3>
+        <ion-item ng-if="data.displayTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item">
+               <div ng-if="data.displayTrips.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
+                 <h3>{{'diary.no-trips-found' | translate}}</h3>
                </div>
          </ion-item>
 
-		<div collection-repeat="trip in data.allTrips" item-height="'110px'">
+		<div collection-repeat="trip in data.displayTrips" item-height="'110px'">
            <div class="start-time-tag">{{trip.display_start_time}}</div>
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
                 <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '100px'}">
                 <div ng-click="showDetail($event, trip)" class="diary-arrow-container">
-                    <i class="ion-plus-circled"></i>
+                    <i class="ion-more"></i>
                 </div>
-                <div ng-click="toggleDetail(trip)" ng-class="listTextClass" style="font-size: 20px; padding-left: 30px; margin-bottom: 0;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
+                <div ng-click="toggleDetail(trip)" ng-class="listTextClass" style="font-size: 18px; padding-left: 30px; margin-bottom: 0;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
                 <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{'.mode'}}

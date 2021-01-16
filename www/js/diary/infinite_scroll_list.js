@@ -47,6 +47,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             });
         });
         $scope.data.displayTrips = $scope.data.allTrips;
+        // reset all filters
+        $scope.filterInputs = {};
+        $scope.filterInputs.unlabeled = false;
+        $scope.filterInputs.invalid = false;
+        $scope.filterInputs.all = false;
     });
   };
 
@@ -70,13 +75,49 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
   }
 
+  $scope.selectUnlabeled = function() {
+    $scope.filterInputs.unlabeled = true;
+    $scope.filterInputs.invalid = false;
+    $scope.recomputeDisplayTrips();
+  }
 
-  $scope.closeAllExcept = function(trip) {
-     $scope.data.allTrips.forEach((t) => {
-        if (t !== trip) {
-            $scope.toggleDetail(t);
+  $scope.selectInvalid = function() {
+    $scope.filterInputs.unlabeled = false;
+    $scope.filterInputs.invalid = true;
+    $scope.recomputeDisplayTrips();
+  }
+
+  $scope.resetSelection = function() {
+    $scope.filterInputs.unlabeled = false;
+    $scope.filterInputs.invalid = false;
+    $scope.recomputeDisplayTrips();
+  }
+
+  var unlabeledCheck = function(t) {
+    return ConfirmHelper.INPUTS
+        .map((inputType, index) => !angular.isDefined(t.userInput[inputType]))
+        .reduce((acc, val) => acc || val);
+  }
+
+  var invalidCheck = function(t) {
+    const retVal = 
+        (angular.isDefined(t.userInput['MODE']) && t.userInput['MODE'].value === 'pilot_ebike') &&
+        (!angular.isDefined(t.userInput['REPLACED_MODE']) ||
+         t.userInput['REPLACED_MODE'].value === 'pilot_ebike' ||
+         t.userInput['REPLACED_MODE'].value === 'same_mode');
+    return retVal;
+  }
+
+  $scope.recomputeDisplayTrips = function() {
+    if (!$scope.filterInputs.invalid && !$scope.filterInputs.unlabeled) {
+        $scope.data.displayTrips = $scope.data.allTrips;
+    } else {
+        if ($scope.filterInputs.unlabeled) {
+            $scope.data.displayTrips = $scope.data.allTrips.filter(unlabeledCheck);
+        } else {
+            $scope.data.displayTrips = $scope.data.allTrips.filter(invalidCheck);
         }
-     });
+    }
   }
 
   var readAndUpdateForDay = function(day) {
@@ -216,7 +257,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
                 {data: {properties: tripgj, features: [{}, {}, {}]}},
                 inputList);
-            userInputLabel = unprocessedLabelEntry.data.label;
+            userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
         }
         if (angular.isDefined(userInputLabel)) {
             var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];

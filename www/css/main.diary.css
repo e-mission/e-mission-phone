@@ -156,3 +156,7 @@ a.item-content {
   padding: 0;
   border-width: 0;
 }
+
+.button.on {
+    background-color: darkgray;
+}
