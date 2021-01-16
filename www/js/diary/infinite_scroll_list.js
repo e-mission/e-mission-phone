@@ -44,8 +44,33 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
   };
 
-  $scope.toggleDetail = function(trip) {
-    $scope.showDetail = !$scope.showDetail;
+  $ionicPopover.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
+    scope: $scope
+  }).then((popover) => {
+    $scope.tripDetailPopover = popover;
+  });
+
+  $scope.showDetail = function($event, trip) {
+    Timeline.confirmedTrip2Geojson(trip).then((tripgj) => {
+        $scope.currgj = {};
+        $scope.currgj.data = tripgj;
+        $scope.currgj.pointToLayer = DiaryHelper.pointFormat;
+        $scope.tripDetailPopover.show($event);
+        leafletData.getMap("detailPopoverMap").then(function(map) {
+            // const gjlayer = L.geoJson($scope.currgj.data);
+            map.invalidateSize();
+            // map.fitBounds(gjlayer.getBounds())
+        });
+    });
+  }
+
+
+  $scope.closeAllExcept = function(trip) {
+     $scope.data.allTrips.forEach((t) => {
+        if (t !== trip) {
+            $scope.toggleDetail(t);
+        }
+     });
   }
 
   var readAndUpdateForDay = function(day) {
@@ -61,13 +86,15 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   angular.extend($scope, {
       defaults: {
-          zoomControl: false,
-          dragging: false,
+      /*
+          zoomControl: true,
+          dragging: true,
           zoomAnimation: true,
-          touchZoom: false,
-          scrollWheelZoom: false,
+          touchZoom: true,
+          scrollWheelZoom: true,
           doubleClickZoom: false,
           boxZoom: false,
+      */
       }
   });
 
@@ -199,6 +226,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
         tripgj.display_distance = $scope.getFormattedDistanceInMiles(tripgj.distance);
+        tripgj.display_date = moment(tripgj.start_ts * 1000).format('DD MMM YY');
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.start_ts,
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
@@ -236,6 +264,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       // don't want to go to the detail screen
     }
 
+    /*
     $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
       console.log("Got timeline update done event with args "+JSON.stringify(args));
       $scope.$apply(function() {
@@ -311,6 +340,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         });
         return alertPopup;
     }
+    */
 
     /*
      * Disabling the reload of the page on background sync because it doesn't

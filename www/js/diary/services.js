@@ -491,8 +491,17 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     timeline.readAllConfirmedTrips = function() {
       const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-      return CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs).then((ctList) => {
+      $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+      });
+      return CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs)
+        .then((ctList) => {
+            $ionicLoading.hide();
             return ctList.phone_data.map((ct) => ct.data);
+        })
+        .catch((err) => {
+            Logger.displayError("while reading confirmed trips", err);
+            $ionicLoading.hide();
         });
     };
 
@@ -779,6 +788,68 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var tsEntrySort = function(e1, e2) {
       // compare timestamps
       return e1.data.ts - e2.data.ts;
+    }
+
+    var confirmedPlace2Geojson = function(trip, locationPoint, featureType) {
+        var place_gj = {
+        "type": "Feature",
+        "geometry": locationPoint,
+        "properties": {
+            "feature_type": featureType
+        }
+      }
+      return place_gj;
+    }
+
+    var confirmedPoints2Geojson = function(trip, locationList) {
+      var sectionCoordinates = locationList.map(function(point) {
+        return point.data.loc.coordinates;
+      });
+      return {
+        type: "Feature",
+        geometry: {
+            type: "LineString",
+            coordinates: sectionCoordinates
+        }
+      }
+    }
+
+    timeline.confirmedTrip2Geojson = function(trip) {
+      Logger.log("About to pull location data for range "
+        + moment.unix(trip.start_ts).toString() + " -> " 
+        + moment.unix(trip.end_ts).toString());
+        // TODO: change this to recreated location
+      $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+      });
+
+        const fillPromises = [
+            CommonGraph.getDisplayName('cplace', {location: trip.start_loc}),
+            CommonGraph.getDisplayName('cplace', {location: trip.end_loc}),
+            CommHelper.getRawEntries(["background/filtered_location"], trip.start_ts, trip.end_ts)
+        ];
+
+        return Promise.all(fillPromises).then(function([startName, endName, locationList]) {
+          var features = [
+            confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
+            confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
+            confirmedPoints2Geojson(trip, locationList.phone_data)
+          ];
+          var trip_gj = {
+            id: "confirmed"+trip.start_ts,
+            type: "FeatureCollection",
+            features: features,
+            properties: {
+                "start_display_name": startName,
+                "end_display_name": endName
+            }
+          }
+          $ionicLoading.hide();
+          return trip_gj;
+        }).catch((err) => {
+          Logger.displayError("while filling details", err);
+          $ionicLoading.hide();
+        });
     }
 
     var trip2Geojson = function(trip) {
