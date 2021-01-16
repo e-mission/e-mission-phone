@@ -406,7 +406,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
 
   dh.getUserInputForTrip = function(tripgj, userInputList) {
-    console.log("Input list = "+userInputList.map(printUserInput));
+    if (userInputList.length < 20) {
+        console.log("Input list = "+userInputList.map(printUserInput));
+    }
     var tripProp = tripgj.data.properties;
     var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
@@ -423,37 +425,43 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         // logic described in
         // https://github.com/e-mission/e-mission-docs/issues/423
         if (isDraft) {
-            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
-                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
-                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
-                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
-            console.log(logStr);
-            // Logger.log(logStr);
+            if (userInputList.length < 20) {
+                var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                    +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
+                    +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                    +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                    +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+                console.log(logStr);
+                // Logger.log(logStr);
+            }
             return (userInput.data.start_ts >= tripProp.start_ts
                     || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
                 && userInput.data.end_ts <= tripProp.end_ts;
         } else {
             // we know that the trip is cleaned so we can use the fmt_time
             // but the confirm objects are not necessarily filled out
-            var logStr = "Cleaned trip: comparing user = "
-                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+tripProp.start_fmt_time
-                +" -> "+tripProp.end_fmt_time
-                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
-                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
-                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
-            Logger.log(logStr);
+            if (userInputList.length < 20) {
+                var logStr = "Cleaned trip: comparing user = "
+                    +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                    +" trip = "+tripProp.start_fmt_time
+                    +" -> "+tripProp.end_fmt_time
+                    +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                    +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
+                    +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
+                Logger.log(logStr);
+            }
             return userInput.data.start_ts >= tripProp.start_ts
                 && (userInput.data.end_ts <= tripProp.end_ts ||
                     (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
         }
     });
     if (potentialCandidates.length === 0)  {
-        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        if (userInputList.length < 20) {
+            Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        }
         return undefined;
     }
 
@@ -513,6 +521,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         .catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
             $ionicLoading.hide();
+            return [[], {}];
         });
     };
 

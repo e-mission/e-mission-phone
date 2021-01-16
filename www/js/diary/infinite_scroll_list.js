@@ -24,7 +24,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
 
@@ -55,22 +55,21 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
   };
 
-  $ionicPopover.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
-    scope: $scope
+  $ionicModal.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
+    scope: $scope,
+    animation: 'slide-in-up'
   }).then((popover) => {
     $scope.tripDetailPopover = popover;
   });
 
   $scope.showDetail = function($event, trip) {
     Timeline.confirmedTrip2Geojson(trip).then((tripgj) => {
-        $scope.currgj = {};
+        $scope.currgj = trip;
         $scope.currgj.data = tripgj;
         $scope.currgj.pointToLayer = DiaryHelper.pointFormat;
-        $scope.tripDetailPopover.show($event);
+        $scope.tripDetailPopover.show();
         leafletData.getMap("detailPopoverMap").then(function(map) {
-            // const gjlayer = L.geoJson($scope.currgj.data);
             map.invalidateSize();
-            // map.fitBounds(gjlayer.getBounds())
         });
     });
   }
@@ -266,10 +265,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
               $scope.inputParams[inputType].options.push(userInputEntry);
               $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
             }
-            console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
+            // console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
             tripgj.userInput[inputType] = userInputEntry;
         }
-        Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
+        // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
         $scope.editingTrip = angular.undefined;
     }
 
