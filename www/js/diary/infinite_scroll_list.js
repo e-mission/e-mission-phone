@@ -40,6 +40,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   var readDataFromServer = function() {
     Timeline.readAllConfirmedTrips().then((ctList) => {
         $scope.data.allTrips = ctList.map($scope.populateBasicClasses);
+        $scope.data.allTrips.forEach((trip) => {
+            trip.userInput = {};
+            ConfirmHelper.INPUTS.forEach(function(item, index) {
+                $scope.populateInputFromTimeline(trip, item);
+            });
+        });
         $scope.data.displayTrips = $scope.data.allTrips;
     });
   };
@@ -201,20 +207,20 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
      * Embed 'inputType' to the trip
      */
     $scope.populateInputFromTimeline = function (tripgj, inputType, inputList) {
-        var userInput = DiaryHelper.getUserInputForTrip(tripgj, inputList);
-        if (angular.isDefined(userInput)) {
-            // userInput is an object with data + metadata
-            // the label is the "value" from the options
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInput.data.label];
+        // manual/mode_confirm becomes mode_confirm
+        const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
+        var userInputLabel = tripgj.user_input[retKey];
+        if (angular.isDefined(userInputLabel)) {
+            var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
             if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInput.data.label);
+              userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
               $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
+              $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
             }
-            console.log("Mapped label "+userInput.data.label+" to entry "+JSON.stringify(userInputEntry));
+            console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
             tripgj.userInput[inputType] = userInputEntry;
         }
-        Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
+        Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
         $scope.editingTrip = angular.undefined;
     }
 
@@ -541,8 +547,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.selected[inputType].value = '';
       }
       $scope.draftInput = {
-        "start_ts": tripgj.data.properties.start_ts,
-        "end_ts": tripgj.data.properties.end_ts
+        "start_ts": tripgj.start_ts,
+        "end_ts": tripgj.end_ts
       };
       $scope.editingTrip = tripgj;
       Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
