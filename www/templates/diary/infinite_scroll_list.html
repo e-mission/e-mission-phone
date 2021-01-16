@@ -43,17 +43,16 @@
                </div>
          </ion-item>
 
-		<div collection-repeat="trip in data.allTrips" item-height="showDetails? '365px' : '110px'">
+		<div collection-repeat="trip in data.allTrips" item-height="'110px'">
            <div class="start-time-tag">{{trip.display_start_time}}</div>
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
                 <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '100px'}">
-                <div ng-click="toggleDetail(trip)" class="diary-arrow-container">
-                    <i ng-if="!showDetail" class="ion-ios-arrow-right"></i>
-                    <i ng-if="showDetail" class="ion-chevron-down"></i>
+                <div ng-click="showDetail($event, trip)" class="diary-arrow-container">
+                    <i class="ion-plus-circled"></i>
                 </div>
-                <div ng-click="toggleDetail(trip)" ng-class="listTextClass" style="font-size: 20px; padding-left: 30px; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
+                <div ng-click="toggleDetail(trip)" ng-class="listTextClass" style="font-size: 20px; padding-left: 30px; margin-bottom: 0;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
                 <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{'.mode'}}
@@ -104,24 +103,7 @@
                 </div>
              </div>   
             </div>
-            <div ng-if="showDetail">
-                <div style="padding: 0.5em;">
-                    <div class="start-end-addresses-container">
-                        <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
-                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
-                                {{tripgj.start_place.properties.display_name.split(',')[0]}}
-
-                        </div>
-                        <div ng-class="listLocationClass" id="no-border" href="#">
-                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-                                {{tripgj.end_place.properties.display_name.split(',')[0]}}
-                        </div>
-                    </div>
-                </div>
-                <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
-            </div>
             </ion-item>
-
             </div>
             <div class="stop-time-tag">{{trip.display_end_time}}</div>
         </div>

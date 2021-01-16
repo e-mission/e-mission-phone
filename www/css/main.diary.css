@@ -147,6 +147,11 @@ a.item-content {
   width: 230px;
 }
 
+.big-popover {
+  height: 40%;
+  width: 75%;
+}
+
 #diary-item {
   padding: 0;
   border-width: 0;

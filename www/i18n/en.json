@@ -145,6 +145,7 @@
         "report-incident": "Report Incident",
         "draft": "DRAFT",
         "distance-in-time": "{{distance}} km in {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} km in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
