@@ -497,20 +497,35 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
+    var getUnprocessedLabels = function() {
+        /*
+         Because with the confirmed trips, all prior labels have been
+         incorporated into the trip.
+         */
+        return CommHelper.getPipelineCompleteTs().then(function(result) {
+            const pendingLabelQuery = {key: "write_ts",
+                startTs: result.complete_ts - 10,
+                endTs: moment().unix() + 10
+            }
+            var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+              return UnifiedDataLoader.getUnifiedMessagesForInterval(
+                  ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
+            });
+            return Promise.all(manualPromises);
+        });
+    };
+
     timeline.readAllConfirmedTripsAndLabels = function() {
       const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
       $ionicLoading.show({
         template: $translate.instant('service.reading-server')
       });
-      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
-        return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq);
-      });
       const readPromises = [
         CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs),
-      ].concat(manualPromises);
+        getUnprocessedLabels()
+      ];
       return Promise.all(readPromises)
-        .then(([ctList, ...manualResults]) => {
+        .then(([ctList, manualResults]) => {
             $ionicLoading.hide();
             const manualConfirmResults = {};
             manualResults.forEach(function(mr, index) {

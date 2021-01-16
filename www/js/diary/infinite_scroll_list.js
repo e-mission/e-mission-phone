@@ -43,7 +43,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.data.allTrips.forEach((trip) => {
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline(trip, item, manualConfirmResults[item]);
+                $scope.populateManualInputs(trip, item, manualConfirmResults[item]);
             });
         });
         $scope.data.displayTrips = $scope.data.allTrips;
@@ -246,17 +246,17 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     /**
      * Embed 'inputType' to the trip
      */
-    $scope.populateInputFromTimeline = function (tripgj, inputType, inputList) {
-        // manual/mode_confirm becomes mode_confirm
-        const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
-        var userInputLabel = tripgj.user_input[retKey];
+    $scope.populateManualInputs = function (tripgj, inputType, inputList) {
+        // Check unprocessed labels first since they are more recent
+        // Massage the input to meet getUserInputForTrip expectations
+        const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
+            {data: {properties: tripgj, features: [{}, {}, {}]}},
+            inputList);
+        var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
         if (!angular.isDefined(userInputLabel)) {
-            // Check unprocessed labels instead
-            // Massage the input to meet getUserInputForTrip expectations
-            const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
-                {data: {properties: tripgj, features: [{}, {}, {}]}},
-                inputList);
-            userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
+            // manual/mode_confirm becomes mode_confirm
+            const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
+            userInputLabel = tripgj.user_input[retKey];
         }
         if (angular.isDefined(userInputLabel)) {
             var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
