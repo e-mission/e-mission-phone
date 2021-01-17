@@ -132,15 +132,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   angular.extend($scope, {
       defaults: {
-      /*
-          zoomControl: true,
+          zoomControl: false,
           dragging: true,
-          zoomAnimation: true,
-          touchZoom: true,
-          scrollWheelZoom: true,
+          zoomAnimation: false,
+          touchZoom: false,
           doubleClickZoom: false,
           boxZoom: false,
-      */
       }
   });
 

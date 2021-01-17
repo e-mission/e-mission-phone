@@ -861,10 +861,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         const fillPromises = [
             CommonGraph.getDisplayName('cplace', {location: trip.start_loc}),
             CommonGraph.getDisplayName('cplace', {location: trip.end_loc}),
-            CommHelper.getRawEntries(["background/filtered_location"], trip.start_ts, trip.end_ts)
+            CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
         ];
 
         return Promise.all(fillPromises).then(function([startName, endName, locationList]) {
+          Logger.log("Retrieved "+locationList.phone_data.length+" points");
           var features = [
             confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
             confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
