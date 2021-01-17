@@ -127,12 +127,19 @@ angular.module('emission.services', ['emission.plugin.logger',
       return momentObj.unix();
     }
 
-    this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
+    // time_key is typically metadata.write_ts or data.ts
+    this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts,
+        time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
       return new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
             message.key_list = key_list;
             message.from_local_date = moment2Localdate(moment.unix(start_ts));
             message.to_local_date = moment2Localdate(moment.unix(end_ts));
+            message.key_local_date = time_key;
+            if (max_entries !== undefined) {
+                message.max_entries = max_entries;
+                message.trunc_method = trunc_method;
+            }
             console.log("About to return message "+JSON.stringify(message));
           };
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
@@ -140,12 +147,18 @@ angular.module('emission.services', ['emission.plugin.logger',
       });
     };
 
-    this.getRawEntries = function(key_list, start_ts, end_ts) {
+    this.getRawEntries = function(key_list, start_ts, end_ts,
+        time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
       return new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
             message.key_list = key_list;
             message.start_time = start_ts;
             message.end_time = end_ts;
+            message.key_time = time_key;
+            if (max_entries !== undefined) {
+                message.max_entries = max_entries;
+                message.trunc_method = trunc_method;
+            }
             console.log("About to return message "+JSON.stringify(message));
           };
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
