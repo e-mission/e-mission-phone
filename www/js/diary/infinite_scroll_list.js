@@ -37,23 +37,77 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   });
 
   $scope.data = {};
-  var readDataFromServer = function() {
-    Timeline.readAllConfirmedTripsAndLabels().then(([ctList, manualConfirmResults]) => {
-        $scope.data.allTrips = ctList.map($scope.populateBasicClasses);
-        $scope.data.allTrips.forEach((trip) => {
+  // reset all filters
+  $scope.filterInputs = {};
+  $scope.filterInputs.unlabeled = false;
+  $scope.filterInputs.invalid = false;
+  $scope.filterInputs.all = false;
+  const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
+
+  $scope.infScrollControl = {};
+
+  $scope.readDataFromServer = function() {
+    console.log("calling readDataFromServer with "+
+        JSON.stringify($scope.infScrollControl));
+    const currEnd = $scope.infScrollControl.currentEnd;
+    if (!angular.isDefined(currEnd)) {
+        console.log("trying to read data too early, early return");
+        $scope.$broadcast('scroll.infiniteScrollComplete')
+        return;
+    }
+    Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
+        // let's reverse the incoming list so we go most recent to oldest
+        ctList.reverse();
+        const currBatch = ctList.map($scope.populateBasicClasses);
+        currBatch.forEach((trip) => {
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateManualInputs(trip, item, manualConfirmResults[item]);
+                $scope.populateManualInputs(trip, item, $scope.data.manualResultMap[item]);
             });
         });
-        $scope.data.displayTrips = $scope.data.allTrips;
-        // reset all filters
-        $scope.filterInputs = {};
-        $scope.filterInputs.unlabeled = false;
-        $scope.filterInputs.invalid = false;
-        $scope.filterInputs.all = false;
+        $scope.$apply(() => {
+            $scope.data.allTrips = $scope.data.allTrips.concat(currBatch);
+            if (currBatch.length === 0) {
+                console.log("Reached the end of the scrolling");
+                $scope.infScrollControl.reachedEnd = true;
+            } else {
+                // Since this was reversed, the first entry is the most recent
+                $scope.infScrollControl.currentEnd =
+                    currBatch[currBatch.length -1].end_ts - 1;
+                console.log("new end time = "+$scope.infScrollControl.currentEnd);
+            }
+            $scope.recomputeDisplayTrips();
+        });
+        console.log("Broadcasting infinite scroll complete");
+        $scope.$broadcast('scroll.infiniteScrollComplete')
+    }).catch((err) => {
+        Logger.displayError("while reading confirmed trips", err);
+        $scope.$apply(() => {
+            console.log("Reached the end of the scrolling");
+            $scope.infScrollControl.reachedEnd = true;
+        });
+        console.log("Broadcasting infinite scroll complete");
+        $scope.$broadcast('scroll.infiniteScrollComplete')
     });
   };
+
+  $scope.setupInfScroll = function() {
+    console.log("Setting up the scrolling");
+    $scope.infScrollControl.reachedEnd = false;
+    $scope.data.allTrips = [];
+    Timeline.getUnprocessedLabels().then(([lastProcessedTs, manualResultMap]) => {
+        if (lastProcessedTs) {
+            $scope.data.manualResultMap = manualResultMap;
+            $scope.infScrollControl.currentEnd = lastProcessedTs;
+            $scope.readDataFromServer();
+        } else {
+            $scope.$apply(() => {
+                $scope.infScrollControl.reachedEnd = true;
+            });
+            $scope.$broadcast('scroll.infiniteScrollComplete')
+        }
+    });
+  }
 
   $ionicModal.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
     scope: $scope,
@@ -95,7 +149,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   var unlabeledCheck = function(t) {
     return ConfirmHelper.INPUTS
         .map((inputType, index) => !angular.isDefined(t.userInput[inputType]))
-        .reduce((acc, val) => acc || val);
+        .reduce((acc, val) => acc && val, true);
   }
 
   var invalidCheck = function(t) {
@@ -410,8 +464,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     */
 
     $scope.refresh = function() {
-       readDataFromServer();
-       $scope.$broadcast('invalidateSize');
+       $scope.setupInfScroll();
     };
 
     /* For UI control */
@@ -710,7 +763,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
 
     $ionicPlatform.ready().then(function() {
-      readDataFromServer();
+      $scope.setupInfScroll();
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from

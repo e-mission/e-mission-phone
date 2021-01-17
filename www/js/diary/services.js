@@ -497,7 +497,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
-    var getUnprocessedLabels = function() {
+    timeline.getUnprocessedLabels = function() {
         /*
          Because with the confirmed trips, all prior labels have been
          incorporated into the trip.
@@ -511,32 +511,36 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
                   ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
             });
-            return Promise.all(manualPromises);
+            return Promise.all(manualPromises).then((manualResults) => {
+                const manualConfirmResults = {};
+                manualResults.forEach(function(mr, index) {
+                  manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
+                });
+                return [result.complete_ts, manualConfirmResults];
+            });
+        }).catch((err) => {
+            Logger.displayError("while reading confirmed trips", err);
+            return [undefined, {}];
         });
     };
 
-    timeline.readAllConfirmedTripsAndLabels = function() {
-      const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+    timeline.readAllConfirmedTrips = function(endTs, deltaTs) {
       $ionicLoading.show({
         template: $translate.instant('service.reading-server')
       });
       const readPromises = [
-        CommHelper.getRawEntries(["analysis/confirmed_trip"], tq.startTs, tq.endTs),
-        getUnprocessedLabels()
+        CommHelper.getRawEntries(["analysis/confirmed_trip"],
+            endTs - deltaTs, endTs, "data.end_ts"),
       ];
       return Promise.all(readPromises)
-        .then(([ctList, manualResults]) => {
+        .then(([ctList]) => {
             $ionicLoading.hide();
-            const manualConfirmResults = {};
-            manualResults.forEach(function(mr, index) {
-              manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
-            });
-            return [ctList.phone_data.map((ct) => ct.data), manualConfirmResults];
+            return ctList.phone_data.map((ct) => ct.data);
         })
         .catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
             $ionicLoading.hide();
-            return [[], {}];
+            return [];
         });
     };
 

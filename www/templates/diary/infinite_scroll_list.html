@@ -27,6 +27,14 @@
             <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
         </div>
         -->
+        <div ng-if="data.displayTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item" item-height="'400px'">
+               <div ng-if="data.displayTrips.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%);" height="'400px'">
+                 <h3>{{'diary.no-trips-found' | translate}}</h3>
+                 <h3 ng-if="filterInputs.unlabeled || filterInputs.invalid">{{'diary.for-current-filter' | translate }}</h3>
+                 <h3 ng-if="!infScrollControl.reachedEnd">{{'diary.scroll-to-load-more' | translate }}</h3>
+               </div>
+         </div>
+
 		<ion-list>
         <ion-nav-view ></ion-nav-view>
         <!--
@@ -39,14 +47,8 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-        <ion-item ng-if="data.displayTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item">
-               <div ng-if="data.displayTrips.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%) translateY(-50%);">
-                 <h3>{{'diary.no-trips-found' | translate}}</h3>
-               </div>
-         </ion-item>
-
 		<div collection-repeat="trip in data.displayTrips" item-height="'110px'">
-           <div class="start-time-tag">{{trip.display_start_time}}</div>
+            <div class="stop-time-tag-inf-scroll">{{trip.display_end_time}}</div>
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
@@ -107,10 +109,16 @@
             </div>
             </ion-item>
             </div>
-            <div class="stop-time-tag">{{trip.display_end_time}}</div>
+           <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
         </div>
-		</ion-list>
+        <ion-infinite-scroll
+            ng-if="!infScrollControl.reachedEnd"
+            on-infinite="readDataFromServer()"></ion-infinite-scroll>
+        </ion-list>
 	</ion-content>
-
-
+    <!--
+    <ion-footer-bar>
+        <button class="button button-block button-outline button-positive" ng-click="readDataFromServer()" translate>{{'load-more'}}</button>
+    </ion-footer-bar>
+    -->
 </ion-view>
