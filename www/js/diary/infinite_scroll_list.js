@@ -31,10 +31,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   console.log("controller InfiniteDiaryListCtrl called");
   // Add option
 
-  $scope.$on('leafletDirectiveMap.resize', function(event, data) {
-      console.log("diary/infinite_list received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-  });
+  const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
   $scope.data = {};
   // reset all filters
@@ -47,7 +44,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.infScrollControl = {};
 
   $scope.readDataFromServer = function() {
-    console.log("calling readDataFromServer with "+
+    Logger.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;
     if (!angular.isDefined(currEnd)) {
@@ -57,42 +54,42 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
     Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
         // let's reverse the incoming list so we go most recent to oldest
+        Logger.log("Received batch of size "+ctList.length);
         ctList.reverse();
-        const currBatch = ctList.map($scope.populateBasicClasses);
-        currBatch.forEach((trip) => {
+        ctList.forEach($scope.populateBasicClasses);
+        ctList.forEach((trip) => {
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
                 $scope.populateManualInputs(trip, item, $scope.data.manualResultMap[item]);
             });
         });
-        $scope.$apply(() => {
-            $scope.data.allTrips = $scope.data.allTrips.concat(currBatch);
-            if (currBatch.length === 0) {
-                console.log("Reached the end of the scrolling");
-                $scope.infScrollControl.reachedEnd = true;
-            } else {
-                // Since this was reversed, the first entry is the most recent
-                $scope.infScrollControl.currentEnd =
-                    currBatch[currBatch.length -1].end_ts - 1;
-                console.log("new end time = "+$scope.infScrollControl.currentEnd);
-            }
-            $scope.recomputeDisplayTrips();
+        ctList.forEach(function(trip, index) {
+            fillPlacesForTripAsync(trip);
         });
-        console.log("Broadcasting infinite scroll complete");
+        $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+        if (ctList.length === 0) {
+            Logger.log("Reached the end of the scrolling");
+            $scope.infScrollControl.reachedEnd = true;
+        } else {
+            // Since this was reversed, the first entry is the most recent
+            $scope.infScrollControl.currentEnd =
+                ctList[ctList.length -1].end_ts - 1;
+            Logger.log("new end time = "+$scope.infScrollControl.currentEnd);
+        }
+        $scope.recomputeDisplayTrips();
+        Logger.log("Broadcasting infinite scroll complete");
         $scope.$broadcast('scroll.infiniteScrollComplete')
     }).catch((err) => {
         Logger.displayError("while reading confirmed trips", err);
-        $scope.$apply(() => {
-            console.log("Reached the end of the scrolling");
-            $scope.infScrollControl.reachedEnd = true;
-        });
-        console.log("Broadcasting infinite scroll complete");
+        Logger.log("Reached the end of the scrolling");
+        $scope.infScrollControl.reachedEnd = true;
+        Logger.log("Broadcasting infinite scroll complete");
         $scope.$broadcast('scroll.infiniteScrollComplete')
     });
   };
 
   $scope.setupInfScroll = function() {
-    console.log("Setting up the scrolling");
+    Logger.log("Setting up the scrolling");
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
     Timeline.getUnprocessedLabels().then(([lastProcessedTs, manualResultMap]) => {
@@ -336,7 +333,21 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
-        return tripgj;
+    }
+
+    const fillPlacesForTripAsync = function(tripgj) {
+        const fillPromises = [
+            placeLimiter.schedule(() =>
+                CommonGraph.getDisplayName('cplace', {location: tripgj.start_loc})),
+            placeLimiter.schedule(() =>
+                CommonGraph.getDisplayName('cplace', {location: tripgj.end_loc})),
+        ];
+        Promise.all(fillPromises).then(function([startName, endName]) {
+            $scope.$apply(() => {
+                tripgj.start_display_name = startName;
+                tripgj.end_display_name = endName;
+            });
+        });
     }
 
     $scope.populateCommonInfo = function(tripgj) {

@@ -863,12 +863,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       });
 
         const fillPromises = [
-            CommonGraph.getDisplayName('cplace', {location: trip.start_loc}),
-            CommonGraph.getDisplayName('cplace', {location: trip.end_loc}),
             CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
         ];
 
-        return Promise.all(fillPromises).then(function([startName, endName, locationList]) {
+        return Promise.all(fillPromises).then(function([locationList]) {
           Logger.log("Retrieved "+locationList.phone_data.length+" points");
           var features = [
             confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
@@ -879,10 +877,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             id: "confirmed"+trip.start_ts,
             type: "FeatureCollection",
             features: features,
-            properties: {
-                "start_display_name": startName,
-                "end_display_name": endName
-            }
+            properties: { }
           }
           $ionicLoading.hide();
           return trip_gj;
