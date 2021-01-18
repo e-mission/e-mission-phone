@@ -44,7 +44,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.infScrollControl = {};
 
   $scope.readDataFromServer = function() {
-    Logger.log("calling readDataFromServer with "+
+    console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;
     if (!angular.isDefined(currEnd)) {
@@ -67,6 +67,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             fillPlacesForTripAsync(trip);
         });
         $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+        Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         const oldestTrip = ctList[ctList.length -1];
         if (oldestTrip) {
             if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
@@ -105,7 +106,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.data.manualResultMap = manualResultMap;
             $scope.infScrollControl.pipelineRange = pipelineRange;
             $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
-            $scope.readDataFromServer();
+            // Don't need to do this, the infinite scroll code calls it automatically
+            // $scope.readDataFromServer();
         } else {
             $scope.$apply(() => {
                 $scope.infScrollControl.reachedEnd = true;
