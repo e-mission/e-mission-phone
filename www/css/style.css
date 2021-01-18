@@ -958,9 +958,6 @@ button.button.back-button.buttons.button-clear.header-item {
   display: inline-block;
   width: calc(100% - 25px);
 }
-.diary-arrow-container {
-  display: inline;
-}
 .diary-arrow-container i {
   font-size: 32px;
   float: right;
