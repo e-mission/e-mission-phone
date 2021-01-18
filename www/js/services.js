@@ -173,6 +173,14 @@ angular.module('emission.services', ['emission.plugin.logger',
       });
     };
 
+    this.getPipelineRangeTs = function() {
+      return new Promise(function(resolve, reject) {
+          console.log("getting pipeline range timestamps");
+          window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", resolve, reject);
+      });
+    };
+
+
     // host is automatically read from $rootScope.connectUrl, which is set in app.js
     this.getAggregateData = function(path, data) {
         return new Promise(function(resolve, reject) {
