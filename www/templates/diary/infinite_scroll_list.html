@@ -1,21 +1,19 @@
 <ion-view ng-class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
-    <ion-nav-buttons side="right">
-      <button class="button button-icon" ng-click="refresh()">
-        <i class="icon ion-refresh"></i>
-      </button>
-    </ion-nav-buttons>
-    <ion-nav-buttons side="left">
+    <ion-nav-buttons>
        <div class="row buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
           <button ng-click="selectUnlabeled()" class="col-40 button" ng-class="{on:filterInputs.unlabeled}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
           {{'.unlabeled'}}
           </button>
-          <button ng-click="selectInvalid()" class="col-50 button" ng-class="{on:filterInputs.invalid}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          <button ng-click="selectInvalid()" class="col-40 button" ng-class="{on:filterInputs.invalid}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
           {{'.invalid-ebike'}}
           </button>
-          <button ng-click="resetSelection()" class="col-33 button" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          <button ng-click="resetSelection()" class="col-15 button" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
           {{'.show-all'}}
+          </button>
+          <button class="button button-icon" class="col-5 button" ng-click="refresh()">
+            <i class="icon ion-refresh"></i>
           </button>
        </div>
     </ion-nav-buttons>
