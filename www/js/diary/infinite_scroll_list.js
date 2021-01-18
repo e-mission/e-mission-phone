@@ -101,6 +101,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     Logger.log("Setting up the scrolling");
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
+    $scope.data.displayTrips = [];
     Timeline.getUnprocessedLabels().then(([pipelineRange, manualResultMap]) => {
         if (pipelineRange.end_ts) {
             $scope.data.manualResultMap = manualResultMap;
