@@ -787,6 +787,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     $ionicPlatform.ready().then(function() {
       $scope.setupInfScroll();
+      $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
 
       $scope.$on('$ionicView.enter', function(ev) {
         // Workaround from
