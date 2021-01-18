@@ -502,9 +502,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
          Because with the confirmed trips, all prior labels have been
          incorporated into the trip.
          */
-        return CommHelper.getPipelineCompleteTs().then(function(result) {
+        return CommHelper.getPipelineRangeTs().then(function(result) {
             const pendingLabelQuery = {key: "write_ts",
-                startTs: result.complete_ts - 10,
+                startTs: result.end_ts - 10,
                 endTs: moment().unix() + 10
             }
             var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
@@ -516,11 +516,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 manualResults.forEach(function(mr, index) {
                   manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
                 });
-                return [result.complete_ts, manualConfirmResults];
+                return [result, manualConfirmResults];
             });
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
-            return [undefined, {}];
+            return [{}, {}];
         });
     };
 

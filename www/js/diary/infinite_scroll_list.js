@@ -67,14 +67,22 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             fillPlacesForTripAsync(trip);
         });
         $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
-        if (ctList.length === 0) {
-            Logger.log("Reached the end of the scrolling");
-            $scope.infScrollControl.reachedEnd = true;
+        const oldestTrip = ctList[ctList.length -1];
+        if (oldestTrip) {
+            if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
+                Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
+                    +" pipeline starts at "+moment($scope.infScrollControl.pipelineRange.start_ts)
+                    +" reached end");
+                $scope.infScrollControl.reachedEnd = true;
+            } else {
+                // Since this was reversed, the first entry is the most recent
+                $scope.infScrollControl.currentEnd =
+                    oldestTrip.end_ts - 1;
+                Logger.log("new end time = "+$scope.infScrollControl.currentEnd);
+            }
         } else {
-            // Since this was reversed, the first entry is the most recent
-            $scope.infScrollControl.currentEnd =
-                ctList[ctList.length -1].end_ts - 1;
-            Logger.log("new end time = "+$scope.infScrollControl.currentEnd);
+            Logger.log("current batch of size 0 but haven't reached pipeline start, going on");
+            $scope.infScrollControl.currentEnd = $scope.infScrollControl.currentEnd - ONE_WEEK;
         }
         $scope.recomputeDisplayTrips();
         Logger.log("Broadcasting infinite scroll complete");
@@ -92,10 +100,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     Logger.log("Setting up the scrolling");
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
-    Timeline.getUnprocessedLabels().then(([lastProcessedTs, manualResultMap]) => {
-        if (lastProcessedTs) {
+    Timeline.getUnprocessedLabels().then(([pipelineRange, manualResultMap]) => {
+        if (pipelineRange.end_ts) {
             $scope.data.manualResultMap = manualResultMap;
-            $scope.infScrollControl.currentEnd = lastProcessedTs;
+            $scope.infScrollControl.pipelineRange = pipelineRange;
+            $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
             $scope.readDataFromServer();
         } else {
             $scope.$apply(() => {
