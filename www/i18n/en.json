@@ -60,6 +60,7 @@
         "check-ui-updates": "Check for UI updates",
         "download-json-dump": "Download json dump",
         "email-log": "Email log",
+        "upload-log": "Upload log",
         "user-data": "User data",
         "erase-data": "Erase data",
         "dev-zone": "Developer zone",
@@ -244,6 +245,12 @@
             "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
             "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
         }
+    },
+
+    "upload-service":{
+        "upload-from-dir": "Uploading from directory {{parentDir}}",
+        "going-to-email": "Going to email database from {{parentDir}}",
+        "please-fill-in-what-is-wrong": "please fill in what is wrong",
     },
 
     "intro": {

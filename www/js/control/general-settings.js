@@ -17,7 +17,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
-               StartPrefs, ControlHelper, EmailHelper,
+               StartPrefs, ControlHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
@@ -56,7 +56,7 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.emailLog = function () {
         // Passing true, we want to send logs
-        EmailHelper.sendEmail("loggerDB")
+        UploadHelper.uploadFile("loggerDB")
     };
 
     $scope.userData = []
