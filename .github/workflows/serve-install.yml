@@ -36,7 +36,7 @@ jobs:
       run: ls /Applications
 
     - name: Print applications through brew
-      run: brew list
+      run: brew list --formula
 
     - name: Setup the serve environment
       shell: bash -l {0}
