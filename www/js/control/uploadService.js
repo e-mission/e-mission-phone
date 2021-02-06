@@ -32,11 +32,10 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             Logger.displayError("Error while uploading log", err);
         }
 
-        const readDBFile = function(database, callbackFn) {
+        const readDBFile = function(parentDir, database, callbackFn) {
             return new Promise(function(resolve, reject) {
-                const storageRoot = cordova.file.applicationStorageDirectory;
-                window.resolveLocalFileSystemURL(storageRoot, function(fs) {
-                    fs.filesystem.root.getFile(fs.fullPath+"databases/"+database, null, (fileEntry) => {
+                window.resolveLocalFileSystemURL(parentDir, function(fs) {
+                    fs.filesystem.root.getFile(fs.fullPath+database, null, (fileEntry) => {
                         console.log(fileEntry);
                         fileEntry.file(function(file) {
                           console.log(file);
@@ -82,7 +81,6 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                 parentDir = cordova.file.applicationStorageDirectory+"/databases";
             }
             if (ionic.Platform.isIOS()) {
-                alert($translate.instant('email-service.email-account-mail-app'));
                 parentDir = cordova.file.dataDirectory + "../LocalDatabase";
             }
 
@@ -119,13 +117,19 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             });
 
             Logger.log(Logger.LEVEL_INFO, "Going to upload " + database);
-            const readFileAndInfo = [readDBFile(database), detailsPopup];
-            Promise.all(readFileAndInfo).then((binString, reason) => {
+            const readFileAndInfo = [readDBFile(parentDir, database), detailsPopup];
+            Promise.all(readFileAndInfo).then(([binString, reason]) => {
                 const fd = new FormData();
                 fd.append("reason", reason);
                 fd.append("rawFile", binString);
                 uploadConfig.forEach((url) => {
                     sendToServer(url, fd).then((response) => {
+                        $ionicPopup.alert({
+                            title: $translate.instant("upload-service.upload-success"),
+                            template: $translate.instant("upload-service.upload-details",
+                                {filesizemb: binString.length / (1000 * 1000),
+                                 serverURL: uploadConfig})
+                        });
                         console.log(response);
                     }).catch(onUploadError);
                 });

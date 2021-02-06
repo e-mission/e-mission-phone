@@ -252,7 +252,9 @@
         "upload-from-dir": "from directory {{parentDir}}",
         "upload-to-server": "to servers {{serverURL}}",
         "going-to-email": "Going to email database from {{parentDir}}",
-        "please-fill-in-what-is-wrong": "please fill in what is wrong"
+        "please-fill-in-what-is-wrong": "please fill in what is wrong",
+        "upload-success": "Upload successful",
+        "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
     },
 
     "intro": {
