@@ -5,19 +5,19 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
     .service('UploadHelper', function ($window, $translate, $http, $rootScope, $ionicPopup, Logger) {
         const getUploadConfig = function () {
             return new Promise(function (resolve, reject) {
-                window.Logger.log(window.Logger.LEVEL_INFO, "About to get email config");
+                Logger.log(Logger.LEVEL_INFO, "About to get email config");
                 var url = [];
                 $http.get("json/uploadConfig.json").then(function (uploadConfig) {
-                    window.Logger.log(window.Logger.LEVEL_DEBUG, "uploadConfigString = " + JSON.stringify(uploadConfig.data));
+                    Logger.log(Logger.LEVEL_DEBUG, "uploadConfigString = " + JSON.stringify(uploadConfig.data));
                     url.push(uploadConfig.data.url)
                     resolve(url);
                 }).catch(function (err) {
                     $http.get("json/uploadConfig.json.sample").then(function (uploadConfig) {
-                        window.Logger.log(window.Logger.LEVEL_DEBUG, "default uploadConfigString = " + JSON.stringify(uploadConfig.data));
+                        Logger.log(Logger.LEVEL_DEBUG, "default uploadConfigString = " + JSON.stringify(uploadConfig.data));
                         url.push(uploadConfig.data.url)
                         resolve(url);
                     }).catch(function (err) {
-                        window.Logger.log(window.Logger.LEVEL_ERROR, "Error while reading default upload config" + err);
+                        Logger.log(Logger.LEVEL_ERROR, "Error while reading default upload config" + err);
                         reject(err);
                     });
                 });
@@ -92,10 +92,13 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
 
             const newScope = $rootScope.$new();
             newScope.data = {};
+            newScope.fromDirText = $translate.instant('upload-service.upload-from-dir',  {parentDir: parentDir});
+            newScope.toServerText = $translate.instant('upload-service.upload-to-server',  {serverURL: uploadConfig});
 
             const detailsPopup = $ionicPopup.show({
-                title: $translate.instant("upload-service.upload-from-dir", { parentDir: parentDir }),
-                template: '<input type="text" ng-model="data.reason"'
+                title: $translate.instant("upload-service.upload-database", { db: database }),
+                template: newScope.toServerText
+                    + '<input type="text" ng-model="data.reason"'
                     +' placeholder="{{ \'upload-service.please-fill-in-what-is-wrong \' | translate}}">',
                 scope: newScope,
                 buttons: [
@@ -115,7 +118,7 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                 ]
             });
 
-            window.Logger.log(window.Logger.LEVEL_INFO, "Going to upload " + database);
+            Logger.log(Logger.LEVEL_INFO, "Going to upload " + database);
             const readFileAndInfo = [readDBFile(database), detailsPopup];
             Promise.all(readFileAndInfo).then((binString, reason) => {
                 const fd = new FormData();
