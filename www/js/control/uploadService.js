@@ -65,13 +65,13 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             });
         }
 
-        const sendToServer = function upload(url, formData) {
+        const sendToServer = function upload(url, binArray, params) {
             var config = {
                 headers: {'Content-Type': undefined },
                 transformRequest: angular.identity,
-                params: { reason: "hihi"}
+                params: params
             };
-            return $http.post(url, formData, config);
+            return $http.post(url, binArray, config);
         }
 
         this.uploadFile = function (database) {
@@ -121,18 +121,29 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             const readFileAndInfo = [readDBFile(parentDir, database), detailsPopup];
             Promise.all(readFileAndInfo).then(([binString, reason]) => {
                 console.log("Uploading file of size "+binString.byteLength);
-                // const fd = new FormData();
-                // fd.append("reason", reason);
-                // fd.append("rawFile", binString);
+                const progressScope = $rootScope.$new();
+                const params = {
+                    reason: reason,
+                    tz: Intl.DateTimeFormat().resolvedOptions().timeZone
+                }
                 uploadConfig.forEach((url) => {
-                    sendToServer(url, binString).then((response) => {
-                        $ionicPopup.alert({
+                    const progressPopup = $ionicPopup.alert({
+                        title: $translate.instant("upload-service.upload-database",
+                            {db: database}),
+                        template: $translate.instant("upload-service.upload-progress",
+                            {filesizemb: binString.byteLength / (1000 * 1000),
+                             serverURL: uploadConfig}),
+                        scope: progressScope,
+                    });
+                    sendToServer(url, binString, params).then((response) => {
+                        console.log(response);
+                        progressPopup.close();
+                        const successPopup = $ionicPopup.alert({
                             title: $translate.instant("upload-service.upload-success"),
                             template: $translate.instant("upload-service.upload-details",
                                 {filesizemb: binString.byteLength / (1000 * 1000),
                                  serverURL: uploadConfig})
                         });
-                        console.log(response);
                     }).catch(onUploadError);
                 });
             }).catch(onReadError);

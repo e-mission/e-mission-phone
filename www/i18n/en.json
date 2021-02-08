@@ -254,6 +254,7 @@
         "going-to-email": "Going to email database from {{parentDir}}",
         "please-fill-in-what-is-wrong": "please fill in what is wrong",
         "upload-success": "Upload successful",
+        "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
         "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
     },
 
