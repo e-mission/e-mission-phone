@@ -54,11 +54,11 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                           }
 
                           reader.onload = function() {
-                            console.log("Successful file read with " + this.result.length +" characters");
-                            resolve(this.result);
+                            console.log("Successful file read with " + this.result.byteLength +" characters");
+                            resolve(new DataView(this.result));
                           }
 
-                          reader.readAsBinaryString(file);
+                          reader.readAsArrayBuffer(file);
                         }, reject);
                     }, reject);
                 });
@@ -67,8 +67,9 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
 
         const sendToServer = function upload(url, formData) {
             var config = {
-                headers: {'Content-Type': "undefined"},
-                transformRequest: []
+                headers: {'Content-Type': undefined },
+                transformRequest: angular.identity,
+                params: { reason: "hihi"}
             };
             return $http.post(url, formData, config);
         }
@@ -119,15 +120,16 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             Logger.log(Logger.LEVEL_INFO, "Going to upload " + database);
             const readFileAndInfo = [readDBFile(parentDir, database), detailsPopup];
             Promise.all(readFileAndInfo).then(([binString, reason]) => {
-                const fd = new FormData();
-                fd.append("reason", reason);
-                fd.append("rawFile", binString);
+                console.log("Uploading file of size "+binString.byteLength);
+                // const fd = new FormData();
+                // fd.append("reason", reason);
+                // fd.append("rawFile", binString);
                 uploadConfig.forEach((url) => {
-                    sendToServer(url, fd).then((response) => {
+                    sendToServer(url, binString).then((response) => {
                         $ionicPopup.alert({
                             title: $translate.instant("upload-service.upload-success"),
                             template: $translate.instant("upload-service.upload-details",
-                                {filesizemb: binString.length / (1000 * 1000),
+                                {filesizemb: binString.byteLength / (1000 * 1000),
                                  serverURL: uploadConfig})
                         });
                         console.log(response);
