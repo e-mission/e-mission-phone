@@ -179,6 +179,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
             obj.start_display_name = name;
             break;
         }
+        return name;
 
       };
       var responseListener1 = function(data) {
@@ -200,7 +201,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         }
         console.log("got response, setting display name to "+name);
         obj.end_display_name = name;
-
+        return obj;
       };
       switch (mode) {
         case 'place':
@@ -209,7 +210,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
           $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
               +" data = "+JSON.stringify(response.data));
-            responseListener(response.data);
+            return responseListener(response.data);
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
           });
@@ -218,10 +219,10 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
         + "&lon=" + obj.location.coordinates[0];
 
-          $http.get(url).then(function(response) {
+          return $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
               +" data = "+JSON.stringify(response.data));
-            responseListener(response.data);
+            return responseListener(response.data);
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
           });

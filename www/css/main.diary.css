@@ -110,35 +110,27 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
-.btn-mode-confirm-green,
-.btn-mode-confirm-green:hover,
-.btn-mode-confirm-green:active,
-.btn-purpose-confirm-green,
-.btn-purpose-confirm-green:hover,
-.btn-purpose-confirm-green:active {
+.btn-input-confirm-green,
+.btn-input-confirm-green:hover,
+.btn-input-confirm-green:active {
   background-color: #30A64A;
   color: white;
 }
-.btn-mode-confirm-white,
-.btn-mode-confirm-white:hover,
-.btn-mode-confirm-white:active,
-.btn-purpose-confirm-white,
-.btn-purpose-confirm-white:hover,
-.btn-purpose-confirm-white:active {
+.btn-input-confirm-white,
+.btn-input-confirm-white:hover,
+.btn-input-confirm-white:active {
   background-color: #ddd;
   color: #333;
   font-size: 0.8em;
 }
-.btn-mode-confirm,
-.btn-purpose-confirm {
+.btn-input-confirm {
   line-height: 30px;
   min-height: 30px;
   font-size: 0.8em !important;
   width: 115px;
   padding: 0;
 }
-.mode-confirm-container,
-.purpose-confirm-container {
+.input-confirm-container {
   margin-top: 5px;
 }
 
@@ -147,7 +139,16 @@ a.item-content {
   width: 230px;
 }
 
+.big-popover {
+  height: 40%;
+  width: 75%;
+}
+
 #diary-item {
   padding: 0;
   border-width: 0;
+}
+
+.button.on {
+    background-color: darkgray;
 }
