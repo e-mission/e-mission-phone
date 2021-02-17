@@ -182,17 +182,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
   }
 
-  var readAndUpdateForDay = function(day) {
-    // This just launches the update. The update can complete in the background
-    // based on the time when the database finishes reading.
-    // TODO: Convert the usercache calls into promises so that we don't have to
-    // do this juggling
-    Timeline.updateForDay(day);
-    // This will be used to show the date of datePicker in the user language.
-    $scope.currDay = moment(day).format('LL');
-    // CommonGraph.updateCurrent();
-  };
-
   angular.extend($scope, {
       defaults: {
           zoomControl: false,
@@ -258,49 +247,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
     $scope.stopTimeTagClass = function(tripgj) {
       return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
-    }
-    $scope.setCurrDay = function(val) {
-        if (typeof(val) === 'undefined') {
-          window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
-        } else {
-          window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
-          readAndUpdateForDay(moment(val));
-        }
-    }
-
-    $scope.getDatePickerObject = function() {
-      return {
-        todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-        closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-        setLabel: $translate.instant('list-datepicker-set'),  //Optional
-        monthsList: moment.monthsShort(),
-        weeksList: moment.weekdaysMin(),
-        titleLabel: $translate.instant('diary.list-pick-a-date'),
-        setButtonType : 'button-positive',  //Optional
-        todayButtonType : 'button-stable',  //Optional
-        closeButtonType : 'button-stable',  //Optional
-        inputDate: new Date(),  //Optional
-        from: new Date(2015, 1, 1),
-        to: new Date(),
-        mondayFirst: true,  //Optional
-        templateType: 'popup', //Optional
-        showTodayButton: 'true', //Optional
-        modalHeaderColor: 'bar-positive', //Optional
-        modalFooterColor: 'bar-positive', //Optional
-        callback: $scope.setCurrDay, //Mandatory
-        dateFormat: 'dd MMM yyyy', //Optional
-        closeOnSelect: true //Optional
-      }
-    };
-
-    $scope.datepickerObject = $scope.getDatePickerObject();
-
-    $ionicPlatform.on("resume", function() {
-        $scope.datepickerObject = $scope.getDatePickerObject();
-    });
-
-    $scope.pickDay = function() {
-      ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
     /**
@@ -376,14 +322,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
 
-    var isNotEmpty = function (obj) {
-      for (var prop in obj) {
-        if (obj.hasOwnProperty(prop))
-          return true;
-      }
-      return false;
-    };
-
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
@@ -391,84 +329,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       });
       // don't want to go to the detail screen
     }
-
-    /*
-    $scope.$on(Timeline.UPDATE_DONE, function(event, args) {
-      console.log("Got timeline update done event with args "+JSON.stringify(args));
-      $scope.$apply(function() {
-          $scope.data = Timeline.data;
-          $scope.datepickerObject.inputDate = Timeline.data.currDay.toDate();
-          $scope.data.currDayTrips.forEach(function(trip, index, array) {
-            PostTripManualMarker.addUnpushedIncidents(trip);
-          });
-          var currDayTripWrappers = Timeline.data.currDayTrips.map(
-            DiaryHelper.directiveForTrip);
-          Timeline.setTripWrappers(currDayTripWrappers);
-
-          $scope.data.currDayTripWrappers.forEach(function(tripgj, index, array) {
-            tripgj.userInput = {};
-            ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline(tripgj, item, $scope.data.unifiedConfirmsResults[item]);
-            });
-            $scope.populateBasicClasses(tripgj);
-            $scope.populateCommonInfo(tripgj);
-          });
-          if ($rootScope.displayingIncident) {
-            $ionicScrollDelegate.scrollBottom(true);
-            $rootScope.displayingIncident = false;
-          } else {
-              $ionicScrollDelegate.scrollTop(true);
-          }
-      });
-    });
-
-    $scope.$on(CommonGraph.UPDATE_DONE, function(event, args) {
-      console.log("Got common graph update done event with args "+JSON.stringify(args));
-      $scope.$apply(function() {
-          // If we don't have the trip wrappers yet, then we can just bail because
-          // the counts will be filled in when that is done. If the currDayTripWrappers
-          // is already defined, that may have won the race, and not been able to update
-          // the counts, so let us do it here.
-          if (!angular.isUndefined($scope.data) && !angular.isUndefined($scope.data.currDayTripWrappers)) {
-             $scope.data.currDayTripWrappers.forEach(function(tripWrapper, index, array) {
-                $scope.populateCommonInfo(tripWrapper);
-             });
-          };
-      });
-    });
-
-    var showNoTripsAlert = function() {
-      var buttons = [{
-          text: 'New',
-          type: 'button-balanced',
-          onTap: function (e) {
-            $state.go('root.main.recent.log');
-          }
-        },
-        {
-          text: 'Force',
-          type: 'button-balanced',
-          onTap: function (e) {
-            $state.go('root.main.control');
-          }
-        },
-        {
-          text: 'OK',
-          type: 'button-balanced',
-          onTap: function (e) {
-            return;
-          }
-        },
-        ];
-        console.log("No trips found for day ");
-        var alertPopup = $ionicPopup.show({
-             title: 'No trips found!',
-             template: "This is probably because you didn't go anywhere. You can also check",
-             buttons: buttons
-        });
-        return alertPopup;
-    }
-    */
 
     /*
      * Disabling the reload of the page on background sync because it doesn't
@@ -557,19 +417,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         nextText: $translate.instant('tour-next'),
         finishText: $translate.instant('tour-finish')
       },
-      steps: [{
-        target: '#date-picker-button',
-        content: $translate.instant('list-tour-datepicker-button')
-      },
-      {
-        target: '.diary-entry',
-        content: $translate.instant('list-tour-diary-entry')
-      },
-      {
-        target: '#map-fix-button',
-        content: $translate.instant('list-tour-diary-entry')
-        }
-      ]
+      steps: []
     };
 
     var startWalkthrough = function () {
@@ -578,10 +426,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       }).catch(function(err) {
         Logger.displayError("list walkthrough start errored", err);
       });
-    };
-
-    $scope.refreshTiles = function() {
-      $scope.$broadcast('invalidateSize');
     };
 
     /*
@@ -612,13 +456,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     $scope.$on('$ionicView.leave',function() {
       var timeOnPage = moment().utc() - $scope.startTime;
-      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+      ClientStats.addReading(ClientStats.getStatKeys().INF_SCROLL_TIME, timeOnPage);
     });
 
     $ionicPlatform.on("pause", function() {
       if ($state.$current == "root.main.diary.list") {
         var timeOnPage = moment().utc() - $scope.startTime;
-        ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+        ClientStats.addReading(ClientStats.getStatKeys().INF_SCROLL_TIME, timeOnPage);
       }
     })
 
@@ -798,20 +642,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       });
 
       $scope.$on('$ionicView.afterEnter', function() {
-        ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {
-           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+        ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_INF_SCROLL).then(function() {
+           console.log("Added "+ClientStats.getStatKeys().CHECKED_INF_SCROLL+" event");
         });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;
-          }
-        if($rootScope.displayingIncident == true) {
-          if (angular.isDefined(Timeline.data.currDay)) {
-              // page was already loaded, reload it automatically
-              readAndUpdateForDay(Timeline.data.currDay);
-          } else {
-             Logger.log("currDay is not defined, load not complete");
-          }
         }
       });
     });
