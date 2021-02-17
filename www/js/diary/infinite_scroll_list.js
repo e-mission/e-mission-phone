@@ -35,6 +35,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
+  $scope.userInputDetails = [];
+  ConfirmHelper.INPUTS.forEach(function(item, index) {
+    const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
+    currInput.name = item;
+    $scope.userInputDetails.push(currInput);
+  });
+
   $scope.data = {};
   // reset all filters
   $scope.filterInputs = [

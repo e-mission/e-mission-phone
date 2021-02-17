@@ -66,50 +66,20 @@
                  </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
-                <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-                {{'.mode'}}
-                </div>
-                <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600; word-wrap: break-word;" translate>
-                {{'.replaces'}}
-                </div>
-                <div class="col-33" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-                {{'.purpose'}}
-                </div>
+              <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name" translate>
+                {{input.labeltext}}
+              </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-33" style="text-align: center;">
-                    <div ng-if="trip.userInput.MODE" class="mode-confirm-container">
-                        <button ng-click ="openPopover($event, trip, 'MODE')" class="button btn-mode-confirm btn-mode-confirm-green">
-                            {{trip.userInput.MODE.text}}
+                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
+                    <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+                            {{trip.userInput[input.name].text}}
                         </button>
                     </div>
-                    <div  ng-if="!trip.userInput.MODE" class="mode-confirm-container">
-                        <button ng-click ="openPopover($event, trip, 'MODE')" class="button btn-mode-confirm btn-mode-confirm-white" translate>
-                        {{'.choose-mode'}}
-                        </button>
-                    </div>
-                </div>
-                <div class="col-33" style="text-align: center;">
-                    <div ng-if="trip.userInput.REPLACED_MODE" class="mode-confirm-container">
-                        <button ng-click ="openPopover($event, trip, 'REPLACED_MODE')" class="button btn-mode-confirm btn-mode-confirm-green">
-                            {{trip.userInput.REPLACED_MODE.text}}
-                        </button>
-                    </div>
-                    <div  ng-if="!trip.userInput.REPLACED_MODE" class="mode-confirm-container">
-                        <button ng-click ="openPopover($event, trip, 'REPLACED_MODE')" class="button btn-mode-confirm btn-mode-confirm-white" translate>
-                        {{'.choose-replaced-mode'}}
-                        </button>
-                    </div>
-                </div>
-                <div class="col-33" style="text-align: center;">
-                    <div ng-if="trip.userInput.PURPOSE" class="purpose-confirm-container">
-                        <button ng-click="openPopover($event, trip, 'PURPOSE')" class="button btn-purpose-confirm btn-purpose-confirm-green">
-                            {{trip.userInput.PURPOSE.text}}
-                        </button>
-                    </div>
-                    <div ng-if="!trip.userInput.PURPOSE" class="purpose-confirm-container">
-                        <button ng-click="openPopover($event, trip, 'PURPOSE')" class="button btn-purpose-confirm btn-purpose-confirm-white" translate>
-                        {{'.choose-purpose'}}
+                    <div  ng-if="!trip.userInput[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
+                        {{input.choosetext}}
                         </button>
                     </div>
                 </div>

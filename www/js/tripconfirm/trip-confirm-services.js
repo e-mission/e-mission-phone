@@ -4,12 +4,18 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
     ch.INPUTS = ["MODE", "PURPOSE"]
     ch.inputDetails = {
         "MODE": {
+            labeltext: $translate.instant(".mode"),
+            choosetext: $translate.instant(".choose-mode"),
+            width: "col-50",
             key: "manual/mode_confirm",
-            otherVals: {}
+            otherVals: {},
         },
         "PURPOSE": {
+            labeltext: $translate.instant(".purpose"),
+            choosetext: $translate.instant(".choose-purpose"),
+            width: "col-50",
             key: "manual/purpose_confirm",
-            otherVals: {}
+            otherVals: {},
         }
     }
 

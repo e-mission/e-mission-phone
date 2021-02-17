@@ -33,6 +33,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       data.leafletObject.invalidateSize();
   });
 
+  $scope.userInputDetails = [];
+  ConfirmHelper.INPUTS.forEach(function(item, index) {
+    const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
+    currInput.name = item;
+    $scope.userInputDetails.push(currInput);
+  });
+
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
     // based on the time when the database finishes reading.
