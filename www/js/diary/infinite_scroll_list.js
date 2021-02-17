@@ -45,7 +45,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.data = {};
   // reset all filters
   $scope.filterInputs = [
-    InfScrollFilters.UNLABELED, InfScrollFilters.INVALID_EBIKE
+    InfScrollFilters.UNLABELED
   ];
   $scope.filterInputs.forEach((f) => {
     f.state = false;

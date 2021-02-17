@@ -31,11 +31,13 @@ angular.module('emission.main.diary.infscrollfilters',[
 
     sf.UNLABELED = {
         text: $translate.instant(".unlabeled"),
+        width: "col-80",
         filter: unlabeledCheck
     }
 
     sf.INVALID_EBIKE = {
         text: $translate.instant(".invalid-ebike"),
+        width: "col-50",
         filter: invalidCheck
     }
     return sf;
