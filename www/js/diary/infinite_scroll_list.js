@@ -67,11 +67,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                 $scope.populateManualInputs(trip, item, $scope.data.manualResultMap[item]);
             });
         });
-        /*
         ctList.forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
         });
-        */
         $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         const oldestTrip = ctList[ctList.length -1];
