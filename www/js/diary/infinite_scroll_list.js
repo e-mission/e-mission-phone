@@ -15,6 +15,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.tripconfirm.services',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
+                                      'emission.main.diary.infscrollfilters',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
@@ -24,6 +25,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
+                                    InfScrollFilters,
     Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
@@ -35,10 +37,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.data = {};
   // reset all filters
-  $scope.filterInputs = {};
-  $scope.filterInputs.unlabeled = false;
-  $scope.filterInputs.invalid = false;
-  $scope.filterInputs.all = false;
+  $scope.filterInputs = [
+    InfScrollFilters.UNLABELED, InfScrollFilters.INVALID_EBIKE
+  ];
+  $scope.filterInputs.forEach((f) => {
+    f.state = false;
+  });
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
   $scope.infScrollControl = {};
@@ -63,9 +67,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                 $scope.populateManualInputs(trip, item, $scope.data.manualResultMap[item]);
             });
         });
+        /*
         ctList.forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
         });
+        */
         $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         const oldestTrip = ctList[ctList.length -1];
@@ -137,49 +143,38 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
   }
 
-  $scope.selectUnlabeled = function() {
-    $scope.filterInputs.unlabeled = true;
-    $scope.filterInputs.invalid = false;
-    $scope.recomputeDisplayTrips();
-  }
-
-  $scope.selectInvalid = function() {
-    $scope.filterInputs.unlabeled = false;
-    $scope.filterInputs.invalid = true;
+  $scope.select = function(selF) {
+    selF.state = true;
+    $scope.filterInputs.forEach((f) => {
+      if (f !== selF) {
+        f.state = false;
+      }
+    });
     $scope.recomputeDisplayTrips();
   }
 
   $scope.resetSelection = function() {
-    $scope.filterInputs.unlabeled = false;
-    $scope.filterInputs.invalid = false;
+    $scope.filterInputs.forEach((f) => {
+      f.state = false;
+    });
     $scope.recomputeDisplayTrips();
   }
 
-  var unlabeledCheck = function(t) {
-    return ConfirmHelper.INPUTS
-        .map((inputType, index) => !angular.isDefined(t.userInput[inputType]))
-        .reduce((acc, val) => acc && val, true);
-  }
-
-  var invalidCheck = function(t) {
-    const retVal = 
-        (angular.isDefined(t.userInput['MODE']) && t.userInput['MODE'].value === 'pilot_ebike') &&
-        (!angular.isDefined(t.userInput['REPLACED_MODE']) ||
-         t.userInput['REPLACED_MODE'].value === 'pilot_ebike' ||
-         t.userInput['REPLACED_MODE'].value === 'same_mode');
-    return retVal;
-  }
-
   $scope.recomputeDisplayTrips = function() {
-    if (!$scope.filterInputs.invalid && !$scope.filterInputs.unlabeled) {
-        $scope.data.displayTrips = $scope.data.allTrips;
-    } else {
-        if ($scope.filterInputs.unlabeled) {
-            $scope.data.displayTrips = $scope.data.allTrips.filter(unlabeledCheck);
-        } else {
-            $scope.data.displayTrips = $scope.data.allTrips.filter(invalidCheck);
+    let alreadyFiltered = false;
+    $scope.filterInputs.forEach((f) => {
+        if (f.state == true) {
+            if (alreadyFiltered) {
+                Logger.displayError("multiple filters not supported!", undefined);
+            } else {
+                $scope.data.displayTrips = $scope.data.allTrips.filter(f.filter);
+                alreadyFiltered = true;
+            }
         }
-    }
+    });
+    if (!alreadyFiltered) {
+        $scope.data.displayTrips = $scope.data.allTrips;
+    };
   }
 
   var readAndUpdateForDay = function(day) {
