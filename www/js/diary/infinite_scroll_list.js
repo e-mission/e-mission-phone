@@ -68,10 +68,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Received batch of size "+ctList.length);
         ctList.reverse();
         ctList.forEach($scope.populateBasicClasses);
-        ctList.forEach((trip) => {
+        ctList.forEach((trip, tIndex) => {
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateManualInputs(trip, item, $scope.data.manualResultMap[item]);
+                $scope.populateManualInputs(trip, ctList[tIndex+1], item, $scope.data.manualResultMap[item]);
             });
         });
         ctList.forEach(function(trip, index) {
@@ -252,11 +252,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     /**
      * Embed 'inputType' to the trip
      */
-    $scope.populateManualInputs = function (tripgj, inputType, inputList) {
+    $scope.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
         // Check unprocessed labels first since they are more recent
         // Massage the input to meet getUserInputForTrip expectations
         const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
             {data: {properties: tripgj, features: [{}, {}, {}]}},
+            {data: {properties: nextTripgj, features: [{}, {}, {}]}},
             inputList);
         var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
         if (!angular.isDefined(userInputLabel)) {
