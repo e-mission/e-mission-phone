@@ -2,10 +2,11 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="right">
-        <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+        <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
     </ion-nav-buttons> 
     <ion-nav-buttons side="left">
-        <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
+        <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+        <!-- <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
         <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
             <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
             </button>
@@ -16,10 +17,6 @@
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">
-        <ion-refresher
-        pulling-text="{{'pull-to-refresh' | translate}}"
-        on-refresh="refresh()">
-        </ion-refresher>
         <!--
         <div  ng-if="inTrip()" class="control-list-item">
             <div class="control-list-text">Current Trip</div>
@@ -72,8 +69,8 @@
                 </div>
 
                 <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
-                <div style="padding: 0.5em;">
-                    <div class="start-end-addresses-container">
+                <div style="padding: 0.5em;" class="row">
+                    <div class="col-90 start-end-addresses-container">
                         <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
                         <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
                                 {{tripgj.start_place.properties.display_name.split(',')[0]}}
@@ -84,41 +81,26 @@
                                 {{tripgj.end_place.properties.display_name.split(',')[0]}}
                         </div>
                     </div>
-                    <div class="diary-arrow-container">
+                    <div class="col-10 diary-arrow-container">
                         <i class="ion-ios-arrow-right"></i>
                     </div>
                 </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-                {{'.mode'}}
-                </div>
-                <div class="col-50" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-                {{'.purpose'}}
-                </div>
+              <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
+                {{input.labeltext}}
+              </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div class="col-50" style="text-align: center;">
-                    <div ng-if="tripgj.usermode" class="mode-confirm-container">
-                        <button ng-click ="openModePopover($event, tripgj)" class="button btn-mode-confirm btn-mode-confirm-green">
-                            {{tripgj.usermode.text}}
+                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name }}">
+                    <div ng-if="tripgj.userInput[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+                            {{tripgj.userInput[input.name].text}}
                         </button>
                     </div>
-                    <div  ng-if="!tripgj.usermode" class="mode-confirm-container">
-                        <button ng-click ="openModePopover($event, tripgj)" class="button btn-mode-confirm btn-mode-confirm-white" translate>
-                        {{'.choose-mode'}}
-                        </button>
-                    </div>
-                </div>
-                <div class="col-50" style="text-align: center;">
-                    <div ng-if="tripgj.userpurpose" class="purpose-confirm-container">
-                        <button ng-click="openPurposePopover($event, tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-green">
-                            {{tripgj.userpurpose.text}}
-                        </button>
-                    </div>
-                    <div ng-if="!tripgj.userpurpose" class="purpose-confirm-container">
-                        <button ng-click="openPurposePopover($event, tripgj)" class="button btn-purpose-confirm btn-purpose-confirm-white" translate>
-                        {{'.choose-purpose'}}
+                    <div  ng-if="!tripgj.userInput[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
+                        {{input.choosetext}}
                         </button>
                     </div>
                 </div>

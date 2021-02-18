@@ -60,6 +60,7 @@
         "check-ui-updates": "Check for UI updates",
         "download-json-dump": "Download json dump",
         "email-log": "Email log",
+        "upload-log": "Upload log",
         "user-data": "User data",
         "erase-data": "Erase data",
         "dev-zone": "Developer zone",
@@ -144,10 +145,17 @@
         "report-incident": "Report Incident",
         "draft": "DRAFT",
         "distance-in-time": "{{distance}} km in {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} km in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
         "purpose": "Purpose",
+        "unlabeled": "Unlabeled🔍",
+        "invalid-ebike": "Invalid🔍",
+        "show-all": "All",
+        "no-trips-found": "No trips found",
+        "for-current-filter": "for current filter. Show All to remove filters",
+        "scroll-to-load-more": "Scroll to load more",
         "choose-mode": "Choose Mode",
         "choose-purpose": "Choose Purpose",
         "select-mode-scroll": "Mode (Scroll for more)",
@@ -186,6 +194,10 @@
     },
 
     "main-diary" : "Diary",
+
+    "main-inf-scroll" : {
+        "tab": "Label"
+    },
 
     "main-heatmap":{
         "title": "Heatmap",
@@ -244,6 +256,17 @@
             "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
             "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
         }
+    },
+
+    "upload-service":{
+        "upload-database": "Uploading database {{db}}",
+        "upload-from-dir": "from directory {{parentDir}}",
+        "upload-to-server": "to servers {{serverURL}}",
+        "going-to-email": "Going to email database from {{parentDir}}",
+        "please-fill-in-what-is-wrong": "please fill in what is wrong",
+        "upload-success": "Upload successful",
+        "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
+        "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
     },
 
     "intro": {

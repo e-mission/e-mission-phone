@@ -144,6 +144,16 @@ AND/OR
 $ npx cordova emulate android
 ```
 
+Creating logos
+---
+If you are building your own version of the app, you must have your own logo to
+avoid app store conficts. Updating the logo is very simple using the [`ionic
+cordova resources`](https://ionicframework.com/docs/v3/cli/cordova/resources/)
+command.
+
+**Note**: You may have to install the [`cordova-res` package](https://github.com/ionic-team/cordova-res) for the command to work
+
+
 Troubleshooting
 ---
 - Make sure to use `npx ionic` and `npx cordova`. This is
