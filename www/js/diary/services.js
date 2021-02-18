@@ -405,8 +405,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  dh.getUserInputForTrip = function(tripgj, userInputList) {
-    console.log("Input list = "+userInputList.map(printUserInput));
+  dh.getUserInputForTrip = function(tripgj, nextTripgj, userInputList) {
+    if (userInputList.length < 20) {
+        console.log("Input list = "+userInputList.map(printUserInput));
+    }
     var tripProp = tripgj.data.properties;
     var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
@@ -423,37 +425,68 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         // logic described in
         // https://github.com/e-mission/e-mission-docs/issues/423
         if (isDraft) {
-            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
-                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
-                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
-                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
-            console.log(logStr);
-            // Logger.log(logStr);
+            if (userInputList.length < 20) {
+                var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                    +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
+                    +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
+                    +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
+                    +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+                console.log(logStr);
+                // Logger.log(logStr);
+            }
             return (userInput.data.start_ts >= tripProp.start_ts
-                    || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                    && userInput.data.start_ts <= tripProp.end_ts
+                    || -(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
                 && userInput.data.end_ts <= tripProp.end_ts;
         } else {
             // we know that the trip is cleaned so we can use the fmt_time
             // but the confirm objects are not necessarily filled out
-            var logStr = "Cleaned trip: comparing user = "
-                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+tripProp.start_fmt_time
-                +" -> "+tripProp.end_fmt_time
-                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
-                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
-                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
-            Logger.log(logStr);
-            return userInput.data.start_ts >= tripProp.start_ts
-                && (userInput.data.end_ts <= tripProp.end_ts ||
-                    (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
+            if (userInputList.length < 20) {
+                var logStr = "Cleaned trip: comparing user = "
+                    +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                    +" trip = "+tripProp.start_fmt_time
+                    +" -> "+tripProp.end_fmt_time
+                    +" start checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
+                    +" end checks are "+(userInput.data.end_ts <= tripProp.end_ts)
+                    +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 15 * 60)+")";
+                Logger.log(logStr);
+            }
+            // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
+            const startChecks = userInput.data.start_ts >= tripProp.start_ts &&
+                userInput.data.start_ts <= tripProp.end_ts;
+            var endChecks = (userInput.data.end_ts <= tripProp.end_ts ||
+                    (userInput.data.end_ts - tripProp.end_ts) <= 15 * 60);
+            if (startChecks && !endChecks) {
+                if (angular.isDefined(nextTripgj)) {
+                    endChecks = userInput.data.end_ts <= nextTripgj.data.properties.start_ts;
+                    Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextTripgj.data.properties.start_ts+") = "+endChecks);
+                } else {
+                    // next trip is not defined, last trip
+                    endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
+                    Logger.log("Second level of end checks for the last trip of the day");
+                    Logger.log("compare "+userInput.data.end_local_dt.day + " with " + userInput.data.start_local_dt.day + " = " + endChecks);
+                }
+                if (endChecks) {
+                    // If we have flipped the values, check to see that there
+                    // is sufficient overlap
+                    const overlapDuration = Math.min(userInput.data.end_ts, tripProp.end_ts) - Math.max(userInput.data.start_ts, tripProp.start_ts)
+                    Logger.log("Flipped endCheck, overlap("+overlapDuration+
+                        ")/trip("+tripProp.duration+") = "+ (overlapDuration / tripProp.duration));
+                    endChecks = (overlapDuration/tripProp.duration) > 0.5;
+                }
+            }
+            return startChecks && endChecks;
         }
     });
     if (potentialCandidates.length === 0)  {
-        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        if (userInputList.length < 20) {
+            Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        }
         return undefined;
     }
 
@@ -487,6 +520,53 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var getKeyForDate = function(date) {
       var dateString = date.startOf('day').format('YYYY-MM-DD');
       return "diary/trips-"+dateString;
+    };
+
+    timeline.getUnprocessedLabels = function() {
+        /*
+         Because with the confirmed trips, all prior labels have been
+         incorporated into the trip.
+         */
+        return CommHelper.getPipelineRangeTs().then(function(result) {
+            const pendingLabelQuery = {key: "write_ts",
+                startTs: result.end_ts - 10,
+                endTs: moment().unix() + 10
+            }
+            var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+              return UnifiedDataLoader.getUnifiedMessagesForInterval(
+                  ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
+            });
+            return Promise.all(manualPromises).then((manualResults) => {
+                const manualConfirmResults = {};
+                manualResults.forEach(function(mr, index) {
+                  manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
+                });
+                return [result, manualConfirmResults];
+            });
+        }).catch((err) => {
+            Logger.displayError("while reading confirmed trips", err);
+            return [{}, {}];
+        });
+    };
+
+    timeline.readAllConfirmedTrips = function(endTs, deltaTs) {
+      $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+      });
+      const readPromises = [
+        CommHelper.getRawEntries(["analysis/confirmed_trip"],
+            endTs - deltaTs, endTs, "data.end_ts"),
+      ];
+      return Promise.all(readPromises)
+        .then(([ctList]) => {
+            $ionicLoading.hide();
+            return ctList.phone_data.map((ct) => ct.data);
+        })
+        .catch((err) => {
+            Logger.displayError("while reading confirmed trips", err);
+            $ionicLoading.hide();
+            return [];
+        });
     };
 
     timeline.updateFromDatabase = function(day) {
@@ -772,6 +852,64 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var tsEntrySort = function(e1, e2) {
       // compare timestamps
       return e1.data.ts - e2.data.ts;
+    }
+
+    var confirmedPlace2Geojson = function(trip, locationPoint, featureType) {
+        var place_gj = {
+        "type": "Feature",
+        "geometry": locationPoint,
+        "properties": {
+            "feature_type": featureType
+        }
+      }
+      return place_gj;
+    }
+
+    var confirmedPoints2Geojson = function(trip, locationList) {
+      var sectionCoordinates = locationList.map(function(point) {
+        return point.data.loc.coordinates;
+      });
+      return {
+        type: "Feature",
+        geometry: {
+            type: "LineString",
+            coordinates: sectionCoordinates
+        }
+      }
+    }
+
+    timeline.confirmedTrip2Geojson = function(trip) {
+      Logger.log("About to pull location data for range "
+        + moment.unix(trip.start_ts).toString() + " -> " 
+        + moment.unix(trip.end_ts).toString());
+        // TODO: change this to recreated location
+      $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+      });
+
+        const fillPromises = [
+            CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
+        ];
+
+        return Promise.all(fillPromises).then(function([locationList]) {
+          Logger.log("Retrieved "+locationList.phone_data.length+" points");
+          var features = [
+            confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
+            confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
+            confirmedPoints2Geojson(trip, locationList.phone_data)
+          ];
+          var trip_gj = {
+            id: "confirmed"+trip.start_ts,
+            type: "FeatureCollection",
+            features: features,
+            properties: { }
+          }
+          $ionicLoading.hide();
+          return trip_gj;
+        }).catch((err) => {
+          Logger.displayError("while filling details", err);
+          $ionicLoading.hide();
+        });
     }
 
     var trip2Geojson = function(trip) {

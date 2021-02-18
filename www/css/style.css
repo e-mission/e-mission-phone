@@ -911,6 +911,34 @@ button.button.back-button.buttons.button-clear.header-item {
         bottom: 15px;
         line-height: 16px;
 }
+.start-time-tag-inf-scroll {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #33e0bb;
+        color: black;
+        width: 16%;
+        height: 25px;
+        border-radius: 8px;
+        font-size: 12px;
+        position: absolute;
+        left: 1%;
+        bottom: 15px;
+        line-height: 16px;
+}
+.stop-time-tag-inf-scroll {
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        text-align: center;
+        background-color: #ff5251;
+        color: black;
+        width: 16%;
+        height: 25px;
+        border-radius: 8px;
+        font-size: 12px;
+        position: absolute;
+        left: 1%;
+        top: 15px;
+        line-height: 16px;
+}
 .stop-time-tag-lower {
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
@@ -929,9 +957,6 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-end-addresses-container {
   display: inline-block;
   width: calc(100% - 25px);
-}
-.diary-arrow-container {
-  display: inline-block;
 }
 .diary-arrow-container i {
   font-size: 32px;
