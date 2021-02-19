@@ -21,7 +21,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
-               UpdateCheck,
+               SurveyLaunch, UpdateCheck,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
 
@@ -484,6 +484,13 @@ angular.module('emission.main.control',['emission.services',
           }
         });
     };
+
+    $scope.launchDemographicSurvey = function() {
+      SurveyLaunch.startSurveyPrefilled(
+        'https://ee.kobotoolbox.org/x/hEkHk50v',
+        'd[/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Here_is_your_UUID_wh_ake_any_change_to_it]');
+    }
+
     $scope.expandDeveloperZone = function() {
         if ($scope.collectionExpanded()) {
             $scope.expanded = false;
