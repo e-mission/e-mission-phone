@@ -16,7 +16,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
-               StartPrefs, ControlHelper, EmailHelper,
+               StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
@@ -52,6 +52,11 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+
+    $scope.uploadLog = function () {
+        // Passing true, we want to send logs
+        UploadHelper.uploadFile("loggerDB")
+    };
 
     $scope.emailLog = function () {
         // Passing true, we want to send logs
