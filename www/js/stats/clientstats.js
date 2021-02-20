@@ -19,7 +19,9 @@ angular.module('emission.stats.clientstats', [])
       NOTIFICATION_OPEN: "notification_open",
       METRICS_TIME: "metrics_time",
       BEAR_TIME: "bear_time",
-      DIARY_TIME: "diary_time"
+      DIARY_TIME: "diary_time",
+      CHECKED_INF_SCROLL: "checked_inf_scroll",
+      INF_SCROLL_TIME: "inf_scroll_time"
     };
   }
 

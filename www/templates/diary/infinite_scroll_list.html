@@ -1,0 +1,102 @@
+<ion-view ng-class="ion-view-background" translate-namespace="diary">
+    <ion-nav-bar class="bar-stable">
+    </ion-nav-bar>
+    <ion-nav-buttons>
+       <div class="row buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
+          <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{selF.text}}
+          </button>
+          <button ng-click="resetSelection()" class="col-15 button" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{'.show-all'}}
+          </button>
+          <button class="button button-icon" class="col-5 button" ng-click="refresh()">
+            <i class="icon ion-refresh"></i>
+          </button>
+       </div>
+    </ion-nav-buttons>
+    <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
+	<ion-content class="diary-entry">
+        <!--
+        <div  ng-if="inTrip()" class="control-list-item">
+            <div class="control-list-text">Current Trip</div>
+            <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+        </div>
+        -->
+        <div ng-if="data.displayTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item" item-height="'400px'">
+               <div ng-if="data.displayTrips.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%);" height="'400px'">
+                 <h3>{{'diary.no-trips-found' | translate}}</h3>
+                 <h3 ng-if="filterInputs.unlabeled || filterInputs.invalid">{{'diary.for-current-filter' | translate }}</h3>
+                 <h3 ng-if="!infScrollControl.reachedEnd">{{'diary.scroll-to-load-more' | translate }}</h3>
+               </div>
+         </div>
+
+		<ion-list>
+        <ion-nav-view ></ion-nav-view>
+        <!--
+        This needs to be collection-repeat instead of ng-repeat on android.
+        Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
+        I have no clue why this happens, but it is not worth it to understand
+        this deeply. It is not purely a leaflet issue, but it also clearly something to
+        do with leaflet because scrolling on the details part does work.
+
+        If you want to change this from collection-repeat to ng-repeat, you
+        MUST test on android first to make sure that the scrolling works.
+        -->
+		<div collection-repeat="trip in data.displayTrips" item-height="'160px'">
+            <div class="stop-time-tag-inf-scroll">{{trip.display_end_time}}</div>
+            <div  style="padding-left: 19%;">
+
+			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
+                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                <div ng-click="showDetail($event, trip)" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
+             <div class="row">
+                 <div class="col-90" ng-click="showDetail($event, trip)">
+                     <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                    <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+                            {{trip.start_display_name}}
+
+                    </div>
+                    <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                    <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+                            {{trip.end_display_name}}
+                    </div>
+                 </div>
+                 <div ng-click="showDetail($event, trip)" class="col-10 diary-arrow-container">
+                    <i class="ion-more"></i>
+                 </div>
+             </div>
+             <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
+              <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name" translate>
+                {{input.labeltext}}
+              </div>
+             </div>
+             <div class="row" style="padding-left: 5px;padding-right: 5px;">
+                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
+                    <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+                            {{trip.userInput[input.name].text}}
+                        </button>
+                    </div>
+                    <div  ng-if="!trip.userInput[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
+                        {{input.choosetext}}
+                        </button>
+                    </div>
+                </div>
+             </div>   
+            </div>
+            </ion-item>
+            </div>
+           <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
+        </div>
+        <ion-infinite-scroll
+            ng-if="!infScrollControl.reachedEnd"
+            on-infinite="readDataFromServer()"></ion-infinite-scroll>
+        </ion-list>
+	</ion-content>
+    <!--
+    <ion-footer-bar>
+        <button class="button button-block button-outline button-positive" ng-click="readDataFromServer()" translate>{{'load-more'}}</button>
+    </ion-footer-bar>
+    -->
+</ion-view>
