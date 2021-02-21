@@ -184,7 +184,7 @@
         "gold-tier": "Gold tier",
         "silver-tier": "Silver tier",
         "bronze-tier": "Bronze tier",
-        "overallScoreMsg": "Overall Score: {{overallScore | number }} = {{incentive | currency}}",
+        "overallScoreMsg": "Overall Score: {{overallScore | number }}",
         "confirmationMsg": "{{confirmedPct | number }}% labeled",
         "validLabelsMsg": "{{validReplacePct | number }}% eBike 'replaced mode' labels valid",
         "suggestion": "Suggestion",
