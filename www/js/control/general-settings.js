@@ -55,7 +55,6 @@ angular.module('emission.main.control',['emission.services',
     $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
     $scope.uploadLog = function () {
-        // Passing true, we want to send logs
         UploadHelper.uploadFile("loggerDB")
     };
 
@@ -63,6 +62,11 @@ angular.module('emission.main.control',['emission.services',
         // Passing true, we want to send logs
         EmailHelper.sendEmail("loggerDB")
     };
+
+    $ionicPopover.fromTemplateUrl("templates/control/main-consent.html").then((p) => $scope.ppp = p);
+    $scope.viewPrivacyPolicy = function($event) {
+        $scope.ppp.show($event);
+    }
 
     $scope.userData = []
     $scope.getUserData = function() {

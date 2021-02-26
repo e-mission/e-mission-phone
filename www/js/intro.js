@@ -106,7 +106,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   allIntroFiles.then(function(allIntroFilePaths) {
     console.log("intro files are "+allIntroFilePaths);
     $scope.summaryFile = allIntroFilePaths[0];
-    $scope.consentFile = allIntroFilePaths[1];
+    $scope.consentTextFile = allIntroFilePaths[1];
     $scope.explainFile = allIntroFilePaths[2];
     $scope.loginFile = allIntroFilePaths[3];
   });
