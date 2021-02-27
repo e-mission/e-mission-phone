@@ -5,6 +5,10 @@
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.view-privacy'}}</div>
+      <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
@@ -59,11 +63,6 @@
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.email-log'}}</div>
       <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
-    </div>
-
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.view-privacy'}}</div>
-      <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
     </div>
 
     <div class="control-list-item" ng-show="userDataSaved()">
