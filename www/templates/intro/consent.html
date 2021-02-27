@@ -1,6 +1,8 @@
 <ion-content>
 
-<div ng-include="'templates/intro/consent-text.html'"></div>
+<!-- use i18n/intro/consent-text-<lang>.html for other languages -->
+<!-- e.g. i18n/intro/consent-text-es.html for spanish -->
+<ng-include src="'templates/intro/consent-text.html'"></ng-include>
 
 <div class="consent-text">
 If you agree to contribute your data to the platform, please click "I agree"
