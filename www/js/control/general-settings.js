@@ -1,5 +1,6 @@
 'use strict';
 angular.module('emission.main.control',['emission.services',
+                                        'emission.i18n.utils',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
                                         'emission.main.control.tnotify',
@@ -20,7 +21,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
-               SurveyLaunch, UpdateCheck,
+               SurveyLaunch, UpdateCheck, i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
 
@@ -54,7 +55,6 @@ angular.module('emission.main.control',['emission.services',
     $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
     $scope.uploadLog = function () {
-        // Passing true, we want to send logs
         UploadHelper.uploadFile("loggerDB")
     };
 
@@ -62,6 +62,16 @@ angular.module('emission.main.control',['emission.services',
         // Passing true, we want to send logs
         EmailHelper.sendEmail("loggerDB")
     };
+
+    $scope.viewPrivacyPolicy = function($event) {
+        i18nUtils.geti18nFileName("templates/", "intro/consent-text", ".html").then((consentFileName) => {
+            $scope.consentTextFile = consentFileName;
+            $ionicPopover.fromTemplateUrl("templates/control/main-consent.html", {scope: $scope}).then((p) => {
+                $scope.ppp = p;
+                $scope.ppp.show($event);
+            });
+        }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
+    }
 
     $scope.userData = []
     $scope.getUserData = function() {

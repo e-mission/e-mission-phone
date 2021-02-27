@@ -67,6 +67,11 @@
     </div>
     -->
 
+    <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.view-privacy'}}</div>
+      <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
+    </div>
+
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text" translate>{{'.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>

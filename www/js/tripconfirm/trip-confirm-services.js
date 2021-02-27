@@ -1,5 +1,5 @@
-angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logger"])
-.factory("ConfirmHelper", function($http, $ionicPopup, $translate, Logger) {
+angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
+.factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger) {
     var ch = {};
     ch.INPUTS = ["MODE", "PURPOSE", "REPLACED_MODE"]
     ch.inputDetails = {
@@ -51,28 +51,23 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
         return [text2entryMap, value2entryMap];
     }
 
-    var loadAndPopulateOptions = function (lang) {
-        if (lang != "en") {
-            return $http.get("i18n/trip_confirm_options-" + lang + ".json")
-            .then(fillInOptions)
-            .catch(function (err) {
-                console.log("error "+JSON.stringify(err)+" while reading confirm options in your language, reverting to english options");
-                return loadAndPopulateOptions("en");
+    var loadAndPopulateOptions = function () {
+        return i18nUtils.geti18nFileName("json/", "trip_confirm_options", ".json")
+            .then((optionFileName) => {
+                console.log("Final option file = "+optionFileName);
+                return $http.get(optionFileName)
+                    .then(fillInOptions)
+                    .catch(function(err) {
+                       // no prompt here since we have a fallback
+                       console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
+                       return $http.get("json/trip_confirm_options.json.sample")
+                        .then(fillInOptions)
+                        .catch(function(err) {
+                           // prompt here since we don't have a fallback
+                           Logger.displayError("Error while reading default confirm options", err);
+                        });
+                    });
             });
-        }
-
-        return $http.get("json/trip_confirm_options.json")
-        .then(fillInOptions)
-        .catch(function(err) {
-           // no prompt here since we have a fallback
-           console.log("error "+JSON.stringify(err)+" while reading confirm options, reverting to defaults");
-           return $http.get("json/trip_confirm_options.json.sample")
-            .then(fillInOptions)
-            .catch(function(err) {
-               // prompt here since we don't have a fallback
-               Logger.displayError("Error while reading default confirm options", err);
-            });
-        });
     }
 
     ch.getOptionsAndMaps = function(inputType) {
@@ -94,8 +89,10 @@ angular.module('emission.tripconfirm.services', ['ionic', "emission.plugin.logge
     ch.getOptions = function(inputType) {
         if (!angular.isDefined(ch.inputDetails[inputType].options)) {
             var lang = $translate.use();
-            return loadAndPopulateOptions(lang)
-                .then(function () { return ch.inputDetails[inputType].options; });
+            return loadAndPopulateOptions()
+                .then(function () { 
+                    return ch.inputDetails[inputType].options;
+                });
         } else {
             return Promise.resolve(ch.inputDetails[inputType].options);
         }
