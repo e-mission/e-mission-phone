@@ -5,7 +5,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
                                   'emission.i18n.utils',
                                   'ionic-toast', 'angularLocalStorage'])
-                                  'ionic-toast'])
 
 .config(function($stateProvider) {
   $stateProvider
