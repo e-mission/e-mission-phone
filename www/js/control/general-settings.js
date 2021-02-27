@@ -64,13 +64,19 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.viewPrivacyPolicy = function($event) {
-        i18nUtils.geti18nFileName("templates/", "intro/consent-text", ".html").then((consentFileName) => {
-            $scope.consentTextFile = consentFileName;
-            $ionicPopover.fromTemplateUrl("templates/control/main-consent.html", {scope: $scope}).then((p) => {
-                $scope.ppp = p;
-                $scope.ppp.show($event);
-            });
-        }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
+        // button -> list element -> scroll
+        // const targetEl = $event.currentTarget.parentElement.parentElement;
+        if ($scope.ppp) {
+            $scope.ppp.show($event);
+        } else {
+            i18nUtils.geti18nFileName("templates/", "intro/consent-text", ".html").then((consentFileName) => {
+                $scope.consentTextFile = consentFileName;
+                $ionicPopover.fromTemplateUrl("templates/control/main-consent.html", {scope: $scope}).then((p) => {
+                    $scope.ppp = p;
+                    $scope.ppp.show($event);
+                });
+            }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
+        }
     }
 
     $scope.userData = []
