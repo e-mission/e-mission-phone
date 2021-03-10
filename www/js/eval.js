@@ -468,15 +468,47 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
      * END: Control the UX of the trip settings
      */
 
+    var isValidEntry = function(entry, nowSecs) {
+        return (entry.properties.valid_start_ts <= nowSecs) && (nowSecs <= entry.properties.valid_end_ts);
+    }
+
+    var getValidEntry = function(allEntryList) {
+        const nowSecs = Date.now()/1000;
+        if (allEntryList.length == 1) {
+            let theEntry = allEntryList[0];
+            if (!isValidEntry(theEntry, nowSecs)) {
+                $ionicPopup.alert({"title": "the only entry is not valid",
+                    "template": JSON.stringify(theEntry)});
+            }
+            return theEntry;
+        } else {
+            let validEntries = allEntryList.map(function(e) {
+                if(isValidEntry(e, nowSecs)) { return e;}
+                else { return undefined}
+            }).filter(x => x != undefined);
+            if (validEntries.length == 1) {
+                return validEntries[0];
+            } else {
+                if (validEntries.length == 0) {
+                    console.log({"title": "none of the entries are valid",
+                        "template": JSON.stringify(allEntryList)});
+                } else {
+                    console.log({"title": "multiple entries are valid",
+                        "template": JSON.stringify(allEntryList)});
+                }
+            }
+        }
+    }
+
 
     var toGeojsonTravel = function(eval_section) {
-        eval_section.start_loc.properties.style = {color: 'green', fill: true}
-        eval_section.end_loc.properties.style = {color: 'red', fill: true}
         var featureList = [
-            eval_section.start_loc,
-            eval_section.end_loc,
-            eval_section.route_coords
+            getValidEntry(eval_section.start_loc),
+            getValidEntry(eval_section.end_loc),
+            getValidEntry(eval_section.route_coords)
         ]
+        featureList[0].properties.style = {color: 'green', fill: true}; // valid_start_loc
+        featureList[1].properties.style = {color: 'red', fill: true}; // valid_end_loc
         return {
             type: "FeatureCollection",
             features: featureList,
@@ -490,11 +522,11 @@ angular.module('emission.main.eval',['emission.plugin.logger',"emission.plugin.k
     }
 
     var toGeojsonShim = function(eval_section) {
-        eval_section.loc.properties.style = {color: "purple",
-            fill: true}
         var featureList = [
-            eval_section.loc
+            getValidEntry(eval_section.loc)
         ]
+        featureList[0].properties.style = {color: "purple",
+            fill: true}
         return {
             type: "FeatureCollection",
             features: featureList,
