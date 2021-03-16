@@ -1,0 +1,41 @@
+<ion-popover-view>
+    <ion-content class="has-footer">
+        <div class="intro-text">
+            This app builds an automatic diary of all your trips, across all
+            transportation modes. It reads multiple sensors, including
+            location, in the background, and turns GPS tracking on and off
+            automatically for minimal power consumption. Information about your travel
+            patterns will be displayed to you according to the design of the study you
+            join.
+        </div>
+
+        <div class="intro-text">
+            <b>Tip(s) for correct operation:</b>
+            <div ng-show="isIOS">
+            <ion-list>
+            <ion-item class="item-text-wrap">
+                <i class="icon ion-checkmark-circled"></i>
+                "Always allow" access to location
+            </ion-item>
+            <ion-item class="item-text-wrap">
+                <i class="icon ion-checkmark-circled"></i>
+                Do not force kill the app
+            </ion-item>
+            </ion-list>
+            </div>
+            <div ng-show="isAndroid">
+            <ion-list>
+            <ion-item class="item-text-wrap"> <div>
+                <i class="icon ion-checkmark-circled"></i>
+                Keep location services turned on</div>
+            </ion-item>
+            </ion-list>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar-positive">
+      <button class="button button-block button-clear" ng-click="hideDetails($event)">
+        Close
+      </button>
+    </ion-footer-bar>
+</ion-popover-view>

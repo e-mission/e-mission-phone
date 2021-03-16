@@ -1,9 +1,10 @@
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
+                                              'emission.splash.secretcheck',
                                               'emission.plugin.kvstore'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, KVStore, storage, $http, Logger, ReferralHandler) {
+      $ionicPopup, KVStore, SecretCheck, storage, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var nTimesCalled = 0;
     var startprefs = {};
@@ -51,6 +52,12 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       KVStore.set(INTRO_DONE_KEY, currTime);
       $rootScope.$emit(startprefs.INTRO_DONE_EVENT, currTime);
     }
+
+    startprefs.readSecretState = function() {
+      // read secret state from the local KV store
+      return SecretCheck.hasValidSecret();
+    }
+
 
     // returns boolean
     startprefs.readIntroDone = function() {
@@ -107,8 +114,11 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
      */
 
     startprefs.getPendingOnboardingState = function() {
-      return startprefs.readStartupState().then(function([is_intro_done, is_consented]) {
-        if (!is_intro_done) {
+      return startprefs.readStartupState().then(function([is_intro_done, is_consented, hasReadSecret]) {
+        if (!hasReadSecret) {
+            console.assert(!$rootScope.intro_done, "in getPendingOnboardingState first check, hasReadSecret", JSON.stringify(hasReadSecret));
+            return 'splash';
+        } else if (!is_intro_done) {
             console.assert(!$rootScope.intro_done, "in getPendingOnboardingState first check, $rootScope.intro_done", JSON.stringify($rootScope.intro_done));
             return 'root.intro';
         } else {
@@ -133,7 +143,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                     .then(startprefs.isIntroDone);
         var readConsentPromise = startprefs.readConsentState()
                                     .then(startprefs.isConsented);
-        return Promise.all([readIntroPromise, readConsentPromise]);
+        var readSecretPromise = startprefs.readSecretState()
+                                    .then(startprefs.hasReadSecret);
+        return Promise.all([readIntroPromise, readConsentPromise, readSecretPromise]);
     };
 
     startprefs.getConsentDocument = function() {

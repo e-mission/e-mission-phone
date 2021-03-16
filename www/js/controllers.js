@@ -14,11 +14,60 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
+    $ionicPlatform, $ionicPopup, $ionicPopover,
     UpdateCheck, StartPrefs, PushNotify, StoreDeviceSettings,
     LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
+
+  /*
+   * BEGIN: Copy from embase to handle the initial screen
+   */
+  $ionicPlatform.ready(function() {
+    $scope.scanEnabled = true;
+  });
+
+  $ionicPopover.fromTemplateUrl('templates/splash/about-app.html', {
+    backdropClickToClose: true,
+    hardwareBackButtonClose: true,
+    scope: $scope
+  }).then(function(popover) {
+    $scope.popover = popover;
+    $scope.isIOS = $ionicPlatform.is('ios');
+    $scope.isAndroid = $ionicPlatform.is('android');
+  });
+
+  $scope.showDetails = function($event) {
+    $scope.popover.show($event)
+  }
+
+  $scope.hideDetails = function($event) {
+    $scope.popover.hide($event)
+  }
+
+  $scope.scanCode = function() {
+    if (!$scope.scanEnabled) {
+        $ionicPopup.alert({template: "plugins not yet initialized, please retry later"});
+    } else {
+      cordova.plugins.barcodeScanner.scan(
+        function (result) {
+            if (result.format == "QR_CODE" &&
+                result.cancelled == false &&
+                result.text.substring(0,11) == "emission://") {
+                handleOpenURL(result.text);
+            } else {
+                $ionicPopup.alert({template: "invalid study reference "+result.text});
+            }
+        },
+        function (error) {
+            $ionicPopup.alert({template: "Scanning failed: " + error});
+        });
+    }
+  }; // scanCode
+  /*
+   * END: Copy from embase to handle the initial screen
+   */
 
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
