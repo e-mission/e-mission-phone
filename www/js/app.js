@@ -10,12 +10,12 @@
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.splash.updatecheck', 'emission.services.email',
+    'emission.splash.secretcheck', 'emission.services.email',
   'emission.intro', 'emission.main',
   'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, UpdateCheck) {
+    CustomURLScheme, ReferralHandler, SecretCheck) {
   console.log("Starting run");
   // alert("Starting run");
   // BEGIN: Global listeners, no need to wait for the platform
@@ -29,8 +29,8 @@ angular.module('emission', ['ionic',
     if (urlComponents.route == 'join') {
       ReferralHandler.setupGroupReferral(urlComponents);
       StartPrefs.loadWithPrefs();
-    } else if (urlComponents.route == 'change_client') {
-      UpdateCheck.handleClientChangeURL(urlComponents);
+    } else if (urlComponents.route == 'validate_secret') {
+      SecretCheck.handleValidateSecretURL(urlComponents);
     }
   });
   // END: Global listeners
@@ -86,7 +86,7 @@ angular.module('emission', ['ionic',
   // This cannot directly use plugins - has to check for them first.
   .state('splash', {
         url: '/splash',
-        templateUrl: 'templates/splash/splash.html',
+        templateUrl: 'templates/splash/study-text.html',
         controller: 'SplashCtrl'
   })
 

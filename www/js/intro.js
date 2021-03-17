@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'emission.splash.updatecheck',
+                                  'emission.splash.secretcheck',
                                   'emission.survey.launch',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
@@ -22,7 +22,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, SecretCheck, $translate, i18nUtils) {
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
   if($scope.platform.toLowerCase() == "android") {
@@ -193,7 +193,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.login = function(token) {
-    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
+    const comboToken = SecretCheck.SECRET+token;
+    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(comboToken).then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
@@ -201,11 +202,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-          UpdateCheck.getChannel().then(function(retVal) {
-            CommHelper.updateUser({
-             client: retVal
-            });
-          });
           $scope.startSurvey();
           $scope.finish();
         }, function(errorResult) {
