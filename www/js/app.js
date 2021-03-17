@@ -52,6 +52,7 @@ angular.module('emission', ['ionic',
         }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
         $rootScope.connectUrl = connectionConfig.data.connectUrl;
+        $rootScope.aggregateAuth = connectionConfig.data.aggregate_call_auth;
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
         // not displaying the error here since we have a backup
@@ -59,6 +60,7 @@ angular.module('emission', ['ionic',
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
             Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
             $rootScope.connectUrl = defaultConfig.connectUrl;
+            $rootScope.aggregateAuth = "no_auth";
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
             // displaying the error here since we don't have a backup
