@@ -185,19 +185,30 @@ angular.module('emission.services', ['emission.plugin.logger',
     this.getAggregateData = function(path, data) {
         return new Promise(function(resolve, reject) {
           const full_url = $rootScope.connectUrl+"/"+path;
-          console.log("getting aggregate data without user authentication from "
-            + full_url +" with arguments "+JSON.stringify(data));
-          const options = {
-              method: 'post',
-              data: data,
-              responseType: 'json'
+          data["aggregate"] = true
+
+          if ($rootScope.aggregateAuth === "no_auth") {
+              console.log("getting aggregate data without user authentication from "
+                + full_url +" with arguments "+JSON.stringify(data));
+              const options = {
+                  method: 'post',
+                  data: data,
+                  responseType: 'json'
+              }
+              cordova.plugin.http.sendRequest(full_url, options,
+              function(response) {
+                resolve(response.data);
+              }, function(error) {
+                reject(error);
+              });
+          } else {
+              console.log("getting aggregate data with user authentication from "
+                + full_url +" with arguments "+JSON.stringify(data));
+              var msgFiller = function(message) {
+                return Object.assign(message, data);
+              };
+              window.cordova.plugins.BEMServerComm.pushGetJSON("/"+path, msgFiller, resolve, reject);
           }
-          cordova.plugin.http.sendRequest(full_url, options,
-          function(response) {
-            resolve(response);
-          }, function(error) {
-            reject(error);
-          });
         });
     };
 })
