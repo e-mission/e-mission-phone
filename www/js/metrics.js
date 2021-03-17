@@ -503,7 +503,7 @@ angular.module('emission.main.metrics',['nvd3',
       })
 
       getAggMetricsFromServer().then(function(results) {
-          $scope.fillAggregateValues(results.data.aggregate_metrics);
+          $scope.fillAggregateValues(results.aggregate_metrics);
           $scope.uictrl.hasAggr = true;
           if (angular.isDefined($scope.chartDataAggr)) { //Only have to check one because
             // Restore the $apply if/when we go away from $http

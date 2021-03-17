@@ -1,5 +1,6 @@
 {
     "connectUrl": "https://<your-production-host>:8080",
+    "aggregate_call_auth": "no_auth",
     "android": {
         "auth": {
             "method": "google-authutil",

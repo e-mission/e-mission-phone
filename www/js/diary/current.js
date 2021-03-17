@@ -240,7 +240,7 @@
           removeExistingIncidentMarkers(_map, _serverIncidentMarkers);
           _serverIncidentMarkers = [];
           if(res.data.incidents.length > 0) {
-            addIncidents(res.data.incidents, _map, _serverIncidentMarkers);
+            addIncidents(res.incidents, _map, _serverIncidentMarkers);
           }
           });
       }, function(error){
