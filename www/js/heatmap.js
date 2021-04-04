@@ -46,10 +46,11 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     Logger.log("Sending data "+JSON.stringify(data));
     return CommHelper.getAggregateData("result/heatmap/pop.route/local_date", data)
     .then(function(response) {
-      if (angular.isDefined(response.data.lnglat)) {
-        Logger.log("Got points in heatmap "+response.data.lnglat.length);
+      console.log("Pop route query response = "+response);
+      if (angular.isDefined(response.lnglat)) {
+        Logger.log("Got points in heatmap "+response.lnglat.length);
         $scope.$apply(function() {
-            $scope.showHeatmap(response.data.lnglat);
+            $scope.showHeatmap(response.lnglat);
         });
       } else {
         Logger.log("did not find latlng in response data "+JSON.stringify(response.data));
@@ -270,8 +271,8 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   };
 
   $scope.getHeatmaps = function() {
-    $scope.getPopRoute().finally($scope.switchSelData);
-    $scope.getIncidents().finally($scope.switchSelData);
+    $scope.getPopRoute().then($scope.switchSelData).catch($scope.switchSelData);
+    $scope.getIncidents().then($scope.switchSelData).catch($scope.switchSelData);
   }
 
   /*
@@ -293,13 +294,14 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
     Logger.log("Sending data "+JSON.stringify(data));
     return CommHelper.getAggregateData("result/heatmap/incidents/local_date", data)
     .then(function(response) {
-      if (angular.isDefined(response.data.incidents)) {
+      console.log("Incident query response = "+response);
+      if (angular.isDefined(response.incidents)) {
         $scope.$apply(function() {
-            Logger.log("Got incidents"+response.data.incidents.length);
-            $scope.showIncidents(response.data.incidents);
+            Logger.log("Got incidents"+response.incidents.length);
+            $scope.showIncidents(response.incidents);
         });
       } else {
-        Logger.log("did not find incidents in response data "+JSON.stringify(response.data));
+        Logger.log("did not find incidents in response data "+JSON.stringify(response));
       }
       $scope.stressData.isLoading = false;
     }, function(error) {
