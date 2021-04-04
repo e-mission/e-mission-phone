@@ -51,7 +51,6 @@ angular.module('emission', ['ionic',
             throw "blank string instead of missing file on dynamically served app";
         }
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
-        $rootScope.connectionConfig = connectionConfig.data;
         $rootScope.connectUrl = connectionConfig.data.connectUrl;
         $rootScope.aggregateAuth = connectionConfig.data.aggregate_call_auth;
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
@@ -60,7 +59,6 @@ angular.module('emission', ['ionic',
         Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
             Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
-            $rootScope.connectionConfig = defaultConfig;
             $rootScope.connectUrl = defaultConfig.connectUrl;
             $rootScope.aggregateAuth = "no_auth";
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
