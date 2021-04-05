@@ -136,7 +136,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   var changeURLIfNeeded = function(userEmail) {
-    if (userEmail.startsWith("STAGE_")) {
+    if (userEmail.startsWith("stage_")) {
         $rootScope.connectionConfig.connectUrl = "https://stage.canbikeco.org";
         $rootScope.connectUrl = "https://stage.canbikeco.org";
         return window.cordova.plugins.BEMConnectionSettings.setSettings($rootScope.connectionConfig);
