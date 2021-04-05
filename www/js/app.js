@@ -46,7 +46,13 @@ angular.module('emission', ['ionic',
 
     // Configure the connection settings
     StartPrefs.readStartupState().then(function([is_intro_done, is_consented]) {
-        if (!is_intro_done) {
+        if (is_intro_done) {
+            window.cordova.plugins.BEMConnectionSettings.getSettings().then(function(settings) {
+                $rootScope.connectionConfig = settings;
+                $rootScope.connectUrl = settings.connectUrl;
+                $rootScope.aggregateAuth = settings.aggregate_call_auth || "no_auth";
+            });
+        } else {
             Logger.log("intro not done, about to set connection config");
             $http.get("json/connectionConfig.json").then(function(connectionConfig) {
                 if(connectionConfig.data.length == 0) {
