@@ -21,7 +21,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
+.controller('IntroCtrl', function($scope, $rootScope, $state, $window, $ionicSlideBoxDelegate,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
 
   $scope.platform = $window.device.platform;
@@ -135,6 +135,16 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       });
   }
 
+  var changeURLIfNeeded = function(userEmail) {
+    if (userEmail.startsWith("stage_")) {
+        $rootScope.connectionConfig.connectUrl = "https://stage.canbikeco.org";
+        $rootScope.connectUrl = "https://stage.canbikeco.org";
+        return window.cordova.plugins.BEMConnectionSettings.setSettings($rootScope.connectionConfig);
+    } else {
+        return Promise.resolve();
+    }
+  }
+
   $scope.login = function() {
     window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
@@ -143,19 +153,23 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       if (userEmail == "null" || userEmail == "") {
         $scope.alertError("Invalid login "+userEmail);
       } else {
-        CommHelper.registerUser(function(successResult) {
-          UpdateCheck.getChannel().then(function(retVal) {
-            CommHelper.updateUser({
-             client: retVal
+        changeURLIfNeeded(userEmail).then(function() {
+            CommHelper.registerUser(function(successResult) {
+              UpdateCheck.getChannel().then(function(retVal) {
+                CommHelper.updateUser({
+                 client: retVal
+                });
+              });
+              if (localStorage.getItem('username') != null) {
+                $scope.finish();
+              } else {
+                $scope.showUsernamePopup();
+              }
+            }, function(errorResult) {
+              $scope.alertError('User registration error', errorResult);
             });
-          });
-          if (localStorage.getItem('username') != null) {
-            $scope.finish();
-          } else {
-            $scope.showUsernamePopup();
-          }
-        }, function(errorResult) {
-          $scope.alertError('User registration error', errorResult);
+        }).catch(function(error) {
+            $scope.alertError('connection settings error', error);
         });
       }
     }, function(error) {
