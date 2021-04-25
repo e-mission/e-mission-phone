@@ -219,6 +219,10 @@
         "tab": "Label"
     },
 
+    "main-checkinout" : {
+        "tab": "Checkout"
+    },
+
     "main-heatmap":{
         "title": "Heatmap",
         "counts" : "Counts",

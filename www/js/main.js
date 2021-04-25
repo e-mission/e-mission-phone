@@ -6,6 +6,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.goals',
                                  'emission.main.common',
                                  'emission.main.heatmap',
+                                 'emission.main.checkinout',
                                  'emission.main.metrics',
                                  'emission.main.bear',
                                  'emission.tripconfirm.posttrip.map',
@@ -39,6 +40,16 @@ angular.module('emission.main', ['emission.main.recent',
       'main-heatmap': {
         templateUrl: 'templates/main-heatmap.html',
         controller: 'HeatmapCtrl'
+      }
+    }
+  })
+
+  .state('root.main.checkinout', {
+    url: '/checkinout',
+    views: {
+      'main-checkinout': {
+        templateUrl: 'templates/main-checkinout.html',
+        controller: 'CheckinoutCtrl'
       }
     }
   })
