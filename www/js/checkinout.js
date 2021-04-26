@@ -99,7 +99,7 @@ const scanBikeNoDebug = function() {
 }
 
 $scope.doCheckout = function() {
-    scanBikeNoDebug().then((bikeNo) => {
+    scanBikeNo().then((bikeNo) => {
         $scope.$apply(function() {
             $scope.checkout.status = true;
             $scope.checkout.bikeNo = bikeNo;
@@ -111,7 +111,7 @@ $scope.doCheckout = function() {
 }
 
 $scope.doCheckin = function() {
-    scanBikeNoDebug().then((bikeNo) => {
+    scanBikeNo().then((bikeNo) => {
         if (bikeNo === $scope.checkout.bikeNo) {
             $scope.$apply(function() {
                 KVStore.remove(LOCAL_STORAGE_KEY);
