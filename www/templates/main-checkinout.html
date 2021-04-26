@@ -1,12 +1,13 @@
 <ion-view ng-class="ion-view-background" translate-namespace="main-checkinout">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
+    <!--
     <ion-nav-buttons side="right">
         <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
     </ion-nav-buttons> 
     <ion-nav-buttons side="left">
         <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-        <!-- <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
+        <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
         <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
             <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
             </button>
@@ -17,7 +18,7 @@
     </ion-nav-buttons>
     <ion-nav-buttons side="left">
         <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-        <!-- <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
+        <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
         <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
             <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
             </button>
@@ -26,13 +27,23 @@
             </button>
         </div>
     </ion-nav-buttons>
+    -->
   
-    <ion-content class="has-header padding" scroll="false">
-    <div> 
-    This is the checkinout window
+    <ion-content class="has-header has-footer padding" scroll="false">
+    <div class="intro-title">
+        <center ng-if="!checkout.status"><h3> {{ 'main-checkinout.no-bike' | translate }} </h3></center>
+        <center ng-if="checkout.status"><h3 translate="main-checkinout.using-bike" translate-values="{currBikeNo: checkout.bikeNo}"></h3></center>
     </div>
-
 	</ion-content>
-
+    <ion-footer-bar id="intro-footer">
+    <button class="button button-block button-outline button-positive"
+        ng-if="!checkout.status" style="font-size: 25px" ng-click="doCheckout()">
+        {{ 'main-checkinout.checkout' | translate }}
+    </button>
+    <button class="button button-block button-outline button-positive"
+        ng-if="checkout.status" style="font-size: 25px" ng-click="doCheckin()">
+        {{ 'main-checkinout.checkin' | translate }}
+    </button>
+    </ion-footer-bar>
 
 </ion-view>

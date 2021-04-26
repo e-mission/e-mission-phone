@@ -220,7 +220,11 @@
     },
 
     "main-checkinout" : {
-        "tab": "Checkout"
+        "tab": "Checkout",
+        "checkout": "Checkout",
+        "checkin": "Checkin",
+        "using-bike": "Using bike {{currBikeNo}}",
+        "no-bike": "Not using bike"
     },
 
     "main-heatmap":{
