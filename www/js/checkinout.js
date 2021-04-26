@@ -8,11 +8,16 @@ angular.module('emission.main.checkinout',[
                                     $ionicPopup, ClientStats,
                                     KVStore, Logger, $ionicPopover, $translate) {
 
+const LOCAL_STORAGE_KEY = "CHECKINOUT_KEY";
+
 $scope.data = {};
-$scope.checkout = {
-    status: false,
-    bikeNo: undefined
-};
+
+const initCheckout = function() {
+    $scope.checkout = {
+        status: false,
+        bikeNo: undefined
+    };
+}
 
 const getScannedNo = function(urlText) {
     const url = new URL(urlText);
@@ -98,6 +103,7 @@ $scope.doCheckout = function() {
         $scope.$apply(function() {
             $scope.checkout.status = true;
             $scope.checkout.bikeNo = bikeNo;
+            KVStore.set(LOCAL_STORAGE_KEY, $scope.checkout);
         });
     }).catch((err) => {
         Logger.displayError("Error while scanning QR code", err);
@@ -108,6 +114,7 @@ $scope.doCheckin = function() {
     scanBikeNoDebug().then((bikeNo) => {
         if (bikeNo === $scope.checkout.bikeNo) {
             $scope.$apply(function() {
+                KVStore.remove(LOCAL_STORAGE_KEY);
                 $scope.checkout.status = false;
                 $scope.checkout.bikeNo = undefined;
             });
@@ -124,6 +131,15 @@ $ionicPlatform.ready(function() {
     if (cordova.plugins.barcodeScanner != undefined) {
         $scope.scanEnabled = true;
     }
+    KVStore.get(LOCAL_STORAGE_KEY).then((storedVal) => {
+        if (storedVal != null) {
+            $scope.checkout = storedVal;
+        } else {
+            initCheckout();
+        }
+    }).catch((err) => {
+        initCheckout();
+    });
 });
 
 
