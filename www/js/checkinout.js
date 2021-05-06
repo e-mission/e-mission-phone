@@ -1,11 +1,12 @@
 'use strict';
 
 angular.module('emission.main.checkinout',[
+                                      'emission.services',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
 .controller("CheckinoutCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    $ionicPopup, ClientStats,
+                                    $ionicPopup, ClientStats, CommHelper,
                                     KVStore, Logger, $ionicPopover, $translate) {
 
 const LOCAL_STORAGE_KEY = "CHECKINOUT_KEY";
@@ -15,11 +16,11 @@ $scope.data = {};
 const initCheckout = function() {
     $scope.checkout = {
         status: false,
-        bikeNo: undefined
+        bikeLabel: undefined
     };
 }
 
-const getScannedNo = function(urlText) {
+const getScannedLabel = function(urlText) {
     const url = new URL(urlText);
     if (url.protocol != "emission:") {
         throw new Error("Invalid protocol "+url.protocol+" in url "+urlText);
@@ -27,15 +28,15 @@ const getScannedNo = function(urlText) {
     if (url.pathname != "//checkinout") {
         throw new Error("Invalid pathname "+url.pathname+" in url "+urlText);
     }
-    const bikeNo = url.searchParams.get("bikeNo");
-    if (bikeNo === null) {
-        throw new Error("No bike number found in url "+urlText);
+    const bikeLabel = url.searchParams.get("bikeLabel");
+    if (bikeLabel === null) {
+        throw new Error("No bike label found in url "+urlText);
     } else {
-        return bikeNo;
+        return bikeLabel;
     }
 }
 
-const scanBikeNo = function() {
+const scanBikeLabel = function() {
     return new Promise(function(resolve, reject) {
         if (!$scope.scanEnabled) {
             reject(new Error("plugins not yet initialized, please retry later"));
@@ -45,8 +46,8 @@ const scanBikeNo = function() {
                 if (result.format == "QR_CODE" &&
                     result.cancelled == false) {
                     try {
-                        const bikeNo = getScannedNo(result.text);
-                        resolve(bikeNo);
+                        const bikeLabel = getScannedLabel(result.text);
+                        resolve(bikeLabel);
                     } catch(e) {
                         reject(e);
                     }
@@ -61,7 +62,7 @@ const scanBikeNo = function() {
     });
 }
 
-const scanBikeNoDebug = function() {
+const scanBikeLabelDebug = function() {
     return new Promise(function(resolve, reject) {
       var scanBikePopup = $ionicPopup.show({
         template: '<input type="userEmail" ng-model="data.scannedurl">',
@@ -89,8 +90,8 @@ const scanBikeNoDebug = function() {
       scanBikePopup.then(function(res) {
         console.log('Tapped!', res);
         try {
-            const bikeNo = getScannedNo(res);
-            resolve(bikeNo);
+            const bikeLabel = getScannedLabel(res);
+            resolve(bikeLabel);
         } catch (e) {
             reject(e);
         }
@@ -99,48 +100,77 @@ const scanBikeNoDebug = function() {
 }
 
 $scope.doCheckout = function() {
-    scanBikeNo().then((bikeNo) => {
-        $scope.$apply(function() {
-            $scope.checkout.status = true;
-            $scope.checkout.bikeNo = bikeNo;
-            KVStore.set(LOCAL_STORAGE_KEY, $scope.checkout);
-        });
+    scanBikeLabel().then((bikeLabel) => {
+        const checkoutOp = {
+            status: true,
+            bikeLabel: bikeLabel
+        }
+        CommHelper.checkinoutNew("CHECKOUT", checkoutOp).then((response) => {
+            $scope.$apply(function() {
+                $scope.checkout = angular.copy(response.details);
+                $scope.checkedOutList.push(response.details);
+            })
+            // KVStore.set(LOCAL_STORAGE_KEY, $scope.checkout);
+        }).catch((err) => {
+            Logger.displayError("Error while updating status", err);
+       });;
     }).catch((err) => {
         Logger.displayError("Error while scanning QR code", err);
     });
 }
 
 $scope.doCheckin = function() {
-    scanBikeNo().then((bikeNo) => {
-        if (bikeNo === $scope.checkout.bikeNo) {
-            $scope.$apply(function() {
-                KVStore.remove(LOCAL_STORAGE_KEY);
+    scanBikeLabel().then((bikeLabel) => {
+        if (bikeLabel === $scope.checkout.bikeLabel) {
+            CommHelper.checkinoutNew("CHECKIN", $scope.checkout).then((response) => {
+              $scope.$apply(function() {
+                // KVStore.remove(LOCAL_STORAGE_KEY);
+                $scope.checkedOutList = $scope.checkedOutList.filter(
+                    (el) => el.bikeLabel != $scope.checkout.bikeLabel);
                 $scope.checkout.status = false;
-                $scope.checkout.bikeNo = undefined;
-            });
+                // remember to set this to undefined *after* we finish filtering
+                $scope.checkout.bikeLabel = undefined;
+              })
+            }).catch((err) => {
+              Logger.displayError("Error while updating status", err);
+           });;
         } else {
             Logger.displayError("Error while scanning QR code",
-                new Error("Please check in bike "+$scope.checkout.bikeNo+" first"));
+                new Error("Please check in bike "+$scope.checkout.bikeLabel+" first"));
         }
     }).catch((err) => {
         Logger.displayError("Error while scanning QR code", err);
     });
 }
 
+$scope.refreshState = function() {
+    const getList = CommHelper.checkinoutList().then((listResult) => {
+        $scope.$apply(() => {
+            $scope.checkedOutList = listResult.current_list;
+        });
+    }).catch((err) => {
+        Logger.displayError("Error while updating checked out list", err);
+    });
+    const getMine = CommHelper.checkinoutGet().then((myResult) => {
+        $scope.$apply(() => {
+            if (myResult != null) {
+                $scope.checkout = myResult.current_checkout;
+            } else {
+                initCheckout();
+            }
+        });
+    }).catch((err) => {
+        Logger.displayError("Error while updating status", err);
+        initCheckout();
+    });
+    const getCalls = [getList, getMine];
+    return Promise.all(getCalls);
+}
+
 $ionicPlatform.ready(function() {
     if (cordova.plugins.barcodeScanner != undefined) {
         $scope.scanEnabled = true;
     }
-    KVStore.get(LOCAL_STORAGE_KEY).then((storedVal) => {
-        if (storedVal != null) {
-            $scope.checkout = storedVal;
-        } else {
-            initCheckout();
-        }
-    }).catch((err) => {
-        initCheckout();
-    });
+    $scope.refreshState();
 });
-
-
 });

@@ -1,39 +1,25 @@
 <ion-view ng-class="ion-view-background" translate-namespace="main-checkinout">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
-    <!--
     <ion-nav-buttons side="right">
-        <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
+        <button class="button button-icon ion-refresh" ng-click="refreshState()"></button>
     </ion-nav-buttons> 
-    <ion-nav-buttons side="left">
-        <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-        <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
-        <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-            <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-            </button>
-            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-            <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-            </button>
-        </div>
-    </ion-nav-buttons>
-    <ion-nav-buttons side="left">
-        <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-        <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
-        <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-            <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-            </button>
-            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-            <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-            </button>
-        </div>
-    </ion-nav-buttons>
-    -->
-  
     <ion-content class="has-header has-footer padding" scroll="false">
     <div class="intro-title">
         <center ng-if="!checkout.status"><h3> {{ 'main-checkinout.no-bike' | translate }} </h3></center>
-        <center ng-if="checkout.status"><h3 translate="main-checkinout.using-bike" translate-values="{currBikeNo: checkout.bikeNo}"></h3></center>
+        <center ng-if="checkout.status"><h3 translate="main-checkinout.using-bike" translate-values="{currBikeLabel: checkout.bikeLabel}"></h3></center>
     </div>
+    <div class="intro-title">
+        <center><h3 translate="main-checkinout.checked-out-list"></h3></center>
+    </div>
+    <div ng-if="checkedOutList.length == 0">
+        <center><h4 translate="main-checkinout.no-entries"></h4>
+    </div>
+    <ion-list ng-repeat="co in checkedOutList">
+        <ion-item>
+        {{co.bikeLabel}} checked out at {{co.ts * 1000 | date: 'yy/M/d h:mm a' }}
+        </ion-item>
+    </ion-list>
 	</ion-content>
     <ion-footer-bar id="intro-footer">
     <button class="button button-block button-outline button-positive"
@@ -45,5 +31,4 @@
         {{ 'main-checkinout.checkin' | translate }}
     </button>
     </ion-footer-bar>
-
 </ion-view>
