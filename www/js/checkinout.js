@@ -25,7 +25,10 @@ const getScannedLabel = function(urlText) {
     if (url.protocol != "emission:") {
         throw new Error("Invalid protocol "+url.protocol+" in url "+urlText);
     }
-    if (url.pathname != "//checkinout") {
+    // android and iOS parse URLs differently. for the emission://checkinout URL
+    // ios puts checkinout into the hostname and android puts it into the pathname
+    // so we are only invalid if neither is valid
+    if (url.hostname != "checkinout" && url.pathname != "//checkinout") {
         throw new Error("Invalid pathname "+url.pathname+" in url "+urlText);
     }
     const bikeLabel = url.searchParams.get("bikeLabel");
