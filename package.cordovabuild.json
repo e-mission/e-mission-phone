@@ -1,6 +1,6 @@
 {
   "name": "gov.colorado.energyoffice.emission",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "displayName": "CanBikeCO",
   "license": "BSD-3-Clause",
   "repository": {
@@ -61,7 +61,10 @@
       "cordova-plugin-em-transition-notify": {},
       "cordova-plugin-em-unifiedlogger": {},
       "cordova-plugin-em-usercache": {},
-      "cordova-plugin-androidx-adapter": {}
+      "cordova-plugin-androidx-adapter": {},
+      "phonegap-plugin-barcodescanner": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
     }
   },
   "dependencies": {

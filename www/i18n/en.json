@@ -219,6 +219,16 @@
         "tab": "Label"
     },
 
+    "main-checkinout" : {
+        "tab": "Checkout",
+        "checkout": "Checkout",
+        "checkin": "Checkin",
+        "using-bike": "Using bike {{currBikeLabel}}",
+        "checked-out-list": "Checked out list",
+        "no-bike": "Not using bike",
+        "no-entries": "No entries"
+    },
+
     "main-heatmap":{
         "title": "Heatmap",
         "counts" : "Counts",
