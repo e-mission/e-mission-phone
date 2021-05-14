@@ -101,6 +101,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
 
+  $scope.generateRandomToken = function(length) {
+    var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
+    var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
+    var randomString = randomChars.join("");
+    var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
+    return validRandomString.substring(0, length);
+  }
+
   $scope.disagree = function() {
     $state.go('root.main.heatmap');
   };
@@ -136,37 +144,88 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       });
   }
 
-  $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
+  $scope.tokenToClipboard = function() {
+    navigator.clipboard.writeText($scope.randomToken);
+  };
+
+  $scope.loginNew = function() {
+    $scope.login($scope.randomToken);
+  };
+
+  $scope.loginExisting = function() {
+    $scope.data = {};
+    const tokenPopup = $ionicPopup.show({
+        template: '<input type="String" ng-model="data.existing_token">',
+        title: 'Enter the existing token that you have',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>OK</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              if (!$scope.data.existing_token) {
+                //don't allow the user to close unless he enters a username
+
+                e.preventDefault();
+              } else {
+                return $scope.data.existing_token;
+              }
+            }
+          },{
+            text: '<b>Cancel</b>',
+            type: 'button-stable',
+            onTap: function(e) {
+              return null;
+            }
+          }
+        ]
+    });
+    tokenPopup.then(function(token) {
+        if (token != null) {
+            $scope.login(token);
+        }
+    }).catch(function(err) {
+        $scope.alertError(err);
+    });
+  };
+
+  $scope.login = function () {
+    const comboToken = SecretCheck.SECRET + token;
+    window.cordova.plugins.BEMJWTAuth.signIn().then(function (userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       $scope.userEmail = userEmail;
-      CommHelper.registerUser(function(successResult) {
+      ionicToast.show(userEmail, 'middle', false, 2500);
+      if (userEmail == "null" || userEmail == "") {
+        $scope.alertError("Invalid login " + userEmail);
+      } else {
+        CommHelper.registerUser(function (successResult) {
           const uuid = successResult.uuid;
-          return CommHelper.updateUser({branch: 'rciti1'}
-          ).then(function() {
-              const thisUuid = uuid ? uuid : 'undefined';
-              const returnURL = `https://emission-app.byamarin.com/survey-success-static/`;
-              console.log('returnURL', returnURL);
-              $cordovaInAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
-              const unsub = $rootScope.$on('$cordovaInAppBrowser:loadstart', function(e, event) {
-                console.log("started loading, event = "+JSON.stringify(event));
-                if (event.url == 'https://emission-app.byamarin.com/survey-success-static/') {
-                    $cordovaInAppBrowser.close();
-                    ionicToast.show(userEmail, 'middle', false, 2500);
-                    $scope.finish();
-                    unsub();
-                }
-              });
+          return CommHelper.updateUser({ branch: 'rciti1' }
+          ).then(function () {
+            const thisUuid = uuid ? uuid : 'undefined';
+            const returnURL = `https://emission-app.byamarin.com/survey-success-static/`;
+            console.log('returnURL', returnURL);
+            $cordovaInAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
+            const unsub = $rootScope.$on('$cordovaInAppBrowser:loadstart', function (e, event) {
+              console.log("started loading, event = " + JSON.stringify(event));
+              if (event.url == 'https://emission-app.byamarin.com/survey-success-static/') {
+                $cordovaInAppBrowser.close();
+                ionicToast.show(userEmail, 'middle', false, 2500);
+                $scope.finish();
+                unsub();
+              }
+            });
           });
-      }, function(errorResult) {
-        ionicToast.show(userEmail, 'middle', false, 2500);
-        $scope.alertError('User registration error', errorResult);
-        $scope.finish();
-      });
-    }, function(error) {
-        $scope.alertError('Sign in error', error);
-        $scope.finish();
+        }, function (errorResult) {
+          ionicToast.show(userEmail, 'middle', false, 2500);
+          $scope.alertError('User registration error', errorResult);
+          $scope.finish();
+        });
+      }
+    }, function (error) {
+      $scope.alertError('Sign in error', error);
+      $scope.finish();
     });
   };
 
