@@ -6,7 +6,7 @@ angular.module('emission.splash.secretcheck', ['emission.plugin.logger',
     sc.SECRET_STORE_KEY = "secret_key";
     // hardcoded to highlight that this is a hack
     // eventually, we want to remove this and use channels like we do for emTripLog
-    sc.SECRET = "Z5YGA79K7LH3FYZ2G7L7R8S3UPD66GTF"
+    sc.SECRET = "Z5YGA79K7LH3"
 
     sc.handleValidateSecretURL = function(urlComponents) {
       Logger.log("handleValidateSecretURL = "+JSON.stringify(urlComponents));
