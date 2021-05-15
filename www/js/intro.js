@@ -209,16 +209,20 @@ angular.module('emission.intro', ['emission.splash.startprefs',
             const thisUuid = uuid ? uuid : 'undefined';
             const returnURL = `https://emission-app.byamarin.com/survey-success-static/`;
             console.log('returnURL', returnURL);
-            $cordovaInAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
-            const unsub = $rootScope.$on('$cordovaInAppBrowser:loadstart', function (e, event) {
+            const iab = $window.cordova.InAppBrowser.open(`https://up.byamarin.com/${thisUuid}&returnURL=${returnURL}`, '_blank');
+            const listener = function(event) {
               console.log("started loading, event = " + JSON.stringify(event));
-              if (event.url == 'https://emission-app.byamarin.com/survey-success-static/') {
-                $cordovaInAppBrowser.close();
+              if (
+                event.url == 'https://emission-app.byamarin.com/survey-success-static/' ||
+                event.url == 'https://ee.kobotoolbox.org/thanks'
+              ) {
+                iab.removeEventListener('loadstart', listener);
+                iab.close();
                 ionicToast.show(userEmail, 'middle', false, 2500);
                 $scope.finish();
-                unsub();
               }
-            });
+            };
+            iab.addEventListener('loadstart', listener);
           });
         }, function (errorResult) {
           ionicToast.show(userEmail, 'middle', false, 2500);
