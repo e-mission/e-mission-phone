@@ -1,6 +1,7 @@
 'use strict';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
+                                  'emission.splash.secretcheck',
                                   'ionic-toast',
                                   'emission.survey.enketo.launch',
                                   'emission.enketo-survey.service',
@@ -23,7 +24,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
     $cordovaInAppBrowser, $rootScope,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey, $translate, $cordovaFile) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey, SecretCheck, $translate, $cordovaFile) {
 
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
@@ -115,6 +116,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.agree = function() {
     StartPrefs.markConsented().then(function(response) {
+      $scope.randomToken = $scope.generateRandomToken(8);
+      window.Logger.log("Signing in with random token "+$scope.randomToken);
       $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
         $scope.next();
@@ -189,9 +192,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
 
-  $scope.login = function () {
+  $scope.login = function (token) {
     const comboToken = SecretCheck.SECRET + token;
-    window.cordova.plugins.BEMJWTAuth.signIn().then(function (userEmail) {
+    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(comboToken).then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       $scope.userEmail = userEmail;
