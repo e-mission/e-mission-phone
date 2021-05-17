@@ -416,7 +416,7 @@ angular.module('emission.main.control',['emission.services',
         // EnketoSurveyLaunch.launch($scope, 'UserProfile');
         CommHelper.getUser().then(function(profile) {
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
-            $cordovaInAppBrowser.open(`https://up.byamarin.com/${uuid}`, '_blank');
+            $window.cordova.InAppBrowser.open(`https://up.byamarin.com/${uuid}`, '_blank');
         });
     };
 
@@ -424,7 +424,7 @@ angular.module('emission.main.control',['emission.services',
         CommHelper.getUser().then(function(profile) {
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
             const returnURL = 'https://www.taharashidi.com/endsurvey';
-            $cordovaInAppBrowser.open(`https://pe.byamarin.com/${uuid}&returnURL=${returnURL}`, '_blank');
+            $window.cordova.InAppBrowser.open(`https://pe.byamarin.com/${uuid}&returnURL=${returnURL}`, '_blank');
             $scope.endForceSync();
         });
     }
