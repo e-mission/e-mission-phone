@@ -546,10 +546,17 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.launchWeeklySurvey = function() {
-      SurveyLaunch.startSurveyPrefilled(
-        'https://docs.google.com/forms/d/e/1FAIpQLSfJ7qNRtHTYjobW6qFGMmtC8-axg_6MZU0HDCIYfD78ru8RBg/viewform',
-        'entry.1942864803');
+    $scope.launchDemographicSurvey = function() {
+      const lang = $translate.use();
+      if (lang == "en") {
+          SurveyLaunch.startSurveyPrefilled(
+            'https://docs.google.com/forms/d/e/1FAIpQLSeMqtl_rHJkg-lZ-9xnQQHrJyBYOQl83zpKmwXfgOUFVOOwLg/viewform',
+            'entry.779873496');
+      } else {
+          SurveyLaunch.startSurveyPrefilled(
+            'https://docs.google.com/forms/d/e/1FAIpQLSf9fBC-xtEBaMxyq264hjLMaVvIODh4E5h_WmLRw87-m1rqyQ/viewform',
+            'entry.779873496');
+      }
     }
 
     $scope.expandDeveloperZone = function() {

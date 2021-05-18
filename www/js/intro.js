@@ -110,9 +110,16 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
   $scope.startSurvey = function () {
-      SurveyLaunch.startSurveyPrefilled(
-        'https://docs.google.com/forms/d/e/1FAIpQLSfA-JCnD5Tb2olZn0UAO91_juU-wuToxJc6uHdMjEQoSi-YTw/viewform',
-        'entry.779873496');
+      const lang = $translate.use();
+      if (lang == "en") {
+          SurveyLaunch.startSurveyPrefilled(
+            'https://docs.google.com/forms/d/e/1FAIpQLSeMqtl_rHJkg-lZ-9xnQQHrJyBYOQl83zpKmwXfgOUFVOOwLg/viewform',
+            'entry.779873496');
+      } else {
+          SurveyLaunch.startSurveyPrefilled(
+            'https://docs.google.com/forms/d/e/1FAIpQLSf9fBC-xtEBaMxyq264hjLMaVvIODh4E5h_WmLRw87-m1rqyQ/viewform',
+            'entry.779873496');
+      }
   };
 
   $scope.next = function() {
