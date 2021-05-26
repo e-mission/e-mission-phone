@@ -6,9 +6,10 @@
 We will now ask you for permissions to access the following sensors.
 
 <h3> Location </h3>
-We need this permission in order to track your location and determine your travel
-patterns.  Since you are running {{platform}} {{osver}}, when prompted,
-{{locationPermExplanation}}.
+We need this permission in order to track your location in the background, even
+when the app is closed. We use this location data to automatically generate a
+trip log that is displayed to you for annotation. Since you are running
+{{platform}} {{osver}}, when prompted, {{locationPermExplanation}}.
 
 <div ng-if="platform.toLowerCase() == 'ios'">
 <h3> Notifications </h3>
