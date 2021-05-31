@@ -152,6 +152,38 @@ angular.module('emission.services', ['emission.plugin.logger',
       })
     };
 
+    this.checkinoutNew = function(operation, details) {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            message.operation = operation;
+            message.details = details;
+        };
+        console.log("Sending a checkinout operation to the server")
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/checkinout/new", msgFiller, resolve, reject);
+      })
+    };
+
+    this.checkinoutList = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            message.aggregate = true;
+            // do nothing
+        };
+        console.log("Retrieving checkinout list from the server")
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/checkinout/list", msgFiller, resolve, reject);
+      })
+    };
+
+    this.checkinoutGet = function() {
+      return new Promise(function(resolve, reject) {
+        var msgFiller = function(message) {
+            // do nothing
+        };
+        console.log("Retrieving checkinout list from the server")
+        window.cordova.plugins.BEMServerComm.pushGetJSON("/checkinout/get", msgFiller, resolve, reject);
+      })
+    };
+
     this.getIncidents = function(start_ts, end_ts) {
       return new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
