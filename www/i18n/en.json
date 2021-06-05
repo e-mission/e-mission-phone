@@ -273,10 +273,11 @@
     "intro": {
         "permissions": {
             "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
-            "locationPermExplanation-android-gte-6": "please select 'allow'",
-            "locationPermExplanation-android-gte-10": "please select 'Allow all the time'",
+            "locationPermExplanation-android-6-9": "please select 'allow'",
+            "locationPermExplanation-android-10": "please select 'Allow all the time'",
+            "locationPermExplanation-android-gte-11": "please select 'Allow all the time' for location permissions on the app page",
             "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to understand your travel even when you are not actively using the app",
-            "locationPermExplanation-ios-gte-13": "please select 'when in use' now. After a few days, you will be asked whether you want to give the app background permission. Please say 'Always Allow' at that time. This allows us to understand your travel even when you are not actively using the app"
+            "locationPermExplanation-ios-gte-13": "please select 'always' and 'precise' in the app settings page and return here to continue"
         }
     },
     "allow_background": {
