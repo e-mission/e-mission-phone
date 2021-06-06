@@ -143,11 +143,21 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   var changeURLIfNeeded = function(userEmail) {
-    if (userEmail.startsWith("stage_")) {
-        $rootScope.connectionConfig.connectUrl = "https://stage.canbikeco.org";
-        $rootScope.connectUrl = "https://stage.canbikeco.org";
+    // "djZsaYNh".split("_")
+    // Array [ "djZsaYNh" ]
+    // "stage_-o7_9mpIOG0".split("_")
+    // Array(3) [ "stage", "-o7", "9mpIOG0" ]
+    const splitTokens = userEmail.split("_");
+    if (splitTokens.length > 1) {
+        const program = splitTokens[0];
+        window.Logger.log(window.Logger.LEVEL_INFO, "Found full pilot token "+userEmail
+            +" for program "+program);
+        $rootScope.connectionConfig.connectUrl = "https://"+program+".canbikeco.org";
+        $rootScope.connectUrl = "https://"+program+".canbikeco.org";
         return window.cordova.plugins.BEMConnectionSettings.setSettings($rootScope.connectionConfig);
     } else {
+        window.Logger.log(window.Logger.LEVEL_INFO, "Found mini-pilot token "+userEmail
+            +" connecting to default (api.canbikeco.org)");
         return Promise.resolve();
     }
   }
