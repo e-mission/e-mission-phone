@@ -1,6 +1,6 @@
 {
   "name": "edu.berkeley.eecs.emission",
-  "version": "2.9.0",
+  "version": "3.0.0",
   "displayName": "emission",
   "license": "BSD-3-Clause",
   "repository": {
@@ -72,10 +72,10 @@
     "cordova-plugin-app-version": "0.1.9",
     "cordova-plugin-customurlscheme": "5.0.1",
     "cordova-plugin-device": "2.0.1",
-    "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.5.0",
-    "cordova-plugin-em-jwt-auth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.6.3",
+    "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.6.0",
+    "cordova-plugin-em-jwt-auth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.6.4",
     "cordova-plugin-em-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.3",
-    "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.2.4",
+    "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.2.5",
     "cordova-plugin-em-settings": "git+https://github.com/e-mission/cordova-connection-settings.git#v1.2.2",
     "cordova-plugin-em-transition-notify": "git+https://github.com/e-mission/e-mission-transition-notify.git#v1.2.6",
     "cordova-plugin-em-unifiedlogger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.3.3",
