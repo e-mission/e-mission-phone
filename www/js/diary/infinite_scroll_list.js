@@ -69,10 +69,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.reverse();
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
+            // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
                 $scope.populateManualInputs(trip, ctList[tIndex+1], item, $scope.data.manualResultMap[item]);
             });
+            trip.finalInference = {};
+            $scope.inferFinalLabels(trip);
         });
         ctList.forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
@@ -250,6 +253,29 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     /**
+     * MODE (becomes manual/mode_confirm) becomes mode_confirm
+     */
+    $scope.inputType2retKey = function(inputType) {
+      return ConfirmHelper.inputDetails[inputType].key.split("/")[1];
+    }
+
+    /**
+     * Insert the given userInputLabel into the given inputType's slot in inputField
+     */
+    $scope.populateInput = function(tripField, inputType, userInputLabel) {
+      if (angular.isDefined(userInputLabel)) {
+          var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
+          if (!angular.isDefined(userInputEntry)) {
+            userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
+            $scope.inputParams[inputType].options.push(userInputEntry);
+            $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
+          }
+          // console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
+          tripField[inputType] = userInputEntry;
+      }
+    }
+
+    /**
      * Embed 'inputType' to the trip
      */
     $scope.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
@@ -261,22 +287,25 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             inputList);
         var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
         if (!angular.isDefined(userInputLabel)) {
-            // manual/mode_confirm becomes mode_confirm
-            const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
-            userInputLabel = tripgj.user_input[retKey];
+            userInputLabel = tripgj.user_input[$scope.inputType2retKey(inputType)];
         }
-        if (angular.isDefined(userInputLabel)) {
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
-              $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
-            }
-            // console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
-            tripgj.userInput[inputType] = userInputEntry;
-        }
+        $scope.populateInput(tripgj.userInput, inputType, userInputLabel);
         // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
         $scope.editingTrip = angular.undefined;
+    }
+
+    /**
+     * Given the list of possible label tuples we've been sent, choose the best labels to actually present to the user.
+     * TODO: In the future, there will be an algorithm here that takes into account what the user has already entered for the given trip.
+     * As a placeholder, we just choose the first tuple from the list.
+     */
+    $scope.inferFinalLabels = function(trip) {
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const retKey = $scope.inputType2retKey(inputType);
+        // We should gracefully handle the emptiness of the inferred labels list and the nonexistence of our keys
+        const candidate = trip.inferred_labels.length >= 1 ? trip.inferred_labels[0]["labels"][retKey] : undefined;
+        $scope.populateInput(trip.finalInference, inputType, candidate);
+      }
     }
 
     $scope.getFormattedDistanceInMiles = function(input) {

@@ -77,9 +77,14 @@
                             {{trip.userInput[input.name].text}}
                         </button>
                     </div>
-                    <div  ng-if="!trip.userInput[input.name]" class="input-confirm-container">
-                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
-                        {{input.choosetext}}
+                    <div ng-if="!trip.userInput[input.name] && trip.finalInference[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-yellow" translate>
+                            {{trip.finalInference[input.name].text}}
+                        </button>
+                    </div>
+                    <div ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container">
+                        <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red" translate>
+                            {{input.choosetext}}
                         </button>
                     </div>
                 </div>
