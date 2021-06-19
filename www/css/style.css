@@ -874,6 +874,10 @@ button.button.back-button.buttons.button-clear.header-item {
 .list-card-lg {
  width: 95%;
 }
+.list-card .row {
+  padding-left: 5px;
+  padding-right: 5px;
+}
 .list-col-left-margin {
   text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
@@ -958,9 +962,37 @@ button.button.back-button.buttons.button-clear.header-item {
   display: inline-block;
   width: calc(100% - 25px);
 }
-.diary-arrow-container i {
+.diary-more-container i {
   font-size: 32px;
-  float: right;
+}
+.diary-checkmark-container i {
+  font-size: 24px;
+  padding: 3px;
+}
+
+.diary-checkmark-container i.can-verify {
+  color: #30A64A;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+.diary-checkmark-container i.cannot-verify {
+  color: #E6B8B8;
+}
+.diary-checkmark-container i.already-verified {
+  color: #B8E6C2;
+}
+/* .diary-checkmark-container i.already-verified, .diary-checkmark-container i.cannot-verify {
+  color: #BFBFBF;
+} */
+
+.center-vert {
+  display: flex;
+  align-items: center;
+}
+
+.center-horiz {
+  display: flex;
+  justify-content: center;
 }
 
 .side-menu-item {

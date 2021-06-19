@@ -306,7 +306,26 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         const candidate = trip.inferred_labels.length >= 1 ? trip.inferred_labels[0]["labels"][retKey] : undefined;
         $scope.populateInput(trip.finalInference, inputType, candidate);
       }
+      $scope.updateVerifiability(trip);
     }
+
+    /**
+     * For a given trip, compute how the "verify" button should behave.
+     * If the trip has at least one yellow label, the button should be clickable.
+     * If the trip has all green labels, the button should be disabled because everything has already been verified.
+     * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
+     */
+    $scope.updateVerifiability = function(trip) {
+      var allGreen = true;
+      var someYellow = false;
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const green = trip.userInput[inputType];
+        const yellow = trip.finalInference[inputType] && !green;
+        if (yellow) someYellow = true;
+        if (!green) allGreen = false;
+    }
+    trip.verifiability = someYellow ? "can-verify" : (allGreen ? "already-verified" : "cannot-verify");
+  }
 
     $scope.getFormattedDistanceInMiles = function(input) {
       return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
@@ -321,6 +340,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
+        tripgj.verifiability = "cannot-verify";
+        // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
+        tripgj.start_display_name = "\xa0";
+        tripgj.end_display_name = "\xa0";
     }
 
     const fillPlacesForTripAsync = function(tripgj) {
@@ -558,6 +581,25 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
 
     /**
+     * verifyTrip turns all of a given trip's yellow labels green
+     */
+    $scope.verifyTrip = function($event, trip) {
+      if (trip.verifiability != "can-verify") return;
+      
+      $scope.draftInput = {
+        "start_ts": trip.start_ts,
+        "end_ts": trip.end_ts
+      };
+      $scope.editingTrip = trip;
+
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const inferred = trip.finalInference[inputType];
+        // TODO: figure out what to do with "other". For now, do not verify.
+        if (inferred && !trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
+      }
+    }
+
+    /**
      * Store selected value for options
      * $scope.selected is for display only
      * the value is displayed on popover selected option
@@ -623,6 +665,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           } else {
             tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
           }
+          $scope.updateVerifiability(tripToUpdate);
         });
       });
       if (isOther == true)
