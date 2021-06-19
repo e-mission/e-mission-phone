@@ -295,16 +295,62 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     /**
-     * Given the list of possible label tuples we've been sent, choose the best labels to actually present to the user.
-     * TODO: In the future, there will be an algorithm here that takes into account what the user has already entered for the given trip.
-     * As a placeholder, we just choose the first tuple from the list.
+     * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
+     * The algorithm below operationalizes these principles:
+     *   - Never consider label tuples that contradict a green label
+     *   - Obey "conservation of uncertainty": the sum of probabilities after filtering by green labels must equal the sum of probabilities before
+     *   - After filtering, predict the most likely choices at the level of individual labels, not label tuples
+     *   - Never show user yellow labels that have a lower probability of being correct than confidenceThreshold
      */
     $scope.inferFinalLabels = function(trip) {
+      // Display a label as red if its most probable inferred value has a probability of less than or equal to confidenceThreshold
+      // TODO: make this configurable
+      const confidenceThreshold = 0.5;
+
+      // Deep copy the possibility tuples
+      let labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
+
+      // Capture the level of certainty so we can reconstruct it later
+      const totalCertainty = labelsList.map(item => item.p).reduce(((item, rest) => item + rest), 0);
+
+      // Filter out the tuples that are inconsistent with existing green labels
       for (const inputType of ConfirmHelper.INPUTS) {
+        const userInput = trip.userInput[inputType];
+        if (userInput) {
+          const retKey = $scope.inputType2retKey(inputType);
+          labelsList = labelsList.filter(item => item.labels[retKey] == userInput.value);
+        }
+      }
+
+      // Red labels if we have no possibilities left
+      if (labelsList.length == 0) {
+        for (const inputType of ConfirmHelper.INPUTS) $scope.populateInput(trip.finalInference, inputType, undefined);
+        return;
+      }
+
+      // Normalize probabilities to previous level of certainty
+      const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
+      labelsList.forEach(item => item.p*=certaintyScalar);
+
+      for (const inputType of ConfirmHelper.INPUTS) {
+        // For each label type, find the most probable value by binning by label value and summing
         const retKey = $scope.inputType2retKey(inputType);
-        // We should gracefully handle the emptiness of the inferred labels list and the nonexistence of our keys
-        const candidate = trip.inferred_labels.length >= 1 ? trip.inferred_labels[0]["labels"][retKey] : undefined;
-        $scope.populateInput(trip.finalInference, inputType, candidate);
+        let valueProbs = new Map();
+        for (const tuple of labelsList) {
+          const labelValue = tuple.labels[retKey];
+          if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
+          valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
+        }
+        let max = {p: 0, labelValue: undefined};
+        for (const [thisLabelValue, thisP] of valueProbs) {
+          // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
+          if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
+        }
+
+        // Apply threshold
+        if (max.p <= confidenceThreshold) max.labelValue = undefined;
+
+        $scope.populateInput(trip.finalInference, inputType, max.labelValue);
       }
       $scope.updateVerifiability(trip);
     }
@@ -665,7 +711,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           } else {
             tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
           }
-          $scope.updateVerifiability(tripToUpdate);
+          $scope.inferFinalLabels(tripToUpdate);  // Recalculate our inferences based on this new information
         });
       });
       if (isOther == true)
