@@ -38,11 +38,7 @@ angular.module('emission', ['ionic',
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
     Logger.log("ionicPlatform is ready");
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
 
-    }
     if (window.StatusBar) {
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
@@ -52,12 +48,16 @@ angular.module('emission', ['ionic',
     Logger.log("about to get connection config");
     $http.get("json/connectionConfig.json").then(function(connectionConfig) {
         Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
+        $rootScope.connectUrl = connectionConfig.data.connectUrl;
+        $rootScope.aggregateAuth = connectionConfig.data.aggregate_call_auth;
         window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
     }).catch(function(err) {
         // not displaying the error here since we have a backup
         Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
         window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
             Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
+            $rootScope.connectUrl = defaultConfig.connectUrl;
+            $rootScope.aggregateAuth = "no_auth";
             window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
         }).catch(function(err) {
             // displaying the error here since we don't have a backup
@@ -69,11 +69,12 @@ angular.module('emission', ['ionic',
         $rootScope.previousState = fromState;
         $rootScope.previousStateParams = fromParams;
     });
+    cordova.plugin.http.setDataSerializer('json');
   });
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider, $translateProvider) {
+.config(function($stateProvider, $urlRouterProvider, $translateProvider, $compileProvider) {
   console.log("Starting config");
   // alert("config");
 
@@ -82,6 +83,7 @@ angular.module('emission', ['ionic',
   // Set a few states which the app can be in.
   // The 'intro' and 'diary' states are found in their respective modules
   // Each state's controller can be found in controllers.js
+  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|ionic):|data:image/);  
   $stateProvider
   // set up a state for the splash screen. This has no parents and no children
   // because it is basically just used to load the user's preferred screen.

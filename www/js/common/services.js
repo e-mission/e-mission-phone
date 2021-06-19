@@ -151,6 +151,11 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         if (angular.isDefined(address)) {
             if (address["road"]) {
               name = address["road"];
+            //sometimes it occurs that we cannot display street name because they are pedestrian or suburb places so we added them.
+            } else if (address["pedestrian"]) {
+            name = address["pedestrian"]
+            } else if (address["suburb"]) {
+            name = address["suburb"]
             } else if (address["neighbourhood"]) {
               name = address["neighbourhood"];
             }
@@ -174,6 +179,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
             obj.start_display_name = name;
             break;
         }
+        return name;
 
       };
       var responseListener1 = function(data) {
@@ -195,34 +201,34 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         }
         console.log("got response, setting display name to "+name);
         obj.end_display_name = name;
-
+        return obj;
       };
       switch (mode) {
         case 'place':
-          var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1]
+          var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1]
           + "&lon=" + obj.geometry.coordinates[0];
           $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
               +" data = "+JSON.stringify(response.data));
-            responseListener(response.data);
+            return responseListener(response.data);
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
           });
           break;
         case 'cplace':
-        var url = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
+        var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
         + "&lon=" + obj.location.coordinates[0];
 
-          $http.get(url).then(function(response) {
+          return $http.get(url).then(function(response) {
             console.log("while reading data from nominatim, status = "+response.status
               +" data = "+JSON.stringify(response.data));
-            responseListener(response.data);
+            return responseListener(response.data);
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
           });
           break;
         case 'ctrip':
-          var url0 = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.start_loc.coordinates[1]
+          var url0 = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.start_loc.coordinates[1]
           + "&lon=" + obj.start_loc.coordinates[0];
           console.log("About to make call "+url0);
           $http.get(url0).then(function(response) {
@@ -232,7 +238,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
           }, function(error) {
             console.log("while reading data from nominatim, error = "+error);
           });
-          var url1 = "http://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.end_loc.coordinates[1]
+          var url1 = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.end_loc.coordinates[1]
           + "&lon=" + obj.end_loc.coordinates[0];
           console.log("About to make call "+url1);
           $http.get(url1).then(function(response) {

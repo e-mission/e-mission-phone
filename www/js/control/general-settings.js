@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('emission.main.control',['emission.services',
-                                        'emission.survey.enketo.launch',
+                                        'emission.i18n.utils',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
                                         'emission.main.control.tnotify',
@@ -18,13 +18,12 @@ angular.module('emission.main.control',['emission.services',
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
-               $cordovaInAppBrowser,
-               StartPrefs, ControlHelper, EmailHelper,
+               StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
-               UpdateCheck,
-               CalorieCal, ClientStats, CommHelper, Logger, $ionicModal, EnketoSurveyLaunch,
+               UpdateCheck, i18nUtils,
+               CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
 
     var datepickerObject = {
@@ -56,10 +55,30 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
+    $scope.uploadLog = function () {
+        UploadHelper.uploadFile("loggerDB")
+    };
+
     $scope.emailLog = function () {
         // Passing true, we want to send logs
         EmailHelper.sendEmail("loggerDB")
     };
+
+    $scope.viewPrivacyPolicy = function($event) {
+        // button -> list element -> scroll
+        // const targetEl = $event.currentTarget.parentElement.parentElement;
+        if ($scope.ppp) {
+            $scope.ppp.show($event);
+        } else {
+            i18nUtils.geti18nFileName("templates/", "intro/consent-text", ".html").then((consentFileName) => {
+                $scope.consentTextFile = consentFileName;
+                $ionicPopover.fromTemplateUrl("templates/control/main-consent.html", {scope: $scope}).then((p) => {
+                    $scope.ppp = p;
+                    $scope.ppp.show($event);
+                });
+            }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
+        }
+    }
 
     $scope.userData = []
     $scope.getUserData = function() {
@@ -211,6 +230,36 @@ angular.module('emission.main.control',['emission.services',
                 return true;
             }
         });
+    }
+
+    $scope.testTripEndNotify = function() {
+        $ionicPopup.alert({template: 'test for local notification 0.9.0-beta.3+ only'});
+        /*
+        var testCfg = {
+            id: 737678,
+            title: $translate.instant('post-trip-prompt.notification-title'),
+            text: "Testing if this works",
+            icon: 'file://img/icon.png',
+            actions: "TRIP_CONFIRM"
+        };
+        $window.cordova.plugins.notification.local.addActions('TRIP_CONFIRM', [{
+            id: 'MUTE',
+            type: 'button',
+            title: 'Mute',
+            ui: 'decline'
+        },{
+            id: 'SNOOZE',
+            type: 'button',
+            title: 'Snooze',
+            launch: true
+        },{
+            id: 'CHOOSE',
+            type: 'button',
+            title: "Choose",
+            launch: true
+        }]);
+        $window.cordova.plugins.notification.local.schedule(testCfg);
+        */
     }
 
     $scope.invalidateCache = function() {
@@ -413,7 +462,6 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.editUserProfile = function() {
-        // EnketoSurveyLaunch.launch($scope, 'UserProfile');
         CommHelper.getUser().then(function(profile) {
             const uuid = profile && profile.user_id && profile.user_id['$uuid'] ? profile.user_id['$uuid'] : 'undefined';
             $window.cordova.InAppBrowser.open(`https://up.byamarin.com/${uuid}`, '_blank');
@@ -552,4 +600,5 @@ angular.module('emission.main.control',['emission.services',
             console.log("Sharing failed with message: " + msg);
         });
     }
+
 });

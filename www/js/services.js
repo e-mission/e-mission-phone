@@ -3,7 +3,7 @@
 angular.module('emission.services', ['emission.plugin.logger',
                                      'emission.plugin.kvstore'])
 
-.service('CommHelper', function($http) {
+.service('CommHelper', function($rootScope) {
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
@@ -127,12 +127,19 @@ angular.module('emission.services', ['emission.plugin.logger',
       return momentObj.unix();
     }
 
-    this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts) {
+    // time_key is typically metadata.write_ts or data.ts
+    this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts,
+        time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
       return new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
             message.key_list = key_list;
             message.from_local_date = moment2Localdate(moment.unix(start_ts));
             message.to_local_date = moment2Localdate(moment.unix(end_ts));
+            message.key_local_date = time_key;
+            if (max_entries !== undefined) {
+                message.max_entries = max_entries;
+                message.trunc_method = trunc_method;
+            }
             console.log("About to return message "+JSON.stringify(message));
           };
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
@@ -140,12 +147,18 @@ angular.module('emission.services', ['emission.plugin.logger',
       });
     };
 
-    this.getRawEntries = function(key_list, start_ts, end_ts) {
+    this.getRawEntries = function(key_list, start_ts, end_ts,
+        time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
       return new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
             message.key_list = key_list;
             message.start_time = start_ts;
             message.end_time = end_ts;
+            message.key_time = time_key;
+            if (max_entries !== undefined) {
+                message.max_entries = max_entries;
+                message.trunc_method = trunc_method;
+            }
             console.log("About to return message "+JSON.stringify(message));
           };
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
@@ -158,6 +171,45 @@ angular.module('emission.services', ['emission.plugin.logger',
           console.log("getting pipeline complete timestamp");
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
       });
+    };
+
+    this.getPipelineRangeTs = function() {
+      return new Promise(function(resolve, reject) {
+          console.log("getting pipeline range timestamps");
+          window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", resolve, reject);
+      });
+    };
+
+
+    // host is automatically read from $rootScope.connectUrl, which is set in app.js
+    this.getAggregateData = function(path, data) {
+        return new Promise(function(resolve, reject) {
+          const full_url = $rootScope.connectUrl+"/"+path;
+          data["aggregate"] = true
+
+          if ($rootScope.aggregateAuth === "no_auth") {
+              console.log("getting aggregate data without user authentication from "
+                + full_url +" with arguments "+JSON.stringify(data));
+              const options = {
+                  method: 'post',
+                  data: data,
+                  responseType: 'json'
+              }
+              cordova.plugin.http.sendRequest(full_url, options,
+              function(response) {
+                resolve(response.data);
+              }, function(error) {
+                reject(error);
+              });
+          } else {
+              console.log("getting aggregate data with user authentication from "
+                + full_url +" with arguments "+JSON.stringify(data));
+              var msgFiller = function(message) {
+                return Object.assign(message, data);
+              };
+              window.cordova.plugins.BEMServerComm.pushGetJSON("/"+path, msgFiller, resolve, reject);
+          }
+        });
     };
 })
 
@@ -258,7 +310,7 @@ angular.module('emission.services', ['emission.plugin.logger',
       return combinedPromise(localPromise, remotePromise, combineWithDedup);
     }
 })
-.service('ControlHelper', function($cordovaEmailComposer,
+.service('ControlHelper', function($window,
                                    $ionicPopup,
                                    $translate,
                                    CommHelper,
@@ -343,7 +395,7 @@ angular.module('emission.services', ['emission.plugin.logger',
                           subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
                           body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
                         }
-                        $cordovaEmailComposer.open(email).then(resolve());
+                        $window.cordova.plugins.email.open(email).then(resolve());
                       }
                       reader.readAsText(file);
                     }, function(error) {
@@ -564,9 +616,9 @@ angular.module('emission.services', ['emission.plugin.logger',
 
     config.getMapTiles = function() {
       return {
-          tileLayer: 'http://tile.stamen.com/terrain/{z}/{x}/{y}.png',
+          tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
           tileLayerOptions: {
-              attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, under <a href="http://creativecommons.org/licenses/by/3.0">CC BY 3.0</a>. Data by <a href="http://openstreetmap.org">OpenStreetMap</a>, under <a href="http://www.openstreetmap.org/copyright">ODbL</a>.',
+              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
               opacity: 0.9,
               detectRetina: true,
               reuseTiles: true,

@@ -28,16 +28,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
     Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, EnketoSurveyLaunch, EnketoSurvey, $translate) {
   console.log("controller DiaryListCtrl called");
-    var MODE_CONFIRM_KEY = "manual/mode_confirm";
-    var PURPOSE_CONFIRM_KEY = "manual/purpose_confirm";
 
-    $scope.confirmSurvey = function(trip) {
-      EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip }).then(function() {
-        $scope.$apply(function() {
-          $scope.updateCustomSurveyLabelForTrip(trip);
-        });
+  $scope.confirmSurvey = function(trip) {
+    EnketoSurveyLaunch.launch($scope, 'ConfirmSurvey', { trip: trip }).then(function() {
+      $scope.$apply(function() {
+        $scope.updateCustomSurveyLabelForTrip(trip);
       });
-    }
+    });
+  }
 
   // Add option
 
@@ -45,6 +43,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       console.log("diary/list received resize event, invalidating map size");
       data.leafletObject.invalidateSize();
     });
+
+  $scope.userInputDetails = [];
+  ConfirmHelper.INPUTS.forEach(function(item, index) {
+    const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
+    currInput.name = item;
+    $scope.userInputDetails.push(currInput);
+  });
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -199,17 +204,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         if (angular.isDefined(userPurpose)) {
             // userPurpose is a purpose object with data + metadata
             // the label is the "value" from the options
-            var userPurposeEntry = $scope.value2entryPurpose[userPurpose.data.label];
-            if (!angular.isDefined(userPurposeEntry)) {
-              userPurposeEntry = ConfirmHelper.getFakeEntry(userPurpose.data.label);
-              $scope.purposeOptions.push(userPurposeEntry);
-              $scope.value2entryPurpose[userPurpose.data.label] = userPurposeEntry;
+            var userInputEntry = $scope.inputParams[inputType].value2entry[userInput.data.label];
+            if (!angular.isDefined(userInputEntry)) {
+              userInputEntry = ConfirmHelper.getFakeEntry(userInput.data.label);
+              $scope.inputParams[inputType].options.push(userInputEntry);
+              $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
             }
-            console.log("Mapped label "+userPurpose.data.label+" to entry "+JSON.stringify(userPurposeEntry));
-            tripgj.userpurpose = userPurposeEntry;
+            console.log("Mapped label "+userInput.data.label+" to entry "+JSON.stringify(userInputEntry));
+            tripgj.userInput[inputType] = userInputEntry;
         }
-        Logger.log("Set purpose " + JSON.stringify(userPurposeEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
-        $scope.purposeTripgj = angular.undefined;
+        Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
+        $scope.editingTrip = angular.undefined;
     }
 
     /**
@@ -375,24 +380,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     });
 
-    $scope.setColor = function(mode) {
-      var colors = {
-        "icon ion-android-bicycle": 'green',
-        "icon ion-android-walk":'brown',
-        "icon ion-speedometer":'purple',
-        "icon ion-android-bus": "purple",
-        "icon ion-android-train": "navy",
-        "icon fas fa-tram": "darkslateblue",
-        "icon fas fa-subway": "darkcyan",
-        "icon lightrail fas fa-subway": "blue",
-        "icon ion-android-car": "salmon",
-        "icon ion-plane": "red"
-      };
-      return {
-        color: colors[mode]
-      };
-    }
-
     var showNoTripsAlert = function() {
       var buttons = [{
           text: 'New',
@@ -472,7 +459,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.allModes = DiaryHelper.allModes;
     $scope.getKmph = DiaryHelper.getKmph;
     $scope.getPercentages = DiaryHelper.getPercentages;
     $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
@@ -495,9 +481,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     }
 
-    $scope.userModes = [
-        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
-    ];
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
     $scope.getTimeSplit = function (tripList) {
@@ -601,208 +584,109 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.showModes = DiaryHelper.showModes;
 
-    $ionicPopover.fromTemplateUrl('templates/diary/mode-popover.html', {
-      scope: $scope
-    }).then(function (popover) {
-      $scope.modePopover = popover;
+    $scope.popovers = {};
+    ConfirmHelper.INPUTS.forEach(function(item, index) {
+        let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
+        return $ionicPopover.fromTemplateUrl(popoverPath, {
+          scope: $scope
+        }).then(function (popover) {
+          $scope.popovers[item] = popover;
+        });
     });
 
-    $scope.openModePopover = function ($event, tripgj) {
-      var userMode = tripgj.usermode;
-      if (angular.isDefined(userMode)) {
-        $scope.selected.mode.value = userMode.value;
+    $scope.openPopover = function ($event, tripgj, inputType) {
+      var userInput = tripgj.userInput[inputType];
+      if (angular.isDefined(userInput)) {
+        $scope.selected[inputType].value = userInput.value;
       } else {
-        $scope.selected.mode.value = '';
+        $scope.selected[inputType].value = '';
       }
-      $scope.draftMode = {
+      $scope.draftInput = {
         "start_ts": tripgj.data.properties.start_ts,
         "end_ts": tripgj.data.properties.end_ts
       };
-      $scope.modeTripgj = tripgj;
-      Logger.log("in openModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.modePopover.show($event);
+      $scope.editingTrip = tripgj;
+      Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
+      $scope.popovers[inputType].show($event);
     };
 
-    var closeModePopover = function ($event, isOther) {
-      $scope.selected.mode = {
+    var closePopover = function (inputType) {
+      $scope.selected[inputType] = {
         value: ''
       };
-      if (isOther == false)
-        $scope.draftMode = angular.undefined;
-      Logger.log("in closeModePopover, setting draftMode = " + JSON.stringify($scope.draftMode));
-      $scope.modePopover.hide($event);
-    };
-
-    $ionicPopover.fromTemplateUrl('templates/diary/purpose-popover.html', {
-      scope: $scope
-    }).then(function (popover) {
-      $scope.purposePopover = popover;
-    });
-
-    $scope.openPurposePopover = function ($event, tripgj) {
-      var userPurpose = tripgj.userpurpose;
-      if (angular.isDefined(userPurpose)) {
-        $scope.selected.purpose.value = userPurpose.value;
-      } else {
-        $scope.selected.purpose.value = '';
-      }
-
-      $scope.draftPurpose = {
-        "start_ts": tripgj.data.properties.start_ts,
-        "end_ts": tripgj.data.properties.end_ts
-      };
-      $scope.purposeTripgj = tripgj;
-      Logger.log("in openPurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
-      $scope.purposePopover.show($event);
-    };
-
-    var closePurposePopover = function ($event, isOther) {
-      $scope.selected.purpose = {
-        value: ''
-      };
-      if (isOther == false)
-        $scope.draftPurpose = angular.undefined;
-      Logger.log("in closePurposePopover, setting draftPurpose = " + JSON.stringify($scope.draftPurpose));
-      $scope.purposePopover.hide($event);
+      $scope.popovers[inputType].hide();
     };
 
     /**
      * Store selected value for options
-     * $scope.selected is for display purpose only
+     * $scope.selected is for display only
      * the value is displayed on popover selected option
      */
-    $scope.selected = {
-      mode: {
-        value: ''
-      },
-      other: {
-        text: '',
-        value: ''
-      },
-      purpose: {
-        value: ''
-      },
-    };
+    $scope.selected = {}
+    ConfirmHelper.INPUTS.forEach(function(item, index) {
+        $scope.selected[item] = {value: ''};
+    });
+    $scope.selected.other = {text: '', value: ''};
 
     /*
      * This is a curried function that curries the `$scope` variable
      * while returing a function that takes `e` as the input
      */
-    var checkOtherOptionOnTap = function ($scope, choice) {
+    var checkOtherOptionOnTap = function ($scope, inputType) {
         return function (e) {
           if (!$scope.selected.other.text) {
             e.preventDefault();
           } else {
             Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-            if (choice.value == 'other_mode') {
-              $scope.storeMode($scope.selected.other, true /* isOther */);
-              $scope.selected.other = '';
-            } else if (choice.value == 'other_purpose') {
-              $scope.storePurpose($scope.selected.other, true /* isOther */);
-              $scope.selected.other = '';
-            }
+            $scope.store(inputType, $scope.selected.other, true /* isOther */);
+            $scope.selected.other = '';
             return $scope.selected.other;
           }
         }
     };
 
-    $scope.choosePurpose = function () {
-      var isOther = false;
-      if ($scope.selected.purpose.value != "other_purpose") {
-        $scope.storePurpose($scope.selected.purpose, isOther);
-      } else {
-        isOther = true
-        ConfirmHelper.checkOtherOption($scope.selected.purpose, checkOtherOptionOnTap, $scope);
-      }
-      closePurposePopover();
-    };
-
-    $scope.chooseMode = function () {
+    $scope.choose = function (inputType) {
       var isOther = false
-      if ($scope.selected.mode.value != "other_mode") {
-        $scope.storeMode($scope.selected.mode, isOther);
+      if ($scope.selected[inputType].value != "other") {
+        $scope.store(inputType, $scope.selected[inputType], isOther);
       } else {
         isOther = true
-        ConfirmHelper.checkOtherOption($scope.selected.mode, checkOtherOptionOnTap, $scope);
+        ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
       }
-      closeModePopover();
+      closePopover(inputType);
     };
-
-    /*
-     * Convert the array of {text, value} objects to a {value: text} map so that 
-     * we can look up quickly without iterating over the list for each trip
-     */
-
-    var arrayToMap = function(optionsArray) {
-        var text2entryMap = {};
-        var value2entryMap = {};
-
-        optionsArray.forEach(function(text2val) {
-            text2entryMap[text2val.text] = text2val;
-            value2entryMap[text2val.value] = text2val;
-        });
-        return [text2entryMap, value2entryMap];
-    }
 
     $scope.$on('$ionicView.loaded', function() {
-        ConfirmHelper.getModeOptions().then(function(modeOptions) {
-            $scope.modeOptions = modeOptions;
-            var modeMaps = arrayToMap($scope.modeOptions);
-            $scope.text2entryMode = modeMaps[0];
-            $scope.value2entryMode = modeMaps[1];
-        });
-        ConfirmHelper.getPurposeOptions().then(function(purposeOptions) {
-            $scope.purposeOptions = purposeOptions;
-            var purposeMaps = arrayToMap($scope.purposeOptions);
-            $scope.text2entryPurpose = purposeMaps[0];
-            $scope.value2entryPurpose = purposeMaps[1];
+        $scope.inputParams = {}
+        ConfirmHelper.INPUTS.forEach(function(item) {
+            ConfirmHelper.getOptionsAndMaps(item).then(function(omObj) {
+                $scope.inputParams[item] = omObj;
+            });
         });
     });
 
-    $scope.storeMode = function (mode, isOther) {
+    $scope.store = function (inputType, input, isOther) {
       if(isOther) {
-        // Let's make the value for user entered modes look consistent with our
+        // Let's make the value for user entered inputs look consistent with our
         // other values
-        mode.value = ConfirmHelper.otherTextToValue(mode.text);
+        input.value = ConfirmHelper.otherTextToValue(input.text);
       }
-      $scope.draftMode.label = mode.value;
-      Logger.log("in storeMode, after setting mode.value = " + mode.value + ", draftMode = " + JSON.stringify($scope.draftMode));
-      var tripToUpdate = $scope.modeTripgj;
-      $window.cordova.plugins.BEMUserCache.putMessage(MODE_CONFIRM_KEY, $scope.draftMode).then(function () {
+      $scope.draftInput.label = input.value;
+      Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
+      var tripToUpdate = $scope.editingTrip;
+      $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
         $scope.$apply(function() {
           if (isOther) {
-            tripToUpdate.usermode = ConfirmHelper.getFakeEntry(mode.value);
-            $scope.modeOptions.push(tripToUpdate.usermode);
-            $scope.value2entryMode[mode.value] = tripToUpdate.usermode;
+            tripToUpdate.userInput[inputType] = ConfirmHelper.getFakeEntry(input.value);
+            $scope.inputParams[inputType].options.push(tripToUpdate.userInput[inputType]);
+            $scope.inputParams[inputType].value2entry[input.value] = tripToUpdate.userInput[inputType];
           } else {
-            tripToUpdate.usermode = $scope.value2entryMode[mode.value];
+            tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
           }
         });
       });
       if (isOther == true)
-        $scope.draftMode = angular.undefined;
-    }
-
-    $scope.storePurpose = function (purpose, isOther) {
-      if (isOther) {
-        purpose.value = ConfirmHelper.otherTextToValue(purpose.text);
-      }
-      $scope.draftPurpose.label = purpose.value;
-      Logger.log("in storePurpose, after setting purpose.value = " + purpose.value + ", draftPurpose = " + JSON.stringify($scope.draftPurpose));
-      var tripToUpdate = $scope.purposeTripgj;
-      $window.cordova.plugins.BEMUserCache.putMessage(PURPOSE_CONFIRM_KEY, $scope.draftPurpose).then(function () {
-        $scope.$apply(function() {
-          if (isOther) {
-            tripToUpdate.userpurpose = ConfirmHelper.getFakeEntry(purpose.value);
-            $scope.purposeOptions.push(tripToUpdate.userpurpose);
-            $scope.value2entryPurpose[purpose.value] = tripToUpdate.userpurpose;
-          } else {
-            tripToUpdate.userpurpose = $scope.value2entryPurpose[purpose.value];
-          }
-        });
-      });
-      if (isOther == true)
-        $scope.draftPurpose = angular.undefined;
+        $scope.draftInput = angular.undefined;
     }
 
     $scope.redirect = function(){

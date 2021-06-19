@@ -2,10 +2,8 @@
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.secretcheck',
-                                  'ionic-toast',
-                                  'emission.survey.enketo.launch',
-                                  'emission.enketo-survey.service',
-                                ])
+                                  'emission.i18n.utils',
+                                  'ionic-toast'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -23,16 +21,19 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 })
 
 .controller('IntroCtrl', function($scope, $state, $window, $ionicSlideBoxDelegate,
-    $cordovaInAppBrowser, $rootScope,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, EnketoSurvey, SecretCheck, $translate, $cordovaFile) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SecretCheck, $translate, i18nUtils) {
 
   $scope.platform = $window.device.platform;
   $scope.osver = $window.device.version.split(".")[0];
   if($scope.platform.toLowerCase() == "android") {
     if($scope.osver < 6) {
         $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
+    } else if ($scope.osver < 10) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-6-9");
+    } else if ($scope.osver < 11) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-10");
     } else {
-        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-6");
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-11");
     }
   }
 
@@ -42,6 +43,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     } else {
         $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
     }
+    return defaultVal;
   }
 
   $scope.backgroundRestricted = false;
@@ -49,34 +51,27 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.backgroundRestricted = true;
     $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
   }
-  if($window.device.manufacturer.toLowerCase() == "huawei") {
-    $scope.backgroundRestricted = true;
-    $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.huawei");
-  }
+
+  $scope.fitnessPermNeeded = ($scope.platform.toLowerCase() == "ios" ||
+    (($scope.platform.toLowerCase() == "android") && ($scope.osver >= 10)));
 
   console.log("Explanation = "+$scope.locationPermExplanation);
 
-  // The language comes in between the first and second part
-  $scope.geti18nFile = function (fpFirstPart, fpSecondPart) {
-    var lang = $translate.use();
-    var defaultVal = fpFirstPart + fpSecondPart;
-    if (lang != 'en') {
-      var url = fpFirstPart + lang + fpSecondPart;
-      $cordovaFile.checkFile(cordova.file.applicationDirectory, url).then( function(result){
-        window.Logger.log(window.Logger.LEVEL_DEBUG,
-          "Successfully found the consent file, result is " + JSON.stringify(result));
-        return url.replace("www/", "");
-      }, function (err) {
-        window.Logger.log(window.Logger.LEVEL_DEBUG,
-          "Consent file not found, loading english version, error is " + JSON.stringify(err));
-           return defaultVal;
-        });
-    }
-    return defaultVal;
-  }
-  
-  $scope.consentFile = $scope.geti18nFile("templates/intro/consent", ".html");
-  $scope.explainFile = $scope.geti18nFile("templates/intro/sensor_explanation", ".html");
+  var allIntroFiles = Promise.all([
+    i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
+    i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
+    i18nUtils.geti18nFileName("templates/", "intro/sensor_explanation", ".html"),
+    i18nUtils.geti18nFileName("templates/", "intro/login", ".html")
+  ]);
+  allIntroFiles.then(function(allIntroFilePaths) {
+    $scope.$apply(function() {
+      console.log("intro files are "+allIntroFilePaths);
+      $scope.summaryFile = allIntroFilePaths[0];
+      $scope.consentFile = allIntroFilePaths[1];
+      $scope.explainFile = allIntroFilePaths[2];
+      $scope.loginFile = allIntroFilePaths[3];
+    });
+  });
 
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');

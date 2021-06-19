@@ -4,7 +4,6 @@
   "devDependencies": {
     "ionic": "driftyco/ionic-bower#1.3.1",
     "ionic-toast": "^0.2.0",
-    "ngCordova": "^0.1.24-alpha",
     "moment": "^2.11.2",
     "moment-timezone": "^0.5.0",
     "leaflet": "^0.7.7",
@@ -18,7 +17,6 @@
   },
   "dependencies": {
     "angular-nvd3": "^1.0.7",
-    "string.startsWith": "*",
     "angularLocalStorage": "^0.3.2",
     "ng-walkthrough": "^1.0.0",
     "animate.css": "^3.5.2",
@@ -28,6 +26,7 @@
     "angularjs-slider": "^6.2.2",
     "angular-translate": "^2.18.1",
     "angular-translate-loader-static-files": "^2.18.1",
-    "angular-translate-interpolation-messageformat": "^2.18.1"
+    "angular-translate-interpolation-messageformat": "^2.18.1",
+    "bottleneck": "^2.19.5"
   }
 }

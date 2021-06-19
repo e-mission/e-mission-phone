@@ -1,5 +1,4 @@
  angular.module('emission.main.diary.current', ['ui-leaflet',
-                                                'ngCordova', 
                                                 'emission.services', 
                                                 'ionic',
                                                 'emission.incident.posttrip.manual',
@@ -8,7 +7,7 @@
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, $http, KVStore, $ionicPlatform, $translate) {
+                                    Logger, $window, PostTripManualMarker, CommHelper, KVStore, $ionicPlatform, $translate) {
     
   console.log("controller CurrMapCtrl called from current.js");
   var _map;
@@ -232,15 +231,18 @@
 
   var getServerIncidents = function() {
       Logger.log("Getting server incidents with call "+JSON.stringify(incidentServerCalldata));
-      $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/timestamp", incidentServerCalldata).then(function(res){
+      CommHelper.getAggregateData("result/heatmap/incidents/timestamp", incidentServerCalldata)
+        .then(function(res){
+          $scope.$apply(function() {
           Logger.log("Server incidents result is "+JSON.stringify(res));
           // Need to remove existing markers before adding new ones
           // https://github.com/e-mission/e-mission-phone/pull/263#issuecomment-322669042
           removeExistingIncidentMarkers(_map, _serverIncidentMarkers);
           _serverIncidentMarkers = [];
           if(res.data.incidents.length > 0) {
-            addIncidents(res.data.incidents, _map, _serverIncidentMarkers);
+            addIncidents(res.incidents, _map, _serverIncidentMarkers);
           }
+          });
       }, function(error){
           Logger.log("Error when getting incidents");
           Logger.log(JSON.stringify(error));

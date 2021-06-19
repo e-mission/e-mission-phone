@@ -6,17 +6,21 @@
 We will now ask you for permissions to access the following sensors.
 
 <h3> Location </h3>
-We need this permission in order to track your location. Since you are running
+We need this permission in order to track your location in the background, even
+when the app is closed. We use this location data to automatically generate a
+trip log that is displayed to you for annotation. Since you are running
 {{platform}} {{osver}}, when prompted, {{locationPermExplanation}}.
 
 <div ng-if="platform.toLowerCase() == 'ios'">
 <h3> Notifications </h3>
-We need this permission in order to alert you if we find that you are at risk.
+We need this permission in order to prompt you for your travel mode and purpose.
 Please allow.
+</div>
 
+<div ng-if="fitnessPermNeeded">
 <h3> Motion and Fitness </h3>
-We need this permission in order to determine your travel mode and include your
-exposure on public transit. Please allow.
+We need this permission in order to separate the parts of multi-modal travel
+such as transit. Please allow.
 </div>
 
 <div ng-if="backgroundRestricted">

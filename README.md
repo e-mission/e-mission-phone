@@ -3,7 +3,7 @@ e-mission phone app
 
 This is the phone component of the e-mission system.
 
-:sparkles: As part of experimenting with a COVID-19 reference app, we upgraded to the most recent cordova version and added CI :sparkles: We are now porting this over to the main e-mission repo. The ported code is currently in https://github.com/e-mission/e-mission-phone/tree/upgrade_to_latest_cordova and the current status is in https://github.com/e-mission/e-mission-docs/issues/519. The branch is usable although not all functionality has been tested. Please contribute your testing results so that we feel confident promoting it to master.
+:sparkles: This has now been upgraded to cordova android@9.0.0 and iOS@6.0.1 ([details](https://github.com/e-mission/e-mission-docs/issues/554)). It has also been upgraded to [android API 29](https://github.com/e-mission/e-mission-phone/pull/707/), [cordova-lib@10.0.0 and the most recent node and npm versions](https://github.com/e-mission/e-mission-phone/pull/708)It also now supports CI, so we should not have any build issues in the future. The limitations from the [previous upgrade](https://github.com/e-mission/e-mission-docs/issues/519) have all been resolved. This should be ready to build out of the box, after all the configuration files are changed.
 
 Additional Documentation
 ---
@@ -14,94 +14,32 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 Updating the UI only
 ---
+[![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-serve-install)
+
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) e-mission dev app. 
 
-### Dependencies
-1. node.js: You probably want to install this using [nvm](https://github.com/creationix/nvm), to ensure that you can pick a particular [version of node](https://github.com/creationix/nvm#usage).
-    ```
-    $ node -v
-    v9.4.0
-    $ npm -v
-    6.0.0
-    ```
-    
-  Make sure that the permissions are set correctly - npm and node need to be owned by `root` or another admin user.
+### Installing (one-time)
 
-  ```
-  $ which npm
-  /usr/local/bin/npm
-  $ ls -al /usr/local/bin/npm
-  lrwxr-xr-x  1 root  wheel  38 May  8 10:04 /usr/local/bin/npm -> ../lib/node_modules/npm/bin/npm-cli.js
-  $ ls -al /usr/local/lib/node_modules/npm/bin/npm-cli.js
-  -rwxr-xr-x  1 cusgadmin  staff  4295 Oct 26  1985 /usr/local/lib/node_modules/npm/bin/npm-cli.js
-  ```
-  
-2. [bower](https://bower.io/):
+Run the setup script
 
-  ```
-  $ bower -v
-  1.8.4
-  ```
+```
+$ bash setup/setup_serve.sh
+```
 
-### Installation
-1. Install the most recent release of the em-devapp (https://github.com/e-mission/e-mission-devapp)
+**(optional)** Configure by changing the files in `www/json`.
+Defaults are in `www/json/*.sample`
 
-1. Get the current version of the phone UI code
+```
+$ ls www/json/*.sample
+$ cp www/json/startupConfig.json.sample www/json/startupConfig.json
+$ cp ..... www/json/connectionConfig.json
+```
 
-    1. Fork this repo using the github UI
+### Activation (after install, and in every new shell)
 
-    1. Clone your fork
-
-    ```
-    $ git clone <your repo URL>
-    ```
-
-    ```
-    $ cd e-mission-phone
-    ```
-    
-1. Create a remote to pull updates from upstream
-
-    ```
-    $ git remote add upstream https://github.com/e-mission/e-mission-phone.git
-    ```
-    
-1. Setup the config
-
-    ```
-    $ ./bin/configure_xml_and_json.js serve
-    ```
-
-1. Install all required node modules 
-
-    ```
-    $ npm install
-    ```
- 1. Install javascript dependencies
- 
-    ```
-    $ bower install
-    ```
-    
-1. Configure values if necessary - e.g.
-
-    ```
-    $ ls www/json/*.sample
-    $ cp www/json/setupConfig.json.sample www/json/setupConfig.json
-    $ cp ..... www/json/connectionConfig.json
-    ```
-  
-1. Run the setup script
-
-    ```
-    $ npm run setup-serve
-    > edu.berkeley.eecs.emission@2.5.0 setup /private/tmp/e-mission-phone
-    > ./bin/download_settings_controls.js
-
-    Sync collection settings updated
-    Data collection settings updated
-    Transition notify settings updated
-    ```
+```
+$ source setup/activate_serve.sh
+```
   
 ### Running
 
@@ -125,10 +63,9 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
     - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
     - Chrome: chrome://inspect -> Remote target (emulator)
     
-**Ta-da!** If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app.
+**Ta-da!** :gift: If you change any of the files in the `www` directory, the app will automatically be re-loaded without manually restarting either the server or the app :tada:
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
-
 
 End to end testing
 ---
@@ -147,157 +84,89 @@ One advantage of using `skip` authentication in development mode is that any use
 
 Updating the e-mission-\* plugins or adding new plugins
 ---
+[![osx-build-ios](https://github.com/e-mission/e-mission-phone/workflows/osx-build-ios/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-ubuntu-build-android)
+[![osx-ubuntu-build-android](https://github.com/e-mission/e-mission-phone/workflows/osx-ubuntu-build-android/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-build-ios)
 
-Installing
+Pre-requisites
 ---
-We are using the ionic v3.19.1 platform, which is a toolchain on top of the apache
-cordova project. So the first step is to install ionic using their instructions.
-http://ionicframework.com/docs/v1/getting-started/
+- the version of xcode used by the CI
+    - to install a particular version, use [xcode-select](https://www.unix.com/man-page/OSX/1/xcode-select/)
+    - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
+    - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
+- git
+- the most recent version of android studio
+    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK 1.8 using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
 
-NOTE: Since we are still on ionic v1, please do not install v2 or v3, as the current codebase will not work with it.
-Issue the following commands to install Cordova and Ionic instead of the ones provided in the instruction above.
+Important
+---
+Most of the recent issues encountered have been due to incompatible setup. We
+have now:
+- locked down the dependencies,
+- created setup and teardown scripts to setup self-contained environments with
+  those dependencies, and
+- CI enabled to validate that they continue work.
 
-```
-$ npm install -g cordova@8.0.0
-$ npm install -g ionic@3.19.1
-```
+If you have setup failures, please compare the configuration in the passing CI
+builds with your configuration. That is almost certainly the source of the error.
 
-Install gradle (https://gradle.org/install/) for android builds.
-
-Then, get the current version of our code
-
-Fork this repo using the github UI
-
-Clone your fork
-
-```
-$ git clone <your repo URL>
-```
-
-```
-$ cd e-mission-phone
-```
-
-Enable platform hooks, including http on iOS9
+Installing (one time only)
+---
+Run the setup script for the platform you want to build
 
 ```
-$ git clone https://github.com/driftyco/ionic-package-hooks.git ./package-hooks
+$ bash setup/setup_android_native.sh
+AND/OR
+$ bash setup/setup_ios_native.sh
 ```
 
-Setup the config
+**(optional)** Configure by changing the files in `www/json`.
+Defaults are in `www/json/*.sample`
 
 ```
-$ ./bin/configure_xml_and_json.js cordovabuild
+$ ls www/json/*.sample
+$ cp www/json/startupConfig.json.sample www/json/startupConfig.json
+$ cp ..... www/json/connectionConfig.json
 ```
 
-Install all javascript components using bower
+### Activation (after install, and in every new shell)
 
 ```
-$ bower update
+$ source setup/activate_native.sh
 ```
 
-Make sure to install the other node modules required for the setup scripts.
+
+
+Run in the emulator
 
 ```
-npm install
+$ npx cordova emulate ios
+AND/OR
+$ npx cordova emulate android
 ```
 
-Create a remote to pull updates from upstream
+Creating logos
+---
+If you are building your own version of the app, you must have your own logo to
+avoid app store conficts. Updating the logo is very simple using the [`ionic
+cordova resources`](https://ionicframework.com/docs/v3/cli/cordova/resources/)
+command.
 
-```
-$ git remote add upstream https://github.com/e-mission/e-mission-phone.git
-```
-
-Setup cocoapods. For all versions > 1.9, we need https://cocoapods.org/ support. This is used by the push plugin for the GCM pod, and by the auth plugin to install the GTMOAuth framework. This is a good time to get a cup of your favourite beverage.
-
-```
-$ sudo gem install cocoapods
-$ pod setup
-```
-
-To debug the cocoapods install, or make it less resource intensive, check out troubleshooting guide for the push plugin.
-https://github.com/phonegap/phonegap-plugin-push/blob/master/docs/INSTALLATION.md#cocoapods
-
-**Note about cocoapods 1.9, there seems to be an issue which breaks ```pod setup```:** 
-https://github.com/flutter/flutter/issues/41253
-1.75 seems to work: ```sudo gem install cocoapods -v 1.7.5```
-
-Configure values if necessary - e.g.
-
-```
-ls www/json/*.sample
-cp www/json/setupConfig.json.sample www/json/setupConfig.json
-cp ..... www/json/connectionConfig.json
-```
-
-Restore cordova platforms and plugins
-
-```
-$ cordova prepare
-```
-
-**Note:** Sometimes, the `$ cordova prepare` command fails because of errors while cloning plugins (`Failed to restore plugin "..." from config.xml.`). A workaround is at https://github.com/e-mission/e-mission-docs/blob/master/docs/overview/high_level_faq.md#i-get-an-error-while-adding-plugins
-
-**Note #2:** After the update to the plugins to support api 26, for this repository **only** the first call `$ cordova prepare` fails with the error
-
-    Using cordova-fetch for cordova-android@^6.4.0
-    Error: Platform ios already added.
-The workaround is to re-run `$cordova prepare`. This not required in the https://github.com/e-mission/e-mission-base repo although the config.xml seems to be the same for both repositories.
-
-    $ cordova prepare
-    Discovered platform "android@^6.4.0" in config.xml or package.json. Adding it to the project
-    Using cordova-fetch for cordova-android@^6.4.0
-    Adding android project...
-    Creating Cordova project for the Android platform:
-        Path: platforms/android
-        Package: edu.berkeley.eecs.emission
-        Name: emission
-        Activity: MainActivity
-        Android target: android-26
-
-
-Installation is now complete. You can view the current state of the application in the emulator
-
-    $ cordova emulate ios
-
-    OR
-
-    $ cordova emulate android
-
-The android build and emulator have improved significantly in the last release
-of Android Studio (3.0.1).  The build is significantly faster than iOS, the
-emulator is just as snappy, and the debugger is better since chrome saves logs
-from startup, so you don't have to use tricks like adding alerts to see errors
-in startup.
-
-**Note about Xcode >=10** The cordova build doesn't work super smoothly for iOS anymore. Concretely, you need two additional steps:
-- install pods manually. Otherwise you will get a linker error for `-lAppAuth`
-    ```
-        $ cd platform/ios
-        $ pod install
-        $ cd ../..
-    ```
-
-- when you recompile, you will get the following compile error. The workaround is to compile from xcode. I have filed an issue for this (https://github.com/apache/cordova-ios/issues/550) but there have been no recent updates.
-
-    ```
-    /Users/shankari/e-mission/e-mission-phone/platforms/ios/Pods/JWT/Classes/Supplement/JWTBase64Coder.m:22:9: fatal error:
-          'Base64/MF_Base64Additions.h' file not found
-    #import <Base64/MF_Base64Additions.h>
-            ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-    1 error generated.
-    ```
-
-- Also, on Mojave, we have reports that [you may need to manually enable the Legacy Build system in Xcode if you want to run the app on a real device](https://stackoverflow.com/a/52528662/4040267).
+**Note**: You may have to install the [`cordova-res` package](https://github.com/ionic-team/cordova-res) for the command to work
 
 
 Troubleshooting
 ---
+- Make sure to use `npx ionic` and `npx cordova`. This is
+  because the setup script installs all the modules locally in a self-contained
+  environment using `npm install` and not `npm install -g`
+- Check the CI to see whether there is a known issue
+- Run the commands from the script one by one and see which fails
+    - compare the failed command with the CI logs
+- Another workaround is to delete the local environment and recreate it
+    - javascript errors: `rm -rf node_modules && npm install`
+    - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
-Troubleshooting tips have been moved to the e-mission-phone section of the e-mission-docs repo:
-https://github.com/e-mission/e-mission-docs/blob/master/docs/e-mission-phone/troubleshooting_tips_faq.md
-
-Debugging
+Beta-testing debugging
 ---
 If users run into problems, they have the ability to email logs to the
 maintainer. These logs are in the form of an sqlite3 database, so they have to
@@ -315,6 +184,10 @@ $ less /tmp/loggerDB.<issue>.withdate.log
 
 Contributing
 ---
+
+Add the main repo as upstream
+
+    $ git remote add upstream https://github.com/covid19database/phone-app.git
 
 Create a new branch (IMPORTANT). Please do not submit pull requests from master
 
