@@ -325,32 +325,32 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       // Red labels if we have no possibilities left
       if (labelsList.length == 0) {
         for (const inputType of ConfirmHelper.INPUTS) $scope.populateInput(trip.finalInference, inputType, undefined);
-        return;
       }
+      else {
+        // Normalize probabilities to previous level of certainty
+        const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
+        labelsList.forEach(item => item.p*=certaintyScalar);
 
-      // Normalize probabilities to previous level of certainty
-      const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
-      labelsList.forEach(item => item.p*=certaintyScalar);
+        for (const inputType of ConfirmHelper.INPUTS) {
+          // For each label type, find the most probable value by binning by label value and summing
+          const retKey = $scope.inputType2retKey(inputType);
+          let valueProbs = new Map();
+          for (const tuple of labelsList) {
+            const labelValue = tuple.labels[retKey];
+            if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
+            valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
+          }
+          let max = {p: 0, labelValue: undefined};
+          for (const [thisLabelValue, thisP] of valueProbs) {
+            // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
+            if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
+          }
 
-      for (const inputType of ConfirmHelper.INPUTS) {
-        // For each label type, find the most probable value by binning by label value and summing
-        const retKey = $scope.inputType2retKey(inputType);
-        let valueProbs = new Map();
-        for (const tuple of labelsList) {
-          const labelValue = tuple.labels[retKey];
-          if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
-          valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
+          // Apply threshold
+          if (max.p <= confidenceThreshold) max.labelValue = undefined;
+
+          $scope.populateInput(trip.finalInference, inputType, max.labelValue);
         }
-        let max = {p: 0, labelValue: undefined};
-        for (const [thisLabelValue, thisP] of valueProbs) {
-          // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
-          if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
-        }
-
-        // Apply threshold
-        if (max.p <= confidenceThreshold) max.labelValue = undefined;
-
-        $scope.populateInput(trip.finalInference, inputType, max.labelValue);
       }
       $scope.updateVerifiability(trip);
     }
