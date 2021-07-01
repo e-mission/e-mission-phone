@@ -110,19 +110,32 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
+.btn-input-confirm-red,
+.btn-input-confirm-red:hover,
+.btn-input-confirm-red:active {
+  background-color: #ED2D3A;
+  color: white;
+}
+.btn-input-confirm-yellow,
+.btn-input-confirm-yellow:hover,
+.btn-input-confirm-yellow:active {
+  background-color: #FFC108;
+  color: white;
+}
 .btn-input-confirm-green,
 .btn-input-confirm-green:hover,
 .btn-input-confirm-green:active {
   background-color: #30A64A;
   color: white;
 }
-.btn-input-confirm-white,
+/* White confirm buttons are currently unused */
+/* .btn-input-confirm-white,
 .btn-input-confirm-white:hover,
 .btn-input-confirm-white:active {
   background-color: #ddd;
   color: #333;
   font-size: 0.8em;
-}
+} */
 .btn-input-confirm {
   line-height: 30px;
   min-height: 30px;

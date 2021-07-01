@@ -69,10 +69,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.reverse();
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
+            // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
                 $scope.populateManualInputs(trip, ctList[tIndex+1], item, $scope.data.manualResultMap[item]);
             });
+            trip.finalInference = {};
+            $scope.inferFinalLabels(trip);
         });
         ctList.forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
@@ -250,6 +253,29 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     /**
+     * MODE (becomes manual/mode_confirm) becomes mode_confirm
+     */
+    $scope.inputType2retKey = function(inputType) {
+      return ConfirmHelper.inputDetails[inputType].key.split("/")[1];
+    }
+
+    /**
+     * Insert the given userInputLabel into the given inputType's slot in inputField
+     */
+    $scope.populateInput = function(tripField, inputType, userInputLabel) {
+      if (angular.isDefined(userInputLabel)) {
+          var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
+          if (!angular.isDefined(userInputEntry)) {
+            userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
+            $scope.inputParams[inputType].options.push(userInputEntry);
+            $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
+          }
+          // console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
+          tripField[inputType] = userInputEntry;
+      }
+    }
+
+    /**
      * Embed 'inputType' to the trip
      */
     $scope.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
@@ -261,23 +287,91 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             inputList);
         var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
         if (!angular.isDefined(userInputLabel)) {
-            // manual/mode_confirm becomes mode_confirm
-            const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
-            userInputLabel = tripgj.user_input[retKey];
+            userInputLabel = tripgj.user_input[$scope.inputType2retKey(inputType)];
         }
-        if (angular.isDefined(userInputLabel)) {
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
-              $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
-            }
-            // console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
-            tripgj.userInput[inputType] = userInputEntry;
-        }
+        $scope.populateInput(tripgj.userInput, inputType, userInputLabel);
         // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
         $scope.editingTrip = angular.undefined;
     }
+
+    /**
+     * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
+     * The algorithm below operationalizes these principles:
+     *   - Never consider label tuples that contradict a green label
+     *   - Obey "conservation of uncertainty": the sum of probabilities after filtering by green labels must equal the sum of probabilities before
+     *   - After filtering, predict the most likely choices at the level of individual labels, not label tuples
+     *   - Never show user yellow labels that have a lower probability of being correct than confidenceThreshold
+     */
+    $scope.inferFinalLabels = function(trip) {
+      // Display a label as red if its most probable inferred value has a probability of less than or equal to confidenceThreshold
+      // TODO: make this configurable
+      const confidenceThreshold = 0.5;
+
+      // Deep copy the possibility tuples
+      let labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
+
+      // Capture the level of certainty so we can reconstruct it later
+      const totalCertainty = labelsList.map(item => item.p).reduce(((item, rest) => item + rest), 0);
+
+      // Filter out the tuples that are inconsistent with existing green labels
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const userInput = trip.userInput[inputType];
+        if (userInput) {
+          const retKey = $scope.inputType2retKey(inputType);
+          labelsList = labelsList.filter(item => item.labels[retKey] == userInput.value);
+        }
+      }
+
+      // Red labels if we have no possibilities left
+      if (labelsList.length == 0) {
+        for (const inputType of ConfirmHelper.INPUTS) $scope.populateInput(trip.finalInference, inputType, undefined);
+        return;
+      }
+
+      // Normalize probabilities to previous level of certainty
+      const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
+      labelsList.forEach(item => item.p*=certaintyScalar);
+
+      for (const inputType of ConfirmHelper.INPUTS) {
+        // For each label type, find the most probable value by binning by label value and summing
+        const retKey = $scope.inputType2retKey(inputType);
+        let valueProbs = new Map();
+        for (const tuple of labelsList) {
+          const labelValue = tuple.labels[retKey];
+          if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
+          valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
+        }
+        let max = {p: 0, labelValue: undefined};
+        for (const [thisLabelValue, thisP] of valueProbs) {
+          // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
+          if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
+        }
+
+        // Apply threshold
+        if (max.p <= confidenceThreshold) max.labelValue = undefined;
+
+        $scope.populateInput(trip.finalInference, inputType, max.labelValue);
+      }
+      $scope.updateVerifiability(trip);
+    }
+
+    /**
+     * For a given trip, compute how the "verify" button should behave.
+     * If the trip has at least one yellow label, the button should be clickable.
+     * If the trip has all green labels, the button should be disabled because everything has already been verified.
+     * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
+     */
+    $scope.updateVerifiability = function(trip) {
+      var allGreen = true;
+      var someYellow = false;
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const green = trip.userInput[inputType];
+        const yellow = trip.finalInference[inputType] && !green;
+        if (yellow) someYellow = true;
+        if (!green) allGreen = false;
+    }
+    trip.verifiability = someYellow ? "can-verify" : (allGreen ? "already-verified" : "cannot-verify");
+  }
 
     $scope.getFormattedDistanceInMiles = function(input) {
       return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
@@ -292,6 +386,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
+        tripgj.verifiability = "cannot-verify";
+        // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
+        tripgj.start_display_name = "\xa0";
+        tripgj.end_display_name = "\xa0";
     }
 
     const fillPlacesForTripAsync = function(tripgj) {
@@ -529,6 +627,25 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
 
     /**
+     * verifyTrip turns all of a given trip's yellow labels green
+     */
+    $scope.verifyTrip = function($event, trip) {
+      if (trip.verifiability != "can-verify") return;
+      
+      $scope.draftInput = {
+        "start_ts": trip.start_ts,
+        "end_ts": trip.end_ts
+      };
+      $scope.editingTrip = trip;
+
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const inferred = trip.finalInference[inputType];
+        // TODO: figure out what to do with "other". For now, do not verify.
+        if (inferred && !trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
+      }
+    }
+
+    /**
      * Store selected value for options
      * $scope.selected is for display only
      * the value is displayed on popover selected option
@@ -594,6 +711,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           } else {
             tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
           }
+          $scope.inferFinalLabels(tripToUpdate);  // Recalculate our inferences based on this new information
         });
       });
       if (isOther == true)
