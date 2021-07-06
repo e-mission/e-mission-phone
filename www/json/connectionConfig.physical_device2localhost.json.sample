@@ -1,5 +1,6 @@
 {
     "connectUrl": "http://<your laptop ip>:8080",
+    "aggregate_call_auth": "no_auth",
     "android": {
         "auth": {
             "method": "prompted-auth",

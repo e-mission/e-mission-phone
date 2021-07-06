@@ -1,5 +1,5 @@
 {
-  "modeOptions" : [
+  "MODE" : [
        {"text":"Walk", "value":"walk"},
        {"text":"Bike","value":"bike"},
        {"text":"Drove Alone","value":"drove_alone"},
@@ -8,8 +8,8 @@
        {"text":"Bus","value":"bus"},
        {"text":"Train","value":"train"},
        {"text":"Free Shuttle","value":"free_shuttle"},
-       {"text":"Other","value":"other_mode"}],
-    "purposeOptions" : [
+       {"text":"Other","value":"other"}],
+    "PURPOSE" : [
        {"text":"Home", "value":"home"},
        {"text":"Work","value":"work"},
        {"text":"School","value":"school"},
@@ -21,5 +21,5 @@
        {"text":"Recreation/Exercise","value":"exercise"},
        {"text":"Entertainment/Social","value":"entertainment"},
        {"text":"Religious", "value":"religious"},
-       {"text":"Other","value":"other_purpose"}]
+       {"text":"Other","value":"other"}]
 }

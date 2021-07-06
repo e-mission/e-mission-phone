@@ -1,0 +1,41 @@
+<ion-modal-view translate-namespace="diary">
+   <ion-header-bar class="bar bar-header bar-stable">
+    <h1 class="title dark-color">Trip Details</h1>
+    <button class="button button-mode-confirm-green button-primary" ng-click="tripDetailPopover.hide()">Close</button>
+   </ion-header-bar>
+   <ion-content>
+     <center>
+     <h1 class="title dark-color" style="textAlign: center;">{{currgj.display_date}}</h1>
+     </center>
+     <div style="height: 15px;"></div>
+     <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
+        <div class="col-30">
+            <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{currgj.display_start_time}}</div>
+            <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{currgj.display_end_time}}
+            </div>
+        </div>
+
+        <div class="col-70">
+            <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 1em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+            <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+                    {{currgj.start_display_name}}
+
+            </div>
+            <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 1em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+            <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+                    {{currgj.end_display_name}}
+            </div>
+        </div>
+    </div>
+    <div style="height: 15px;"></div>
+    <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
+      <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
+      <p style="font-size: 1.1em; color: #999999; margin-bottom: 0;" translate>{{'.distance'}}</p>{{currgj.display_distance}} mi</div>
+      <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #999999; margin-bottom: 0;" translate>{{'.time'}}</p>{{currgj.display_time}}</div>
+    </div>
+    <div style="height: 20px;"></div>
+    <leaflet geojson="currgj" id="detailPopoverMap" defaults="defaults"
+        height="isAndroid? '50%': '600px'" width="100%"
+        style="padding-right: 20px !important; padding-left: 20px !important"></leaflet>
+   </ion-content>
+</ion-modal-view>

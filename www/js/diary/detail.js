@@ -54,8 +54,6 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
   $scope.getIcon = DiaryHelper.getIcon;
   $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-  $scope.getPercentages = DiaryHelper.getPercentages;
-  $scope.allModes = DiaryHelper.allModes;
   $scope.trip = Timeline.getTrip($stateParams.tripId);
   $scope.getKmph = DiaryHelper.getKmph;
   $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
@@ -67,11 +65,16 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.getTripDetails = DiaryHelper.getTripDetails
   $scope.tripgj = Timeline.getTripWrapper($stateParams.tripId);
 
-  console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
-
-  leafletData.getMap('detail').then(function(map) {
-    map.on('click', PostTripManualMarker.startAddingIncidentToTrip($scope.trip, map));
+  $scope.formattedSectionProperties = $scope.tripgj.sections.map(function(s) {
+    return {"fmt_time": DiaryHelper.getLocalTimeString(s.properties.start_local_dt),
+            "fmt_time_range": DiaryHelper.getFormattedTimeRange(s.properties.end_ts, s.properties.start_ts),
+            "fmt_distance": DiaryHelper.getFormattedDistance(s.properties.distance),
+            "icon": DiaryHelper.getIcon(s.properties.sensed_mode),
+            "colorStyle": {color: DiaryHelper.getColor(s.properties.sensed_mode)}
+            };
   });
+
+  console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
 
   var data  = [];
   var start_ts = $scope.trip.properties.start_ts;

@@ -11,7 +11,7 @@ angular.module('emission.main.metrics',['nvd3',
                                     CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
-                                    $rootScope, $location, $state, ReferHelper, $http, Logger,
+                                    $rootScope, $location, $state, ReferHelper, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
     var first = true;
@@ -419,9 +419,8 @@ angular.module('emission.main.metrics',['nvd3',
       delete clonedData.metric;
       clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
       clonedData.is_return_aggregate = true;
-      var getMetricsResult = $http.post(
-        "https://e-mission.eecs.berkeley.edu/result/metrics/timestamp",
-        clonedData)
+      var getMetricsResult = CommHelper.getAggregateData(
+        "result/metrics/timestamp", clonedData)
       return getMetricsResult;
    }
 
@@ -504,20 +503,20 @@ angular.module('emission.main.metrics',['nvd3',
       })
 
       getAggMetricsFromServer().then(function(results) {
-          $scope.fillAggregateValues(results.data.aggregate_metrics);
+          $scope.fillAggregateValues(results.aggregate_metrics);
           $scope.uictrl.hasAggr = true;
           if (angular.isDefined($scope.chartDataAggr)) { //Only have to check one because
             // Restore the $apply if/when we go away from $http
-            // $scope.$apply(function() {
+            $scope.$apply(function() {
               if (!$scope.uictrl.showMe) {
                 $scope.showCharts($scope.chartDataAggr);
               }
-            // })
+            })
           } else {
-            // $scope.$apply(function() {
+            $scope.$apply(function() {
               $scope.showCharts([]);
               console.log("did not find aggregate result in response data "+JSON.stringify(results[2]));
-            // });
+            });
           }
       })
       .catch(function(error) {

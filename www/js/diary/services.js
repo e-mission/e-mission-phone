@@ -3,7 +3,7 @@
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.enketo-survey.service',
-    'emission.incident.posttrip.manual'])
+    'emission.incident.posttrip.manual', 'emission.tripconfirm.services'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -34,7 +34,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
   }
-  dh.getIcon = function(section) {
+  dh.getIcon = function(sensed_mode) {
+    var mode_string = dh.getHumanReadable(sensed_mode);
     var icons = {"BICYCLING":"ion-android-bicycle",
     "WALKING":" ion-android-walk",
     "RUNNING":" ion-android-walk",
@@ -48,7 +49,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     "UNKNOWN": "ion-ios-help",
     "UNPROCESSED": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
-    return icons[dh.getHumanReadable(section.properties.sensed_mode)];
+    return icons[mode_string];
   }
   dh.getHumanReadable = function(sensed_mode) {
     var ret_string = sensed_mode.split('.')[1];
@@ -60,47 +61,64 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
   // Temporary function to avoid repear in getPercentages ret val.
   var filterRunning = function(mode) {
-    if (mode == 'RUNNING') {
-      return 'WALKING';
+    if (mode == 'MotionTypes.RUNNING') {
+      return 'MotionTypes.WALKING';
     } else {
       return mode;
     }
   }
   dh.getPercentages = function(trip) {
-    var rtn0 = []; // icons
-    var rtn1 = []; //percentages
+    // we use a Map here to make it easier to work with the for loop below
+    let dists = {};
 
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":"ion-android-walk",
-    // "RUNNING":" ion-android-walk",
-    //  RUNNING has been filtered in function above
-    "IN_VEHICLE":"ion-speedometer",
-    "BUS": "ion-android-bus",
-    "LIGHT_RAIL": "lightrail fas fa-subway",
-    "TRAIN": "ion-android-train",
-    "TRAM": "fas fa-tram",
-    "SUBWAY": "fas fa-subway",
-    "CAR": "ion-android-car",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    var total = 0;
+    var totalDist = 0;
     for (var i=0; i<trip.sections.length; i++) {
-      if (rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode))) == -1) {
-        rtn0.push(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)));
-        rtn1.push(trip.sections[i].properties.distance);
-        total += trip.sections[i].properties.distance;
+      let filteredMode = filterRunning(trip.sections[i].properties.sensed_mode);
+      if (filteredMode in dists) {
+        dists[filteredMode] += trip.sections[i].properties.distance;
+        totalDist += trip.sections[i].properties.distance;
       } else {
-        rtn1[rtn0.indexOf(filterRunning(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)))] += trip.sections[i].properties.distance;
-        total += trip.sections[i].properties.distance;
+        dists[filteredMode] = trip.sections[i].properties.distance;
+        totalDist += trip.sections[i].properties.distance;
       }
     }
-    for (var i=0; i<rtn0.length; i++) {
-      rtn0[i] = "icon " + icons[rtn0[i]];
-      rtn1[i] = Math.floor((rtn1[i] / total) * 100);
-    }
-    return [rtn0, rtn1];
+
+    let sectionPcts = Object.keys(dists).map(function(mode) {
+        return {
+            mode: mode,
+            icon: "icon " + dh.getIcon(mode),
+            color: {color: dh.getColor(mode)},
+            pct: Math.floor((dists[mode] / totalDist) * 100)
+        };
+    });
+
+    return sectionPcts;
   }
+
+  dh.getColor = function(sensed_mode) {
+    var mode_string = dh.getHumanReadable(sensed_mode);
+    var colors = {
+      "WALKING": 'brown',
+      "RUNNING": 'brown',
+      "BICYCLING": 'green',
+      "IN_VEHICLE": 'purple',
+      "LIGHT_RAIL": 'blue',
+      "BUS": 'navy',
+      "TRAIN": 'skyblue',
+      "TRAM": 'slateblue',
+      "SUBWAY": 'darkcyan',
+      "CAR": 'salmon',
+      "UNKNOWN": 'orange',
+      "UNPROCESSED": 'orange',
+      "AIR_OR_HSR": "red"
+    };
+    if (mode_string in colors) {
+        return colors[mode_string];
+    } else {
+        return "black";
+    }
+  }
+
   dh.starColor = function(num) {
     if (num >= 3) {
       return 'yellow';
@@ -127,32 +145,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return background;
   }
 
-  dh.allModes = function(trip) {
-    var rtn = [];
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":"ion-android-walk",
-    "RUNNING":"ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",
-    "CAR": "ion-android-car",
-    "BUS": "ion-android-bus",
-    "LIGHT_RAIL": "lightrail fas fa-subway",
-    "TRAIN": "ion-android-train",
-    "TRAM": "fas fa-tram",
-    "SUBWAY": "fas fa-subway",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    for (var i=0; i<trip.sections.length; i++) {
-      if (rtn.indexOf(dh.getHumanReadable(trip.sections[i].properties.sensed_mode)) == -1) {
-        rtn.push(dh.getHumanReadable(trip.sections[i].properties.sensed_mode));
-      }
-    }
-    for (var i=0; i<rtn.length; i++) {
-      rtn[i] = "icon " + icons[rtn[i]];
-    }
-    return rtn;
-  }
-
   dh.getKmph = function(section) {
     var metersPerSec = section.properties.distance / section.properties.duration;
     return (metersPerSec * 3.6).toFixed(2);
@@ -177,7 +169,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.getLocalTimeString = function (dt) {
-    return moment(dt).format("LT");
+    //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
+    let mdt = angular.copy(dt)
+    mdt.month = mdt.month - 1
+    return moment(mdt).format("LT");
   };
 
   dh.getFormattedTime = function(ts_in_secs) {
@@ -398,23 +393,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 weight: 5,
                 opacity: 1,
         };
-        var mode_string = dh.getHumanReadable(feature.properties.sensed_mode);
-        switch(mode_string) {
-            case "WALKING": return getColoredStyle(baseDict, 'brown');
-            case "RUNNING": return getColoredStyle(baseDict, 'brown');
-            case "BICYCLING": return getColoredStyle(baseDict, 'green');
-            case "IN_VEHICLE": return getColoredStyle(baseDict, 'purple');
-            case "LIGHT_RAIL": return getColoredStyle(baseDict, 'blue');
-            case "TRAIN": return getColoredStyle(baseDict, 'skyblue');
-            case "TRAM": return getColoredStyle(baseDict, 'slateblue');
-            case "SUBWAY": return getColoredStyle(baseDict, 'darkcyan');
-            case "BUS": return getColoredStyle(baseDict, 'navy');
-            case "CAR": return getColoredStyle(baseDict, 'salmon');
-            case "UNKNOWN": return getColoredStyle(baseDict, 'orange');
-            case "UNPROCESSED": return getColoredStyle(baseDict, 'orange');
-            case "AIR_OR_HSR": return getColoredStyle(baseDict, 'red');
-            default: return getColoredStyle(baseDict, 'black');
-        }
+        return getColoredStyle(baseDict, dh.getColor(feature.properties.sensed_mode));
       };
 
   var fmtTs = function(ts_in_secs, tz) {
@@ -427,8 +406,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  dh.getUserInputForTrip = function(tripgj, userInputList) {
-    console.log("Input list = "+userInputList.map(printUserInput));
+  dh.getUserInputForTrip = function(tripgj, nextTripgj, userInputList) {
+    if (userInputList.length < 20) {
+        console.log("Input list = "+userInputList.map(printUserInput));
+    }
     var tripProp = tripgj.data.properties;
     var isDraft = dh.isDraft(tripgj);
     var potentialCandidates = userInputList.filter(function(userInput) {
@@ -445,37 +426,68 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         // logic described in
         // https://github.com/e-mission/e-mission-docs/issues/423
         if (isDraft) {
-            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
-                +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
-                +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
-                +") && "+(userInput.data.end_ts <= tripProp.end_ts);
-            console.log(logStr);
-            // Logger.log(logStr);
+            if (userInputList.length < 20) {
+                var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                    +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
+                    +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
+                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
+                    +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
+                    +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+                console.log(logStr);
+                // Logger.log(logStr);
+            }
             return (userInput.data.start_ts >= tripProp.start_ts
-                    || -(userInput.data.start_ts - tripProp.start_ts) <= 5 * 60)
+                    && userInput.data.start_ts <= tripProp.end_ts
+                    || -(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
                 && userInput.data.end_ts <= tripProp.end_ts;
         } else {
             // we know that the trip is cleaned so we can use the fmt_time
             // but the confirm objects are not necessarily filled out
-            var logStr = "Cleaned trip: comparing user = "
-                +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+tripProp.start_fmt_time
-                +" -> "+tripProp.end_fmt_time
-                +" checks are "+(userInput.data.start_ts >= tripProp.start_ts)
-                +" && ("+(userInput.data.end_ts <= tripProp.end_ts)
-                +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 5 * 60)+")";
-            Logger.log(logStr);
-            return userInput.data.start_ts >= tripProp.start_ts
-                && (userInput.data.end_ts <= tripProp.end_ts ||
-                    (userInput.data.end_ts - tripProp.end_ts) <= 5 * 60);
+            if (userInputList.length < 20) {
+                var logStr = "Cleaned trip: comparing user = "
+                    +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
+                    +" trip = "+tripProp.start_fmt_time
+                    +" -> "+tripProp.end_fmt_time
+                    +" start checks are "+(userInput.data.start_ts >= tripProp.start_ts)
+                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
+                    +" end checks are "+(userInput.data.end_ts <= tripProp.end_ts)
+                    +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 15 * 60)+")";
+                Logger.log(logStr);
+            }
+            // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
+            const startChecks = userInput.data.start_ts >= tripProp.start_ts &&
+                userInput.data.start_ts <= tripProp.end_ts;
+            var endChecks = (userInput.data.end_ts <= tripProp.end_ts ||
+                    (userInput.data.end_ts - tripProp.end_ts) <= 15 * 60);
+            if (startChecks && !endChecks) {
+                if (angular.isDefined(nextTripgj)) {
+                    endChecks = userInput.data.end_ts <= nextTripgj.data.properties.start_ts;
+                    Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextTripgj.data.properties.start_ts+") = "+endChecks);
+                } else {
+                    // next trip is not defined, last trip
+                    endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
+                    Logger.log("Second level of end checks for the last trip of the day");
+                    Logger.log("compare "+userInput.data.end_local_dt.day + " with " + userInput.data.start_local_dt.day + " = " + endChecks);
+                }
+                if (endChecks) {
+                    // If we have flipped the values, check to see that there
+                    // is sufficient overlap
+                    const overlapDuration = Math.min(userInput.data.end_ts, tripProp.end_ts) - Math.max(userInput.data.start_ts, tripProp.start_ts)
+                    Logger.log("Flipped endCheck, overlap("+overlapDuration+
+                        ")/trip("+tripProp.duration+") = "+ (overlapDuration / tripProp.duration));
+                    endChecks = (overlapDuration/tripProp.duration) > 0.5;
+                }
+            }
+            return startChecks && endChecks;
         }
     });
     if (potentialCandidates.length === 0)  {
-        Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        if (userInputList.length < 20) {
+            Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
+        }
         return undefined;
     }
 
@@ -496,8 +508,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, EnketoSurvey, Logger, $translate) {
+.factory('Timeline', function(CommHelper, ConfirmHelper, $http, $ionicLoading, $window,
+    EnketoSurvey,
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -509,6 +522,53 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var getKeyForDate = function(date) {
       var dateString = date.startOf('day').format('YYYY-MM-DD');
       return "diary/trips-"+dateString;
+    };
+
+    timeline.getUnprocessedLabels = function() {
+        /*
+         Because with the confirmed trips, all prior labels have been
+         incorporated into the trip.
+         */
+        return CommHelper.getPipelineRangeTs().then(function(result) {
+            const pendingLabelQuery = {key: "write_ts",
+                startTs: result.end_ts - 10,
+                endTs: moment().unix() + 10
+            }
+            var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+              return UnifiedDataLoader.getUnifiedMessagesForInterval(
+                  ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
+            });
+            return Promise.all(manualPromises).then((manualResults) => {
+                const manualConfirmResults = {};
+                manualResults.forEach(function(mr, index) {
+                  manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
+                });
+                return [result, manualConfirmResults];
+            });
+        }).catch((err) => {
+            Logger.displayError("while reading confirmed trips", err);
+            return [{}, {}];
+        });
+    };
+
+    timeline.readAllConfirmedTrips = function(endTs, deltaTs) {
+      $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+      });
+      const readPromises = [
+        CommHelper.getRawEntries(["analysis/confirmed_trip"],
+            endTs - deltaTs, endTs, "data.end_ts"),
+      ];
+      return Promise.all(readPromises)
+        .then(([ctList]) => {
+            $ionicLoading.hide();
+            return ctList.phone_data.map((ct) => ct.data);
+        })
+        .catch((err) => {
+            Logger.displayError("while reading confirmed trips", err);
+            $ionicLoading.hide();
+            return [];
+        });
     };
 
     timeline.updateFromDatabase = function(day) {
@@ -667,8 +727,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return {
             timezone: tz,
             year: currMoment.year(),
-            month: currMoment.month(),
-            day: currMoment.day(),
+            //the months of the draft trips match the one format needed for
+            //moment function however now that is modified we need to also
+            //modify the months value here
+            month: currMoment.month() + 1,
+            day: currMoment.date(),
             weekday: currMoment.weekday(),
             hour: currMoment.hour(),
             minute: currMoment.minute(),
@@ -791,6 +854,64 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var tsEntrySort = function(e1, e2) {
       // compare timestamps
       return e1.data.ts - e2.data.ts;
+    }
+
+    var confirmedPlace2Geojson = function(trip, locationPoint, featureType) {
+        var place_gj = {
+        "type": "Feature",
+        "geometry": locationPoint,
+        "properties": {
+            "feature_type": featureType
+        }
+      }
+      return place_gj;
+    }
+
+    var confirmedPoints2Geojson = function(trip, locationList) {
+      var sectionCoordinates = locationList.map(function(point) {
+        return point.data.loc.coordinates;
+      });
+      return {
+        type: "Feature",
+        geometry: {
+            type: "LineString",
+            coordinates: sectionCoordinates
+        }
+      }
+    }
+
+    timeline.confirmedTrip2Geojson = function(trip) {
+      Logger.log("About to pull location data for range "
+        + moment.unix(trip.start_ts).toString() + " -> " 
+        + moment.unix(trip.end_ts).toString());
+        // TODO: change this to recreated location
+      $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+      });
+
+        const fillPromises = [
+            CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
+        ];
+
+        return Promise.all(fillPromises).then(function([locationList]) {
+          Logger.log("Retrieved "+locationList.phone_data.length+" points");
+          var features = [
+            confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
+            confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
+            confirmedPoints2Geojson(trip, locationList.phone_data)
+          ];
+          var trip_gj = {
+            id: "confirmed"+trip.start_ts,
+            type: "FeatureCollection",
+            features: features,
+            properties: { }
+          }
+          $ionicLoading.hide();
+          return trip_gj;
+        }).catch((err) => {
+          Logger.displayError("while filling details", err);
+          $ionicLoading.hide();
+        });
     }
 
     var trip2Geojson = function(trip) {
@@ -994,22 +1115,27 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
       // Also mode/purpose and survey answers
       var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-      var modesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/mode_confirm', tq);
-      var purposesPromise = UnifiedDataLoader.getUnifiedMessagesForInterval('manual/purpose_confirm', tq);
+      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+        return UnifiedDataLoader.getUnifiedMessagesForInterval(
+            ConfirmHelper.inputDetails[inp].key, tq);
+      });
       var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
 
       // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, modesPromise, purposesPromise, surveyAnswersPromise])
-        .then(function([processedTripList, completeStatus, modes, purposes, surveyAnswers]) {
+      Promise.all([tripsFromServerPromise, isProcessingCompletePromise, surveyAnswersPromise].concat(manualPromises))
+        .then(function([processedTripList, completeStatus, surveyAnswers, ...manualResults]) {
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
-        console.log(` with ${modes.length} modes, ${purposes.length} purposes,  ${surveyAnswers.length} surveyAnswers`);
+        var mrString = 'with ' + manualResults.map(function(item, index) {
+            return ' ${mr.length} ${ConfirmHelper.INPUTS[index]}';
+        });
+        console.log(mrString + ` ${surveyAnswers.length} surveyAnswers`);
         var tripList = processedTripList;
-        timeline.data.unifiedConfirmsResults = {
-          modes: modes,
-          purposes: purposes,
-          surveyAnswers: surveyAnswers,
-        };
+        timeline.data.unifiedConfirmsResults = {}
+        timeline.data.unifiedConfirmsResults.surveyAnswers = surveyAnswers;
+        manualResults.forEach(function(mr, index) {
+          timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
+        });
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -1029,8 +1155,23 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
         console.log("About to hide loading overlay");
         $ionicLoading.hide();
-        localCacheReadFn(day).then(function(processedTripList) {
+
+        var tripsFromCachePromise = localCacheReadFn(day);
+
+        // Also mode/purpose and (currently disabled) survey answers
+        var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+        var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+          return UnifiedDataLoader.getUnifiedMessagesForInterval(
+            ConfirmHelper.inputDetails[inp].key, tq);
+        });
+        Promise.all([tripsFromCachePromise].concat(manualPromises)).then(function(
+            [processedTripList, ...manualResults]) {
+          console.log(' in local cache, found ${modes.length} modes, ${purposes.length} purposes');
           var tripList = processedTripList;
+          timeline.data.unifiedConfirmsResults = {}
+          manualResults.forEach(function(mr, index) {
+            timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
+          });
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
               Logger.log("tripList.length = "+tripList.length

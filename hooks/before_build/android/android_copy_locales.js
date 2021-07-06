@@ -18,7 +18,7 @@ module.exports = function (context) {
     console.log(LOG_NAME + "Languages found -> " + languagesFolders);
     languagesFolders.forEach(function (language) {
         console.log(LOG_NAME + 'I found ' + language + ", I will now copy the files.")
-        var platformRes = path.join(context.opts.projectRoot, 'platforms/android/res');
+        var platformRes = path.join(context.opts.projectRoot, 'platforms/android/app/src/main/res');
         var wwwi18n = path.join(context.opts.projectRoot, 'www/i18n/');
         var languageFolder = localesFolder + "/" + language;
 
@@ -30,7 +30,7 @@ module.exports = function (context) {
             var platformValues = platformRes + values;
             if (!fs.existsSync(platformValues)) {
                 console.log(LOG_NAME + platformValues + "does not exist, I will create it.");
-                fs.mkdirSync(platformValues);
+                fs.mkdirSync(platformValues, {recursive: true});
             }
 
             fs.copySync(valuesFolder, platformValues);

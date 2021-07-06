@@ -17,6 +17,10 @@
       </div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.view-privacy'}}</div>
+      <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
@@ -69,6 +73,11 @@
     </div>
 
     <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.upload-log'}}</div>
+      <div ng-click="uploadLog()" class="control-icon-button"><i class="ion-android-upload"></i></div>
+    </div>
+
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.email-log'}}</div>
       <div ng-click="emailLog()" class="control-icon-button"><i class="ion-android-mail"></i></div>
     </div>
@@ -118,7 +127,11 @@
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.nuke-all'}}</div>
-        <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-trash-a"></i></div>
+        <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text" translate> {{'.test-notification'}}</div>
+        <div ng-click="testTripEndNotify()" class="control-icon-button"><i class="ion-android-note"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.set-ui-channel'}}</div>

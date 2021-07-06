@@ -1,6 +1,6 @@
 {
   "name": "e-mission-phone",
-  "app_id": "e0d8cdec",
+  "id": "e0d8cdec",
   "browsers": [
     {
       "platform": "android",

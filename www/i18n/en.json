@@ -60,6 +60,8 @@
         "check-ui-updates": "Check for UI updates",
         "download-json-dump": "Download json dump",
         "email-log": "Email log",
+        "upload-log": "Upload log",
+        "view-privacy": "View Privacy Policy",
         "user-data": "User data",
         "erase-data": "Erase data",
         "dev-zone": "Developer zone",
@@ -68,6 +70,7 @@
         "check-consent": "Check consent",
         "invalidate-cached-docs": "Invalidate cached docs",
         "nuke-all": "Nuke all buffers and cache",
+        "test-notification": "Test local notification",
         "set-ui-channel": "Set UI channel",
         "check-log": "Check log",
         "check-sensed-data": "Check sensed data",
@@ -143,14 +146,21 @@
         "report-incident": "Report Incident",
         "draft": "DRAFT",
         "distance-in-time": "{{distance}} km in {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} km in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
         "purpose": "Purpose",
+        "unlabeled": "Unlabeled🔍",
+        "invalid-ebike": "Invalid🔍",
+        "show-all": "All",
+        "no-trips-found": "No trips found",
+        "for-current-filter": "for current filter. Show All to remove filters",
+        "scroll-to-load-more": "Scroll to load more",
         "choose-mode": "Choose Mode",
         "choose-purpose": "Choose Purpose",
-        "how-did-you-get-here": "How did you get here?",
-        "why-did-you-come-here": "Why did you come here?",
+        "select-mode-scroll": "Mode (Scroll for more)",
+        "select-purpose-scroll": "Purpose (👇 for more)",
         "list-pick-a-date": "Pick a date"
     },
 
@@ -185,6 +195,10 @@
     },
 
     "main-diary" : "Diary",
+
+    "main-inf-scroll" : {
+        "tab": "Label"
+    },
 
     "main-heatmap":{
         "title": "Heatmap",
@@ -245,17 +259,29 @@
         }
     },
 
+    "upload-service":{
+        "upload-database": "Uploading database {{db}}",
+        "upload-from-dir": "from directory {{parentDir}}",
+        "upload-to-server": "to servers {{serverURL}}",
+        "going-to-email": "Going to email database from {{parentDir}}",
+        "please-fill-in-what-is-wrong": "please fill in what is wrong",
+        "upload-success": "Upload successful",
+        "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
+        "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
+    },
+
     "intro": {
         "permissions": {
             "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
-            "locationPermExplanation-android-gte-6": "please select 'allow'",
-            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to detect your location even when you are not actively using the app",
-            "locationPermExplanation-ios-gte-13": "please open emTripLog in Settings and change the location permission to 'Always'. This allows us to detect your location even when you are not actively using the app. After a few days, you will be asked whether you want to give the app background permission. Please continue to say 'Always Allow' whenever that comes up."
+            "locationPermExplanation-android-6-9": "please select 'allow'",
+            "locationPermExplanation-android-10": "please select 'Allow all the time'",
+            "locationPermExplanation-android-gte-11": "please select 'Allow all the time' for location permissions on the app page",
+            "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to understand your travel even when you are not actively using the app",
+            "locationPermExplanation-ios-gte-13": "please select 'always' and 'precise' in the app settings page and return here to continue"
         }
     },
     "allow_background": {
-        "samsung": "Settings → Power mode → High performance",
-        "huawei": "Settings → Battery manager → Protected apps → Enable protection for emTripLog"
+        "samsung": "Disable 'Medium power saving mode'"
     },
     "consent":{
         "button-accept": "I accept",
@@ -265,7 +291,7 @@
         "downloading-update": "Downloading UI-only update",
         "extracting-update": "Extracting UI-only update",
         "done": "Update done, reloading...",
-        "download-new-ui": "Download new UI-only update?.",
+        "download-new-ui": "Download new UI-only update to build {{build}}?",
         "download-not-now": "Not now",
         "download-apply": "Apply"
     },

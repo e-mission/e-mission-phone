@@ -12,7 +12,9 @@ angular.module('emission.stats.clientstats', [])
   clientStat.getStatKeys = function() {
     return {
       STATE_CHANGED: "state_changed",
-      BUTTON_FORCE_SYNC: "button_sync_forced"
+      BUTTON_FORCE_SYNC: "button_sync_forced",
+      CHECKED_INF_SCROLL: "checked_inf_scroll",
+      INF_SCROLL_TIME: "inf_scroll_time"
     };
   }
 

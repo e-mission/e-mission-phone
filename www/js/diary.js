@@ -1,4 +1,5 @@
 angular.module('emission.main.diary',['emission.main.diary.list',
+                                      'emission.main.diary.infscrolllist',
                                       'emission.main.diary.detail',
                                       'emission.main.diary.services',
                                       'emission.main.diary.current',])
@@ -23,6 +24,17 @@ angular.module('emission.main.diary',['emission.main.diary.list',
             controller: 'DiaryDetailCtrl'
         }
      }
+  })
+
+  .state('root.main.inf_scroll', {
+      url: "/inf_scroll",
+      views: {
+        'main-inf-scroll': {
+          templateUrl: "templates/diary/infinite_scroll_list.html",
+          controller: 'InfiniteDiaryListCtrl'
+        },
+      }
+      
   })
 
   .state('root.main.current', {

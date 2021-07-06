@@ -26,13 +26,11 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
         Logger.log("currChannel == null, skipping deploy init");
         return Promise.resolve(null);
     } else {
-        return new Promise(function(resolve, reject) {
-            var config = {
-                appId: "e0d8cdec",
-                channel: currChannel
-            }
-            deploy.init(config, resolve, reject);
-        });
+        var config = {
+            appId: "e0d8cdec",
+            channel: currChannel
+        }
+        return deploy.configure(config);
     }
   };
 
@@ -48,44 +46,22 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
 
   uc.checkPromise = function() {
     var deploy = $window.IonicCordova.deploy;
-    return new Promise(function(resolve, reject) {
-        deploy.check(resolve, reject);
-    });
+    return deploy.checkForUpdate();
   };
 
   uc.downloadPromise = function() {
     var deploy = $window.IonicCordova.deploy;
-    return new Promise(function(resolve, reject) {
-        deploy.download(function(res) {
-            if(res == 'true') {
-                resolve(res);
-            } else {
-                updateProgress(res);
-            }
-        }, reject);
-    });
+    return deploy.downloadUpdate(updateProgress);
   };
 
   uc.extractPromise = function() {
     var deploy = $window.IonicCordova.deploy;
-    return new Promise(function(resolve, reject) {
-        deploy.extract(function(res) {
-            console.log("extract progress = "+res);
-            var expectedResult = $window.cordova.platformId == "ios"? "done": "true";
-            if(res == expectedResult) {
-                resolve(res);
-            } else {
-                updateProgress(res);
-            }
-        }, reject);
-    });
+    return deploy.extractUpdate(updateProgress);
   };
 
   uc.redirectPromise = function() {
     var deploy = $window.IonicCordova.deploy;
-    return new Promise(function(resolve, reject) {
-        deploy.redirect(resolve, reject);
-    });
+    return deploy.reloadApp();
   };
 
   uc.handleClientChangeURL = function(urlComponents) {
@@ -166,13 +142,13 @@ angular.module('emission.splash.updatecheck', ['emission.plugin.logger',
     getChannelToUse().then(function(currChannel) {
     uc.initChannelPromise(currChannel).then(function() {
     Logger.log("deploy init complete ");
-    uc.checkPromise().then(function(hasUpdate) {
-      Logger.log('Ionic Deploy: Update available: ' + hasUpdate);
-      if (hasUpdate == 'true') {
+    uc.checkPromise().then(function(updateResponse) {
+      Logger.log('Ionic Deploy: Update available: ' + JSON.stringify(updateResponse));
+      if (updateResponse.available == true) {
         Logger.log('Ionic Deploy: found update, asking user: ');
 
         $ionicPopup.show({
-            title: $translate.instant('updatecheck.download-new-ui'),
+            title: $translate.instant('updatecheck.download-new-ui', updateResponse),
             templateUrl: 'templates/splash/release-notes.html',
             scope: $rootScope,
             buttons: [{ // Array[Object] (optional). Buttons to place in the popup footer.

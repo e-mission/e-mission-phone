@@ -8,7 +8,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
                 'ng-walkthrough', 'nzTour'])
 
 .controller('GoalsCtrl', function(CommHelper, $state, $ionicLoading, $ionicPlatform, $scope, $rootScope, $ionicModal, nzTour,
-                                $window, $http, $ionicPopup, $timeout, KVStore, ReferralHandler, ReferHelper, Logger, $cordovaInAppBrowser, SurveyLaunch) {
+                                $window, $http, $ionicPopup, $timeout, KVStore, ReferralHandler, ReferHelper, Logger, SurveyLaunch) {
     $scope.goals = [];
     $scope.goal = {};
     $scope.challenges=[];
@@ -24,6 +24,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     var floatGold;
     var refresh;
     var HABITICA_REGISTERED_KEY = 'habitica_registered';
+    var iab;
     //var challengeMembersId = [];
     
     // THIS BLOCK FOR inAppBrowser
@@ -150,36 +151,31 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
     /*$scope.data = {
         showDelete: false
     };*/
-    $scope.toBrowser = function() {     
-            var options = {       
-              location: 'no',     
-              clearcache: 'no',       
-              toolbar: 'yes'      
-            };        
+    $scope.toBrowser = function() {
+            var options = {
+              location: 'no',
+              clearcache: 'no',
+              toolbar: 'yes'
+            };
+
+            var settings = localStorage.getItem("habit-mobile-settings");
       
-            var settings = localStorage.getItem("habit-mobile-settings");     
-      
-          $rootScope.$on('$cordovaInAppBrowser:loadstop', function(e, event){     
-            // insert Javascript via code / file      
-            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||      
-                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {       
-                $cordovaInAppBrowser.executeScript({      
-                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');"      
-                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"     
-                });       
-            } else {      
-                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");     
-            }     
-          });     
-        $cordovaInAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options)     
-          .then(function(event) {     
-            // success        
-          })      
-          .catch(function(error) {        
-            Logger.displayError("Error while launching habitica website", error);
-            // error      
-          });
-       
+        iab = $window.cordova.InAppBrowser.open('https://em-game.eecs.berkeley.edu/#/tasks', '_blank', options);
+        iab.addEventListener('loadstop', function(event){
+            // insert Javascript via code / file
+            if (event.url == 'https://em-game.eecs.berkeley.edu/static/front' ||
+                event.url == 'https://em-game.eecs.berkeley.edu/static/front#/tasks') {
+                iab.executeScript({
+                  code: "localStorage.setItem('habit-mobile-settings', '" + settings + "');"
+                  + "window.location.href = 'https://em-game.eecs.berkeley.edu/#/tasks';"
+                });
+            } else {
+                Logger.log("checking for game loadstop, finished loading url "+event.url+" ignoring...");
+            }
+        });
+        iab.addEventListener('loaderror', function(event){
+            Logger.displayError("Error while launching habitica website", JSON.stringify(event));
+        });
     };
 
     $scope.openLeaderboard = function() {
@@ -898,8 +894,7 @@ angular.module('emission.main.goals',['emission.services', 'emission.plugin.logg
 
     $scope.startSurvey = function () {
       // (URL, elementID)
-      SurveyLaunch.startSurvey('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
-      // startSurvey();
+      SurveyLaunch.startSurveyWithID('https://berkeley.qualtrics.com/SE/?SID=SV_5pzFk7JnMkfWBw1', 'QR~QID2');
     }
 
     // Tour steps

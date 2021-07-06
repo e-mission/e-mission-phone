@@ -1,5 +1,6 @@
 {
     "connectUrl": "<e-mission server url, including host and port>",
+    "aggregate_call_auth": "no_auth",
     "android": {
         "auth": {
             "method": "prompted-auth",

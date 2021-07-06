@@ -10,7 +10,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.survey.enketo.launch',
                                  'emission.tripconfirm.posttrip.map',
                                  'emission.services',
-                                 'emission.services.email'])
+                                 'emission.services.upload'])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
 

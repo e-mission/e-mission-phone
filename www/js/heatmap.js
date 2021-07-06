@@ -4,8 +4,8 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
                'emission.plugin.logger', 'emission.incident.posttrip.manual',
                'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore'])
 
-.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet, $http,
-        leafletData, Logger, Config, PostTripManualMarker,
+.controller('HeatmapCtrl', function($scope, $ionicLoading, $ionicActionSheet,
+        leafletData, Logger, Config, PostTripManualMarker, CommHelper,
         $window, nzTour, KVStore, $translate) {
   $scope.mapCtrl = {};
 
@@ -44,11 +44,14 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/pop.route/local_date", data)
+    return CommHelper.getAggregateData("result/heatmap/pop.route/local_date", data)
     .then(function(response) {
-      if (angular.isDefined(response.data.lnglat)) {
-        Logger.log("Got points in heatmap "+response.data.lnglat.length);
-        $scope.showHeatmap(response.data.lnglat);
+      console.log("Pop route query response = "+response);
+      if (angular.isDefined(response.lnglat)) {
+        Logger.log("Got points in heatmap "+response.lnglat.length);
+        $scope.$apply(function() {
+            $scope.showHeatmap(response.lnglat);
+        });
       } else {
         Logger.log("did not find latlng in response data "+JSON.stringify(response.data));
       }
@@ -240,7 +243,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       // Don't set any layer - it will be filled in when the load completes
     } else {
       $ionicLoading.hide();
-      if (angular.isDefined(selData) && angular.isDefined(selData.layer)) {
+      if (angular.isDefined(selData) &&
+            angular.isDefined(selData.layer) &&
+            angular.isDefined(selData.bounds) &&
+            selData.bounds.isValid()) {
         selData.layer.addTo(map);
         map.fitBounds(selData.bounds);
         $scope.selData = selData;
@@ -265,8 +271,8 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
   };
 
   $scope.getHeatmaps = function() {
-    $scope.getPopRoute().finally($scope.switchSelData);
-    $scope.getIncidents().finally($scope.switchSelData);
+    $scope.getPopRoute().then($scope.switchSelData).catch($scope.switchSelData);
+    $scope.getIncidents().then($scope.switchSelData).catch($scope.switchSelData);
   }
 
   /*
@@ -286,13 +292,16 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
       sel_region: null
     };
     Logger.log("Sending data "+JSON.stringify(data));
-    return $http.post("https://e-mission.eecs.berkeley.edu/result/heatmap/incidents/local_date", data)
+    return CommHelper.getAggregateData("result/heatmap/incidents/local_date", data)
     .then(function(response) {
-      if (angular.isDefined(response.data.incidents)) {
-        Logger.log("Got incidents"+response.data.incidents.length);
-        $scope.showIncidents(response.data.incidents);
+      console.log("Incident query response = "+response);
+      if (angular.isDefined(response.incidents)) {
+        $scope.$apply(function() {
+            Logger.log("Got incidents"+response.incidents.length);
+            $scope.showIncidents(response.incidents);
+        });
       } else {
-        Logger.log("did not find incidents in response data "+JSON.stringify(response.data));
+        Logger.log("did not find incidents in response data "+JSON.stringify(response));
       }
       $scope.stressData.isLoading = false;
     }, function(error) {

@@ -167,11 +167,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           var temp = ReferralHandler.getReferralNavigation();
           if (temp == 'goals') {
             return {state: 'root.main.goals', params: {}};
-          } else if ($rootScope.tripConfirmParams) {
+          } else if ($rootScope.displayingIncident) {
             logger.log("Showing tripconfirm from startprefs");
-            var startEndParams = $rootScope.tripConfirmParams;
-            $rootScope.tripConfirmParams = angular.undefined;
-            return {state: 'root.main.tripconfirm', params: startEndParams};
+            return {state: 'root.main.diary'};
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             $rootScope.redirectTo = undefined;
