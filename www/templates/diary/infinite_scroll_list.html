@@ -3,16 +3,19 @@
     </ion-nav-bar>
     <ion-nav-buttons>
        <div class="row buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-          <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-          {{selF.text}}
-          </button>
-          <button ng-click="resetSelection()" class="col-15 button" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-          {{'.show-all'}}
-          </button>
-          <button class="button button-icon" class="col-5 button" ng-click="refresh()">
-            <i class="icon ion-refresh"></i>
-          </button>
-       </div>
+            <button ng-repeat-start="selF in filterInputs" ng-if="$first" ng-click="select(selF)" class="{{selF.width}} button labelfilter first" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                {{selF.text}}
+                </button>  
+                <button ng-repeat-end ng-if="!$first" ng-click="select(selF)" class="{{selF.width}} button labelfilter middle" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                {{selF.text}}
+                </button>
+                <button ng-click="resetSelection()" class="col-15 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                {{'.show-all'}}
+                </button>
+                <button class="button button-icon" class="col-5 button" ng-click="refresh()">
+                    <i class="icon ion-refresh"></i>
+                  </button>
+            </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">

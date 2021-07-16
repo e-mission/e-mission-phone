@@ -45,11 +45,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.data = {};
   // reset all filters
   $scope.filterInputs = [
-    InfScrollFilters.UNLABELED
+    InfScrollFilters.UNLABELED,
+    InfScrollFilters.INVALID_EBIKE
   ];
   $scope.filterInputs.forEach((f) => {
     f.state = false;
   });
+  $scope.allTrips = true;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
   $scope.infScrollControl = {};
@@ -158,6 +160,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         f.state = false;
       }
     });
+    $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
   }
 
@@ -165,6 +168,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.filterInputs.forEach((f) => {
       f.state = false;
     });
+    $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
   }
 
