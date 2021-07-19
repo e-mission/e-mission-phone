@@ -45,11 +45,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.data = {};
   // reset all filters
   $scope.filterInputs = [
+    InfScrollFilters.TO_LABEL,
     InfScrollFilters.UNLABELED
   ];
   $scope.filterInputs.forEach((f) => {
     f.state = false;
   });
+  $scope.filterInputs[0].state = true;
+  $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
   $scope.infScrollControl = {};
@@ -69,6 +72,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.reverse();
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
+          console.log("Expectation: "+JSON.stringify(trip.expectation));
             // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
@@ -76,6 +80,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             });
             trip.finalInference = {};
             $scope.inferFinalLabels(trip);
+            $scope.updateVerifiability(trip);
         });
         ctList.forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
@@ -158,6 +163,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         f.state = false;
       }
     });
+    $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
   }
 
@@ -165,6 +171,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.filterInputs.forEach((f) => {
       f.state = false;
     });
+    $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
   }
 
@@ -175,7 +182,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             if (alreadyFiltered) {
                 Logger.displayError("multiple filters not supported!", undefined);
             } else {
+                // console.log("Trip n before: "+$scope.data.displayTrips.length);
                 $scope.data.displayTrips = $scope.data.allTrips.filter(f.filter);
+                // console.log("Trip n after:  "+$scope.data.displayTrips.length);
                 alreadyFiltered = true;
             }
         }
@@ -294,6 +303,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.editingTrip = angular.undefined;
     }
 
+    $scope.updateTripProperties = function(trip) {
+      $scope.inferFinalLabels(trip);
+      $scope.updateVerifiability(trip);
+      $scope.recomputeDisplayTrips();
+    }
+
     /**
      * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
      * The algorithm below operationalizes these principles:
@@ -352,7 +367,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           $scope.populateInput(trip.finalInference, inputType, max.labelValue);
         }
       }
-      $scope.updateVerifiability(trip);
     }
 
     /**
@@ -711,7 +725,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           } else {
             tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
           }
-          $scope.inferFinalLabels(tripToUpdate);  // Recalculate our inferences based on this new information
+          $scope.updateTripProperties(tripToUpdate);  // Redo our inferences, filters, etc. based on this new information
         });
       });
       if (isOther == true)
