@@ -174,12 +174,13 @@ a.item-content {
     color: white;
 }
 
-.labelfilter.first {
+.labelfilter:first-of-type {
+  margin-left:5%;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
 
-.labelfilter.last {
+.labelfilter:last-of-type {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
