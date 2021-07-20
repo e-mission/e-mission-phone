@@ -1,7 +1,7 @@
 <ion-view ng-class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
-    <ion-nav-buttons side="primary" id="toget" class="row buttons">
+    <ion-nav-buttons side="left" id="toget" class="row buttons">
         <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="col col-50 button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
             {{selF.text}}
         </button>
@@ -9,7 +9,7 @@
             {{'.show-all'}}
         </button>
     </ion-nav-buttons>
-    <ion-nav-buttons side="secondary">
+    <ion-nav-buttons side="right">
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
