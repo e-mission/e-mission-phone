@@ -1,7 +1,7 @@
 <ion-view ng-class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
-    <ion-nav-buttons ng-if="newLabel()" side="primary" id="toget" class="row buttons">
+    <ion-nav-buttons ng-if="newLabel" side="primary" id="toget" class="row buttons">
         <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="col col-50 button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
             {{selF.text}}
         </button>
@@ -9,12 +9,12 @@
             {{'.show-all-new'}}
         </button>
     </ion-nav-buttons>
-    <ion-nav-buttons ng-if="newLabel()" side="secondary">
+    <ion-nav-buttons ng-if="newLabel" side="secondary">
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
     </ion-nav-buttons>
-    <ion-nav-buttons ng-if="oldLabel()">
+    <ion-nav-buttons ng-if="!newLabel">
        <div class="row buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
           <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
           {{selF.text}}
@@ -60,7 +60,7 @@
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div ng-if="newLabel()" id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                <div ng-if="newLabel" id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
                     <div class="row">
                         <div ng-click="showDetail($event, trip)" class="col-90 center-vert" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0; justify-self: flex-start;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
                         <div ng-click="showDetail($event, trip)" class="col-10 diary-more-container center-vert center-horiz">
@@ -101,13 +101,13 @@
                             </div>
                             <div ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container">
                                 <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red" translate>
-                                    {{input.choosetext}}
+                                    {{input.choosetext_new}}
                                 </button>
                             </div>
                         </div>
                     </div>   
                 </div>
-                <div ng-if="oldLabel()" id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                <div ng-if="!newLabel" id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
                     <div ng-click="showDetail($event, trip)" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
                  <div class="row">
                      <div class="col-90" ng-click="showDetail($event, trip)">
@@ -139,7 +139,7 @@
                         </div>
                         <div  ng-if="!trip.userInput[input.name]" class="input-confirm-container">
                             <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
-                            {{input.choosetext}}
+                            {{input.choosetext_old}}
                             </button>
                         </div>
                     </div>

@@ -5,21 +5,24 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
     ch.inputDetails = {
         "MODE": {
             labeltext: $translate.instant(".mode"),
-            choosetext: $translate.instant(".choose-mode"),
+            choosetext_old: $translate.instant(".choose-mode-old"),
+            choosetext_new: $translate.instant(".choose-mode-new"),
             width: "col-33",
             key: "manual/mode_confirm",
             otherVals: {},
         },
         "PURPOSE": {
             labeltext: $translate.instant(".purpose"),
-            choosetext: $translate.instant(".choose-purpose"),
+            choosetext_old: $translate.instant(".choose-purpose-old"),
+            choosetext_new: $translate.instant(".choose-purpose-new"),
             width: "col-33",
             key: "manual/purpose_confirm",
             otherVals: {},
         },
         "REPLACED_MODE": {
             labeltext: $translate.instant(".replaces"),
-            choosetext: $translate.instant(".choose-replaced-mode"),
+            choosetext_old: $translate.instant(".choose-replaced-mode-old"),
+            choosetext_new: $translate.instant(".choose-replaced-mode-new"),
             width: "col-33",
             key: "manual/replaced_mode",
             otherVals: {}

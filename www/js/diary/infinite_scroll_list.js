@@ -34,60 +34,38 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   console.log("controller InfiniteDiaryListCtrl called");
   // Add option
 
-  //Cache the new label UI setting so we only have to calculate it once
-  $scope.newLabelState = undefined;
   /**
-   * If possible, check whether we should be using the new label UI or not
+   * Check whether we should be using the new label UI or not
    */
   $scope.updateNewLabel = function() {
-    if ($scope.newLabelState == undefined) {
-      const url = $rootScope.connectUrl;
-      if (url != undefined) {
-        $scope.newLabelState = url.includes("stage");
-        $scope.newLabelState = true;  //For testing
-        Logger.log(($scope.newLabelState ? "NOT " : "") + "USING new label UI");
-
-        if ($scope.newLabelState === true) {
-          $scope.filterInputs = [
-            InfScrollFilters.TO_LABEL,
-            InfScrollFilters.UNLABELED_NEW
-          ];
-          $scope.filterInputs.forEach((f) => {
-            f.state = false;
-          });
-          $scope.filterInputs[0].state = true;
-          $scope.allTrips = false;
-        }
-
-        else if ($scope.newLabelState === false) {
-          $scope.filterInputs = [
-            InfScrollFilters.UNLABELED_OLD,
-            InfScrollFilters.INVALID_EBIKE_OLD
-          ];
-          $scope.filterInputs.forEach((f) => {
-            f.state = false;
-          });
-        } 
-      }
+    const url = $rootScope.connectUrl;
+    Logger.log(url == undefined ? "URL UNDEFINED" : "URL DEFINED");
+    if (url == undefined) return;  //Hopefully this doesn't happen in practice...
+    $scope.newLabel = url.includes("stage");
+    $scope.newLabel = false;  //For testing
+    Logger.log(($scope.newLabelState ? "NOT " : "") + "USING new label UI");
+    if ($scope.newLabel) {
+      $scope.filterInputs = [
+        InfScrollFilters.TO_LABEL,
+        InfScrollFilters.UNLABELED_NEW
+      ];
+      $scope.filterInputs.forEach((f) => {
+        f.state = false;
+      });
+      $scope.filterInputs[0].state = true;
+      $scope.allTrips = false;
+    }
+    else {
+      $scope.filterInputs = [
+        InfScrollFilters.UNLABELED_OLD,
+        InfScrollFilters.INVALID_EBIKE_OLD
+      ];
+      $scope.filterInputs.forEach((f) => {
+        f.state = false;
+      });
     }
   }
-  /**
-   * Test whether we should draw the new label UI
-   * (note: both newLabel() and oldLabel() could be false; that means we haven't been able to get the setting yet)
-   */
-  $scope.newLabel = function() {
-    $scope.updateNewLabel();
-    return $scope.newLabelState === true;
-  }
-  /**
-   * Test whether we should draw the old label UI
-   */
-  $scope.oldLabel = function() {
-    $scope.updateNewLabel();
-    return $scope.newLabelState === false;
-  }
-
-
+  $scope.updateNewLabel();
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
@@ -99,9 +77,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   });
 
   $scope.data = {};
-  // reset all filters
-  $scope.filterInputs = [];
-  $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
   $scope.infScrollControl = {};
