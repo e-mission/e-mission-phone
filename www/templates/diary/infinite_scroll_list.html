@@ -1,18 +1,31 @@
 <ion-view ng-class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
-    <ion-nav-buttons side="primary" id="toget" class="row buttons">
+    <ion-nav-buttons ng-if="newLabel()" side="primary" id="toget" class="row buttons">
         <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="col col-50 button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
             {{selF.text}}
         </button>
         <button ng-click="resetSelection()" class="col col-50 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-            {{'.show-all'}}
+            {{'.show-all-new'}}
         </button>
     </ion-nav-buttons>
-    <ion-nav-buttons side="secondary">
+    <ion-nav-buttons ng-if="newLabel()" side="secondary">
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
+    </ion-nav-buttons>
+    <ion-nav-buttons ng-if="oldLabel()">
+       <div class="row buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
+          <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{selF.text}}
+          </button>
+          <button ng-click="resetSelection()" class="col-15 button" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+          {{'.show-all-old'}}
+          </button>
+          <button class="button button-icon" class="col-5 button" ng-click="refresh()">
+            <i class="icon ion-refresh"></i>
+          </button>
+       </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">
@@ -47,7 +60,7 @@
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                <div ng-if="newLabel()" id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
                     <div class="row">
                         <div ng-click="showDetail($event, trip)" class="col-90 center-vert" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0; justify-self: flex-start;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
                         <div ng-click="showDetail($event, trip)" class="col-10 diary-more-container center-vert center-horiz">
@@ -93,6 +106,44 @@
                             </div>
                         </div>
                     </div>   
+                </div>
+                <div ng-if="oldLabel()" id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                    <div ng-click="showDetail($event, trip)" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
+                 <div class="row">
+                     <div class="col-90" ng-click="showDetail($event, trip)">
+                         <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+                                {{trip.start_display_name}}
+    
+                        </div>
+                        <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+                                {{trip.end_display_name}}
+                        </div>
+                     </div>
+                     <div ng-click="showDetail($event, trip)" class="col-10 diary-arrow-container">
+                        <i class="ion-more"></i>
+                     </div>
+                 </div>
+                 <div class="row" style="padding-left: 5px;padding-right: 5px;margin-top: 0px">
+                  <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name" translate>
+                    {{input.labeltext}}
+                  </div>
+                 </div>
+                 <div class="row" style="padding-left: 5px;padding-right: 5px;">
+                    <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
+                        <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
+                            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+                                {{trip.userInput[input.name].text}}
+                            </button>
+                        </div>
+                        <div  ng-if="!trip.userInput[input.name]" class="input-confirm-container">
+                            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
+                            {{input.choosetext}}
+                            </button>
+                        </div>
+                    </div>
+                 </div>   
                 </div>
             </ion-item>
             </div>

@@ -34,13 +34,23 @@ angular.module('emission.main.diary.infscrollfilters',[
         return trip.expectation.to_label && unlabeledCheck(trip);
     }
 
-    sf.UNLABELED = {
-        text: $translate.instant(".unlabeled"),
+    sf.UNLABELED_OLD = {
+        text: $translate.instant(".unlabeled-old"),
         filter: unlabeledCheck
     }
 
-    sf.INVALID_EBIKE = {
-        text: $translate.instant(".invalid-ebike"),
+    sf.UNLABELED_NEW = {
+        text: $translate.instant(".unlabeled-new"),
+        filter: unlabeledCheck
+    }
+
+    sf.INVALID_EBIKE_OLD = {
+        text: $translate.instant(".invalid-ebike-old"),
+        filter: invalidCheck
+    }
+
+    sf.INVALID_EBIKE_NEW = {
+        text: $translate.instant(".invalid-ebike-new"),
         filter: invalidCheck
     }
 

@@ -129,13 +129,13 @@ a.item-content {
   color: white;
 }
 /* White confirm buttons are currently unused */
-/* .btn-input-confirm-white,
+.btn-input-confirm-white,
 .btn-input-confirm-white:hover,
 .btn-input-confirm-white:active {
   background-color: #ddd;
   color: #333;
   font-size: 0.8em;
-} */
+}
 .btn-input-confirm {
   line-height: 30px;
   min-height: 30px;
@@ -183,4 +183,8 @@ a.item-content {
 .labelfilter:last-of-type {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+.button:not(.labelfilter).on {
+  background-color: darkgray;
 }
