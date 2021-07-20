@@ -318,6 +318,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
      *   - Never show user yellow labels that have a lower probability of being correct than confidenceThreshold
      */
     $scope.inferFinalLabels = function(trip) {
+      // Display a label as red if its most probable inferred value has a probability of less than or equal to confidenceThreshold
+      // TODO: make this configurable
+      const confidenceThreshold = 0.5;
+
       // Deep copy the possibility tuples
       let labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
 
@@ -357,9 +361,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
           }
 
-          // Display a label as red if its most probable inferred value has a probability less than or equal to the trip's confidence_threshold
-          // Fails safe if confidence_threshold doesn't exist
-          if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
+          // Apply threshold
+          if (max.p <= confidenceThreshold) max.labelValue = undefined;
 
           $scope.populateInput(trip.finalInference, inputType, max.labelValue);
         }

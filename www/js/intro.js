@@ -20,24 +20,22 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $state, $window,
-    $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, UpdateCheck, $translate, i18nUtils) {
+.controller('IntroCtrl', function($scope, $rootScope, $state, $window, $ionicSlideBoxDelegate,
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
 
-  $scope.setupPermissionText = function() {
-      $scope.platform = $window.device.platform;
-      $scope.osver = $window.device.version.split(".")[0];
-      if($scope.platform.toLowerCase() == "android") {
-        if($scope.osver < 6) {
-            $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
-        } else if ($scope.osver < 10) {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-6-9");
-        } else if ($scope.osver < 11) {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-10");
-        } else {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-11");
-        }
-      }
+  $scope.platform = $window.device.platform;
+  $scope.osver = $window.device.version.split(".")[0];
+  if($scope.platform.toLowerCase() == "android") {
+    if($scope.osver < 6) {
+        $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
+    } else if ($scope.osver < 10) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-6-9");
+    } else if ($scope.osver < 11) {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-10");
+    } else {
+        $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-11");
+    }
+  }
 
       if($scope.platform.toLowerCase() == "ios") {
         if($scope.osver < 13) {
