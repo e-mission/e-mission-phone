@@ -17,7 +17,7 @@ angular.module('emission.main.diary.infscrollfilters',[
     var unlabeledCheck = function(t) {
        return ConfirmHelper.INPUTS
            .map((inputType, index) => !angular.isDefined(t.userInput[inputType]))
-           .reduce((acc, val) => acc && val, true);
+           .reduce((acc, val) => acc || val, false);
     }
 
     var invalidCheck = function(t) {
@@ -29,16 +29,24 @@ angular.module('emission.main.diary.infscrollfilters',[
        return retVal;
     }
 
+    var toLabelCheck = function(trip) {
+        console.log(trip.expectation.to_label)
+        return trip.expectation.to_label && unlabeledCheck(trip);
+    }
+
     sf.UNLABELED = {
         text: $translate.instant(".unlabeled"),
-        width: "col-40",
         filter: unlabeledCheck
     }
 
     sf.INVALID_EBIKE = {
         text: $translate.instant(".invalid-ebike"),
-        width: "col-40",
         filter: invalidCheck
+    }
+
+    sf.TO_LABEL = {
+        text: $translate.instant(".to-label"),
+        filter: toLabelCheck
     }
     return sf;
 });
