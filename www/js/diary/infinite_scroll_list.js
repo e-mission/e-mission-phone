@@ -82,7 +82,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.inferFinalLabels(trip);
             $scope.updateVerifiability(trip);
         });
-        ctList.forEach(function(trip, index) {
+        // Fill places on a reversed copy of the list so we fill from the bottom up
+        ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
         });
         $scope.data.allTrips = ctList.concat($scope.data.allTrips);
