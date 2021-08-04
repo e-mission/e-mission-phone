@@ -926,7 +926,7 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 12px;
         position: absolute;
         left: 1%;
-        bottom: 15px;
+        top: 15px;
         line-height: 16px;
 }
 .stop-time-tag-inf-scroll {
@@ -940,7 +940,7 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 12px;
         position: absolute;
         left: 1%;
-        top: 15px;
+        bottom: 15px;
         line-height: 16px;
 }
 .stop-time-tag-lower {

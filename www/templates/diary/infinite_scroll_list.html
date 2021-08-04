@@ -43,7 +43,7 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 		<div collection-repeat="trip in data.displayTrips" item-height="'160px'">
-            <div class="stop-time-tag-inf-scroll">{{trip.display_end_time}}</div>
+            <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
@@ -96,7 +96,7 @@
                 </div>
             </ion-item>
             </div>
-           <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
+           <div class="stop-time-tag-inf-scroll">{{trip.display_end_time}}</div>
         </div>
         <!-- <ion-infinite-scroll
             ng-if="!infScrollControl.reachedEnd"
