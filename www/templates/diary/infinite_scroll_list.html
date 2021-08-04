@@ -1,7 +1,7 @@
 <ion-view ng-class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
-    <ion-nav-buttons side="primary" id="toget" class="row buttons">
+    <ion-nav-buttons side="left" id="toget" class="row buttons">
         <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="col col-50 button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
             {{selF.text}}
         </button>
@@ -9,13 +9,13 @@
             {{'.show-all'}}
         </button>
     </ion-nav-buttons>
-    <ion-nav-buttons side="secondary">
+    <ion-nav-buttons side="right">
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
-	<ion-content class="diary-entry">
+	<ion-content class="diary-entry" on-scroll="handleScroll()">
         <!--
         <div  ng-if="inTrip()" class="control-list-item">
             <div class="control-list-text">Current Trip</div>
@@ -98,10 +98,10 @@
             </div>
            <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
         </div>
-        <ion-infinite-scroll
+        <!-- <ion-infinite-scroll
             ng-if="!infScrollControl.reachedEnd"
             on-infinite="readDataFromServer()"></ion-infinite-scroll>
-        </ion-list>
+        </ion-list> -->
 	</ion-content>
     <!--
     <ion-footer-bar>
