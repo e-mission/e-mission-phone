@@ -352,7 +352,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const confidenceThreshold = 0.5;
 
       // Deep copy the possibility tuples
-      let labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
+      let labelsList = [];
+      if (angular.isDefined(trip.inferred_labels)) {
+          labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
+      }
 
       // Capture the level of certainty so we can reconstruct it later
       const totalCertainty = labelsList.map(item => item.p).reduce(((item, rest) => item + rest), 0);
@@ -673,6 +676,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
      * verifyTrip turns all of a given trip's yellow labels green
      */
     $scope.verifyTrip = function($event, trip) {
+      ClientStats.addEvent(ClientStats.getStatKeys().VERIFY_TRIP);
       if (trip.verifiability != "can-verify") return;
       
       $scope.draftInput = {

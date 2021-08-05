@@ -10,9 +10,10 @@
 
 angular.module('emission.main.diary.infscrollfilters',[
     'emission.tripconfirm.services',
+    'emission.stats.clientstats',
     'emission.plugin.logger'
   ])
-.factory('InfScrollFilters', function(Logger, ConfirmHelper, $translate){
+.factory('InfScrollFilters', function(Logger, ConfirmHelper, ClientStats, $translate){
     var sf = {};
     var unlabeledCheck = function(t) {
        return ConfirmHelper.INPUTS
@@ -30,8 +31,12 @@ angular.module('emission.main.diary.infscrollfilters',[
     }
 
     var toLabelCheck = function(trip) {
-        console.log(trip.expectation.to_label)
-        return trip.expectation.to_label && unlabeledCheck(trip);
+        if (angular.isDefined(trip.expectation)) {
+            console.log(trip.expectation.to_label)
+            return trip.expectation.to_label && unlabeledCheck(trip);
+        } else {
+            return true;
+        }
     }
 
     sf.UNLABELED = {
