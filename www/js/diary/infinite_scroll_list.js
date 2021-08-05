@@ -689,6 +689,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": false});
         return;
       }
+      ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": true, "userInput": angular.toJson(trip.userInput), "finalInference": angular.toJson(trip.finalInference)});
       
       $scope.draftInput = {
         "start_ts": trip.start_ts,
@@ -701,7 +702,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // TODO: figure out what to do with "other". For now, do not verify.
         if (inferred && !trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
       }
-      ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": true, "userInput": angular.toJson(trip.userInput), "finalInference": angular.toJson(trip.finalInference)});
     }
 
     /**
