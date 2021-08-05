@@ -21,7 +21,8 @@ angular.module('emission.stats.clientstats', [])
       BEAR_TIME: "bear_time",
       DIARY_TIME: "diary_time",
       CHECKED_INF_SCROLL: "checked_inf_scroll",
-      INF_SCROLL_TIME: "inf_scroll_time"
+      INF_SCROLL_TIME: "inf_scroll_time",
+      VERIFY_TRIP: "verify_trip"
     };
   }
 
