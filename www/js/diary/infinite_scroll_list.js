@@ -55,9 +55,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
-  $scope.infScrollControl = {};
+  $scope.infScrollControl = {threshold: 75, scrollLock: true, fromBottom: -1, callback: undefined};
 
   $scope.readDataFromServer = function() {
+    $scope.infScrollControl.scrollLock = true;
+    $scope.infScrollControl.fromBottom = $ionicScrollDelegate.getScrollView().__contentHeight-$ionicScrollDelegate.getScrollPosition().top;
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;
@@ -67,12 +69,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         return;
     }
     Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
-        // let's reverse the incoming list so we go most recent to oldest
         Logger.log("Received batch of size "+ctList.length);
-        ctList.reverse();
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
-          console.log("Expectation: "+JSON.stringify(trip.expectation));
+            // console.log("Expectation: "+JSON.stringify(trip.expectation));
             // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
             trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
@@ -82,12 +82,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.inferFinalLabels(trip);
             $scope.updateVerifiability(trip);
         });
-        ctList.forEach(function(trip, index) {
+        // Fill places on a reversed copy of the list so we fill from the bottom up
+        ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
         });
-        $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+        $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
-        const oldestTrip = ctList[ctList.length -1];
+        const oldestTrip = ctList[0];
         if (oldestTrip) {
             if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
                 Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
@@ -106,13 +107,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
         $scope.recomputeDisplayTrips();
         Logger.log("Broadcasting infinite scroll complete");
-        $scope.$broadcast('scroll.infiniteScrollComplete')
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+
     }).catch((err) => {
         Logger.displayError("while reading confirmed trips", err);
         Logger.log("Reached the end of the scrolling");
         $scope.infScrollControl.reachedEnd = true;
         Logger.log("Broadcasting infinite scroll complete");
-        $scope.$broadcast('scroll.infiniteScrollComplete')
+        $scope.$broadcast('scroll.infiniteScrollComplete');
     });
   };
 
@@ -126,8 +128,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.data.manualResultMap = manualResultMap;
             $scope.infScrollControl.pipelineRange = pipelineRange;
             $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
-            // Don't need to do this, the infinite scroll code calls it automatically
-            // $scope.readDataFromServer();
+            $scope.infScrollControl.callback = function() {
+              $ionicScrollDelegate.scrollBottom();
+            };
+            $scope.readDataFromServer();
         } else {
             $scope.$apply(() => {
                 $scope.infScrollControl.reachedEnd = true;
@@ -135,6 +139,31 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.$broadcast('scroll.infiniteScrollComplete')
         }
     });
+  }
+
+  $scope.$on("scroll.infiniteScrollComplete", function() {
+    if ($scope.infScrollControl.callback != undefined) {
+      $scope.infScrollControl.callback();
+      $scope.infScrollControl.callback = undefined;
+    }
+    $scope.infScrollControl.scrollLock = false;
+  });
+
+  $scope.handleScroll = function() {
+    if ($scope.infScrollControl.scrollLock) return;
+    if ($scope.infScrollControl.reachedEnd) {
+      console.log("reached end");
+      return;
+    }
+    if ($ionicScrollDelegate.getScrollPosition().top < $scope.infScrollControl.threshold) {
+      $scope.infScrollControl.callback = function() {
+        // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
+        $ionicScrollDelegate.scrollBottom();
+        const clientHeight = $ionicScrollDelegate.getScrollView().__clientHeight;
+        $ionicScrollDelegate.scrollBy(0, -$scope.infScrollControl.fromBottom+clientHeight);
+      };
+      $scope.readDataFromServer();
+    }
   }
 
   $ionicModal.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
