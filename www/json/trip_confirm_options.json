@@ -28,7 +28,8 @@
        {"text":"Other","value":"other"}],
     "PURPOSE" : [
        {"text":"Home", "value":"home"},
-       {"text":"Work","value":"work"},
+       {"text":"To Work","value":"work"},
+       {"text":"At Work","value":"at_work"},
        {"text":"School","value":"school"},
        {"text":"Transit transfer", "value":"transit_transfer"},
        {"text":"Shopping","value":"shopping"},
@@ -36,6 +37,7 @@
        {"text":"Pick-up/Drop off 👤","value":"pick_drop_person"},
        {"text":"Pick-up/Drop off 📦","value":"pick_drop_item"},
        {"text":"Personal/Medical","value":"personal_med"},
+       {"text":"Access Recreation","value":"access_recreation"},
        {"text":"Recreation/Exercise","value":"exercise"},
        {"text":"Entertainment/Social","value":"entertainment"},
        {"text":"Religious", "value":"religious"},
