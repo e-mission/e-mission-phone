@@ -22,7 +22,9 @@ angular.module('emission.stats.clientstats', [])
       DIARY_TIME: "diary_time",
       CHECKED_INF_SCROLL: "checked_inf_scroll",
       INF_SCROLL_TIME: "inf_scroll_time",
-      VERIFY_TRIP: "verify_trip"
+      VERIFY_TRIP: "verify_trip",
+      LABEL_TAB_SWITCH: "label_tab_switch",
+      SELECT_LABEL: "select_label"
     };
   }
 

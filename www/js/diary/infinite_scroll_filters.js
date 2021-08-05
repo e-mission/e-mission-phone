@@ -40,16 +40,19 @@ angular.module('emission.main.diary.infscrollfilters',[
     }
 
     sf.UNLABELED = {
+        key: "unlabeled",
         text: $translate.instant(".unlabeled"),
         filter: unlabeledCheck
     }
 
     sf.INVALID_EBIKE = {
+        key: "invalid_ebike",
         text: $translate.instant(".invalid-ebike"),
         filter: invalidCheck
     }
 
     sf.TO_LABEL = {
+        key: "to_label",
         text: $translate.instant(".to-label"),
         filter: toLabelCheck
     }
