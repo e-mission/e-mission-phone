@@ -43,6 +43,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   });
 
   $scope.data = {};
+
+  $scope.getActiveFilters = function() {
+    return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
+  }
   // reset all filters
   $scope.filterInputs = [
     InfScrollFilters.TO_LABEL,
@@ -52,6 +56,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     f.state = false;
   });
   $scope.filterInputs[0].state = true;
+  ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
   $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
@@ -157,6 +162,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.select = function(selF) {
+    const prev = $scope.getActiveFilters();
     selF.state = true;
     $scope.filterInputs.forEach((f) => {
       if (f !== selF) {
@@ -165,14 +171,17 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
   $scope.resetSelection = function() {
+    const prev = $scope.getActiveFilters();
     $scope.filterInputs.forEach((f) => {
       f.state = false;
     });
     $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
   $scope.recomputeDisplayTrips = function() {
@@ -647,8 +656,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
      * verifyTrip turns all of a given trip's yellow labels green
      */
     $scope.verifyTrip = function($event, trip) {
-      ClientStats.addEvent(ClientStats.getStatKeys().VERIFY_TRIP);
-      if (trip.verifiability != "can-verify") return;
+      if (trip.verifiability != "can-verify") {
+        ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": false});
+        return;
+      }
       
       $scope.draftInput = {
         "start_ts": trip.start_ts,
@@ -661,6 +672,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // TODO: figure out what to do with "other". For now, do not verify.
         if (inferred && !trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
       }
+      ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": true, "userInput": angular.toJson(trip.userInput), "finalInference": angular.toJson(trip.finalInference)});
     }
 
     /**
@@ -692,6 +704,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
 
     $scope.choose = function (inputType) {
+      ClientStats.addReading(ClientStats.getStatKeys().SELECT_LABEL, {
+        "userInput":  angular.toJson($scope.editingTrip.userInput),
+        "finalInference": angular.toJson($scope.editingTrip.finalInference),
+        "inputKey": inputType,
+        "inputVal": $scope.selected[inputType].value
+      });
       var isOther = false
       if ($scope.selected[inputType].value != "other") {
         $scope.store(inputType, $scope.selected[inputType], isOther);
