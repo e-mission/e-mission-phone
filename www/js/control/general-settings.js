@@ -7,6 +7,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.main.control.tnotify',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
+                                        'emission.splash.secretcheck',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
@@ -19,7 +20,7 @@ angular.module('emission.main.control',['emission.services',
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $rootScope, KVStore, ionicDatePicker,
                $cordovaInAppBrowser,
-               StartPrefs, ControlHelper, EmailHelper,
+               SecretCheck, StartPrefs, ControlHelper, EmailHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
@@ -143,7 +144,7 @@ angular.module('emission.main.control',['emission.services',
     };
 
     $scope.getEmail = function() {
-        ControlHelper.getUserEmail().then(function(response) {
+        return ControlHelper.getUserEmail().then(function(response) {
            console.log("user email = "+response);
             $scope.$apply(function() {
                 if (response == null) {
@@ -156,6 +157,15 @@ angular.module('emission.main.control',['emission.services',
             $ionicPopup.alert("while getting email, "+error);
         });
     };
+
+    /**
+     * getUserId get user id for prompt auth. Note that we remove the secret prefix.
+     */
+    $scope.getUserId = function() {
+        const prefix = SecretCheck.SECRET;
+        $scope.settings.userId = $scope.settings.auth.email.replace(new RegExp(`^${prefix}`), '');
+    }
+
     $scope.showLog = function() {
         $state.go("root.main.log");
     }
@@ -248,6 +258,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.tnotify = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
+        $scope.settings.userId = '';
         $scope.settings.channel = function(newName) {
           return arguments.length ? (UpdateCheck.setChannel(newName)) : $scope.settings.storedChannel;
         };
@@ -260,7 +271,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
         $scope.getTNotifySettings();
-        $scope.getEmail();
+        $scope.getEmail().then($scope.getUserId);
         $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
             $scope.$apply(function() {
                 console.log("Setting settings.collect.trackingOn = "+isTracking);
