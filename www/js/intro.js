@@ -123,7 +123,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       if ($state.is('root.intro')) {
         $scope.next();
       } else {
-        StartPrefs.any_change_();
+        StartPrefs.loadPreferredScreen();
       }
     });
   };
