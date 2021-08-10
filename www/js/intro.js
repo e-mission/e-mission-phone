@@ -150,8 +150,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.startSurvey = function () {
     SurveyLaunch.startSurveyPrefilled(
-      'https://ee.kobotoolbox.org/single/ftEnRIgo',
-      'd[/aryxJs4NmMde4YQ7erVuZz/_user_id]');
+      'https://up.byamarin.com/' // redirect link
+      );
   }
 
   $scope.tokenToClipboard = function() {

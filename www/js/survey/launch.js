@@ -167,9 +167,14 @@ angular.module('emission.survey.launch', ['emission.services',
         let uuid = userProfile.user_id['$uuid']
         Logger.log("inserting user id into survey. userId = "+ uuid
                       +" base url = "+url);
-        let urlObj = new URL(url);
-        urlObj.searchParams.append(uuidSearchParam, uuid);
-        let modifiedURL = urlObj.href;
+        let modifiedURL;
+        if (!uuidSearchParam) {
+          modifiedURL = url + '/' + uuid
+        } else {
+          let urlObj = new URL(url);
+          urlObj.searchParams.append(uuidSearchParam, uuid);
+          modifiedURL = urlObj.href;
+        }
         Logger.log("modified URL = "+modifiedURL);
         let iab = $window.cordova.InAppBrowser.open(modifiedURL, '_blank', surveylaunch.options);
         iab.addEventListener('loaderror', function(event) {
