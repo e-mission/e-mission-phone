@@ -161,7 +161,7 @@ angular.module('emission.survey.launch', ['emission.services',
         startSurveyCommon(url, elementXPath, "js/survey/uuid_insert_xpath.js");
     }
 
-    surveylaunch.startSurveyPrefilled = function (url, uuidSearchParam) {
+    surveylaunch.startSurveyPrefilled = function (url, uuidSearchParam, returnUrl) {
       CommHelper.getUser().then(function(userProfile) {
         // alert("finished loading script");
         let uuid = userProfile.user_id['$uuid']
@@ -174,6 +174,12 @@ angular.module('emission.survey.launch', ['emission.services',
           let urlObj = new URL(url);
           urlObj.searchParams.append(uuidSearchParam, uuid);
           modifiedURL = urlObj.href;
+        }
+        if (returnUrl) {
+          // NOTE: We manually append with & to make it compatible when we embed uuid as path param
+          // i.e. http://pe.byamarin.com/${uuid}&return_url=https://www.google.com
+          // However, if uuid is appended normally `return_url` will correctly be appended with & anyways.
+          modifiedURL = `${modifiedURL}&return_url=${encodeURIComponent(returnUrl)}`;
         }
         Logger.log("modified URL = "+modifiedURL);
         let iab = $window.cordova.InAppBrowser.open(modifiedURL, '_blank', surveylaunch.options);

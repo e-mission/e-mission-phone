@@ -5,6 +5,18 @@
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text">Edit User Profile</div>
+      <div ng-click="editUserProfile()" class="control-icon-button control-icon-user-profile">
+        <i class="ion-person"></i>
+      </div>
+    </div>
+    <div class="control-list-item">
+      <div class="control-list-text">End Survey</div>
+      <div ng-click="launchEndSurvey()" class="control-icon-button control-icon-end-survey">
+        <i class="ion-document-text"></i>
+      </div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.view-privacy'}}</div>
       <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
     </div>
