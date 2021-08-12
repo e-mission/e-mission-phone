@@ -237,9 +237,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           zoomControl: false,
           dragging: true,
           zoomAnimation: false,
-          touchZoom: false,
-          doubleClickZoom: false,
-          boxZoom: false,
+          touchZoom: true,
+          doubleClickZoom: true,
+          boxZoom: true,
       }
   });
 
