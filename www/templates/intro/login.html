@@ -1,8 +1,9 @@
 <ion-content>
     <div class="intro-title">
-    <center><h3>Login via anonymous token</h3></center>
-    <center>Token {{randomToken}}</center></div>
-    
+    <center><h3>Login via anonymous token &#128273</h3></center>
+    <br></br>
+    <!-- <center>Token {{randomToken}}</center></div>
+
     <div class="intro-text">
     This unique randomly generated token is your identifier in the system.
     <p>&nbsp;</p>
@@ -10,11 +11,21 @@
     want to communicate with the research team about the data collected about you,
     please be prepared to provide this token.
     <div class="intro-space"></div>
-    <button class="button button-block button-balanced" ng-click="loginNew()">Login as {{randomToken}}</button>
+    <button class="button button-block button-balanced" ng-click="loginNew()">Login as {{randomToken}}</button> -->
+
+    <!-- If you already have a token from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a token that does not match an existing one, we will create a new account. -->
+    Please use the token given to you via email to login:
+    <br></br>
+    <button class="button button-block button-positive" ng-click="loginExisting()">Login with existing token</button>
+    </div>
     
-    If you already have a token from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a token that does not match an existing one, we will create a new account.
-    <div class="intro-space"></div>
-    <button class="button button-block button-energized" ng-click="loginExisting()">Login with existing token</button>
+    <div class="intro-text-large">
+    Should you require any assistance please do not hesitate to contact us:
+    <br></br>
+    <ul>
+        <li>📧 Email us at a.siripanich@unsw.edu.au</li>
+        <li>☎ Call or text 043-292-9748 any day between 09.00-18.00.</li>
+    </ul>
     </div>
     
 </ion-content>
