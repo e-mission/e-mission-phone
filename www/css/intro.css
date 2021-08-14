@@ -31,11 +31,19 @@
   padding-left: 8%;
   font-size: 18px;
 }
+.intro-text-large {
+  padding-top: 5%;
+  padding-right: 8%;
+  padding-left: 8%;
+  font-size: 18px;
+  line-height: 1.5;
+  text-align: left;
+}
 .intro-text {
   padding-top: 5%;
   padding-right: 8%;
   padding-left: 8%;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
   text-align: left;
 }
@@ -56,9 +64,9 @@
   padding-top: 5%;
   padding-right: 8%;
   padding-left: 8%;
-  font-size: 15px;
+  font-size: 16px;
   line-height: 1.5;
-  text-align: left;
+  text-align: justify;
 }
 .consent-space {
   height: 15px;
