@@ -158,7 +158,7 @@
         "no-trips-found": "No trips found",
         "for-current-filter": "for current filter. Show All to remove filters",
         "scroll-to-load-more": "Scroll to load more",
-        "filter-display-status": "Displaying {{displayTripsLength}} of {{allTripsLength}} trips upto {{currentEnd | date}}",
+        "filter-display-status": "Displaying {{displayTripsLength}} of {{allTripsLength}} trips up to {{currentEnd | date}}",
         "choose-mode": "Mode 📝 ",
         "choose-replaced-mode": "Replaces 📝",
         "choose-purpose": "Purpose 📝",
