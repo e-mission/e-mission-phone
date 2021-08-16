@@ -210,6 +210,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
+    $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
@@ -220,6 +221,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
+    $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
