@@ -60,11 +60,38 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
-  $scope.infScrollControl = {threshold: 75, scrollLock: true, fromBottom: -1, callback: undefined};
+  /*
+   * These values are used to ensure that when the user scrolls upwards, they
+   * end up at the same location as they were. Since we now add entries to the
+   * top of the list, without these changes, as we load more entries, we will
+   * see the top of the new entries and will potentially have to scroll down to
+   * find where we originally were.
+   * That is not terrible, but it is also not super intuitive. This keeps track
+   * of where we were from the bottom and scrolls back to that location after
+   * the data is loaded and the infiniteScrollCallback is broadcast.
+   *
+   * We need to define and store the callback since we want to scroll *after*
+   * the new items have been fully added (i.e. in the `$scope.$on`). If the
+   * focus group is ok with seeing the newly loaded trips first, we can
+   * simplify this.
+   */
+  $scope.infScrollControl = {fromBottom: -1, callback: undefined};
+
+  var adjustScrollAfterDownload = function() {
+    // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
+    $ionicScrollDelegate.scrollBottom();
+    const clientHeight = $ionicScrollDelegate.getScrollView().__clientHeight;
+    $ionicScrollDelegate.scrollBy(0, -$scope.infScrollControl.fromBottom+clientHeight);
+  };
+
+  var getFromBottom = function() {
+    return $ionicScrollDelegate.getScrollView().__contentHeight
+        - $ionicScrollDelegate.getScrollPosition().top;
+  }
 
   $scope.readDataFromServer = function() {
-    $scope.infScrollControl.scrollLock = true;
-    $scope.infScrollControl.fromBottom = $ionicScrollDelegate.getScrollView().__contentHeight-$ionicScrollDelegate.getScrollPosition().top;
+    $scope.infScrollControl.fromBottom = getFromBottom()
+    $scope.infScrollControl.callback = adjustScrollAfterDownload;
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;
@@ -147,29 +174,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.$on("scroll.infiniteScrollComplete", function() {
+    Logger.log("infiniteScrollComplete broadcast")
     if ($scope.infScrollControl.callback != undefined) {
       $scope.infScrollControl.callback();
       $scope.infScrollControl.callback = undefined;
     }
-    $scope.infScrollControl.scrollLock = false;
   });
-
-  $scope.handleScroll = function() {
-    if ($scope.infScrollControl.scrollLock) return;
-    if ($scope.infScrollControl.reachedEnd) {
-      console.log("reached end");
-      return;
-    }
-    if ($ionicScrollDelegate.getScrollPosition().top < $scope.infScrollControl.threshold) {
-      $scope.infScrollControl.callback = function() {
-        // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
-        $ionicScrollDelegate.scrollBottom();
-        const clientHeight = $ionicScrollDelegate.getScrollView().__clientHeight;
-        $ionicScrollDelegate.scrollBy(0, -$scope.infScrollControl.fromBottom+clientHeight);
-      };
-      $scope.readDataFromServer();
-    }
-  }
 
   $ionicModal.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
     scope: $scope,
@@ -200,6 +210,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
+    // scroll to the bottom while changing filters so users don't have to
+    // fixes the first of the fit-and-finish issues from
+    // https://github.com/e-mission/e-mission-docs/issues/662
+    $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
@@ -210,6 +224,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
+    $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
