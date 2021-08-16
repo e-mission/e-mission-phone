@@ -210,6 +210,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
+    // scroll to the bottom while changing filters so users don't have to
+    // fixes the first of the fit-and-finish issues from
+    // https://github.com/e-mission/e-mission-docs/issues/662
     $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
