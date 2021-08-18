@@ -180,7 +180,8 @@
         "7": "If all of a trip's yellow labels are correct, you can click the checkmark button, which will turn them green (the checkmark button doesn't do anything to red or green labels.",
         "8": "If certain yellow labels are incorrect, you can correct them just like you'd enter a label normally.",
         "9": "When there are no more trips in To Label, you're done labeling for the day.",
-        "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!"
+        "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!",
+        "11": "Click the ‘?’ button whenever you'd like to view this tour again."
     },
 
     "user-gender": "Gender",
