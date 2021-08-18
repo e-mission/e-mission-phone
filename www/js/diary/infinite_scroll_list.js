@@ -27,7 +27,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     InfScrollFilters,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate, $q) {
 
   // TODO: load only a subset of entries instead of everything
 
@@ -611,13 +611,71 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         nextText: $translate.instant('tour-next'),
         finishText: $translate.instant('tour-finish')
       },
-      steps: []
+      steps: [{
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.0'),
+        before: function() {
+          var d = $q.defer();
+          $ionicScrollDelegate.scrollTop(true);
+          d.resolve();
+          return d.promise
+        }
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.1')
+      },
+      {
+        target: '.labelfilter.last',
+        content: $translate.instant('new_label_tour.2')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.3')
+      },
+      {
+        target: '.control-icon-button',
+        content: $translate.instant('new_label_tour.4')
+      },
+      {
+        target: '.input-confirm-row',
+        content: $translate.instant('new_label_tour.5')
+      },
+      {
+        target: '.input-confirm-row',
+        content: $translate.instant('new_label_tour.6')
+      },
+      {
+        target: '.diary-checkmark-container i',
+        content: $translate.instant('new_label_tour.7')
+      },
+      {
+        target: '.input-confirm-row',
+        content: $translate.instant('new_label_tour.8')
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.9')
+      },
+      {
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.10'),
+        after: function() {
+          var d = $q.defer();
+          $ionicScrollDelegate.scrollBottom(true);
+          d.resolve();
+          return d.promise
+        }
+      }
+      ]
     };
 
     var startWalkthrough = function () {
       nzTour.start(tour).then(function(result) {
+        // $ionicScrollDelegate.scrollBottom();
         Logger.log("list walkthrough start completed, no error");
       }).catch(function(err) {
+        // $ionicScrollDelegate.scrollBottom();
         Logger.displayError("list walkthrough start errored", err);
       });
     };
