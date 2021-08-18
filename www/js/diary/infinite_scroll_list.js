@@ -372,14 +372,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       // is going to modify it further
       trip.waitingForMod = true;
       let currTimeoutPromise = trip.timeoutPromise;
-      let ONE_MINUTE = 60 * 1000;
+      let THIRTY_SECS = 30 * 1000;
       Logger.log("trip starting at "+trip.start_fmt_time+": creating new timeout");
       trip.timeoutPromise = $timeout(function() {
         Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
         trip.waitingForMod = false;
         trip.timeoutPromise = undefined;
         $scope.recomputeDisplayTrips();
-      }, ONE_MINUTE);
+      }, THIRTY_SECS);
       Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
       $timeout.cancel(currTimeoutPromise);
     }
@@ -476,7 +476,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
         tripgj.display_distance = $scope.getFormattedDistanceInMiles(tripgj.distance);
-        tripgj.display_date = moment(tripgj.start_ts * 1000).format('DD MMM YY');
+        tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YY');
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.start_ts,
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
