@@ -95,9 +95,9 @@
         "consent-found": "Consent found!",
         "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
         "consented-ok": "OK",
-        "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
-        "share-subject": "Emission - UC Berkeley Research Project",
-        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
+        "share-message": "Join me in making transportation greener and healthier \nDownload the emTripLog app:",
+        "share-subject": "UNSW Travel Survey",
+        "share-url": "https://www.taharashidi.com/travel-survey"
     },
 
     "metrics":{
