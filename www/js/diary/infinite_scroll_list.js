@@ -23,6 +23,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
+                                    $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     InfScrollFilters,
@@ -236,7 +237,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                 Logger.displayError("multiple filters not supported!", undefined);
             } else {
                 // console.log("Trip n before: "+$scope.data.displayTrips.length);
-                $scope.data.displayTrips = $scope.data.allTrips.filter(f.filter);
+                $scope.data.displayTrips = $scope.data.allTrips.filter(
+                    t => InfScrollFilters.waitingForMod(t) || f.filter(t));
                 // console.log("Trip n after:  "+$scope.data.displayTrips.length);
                 alreadyFiltered = true;
             }
@@ -356,10 +358,36 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.editingTrip = angular.undefined;
     }
 
+    /*
+     * Embody the logic for delayed update:
+     * the recompute logic already keeps trips that are waitingForModification
+     * even if they would be filtered otherwise.
+     * so here:
+     * - set the trip as waiting for potential modifications
+     * - create a one minute timeout that will remove the wait and recompute
+     * - clear the existing timeout (if any)
+     */
+    $scope.updateVisibilityAfterDelay = function(trip) {
+      // We have just edited this trip, and are now waiting to see if the user
+      // is going to modify it further
+      trip.waitingForMod = true;
+      let currTimeoutPromise = trip.timeoutPromise;
+      let ONE_MINUTE = 60 * 1000;
+      Logger.log("trip starting at "+trip.start_fmt_time+": creating new timeout");
+      trip.timeoutPromise = $timeout(function() {
+        Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
+        trip.waitingForMod = false;
+        trip.timeoutPromise = undefined;
+        $scope.recomputeDisplayTrips();
+      }, ONE_MINUTE);
+      Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
+      $timeout.cancel(currTimeoutPromise);
+    }
+
     $scope.updateTripProperties = function(trip) {
       $scope.inferFinalLabels(trip);
       $scope.updateVerifiability(trip);
-      $scope.recomputeDisplayTrips();
+      $scope.updateVisibilityAfterDelay(trip);
     }
 
     /**

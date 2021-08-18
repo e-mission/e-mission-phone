@@ -39,6 +39,10 @@ angular.module('emission.main.diary.infscrollfilters',[
         }
     }
 
+    sf.waitingForMod = function(t) {
+        return t.waitingForMod == true;
+    }
+
     sf.UNLABELED = {
         key: "unlabeled",
         text: $translate.instant(".unlabeled"),
