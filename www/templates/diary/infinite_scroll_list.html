@@ -2,7 +2,7 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="left" id="toget" class="row buttons">
-        <button class="button button-icon ion-help" ng-click="startWalkthrough()" style="padding-right: 0"></button>
+        <button class="button button-icon ion-help walkthrough-button" ng-click="startWalkthrough()" style="padding-right: 0"></button>
         <div class="labelfilterlist row buttons">
             <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="col button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{selF.text}}
