@@ -709,7 +709,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
         return;*/
-      checkNewlabelTutorialDone();
+      // checkNewlabelTutorialDone();
     });
 
     $scope.$on('$ionicView.leave',function() {
@@ -928,7 +928,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
         if(ev.targetScope !== $scope)
           return;*/
-        checkNewlabelTutorialDone();
+        // checkNewlabelTutorialDone();
       });
 
       $scope.$on('$ionicView.afterEnter', function() {
