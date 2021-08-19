@@ -60,7 +60,7 @@ angular.module('emission.main.diary.infscrollfilters',[
         key: "to_label",
         text: $translate.instant(".to-label"),
         filter: toLabelCheck,
-        width: "col-33"
+        width: "col-50"
     }
     return sf;
 });
