@@ -2,13 +2,17 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="left" id="toget" class="row buttons">
-        <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="col col-50 button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-            {{selF.text}}
-        </button>
-        <button ng-click="resetSelection()" class="col col-50 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
-            {{'.show-all'}}
-        </button>
+        <button class="button button-icon ion-help walkthrough-button" ng-click="startWalkthrough()" style="padding-right: 0"></button>
+        <div class="row buttons labelfilterlist">
+            <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                {{selF.text}}
+            </button>
+            <button ng-click="resetSelection()" class="col-33 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+                {{'.show-all'}}
+            </button>
+        </div>
     </ion-nav-buttons>
+    
     <ion-nav-buttons side="right">
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
@@ -77,7 +81,7 @@
                         {{input.labeltext}}
                     </div>
                     </div>
-                    <div class="row">
+                    <div class="row input-confirm-row">
                         <div ng-repeat="input in userInputDetails" class={{input.width}} style="margin-top: -7px; text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
                             <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
                                 <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">

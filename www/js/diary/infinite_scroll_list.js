@@ -27,7 +27,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     InfScrollFilters,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate, $q) {
 
   // TODO: load only a subset of entries instead of everything
 
@@ -611,27 +611,89 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         nextText: $translate.instant('tour-next'),
         finishText: $translate.instant('tour-finish')
       },
-      steps: []
+      steps: [{
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.0')
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.1')
+      },
+      {
+        target: '.labelfilter.last',
+        content: $translate.instant('new_label_tour.2')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.3')
+      },
+      {
+        target: '.control-icon-button',
+        content: $translate.instant('new_label_tour.4'),
+        before: function() {
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollTop(true);
+            resolve();
+          });
+        }
+      },
+      {
+        target: '.input-confirm-row',
+        content: $translate.instant('new_label_tour.5')
+      },
+      {
+        target: '.input-confirm-row',
+        content: $translate.instant('new_label_tour.6')
+      },
+      {
+        target: '.diary-checkmark-container i',
+        content: $translate.instant('new_label_tour.7')
+      },
+      {
+        target: '.input-confirm-row',
+        content: $translate.instant('new_label_tour.8'),
+        after: function() {
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollBottom(true);
+            resolve();
+          });
+        }
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.9')
+      },
+      {
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.10')
+      },
+      {
+        target: '.walkthrough-button',
+        content: $translate.instant('new_label_tour.11')
+      }
+      ]
     };
 
     var startWalkthrough = function () {
       nzTour.start(tour).then(function(result) {
+        // $ionicScrollDelegate.scrollBottom();
         Logger.log("list walkthrough start completed, no error");
       }).catch(function(err) {
+        // $ionicScrollDelegate.scrollBottom();
         Logger.displayError("list walkthrough start errored", err);
       });
     };
 
     /*
-    * Checks if it is the first time the user has loaded the diary tab. If it is then
+    * Checks if it is the first time the user has loaded the new label tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
     */
-    var checkDiaryTutorialDone = function () {
-      var DIARY_DONE_KEY = 'diary_tutorial_done';
-      var diaryTutorialDone = KVStore.getDirect(DIARY_DONE_KEY);
-      if (!diaryTutorialDone) {
+    var checkNewlabelTutorialDone = function () {
+      var NEWLABEL_DONE_KEY = 'newlabel_tutorial_done';
+      var newlabelTutorialDone = KVStore.getDirect(NEWLABEL_DONE_KEY);
+      if (!newlabelTutorialDone) {
         startWalkthrough();
-        KVStore.set(DIARY_DONE_KEY, true);
+        KVStore.set(NEWLABEL_DONE_KEY, true);
       }
     };
 
@@ -641,11 +703,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     $scope.$on('$ionicView.enter', function(ev) {
       $scope.startTime = moment().utc()
-      // Workaround from
+      // This workaround seems to no longer work
+      // In any case, only the first call to checkNewlabelTutorialDone does anything
+      /*// Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
-        return;
-      checkDiaryTutorialDone();
+        return;*/
+      checkNewlabelTutorialDone();
     });
 
     $scope.$on('$ionicView.leave',function() {
@@ -858,11 +922,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
 
       $scope.$on('$ionicView.enter', function(ev) {
-        // Workaround from
+        // This workaround seems to no longer work
+        // In any case, only the first call to checkNewlabelTutorialDone does anything
+        /*// Workaround from
         // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
         if(ev.targetScope !== $scope)
-          return;
-        checkDiaryTutorialDone();
+          return;*/
+        checkNewlabelTutorialDone();
       });
 
       $scope.$on('$ionicView.afterEnter', function() {
