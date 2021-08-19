@@ -46,7 +46,8 @@ angular.module('emission.main.diary.infscrollfilters',[
     sf.UNLABELED = {
         key: "unlabeled",
         text: $translate.instant(".unlabeled"),
-        filter: unlabeledCheck
+        filter: unlabeledCheck,
+        width: "col-50"
     }
 
     sf.INVALID_EBIKE = {
@@ -58,7 +59,8 @@ angular.module('emission.main.diary.infscrollfilters',[
     sf.TO_LABEL = {
         key: "to_label",
         text: $translate.instant(".to-label"),
-        filter: toLabelCheck
+        filter: toLabelCheck,
+        width: "col-33"
     }
     return sf;
 });

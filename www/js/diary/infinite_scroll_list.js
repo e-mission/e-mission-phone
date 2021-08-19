@@ -631,10 +631,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         target: '.control-icon-button',
         content: $translate.instant('new_label_tour.4'),
         before: function() {
-          var d = $q.defer();
-          $ionicScrollDelegate.scrollTop(true);
-          d.resolve();
-          return d.promise
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollTop(true);
+            resolve();
+          });
         }
       },
       {
@@ -653,10 +653,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         target: '.input-confirm-row',
         content: $translate.instant('new_label_tour.8'),
         after: function() {
-          var d = $q.defer();
-          $ionicScrollDelegate.scrollBottom(true);
-          d.resolve();
-          return d.promise
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollBottom(true);
+            resolve();
+          });
         }
       },
       {
