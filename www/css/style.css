@@ -857,7 +857,9 @@ button.button.back-button.buttons.button-clear.header-item {
   top: 16px;
 }
 .list-card {
-  margin: 16px 0; box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  margin: 16px 0;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border: 1px solid #ccc;
 }
 .bg-light {
   background-color: #ffffff; 
@@ -926,7 +928,7 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 12px;
         position: absolute;
         left: 1%;
-        bottom: 15px;
+        top: 15px;
         line-height: 16px;
 }
 .stop-time-tag-inf-scroll {
@@ -940,7 +942,7 @@ button.button.back-button.buttons.button-clear.header-item {
         font-size: 12px;
         position: absolute;
         left: 1%;
-        top: 15px;
+        bottom: 15px;
         line-height: 16px;
 }
 .stop-time-tag-lower {
