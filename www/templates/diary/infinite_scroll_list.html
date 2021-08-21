@@ -2,7 +2,7 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="left" id="toget" class="row buttons">
-        <button class="button button-icon ion-help walkthrough-button" ng-click="startWalkthrough()" style="padding-right: 0"></button>
+        <button class="button button-icon ion-help walkthrough-button" ng-click="startWalkthrough()"></button>
         <div class="row buttons labelfilterlist">
             <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
                 {{selF.text}}
@@ -34,8 +34,9 @@
                 <div class="row" translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
                 <div ng-if="data.allTrips.length > 0" class="row" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
             </div>
-            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
-            <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
+            <!-- The hope with the ng-attr-id stuff here is that between looking up the property and populating the actual id field, something will only happen for DOM elements that actually appear on screen and not for the duplicated ones. I don't have a good way to test this as the problem happens so rarely and irreproducibly. See https://github.com/e-mission/e-mission-docs/issues/669. -->
+            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" ng-attr-id="{{getMoreTripsID}}" class="gray-icon control-icon-button"><i class="ion-ios-download"></i></div>
+            <div ng-if="infScrollControl.reachedEnd" ng-attr-id="{{getMoreTripsID}}" class="control-icon-button"><i class="ion-checkmark"></i></div>
         </div>
 
 		<ion-list>
@@ -54,7 +55,7 @@
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                <div ng-attr-id="diary-card-{{trip.dom_id}}" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
                     <div class="row">
                         <div ng-click="showDetail($event, trip)" class="col-90 center-vert" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0; justify-self: flex-start;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
                         <div ng-click="showDetail($event, trip)" class="col-10 diary-more-container center-vert center-horiz">
@@ -82,7 +83,7 @@
                     </div>
                     </div>
                     <div class="row input-confirm-row">
-                        <div ng-repeat="input in userInputDetails" class={{input.width}} style="margin-top: -7px; text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
+                        <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
                             <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
                                 <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
                                     {{trip.userInput[input.name].text}}

@@ -708,7 +708,7 @@ background-image: none !important; }
   background-color: #E0A1A1 !important;
 }
 
-#gray.control-icon-button{
+.gray-icon.control-icon-button{
   background-color: #CCCCCC !important;
 }
 
