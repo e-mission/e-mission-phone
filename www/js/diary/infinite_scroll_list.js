@@ -45,10 +45,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.data = {};
 
-  // To aid in the walkthrough fix (see https://github.com/e-mission/e-mission-docs/issues/669)
-  var firstTripID = "";
-  $scope.getMoreTripsID = 'walkthrough'+'-'+'getmoretrips';
-
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }
@@ -251,7 +247,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     if (!alreadyFiltered) {
         $scope.data.displayTrips = $scope.data.allTrips;
     };
-    firstTripID = "diary-card-"+$scope.data.displayTrips[0].dom_id;
   }
 
   angular.extend($scope, {
@@ -490,7 +485,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
         tripgj.start_display_name = "\xa0";
         tripgj.end_display_name = "\xa0";
-        tripgj.dom_id = Math.round(tripgj.start_ts).toString();
     }
 
     const fillPlacesForTripAsync = function(tripgj) {
@@ -607,97 +601,81 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
 
     // Tour steps
-    var tour = function() {
-      // We do some extra work here to avoid trying to target DOM elements that have been duplicated and moved off-screen. See https://github.com/e-mission/e-mission-docs/issues/669.
-      // filterOutTopLeft helps us ignore duplicated DOM elements that get translate3d'd to -9999, -9999, 0:
-      const filterOutTopLeft = ":not([style*='transform: translate3d(-'])";
-      // tripTag filters out duplicated DOM elements using the above, then gets the first trip by time. This is necessary because the trips are not necessarily in order in the DOM even though they appear in order on the screen.
-      const tripTag = ".collection-repeat-container>div"+filterOutTopLeft+" #"+firstTripID+" ";
-      // The "load more trips" button sometimes has the glitchy behavior as well. I haven't been able to reproduce enough to narrow down the issue; for now, we'll try the same tricks as we try with the trips.
-      const loadMoreTag = ".scroll"+filterOutTopLeft+" .control-icon-button#"+$scope.getMoreTripsID;
-      return {
-        config: {
-          mask: {
-            visibleOnNoTarget: true,
-            clickExit: true,
-          },
-          previousText: $translate.instant('tour-previous'),
-          nextText: $translate.instant('tour-next'),
-          finishText: $translate.instant('tour-finish')
+    var tour = {
+      config: {
+        mask: {
+          visibleOnNoTarget: true,
+          clickExit: true,
         },
-        steps: [{
-          target: '.ion-view-background',
-          content: $translate.instant('new_label_tour.0')
-        },
-        {
-          target: '.labelfilter',
-          content: $translate.instant('new_label_tour.1')
-        },
-        {
-          target: '.labelfilter.last',
-          content: $translate.instant('new_label_tour.2')
-        },
-        {
-          target: '.diary-entry',
-          content: $translate.instant('new_label_tour.3')
-        },
-        {
-          target: loadMoreTag,
-          content: $translate.instant('new_label_tour.4'),
-          before: function() {
-            return new Promise(function(resolve, reject) {
-              $ionicScrollDelegate.scrollTop(true);
-              resolve();
-            });
-          }
-        },
-        {
-          target: tripTag+'.input-confirm-row',
-          content: $translate.instant('new_label_tour.5'),
-          before: function() {
-            return new Promise(function(resolve, reject) {
-              console.log("HII");
-              console.log("#"+firstTripID+' .input-confirm-row');
-              resolve();
-            });
-          }
-        },
-        {
-          target: tripTag+'.input-confirm-row',
-          content: $translate.instant('new_label_tour.6')
-        },
-        {
-          target: tripTag+'.diary-checkmark-container i',
-          content: $translate.instant('new_label_tour.7')
-        },
-        {
-          target: tripTag+'.input-confirm-row',
-          content: $translate.instant('new_label_tour.8')
-        },
-        {
-          target: '.labelfilter',
-          content: $translate.instant('new_label_tour.9')
-        },
-        {
-          target: '.ion-view-background',
-          content: $translate.instant('new_label_tour.10')
-        },
-        {
-          target: '.walkthrough-button',
-          content: $translate.instant('new_label_tour.11'),
-          after: function() {
-            return new Promise(function(resolve, reject) {
-              $ionicScrollDelegate.scrollBottom(true);
-              resolve();
-            });
-          }
+        previousText: $translate.instant('tour-previous'),
+        nextText: $translate.instant('tour-next'),
+        finishText: $translate.instant('tour-finish')
+      },
+      steps: [{
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.0')
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.1')
+      },
+      {
+        target: '.labelfilter.last',
+        content: $translate.instant('new_label_tour.2')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.3')
+      },
+      {
+        target: '.control-icon-button',
+        content: $translate.instant('new_label_tour.4'),
+        before: function() {
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollTop(true);
+            resolve();
+          });
         }
-        ]
-      };
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.5')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.6')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.7')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.8'),
+        after: function() {
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollBottom(true);
+            resolve();
+          });
+        }
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.9')
+      },
+      {
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.10')
+      },
+      {
+        target: '.walkthrough-button',
+        content: $translate.instant('new_label_tour.11')
+      }
+      ]
     };
 
     var startWalkthrough = function () {
-      nzTour.start(tour()).then(function(result) {
+      nzTour.start(tour).then(function(result) {
         // $ionicScrollDelegate.scrollBottom();
         Logger.log("list walkthrough start completed, no error");
       }).catch(function(err) {
