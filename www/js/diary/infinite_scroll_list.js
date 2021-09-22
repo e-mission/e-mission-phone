@@ -638,19 +638,19 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
       },
       {
-        target: '.input-confirm-row',
+        target: '.diary-entry',
         content: $translate.instant('new_label_tour.5')
       },
       {
-        target: '.input-confirm-row',
+        target: '.diary-entry',
         content: $translate.instant('new_label_tour.6')
       },
       {
-        target: '.diary-checkmark-container i',
+        target: '.diary-entry',
         content: $translate.instant('new_label_tour.7')
       },
       {
-        target: '.input-confirm-row',
+        target: '.diary-entry',
         content: $translate.instant('new_label_tour.8'),
         after: function() {
           return new Promise(function(resolve, reject) {
