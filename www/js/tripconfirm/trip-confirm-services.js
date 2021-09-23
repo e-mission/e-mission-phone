@@ -16,6 +16,13 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
             width: "col-50",
             key: "manual/purpose_confirm",
             otherVals: {},
+        },
+        "SURVEY": {
+            labeltext: $translate.instant(".survey"),
+            choosetext: $translate.instant(".choose-survey"),
+            width: "col-50",
+            key: "manual/survey_response",
+            otherVals: {},
         }
     }
 
