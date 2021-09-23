@@ -11,11 +11,12 @@ angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.splash.updatecheck', 'emission.services.email',
+    'emission.main.control.sync',
   'emission.intro', 'emission.main',
   'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, UpdateCheck) {
+    CustomURLScheme, ReferralHandler, UpdateCheck, ControlSyncHelper) {
   console.log("Starting run");
   // alert("Starting run");
   // BEGIN: Global listeners, no need to wait for the platform
@@ -34,6 +35,15 @@ angular.module('emission', ['ionic',
     }
   });
   // END: Global listeners
+  let autoForceSync = function() {
+    if ($ionicPlatform.is("android")) {
+      console.log("app has started/resumed, forcing sync on android");
+      ControlSyncHelper.forceSync().then(function() {
+        ClientStats.addEvent(ClientStats.getStatKeys().RESUME_FORCE_SYNC);
+      });
+    }
+  };
+
   $ionicPlatform.ready(function() {
     // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
     // for form inputs)
@@ -68,7 +78,13 @@ angular.module('emission', ['ionic',
         });
     });
     cordova.plugin.http.setDataSerializer('json');
+    autoForceSync();
   });
+
+  $ionicPlatform.on("resume", function() {
+    autoForceSync();
+  });
+
   console.log("Ending run");
 })
 
