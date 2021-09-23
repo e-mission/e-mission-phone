@@ -105,25 +105,26 @@ angular.module('emission.enketo-survey.service', [
   /**
    * _restoreAnswer restore the most recent answer for the survey
    * @param {EnketoAnswer[]} answers survey answers
-   * @returns {string} answer string
+   * @returns {Promise<string>} answer string promise
    */
   function _restoreAnswer(answers) {
-    let answer = null;
-    answers = EnketoSurveyAnswer.filterByNameAndVersion(_state.name, answers);
-    if (!answers.length) {
-      return null;
-    }
-    if (_state.opts.trip) {
-      answer = DiaryHelper.getUserInputForTrip(_state.opts.trip, undefined, answers);
-      if (answer) {
-        return answer.data.xmlResponse;
+    return EnketoSurveyAnswer.filterByNameAndVersion(_state.name, answers).then(answers => {
+      let answer = null;
+      if (!answers.length) {
+        return null;
       }
-    }
-    if (_state.opts.uuid) {
-      answers = answers.filter(answer => answer.data.user_uuid === _state.opts.uuid);
-      answer = answers.length ? answers[0] : null;
-    }
-    return answer ? answer.data.xmlResponse : null;
+      if (_state.opts.trip) {
+        answer = DiaryHelper.getUserInputForTrip(_state.opts.trip, undefined, answers);
+        if (answer) {
+          return answer.data.xmlResponse;
+        }
+      }
+      if (_state.opts.uuid) {
+        answers = answers.filter(answer => answer.data.user_uuid === _state.opts.uuid);
+        answer = answers.length ? answers[0] : null;
+      }
+      return answer ? answer.data.xmlResponse : null;
+    });
   }
 
   /**
@@ -138,7 +139,9 @@ angular.module('emission.enketo-survey.service', [
 
     const data = {
       label: EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc),
+      name: _state.name,
       timestamp: new Date(),
+      version: _state.config[_state.name].version,
       xmlResponse,
     };
     if (_state.opts.trip && _state.opts.trip.data.properties) {
