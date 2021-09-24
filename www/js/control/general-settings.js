@@ -12,12 +12,13 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
+                                        'emission.survey.launch',
                                         'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, KVStore, ionicDatePicker,
+               $rootScope, KVStore, SurveyLaunch, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
@@ -459,6 +460,14 @@ angular.module('emission.main.control',['emission.services',
                 return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
             }
         });
+    };
+    $scope.editUserProfile = function() {
+        SurveyLaunch.startSurveyPrefilled('https://up.byamarin.com/?returnUrl=', 'uuid');
+    };
+    $scope.launchEndSurvey = function() {
+        const returnURL = 'https://www.taharashidi.com/endsurvey';
+        SurveyLaunch.startSurveyPrefilled(`https://pe.byamarin.com/?returnUrl=${returnURL}`, 'uuid');
+        $scope.endForceSync();
     };
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
