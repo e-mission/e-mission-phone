@@ -9,6 +9,7 @@ angular.module('emission.main.control',['emission.services',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
+                                        'emission.survey.launch',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
@@ -24,7 +25,7 @@ angular.module('emission.main.control',['emission.services',
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
                UpdateCheck, i18nUtils,
-               CalorieCal, ClientStats, CommHelper, Logger,
+               CalorieCal, ClientStats, CommHelper, Logger, SurveyLaunch,
                $translate) {
 
     var datepickerObject = {
@@ -446,6 +447,19 @@ angular.module('emission.main.control',['emission.services',
     $scope.isIOS = function() {
         return ionic.Platform.isIOS();
     }
+
+    $scope.editUserProfile = function() {
+        SurveyLaunch.startSurveyPrefilled('https://up.byamarin.com')
+    };
+
+    $scope.launchEndSurvey = function() {
+        SurveyLaunch.startSurveyPrefilled(
+            'https://pe.byamarin.com', 
+            undefined, 
+            'https://www.taharashidi.com/endsurvey'
+        )
+        $scope.endForceSync();
+    };
 
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope

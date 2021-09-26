@@ -2,6 +2,7 @@
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
+                                  'emission.survey.launch',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
 
@@ -99,12 +100,25 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
 
+  // Adapted from https://stackoverflow.com/a/63363662/4040267
+  // made available under a CC BY-SA 4.0 license
+
+  $scope.generateRandomToken = function(length) {
+    var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
+    var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
+    var randomString = randomChars.join("");
+    var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
+    return validRandomString.substring(0, length);
+  }
+
   $scope.disagree = function() {
     $state.go('root.main.heatmap');
   };
 
   $scope.agree = function() {
     StartPrefs.markConsented().then(function(response) {
+      $scope.randomToken = $scope.generateRandomToken(8);
+      window.Logger.log("Signing in with random token "+$scope.randomToken);
       $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
         $scope.next();
@@ -134,8 +148,59 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       });
   }
 
-  $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
+  $scope.startSurvey = function () {
+    SurveyLaunch.startSurveyPrefilled(
+      'https://up.byamarin.com/' // redirect link
+      );
+  }
+
+  $scope.tokenToClipboard = function() {
+    navigator.clipboard.writeText($scope.randomToken);
+  };
+
+  $scope.loginNew = function() {
+    $scope.login($scope.randomToken);
+  };
+
+  $scope.loginExisting = function() {
+    $scope.data = {};
+    const tokenPopup = $ionicPopup.show({
+        template: '<input type="String" ng-model="data.existing_token">',
+        title: 'Enter the existing token that you have',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>OK</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              if (!$scope.data.existing_token) {
+                //don't allow the user to close unless he enters a username
+
+                e.preventDefault();
+              } else {
+                return $scope.data.existing_token;
+              }
+            }
+          },{
+            text: '<b>Cancel</b>',
+            type: 'button-stable',
+            onTap: function(e) {
+              return null;
+            }
+          }
+        ]
+    });
+    tokenPopup.then(function(token) {
+        if (token != null) {
+            $scope.login(token);
+        }
+    }).catch(function(err) {
+        $scope.alertError(err);
+    });
+  };
+
+  $scope.login = function(token) {
+    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
@@ -143,11 +208,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-          UpdateCheck.getChannel().then(function(retVal) {
-            CommHelper.updateUser({
-             client: retVal
-            });
-          });
+          $scope.startSurvey();
           $scope.finish();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);
