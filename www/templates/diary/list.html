@@ -87,6 +87,9 @@
                 </div>
              </div>
              <div class="row" style="padding-left: 5px;padding-right: 5px;">
+              <multilabel inputs="['mode', 'purpose']"></multilabel>
+             </div>
+             <div class="row" style="padding-left: 5px;padding-right: 5px;">
               <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
                 {{input.labeltext}}
               </div>

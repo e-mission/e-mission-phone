@@ -13,6 +13,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
                                       'emission.tripconfirm.services',
+                                      'emission.tripconfirm.multilabel',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
