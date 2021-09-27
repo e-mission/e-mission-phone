@@ -10,11 +10,7 @@ angular.module('emission.tripconfirm.multilabel',
         inputParams: "=inputparams" // use nocase inputs to maintain consistency between  HTML and scope parameters
     },
     controller: function($scope, $element) {
-      console.log("Invoked directive controller with "+$element);
-      console.log($scope);
-      console.log("unifiedresults "+$scope.unifiedConfirmsResults);
-      console.log("scope trip information is "+$scope.tripgj);
-      console.log("scope inputs are "+$scope.inputs);
+      console.log("Invoked multilabel directive controller for labels "+$scope.inputs);
 
       /**
        * Embed 'inputType' to the trip
@@ -38,7 +34,8 @@ angular.module('emission.tripconfirm.multilabel',
       }
 
       $scope.fillUserInputs = function() {
-        console.log("Checking to fill user inputs for "+$scope.tripgj);
+        console.log("Checking to fill user inputs for "
+            +$scope.tripgj.display_start_time+" -> "+$scope.tripgj.display_end_time);
         if (angular.isDefined($scope.tripgj)) {
             $scope.tripgj.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
@@ -50,19 +47,8 @@ angular.module('emission.tripconfirm.multilabel',
         }
       }
 
-      $scope.init = function() {
-          $scope.userInputDetails = [];
-          $scope.inputs.forEach(function(item, index) {
-            const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-            currInput.name = item;
-            $scope.userInputDetails.push(currInput);
-          });
-          console.log("Finished initializing directive, userInputDetails = "+JSON.stringify($scope.userInputDetails));
-          console.log("Before filling user inputs, trip is = "+JSON.stringify($scope.tripgj));
-      }
-
       $scope.$watch("tripgj", function(newVal, oldVal) {
-        console.log("the trip binding has changed from "+oldVal+" to new value");
+        console.log("the trip binding has changed from "+oldVal+" to new value "+newVal);
         $scope.fillUserInputs();
       });
     
@@ -172,15 +158,19 @@ angular.module('emission.tripconfirm.multilabel',
           });
           console.log("after loading in directive, inputParams = "+JSON.stringify($scope.inputParams));
       });
+
+      $scope.init = function() {
+          $scope.userInputDetails = [];
+          $scope.inputs.forEach(function(item, index) {
+            const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
+            currInput.name = item;
+            $scope.userInputDetails.push(currInput);
+          });
+          console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
+      }
+
       $scope.init();
     },
-    templateUrl: 'templates/tripconfirm/multi-label-ui.html',
-    link: function(scope, element, attrs, ctrl) {
-        console.log("link function called with "+scope+" and ctrl "+ctrl);
-        console.log(scope);
-        console.log("unifiedresults "+scope.unifiedConfirmsResults);
-        console.log("scope trip information is "+scope.tripgj);
-        console.log("scope inputs are "+scope.inputs);
-    }
+    templateUrl: 'templates/tripconfirm/multi-label-ui.html'
   };
 });
