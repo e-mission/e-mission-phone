@@ -22,7 +22,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $http, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, UpdateCheck, $translate, i18nUtils) {
 
   $scope.setupPermissionText = function() {
       $scope.platform = $window.device.platform;
@@ -181,24 +181,21 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       } else {
         CommHelper.registerUser(function(successResult) {
           const uuid = successResult.uuid;
-          return CommHelper.updateUser({ branch: 'rciti1' })
-            .then(function() {
-              const thisUuid = uuid ? uuid : 'undefined';
-              const returnUrl = 'https://emission-app.fourstep.dev/survey-success-static/';
-              console.log('returnUrl', returnUrl);
-              const url = `https://up.fourstep.dev/?returnUrl=${returnUrl}&uuid=${thisUuid}`;
-              const iab = $window.cordova.InAppBrowser.open(url, '_blank');
-              const listener = function(event) {
-                console.log("started loading, event = " + JSON.stringify(event));
-                if (event.url === returnUrl || event.url === 'https://ee.kobotoolbox.org/thanks') {
-                  iab.removeEventListener('loadstart', listener);
-                  iab.close();
-                  ionicToast.show(userEmail, 'middle', false, 2500);
-                  $scope.finish();
-                }
-              };
-              iab.addEventListener('loadstart', listener);
-            });
+          const thisUuid = uuid ? uuid : 'undefined';
+          const returnUrl = 'https://emission-app.fourstep.dev/survey-success-static/';
+          console.log('returnUrl', returnUrl);
+          const url = `https://up.fourstep.dev/?returnUrl=${returnUrl}&uuid=${thisUuid}`;
+          const iab = $window.cordova.InAppBrowser.open(url, '_blank');
+          const listener = function(event) {
+            console.log("started loading, event = " + JSON.stringify(event));
+            if (event.url === returnUrl || event.url === 'https://ee.kobotoolbox.org/thanks') {
+              iab.removeEventListener('loadstart', listener);
+              iab.close();
+              ionicToast.show(userEmail, 'middle', false, 2500);
+              $scope.finish();
+            }
+          };
+          iab.addEventListener('loadstart', listener);
         }, function(errorResult) {
           // ionicToast.show(userEmail, 'middle', false, 2500);
           $scope.alertError('User registration error', errorResult);
