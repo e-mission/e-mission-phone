@@ -34,13 +34,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       data.leafletObject.invalidateSize();
   });
 
-  $scope.userInputDetails = [];
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-    const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-    currInput.name = item;
-    $scope.userInputDetails.push(currInput);
-  });
-
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
     // based on the time when the database finishes reading.
@@ -458,110 +451,18 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.showModes = DiaryHelper.showModes;
 
-    $scope.popovers = {};
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
-        return $ionicPopover.fromTemplateUrl(popoverPath, {
-          scope: $scope
-        }).then(function (popover) {
-          $scope.popovers[item] = popover;
-        });
-    });
-
-    $scope.openPopover = function ($event, tripgj, inputType) {
-      var userInput = tripgj.userInput[inputType];
-      if (angular.isDefined(userInput)) {
-        $scope.selected[inputType].value = userInput.value;
-      } else {
-        $scope.selected[inputType].value = '';
-      }
-      $scope.draftInput = {
-        "start_ts": tripgj.data.properties.start_ts,
-        "end_ts": tripgj.data.properties.end_ts
-      };
-      $scope.editingTrip = tripgj;
-      Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
-      $scope.popovers[inputType].show($event);
-    };
-
-    var closePopover = function (inputType) {
-      $scope.selected[inputType] = {
-        value: ''
-      };
-      $scope.popovers[inputType].hide();
-    };
-
-    /**
-     * Store selected value for options
-     * $scope.selected is for display only
-     * the value is displayed on popover selected option
-     */
-    $scope.selected = {}
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        $scope.selected[item] = {value: ''};
-    });
-    $scope.selected.other = {text: '', value: ''};
-
-    /*
-     * This is a curried function that curries the `$scope` variable
-     * while returing a function that takes `e` as the input
-     */
-    var checkOtherOptionOnTap = function ($scope, inputType) {
-        return function (e) {
-          if (!$scope.selected.other.text) {
-            e.preventDefault();
-          } else {
-            Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-            $scope.store(inputType, $scope.selected.other, true /* isOther */);
-            $scope.selected.other = '';
-            return $scope.selected.other;
-          }
-        }
-    };
-
-    $scope.choose = function (inputType) {
-      var isOther = false
-      if ($scope.selected[inputType].value != "other") {
-        $scope.store(inputType, $scope.selected[inputType], isOther);
-      } else {
-        isOther = true
-        ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
-      }
-      closePopover(inputType);
-    };
-
+    console.log('registering loaded callback');
     $scope.$on('$ionicView.loaded', function() {
+        console.log('ionic view loaded event invoked');
         $scope.inputParams = {}
         ConfirmHelper.INPUTS.forEach(function(item) {
             ConfirmHelper.getOptionsAndMaps(item).then(function(omObj) {
                 $scope.inputParams[item] = omObj;
             });
         });
+        console.log("after loading, inputParams = "+JSON.stringify($scope.inputParams));
     });
 
-    $scope.store = function (inputType, input, isOther) {
-      if(isOther) {
-        // Let's make the value for user entered inputs look consistent with our
-        // other values
-        input.value = ConfirmHelper.otherTextToValue(input.text);
-      }
-      $scope.draftInput.label = input.value;
-      Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
-      var tripToUpdate = $scope.editingTrip;
-      $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
-        $scope.$apply(function() {
-          if (isOther) {
-            tripToUpdate.userInput[inputType] = ConfirmHelper.getFakeEntry(input.value);
-            $scope.inputParams[inputType].options.push(tripToUpdate.userInput[inputType]);
-            $scope.inputParams[inputType].value2entry[input.value] = tripToUpdate.userInput[inputType];
-          } else {
-            tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
-          }
-        });
-      });
-      if (isOther == true)
-        $scope.draftInput = angular.undefined;
-    }
 
     $scope.redirect = function(){
       $state.go("root.main.current");
