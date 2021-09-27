@@ -156,26 +156,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
-    /**
-     * Embed 'inputType' to the trip
-     */
-    $scope.populateInputFromTimeline = function (tripgj, nextTripgj, inputType, inputList) {
-        var userInput = DiaryHelper.getUserInputForTrip(tripgj, nextTripgj, inputList);
-        if (angular.isDefined(userInput)) {
-            // userInput is an object with data + metadata
-            // the label is the "value" from the options
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInput.data.label];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInput.data.label);
-              $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
-            }
-            console.log("Mapped label "+userInput.data.label+" to entry "+JSON.stringify(userInputEntry));
-            tripgj.userInput[inputType] = userInputEntry;
-        }
-        Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
-        $scope.editingTrip = angular.undefined;
-    }
 
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
@@ -231,11 +211,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             DiaryHelper.directiveForTrip);
           Timeline.setTripWrappers(currDayTripWrappers);
 
+          // Add "next" pointers to make it easier to use trip linkages for display
           $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
-            tripgj.userInput = {};
-            ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline(tripgj, array[tripIndex+1], item, $scope.data.unifiedConfirmsResults[item]);
-            });
+            tripgj.nextTripgj = array[tripIndex+1];
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
