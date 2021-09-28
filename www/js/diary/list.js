@@ -429,19 +429,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.showModes = DiaryHelper.showModes;
 
-    console.log('registering loaded callback');
-    $scope.$on('$ionicView.loaded', function() {
-        console.log('ionic view loaded event invoked');
-        $scope.inputParams = {}
-        ConfirmHelper.INPUTS.forEach(function(item) {
-            ConfirmHelper.getOptionsAndMaps(item).then(function(omObj) {
-                $scope.inputParams[item] = omObj;
-            });
-        });
-        console.log("after loading, inputParams = "+JSON.stringify($scope.inputParams));
-    });
-
-
     $scope.redirect = function(){
       $state.go("root.main.current");
     };

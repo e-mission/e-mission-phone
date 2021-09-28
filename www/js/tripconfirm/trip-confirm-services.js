@@ -130,5 +130,19 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
             value: otherValue};
     }
 
+    ch.inputParamsPromise = new Promise(function(resolve, reject) {
+      inputParams = {};
+      console.log("Starting promise execution with ", inputParams);
+      omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
+      console.log("Promise list ", omPromises);
+      Promise.all(omPromises).then((omObjList) =>
+          ch.INPUTS.forEach(function(item, index) {
+              inputParams[item] = omObjList[index];
+          }));
+          console.log("Read all inputParams, resolving with ", inputParams);
+          resolve(inputParams);
+    });
+
+
     return ch;
 });

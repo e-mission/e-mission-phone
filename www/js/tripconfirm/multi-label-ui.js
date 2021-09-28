@@ -1,13 +1,12 @@
 angular.module('emission.tripconfirm.multilabel',
     ['emission.tripconfirm.services',
         'emission.main.diary.services'])
-.directive('multilabel', function(ConfirmHelper, $ionicPopover, $window, DiaryHelper) {
+.directive('multilabel', function() {
   return {
     scope: {
         inputs: "=",
         tripgj: "=",
         unifiedConfirmsResults: "=",
-        inputParams: "=inputparams" // use nocase inputs to maintain consistency between  HTML and scope parameters
     },
     controller: "MultiLabelCtrl",
     templateUrl: 'templates/tripconfirm/multi-label-ui.html'
@@ -21,6 +20,7 @@ angular.module('emission.tripconfirm.multilabel',
    * Embed 'inputType' to the trip
    */
   $scope.populateInputFromTimeline = function (tripgj, nextTripgj, inputType, inputList) {
+      console.log("While populating inputs, inputParams", $scope.inputParams);
       var userInput = DiaryHelper.getUserInputForTrip(tripgj, nextTripgj, inputList);
       if (angular.isDefined(userInput)) {
           // userInput is an object with data + metadata
@@ -42,10 +42,12 @@ angular.module('emission.tripconfirm.multilabel',
     console.log("Checking to fill user inputs for "
         +$scope.tripgj.display_start_time+" -> "+$scope.tripgj.display_end_time);
     if (angular.isDefined($scope.tripgj)) {
-        $scope.tripgj.userInput = {};
-        ConfirmHelper.INPUTS.forEach(function(item, index) {
-            $scope.populateInputFromTimeline($scope.tripgj, $scope.tripgj.nextTripgj,
-                item, $scope.unifiedConfirmsResults[item]);
+        $scope.$apply(() => {
+            $scope.tripgj.userInput = {};
+            $scope.inputs.forEach(function(item, index) {
+                $scope.populateInputFromTimeline($scope.tripgj, $scope.tripgj.nextTripgj,
+                    item, $scope.unifiedConfirmsResults[item]);
+            });
         });
     } else {
         console.log("Trip information not yet bound, skipping fill");
@@ -54,7 +56,16 @@ angular.module('emission.tripconfirm.multilabel',
 
   $scope.$watch("tripgj", function(newVal, oldVal) {
     console.log("the trip binding has changed from "+oldVal+" to new value "+newVal);
-    $scope.fillUserInputs();
+    // We also launch this promise from the init.
+    // If it is complete by the time the watch completes (the common case), the
+    // promise will return immediately
+    // but if the promise takes a while, we will still wait here until the data
+    // is available.
+    // Think of this as assert(inputParams)
+    ConfirmHelper.inputParamsPromise.then((inputParams) => {
+        $scope.inputParams = inputParams;
+        $scope.fillUserInputs();
+    });
   });
 
   $scope.popovers = {};
@@ -152,17 +163,6 @@ angular.module('emission.tripconfirm.multilabel',
     if (isOther == true)
       $scope.draftInput = angular.undefined;
   }
-  console.log('registering loaded callback in directive');
-  $element.on('$ionicView.loaded', function() {
-      console.log('ionic view loaded event invoked');
-      $scope.inputParams = {}
-      ConfirmHelper.INPUTS.forEach(function(item) {
-          ConfirmHelper.getOptionsAndMaps(item).then(function(omObj) {
-              $scope.inputParams[item] = omObj;
-          });
-      });
-      console.log("after loading in directive, inputParams = "+JSON.stringify($scope.inputParams));
-  });
 
   $scope.init = function() {
       $scope.userInputDetails = [];
@@ -171,6 +171,7 @@ angular.module('emission.tripconfirm.multilabel',
         currInput.name = item;
         $scope.userInputDetails.push(currInput);
       });
+      ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
       console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
   }
 
