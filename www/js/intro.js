@@ -2,6 +2,7 @@
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
+                                  'emission.survey.launch',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
 
@@ -22,7 +23,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $http, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, UpdateCheck, $translate, i18nUtils) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
 
   $scope.setupPermissionText = function() {
       $scope.platform = $window.device.platform;
@@ -180,22 +181,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-          const uuid = successResult.uuid;
-          const thisUuid = uuid ? uuid : 'undefined';
-          const returnUrl = 'https://emission-app.fourstep.dev/survey-success-static/';
-          console.log('returnUrl', returnUrl);
-          const url = `https://up.fourstep.dev/?returnUrl=${returnUrl}&uuid=${thisUuid}`;
-          const iab = $window.cordova.InAppBrowser.open(url, '_blank');
-          const listener = function(event) {
-            console.log("started loading, event = " + JSON.stringify(event));
-            if (event.url === returnUrl || event.url === 'https://ee.kobotoolbox.org/thanks') {
-              iab.removeEventListener('loadstart', listener);
-              iab.close();
-              ionicToast.show(userEmail, 'middle', false, 2500);
-              $scope.finish();
-            }
-          };
-          iab.addEventListener('loadstart', listener);
+          SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/', {
+            autoCloseURL: 'https://ee.kobotoolbox.org/thanks',
+          }).then(() => {
+            ionicToast.show(userEmail, 'middle', false, 2500);
+            $scope.finish();
+          });
         }, function(errorResult) {
           // ionicToast.show(userEmail, 'middle', false, 2500);
           $scope.alertError('User registration error', errorResult);
