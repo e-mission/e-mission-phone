@@ -462,11 +462,14 @@ angular.module('emission.main.control',['emission.services',
         });
     };
     $scope.editUserProfile = function() {
-        SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/?returnUrl=', 'uuid');
+        SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/', {
+            autoCloseURL: 'https://ee.kobotoolbox.org/thanks'
+        });
     };
     $scope.launchEndSurvey = function() {
-        const returnURL = 'https://www.taharashidi.com/endsurvey';
-        SurveyLaunch.startSurveyPrefilled(`https://pe.fourstep.dev/?returnUrl=${returnURL}`, 'uuid');
+        SurveyLaunch.startSurveyPrefilled('https://pe.fourstep.dev/', {
+            returnURL: 'https://www.taharashidi.com/endsurvey',
+        });
         $scope.endForceSync();
     };
     $scope.userStartStopTracking = function() {
