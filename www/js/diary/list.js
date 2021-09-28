@@ -484,9 +484,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             if (!result) {
               return;
             }
-            $scope.$apply(() =>
-              $scope.populateInputFromTimeline(tripgj, undefined, inputType, [{data: result}])
-            );
+            $scope.$apply(() => tripgj.userInput[inputType] = {text: result.label});
           });
       }
       var userInput = tripgj.userInput[inputType];
