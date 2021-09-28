@@ -199,9 +199,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = $scope.isDraft(tripgj);
-        // rciti start
-        tripgj.isAnalyzed = $scope.isAnalyzed(tripgj);
-        // rciti end
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         tripgj.percentages = $scope.getPercentages(tripgj)
@@ -375,10 +372,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.isDraft = DiaryHelper.isDraft;
     // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
     // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
-
-    // rciti start
-    $scope.isAnalyzed = DiaryHelper.isAnalyzed;
-    // rciti end
 
     $scope.makeCurrent = function() {
       $ionicPopup.alert({
