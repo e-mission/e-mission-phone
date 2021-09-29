@@ -4,7 +4,7 @@ angular.module('emission.tripconfirm.multilabel',
 .directive('multilabel', function() {
   return {
     scope: {
-        tripgj: "=",
+        trip: "=",
         unifiedConfirmsResults: "=",
     },
     controller: "MultiLabelCtrl",
@@ -18,9 +18,9 @@ angular.module('emission.tripconfirm.multilabel',
   /**
    * Embed 'inputType' to the trip
    */
-  $scope.populateInputFromTimeline = function (tripgj, nextTripgj, inputType, inputList) {
+  $scope.populateInputFromTimeline = function (trip, nextTripgj, inputType, inputList) {
       console.log("While populating inputs, inputParams", $scope.inputParams);
-      var userInput = DiaryHelper.getUserInputForTrip(tripgj, nextTripgj, inputList);
+      var userInput = DiaryHelper.getUserInputForTrip(trip, nextTripgj, inputList);
       if (angular.isDefined(userInput)) {
           // userInput is an object with data + metadata
           // the label is the "value" from the options
@@ -31,20 +31,20 @@ angular.module('emission.tripconfirm.multilabel',
             $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
           }
           console.log("Mapped label "+userInput.data.label+" to entry "+JSON.stringify(userInputEntry));
-          tripgj.userInput[inputType] = userInputEntry;
+          trip.userInput[inputType] = userInputEntry;
       }
-      Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
+      Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(trip.data.id));
       $scope.editingTrip = angular.undefined;
   }
 
   $scope.fillUserInputs = function() {
     console.log("Checking to fill user inputs for "
-        +$scope.tripgj.display_start_time+" -> "+$scope.tripgj.display_end_time);
-    if (angular.isDefined($scope.tripgj)) {
+        +$scope.trip.display_start_time+" -> "+$scope.trip.display_end_time);
+    if (angular.isDefined($scope.trip)) {
         $scope.$apply(() => {
-            $scope.tripgj.userInput = {};
+            $scope.trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline($scope.tripgj, $scope.tripgj.nextTripgj,
+                $scope.populateInputFromTimeline($scope.trip, $scope.trip.nextTripgj,
                     item, $scope.unifiedConfirmsResults[item]);
             });
         });
@@ -53,7 +53,7 @@ angular.module('emission.tripconfirm.multilabel',
     }
   }
 
-  $scope.$watch("tripgj", function(newVal, oldVal) {
+  $scope.$watch("trip", function(newVal, oldVal) {
     console.log("the trip binding has changed from "+oldVal+" to new value "+newVal);
     // We also launch this promise from the init.
     // If it is complete by the time the watch completes (the common case), the
@@ -61,10 +61,15 @@ angular.module('emission.tripconfirm.multilabel',
     // but if the promise takes a while, we will still wait here until the data
     // is available.
     // Think of this as assert(inputParams)
-    ConfirmHelper.inputParamsPromise.then((inputParams) => {
-        $scope.inputParams = inputParams;
-        $scope.fillUserInputs();
-    });
+    if ($scope.unifiedConfirmsResults != undefined) {
+        ConfirmHelper.inputParamsPromise.then((inputParams) => {
+            $scope.inputParams = inputParams;
+            $scope.fillUserInputs();
+        });
+        console.log("After filling user inputs", $scope.trip);
+    } else {
+        console.log("No input list defined, skipping manual user input fill", $scope.unifiedConfirmsResults);
+    }
   });
 
   $scope.popovers = {};
@@ -77,18 +82,18 @@ angular.module('emission.tripconfirm.multilabel',
       });
   });
 
-  $scope.openPopover = function ($event, tripgj, inputType) {
-    var userInput = tripgj.userInput[inputType];
+  $scope.openPopover = function ($event, trip, inputType) {
+    var userInput = trip.userInput[inputType];
     if (angular.isDefined(userInput)) {
       $scope.selected[inputType].value = userInput.value;
     } else {
       $scope.selected[inputType].value = '';
     }
     $scope.draftInput = {
-      "start_ts": tripgj.data.properties.start_ts,
-      "end_ts": tripgj.data.properties.end_ts
+      "start_ts": trip.data.properties.start_ts,
+      "end_ts": trip.data.properties.end_ts
     };
-    $scope.editingTrip = tripgj;
+    $scope.editingTrip = trip;
     Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
     $scope.popovers[inputType].show($event);
   };
