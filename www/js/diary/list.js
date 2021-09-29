@@ -12,7 +12,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.incident.posttrip.manual',
-                                      'emission.tripconfirm.services',
                                       'emission.tripconfirm.multilabel',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
@@ -25,7 +24,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
   // Add option
 

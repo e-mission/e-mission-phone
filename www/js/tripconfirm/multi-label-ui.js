@@ -4,7 +4,6 @@ angular.module('emission.tripconfirm.multilabel',
 .directive('multilabel', function() {
   return {
     scope: {
-        inputs: "=",
         tripgj: "=",
         unifiedConfirmsResults: "=",
     },
@@ -14,7 +13,7 @@ angular.module('emission.tripconfirm.multilabel',
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
     ConfirmHelper, $ionicPopover, $window, DiaryHelper) {
-  console.log("Invoked multilabel directive controller for labels "+$scope.inputs);
+  console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
 
   /**
    * Embed 'inputType' to the trip
@@ -44,7 +43,7 @@ angular.module('emission.tripconfirm.multilabel',
     if (angular.isDefined($scope.tripgj)) {
         $scope.$apply(() => {
             $scope.tripgj.userInput = {};
-            $scope.inputs.forEach(function(item, index) {
+            ConfirmHelper.INPUTS.forEach(function(item, index) {
                 $scope.populateInputFromTimeline($scope.tripgj, $scope.tripgj.nextTripgj,
                     item, $scope.unifiedConfirmsResults[item]);
             });
@@ -69,7 +68,7 @@ angular.module('emission.tripconfirm.multilabel',
   });
 
   $scope.popovers = {};
-  $scope.inputs.forEach(function(item, index) {
+  ConfirmHelper.INPUTS.forEach(function(item, index) {
       let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
       return $ionicPopover.fromTemplateUrl(popoverPath, {
         scope: $scope
@@ -107,7 +106,7 @@ angular.module('emission.tripconfirm.multilabel',
    * the value is displayed on popover selected option
    */
   $scope.selected = {}
-  $scope.inputs.forEach(function(item, index) {
+  ConfirmHelper.INPUTS.forEach(function(item, index) {
       $scope.selected[item] = {value: ''};
   });
   $scope.selected.other = {text: '', value: ''};
@@ -166,7 +165,7 @@ angular.module('emission.tripconfirm.multilabel',
 
   $scope.init = function() {
       $scope.userInputDetails = [];
-      $scope.inputs.forEach(function(item, index) {
+      ConfirmHelper.INPUTS.forEach(function(item, index) {
         const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
         currInput.name = item;
         $scope.userInputDetails.push(currInput);
