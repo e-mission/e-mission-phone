@@ -2,7 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual', 'emission.tripconfirm.services'])
+    'emission.incident.posttrip.manual', 'emission.tripconfirm.services', 'emission.enketo-survey.answer'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -406,6 +406,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
 
   dh.getUserInputForTrip = function(tripgj, nextTripgj, userInputList) {
+    // If there is only one item in the list, return it.
+    // This make it compatible when fake list is given (for Enketo Survey).
+    // As well as optimize the performance.
+    if (userInputList.length === 1) {
+      return userInputList[0];
+    }
     if (userInputList.length < 20) {
         console.log("Input list = "+userInputList.map(printUserInput));
     }
@@ -508,7 +514,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 })
 .factory('Timeline', function(CommHelper, ConfirmHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $translate) {
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger, EnketoSurveyAnswer, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -1114,10 +1120,17 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       // Also mode/purpose and (currently disabled) survey answers
       var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
       var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
-        return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq);
+        var key = ConfirmHelper.inputDetails[inp].key;
+        return UnifiedDataLoader.getUnifiedMessagesForInterval(key, tq).then(function(results) {
+          switch(key) {
+            // Post-process survey answers
+            case 'manual/survey_response':
+              return EnketoSurveyAnswer.filterByNameAndVersion('TripConfirmSurvey', results);
+            default:
+              return results;
+          }
+        });
       });
-      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
 
       // Deal with all the trip retrieval
       Promise.all([tripsFromServerPromise, isProcessingCompletePromise].concat(manualPromises))
@@ -1125,7 +1138,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         console.log("Promise.all() finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
         var mrString = 'with ' + manualResults.map(function(item, index) {
-            return ' ${mr.length} ${ConfirmHelper.INPUTS[index]}';
+            return ` ${mr.length} ${ConfirmHelper.INPUTS[index]}`;
         });
         console.log(mrString);
         var tripList = processedTripList;

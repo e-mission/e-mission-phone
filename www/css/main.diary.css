@@ -140,7 +140,8 @@ a.item-content {
   line-height: 30px;
   min-height: 30px;
   font-size: 0.8em !important;
-  width: 115px;
+  /* NOTE: Please use ConfirmHelper.inputDetails["key"].width config if you need to resize the button */
+  width: 100%;
   padding: 0;
 }
 .input-confirm-container {
@@ -162,11 +163,16 @@ a.item-content {
   border-width: 0;
 }
 
+div.labelfilterlist {
+  margin: 0 !important;
+}
+
 .button.labelfilter {
   color: #01D0A7;
   border-radius: 0px;
   border-width: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
+  padding: 0 0.1em !important;
 }
 
 .button.labelfilter.on {

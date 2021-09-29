@@ -14,6 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.incident.posttrip.manual',
                                       'emission.tripconfirm.services',
                                       'emission.services',
+                                      'emission.enketo-survey.launch',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
     'emission.plugin.logger'
   ])
@@ -24,7 +25,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, EnketoSurveyLaunch, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
   // Add option
 
@@ -170,11 +171,19 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         if (angular.isDefined(userInput)) {
             // userInput is an object with data + metadata
             // the label is the "value" from the options
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInput.data.label];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInput.data.label);
-              $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
+            var userInputEntry;
+            switch(inputType) {
+              case 'SURVEY':
+                userInputEntry = {text: userInput.data.label};
+                break;
+              default:
+                userInputEntry = $scope.inputParams[inputType].value2entry[userInput.data.label];
+                if (!angular.isDefined(userInputEntry)) {
+                  userInputEntry = ConfirmHelper.getFakeEntry(userInput.data.label);
+                  $scope.inputParams[inputType].options.push(userInputEntry);
+                  $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
+                }
+                break;
             }
             console.log("Mapped label "+userInput.data.label+" to entry "+JSON.stringify(userInputEntry));
             tripgj.userInput[inputType] = userInputEntry;
@@ -468,6 +477,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.openPopover = function ($event, tripgj, inputType) {
+      if (inputType === 'SURVEY') {
+        return EnketoSurveyLaunch
+          .launch($scope, 'TripConfirmSurvey', { trip: tripgj })
+          .then(result => {
+            if (!result) {
+              return;
+            }
+            $scope.$apply(() => tripgj.userInput[inputType] = {text: result.label});
+          });
+      }
       var userInput = tripgj.userInput[inputType];
       if (angular.isDefined(userInput)) {
         $scope.selected[inputType].value = userInput.value;

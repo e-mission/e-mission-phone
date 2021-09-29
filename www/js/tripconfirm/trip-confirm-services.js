@@ -1,7 +1,8 @@
 angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger) {
     var ch = {};
-    ch.INPUTS = ["MODE", "PURPOSE"]
+    // ch.INPUTS = ["MODE", "PURPOSE"]
+    ch.INPUTS = ["SURVEY"];
     ch.inputDetails = {
         "MODE": {
             labeltext: $translate.instant(".mode"),
@@ -15,6 +16,13 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
             choosetext: $translate.instant(".choose-purpose"),
             width: "col-50",
             key: "manual/purpose_confirm",
+            otherVals: {},
+        },
+        "SURVEY": {
+            labeltext: $translate.instant(".survey"),
+            choosetext: $translate.instant(".choose-survey"),
+            width: "col",
+            key: "manual/survey_response",
             otherVals: {},
         }
     }

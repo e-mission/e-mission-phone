@@ -1,0 +1,12 @@
+{
+  "TripConfirmSurvey": {
+    "formPath": "json/trip-end-survey-multiple-select.json",
+    "version": 1.2,
+    "compatibleWith": 1
+  },
+  "UserProfileSurvey": {
+    "formPath": "json/user-profile.json",
+    "version": 1,
+    "compatibleWith": 1
+  }
+}

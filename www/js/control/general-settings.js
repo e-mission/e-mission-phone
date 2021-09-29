@@ -9,22 +9,22 @@ angular.module('emission.main.control',['emission.services',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.splash.updatecheck',
-                                        'emission.survey.launch',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
+                                        'emission.survey.launch',
                                         'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $rootScope, KVStore, ionicDatePicker,
+               $rootScope, KVStore, SurveyLaunch, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
                UpdateCheck, i18nUtils,
-               CalorieCal, ClientStats, CommHelper, Logger, SurveyLaunch,
+               CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
 
     var datepickerObject = {
@@ -447,19 +447,6 @@ angular.module('emission.main.control',['emission.services',
         return ionic.Platform.isIOS();
     }
 
-    $scope.editUserProfile = function() {
-        SurveyLaunch.startSurveyPrefilled('https://up.byamarin.com')
-    };
-
-    $scope.launchEndSurvey = function() {
-        SurveyLaunch.startSurveyPrefilled(
-            'https://pe.byamarin.com', 
-            undefined, 
-            'https://www.taharashidi.com/endsurvey'
-        )
-        $scope.endForceSync();
-    };
-
     $ionicPopover.fromTemplateUrl('templates/control/main-sync-settings.html', {
         scope: $scope
     }).then(function(popover) {
@@ -473,6 +460,17 @@ angular.module('emission.main.control',['emission.services',
                 return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
             }
         });
+    };
+    $scope.editUserProfile = function() {
+        SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/', {
+            autoCloseURL: 'https://ee.kobotoolbox.org/thanks'
+        });
+    };
+    $scope.launchEndSurvey = function() {
+        SurveyLaunch.startSurveyPrefilled('https://pe.fourstep.dev/', {
+            returnURL: 'https://www.taharashidi.com/endsurvey',
+        });
+        $scope.endForceSync();
     };
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){

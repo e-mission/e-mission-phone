@@ -21,7 +21,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $state, $window,
+.controller('IntroCtrl', function($scope, $rootScope, $http, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
 
@@ -100,25 +100,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
   };
 
-  // Adapted from https://stackoverflow.com/a/63363662/4040267
-  // made available under a CC BY-SA 4.0 license
-
-  $scope.generateRandomToken = function(length) {
-    var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
-    var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
-    var randomString = randomChars.join("");
-    var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
-    return validRandomString.substring(0, length);
-  }
-
   $scope.disagree = function() {
     $state.go('root.main.heatmap');
   };
 
   $scope.agree = function() {
     StartPrefs.markConsented().then(function(response) {
-      $scope.randomToken = $scope.generateRandomToken(8);
-      window.Logger.log("Signing in with random token "+$scope.randomToken);
       $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
         $scope.next();
@@ -147,20 +134,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         window.Logger.log(window.Logger.LEVEL_INFO, errorMsg + ' ' + res);
       });
   }
-
-  $scope.startSurvey = function () {
-    SurveyLaunch.startSurveyPrefilled(
-      'https://up.byamarin.com/' // redirect link
-      );
-  }
-
-  $scope.tokenToClipboard = function() {
-    navigator.clipboard.writeText($scope.randomToken);
-  };
-
-  $scope.loginNew = function() {
-    $scope.login($scope.randomToken);
-  };
 
   $scope.loginExisting = function() {
     $scope.data = {};
@@ -208,14 +181,21 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-          $scope.startSurvey();
-          $scope.finish();
+          SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/', {
+            autoCloseURL: 'https://ee.kobotoolbox.org/thanks',
+          }).then(() => {
+            ionicToast.show(userEmail, 'middle', false, 2500);
+            $scope.finish();
+          });
         }, function(errorResult) {
+          // ionicToast.show(userEmail, 'middle', false, 2500);
           $scope.alertError('User registration error', errorResult);
+          // $scope.finish();
         });
       }
     }, function(error) {
         $scope.alertError('Sign in error', error);
+        // $scope.finish();
     });
   };
 
