@@ -469,6 +469,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     trip.verifiability = someYellow ? "can-verify" : (allGreen ? "already-verified" : "cannot-verify");
   }
 
+
     $scope.getFormattedDistanceInMiles = function(input) {
       return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
     }
@@ -482,7 +483,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
-        tripgj.verifiability = "cannot-verify";
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
         tripgj.start_display_name = "\xa0";
         tripgj.end_display_name = "\xa0";

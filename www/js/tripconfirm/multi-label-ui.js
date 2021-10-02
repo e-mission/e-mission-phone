@@ -1,5 +1,6 @@
 angular.module('emission.tripconfirm.multilabel',
     ['emission.tripconfirm.services',
+        'emission.stats.clientstats',
         'emission.main.diary.services'])
 .directive('multilabel', function() {
   return {
@@ -12,8 +13,47 @@ angular.module('emission.tripconfirm.multilabel',
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, $ionicPopover, $window, DiaryHelper) {
+    ConfirmHelper, $ionicPopover, $window, DiaryHelper, ClientStats) {
   console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
+
+  /**
+   * BEGIN: Required external interface for all label directives
+   * These methods will be invoked by the verifycheck directive
+   * For more details on cooperating directives in this situation, please see:
+   * e-mission/e-mission-docs#674 (comment)
+   * to
+   * e-mission/e-mission-docs#674 (comment)
+   *
+   * Input: none
+   * Side effect: verifies the trip (partially if needed) and updates the trip
+   * verifiability status.
+   */
+    $scope.verifyTrip = function() {
+      console.log("About to verify trip "+$scope.trip.start_ts
+        +" -> "+$scope.trip.end_ts+" with current visibility"
+        + $scope.trip.verifiability);
+      if ($scope.trip.verifiability != "can-verify") {
+        ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": false});
+        return;
+      }
+      ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP, {"verifiable": true, "userInput": angular.toJson(trip.userInput), "finalInference": angular.toJson(trip.finalInference)});
+
+      $scope.draftInput = {
+        "start_ts": trip.start_ts,
+        "end_ts": trip.end_ts
+      };
+      $scope.editingTrip = trip;
+
+      for (const inputType of ConfirmHelper.INPUTS) {
+        const inferred = trip.finalInference[inputType];
+        // TODO: figure out what to do with "other". For now, do not verify.
+        if (inferred && !trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
+      }
+    }
+
+  /*
+   * END: Required external interface for all label directives
+   */
 
   /**
    * Embed 'inputType' to the trip

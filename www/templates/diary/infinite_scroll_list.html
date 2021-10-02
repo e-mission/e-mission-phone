@@ -72,12 +72,8 @@
                                     {{trip.end_display_name}}
                             </div>
                         </div>
-                        <verifycheck class="col-10 diarycheckmark-container"></verifycheck>
-                        <!--
-                        <div ng-click="verifyTrip($event, trip)" class="col-10 diary-checkmark-container center-vert center-horiz">
-                            <i ng-class="trip.verifiability" class="ion-checkmark-round"></i>
-                        </div>
-                        -->
+                        <verifycheck linkedtag="multilabel" trip="trip" invokedfrom="label"
+                            class="col-10 diarycheckmark-container center-vert center-horiz"></verifycheck>
                     </div>
                     <div class="row" style="margin-top: 0px">
                         <multilabel class="col" trip="trip" unified-confirms-results="data.unifiedConfirmsResults"></multilabel>
