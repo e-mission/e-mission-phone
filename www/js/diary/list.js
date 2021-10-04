@@ -19,7 +19,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     'emission.plugin.logger'
   ])
 
-.controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
+.controller("DiaryListCtrl", function($window, $scope, $rootScope, $injector,
+                                    $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup,
                                     $ionicLoading,
                                     $ionicActionSheet,
@@ -28,6 +29,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
   // Add option
+  $scope.labelPopulateFactory = $injector.get("MultiLabelService");
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {
       console.log("diary/list received resize event, invalidating map size");
@@ -214,6 +216,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           // Add "next" pointers to make it easier to use trip linkages for display
           $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
             tripgj.nextTripgj = array[tripIndex+1];
+            $scope.labelPopulateFactory.populateInputsDummyInferences(tripgj, $scope.data.unifiedConfirmsResults);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });

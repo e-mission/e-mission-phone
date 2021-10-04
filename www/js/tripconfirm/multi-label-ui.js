@@ -114,64 +114,6 @@ angular.module('emission.tripconfirm.multilabel',
     }
   }
 
-
-  $scope.fillUserInputsObjects = function() {
-    console.log("Checking to fill user inputs for "
-        +$scope.trip.display_start_time+" -> "+$scope.trip.display_end_time);
-    if (angular.isDefined($scope.trip)) {
-        $scope.$apply(() => {
-            $scope.trip.userInput = {};
-            ConfirmHelper.INPUTS.forEach(function(item, index) {
-                MultiLabelService.populateManualInputs($scope.trip, $scope.trip.nextTripgj,
-                    item, $scope.unifiedConfirmsResults[item]);
-            });
-        });
-    } else {
-        console.log("Trip information not yet bound, skipping fill");
-    }
-  }
-
-  /*
-   * Note that we don't need to $watch for the unifiedConfirmsResults right now
-   * because we only start processing the trips after the confirms results are
-   * read. In other words, `$scope.data = Timeline.data;` sets both the trip
-   * wrappers and the confirmed results at the same time. But if we change that
-   * later, we should watch on that as well.
-   */
-
-  $scope.$watch("trip", function(newVal, oldVal) {
-    console.log("the trip binding has changed from ",oldVal," bo new value ",newVal);
-    // We also launch this promise from the init.
-    // If it is complete by the time the watch completes (the common case), the
-    // promise will return immediately
-    // but if the promise takes a while, we will still wait here until the data
-    // is available.
-    // Think of this as assert(inputParams)
-    if ($scope.trip != undefined &&
-        $scope.trip.data != undefined &&
-        $scope.trip.data.properties.start_ts != undefined &&
-        $scope.trip.start_ts == undefined) {
-        // Copy over the timestamps so that the entries have a somewhat similar format
-        // https://github.com/e-mission/e-mission-docs/issues/674#issuecomment-932833288
-        $scope.trip.start_ts = $scope.trip.data.properties.start_ts;
-        $scope.trip.end_ts = $scope.trip.data.properties.end_ts;
-        $scope.trip.inferred_labels = [];
-        $scope.trip.finalInference = {};
-        console.log("This is a diary trip, after copying timestamps over ", $scope.trip);
-    }
-    ConfirmHelper.inputParamsPromise.then((inputParams) => {
-        console.log("After reading input params, unifiedConfirmsResults ",
-            $scope.unifiedConfirmsResults);
-        $scope.inputParams = inputParams;
-        if ($scope.unifiedConfirmsResults != undefined) {
-            $scope.fillUserInputsGeojson();
-            console.log("After filling user inputs from the diary view", $scope.trip);
-        } else {
-            console.log("No input list defined, skipping manual user input fill", $scope.unifiedConfirmsResults);
-        }
-    });
-  });
-
   $scope.popovers = {};
   ConfirmHelper.INPUTS.forEach(function(item, index) {
       let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
@@ -303,6 +245,27 @@ angular.module('emission.tripconfirm.multilabel',
    * This is the version that is called from the diary, where the trips are
    * geojson objects. We should unify this and populateManualInputs later.
    */
+
+  mls.populateInputsDummyInferences = function(trip, inputList) {
+    if (angular.isDefined(trip)) {
+        // console.log("Expectation: "+JSON.stringify(trip.expectation));
+        // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
+        trip.userInput = {};
+        ConfirmHelper.INPUTS.forEach(function(item, index) {
+            mls.populateInputFromTimeline(trip, trip.nextTrip, item,
+                inputList[item]);
+        });
+        // add additional data structures to make the trip gj similar to a trip object
+        // so that the rest of the load/save code works
+        trip.start_ts = trip.data.properties.start_ts;
+        trip.end_ts = trip.data.properties.end_ts;
+        trip.inferred_labels = [];
+        trip.finalInference = {};
+    } else {
+        console.log("Trip information not yet bound, skipping fill");
+    }
+  }
+
   mls.populateInputFromTimeline = function (trip, nextTripgj, inputType, inputList) {
       console.log("While populating inputs, inputParams", mls.inputParams);
       var userInput = DiaryHelper.getUserInputForTrip(trip, nextTripgj, inputList);
