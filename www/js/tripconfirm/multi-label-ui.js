@@ -242,41 +242,7 @@ angular.module('emission.tripconfirm.multilabel',
 
   /**
    * Embed 'inputType' to the trip.
-   * This is the version that is called from the diary, where the trips are
-   * geojson objects. We should unify this and populateManualInputs later.
    */
-
-  mls.populateInputsDummyInferences = function(trip, inputList) {
-    if (angular.isDefined(trip)) {
-        // console.log("Expectation: "+JSON.stringify(trip.expectation));
-        // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
-        trip.userInput = {};
-        ConfirmHelper.INPUTS.forEach(function(item, index) {
-            mls.populateInputFromTimeline(trip, trip.nextTrip, item,
-                inputList[item]);
-        });
-        // add additional data structures to make the trip gj similar to a trip object
-        // so that the rest of the load/save code works
-        trip.start_ts = trip.data.properties.start_ts;
-        trip.end_ts = trip.data.properties.end_ts;
-        trip.inferred_labels = [];
-        trip.finalInference = {};
-    } else {
-        console.log("Trip information not yet bound, skipping fill");
-    }
-  }
-
-  mls.populateInputFromTimeline = function (trip, nextTripgj, inputType, inputList) {
-      console.log("While populating inputs, inputParams", mls.inputParams);
-      var userInput = DiaryHelper.getUserInputForTrip(trip, nextTripgj, inputList);
-      if (angular.isDefined(userInput)) {
-          // userInput is an object with data + metadata
-          // the label is the "value" from the options
-          mls.populateInput(trip.userInput, inputType, userInput.data.label);
-      }
-      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(trip.data.id));
-      mls.editingTrip = angular.undefined;
-  }
 
   mls.populateInputsAndInferences = function(trip, manualResultMap) {
     if (angular.isDefined(trip)) {

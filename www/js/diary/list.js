@@ -216,7 +216,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           // Add "next" pointers to make it easier to use trip linkages for display
           $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
             tripgj.nextTripgj = array[tripIndex+1];
-            $scope.labelPopulateFactory.populateInputsDummyInferences(tripgj, $scope.data.unifiedConfirmsResults);
+
+            // add additional data structures to make the trip gj similar to a
+            // trip object so that the unified populate code works
+            tripgj.start_ts = tripgj.data.properties.start_ts;
+            tripgj.end_ts = tripgj.data.properties.end_ts;
+            tripgj.inferred_labels = [];
+            $scope.labelPopulateFactory.populateInputsAndInferences(tripgj, $scope.data.unifiedConfirmsResults);
             $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
