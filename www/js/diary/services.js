@@ -405,22 +405,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  dh.getUserInputForTrip = function(tripgj, nextTripgj, userInputList) {
+  dh.getUserInputForTrip = function(trip, nextTrip, userInputList) {
     if (userInputList.length < 20) {
         console.log("Input list = "+userInputList.map(printUserInput));
     }
-    var tripProp = tripgj.data.properties;
-    var isDraft = dh.isDraft(tripgj);
+    // undefined != true, so this covers the label view case as well
+    var isDraft = trip.isDraft == true;
     var potentialCandidates = userInputList.filter(function(userInput) {
         /*
         console.log("startDelta "+userInput.data.label+
             "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
             ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
-            (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
+            (userInput.data.start_ts - trip.start_ts)+" should be positive");
         console.log("endDelta = "+userInput.data.label+
             "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
-            ") - trip("+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)+") = "+
-            (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
+            ") - trip("+fmtTs(trip.end_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.end_ts - trip.end_ts)+" should be negative");
         */
         // logic described in
         // https://github.com/e-mission/e-mission-docs/issues/423
@@ -428,19 +428,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             if (userInputList.length < 20) {
                 var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
                     +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                    +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
-                    +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
-                    +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
-                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
-                    +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
-                    +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+                    +" trip = "+fmtTs(trip.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(trip.end_ts, userInput.metadata.time_zone)
+                    +" checks are ("+(userInput.data.start_ts >= trip.start_ts)
+                    +" && "+(userInput.data.start_ts <= trip.end_ts)
+                    +" || "+(-(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
+                    +") && "+(userInput.data.end_ts <= trip.end_ts);
                 console.log(logStr);
                 // Logger.log(logStr);
             }
-            return (userInput.data.start_ts >= tripProp.start_ts
-                    && userInput.data.start_ts <= tripProp.end_ts
-                    || -(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
-                && userInput.data.end_ts <= tripProp.end_ts;
+            return (userInput.data.start_ts >= trip.start_ts
+                    && userInput.data.start_ts <= trip.end_ts
+                    || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
+                && userInput.data.end_ts <= trip.end_ts;
         } else {
             // we know that the trip is cleaned so we can use the fmt_time
             // but the confirm objects are not necessarily filled out
@@ -448,19 +448,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 var logStr = "Cleaned trip: comparing user = "
                     +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
                     +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                    +" trip = "+tripProp.start_fmt_time
-                    +" -> "+tripProp.end_fmt_time
-                    +" start checks are "+(userInput.data.start_ts >= tripProp.start_ts)
-                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
-                    +" end checks are "+(userInput.data.end_ts <= tripProp.end_ts)
-                    +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 15 * 60)+")";
+                    +" trip = "+trip.start_fmt_time
+                    +" -> "+trip.end_fmt_time
+                    +" start checks are "+(userInput.data.start_ts >= trip.start_ts)
+                    +" && "+(userInput.data.start_ts <= trip.end_ts)
+                    +" end checks are "+(userInput.data.end_ts <= trip.end_ts)
+                    +" || "+((userInput.data.end_ts - trip.end_ts) <= 15 * 60)+")";
                 Logger.log(logStr);
             }
             // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
-            const startChecks = userInput.data.start_ts >= tripProp.start_ts &&
-                userInput.data.start_ts <= tripProp.end_ts;
-            var endChecks = (userInput.data.end_ts <= tripProp.end_ts ||
-                    (userInput.data.end_ts - tripProp.end_ts) <= 15 * 60);
+            const startChecks = userInput.data.start_ts >= trip.start_ts &&
+                userInput.data.start_ts <= trip.end_ts;
+            var endChecks = (userInput.data.end_ts <= trip.end_ts ||
+                    (userInput.data.end_ts - trip.end_ts) <= 15 * 60);
             if (startChecks && !endChecks) {
                 if (angular.isDefined(nextTripgj)) {
                     endChecks = userInput.data.end_ts <= nextTripgj.data.properties.start_ts;
@@ -474,10 +474,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 if (endChecks) {
                     // If we have flipped the values, check to see that there
                     // is sufficient overlap
-                    const overlapDuration = Math.min(userInput.data.end_ts, tripProp.end_ts) - Math.max(userInput.data.start_ts, tripProp.start_ts)
+                    const overlapDuration = Math.min(userInput.data.end_ts, trip.end_ts) - Math.max(userInput.data.start_ts, trip.start_ts)
                     Logger.log("Flipped endCheck, overlap("+overlapDuration+
-                        ")/trip("+tripProp.duration+") = "+ (overlapDuration / tripProp.duration));
-                    endChecks = (overlapDuration/tripProp.duration) > 0.5;
+                        ")/trip("+trip.duration+") = "+ (overlapDuration / trip.duration));
+                    endChecks = (overlapDuration/trip.duration) > 0.5;
                 }
             }
             return startChecks && endChecks;

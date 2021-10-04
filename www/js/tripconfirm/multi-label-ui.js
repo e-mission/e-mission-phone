@@ -266,19 +266,16 @@ angular.module('emission.tripconfirm.multilabel',
    * This is the version that is called from the list, which focuses only on
    * manual inputs. It also sets some additional values 
    */
-  mls.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
+  mls.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      // Massage the input to meet getUserInputForTrip expectations
-      const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
-          {data: {properties: tripgj, features: [{}, {}, {}]}},
-          {data: {properties: nextTripgj, features: [{}, {}, {}]}},
+      const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(trip, nextTrip,
           inputList);
       var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
       if (!angular.isDefined(userInputLabel)) {
-          userInputLabel = tripgj.user_input[mls.inputType2retKey(inputType)];
+          userInputLabel = trip.user_input[mls.inputType2retKey(inputType)];
       }
-      mls.populateInput(tripgj.userInput, inputType, userInputLabel);
-      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
+      mls.populateInput(trip.userInput, inputType, userInputLabel);
+      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
       mls.editingTrip = angular.undefined;
   }
 
