@@ -11,8 +11,7 @@
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.incident.posttrip.manual',
-                                      'emission.tripconfirm.services',
+                                      'emission.tripconfirm.multilabel',
                                       'emission.tripconfirm.verifycheck',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
@@ -28,7 +27,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate, $q) {
+    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
 
@@ -352,55 +351,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
 
-    $scope.explainDraft = function($event) {
-      $event.stopPropagation();
-      $ionicPopup.alert({
-        template: $translate.instant('list-explainDraft-alert')
-      });
-      // don't want to go to the detail screen
-    }
-
-    /*
-     * Disabling the reload of the page on background sync because it doesn't
-     * work correctly.  on iOS, plugins are not loaded if backgroundFetch or
-     * remote push are invoked, since they don't initialize the app. On
-     * android, it looks like the thread ends before the maps are fully loaded,
-     * so we have half displayed, frozen maps. We should really check the
-     * status, reload here if active and reload everything on resume.
-     * For now, we just add a refresh button to avoid maintaining state.
-    window.broadcaster.addEventListener( "edu.berkeley.eecs.emission.sync.NEW_DATA", function( e ) {
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "new data received! reload data for the current day"+$scope.data.currDay);
-        $window.location.reload();
-        // readAndUpdateForDay($scope.data.currDay);
-    });
-    */
-
     $scope.refresh = function() {
        $scope.setupInfScroll();
     };
 
-    /* For UI control */
-    $scope.groups = [];
-    for (var i=0; i<10; i++) {
-      $scope.groups[i] = {
-        name: i,
-        items: ["good1", "good2", "good3"]
-      };
-      for (var j=0; j<3; j++) {
-        $scope.groups[i].items.push(i + '-' + j);
-      }
-    }
-    $scope.toggleGroup = function(group) {
-      if ($scope.isGroupShown(group)) {
-        $scope.shownGroup = null;
-      } else {
-        $scope.shownGroup = group;
-      }
-    };
-    $scope.isGroupShown = function(group) {
-      return $scope.shownGroup === group;
-    };
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
@@ -420,21 +374,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
     // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
 
-    $scope.makeCurrent = function() {
-      $ionicPopup.alert({
-        template: "Coming soon, after Shankari's quals in early March!"
-      });
-    }
-
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
-
-    $scope.getTimeSplit = function(tripList) {
-        var retVal = {};
-        var tripTimes = tripList.map(function(dt) {
-            return dt.data.properties.duration;
-        });
-
-    };
 
     // Tour steps
     var tour = {
@@ -512,10 +452,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     var startWalkthrough = function () {
       nzTour.start(tour).then(function(result) {
-        // $ionicScrollDelegate.scrollBottom();
         Logger.log("list walkthrough start completed, no error");
       }).catch(function(err) {
-        // $ionicScrollDelegate.scrollBottom();
         Logger.displayError("list walkthrough start errored", err);
       });
     };
@@ -565,58 +503,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.startTime = moment().utc()
       }
     })
-
-    $scope.prevDay = function() {
-        console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-        var prevDay = moment(Timeline.data.currDay).subtract(1, 'days');
-        console.log("prevDay = "+prevDay.format('YYYY-MM-DD'));
-        readAndUpdateForDay(prevDay);
-    };
-
-    $scope.nextDay = function() {
-        console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-        var nextDay = moment(Timeline.data.currDay).add(1, 'days');
-        console.log("nextDay = "+nextDay);
-        readAndUpdateForDay(nextDay);
-    };
-
-    $scope.toDetail = function (param) {
-      $state.go('root.main.diary-detail', {
-        tripId: param
-      });
-    };
-
-    $scope.showModes = DiaryHelper.showModes;
-
-    $scope.redirect = function(){
-      $state.go("root.main.current");
-    };
-
-    var in_trip;
-    $scope.checkTripState = function() {
-      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-        Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
-          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
-          in_trip = true;
-        } else {
-          in_trip = false;
-        }
-      });
-    };
-
-    // storing boolean to in_trip and return it in inTrip function
-    // work because ng-show is watching the inTrip function.
-    // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function
-    // to return bool value and using checkTripState function in ng-show
-    // did not work.
-    $scope.inTrip = function() {
-      $ionicPlatform.ready().then(function() {
-          $scope.checkTripState();
-          return in_trip;
-      });
-    };
 
     $ionicPlatform.ready().then(function() {
       $scope.setupInfScroll();

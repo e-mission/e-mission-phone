@@ -11,30 +11,27 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.incident.posttrip.manual',
                                       'emission.tripconfirm.multilabel',
                                       'emission.tripconfirm.verifycheck',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-    'emission.plugin.logger'
+                                      'emission.stats.clientstats',
+                                      'emission.plugin.logger'
   ])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $injector,
                                     $ionicPlatform, $state,
-                                    $ionicScrollDelegate, $ionicPopup,
+                                    $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
     Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
+  ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
+    {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   // Add option
   $scope.labelPopulateFactory = $injector.get("MultiLabelService");
-
-  $scope.$on('leafletDirectiveMap.resize', function(event, data) {
-      console.log("diary/list received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-  });
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -185,14 +182,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
 
-    var isNotEmpty = function (obj) {
-      for (var prop in obj) {
-        if (obj.hasOwnProperty(prop))
-          return true;
-      }
-      return false;
-    };
-
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
@@ -217,13 +206,16 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
             tripgj.nextTripgj = array[tripIndex+1];
 
+            // First populate basic classes so that we can use `isDraft` during
+            // the matching code
+            $scope.populateBasicClasses(tripgj);
+
             // add additional data structures to make the trip gj similar to a
             // trip object so that the unified populate code works
             tripgj.start_ts = tripgj.data.properties.start_ts;
             tripgj.end_ts = tripgj.data.properties.end_ts;
             tripgj.inferred_labels = [];
             $scope.labelPopulateFactory.populateInputsAndInferences(tripgj, $scope.data.unifiedConfirmsResults);
-            $scope.populateBasicClasses(tripgj);
             $scope.populateCommonInfo(tripgj);
           });
           if ($rootScope.displayingIncident) {
@@ -299,33 +291,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     */
 
     $scope.refresh = function() {
-      if ($ionicScrollDelegate.getScrollPosition().top < 20) {
        readAndUpdateForDay(Timeline.data.currDay);
        $scope.$broadcast('invalidateSize');
-      }
     };
 
-    /* For UI control */
-    $scope.groups = [];
-    for (var i=0; i<10; i++) {
-      $scope.groups[i] = {
-        name: i,
-        items: ["good1", "good2", "good3"]
-      };
-      for (var j=0; j<3; j++) {
-        $scope.groups[i].items.push(i + '-' + j);
-      }
-    }
-    $scope.toggleGroup = function(group) {
-      if ($scope.isGroupShown(group)) {
-        $scope.shownGroup = null;
-      } else {
-        $scope.shownGroup = group;
-      }
-    };
-    $scope.isGroupShown = function(group) {
-      return $scope.shownGroup === group;
-    };
     $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
     $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
     $scope.getHumanReadable = DiaryHelper.getHumanReadable;
@@ -352,14 +321,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     }
 
     $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
-
-    $scope.getTimeSplit = function(tripList) {
-        var retVal = {};
-        var tripTimes = tripList.map(function(dt) {
-            return dt.data.properties.duration;
-        });
-
-    };
 
     // Tour steps
     var tour = {
@@ -393,10 +354,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }).catch(function(err) {
         Logger.displayError("list walkthrough start errored", err);
       });
-    };
-
-    $scope.refreshTiles = function() {
-      $scope.$broadcast('invalidateSize');
     };
 
     /*
@@ -476,6 +433,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       readAndUpdateForDay(moment().startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
+        $scope.startTime = moment().utc()
         // Workaround from
         // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
         if(ev.targetScope !== $scope)
@@ -483,7 +441,29 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         checkDiaryTutorialDone();
       });
 
+      $scope.$on('$ionicView.leave',function() {
+        var timeOnPage = moment().utc() - $scope.startTime;
+        ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+      });
+  
+      $ionicPlatform.on("pause", function() {
+        if ($state.$current == "root.main.diary.list") {
+          var timeOnPage = moment().utc() - $scope.startTime;
+          ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+        }
+      })
+
+      $ionicPlatform.on("resume", function() {
+        if ($state.$current == "root.main.diary.list") {
+          $scope.startTime = moment().utc()
+        }
+      })
+  
+
       $scope.$on('$ionicView.afterEnter', function() {
+        ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {
+           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+        });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;

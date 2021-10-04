@@ -13,6 +13,8 @@ angular.module('emission.stats.clientstats', [])
     return {
       STATE_CHANGED: "state_changed",
       BUTTON_FORCE_SYNC: "button_sync_forced",
+      CHECKED_DIARY: "checked_diary",
+      DIARY_TIME: "diary_time",
       CHECKED_INF_SCROLL: "checked_inf_scroll",
       INF_SCROLL_TIME: "inf_scroll_time",
       VERIFY_TRIP: "verify_trip",
