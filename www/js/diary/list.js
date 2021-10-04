@@ -159,10 +159,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
-        tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
-        tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
+        tripgj.display_distance = DiaryHelper.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
-        tripgj.isDraft = $scope.isDraft(tripgj);
+        tripgj.isDraft = DiaryHelper.isDraft(tripgj);
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         tripgj.percentages = $scope.getPercentages(tripgj)
@@ -292,35 +292,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.refresh = function() {
        readAndUpdateForDay(Timeline.data.currDay);
-       $scope.$broadcast('invalidateSize');
     };
-
-    $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
-    $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
-    $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.getKmph = DiaryHelper.getKmph;
-    $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
-    $scope.getSectionDetails = DiaryHelper.getSectionDetails;
-    $scope.getFormattedTime = DiaryHelper.getFormattedTime;
-    $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
-    $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-    $scope.getTripDetails = DiaryHelper.getTripDetails;
-    $scope.starColor = DiaryHelper.starColor;
-    $scope.arrowColor = DiaryHelper.arrowColor;
-    $scope.getArrowClass = DiaryHelper.getArrowClass;
-    $scope.isCommon = DiaryHelper.isCommon;
-    $scope.isDraft = DiaryHelper.isDraft;
-    // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
-    // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
 
     $scope.makeCurrent = function() {
       $ionicPopup.alert({
         template: "Coming soon, after Shankari's quals in early March!"
       });
     }
-
-    $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
     // Tour steps
     var tour = {

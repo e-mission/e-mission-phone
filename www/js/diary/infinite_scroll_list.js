@@ -304,16 +304,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
     }
 
-    $scope.getFormattedDistanceInMiles = function(input) {
-      return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
-    }
-
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
-        tripgj.display_distance = $scope.getFormattedDistanceInMiles(tripgj.distance);
+        tripgj.display_distance = DiaryHelper.getFormattedDistance(tripgj.distance);
         tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YY');
-        tripgj.display_time = $scope.getFormattedTimeRange(tripgj.start_ts,
+        tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.start_ts,
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
@@ -354,27 +350,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.refresh = function() {
        $scope.setupInfScroll();
     };
-
-    $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
-    $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
-    $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.getKmph = DiaryHelper.getKmph;
-    $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
-    $scope.getSectionDetails = DiaryHelper.getSectionDetails;
-    $scope.getFormattedTime = DiaryHelper.getFormattedTime;
-    $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
-    $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-    $scope.getTripDetails = DiaryHelper.getTripDetails;
-    $scope.starColor = DiaryHelper.starColor;
-    $scope.arrowColor = DiaryHelper.arrowColor;
-    $scope.getArrowClass = DiaryHelper.getArrowClass;
-    $scope.isCommon = DiaryHelper.isCommon;
-    $scope.isDraft = DiaryHelper.isDraft;
-    // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
-    // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
-
-    $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
 
     // Tour steps
     var tour = {

@@ -155,6 +155,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return (dist_in_meters/1000).toFixed(3);
     }
   }
+
+  dh.getFormattedDistanceInMiles = function(input) {
+      return (0.621371 * dh.getFormattedDistance(input)).toFixed(1);
+  }
+
   dh.getSectionDetails = function(section) {
     var startMoment = moment(section.properties.start_ts * 1000);
     var endMoment = moment(section.properties.end_ts * 1000);
