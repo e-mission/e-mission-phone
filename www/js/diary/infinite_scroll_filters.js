@@ -39,10 +39,6 @@ angular.module('emission.main.diary.infscrollfilters',[
         }
     }
 
-    sf.waitingForMod = function(t) {
-        return t.waitingForMod == true;
-    }
-
     sf.UNLABELED = {
         key: "unlabeled",
         text: $translate.instant(".unlabeled"),
@@ -62,5 +58,10 @@ angular.module('emission.main.diary.infscrollfilters',[
         filter: toLabelCheck,
         width: "col-50"
     }
+
+    sf.configuredFilters = [
+        sf.TO_LABEL,
+        sf.UNLABELED
+    ];
     return sf;
 });

@@ -27,7 +27,7 @@ angular.module('emission.tripconfirm.multilabel',
     templateUrl: 'templates/tripconfirm/multi-label-ui.html'
   };
 })
-.controller("MultiLabelCtrl", function($scope, $element, $attrs,
+.controller("MultiLabelCtrl", function($scope, $element, $attrs, $timeout,
     ConfirmHelper, $ionicPopover, $window, DiaryHelper, ClientStats) {
   console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
   console.log("Invoked multilabel directive controller with manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.manualResultMap);

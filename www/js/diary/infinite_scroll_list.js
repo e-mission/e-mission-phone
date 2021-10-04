@@ -20,14 +20,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
-.controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
+.controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
+                                    $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    InfScrollFilters,
     Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate, $q) {
 
   // TODO: load only a subset of entries instead of everything
@@ -38,15 +38,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
   $scope.data = {};
+  $scope.tripFilterFactory = $injector.get("InfScrollFilters");
+  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }
-  // reset all filters
-  $scope.filterInputs = [
-    InfScrollFilters.TO_LABEL,
-    InfScrollFilters.UNLABELED
-  ];
   $scope.filterInputs.forEach((f) => {
     f.state = false;
   });
@@ -227,7 +224,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             } else {
                 // console.log("Trip n before: "+$scope.data.displayTrips.length);
                 $scope.data.displayTrips = $scope.data.allTrips.filter(
-                    t => InfScrollFilters.waitingForMod(t) || f.filter(t));
+                    t => (t.waitingForMod == true) || f.filter(t));
                 // console.log("Trip n after:  "+$scope.data.displayTrips.length);
                 alreadyFiltered = true;
             }
