@@ -459,6 +459,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
+    $scope.recomputeDisplayTrips = function() {
+        console.log("recomputing is a NOP on the diary since we always show all trips");
+    };
+
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
 

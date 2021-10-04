@@ -21,16 +21,14 @@ angular.module('emission.tripconfirm.multilabel',
     scope: {
         trip: "=",
         unifiedConfirmsResults: "=",
-        manualResultMap: "="
     },
     controller: "MultiLabelCtrl",
     templateUrl: 'templates/tripconfirm/multi-label-ui.html'
   };
 })
-.controller("MultiLabelCtrl", function($scope, $element, $attrs, $timeout,
-    ConfirmHelper, $ionicPopover, $window, DiaryHelper, ClientStats) {
+.controller("MultiLabelCtrl", function($scope, $element, $attrs,
+    ConfirmHelper, $ionicPopover, $window, ClientStats, MultiLabelService) {
   console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
-  console.log("Invoked multilabel directive controller with manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.manualResultMap);
 
   var findViewElement = function() {
       console.log("$element is ", $element);
@@ -100,60 +98,6 @@ angular.module('emission.tripconfirm.multilabel',
    * END: Required external interface for all label directives
    */
 
-  /**
-   * Embed 'inputType' to the trip.
-   * This is the version that is called from the diary, where the trips are
-   * geojson objects. We should unify this and populateManualInputs later.
-   */
-  $scope.populateInputFromTimeline = function (trip, nextTripgj, inputType, inputList) {
-      console.log("While populating inputs, inputParams", $scope.inputParams);
-      var userInput = DiaryHelper.getUserInputForTrip(trip, nextTripgj, inputList);
-      if (angular.isDefined(userInput)) {
-          // userInput is an object with data + metadata
-          // the label is the "value" from the options
-          $scope.populateInput($scope.trip.userInput, inputType, userInput.data.label);
-      }
-      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(trip.data.id));
-      $scope.editingTrip = angular.undefined;
-  }
-
-  /**
-   * Embed 'inputType' to the trip
-   * This is the version that is called from the list, which focuses only on
-   * manual inputs. It also sets some additional values 
-   */
-  $scope.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
-      // Check unprocessed labels first since they are more recent
-      // Massage the input to meet getUserInputForTrip expectations
-      const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
-          {data: {properties: tripgj, features: [{}, {}, {}]}},
-          {data: {properties: nextTripgj, features: [{}, {}, {}]}},
-          inputList);
-      var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
-      if (!angular.isDefined(userInputLabel)) {
-          userInputLabel = tripgj.user_input[$scope.inputType2retKey(inputType)];
-      }
-      $scope.populateInput(tripgj.userInput, inputType, userInputLabel);
-      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
-      $scope.editingTrip = angular.undefined;
-  }
-
-  /**
-   * Insert the given userInputLabel into the given inputType's slot in inputField
-   */
-  $scope.populateInput = function(tripField, inputType, userInputLabel) {
-    if (angular.isDefined(userInputLabel)) {
-        var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
-        if (!angular.isDefined(userInputEntry)) {
-          userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
-          $scope.inputParams[inputType].options.push(userInputEntry);
-          $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
-        }
-        console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
-        tripField[inputType] = userInputEntry;
-    }
-  }
-
   $scope.fillUserInputsGeojson = function() {
     console.log("Checking to fill user inputs for "
         +$scope.trip.display_start_time+" -> "+$scope.trip.display_end_time);
@@ -161,7 +105,7 @@ angular.module('emission.tripconfirm.multilabel',
         $scope.$apply(() => {
             $scope.trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline($scope.trip, $scope.trip.nextTripgj,
+                MultiLabelService.populateInputFromTimeline($scope.trip, $scope.trip.nextTripgj,
                     item, $scope.unifiedConfirmsResults[item]);
             });
         });
@@ -170,19 +114,17 @@ angular.module('emission.tripconfirm.multilabel',
     }
   }
 
+
   $scope.fillUserInputsObjects = function() {
+    console.log("Checking to fill user inputs for "
+        +$scope.trip.display_start_time+" -> "+$scope.trip.display_end_time);
     if (angular.isDefined($scope.trip)) {
         $scope.$apply(() => {
-            // console.log("Expectation: "+JSON.stringify(trip.expectation));
-            // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
             $scope.trip.userInput = {};
             ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateManualInputs($scope.trip, $scope.trip.nextTrip, item,
-                    $scope.manualResultMap[item]);
+                MultiLabelService.populateManualInputs($scope.trip, $scope.trip.nextTripgj,
+                    item, $scope.unifiedConfirmsResults[item]);
             });
-            $scope.trip.finalInference = {};
-            $scope.inferFinalLabels($scope.trip);
-            $scope.updateVerifiability($scope.trip);
         });
     } else {
         console.log("Trip information not yet bound, skipping fill");
@@ -213,18 +155,17 @@ angular.module('emission.tripconfirm.multilabel',
         // https://github.com/e-mission/e-mission-docs/issues/674#issuecomment-932833288
         $scope.trip.start_ts = $scope.trip.data.properties.start_ts;
         $scope.trip.end_ts = $scope.trip.data.properties.end_ts;
+        $scope.trip.inferred_labels = [];
+        $scope.trip.finalInference = {};
         console.log("This is a diary trip, after copying timestamps over ", $scope.trip);
     }
     ConfirmHelper.inputParamsPromise.then((inputParams) => {
         console.log("After reading input params, unifiedConfirmsResults ",
-            $scope.unifiedConfirmsResults, "manualResultMap", $scope.manualResultMap);
+            $scope.unifiedConfirmsResults);
         $scope.inputParams = inputParams;
         if ($scope.unifiedConfirmsResults != undefined) {
             $scope.fillUserInputsGeojson();
             console.log("After filling user inputs from the diary view", $scope.trip);
-        } else if ($scope.manualResultMap != undefined) {
-            $scope.fillUserInputsObjects();
-            console.log("After filling user inputs from the label view", $scope.trip);
         } else {
             console.log("No input list defined, skipping manual user input fill", $scope.unifiedConfirmsResults);
         }
@@ -263,6 +204,7 @@ angular.module('emission.tripconfirm.multilabel',
     };
     $scope.popovers[inputType].hide();
   };
+
 
   /**
    * Store selected value for options
@@ -328,19 +270,111 @@ angular.module('emission.tripconfirm.multilabel',
         } else {
           tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
         }
-       $scope.updateTripProperties(tripToUpdate);  // Redo our inferences, filters, etc. based on this new information
+        let viewScope = findViewScope();
+       MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
       });
     });
     if (isOther == true)
       $scope.draftInput = angular.undefined;
   }
 
-  $scope.updateTripProperties = function(trip) {
-    $scope.inferFinalLabels(trip);
-    $scope.updateVerifiability(trip);
-    $scope.updateVisibilityAfterDelay(trip);
+  $scope.init = function() {
+      console.log("During initialization, trip is ", $scope.trip);
+      $scope.userInputDetails = [];
+      ConfirmHelper.INPUTS.forEach(function(item, index) {
+        const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
+        currInput.name = item;
+        $scope.userInputDetails.push(currInput);
+      });
+      ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
+      console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
+      $scope.currViewState = findViewState();
   }
 
+  $scope.init();
+})
+.factory("MultiLabelService", function(ConfirmHelper, DiaryHelper, $timeout) {
+  var mls = {};
+
+  ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
+
+  /**
+   * Embed 'inputType' to the trip.
+   * This is the version that is called from the diary, where the trips are
+   * geojson objects. We should unify this and populateManualInputs later.
+   */
+  mls.populateInputFromTimeline = function (trip, nextTripgj, inputType, inputList) {
+      console.log("While populating inputs, inputParams", mls.inputParams);
+      var userInput = DiaryHelper.getUserInputForTrip(trip, nextTripgj, inputList);
+      if (angular.isDefined(userInput)) {
+          // userInput is an object with data + metadata
+          // the label is the "value" from the options
+          mls.populateInput(trip.userInput, inputType, userInput.data.label);
+      }
+      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(trip.data.id));
+      mls.editingTrip = angular.undefined;
+  }
+
+  mls.populateInputsAndInferences = function(trip, manualResultMap) {
+    if (angular.isDefined(trip)) {
+        // console.log("Expectation: "+JSON.stringify(trip.expectation));
+        // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
+        trip.userInput = {};
+        ConfirmHelper.INPUTS.forEach(function(item, index) {
+            mls.populateManualInputs(trip, trip.nextTrip, item,
+                manualResultMap[item]);
+        });
+        trip.finalInference = {};
+        mls.inferFinalLabels(trip);
+        mls.updateVerifiability(trip);
+    } else {
+        console.log("Trip information not yet bound, skipping fill");
+    }
+  }
+
+  /**
+   * Embed 'inputType' to the trip
+   * This is the version that is called from the list, which focuses only on
+   * manual inputs. It also sets some additional values 
+   */
+  mls.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
+      // Check unprocessed labels first since they are more recent
+      // Massage the input to meet getUserInputForTrip expectations
+      const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
+          {data: {properties: tripgj, features: [{}, {}, {}]}},
+          {data: {properties: nextTripgj, features: [{}, {}, {}]}},
+          inputList);
+      var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
+      if (!angular.isDefined(userInputLabel)) {
+          userInputLabel = tripgj.user_input[mls.inputType2retKey(inputType)];
+      }
+      mls.populateInput(tripgj.userInput, inputType, userInputLabel);
+      // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
+      mls.editingTrip = angular.undefined;
+  }
+
+  /**
+   * Insert the given userInputLabel into the given inputType's slot in inputField
+   */
+  mls.populateInput = function(tripField, inputType, userInputLabel) {
+    if (angular.isDefined(userInputLabel)) {
+        var userInputEntry = mls.inputParams[inputType].value2entry[userInputLabel];
+        if (!angular.isDefined(userInputEntry)) {
+          userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
+          mls.inputParams[inputType].options.push(userInputEntry);
+          mls.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
+        }
+        console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
+        tripField[inputType] = userInputEntry;
+    }
+  }
+
+
+  mls.updateTripProperties = function(trip, viewScope) {
+    mls.inferFinalLabels(trip);
+    mls.updateVerifiability(trip);
+    mls.updateVisibilityAfterDelay(trip, viewScope);
+  }
   /**
    * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
    * The algorithm below operationalizes these principles:
@@ -349,7 +383,7 @@ angular.module('emission.tripconfirm.multilabel',
    *   - After filtering, predict the most likely choices at the level of individual labels, not label tuples
    *   - Never show user yellow labels that have a lower probability of being correct than confidenceThreshold
    */
-  $scope.inferFinalLabels = function(trip) {
+  mls.inferFinalLabels = function(trip) {
     // Deep copy the possibility tuples
     let labelsList = [];
     if (angular.isDefined(trip.inferred_labels)) {
@@ -363,14 +397,14 @@ angular.module('emission.tripconfirm.multilabel',
     for (const inputType of ConfirmHelper.INPUTS) {
       const userInput = trip.userInput[inputType];
       if (userInput) {
-        const retKey = $scope.inputType2retKey(inputType);
+        const retKey = mls.inputType2retKey(inputType);
         labelsList = labelsList.filter(item => item.labels[retKey] == userInput.value);
       }
     }
 
     // Red labels if we have no possibilities left
     if (labelsList.length == 0) {
-      for (const inputType of ConfirmHelper.INPUTS) $scope.populateInput(trip.finalInference, inputType, undefined);
+      for (const inputType of ConfirmHelper.INPUTS) mls.populateInput(trip.finalInference, inputType, undefined);
     }
     else {
       // Normalize probabilities to previous level of certainty
@@ -379,7 +413,7 @@ angular.module('emission.tripconfirm.multilabel',
 
       for (const inputType of ConfirmHelper.INPUTS) {
         // For each label type, find the most probable value by binning by label value and summing
-        const retKey = $scope.inputType2retKey(inputType);
+        const retKey = mls.inputType2retKey(inputType);
         let valueProbs = new Map();
         for (const tuple of labelsList) {
           const labelValue = tuple.labels[retKey];
@@ -396,7 +430,7 @@ angular.module('emission.tripconfirm.multilabel',
         // Fails safe if confidence_threshold doesn't exist
         if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
 
-        $scope.populateInput(trip.finalInference, inputType, max.labelValue);
+        mls.populateInput(trip.finalInference, inputType, max.labelValue);
       }
     }
   }
@@ -404,7 +438,7 @@ angular.module('emission.tripconfirm.multilabel',
   /**
    * MODE (becomes manual/mode_confirm) becomes mode_confirm
    */
-  $scope.inputType2retKey = function(inputType) {
+  mls.inputType2retKey = function(inputType) {
     return ConfirmHelper.inputDetails[inputType].key.split("/")[1];
   }
 
@@ -414,7 +448,7 @@ angular.module('emission.tripconfirm.multilabel',
    * If the trip has all green labels, the button should be disabled because everything has already been verified.
    * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
    */
-  $scope.updateVerifiability = function(trip) {
+  mls.updateVerifiability = function(trip) {
     var allGreen = true;
     var someYellow = false;
     for (const inputType of ConfirmHelper.INPUTS) {
@@ -435,7 +469,7 @@ angular.module('emission.tripconfirm.multilabel',
    * - create a one minute timeout that will remove the wait and recompute
    * - clear the existing timeout (if any)
    */
-  $scope.updateVisibilityAfterDelay = function(trip) {
+  mls.updateVisibilityAfterDelay = function(trip, viewScope) {
     // We have just edited this trip, and are now waiting to see if the user
     // is going to modify it further
     trip.waitingForMod = true;
@@ -446,25 +480,11 @@ angular.module('emission.tripconfirm.multilabel',
       Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
       trip.waitingForMod = false;
       trip.timeoutPromise = undefined;
-      let viewScope = findViewScope();
+      console.log("Recomputing display trips on ", viewScope);
       viewScope.recomputeDisplayTrips();
     }, THIRTY_SECS);
     Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
     $timeout.cancel(currTimeoutPromise);
   }
-
-  $scope.init = function() {
-      console.log("During initialization, trip is ", $scope.trip);
-      $scope.userInputDetails = [];
-      ConfirmHelper.INPUTS.forEach(function(item, index) {
-        const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-        currInput.name = item;
-        $scope.userInputDetails.push(currInput);
-      });
-      ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
-      console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
-      $scope.currViewState = findViewState();
-  }
-
-  $scope.init();
+  return mls;
 });

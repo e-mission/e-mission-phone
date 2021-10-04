@@ -41,6 +41,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.tripFilterFactory = $injector.get("InfScrollFilters");
   $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
+  $scope.labelPopulateFactory = $injector.get("MultiLabelService");
+
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }
@@ -97,6 +99,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
             trip.nextTrip = ctList[tIndex+1];
+            $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
         });
         // Fill places on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
