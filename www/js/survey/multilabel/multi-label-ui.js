@@ -31,22 +31,22 @@ angular.module('emission.survey.multilabel.buttons',
   console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
 
   var findViewElement = function() {
-      console.log("$element is ", $element);
-      console.log("parent row is", $element.parents("ion-item"));
+      // console.log("$element is ", $element);
+      // console.log("parent row is", $element.parents("ion-item"));
       let rowElement = $element.parents("ion-view")
-      console.log("row Element is", rowElement);
+      // console.log("row Element is", rowElement);
       return angular.element(rowElement);
   }
 
   var findViewState = function() {
       let viewState = findViewElement().attr("state")
-      console.log("view state is ", viewState);
+      // console.log("view state is ", viewState);
       return viewState;
   }
 
   var findViewScope = function() {
       let viewScope = findViewElement().scope();
-      console.log("view scope is ", viewScope);
+      // console.log("view scope is ", viewScope);
       return viewScope;
   }
 

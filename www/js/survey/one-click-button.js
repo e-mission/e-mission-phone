@@ -3,16 +3,14 @@ angular.module('emission.survey.verifycheck', [])
   return {
     scope: {
         linkedtag: "@",
-        trip: "=",
-        invokedfrom: "="
     },
     controller: "OneClickButtonCtrl",
-    templateUrl: 'templates/survey/multilabel/one-click-button.html'
+    templateUrl: 'templates/survey/one-click-button.html'
   };
 })
 .controller("OneClickButtonCtrl", function($scope, $element, $attrs) {
     var findLinkedLabelScope = function() {
-        console.log("$element is ", $element, "linkedtag is ",$scope.linkedTag);
+        console.log("$element is ", $element, "linkedtag is ",$scope.linkedtag);
         console.log("parent row is", $element.parents("ion-item"));
         let rowElement = $element.parents("ion-item")
         console.log("row Element is", rowElement);
