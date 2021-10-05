@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('emission.survey', [
+                    "emission.survey.verifycheck",
                     "emission.survey.external.launch",
                     "emission.survey.multilabel.buttons",
-                    "emission.survey.multilabel.verifycheck",
                     "emission.survey.multilabel.infscrollfilters",
                     ])
 

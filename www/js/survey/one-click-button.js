@@ -1,6 +1,4 @@
-angular.module('emission.survey.multilabel.verifycheck',
-    ['emission.survey.multilabel.services',
-        'emission.main.diary.services'])
+angular.module('emission.survey.verifycheck', [])
 .directive('verifycheck', function($timeout) {
   return {
     scope: {
