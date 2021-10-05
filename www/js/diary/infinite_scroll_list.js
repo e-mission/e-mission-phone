@@ -298,7 +298,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.listColRightClass = "col-50 list-col-right"
 
     $scope.differentCommon = function(tripgj) {
-        return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
+        return (DiaryHelper.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
     $scope.stopTimeTagClass = function(tripgj) {
       return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
@@ -337,14 +337,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.common = {}
         DiaryHelper.fillCommonTripCount(tripgj);
         tripgj.common.different = $scope.differentCommon(tripgj);
-        tripgj.common.longerOrShorter = $scope.getLongerOrShorter(tripgj.data, tripgj.data.id);
+        tripgj.common.longerOrShorter = DiaryHelper.getLongerOrShorter(tripgj.data, tripgj.data.id);
         tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
         tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
-        tripgj.common.arrowColor = $scope.arrowColor(tripgj.common.longerOrShorter[0]);
-        tripgj.common.arrowClass = $scope.getArrowClass(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowColor = DiaryHelper.arrowColor(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowClass = DiaryHelper.getArrowClass(tripgj.common.longerOrShorter[0]);
 
-        tripgj.common.earlierOrLater = $scope.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
-        tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
+        tripgj.common.earlierOrLater = DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
+        tripgj.common.displayEarlierLater = DiaryHelper.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
 
     $scope.refresh = function() {
