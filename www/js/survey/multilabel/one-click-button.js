@@ -1,5 +1,5 @@
-angular.module('emission.tripconfirm.verifycheck',
-    ['emission.tripconfirm.services',
+angular.module('emission.survey.multilabel.verifycheck',
+    ['emission.survey.multilabel.services',
         'emission.main.diary.services'])
 .directive('verifycheck', function($timeout) {
   return {

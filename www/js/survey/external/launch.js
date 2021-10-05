@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.survey.launch', ['emission.services',
+angular.module('emission.survey.external.launch', ['emission.services',
                     'emission.plugin.logger'])
 
 .factory('SurveyLaunch', function($http, $window, $ionicPopup, $rootScope,

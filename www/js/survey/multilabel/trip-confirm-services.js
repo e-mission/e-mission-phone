@@ -1,4 +1,4 @@
-angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
+angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger) {
     var ch = {};
     ch.INPUTS = ["MODE", "PURPOSE"]

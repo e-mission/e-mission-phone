@@ -11,11 +11,11 @@
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.tripconfirm.multilabel',
-                                      'emission.tripconfirm.verifycheck',
+                                      'emission.survey.multilabel.buttons',
+                                      'emission.survey.multilabel.verifycheck',
                                       'emission.services',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-                                      'emission.main.diary.infscrollfilters',
+                                      'emission.survey.multilabel.infscrollfilters',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 

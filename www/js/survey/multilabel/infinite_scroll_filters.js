@@ -8,8 +8,8 @@
  * All UI elements should only use $scope variables.
  */
 
-angular.module('emission.main.diary.infscrollfilters',[
-    'emission.tripconfirm.services',
+angular.module('emission.survey.multilabel.infscrollfilters',[
+    'emission.survey.multilabel.services',
     'emission.stats.clientstats',
     'emission.plugin.logger'
   ])

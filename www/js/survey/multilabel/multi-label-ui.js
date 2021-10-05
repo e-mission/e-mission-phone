@@ -12,8 +12,8 @@
  *      other components.
  */
 
-angular.module('emission.tripconfirm.multilabel',
-    ['emission.tripconfirm.services',
+angular.module('emission.survey.multilabel.buttons',
+    ['emission.survey.multilabel.services',
         'emission.stats.clientstats',
         'emission.main.diary.services'])
 .directive('multilabel', function() {
