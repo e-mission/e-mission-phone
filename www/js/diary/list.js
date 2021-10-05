@@ -25,12 +25,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
+                                    SurveyOptions,
     Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
+  $scope.surveyOpt = SurveyOptions.MULTILABEL;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
     {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   // Add option
-  $scope.labelPopulateFactory = $injector.get("MultiLabelService");
+  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background

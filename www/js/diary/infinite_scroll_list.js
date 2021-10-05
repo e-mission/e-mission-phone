@@ -23,22 +23,23 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     $timeout,
-                                    ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
+                                    SurveyOptions,
     Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
+  $scope.surveyOpt = SurveyOptions.MULTILABEL;
   // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
   $scope.data = {};
-  $scope.tripFilterFactory = $injector.get("InfScrollFilters");
+  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
   $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
-  $scope.labelPopulateFactory = $injector.get("MultiLabelService");
+  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
 
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
