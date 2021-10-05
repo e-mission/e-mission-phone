@@ -11,9 +11,8 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.survey.multilabel.buttons',
-                                      'emission.survey.multilabel.verifycheck',
                                       'emission.services',
+                                      'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'

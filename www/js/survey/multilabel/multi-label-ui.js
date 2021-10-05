@@ -23,7 +23,7 @@ angular.module('emission.survey.multilabel.buttons',
         unifiedConfirmsResults: "=",
     },
     controller: "MultiLabelCtrl",
-    templateUrl: 'templates/tripconfirm/multi-label-ui.html'
+    templateUrl: 'templates/survey/multilabel/multi-label-ui.html'
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
@@ -237,7 +237,7 @@ angular.module('emission.survey.multilabel.buttons',
 })
 .factory("MultiLabelService", function(ConfirmHelper, DiaryHelper, $timeout) {
   var mls = {};
-
+  console.log("Creating MultiLabelService");
   ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
 
   /**

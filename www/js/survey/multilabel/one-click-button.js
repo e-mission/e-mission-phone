@@ -9,7 +9,7 @@ angular.module('emission.survey.multilabel.verifycheck',
         invokedfrom: "="
     },
     controller: "OneClickButtonCtrl",
-    templateUrl: 'templates/tripconfirm/one-click-button.html'
+    templateUrl: 'templates/survey/multilabel/one-click-button.html'
   };
 })
 .controller("OneClickButtonCtrl", function($scope, $element, $attrs) {
