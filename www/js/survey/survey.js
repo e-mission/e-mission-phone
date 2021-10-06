@@ -17,4 +17,13 @@ angular.module('emission.survey', [
     }
 
     return surveyoptions;
+})
+.directive("linkedsurvey", function($compile) {
+    return {
+        scope: {
+            elementTag:"@",
+            trip: "=",
+        },
+        templateUrl: "templates/survey/wrapper.html",
+    };
 });
