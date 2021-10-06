@@ -78,19 +78,19 @@ angular.module('emission.survey.multilabel.buttons',
       ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
             {"verifiable": true,
              "currView": $scope.currentViewState,
-             "userInput": angular.toJson(trip.userInput),
-             "finalInference": angular.toJson(trip.finalInference)});
+             "userInput": angular.toJson($scope.trip.userInput),
+             "finalInference": angular.toJson($scope.trip.finalInference)});
 
       $scope.draftInput = {
-        "start_ts": trip.start_ts,
-        "end_ts": trip.end_ts
+        "start_ts": $scope.trip.start_ts,
+        "end_ts": $scope.trip.end_ts
       };
-      $scope.editingTrip = trip;
+      $scope.editingTrip = $scope.trip;
 
       for (const inputType of ConfirmHelper.INPUTS) {
-        const inferred = trip.finalInference[inputType];
+        const inferred = $scope.trip.finalInference[inputType];
         // TODO: figure out what to do with "other". For now, do not verify.
-        if (inferred && !trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
+        if (inferred && !$scope.trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
       }
     }
 
