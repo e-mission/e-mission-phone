@@ -215,7 +215,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             // trip object so that the unified populate code works
             tripgj.start_ts = tripgj.data.properties.start_ts;
             tripgj.end_ts = tripgj.data.properties.end_ts;
-            tripgj.inferred_labels = [];
+            tripgj.inferred_labels = tripgj.data.properties.inferred_labels;
+            tripgj.user_input = tripgj.data.properties.user_input;
             $scope.labelPopulateFactory.populateInputsAndInferences(tripgj, $scope.data.unifiedConfirmsResults);
             $scope.populateCommonInfo(tripgj);
           });
