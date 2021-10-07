@@ -1110,34 +1110,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var localCacheReadFn = timeline.updateFromDatabase;
 
-    // Functions
-    timeline.updateForDay = function(day) { // currDay is a moment
-      // First, we try the server
-      var tripsFromServerPromise = timeline.updateFromServer(day);
-      var isProcessingCompletePromise = timeline.isProcessingComplete(day);
-
-      // Also mode/purpose and (currently disabled) survey answers
-      var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
-        return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq);
-      });
-      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
-
-      // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise].concat(manualPromises))
-        .then(function([processedTripList, completeStatus, ...manualResults]) {
-        console.log("Promise.all() finished successfully with length "
-          +processedTripList.length+" completeStatus = "+completeStatus);
-        var mrString = 'with ' + manualResults.map(function(item, index) {
-            return ' ${mr.length} ${ConfirmHelper.INPUTS[index]}';
-        });
+    var processManualInputs = function(manualResults) {
+        var mrString = 'unprocessed manual inputs '
+            + manualResults.map(function(item, index) {
+                return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
+            });
         console.log(mrString);
-        var tripList = processedTripList;
         timeline.data.unifiedConfirmsResults = {}
         manualResults.forEach(function(mr, index) {
           timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
         });
+    }
+
+    var addUnprocessedTrips = function(processedTripList, day, completeStatus) {
+        var tripList = processedTripList;
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -1150,46 +1136,61 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         } else {
             return tripList;
         }
-      }).then(function(combinedTripList) {
-        processOrDisplayNone(day, combinedTripList);
-      }).catch(function(error) {
-        // If there is any error reading from the server, we fallback on the local cache
-        Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
-        console.log("About to hide loading overlay");
-        $ionicLoading.hide();
+    }
 
-        var tripsFromCachePromise = localCacheReadFn(day);
-
-        // Also mode/purpose and (currently disabled) survey answers
-        var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-        var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
-          return UnifiedDataLoader.getUnifiedMessagesForInterval(
+    var readTripsAndUnprocessedInputs = function(day, tripReadFn, completeStatus, tq) {
+      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+        return UnifiedDataLoader.getUnifiedMessagesForInterval(
             ConfirmHelper.inputDetails[inp].key, tq);
-        });
-        Promise.all([tripsFromCachePromise].concat(manualPromises)).then(function(
-            [processedTripList, ...manualResults]) {
-          console.log(' in local cache, found ${modes.length} modes, ${purposes.length} purposes');
-          var tripList = processedTripList;
-          timeline.data.unifiedConfirmsResults = {}
-          manualResults.forEach(function(mr, index) {
-            timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
-          });
-          return timeline.readUnprocessedTrips(day, processedTripList)
-            .then(function(unprocessedTripList) {
-              Logger.log("tripList.length = "+tripList.length
-                         +"unprocessedTripList.length = "+unprocessedTripList.length);
-              Array.prototype.push.apply(tripList, unprocessedTripList);
-              console.log("After merge, returning trip list of size "+tripList.length);
-              return tripList;
-            })
-        }).then(function(combinedTripList) {
-          processOrDisplayNone(day, combinedTripList);
-        }).catch(function(error) {
-          console.log("About to hide loading overlay");
-          $ionicLoading.hide();
-          Logger.displayError("while reading data from cache for "+day, error);
-        })
       });
+      let tripsReadPromise = tripReadFn(day);
+      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+      let allManualPromise = Promise.all(manualPromises).then(processManualInputs);
+
+      let allTripsPromise = tripsReadPromise.then((processedTripList) => {
+        console.log("Reading trips from server finished successfully with length "
+          +processedTripList.length+" completeStatus = "+completeStatus);
+        return addUnprocessedTrips(processedTripList, completeStatus);
+      }).then((combinedTripList) => processOrDisplayNone(day, combinedTripList));
+      return Promise.all([allManualPromise, allTripsPromise]).then(() => {
+        console.log("Finished reading processed/unprocessed trips with length "
+            +timeline.data.currDayTrips.length);
+      });
+    }
+
+    // Functions
+    timeline.updateForDay = function(day) { // currDay is a moment
+      // First, we try the server
+      var isProcessingCompletePromise = timeline.isProcessingComplete(day);
+
+      // First get the pipeline complete timestamp
+      isProcessingCompletePromise.then((completeTs, completeStatus) => {
+          // then, in parallel, read unprocessed user inputs
+          // and trips
+          // Also mode/purpose and (currently disabled) survey answers
+          var pendingTq = {
+             key: "write_ts",
+             startTs: completeTs,
+             endTs: moment().unix()
+          };
+          readTripsAndUnprocessedInputs(day, timeline.updateFromServer,
+                completeStatus, pendingTq)
+          .catch(function(error) {
+            // If there is any error reading from the server, we fallback on the local cache
+            Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
+            console.log("About to hide loading overlay");
+            $ionicLoading.hide();
+
+            // Also mode/purpose and (currently disabled) survey answers
+            let allTq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+            readTripsAndUnprocessedInputs(day, localCacheReadFn, undefined, allTq)
+            .catch(function(error) {
+              console.log("About to hide loading overlay");
+              $ionicLoading.hide();
+              Logger.displayError("while reading data from cache for "+day, error);
+            })
+        });
+     });
     }
 
       timeline.getTrip = function(tripId) {
