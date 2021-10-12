@@ -1,0 +1,25 @@
+<ion-view title="Trip Detail">
+	<ion-content class="has-subheader" style="background-color: #eeeeee;">
+	<p style="font-size: 15px; color: #cccccc">Distance</p>
+    <p style="font-size: 20px;">{{getFormattedDistance(trip.data.properties.distance)}} km</p>
+    <div style="height: 10px;"></div>
+    <p style="font-size: 15px; color: #cccccc">Time</p>
+    <p style="font-size: 20px;">{{getFormattedTimeRange(trip.data.properties.start_ts,
+           trip.data.properties.end_ts)}}</p>
+     <leaflet geojson="trip" id="$index" defaults="defaults"></leaflet>
+     <div class="col button-small">
+          <div class="row">
+              <div class="col">start </div>
+              <i class="col icon ion-ios-time-outline"></i>
+              <div class="col">km </div>
+              <div class="col">mode </div>
+          </div>
+          <div class="row" ng-repeat="section in trip.sections">
+              <div class="col">{{getFormattedTime(section.properties.start_ts)}}</div>
+              <div class="col">{{getFormattedTimeRange(section.properties.end_ts, section.properties.start_ts)}}</div>
+              <div class="col">{{getFormattedDistance(section.properties.distance)}}</div>
+              <div class="col"><i class="{{getIcon(section)}}" style="margin-left: 5px; margin-right: 5px; font-size: 20px;"></div>
+          </div>
+      </div>
+	</ion-content>
+</ion-view>

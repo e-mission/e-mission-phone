@@ -1,0 +1,37 @@
+<ion-view title="Common Places">
+    <ion-content style="padding-bottom: 30px;">
+    <div class="common-detail-title">Common place</div>
+    <div class="common-detail-item">
+      <div class="row">
+        <div class="col">
+          <div class="common-list-card">
+          <div class="common-list-item-location">{{place.display_name}}</div>
+          <div class="common-list-item-times">{{place.places.length}} {{ place.places.length > 1? 'visits' : 'visit' }},
+          {{place.successors.length}} {{ place.successors.length > 1? 'successors' : 'successor' }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="common-detail-title">Successor trips</div>
+
+      <ion-list>
+        <div collection-repeat="succ_tp in succ_trips_places">
+        <div class="common-detail-trips-to"> {{succ_tp.trip.trips.length}} trips to</div>
+          <ion-item href="#/root/main/common/places/{{succ_tp.place._id.$oid}}" >
+
+
+
+
+            <div class="common-detail-item">
+              <div class="common-list-item-location">{{succ_tp.place.display_name}}</div>
+<!--               <div class="row">{{succ_tp.place.location.coordinates}}</div> -->
+              <div class="common-list-item-times">{{succ_tp.place.places.length}} {{ succ_tp.place.places.length > 1? 'visits' : 'visit' }}, {{succ_tp.place.successors.length}} {{ succ_tp.place.successors.length > 1? 'successors' : 'successor' }}</div>
+            <div class="common-list-item-times"> Usually starts at: {{succ_tp.trip.common_hour}}:00 </div>
+            <div class="common-list-item-times"> Usually takes: {{succ_tp.trip.common_duration }}</div>
+            </div>
+          </ion-item>
+        </div>
+        </ion-list>
+
+    </ion-content>
+</ion-view>

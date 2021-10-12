@@ -1,0 +1,19 @@
+{
+  "connectUrl": "<e-mission server url, including host and port>",
+  "aggregate_call_auth": "no_auth",
+  "android": {
+    "auth": {
+      "method": "openid-authutil",
+      "discoveryURI": "<config_url>, similar to https://accounts.open-to-all.com/auth/realms/OpenToAll/",
+      "clientID": "<audience>, similar to emission-mobile-dev",
+      "scope": "openid email profile offline_access"
+    }
+  },
+  "ios": {
+    "auth": {
+      "method": "openid-authutil",
+      "discoveryURI": "<config_url>, similar to https://accounts.open-to-all.com/auth/realms/OpenToAll/",
+      "clientID": "<audience>, similar to emission-mobile-dev"
+    }
+  }
+}

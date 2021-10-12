@@ -1,0 +1,3 @@
+{
+    "url": "http://fill.me.in <replace with httpbin.org for testing, note that this uploads unencrypted data. replace with your final upload server for production>"
+}

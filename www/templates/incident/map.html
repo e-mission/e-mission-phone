@@ -1,0 +1,26 @@
+<ion-view view-title="Incident" class="ion-view-background">
+    <ion-nav-buttons side="right">
+      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+    </ion-nav-buttons>
+    <ion-nav-buttons side="left">
+      <button class="button button-icon ion-close" ng-click="closeView()"></button>
+    </ion-nav-buttons>
+    <ion-nav-title>{{ getFormattedDate(mapCtrl.start_ts) }}</ion-nav-title> 
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
+        <div class="row" style="text-align: center">
+            <div class="col-30" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{getFormattedTime(mapCtrl.start_ts)}}</div>
+            <div class="col-30" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;"> &rarr; </div>
+            <div class="col-30" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;"> &nbsp; {{getFormattedTime(mapCtrl.end_ts)}} &nbsp; </div>
+        </div>
+        <div style="height: 10px;"></div>
+            <leaflet geojson="mapCtrl.geojson" id="incident" defaults="mapCtrl.defaults" 
+                height="75%" width="100%" data-tap-disabled="true">
+            </leaflet>
+        <div style="" class="button-bar">
+            <button class="button button-stable button-block icon ion-refresh"
+                ng-click="refreshWholeMap()" translate>{{'map-refresh'}}</button>
+            <button class="button button-stable button-block"
+                ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
+        </div>
+    </ion-content>
+</ion-view>

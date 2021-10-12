@@ -1,0 +1,39 @@
+<ion-view title="Trips list">
+<!--   <ion-nav-title class="dark-color">
+
+    <div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
+      <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+      </button>
+      <ionic-datepicker input-obj="datepickerObject" style="color: white;">
+        <button class="button date-picker-button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+      </ionic-datepicker>
+      <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
+      </button>
+    </div>
+
+  </ion-nav-title> -->
+  <ion-content>
+      <ion-list>
+        <div collection-repeat="trip in trips">
+          <ion-item class="common-map-item" href="#/root/main/common/trips/{{trip._id.$oid}}">
+            <div class="common-map-card">
+            <div class="row menu-item">
+            <div class="col-60" style="padding: 5% 0 3% 5%;">
+            <div class="common-map-item-location"><i class="icon ion-ios-location" style="font-size: 1em; left: 0; color: #33e0bb; margin-right: 8px;"></i>{{trip.start_display_name.split(',')[0]}}</div>
+            <div class="common-map-item-location"><i class="icon ion-ios-location" style="font-size: 1em; left: 0; color: #ff5251;margin-right: 8px;"></i>{{trip.end_display_name.split(',')[0]}}</div>
+            </div>
+            <div class="col-20" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <i class="icon ion-ios-stopwatch-outline" style="font-size: 0.8em; margin-top: 3px; left: 0; color: #aaa; margin-left: 2px; line-height: 1em;"></i>
+              <div style="font-size: 0.7em;">{{trip.common_duration}}</div>
+            </div>
+            <div class="col-20" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <i class="ion-ios-arrow-right"></i>
+            </div>
+            </div>
+            </div>
+          </ion-item>
+        </div>
+    </ion-list>
+
+  </ion-content>
+</ion-view>

@@ -1,0 +1,74 @@
+<ion-modal-view style="background-color: #eeeeee" translate-namespace="metrics">
+  <ion-header-bar>
+    <button side="left" class="button" ng-click="closeModal()" translate>{{'.cancel'}}</button>
+    <button side="right" class="button" ng-click="getMetricsHelper()" translate>{{'.get'}}</button>
+</ion-header-bar>
+  <ion-content class="padding">
+  <div style="height: 40px; width: 100%; margin-bottom: 5px;"> <!-- query control -->
+    <div class="metric-basic">
+      <div class="metric-current-title hvcenter">{{ uictrl.currentString }}</div>
+      <div ng-class="rangeButtonClass()" ng-click="showRange()" translate>{{'.range'}}</div>
+      <div ng-class="filterButtonClass()" ng-click="showFilter()" translate>{{'.filter'}}</div>
+    </div>
+  </div>
+  <div ng-if="uictrl.showRange"> <!-- range -->
+    <div style="height: 40px; width: 100%;">
+      <div class="metric-datepicker-container-upper">
+          <div class="metric-left">
+            <div class="metric-title" translate>{{'.from'}}</div>
+          </div>
+          <div class="metric-right">
+            <button id="date-picker-button" ng-click="pickFromDay()">
+            <div class="metric-datepicker">{{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
+            </button>
+          </div>
+        </div>
+    </div>
+
+
+    <div style="height: 40px; width: 100%;">
+      <div class="metric-datepicker-container-lower">
+          <div class="metric-left">
+            <div class="metric-title" translate>{{'.to'}}
+            </div>
+          </div>
+          <div class="metric-right">
+            <button id="date-picker-button" ng-click="pickToDay()">
+            <div class="metric-datepicker">{{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
+            </ionic-datepicker>
+          </div>
+        </div>
+    </div>
+    <div class="metric-left">
+        <div class="metric-title" translate>{{'.frequency'}}</div>
+    </div>
+    <div class="metric-right">
+      <div class="metric-freq-button hvcenter" ng-click="changePandaFreq()">{{selectCtrl.pandaFreqString}}</div>
+    </div>
+  </div>
+
+  <div ng-if="uictrl.showFilter">
+  <div style="height: 40px; width: 100%;">
+    <div class="metric-filter-title" translate>{{'.from'}}</div>
+    <input class="metric-filter-year hvcenter" placeholder="yyyy" ng-model="selectCtrl.fromDateLocalDate.year"></input>
+    <input class="metric-filter-month hvcenter" placeholder="mm" ng-model="selectCtrl.fromDateLocalDate.month"></input>
+    <input class="metric-filter-day hvcenter" placeholder="dd" ng-model="selectCtrl.fromDateLocalDate.day"></input>
+    <div class="metric-weekday-container-upper hvcenter" ng-click="changeFromWeekday()">{{selectCtrl.fromDateWeekdayString}}</div>
+  </div>
+  <div style="height: 40px; width: 100%;">
+    <div class="metric-filter-title" translate>{{'.to'}}</div>
+    <input class="metric-filter-year hvcenter" placeholder="yyyy" ng-model="selectCtrl.toDateLocalDate.year"></input>
+    <input class="metric-filter-month hvcenter" placeholder="mm" ng-model="selectCtrl.toDateLocalDate.month"></input>
+    <input class="metric-filter-day hvcenter" placeholder="dd" ng-model="selectCtrl.toDateLocalDate.day"></input>
+    <div class="metric-weekday-container-lower hvcenter" ng-click="changeToWeekday()">{{selectCtrl.toDateWeekdayString}}</div>
+  </div>
+  <div class="metric-left">
+        <div class="metric-title" translate>{{'.frequency'}}</div>
+  </div>
+  <div class="metric-right">
+    <div class="metric-freq-button hvcenter" ng-click="changePandaFreq()">{{selectCtrl.freqString}}</div>
+  </div>
+  </div>
+
+  </ion-content>
+</ion-modal-view>

@@ -1,0 +1,39 @@
+<ion-view view-title="{{'main-heatmap.title' | translate}}" class="ion-view-background" translate-namespace="main-heatmap">
+  <ion-nav-bar class="bar-stable">
+  </ion-nav-bar>
+  <ion-nav-buttons side="right">
+      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+  </ion-nav-buttons>
+  <ion-content class="has-header padding" scroll="false">
+    <div style="height: 40px; width: 100%;"> <!-- visualization control -->
+      <div class="metric-half">
+        <div ng-class="countButtonClass()" ng-click="showCounts()" translate>{{'.counts'}}</div>
+        <div ng-class="stressButtonClass()" ng-click="showStress()" translate>{{'.stress'}}</div>
+      </div>
+    </div>
+    <div class="datepicker">
+      <div style="height: 40px; width: 100%;">
+        <div class="heatmap-filter-title" translate>{{'.from'}}</div>
+        <input class="heatmap-filter-year hvcenter" placeholder="yyyy" ng-model="selectCtrl.fromDate.year"></input>
+        <input class="heatmap-filter-month hvcenter" placeholder="mm" ng-model="selectCtrl.fromDate.month"></input>
+        <input class="heatmap-filter-day hvcenter" placeholder="dd" ng-model="selectCtrl.fromDate.day"></input>
+        <input class="heatmap-filter-hour hvcenter" placeholder="hh" ng-model="selectCtrl.fromDate.hour"></input>
+        <div class="heatmap-weekday-container-upper hvcenter" ng-click="changeFromWeekday()">{{selectCtrl.fromDateWeekdayString}}</div>
+      </div>
+      <div style="height: 40px; width: 100%;">
+        <div class="heatmap-filter-title" translate>{{'.to'}}</div>
+        <input class="heatmap-filter-year hvcenter" placeholder="yyyy" ng-model="selectCtrl.toDate.year"></input>
+        <input class="heatmap-filter-month hvcenter" placeholder="mm" ng-model="selectCtrl.toDate.month"></input>
+        <input class="heatmap-filter-day hvcenter" placeholder="dd" ng-model="selectCtrl.toDate.day"></input>
+        <input class="heatmap-filter-hour hvcenter" placeholder="hh" ng-model="selectCtrl.toDate.hour"></input>
+        <div class="heatmap-weekday-container-lower hvcenter" ng-click="changeToWeekday()">{{selectCtrl.toDateWeekdayString}}</div>
+      </div>
+    </div>
+    <div style="height: 40px; width: 100%;">
+      <div ng-disabled="$scope.selectCtrl.showStress" class="heatmap-mode-button hvcenter" ng-click="changeMode()">{{selectCtrl.modeString}}</div>
+      <div class="heatmap-get-button hvcenter" ng-click="getHeatmaps()" translate>{{'.get'}}</div>
+      <div class="heatmap-fixmap-button hvcenter" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</div>
+    </div>
+    <leaflet id='heatmap' width="100%" height="{{mapHeight}}px" defaults="mapCtrl.defaults" data-tap-disabled="true"></leaflet>
+  </ion-content>
+</ion-view>

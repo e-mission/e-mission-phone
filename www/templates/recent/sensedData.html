@@ -1,0 +1,18 @@
+<ion-view style="" title="Sensed data">
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
+        <ion-refresher
+            pulling-text="{{'pull-to-refresh' | translate}}"
+            on-refresh="updateEntries()">
+        </ion-refresher>
+        <div class="button-bar">
+            <button style="" class="button button-stable button-block  icon ion-email" ng-click="emailCache()"></button>
+            <button class="button button-stable button-block" ng-click="changeSelection()">{{selected.key}}</button>
+        </div>
+        <ion-list>
+            <ion-item class="row responsive-sm" ng-repeat="entry in entries track by entry.metadata.write_ts">
+                <div class="col timestamp item-text-wrap">{{entry.metadata.write_fmt_time}}</div>
+                <div class="col detail item-text-wrap">{{entry.data}}</div>
+            </ion-item>
+        </ion-list>
+    </ion-content>
+</ion-view>

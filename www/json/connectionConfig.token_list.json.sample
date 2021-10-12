@@ -1,0 +1,16 @@
+{
+    "connectUrl": "<e-mission server url, including host and port>",
+    "aggregate_call_auth": "no_auth",
+    "android": {
+        "auth": {
+            "method": "prompted-auth",
+            "prompt": "<Enter the prompt to display - e.g. Enter your unique token>"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "prompted-auth",
+            "prompt": "<Enter the prompt to display - e.g. Enter your unique token>"
+        }
+    }
+}

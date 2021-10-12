@@ -1,0 +1,87 @@
+.slider {
+  height: 100%;
+}
+
+.slider-slide {
+  padding-top: 80px;
+  color: #000;
+  background-color: #fff;
+  text-align: center;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+  font-weight: 300;
+}
+
+.scroll {
+  min-width: 100%;
+}
+.nav-placeholder {
+  height: 30px;
+}
+.wide-as-needed {
+  overflow-y: scroll;
+  white-space: nowrap;
+}
+.intro-view {
+  /*background-color: #eeeeee;*/
+}
+
+.intro-title {
+  padding-top: 10%;
+  padding-right: 8%;
+  padding-left: 8%;
+  font-size: 18px;
+}
+.intro-text {
+  padding-top: 5%;
+  padding-right: 8%;
+  padding-left: 8%;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+.intro-space {
+  height: 15px;
+}
+#intro-footer {
+  padding: 15px;
+  height: 90px;
+}
+.consent-title {
+  padding-top: 10%;
+  padding-right: 8%;
+  padding-left: 8%;
+  font-size: 18px;
+}
+.consent-text {
+  padding-top: 5%;
+  padding-right: 8%;
+  padding-left: 8%;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
+.consent-space {
+  height: 15px;
+}
+#consent-footer {
+  padding: 15px;
+  height: 90px;
+  position: absolute;
+}
+#consent-button {
+  height: 35px;
+}
+.refuse-popup {
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: left;
+  font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}
+.refuse-popup .popup-buttons {
+    margin-left: 15%;
+    width: 70% !important;
+}
+.refuse-popup .popup-body {
+  padding-left: 8%;
+  padding-right: 8%;
+}

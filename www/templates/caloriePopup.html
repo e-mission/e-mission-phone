@@ -1,0 +1,24 @@
+<div class="userdata-title" translate>{{'user-gender'}}</div>
+<div class="full-toggle-container">
+	<div ng-class="fullToggleLeftClass()" ng-click="setGender(1)" translate>{{'gender-male'}}</div>
+	<div ng-class="fullToggleRightClass()" ng-click="setGender(0)" translate>{{'gender-female'}}</div>
+</div>
+<div style="height: 10px;"></div>
+<div class="userdata-title" translate>{{'user-height'}}</div>
+<div style="height: 45px;">
+	<input type="number" ng-model="userData.height" style="width: 48%; float: left;height: 35px; padding: 0 10px;">
+	<div class="unit-toggle-container"  style="width: 50%; float: right">
+		<div ng-class="heightToggleLeftClass()" ng-click="setHeightUnit(1)">cm</div>
+		<div ng-class="heightToggleRightClass()" ng-click="setHeightUnit(0)">ft</div>
+	</div>
+</div>
+<div class="userdata-title" translate>{{'user-weight'}}</div>
+<div style="height: 45px;">
+	<input type="number" ng-model="userData.weight" style="width: 48%; float: left; height: 35px; padding: 0 10px;">
+	<div class="unit-toggle-container"  style="width: 50%; float: right">
+		<div ng-class="weightToggleLeftClass()" ng-click="setWeightUnit(1)">kg</div>
+		<div ng-class="weightToggleRightClass()" ng-click="setWeightUnit(0)">lb</div>
+	</div>
+</div>
+<div class="userdata-title" translate>{{'user-age'}}</div>
+<input type="number" ng-model="userData.age" style=" padding: 0 10px;">

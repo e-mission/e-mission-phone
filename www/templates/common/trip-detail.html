@@ -1,0 +1,24 @@
+<ion-view style="" title="Common Trip">
+    <ion-content>
+            <div class="row">
+            <div class="col-80" style="padding: 5% 0 3% 5%;">
+            <div class="common-map-item-location"><i class="icon ion-ios-location" style="font-size: 1em; left: 0; color: #33e0bb; margin-right: 8px;"></i>{{trip.start_display_name.split(',')[0]}}</div>
+            <div class="common-map-item-location"><i class="icon ion-ios-location" style="font-size: 1em; left: 0; color: #ff5251;margin-right: 8px;"></i>{{trip.end_display_name.split(',')[0]}}</div>
+            </div>
+            <div class="col-20" style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+              <i class="icon ion-ios-stopwatch-outline" style="font-size: 0.8em; margin-top: 3px; left: 0; color: #aaa; margin-left: 2px; line-height: 1em;"></i>
+              <div style="font-size: 0.7em;">{{trip.common_duration}}</div>
+            </div>
+            </div>
+            <div class="common-trip-detail-chart-title">Start hours</div>
+            <div id="chart1">
+                <svg></svg>
+            </div>
+            <div style="height: 10px;"></div>
+            <div class="common-trip-detail-chart-title">Duration</div>
+            <div id="chart2">
+                <svg></svg>
+            </div>
+            <!-- <nvd3 options="optionsDuration" data="dataDuration" config="{refreshDataOnly: false}"></nvd3> -->
+    </ion-content>
+</ion-view>

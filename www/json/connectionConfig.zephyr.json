@@ -1,0 +1,15 @@
+{
+    "connectUrl": "http://cardshark.cs.berkeley.edu",
+    "android": {
+        "auth": {
+            "method": "prompted-auth",
+            "prompt": "Enter a unique identifier for your device"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "prompted-auth",
+            "prompt": "Enter a unique identifier for your device"
+        }
+    }
+}

@@ -1,0 +1,60 @@
+<ion-modal-view>
+   <ion-header-bar>
+      <button side="left" class="button" ng-click="closePartyModal()">Cancel</button>
+      <h1 class = "title">Members</h1>
+      <button class="button" ng-click="inviteToParty()">Invite</button>
+   </ion-header-bar>
+   <ion-content style="background-color: #ededed;">
+      <div class="list" style="background-color: #ededed;">
+        <div ng-repeat="user in userParty" 
+           class="card item-thumbnail-left-avatar leaderboard-card" id="avatar" style="padding-top: 10px !important;height: 117px !important;">
+          <figure class="herobox background_{{user.preferences.background}} true ? &quot;isUser&quot; : &quot;&quot;} undefined ? &quot;minimal&quot; : &quot;&quot;}" ng-class="{hasPet: (true &amp;&amp; user.items.currentPet), hasMount: (true &amp;&amp; user.items.currentMount), noBackgroundImage: !user.preferences.background, &quot;cast-target&quot;: applyingAction, isLeader: party.leader==user._id}" style="top: -10px !important; left: 0px !important;width: 0px;">
+            <div class="character-sprites">
+              <!-- Mount Body-->
+              <span ng-if="user.items.currentMount" class="Mount_Body_{{user.items.currentMount}}"></span>
+              <!-- Buffs that cause visual changes to avatar: Snowman, Ghost, Flower, etc-->
+              <span ng-if="user.stats.buffs.snowball" class="snowman"></span>
+              <span ng-if="user.stats.buffs.spookySparkles" class="ghost"></span>
+              <span ng-if="user.stats.buffs.shinySeed" class="avatar_floral_{{user.stats.class}}"></span>
+              <span ng-if="user.stats.buffs.seafoam" class="seafoam_star"></span>
+              <!-- Show flower ALL THE TIME!!!--><!-- See https://github.com/HabitRPG/habitrpg/issues/7133-->
+              <span class="hair_flower_{{user.preferences.hair.flower}}"></span>
+              <!-- Show avatar only if not currently affected by visual buff-->
+              <span ng-if="!user.stats.buffs.snowball &amp;&amp; !user.stats.buffs.spookySparkles &amp;&amp; !user.stats.buffs.shinySeed &amp;&amp; !user.stats.buffs.seafoam" style="padding-left: 25px;margin-top: -5px;">
+                <span class="chair_{{user.preferences.chair}}"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.back : user.items.gear.equipped.back"></span>
+                <span ng-class="user.preferences.sleep ? 'skin_' + user.preferences.skin + '_sleep' : 'skin_' + user.preferences.skin"></span>
+                <span class="{{user.preferences.size}}_shirt_{{user.preferences.shirt}}"></span>
+                <span ng-class="user.preferences.costume ? user.preferences.size + '_' + user.items.gear.costume.armor : user.preferences.size + '_' + user.items.gear.equipped.armor"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.back + '_collar' : user.items.gear.equipped.back + '_collar'"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.body : user.items.gear.equipped.body"></span>
+                <span class="head_0"></span>
+                <span class="hair_base_{{user.preferences.hair.base}}_{{user.preferences.hair.color}}"></span>
+                <span class="hair_bangs_{{user.preferences.hair.bangs}}_{{user.preferences.hair.color}}"></span>
+                <span class="hair_mustache_{{user.preferences.hair.mustache}}_{{user.preferences.hair.color}}"></span>
+                <span class="hair_beard_{{user.preferences.hair.beard}}_{{user.preferences.hair.color}}"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.eyewear : user.items.gear.equipped.eyewear"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.head : user.items.gear.equipped.head"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.headAccessory : user.items.gear.equipped.headAccessory"></span>
+                <span class="hair_flower_{{user.preferences.hair.flower}}"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.shield : user.items.gear.equipped.shield"></span>
+                <span ng-class="user.preferences.costume ? user.items.gear.costume.weapon : user.items.gear.equipped.weapon"></span>
+              </span>
+              <!-- Mount Head-->
+              <span ng-if="user.items.currentMount" class="current-mount Mount_Head_{{user.items.currentMount}}"></span>
+              <!-- Resting-->
+              <span ng-class="{zzz:user.preferences.sleep}"></span>
+              <!-- Pet-->
+              <span ng-show="user.items.currentPet" class="current-pet Pet-{{user.items.currentPet}}" style="margin-bottom: -10px;"></span>
+            </div>
+          </figure>
+          <div id="leaderboard-stats" style="color: #6e6e6e;">
+            <p><b>{{user.profile.name}}</b></p>
+            <p>Level: {{user.stats.lvl}}</p>
+            <p>Level exp: {{user.stats.exp}}</p>
+            <p style="font-size: 30px;font-family: monospace;font-weight: 600;float: right;padding-right: 10px;">{{user.rank}}</p>
+          </div>
+        </div>
+      </div>
+   </ion-content>
+</ion-modal-view>

@@ -1,0 +1,22 @@
+<ion-view style="" title="Common Patterns" class="ion-view-background">
+      <ion-content class="has-header" overflow-scroll="true" padding="true">
+      <!--
+      <ion-refresher
+        pulling-text="Pull to refresh..."
+        on-refresh="refreshMap()">
+      </ion-refresher>
+      -->
+      <div style="box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);" class="full-toggle-container">
+        <div class="full-toggle-left hvcenter"
+          ng-click="refreshMap()" translate>{{'map-refresh'}}</div>
+        <div class="full-toggle-right hvcenter"
+          ng-click="refreshTiles()" translate>{{'map-fixmap'}}</div>
+      </div>
+      <div style="height: 10px;"></div>
+      <leaflet geojson="mapCtrl.geojson"
+               id="common"
+               defaults="mapCtrl.defaults"
+               height="100%" width="100%">
+      </leaflet>
+    </ion-content>
+</ion-view>

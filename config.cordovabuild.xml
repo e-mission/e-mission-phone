@@ -1,0 +1,58 @@
+<?xml version='1.0' encoding='utf-8'?>
+<widget android-versionCode="41" id="edu.berkeley.eecs.emission" ios-CFBundleVersion="41" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+    <name>TraceMe</name>
+    <description>
+        A commute pattern tracker and carbon footprint estimator.
+    </description>
+    <author email="shankari@eecs.berkeley.edu" href="https://e-mission.eecs.berkeley.edu">
+        E-Mission Team
+  </author>
+    <content src="index.html" />
+    <access origin="*" />
+    <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
+    <preference name="webviewbounce" value="false" />
+    <preference name="UIWebViewBounce" value="false" />
+    <preference name="DisallowOverscroll" value="true" />
+    <preference name="android-minSdkVersion" value="22" />
+    <preference name="BackupWebStorage" value="none" />
+    <preference name="emSensorDataCollectionProtocolApprovalDate" value="2016-07-14" />
+    <preference name="GradlePluginGoogleServicesEnabled" value="true" />
+    <preference name="GradlePluginGoogleServicesVersion" value="4.3.3" />
+    <config-file parent="/manifest/application" target="AndroidManifest.xml">
+        <meta-data android:name="firebase_analytics_collection_deactivated" android:value="true" />
+        <meta-data android:name="google_analytics_adid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_ssaid_collection_enabled" android:value="false" />
+        <meta-data android:name="google_analytics_default_allow_ad_personalization_signals" android:value="false" />
+    </config-file>
+    <config-file parent="FIREBASE_ANALYTICS_COLLECTION_DEACTIVATED" target="*-Info.plist">
+        <true />
+    </config-file>
+    <config-file parent="GOOGLE_ANALYTICS_IDFV_COLLECTION_ENABLED" target="*-Info.plist">
+        <false />
+    </config-file>
+    <config-file parent="GOOGLE_ANALYTICS_DEFAULT_ALLOW_AD_PERSONALIZATION_SIGNALS" target="*-Info.plist">
+        <false />
+    </config-file>
+    <feature name="StatusBar">
+        <param name="ios-package" onload="true" value="CDVStatusBar" />
+    </feature>
+    <platform name="ios">
+        <hook src="hooks/after_platform_add/ios/ios_copy_locales.js" type="after_platform_add" />
+        <resource-file src="GoogleService-Info.plist" />
+        <preference name="WKWebViewOnly" value="true" />
+        <preference name="WKSuspendInBackground" value="false" />
+        <preference name="AutoHideSplashScreen" value="true" />
+    </platform>
+    <platform name="android">
+        <hook src="hooks/before_build/android/android_copy_locales.js" type="before_build" />
+        <preference name="android-minSdkVersion" value="22" />
+        <preference name="android-targetSdkVersion" value="29" />
+        <preference name="AndroidXEnabled" value="true" />
+        <resource-file src="google-services.json" target="app/google-services.json" />
+        <hook src="hooks/before_build/android/android_set_provider.js" type="before_build" />
+        <config-file parent="/manifest/application" target="AndroidManifest.xml">
+            <uses-library android:name="org.apache.http.legacy" android:required="false" />
+        </config-file>
+    </platform>
+    <icon src="resources/icon.png" />
+</widget>

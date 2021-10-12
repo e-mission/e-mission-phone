@@ -1,0 +1,28 @@
+<ion-modal-view>
+   <ion-header-bar>
+      <button side="left" class="button" ng-click="closeModal()">Cancel</button>
+      <h1 class = "title">Add Goal</h1>
+        <button class="button icon ion-plus-round customButtomIconSize" ng-click="createGoalPhone()">
+        </button>
+   </ion-header-bar>
+   <ion-content>
+        <div class="item item-divider" style="font-size: 12px"> Goal
+          </div>
+            <label class="item item-input">
+              <span class="input-label">Text</span>
+              <input ng-model="goal.name" type="text" style="border: 3px !important">
+            </label>
+            <label class="item item-input item-stacked-label">
+              <span class="input-label">Note</span>
+              <input ng-model="goal.note" type="text" style="border: 3px !important">
+            </label>
+            <div class="item item-divider" style="font-size: 12px"> Score Action
+          </div>
+            <ion-checkbox ng-model="goal.up" id="no-border">
+              Positive
+            </ion-checkbox>
+            <ion-checkbox ng-model="goal.down" id="no-border">
+              Negative
+            </ion-checkbox>
+   </ion-content>
+</ion-modal-view>

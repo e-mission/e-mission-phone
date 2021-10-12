@@ -1,0 +1,46 @@
+<ion-content>
+<div class="consent-title">
+<center><h2>Permissions </h2></center>
+</div>
+<div class="consent-text">
+We will now ask you for permissions to access the following sensors.
+
+<h3> Location </h3>
+We need this permission in order to track your location in the background, even
+when the app is closed. We use this location data to automatically generate a
+trip log that is displayed to you for annotation. Since you are running
+{{platform}} {{osver}}, when prompted, {{locationPermExplanation}}.
+
+<div ng-if="platform.toLowerCase() == 'ios'">
+<h3> Notifications </h3>
+We need this permission in order to prompt you for your travel mode and purpose.
+Please allow.
+</div>
+
+<div ng-if="fitnessPermNeeded">
+<h3> Motion and Fitness </h3>
+We need this permission in order to separate the parts of multi-modal travel
+such as transit. Please allow.
+</div>
+
+<div ng-if="backgroundRestricted">
+<h3> Allow background restrictions </h3>
+Your phone restricts app operation in the background. This prevents the app
+from tracking your location or pushing it to the server. Please enable
+background operation for this app with the following instructions:
+{{allowBackgroundRestrictions}}.
+</div>
+
+<div class="row" style="margin-top: 20px;" translate-namespace="consent">
+  <div class="col" style="margin-right: 5px">
+      <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button"><span translate>{{'.button-decline'}}</span></button>
+  </div>
+  <div class="col" style="margin-left: 5px">
+      <button class="button button-block button-positive button-outline" ng-click="agree()" id="consent-button"><span translate>{{'.button-accept'}}</span></button>
+  </div>
+</div>
+</div>
+<div class="consent-space"></div>
+
+
+</ion-content>

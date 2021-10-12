@@ -1,0 +1,31 @@
+<ion-view title="Places list">
+<!--   <ion-nav-title class="dark-color">
+
+    <div class="buttons" style="text-align:center; background-color: transparent !important;" id="toget">
+      <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+      </button>
+      <ionic-datepicker input-obj="datepickerObject" style="color: white;">
+        <button class="button date-picker-button"> {{datepickerObject.inputDate | date:datepickerObject.dateFormat}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+      </ionic-datepicker>
+      <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
+      </button>
+    </div>
+
+  </ion-nav-title> -->
+  <ion-content>
+    <ion-list>
+      <div collection-repeat="place in places">
+        <ion-item  class="common-list-item menu-item" href="#/root/main/common/places/{{place._id.$oid}}">
+          <div class="common-list-card pull-left">
+
+          <div class="common-list-item-location">{{place.display_name}}</div>
+
+          <div class="common-list-item-times">{{place.places.length}} {{ place.places.length > 1? 'visits' : 'visit' }},
+          {{place.successors.length}} {{ place.successors.length > 1? 'successors' : 'successor' }}</div>
+          </div>
+          <i class="ion-ios-arrow-right pull-right" style="line-height: 40px;"></i>
+        </ion-item>
+      </div>
+    </ion-list>
+  </ion-content>
+</ion-view>
