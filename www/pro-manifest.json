@@ -186,8 +186,8 @@
   },
   {
     "href": "js/intro.js",
-    "size": 8182,
-    "integrity": "sha256-qt2/dTaia68Levyrspl/y7Y+JMfl9Ho3ux+/GVW7CUM= sha384-NFQ4ZSF+4VQtYvuX9GF2eXSKJf0J712Eh3UEKFQbA4sIHUZ7o6/Ux4AiVtQdStzP sha512-e9KJ1w8x/WSrNEqVAj0Wfb0xiaFQbdtYdvoMq7lEi7SECKdzxHyh24Y8kytt8FpKbj3jRo31KHFRQyxKjWWrRA=="
+    "size": 8442,
+    "integrity": "sha256-AhTHPaD7QWCfp94k0TxkDsi/bbLIn4xajc2Mdkid2ho= sha384-hw3k/Q1aaELnkkKG1xhmsr+a0HtbzYCaECC4nwx9b0g72R5sVPcsngAH5l9L7dIN sha512-pG+bsLBFujd9rV1cwW6xDiDmn79K4ckV3Vl5aaoOJIHOfWDHoWm3METrTuSvQ7mFf+gZ/vgqqAq7O5cv1e7JwA=="
   },
   {
     "href": "js/main.js",
