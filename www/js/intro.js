@@ -160,14 +160,14 @@ angular
         if (lang == "en") {
           SurveyLaunch.startSurveyPrefilled(
             // "https://docs.google.com/forms/d/e/1FAIpQLSeMqtl_rHJkg-lZ-9xnQQHrJyBYOQl83zpKmwXfgOUFVOOwLg/viewform",
-            "https://docs.google.com/forms/d/e/1FAIpQLSf9NzWdlyNFyTX6AFzsY6cqtYewzWDrpq5h9GnU2FR8QS058g/viewform?usp=sf_link",
-            "entry.779873496"
+            "https://docs.google.com/forms/d/e/1FAIpQLSf9NzWdlyNFyTX6AFzsY6cqtYewzWDrpq5h9GnU2FR8QS058g/viewform",
+            "entry.318047746"
           );
         } else {
           SurveyLaunch.startSurveyPrefilled(
             // "https://docs.google.com/forms/d/e/1FAIpQLSf9fBC-xtEBaMxyq264hjLMaVvIODh4E5h_WmLRw87-m1rqyQ/viewform",
-            "https://docs.google.com/forms/d/e/1FAIpQLSf9NzWdlyNFyTX6AFzsY6cqtYewzWDrpq5h9GnU2FR8QS058g/viewform?usp=sf_link",
-            "entry.779873496"
+            "https://docs.google.com/forms/d/e/1FAIpQLSf9NzWdlyNFyTX6AFzsY6cqtYewzWDrpq5h9GnU2FR8QS058g/viewform",
+            "entry.318047746"
           );
         }
       };
