@@ -12,6 +12,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.services',
+                                      'emission.config.imperial',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
@@ -25,7 +26,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
+    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
 
@@ -306,7 +307,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
-        tripgj.display_distance = DiaryHelper.getFormattedDistance(tripgj.distance);
+        tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
+        tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
         tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YY');
         tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.start_ts,
                                 tripgj.end_ts);

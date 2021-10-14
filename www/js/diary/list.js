@@ -12,6 +12,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.services',
+                                      'emission.config.imperial',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
@@ -26,7 +27,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
@@ -160,7 +161,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
-        tripgj.display_distance = DiaryHelper.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
         tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = DiaryHelper.isDraft(tripgj);
