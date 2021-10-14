@@ -1,8 +1,8 @@
 'use strict';
-angular.module('emission.tripconfirm.posttrip.map',['ui-leaflet', 'ng-walkthrough',
+angular.module('emission.survey.multilabel.posttrip.map',['ui-leaflet', 'ng-walkthrough',
                                       'emission.plugin.kvstore',
                                       'emission.services',
-                                      'emission.tripconfirm.services',
+                                      'emission.survey.multilabel.services',
                                       'emission.plugin.logger',
                                       'emission.main.diary.services'])
 

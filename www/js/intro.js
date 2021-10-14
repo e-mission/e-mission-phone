@@ -2,6 +2,7 @@
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
+                                  'emission.survey.external.launch',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
 

@@ -11,34 +11,28 @@
 angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.incident.posttrip.manual',
-                                      'emission.tripconfirm.services',
                                       'emission.services',
+                                      'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-    'emission.plugin.logger'
+                                      'emission.stats.clientstats',
+                                      'emission.plugin.logger'
   ])
 
-.controller("DiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
-                                    $ionicScrollDelegate, $ionicPopup,
+.controller("DiaryListCtrl", function($window, $scope, $rootScope, $injector,
+                                    $ionicPlatform, $state,
+                                    $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+                                    SurveyOptions,
+    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
+  $scope.surveyOpt = SurveyOptions.MULTILABEL;
+  ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
+    {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   // Add option
-
-  $scope.$on('leafletDirectiveMap.resize', function(event, data) {
-      console.log("diary/list received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-  });
-
-  $scope.userInputDetails = [];
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-    const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-    currInput.name = item;
-    $scope.userInputDetails.push(currInput);
-  });
+  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -113,7 +107,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.listColRightClass = "col-50 list-col-right"
 
     $scope.differentCommon = function(tripgj) {
-        return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
+        return (DiaryHelper.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
     $scope.stopTimeTagClass = function(tripgj) {
       return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
@@ -162,60 +156,32 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
 
-    /**
-     * Embed 'inputType' to the trip
-     */
-    $scope.populateInputFromTimeline = function (tripgj, nextTripgj, inputType, inputList) {
-        var userInput = DiaryHelper.getUserInputForTrip(tripgj, nextTripgj, inputList);
-        if (angular.isDefined(userInput)) {
-            // userInput is an object with data + metadata
-            // the label is the "value" from the options
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInput.data.label];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInput.data.label);
-              $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInput.data.label] = userInputEntry;
-            }
-            console.log("Mapped label "+userInput.data.label+" to entry "+JSON.stringify(userInputEntry));
-            tripgj.userInput[inputType] = userInputEntry;
-        }
-        Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip id " + JSON.stringify(tripgj.data.id));
-        $scope.editingTrip = angular.undefined;
-    }
 
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
-        tripgj.display_distance = $scope.getFormattedDistance(tripgj.data.properties.distance);
-        tripgj.display_time = $scope.getFormattedTimeRange(tripgj.data.properties.start_ts,
+        tripgj.display_distance = DiaryHelper.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
-        tripgj.isDraft = $scope.isDraft(tripgj);
+        tripgj.isDraft = DiaryHelper.isDraft(tripgj);
         tripgj.background = DiaryHelper.getTripBackground(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
-        tripgj.percentages = $scope.getPercentages(tripgj)
+        tripgj.percentages = DiaryHelper.getPercentages(tripgj)
     }
 
     $scope.populateCommonInfo = function(tripgj) {
         tripgj.common = {}
         DiaryHelper.fillCommonTripCount(tripgj);
         tripgj.common.different = $scope.differentCommon(tripgj);
-        tripgj.common.longerOrShorter = $scope.getLongerOrShorter(tripgj.data, tripgj.data.id);
+        tripgj.common.longerOrShorter = DiaryHelper.getLongerOrShorter(tripgj.data, tripgj.data.id);
         tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
         tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
-        tripgj.common.arrowColor = $scope.arrowColor(tripgj.common.longerOrShorter[0]);
-        tripgj.common.arrowClass = $scope.getArrowClass(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowColor = DiaryHelper.arrowColor(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowClass = DiaryHelper.getArrowClass(tripgj.common.longerOrShorter[0]);
 
-        tripgj.common.earlierOrLater = $scope.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
-        tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
+        tripgj.common.earlierOrLater = DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
+        tripgj.common.displayEarlierLater = DiaryHelper.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
-
-    var isNotEmpty = function (obj) {
-      for (var prop in obj) {
-        if (obj.hasOwnProperty(prop))
-          return true;
-      }
-      return false;
-    };
 
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
@@ -237,12 +203,21 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             DiaryHelper.directiveForTrip);
           Timeline.setTripWrappers(currDayTripWrappers);
 
+          // Add "next" pointers to make it easier to use trip linkages for display
           $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
-            tripgj.userInput = {};
-            ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateInputFromTimeline(tripgj, array[tripIndex+1], item, $scope.data.unifiedConfirmsResults[item]);
-            });
+            tripgj.nextTripgj = array[tripIndex+1];
+
+            // First populate basic classes so that we can use `isDraft` during
+            // the matching code
             $scope.populateBasicClasses(tripgj);
+
+            // add additional data structures to make the trip gj similar to a
+            // trip object so that the unified populate code works
+            tripgj.start_ts = tripgj.data.properties.start_ts;
+            tripgj.end_ts = tripgj.data.properties.end_ts;
+            tripgj.inferred_labels = tripgj.data.properties.inferred_labels;
+            tripgj.user_input = tripgj.data.properties.user_input;
+            $scope.labelPopulateFactory.populateInputsAndInferences(tripgj, $scope.data.unifiedConfirmsResults);
             $scope.populateCommonInfo(tripgj);
           });
           if ($rootScope.displayingIncident) {
@@ -318,67 +293,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     */
 
     $scope.refresh = function() {
-      if ($ionicScrollDelegate.getScrollPosition().top < 20) {
        readAndUpdateForDay(Timeline.data.currDay);
-       $scope.$broadcast('invalidateSize');
-      }
     };
-
-    /* For UI control */
-    $scope.groups = [];
-    for (var i=0; i<10; i++) {
-      $scope.groups[i] = {
-        name: i,
-        items: ["good1", "good2", "good3"]
-      };
-      for (var j=0; j<3; j++) {
-        $scope.groups[i].items.push(i + '-' + j);
-      }
-    }
-    $scope.toggleGroup = function(group) {
-      if ($scope.isGroupShown(group)) {
-        $scope.shownGroup = null;
-      } else {
-        $scope.shownGroup = group;
-      }
-    };
-    $scope.isGroupShown = function(group) {
-      return $scope.shownGroup === group;
-    };
-    $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
-    $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
-    $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.getKmph = DiaryHelper.getKmph;
-    $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
-    $scope.getSectionDetails = DiaryHelper.getSectionDetails;
-    $scope.getFormattedTime = DiaryHelper.getFormattedTime;
-    $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
-    $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-    $scope.getTripDetails = DiaryHelper.getTripDetails;
-    $scope.starColor = DiaryHelper.starColor;
-    $scope.arrowColor = DiaryHelper.arrowColor;
-    $scope.getArrowClass = DiaryHelper.getArrowClass;
-    $scope.isCommon = DiaryHelper.isCommon;
-    $scope.isDraft = DiaryHelper.isDraft;
-    // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
-    // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
 
     $scope.makeCurrent = function() {
       $ionicPopup.alert({
         template: "Coming soon, after Shankari's quals in early March!"
       });
     }
-
-    $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
-
-    $scope.getTimeSplit = function(tripList) {
-        var retVal = {};
-        var tripTimes = tripList.map(function(dt) {
-            return dt.data.properties.duration;
-        });
-
-    };
 
     // Tour steps
     var tour = {
@@ -412,10 +334,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       }).catch(function(err) {
         Logger.displayError("list walkthrough start errored", err);
       });
-    };
-
-    $scope.refreshTiles = function() {
-      $scope.$broadcast('invalidateSize');
     };
 
     /*
@@ -457,111 +375,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
 
     $scope.showModes = DiaryHelper.showModes;
 
-    $scope.popovers = {};
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
-        return $ionicPopover.fromTemplateUrl(popoverPath, {
-          scope: $scope
-        }).then(function (popover) {
-          $scope.popovers[item] = popover;
-        });
-    });
-
-    $scope.openPopover = function ($event, tripgj, inputType) {
-      var userInput = tripgj.userInput[inputType];
-      if (angular.isDefined(userInput)) {
-        $scope.selected[inputType].value = userInput.value;
-      } else {
-        $scope.selected[inputType].value = '';
-      }
-      $scope.draftInput = {
-        "start_ts": tripgj.data.properties.start_ts,
-        "end_ts": tripgj.data.properties.end_ts
-      };
-      $scope.editingTrip = tripgj;
-      Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
-      $scope.popovers[inputType].show($event);
-    };
-
-    var closePopover = function (inputType) {
-      $scope.selected[inputType] = {
-        value: ''
-      };
-      $scope.popovers[inputType].hide();
-    };
-
-    /**
-     * Store selected value for options
-     * $scope.selected is for display only
-     * the value is displayed on popover selected option
-     */
-    $scope.selected = {}
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        $scope.selected[item] = {value: ''};
-    });
-    $scope.selected.other = {text: '', value: ''};
-
-    /*
-     * This is a curried function that curries the `$scope` variable
-     * while returing a function that takes `e` as the input
-     */
-    var checkOtherOptionOnTap = function ($scope, inputType) {
-        return function (e) {
-          if (!$scope.selected.other.text) {
-            e.preventDefault();
-          } else {
-            Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-            $scope.store(inputType, $scope.selected.other, true /* isOther */);
-            $scope.selected.other = '';
-            return $scope.selected.other;
-          }
-        }
-    };
-
-    $scope.choose = function (inputType) {
-      var isOther = false
-      if ($scope.selected[inputType].value != "other") {
-        $scope.store(inputType, $scope.selected[inputType], isOther);
-      } else {
-        isOther = true
-        ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
-      }
-      closePopover(inputType);
-    };
-
-    $scope.$on('$ionicView.loaded', function() {
-        $scope.inputParams = {}
-        ConfirmHelper.INPUTS.forEach(function(item) {
-            ConfirmHelper.getOptionsAndMaps(item).then(function(omObj) {
-                $scope.inputParams[item] = omObj;
-            });
-        });
-    });
-
-    $scope.store = function (inputType, input, isOther) {
-      if(isOther) {
-        // Let's make the value for user entered inputs look consistent with our
-        // other values
-        input.value = ConfirmHelper.otherTextToValue(input.text);
-      }
-      $scope.draftInput.label = input.value;
-      Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
-      var tripToUpdate = $scope.editingTrip;
-      $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
-        $scope.$apply(function() {
-          if (isOther) {
-            tripToUpdate.userInput[inputType] = ConfirmHelper.getFakeEntry(input.value);
-            $scope.inputParams[inputType].options.push(tripToUpdate.userInput[inputType]);
-            $scope.inputParams[inputType].value2entry[input.value] = tripToUpdate.userInput[inputType];
-          } else {
-            tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
-          }
-        });
-      });
-      if (isOther == true)
-        $scope.draftInput = angular.undefined;
-    }
-
     $scope.redirect = function(){
       $state.go("root.main.current");
     };
@@ -592,10 +405,15 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
+    $scope.recomputeDisplayTrips = function() {
+        console.log("recomputing is a NOP on the diary since we always show all trips");
+    };
+
     $ionicPlatform.ready().then(function() {
       readAndUpdateForDay(moment().startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {
+        $scope.startTime = moment().utc()
         // Workaround from
         // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
         if(ev.targetScope !== $scope)
@@ -603,7 +421,29 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         checkDiaryTutorialDone();
       });
 
+      $scope.$on('$ionicView.leave',function() {
+        var timeOnPage = moment().utc() - $scope.startTime;
+        ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+      });
+  
+      $ionicPlatform.on("pause", function() {
+        if ($state.$current == "root.main.diary.list") {
+          var timeOnPage = moment().utc() - $scope.startTime;
+          ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+        }
+      })
+
+      $ionicPlatform.on("resume", function() {
+        if ($state.$current == "root.main.diary.list") {
+          $scope.startTime = moment().utc()
+        }
+      })
+  
+
       $scope.$on('$ionicView.afterEnter', function() {
+        ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {
+           console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
+        });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;
