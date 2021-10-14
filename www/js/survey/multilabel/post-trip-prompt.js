@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('emission.tripconfirm.posttrip.prompt', ['emission.plugin.logger'])
+angular.module('emission.survey.multilabel.posttrip.prompt', ['emission.plugin.logger'])
 .factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
     $ionicPopup, Logger, $translate) {
   var ptap = {};

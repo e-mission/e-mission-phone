@@ -8,16 +8,17 @@
  * All UI elements should only use $scope variables.
  */
 
-angular.module('emission.main.diary.infscrollfilters',[
-    'emission.tripconfirm.services',
+angular.module('emission.survey.multilabel.infscrollfilters',[
+    'emission.survey.multilabel.services',
+    'emission.stats.clientstats',
     'emission.plugin.logger'
   ])
-.factory('InfScrollFilters', function(Logger, ConfirmHelper, $translate){
+.factory('InfScrollFilters', function(Logger, ConfirmHelper, ClientStats, $translate){
     var sf = {};
     var unlabeledCheck = function(t) {
        return ConfirmHelper.INPUTS
            .map((inputType, index) => !angular.isDefined(t.userInput[inputType]))
-           .reduce((acc, val) => acc && val, true);
+           .reduce((acc, val) => acc || val, false);
     }
 
     var invalidCheck = function(t) {
@@ -29,16 +30,38 @@ angular.module('emission.main.diary.infscrollfilters',[
        return retVal;
     }
 
+    var toLabelCheck = function(trip) {
+        if (angular.isDefined(trip.expectation)) {
+            console.log(trip.expectation.to_label)
+            return trip.expectation.to_label && unlabeledCheck(trip);
+        } else {
+            return true;
+        }
+    }
+
     sf.UNLABELED = {
+        key: "unlabeled",
         text: $translate.instant(".unlabeled"),
-        width: "col-40",
-        filter: unlabeledCheck
+        filter: unlabeledCheck,
+        width: "col-50"
     }
 
     sf.INVALID_EBIKE = {
+        key: "invalid_ebike",
         text: $translate.instant(".invalid-ebike"),
-        width: "col-40",
         filter: invalidCheck
     }
+
+    sf.TO_LABEL = {
+        key: "to_label",
+        text: $translate.instant(".to-label"),
+        filter: toLabelCheck,
+        width: "col-50"
+    }
+
+    sf.configuredFilters = [
+        sf.TO_LABEL,
+        sf.UNLABELED
+    ];
     return sf;
 });

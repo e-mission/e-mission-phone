@@ -1,4 +1,4 @@
-angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
+angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
 .factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger) {
     var ch = {};
     ch.INPUTS = ["MODE", "PURPOSE", "REPLACED_MODE"]
@@ -136,6 +136,20 @@ angular.module('emission.tripconfirm.services', ['ionic', 'emission.i18n.utils',
         return {text: ch.otherValueToText(otherValue),
             value: otherValue};
     }
+
+    ch.inputParamsPromise = new Promise(function(resolve, reject) {
+      inputParams = {};
+      console.log("Starting promise execution with ", inputParams);
+      omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
+      console.log("Promise list ", omPromises);
+      Promise.all(omPromises).then((omObjList) =>
+          ch.INPUTS.forEach(function(item, index) {
+              inputParams[item] = omObjList[index];
+          }));
+          console.log("Read all inputParams, resolving with ", inputParams);
+          resolve(inputParams);
+    });
+
 
     return ch;
 });

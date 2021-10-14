@@ -2,7 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual', 'emission.tripconfirm.services'])
+    'emission.incident.posttrip.manual', 'emission.survey.multilabel.services'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -155,6 +155,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return (dist_in_meters/1000).toFixed(3);
     }
   }
+
+  dh.getFormattedDistanceInMiles = function(input) {
+      return (0.621371 * dh.getFormattedDistance(input)).toFixed(1);
+  }
+
   dh.getSectionDetails = function(section) {
     var startMoment = moment(section.properties.start_ts * 1000);
     var endMoment = moment(section.properties.end_ts * 1000);
@@ -405,22 +410,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  dh.getUserInputForTrip = function(tripgj, nextTripgj, userInputList) {
+  dh.getUserInputForTrip = function(trip, nextTrip, userInputList) {
     if (userInputList.length < 20) {
         console.log("Input list = "+userInputList.map(printUserInput));
     }
-    var tripProp = tripgj.data.properties;
-    var isDraft = dh.isDraft(tripgj);
+    // undefined != true, so this covers the label view case as well
+    var isDraft = trip.isDraft == true;
     var potentialCandidates = userInputList.filter(function(userInput) {
         /*
         console.log("startDelta "+userInput.data.label+
             "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
             ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
-            (userInput.data.start_ts - tripProp.start_ts)+" should be positive");
+            (userInput.data.start_ts - trip.start_ts)+" should be positive");
         console.log("endDelta = "+userInput.data.label+
             "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
-            ") - trip("+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)+") = "+
-            (userInput.data.end_ts - tripProp.end_ts)+" should be negative");
+            ") - trip("+fmtTs(trip.end_ts, userInput.metadata.time_zone)+") = "+
+            (userInput.data.end_ts - trip.end_ts)+" should be negative");
         */
         // logic described in
         // https://github.com/e-mission/e-mission-docs/issues/423
@@ -428,19 +433,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             if (userInputList.length < 20) {
                 var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
                     +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                    +" trip = "+fmtTs(tripProp.start_ts, userInput.metadata.time_zone)
-                    +" -> "+fmtTs(tripProp.end_ts, userInput.metadata.time_zone)
-                    +" checks are ("+(userInput.data.start_ts >= tripProp.start_ts)
-                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
-                    +" || "+(-(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
-                    +") && "+(userInput.data.end_ts <= tripProp.end_ts);
+                    +" trip = "+fmtTs(trip.start_ts, userInput.metadata.time_zone)
+                    +" -> "+fmtTs(trip.end_ts, userInput.metadata.time_zone)
+                    +" checks are ("+(userInput.data.start_ts >= trip.start_ts)
+                    +" && "+(userInput.data.start_ts <= trip.end_ts)
+                    +" || "+(-(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
+                    +") && "+(userInput.data.end_ts <= trip.end_ts);
                 console.log(logStr);
                 // Logger.log(logStr);
             }
-            return (userInput.data.start_ts >= tripProp.start_ts
-                    && userInput.data.start_ts <= tripProp.end_ts
-                    || -(userInput.data.start_ts - tripProp.start_ts) <= 15 * 60)
-                && userInput.data.end_ts <= tripProp.end_ts;
+            return (userInput.data.start_ts >= trip.start_ts
+                    && userInput.data.start_ts <= trip.end_ts
+                    || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
+                && userInput.data.end_ts <= trip.end_ts;
         } else {
             // we know that the trip is cleaned so we can use the fmt_time
             // but the confirm objects are not necessarily filled out
@@ -448,19 +453,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 var logStr = "Cleaned trip: comparing user = "
                     +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
                     +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                    +" trip = "+tripProp.start_fmt_time
-                    +" -> "+tripProp.end_fmt_time
-                    +" start checks are "+(userInput.data.start_ts >= tripProp.start_ts)
-                    +" && "+(userInput.data.start_ts <= tripProp.end_ts)
-                    +" end checks are "+(userInput.data.end_ts <= tripProp.end_ts)
-                    +" || "+((userInput.data.end_ts - tripProp.end_ts) <= 15 * 60)+")";
+                    +" trip = "+trip.start_fmt_time
+                    +" -> "+trip.end_fmt_time
+                    +" start checks are "+(userInput.data.start_ts >= trip.start_ts)
+                    +" && "+(userInput.data.start_ts <= trip.end_ts)
+                    +" end checks are "+(userInput.data.end_ts <= trip.end_ts)
+                    +" || "+((userInput.data.end_ts - trip.end_ts) <= 15 * 60)+")";
                 Logger.log(logStr);
             }
             // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
-            const startChecks = userInput.data.start_ts >= tripProp.start_ts &&
-                userInput.data.start_ts <= tripProp.end_ts;
-            var endChecks = (userInput.data.end_ts <= tripProp.end_ts ||
-                    (userInput.data.end_ts - tripProp.end_ts) <= 15 * 60);
+            const startChecks = userInput.data.start_ts >= trip.start_ts &&
+                userInput.data.start_ts <= trip.end_ts;
+            var endChecks = (userInput.data.end_ts <= trip.end_ts ||
+                    (userInput.data.end_ts - trip.end_ts) <= 15 * 60);
             if (startChecks && !endChecks) {
                 if (angular.isDefined(nextTripgj)) {
                     endChecks = userInput.data.end_ts <= nextTripgj.data.properties.start_ts;
@@ -474,10 +479,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 if (endChecks) {
                     // If we have flipped the values, check to see that there
                     // is sufficient overlap
-                    const overlapDuration = Math.min(userInput.data.end_ts, tripProp.end_ts) - Math.max(userInput.data.start_ts, tripProp.start_ts)
+                    const overlapDuration = Math.min(userInput.data.end_ts, trip.end_ts) - Math.max(userInput.data.start_ts, trip.start_ts)
                     Logger.log("Flipped endCheck, overlap("+overlapDuration+
-                        ")/trip("+tripProp.duration+") = "+ (overlapDuration / tripProp.duration));
-                    endChecks = (overlapDuration/tripProp.duration) > 0.5;
+                        ")/trip("+trip.duration+") = "+ (overlapDuration / trip.duration));
+                    endChecks = (overlapDuration/trip.duration) > 0.5;
                 }
             }
             return startChecks && endChecks;
@@ -1105,34 +1110,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var localCacheReadFn = timeline.updateFromDatabase;
 
-    // Functions
-    timeline.updateForDay = function(day) { // currDay is a moment
-      // First, we try the server
-      var tripsFromServerPromise = timeline.updateFromServer(day);
-      var isProcessingCompletePromise = timeline.isProcessingComplete(day);
-
-      // Also mode/purpose and (currently disabled) survey answers
-      var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
-        return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq);
-      });
-      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
-
-      // Deal with all the trip retrieval
-      Promise.all([tripsFromServerPromise, isProcessingCompletePromise].concat(manualPromises))
-        .then(function([processedTripList, completeStatus, ...manualResults]) {
-        console.log("Promise.all() finished successfully with length "
-          +processedTripList.length+" completeStatus = "+completeStatus);
-        var mrString = 'with ' + manualResults.map(function(item, index) {
-            return ' ${mr.length} ${ConfirmHelper.INPUTS[index]}';
-        });
+    var processManualInputs = function(manualResults) {
+        var mrString = 'unprocessed manual inputs '
+            + manualResults.map(function(item, index) {
+                return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
+            });
         console.log(mrString);
-        var tripList = processedTripList;
         timeline.data.unifiedConfirmsResults = {}
         manualResults.forEach(function(mr, index) {
           timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
         });
+    }
+
+    var addUnprocessedTrips = function(processedTripList, day, completeStatus) {
+        var tripList = processedTripList;
         if (!completeStatus) {
           return timeline.readUnprocessedTrips(day, processedTripList)
             .then(function(unprocessedTripList) {
@@ -1145,46 +1136,61 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         } else {
             return tripList;
         }
-      }).then(function(combinedTripList) {
-        processOrDisplayNone(day, combinedTripList);
-      }).catch(function(error) {
-        // If there is any error reading from the server, we fallback on the local cache
-        Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
-        console.log("About to hide loading overlay");
-        $ionicLoading.hide();
+    }
 
-        var tripsFromCachePromise = localCacheReadFn(day);
-
-        // Also mode/purpose and (currently disabled) survey answers
-        var tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-        var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
-          return UnifiedDataLoader.getUnifiedMessagesForInterval(
+    var readTripsAndUnprocessedInputs = function(day, tripReadFn, completeStatus, tq) {
+      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+        return UnifiedDataLoader.getUnifiedMessagesForInterval(
             ConfirmHelper.inputDetails[inp].key, tq);
-        });
-        Promise.all([tripsFromCachePromise].concat(manualPromises)).then(function(
-            [processedTripList, ...manualResults]) {
-          console.log(' in local cache, found ${modes.length} modes, ${purposes.length} purposes');
-          var tripList = processedTripList;
-          timeline.data.unifiedConfirmsResults = {}
-          manualResults.forEach(function(mr, index) {
-            timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
-          });
-          return timeline.readUnprocessedTrips(day, processedTripList)
-            .then(function(unprocessedTripList) {
-              Logger.log("tripList.length = "+tripList.length
-                         +"unprocessedTripList.length = "+unprocessedTripList.length);
-              Array.prototype.push.apply(tripList, unprocessedTripList);
-              console.log("After merge, returning trip list of size "+tripList.length);
-              return tripList;
-            })
-        }).then(function(combinedTripList) {
-          processOrDisplayNone(day, combinedTripList);
-        }).catch(function(error) {
-          console.log("About to hide loading overlay");
-          $ionicLoading.hide();
-          Logger.displayError("while reading data from cache for "+day, error);
-        })
       });
+      let tripsReadPromise = tripReadFn(day);
+      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
+      let allManualPromise = Promise.all(manualPromises).then(processManualInputs);
+
+      let allTripsPromise = tripsReadPromise.then((processedTripList) => {
+        console.log("Reading trips from server finished successfully with length "
+          +processedTripList.length+" completeStatus = "+completeStatus);
+        return addUnprocessedTrips(processedTripList, completeStatus);
+      }).then((combinedTripList) => processOrDisplayNone(day, combinedTripList));
+      return Promise.all([allManualPromise, allTripsPromise]).then(() => {
+        console.log("Finished reading processed/unprocessed trips with length "
+            +timeline.data.currDayTrips.length);
+      });
+    }
+
+    // Functions
+    timeline.updateForDay = function(day) { // currDay is a moment
+      // First, we try the server
+      var isProcessingCompletePromise = timeline.isProcessingComplete(day);
+
+      // First get the pipeline complete timestamp
+      isProcessingCompletePromise.then((completeTs, completeStatus) => {
+          // then, in parallel, read unprocessed user inputs
+          // and trips
+          // Also mode/purpose and (currently disabled) survey answers
+          var pendingTq = {
+             key: "write_ts",
+             startTs: completeTs,
+             endTs: moment().unix()
+          };
+          readTripsAndUnprocessedInputs(day, timeline.updateFromServer,
+                completeStatus, pendingTq)
+          .catch(function(error) {
+            // If there is any error reading from the server, we fallback on the local cache
+            Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
+            console.log("About to hide loading overlay");
+            $ionicLoading.hide();
+
+            // Also mode/purpose and (currently disabled) survey answers
+            let allTq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
+            readTripsAndUnprocessedInputs(day, localCacheReadFn, undefined, allTq)
+            .catch(function(error) {
+              console.log("About to hide loading overlay");
+              $ionicLoading.hide();
+              Logger.displayError("while reading data from cache for "+day, error);
+            })
+        });
+     });
     }
 
       timeline.getTrip = function(tripId) {

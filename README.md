@@ -78,7 +78,7 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/docs/e-mission-common/configuring_authentication.md).
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/blob/master/docs/install/configuring_authentication.md).
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
@@ -96,6 +96,8 @@ Pre-requisites
 - git
 - the most recent version of android studio
     - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK 1.8 using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
+    - NOTE: The setup script below will modify this install to workaround
+        https://github.com/actions/virtual-environments/issues/3757
 
 Important
 ---

@@ -11,51 +11,79 @@
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
-                                      'emission.incident.posttrip.manual',
-                                      'emission.tripconfirm.services',
                                       'emission.services',
+                                      'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
-                                      'emission.main.diary.infscrollfilters',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
-.controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $ionicPlatform, $state,
+.controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
+                                    $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
-                                    ionicDatePicker,
+                                    $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    InfScrollFilters,
-    Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
+                                    SurveyOptions,
+    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
+  $scope.surveyOpt = SurveyOptions.MULTILABEL;
   // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
-  $scope.userInputDetails = [];
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-    const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-    currInput.name = item;
-    $scope.userInputDetails.push(currInput);
-  });
-
   $scope.data = {};
-  // reset all filters
-  $scope.filterInputs = [
-    InfScrollFilters.UNLABELED,
-    InfScrollFilters.INVALID_EBIKE
-  ];
+  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+
+  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+
+  $scope.getActiveFilters = function() {
+    return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
+  }
   $scope.filterInputs.forEach((f) => {
     f.state = false;
   });
+  $scope.filterInputs[0].state = true;
+  ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
+  $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
 
-  $scope.infScrollControl = {};
+  /*
+   * These values are used to ensure that when the user scrolls upwards, they
+   * end up at the same location as they were. Since we now add entries to the
+   * top of the list, without these changes, as we load more entries, we will
+   * see the top of the new entries and will potentially have to scroll down to
+   * find where we originally were.
+   * That is not terrible, but it is also not super intuitive. This keeps track
+   * of where we were from the bottom and scrolls back to that location after
+   * the data is loaded and the infiniteScrollCallback is broadcast.
+   *
+   * We need to define and store the callback since we want to scroll *after*
+   * the new items have been fully added (i.e. in the `$scope.$on`). If the
+   * focus group is ok with seeing the newly loaded trips first, we can
+   * simplify this.
+   */
+  $scope.infScrollControl = {fromBottom: -1, callback: undefined};
+
+  var adjustScrollAfterDownload = function() {
+    // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
+    $ionicScrollDelegate.scrollBottom();
+    const clientHeight = $ionicScrollDelegate.getScrollView().__clientHeight;
+    $ionicScrollDelegate.scrollBy(0, -$scope.infScrollControl.fromBottom+clientHeight);
+  };
+
+  var getFromBottom = function() {
+    return $ionicScrollDelegate.getScrollView().__contentHeight
+        - $ionicScrollDelegate.getScrollPosition().top;
+  }
 
   $scope.readDataFromServer = function() {
+    $scope.infScrollControl.fromBottom = getFromBottom()
+    $scope.infScrollControl.callback = adjustScrollAfterDownload;
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;
@@ -65,22 +93,19 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         return;
     }
     Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
-        // let's reverse the incoming list so we go most recent to oldest
         Logger.log("Received batch of size "+ctList.length);
-        ctList.reverse();
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
-            trip.userInput = {};
-            ConfirmHelper.INPUTS.forEach(function(item, index) {
-                $scope.populateManualInputs(trip, ctList[tIndex+1], item, $scope.data.manualResultMap[item]);
-            });
+            trip.nextTrip = ctList[tIndex+1];
+            $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
         });
-        ctList.forEach(function(trip, index) {
+        // Fill places on a reversed copy of the list so we fill from the bottom up
+        ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
         });
-        $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+        $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
-        const oldestTrip = ctList[ctList.length -1];
+        const oldestTrip = ctList[0];
         if (oldestTrip) {
             if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
                 Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
@@ -99,13 +124,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
         $scope.recomputeDisplayTrips();
         Logger.log("Broadcasting infinite scroll complete");
-        $scope.$broadcast('scroll.infiniteScrollComplete')
+        $scope.$broadcast('scroll.infiniteScrollComplete');
+
     }).catch((err) => {
         Logger.displayError("while reading confirmed trips", err);
         Logger.log("Reached the end of the scrolling");
         $scope.infScrollControl.reachedEnd = true;
         Logger.log("Broadcasting infinite scroll complete");
-        $scope.$broadcast('scroll.infiniteScrollComplete')
+        $scope.$broadcast('scroll.infiniteScrollComplete');
     });
   };
 
@@ -116,11 +142,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.data.displayTrips = [];
     Timeline.getUnprocessedLabels().then(([pipelineRange, manualResultMap]) => {
         if (pipelineRange.end_ts) {
-            $scope.data.manualResultMap = manualResultMap;
+            $scope.$apply(() => {
+              $scope.data.manualResultMap = manualResultMap;
+            });
+            console.log("After reading in the label controller, manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.data.manualResultMap);
             $scope.infScrollControl.pipelineRange = pipelineRange;
             $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
-            // Don't need to do this, the infinite scroll code calls it automatically
-            // $scope.readDataFromServer();
+            $scope.infScrollControl.callback = function() {
+              $ionicScrollDelegate.scrollBottom();
+            };
+            $scope.readDataFromServer();
         } else {
             $scope.$apply(() => {
                 $scope.infScrollControl.reachedEnd = true;
@@ -129,6 +160,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
     });
   }
+
+  $scope.$on("scroll.infiniteScrollComplete", function() {
+    Logger.log("infiniteScrollComplete broadcast")
+    if ($scope.infScrollControl.callback != undefined) {
+      $scope.infScrollControl.callback();
+      $scope.infScrollControl.callback = undefined;
+    }
+  });
 
   $ionicModal.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
     scope: $scope,
@@ -150,20 +189,31 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.select = function(selF) {
+    const prev = $scope.getActiveFilters();
     selF.state = true;
     $scope.filterInputs.forEach((f) => {
       if (f !== selF) {
         f.state = false;
       }
     });
+    $scope.allTrips = false;
     $scope.recomputeDisplayTrips();
+    // scroll to the bottom while changing filters so users don't have to
+    // fixes the first of the fit-and-finish issues from
+    // https://github.com/e-mission/e-mission-docs/issues/662
+    $ionicScrollDelegate.scrollBottom();
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
   $scope.resetSelection = function() {
+    const prev = $scope.getActiveFilters();
     $scope.filterInputs.forEach((f) => {
       f.state = false;
     });
+    $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
+    $ionicScrollDelegate.scrollBottom();
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
   $scope.recomputeDisplayTrips = function() {
@@ -173,7 +223,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             if (alreadyFiltered) {
                 Logger.displayError("multiple filters not supported!", undefined);
             } else {
-                $scope.data.displayTrips = $scope.data.allTrips.filter(f.filter);
+                // console.log("Trip n before: "+$scope.data.displayTrips.length);
+                $scope.data.displayTrips = $scope.data.allTrips.filter(
+                    t => (t.waitingForMod == true) || f.filter(t));
+                // console.log("Trip n after:  "+$scope.data.displayTrips.length);
                 alreadyFiltered = true;
             }
         }
@@ -188,9 +241,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           zoomControl: false,
           dragging: true,
           zoomAnimation: false,
-          touchZoom: false,
-          doubleClickZoom: false,
-          boxZoom: false,
+          touchZoom: true,
+          doubleClickZoom: true,
+          boxZoom: true,
       }
   });
 
@@ -244,55 +297,24 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.listColRightClass = "col-50 list-col-right"
 
     $scope.differentCommon = function(tripgj) {
-        return ($scope.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
+        return (DiaryHelper.isCommon(tripgj.id))? ((DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id) == '')? false : true) : false;
     }
     $scope.stopTimeTagClass = function(tripgj) {
       return ($scope.differentCommon(tripgj))? "stop-time-tag-lower" : "stop-time-tag";
     }
 
-    /**
-     * Embed 'inputType' to the trip
-     */
-    $scope.populateManualInputs = function (tripgj, nextTripgj, inputType, inputList) {
-        // Check unprocessed labels first since they are more recent
-        // Massage the input to meet getUserInputForTrip expectations
-        const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(
-            {data: {properties: tripgj, features: [{}, {}, {}]}},
-            {data: {properties: nextTripgj, features: [{}, {}, {}]}},
-            inputList);
-        var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
-        if (!angular.isDefined(userInputLabel)) {
-            // manual/mode_confirm becomes mode_confirm
-            const retKey = ConfirmHelper.inputDetails[inputType].key.split("/")[1];
-            userInputLabel = tripgj.user_input[retKey];
-        }
-        if (angular.isDefined(userInputLabel)) {
-            var userInputEntry = $scope.inputParams[inputType].value2entry[userInputLabel];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
-              $scope.inputParams[inputType].options.push(userInputEntry);
-              $scope.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
-            }
-            // console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
-            tripgj.userInput[inputType] = userInputEntry;
-        }
-        // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(tripgj.start_fmt_time));
-        $scope.editingTrip = angular.undefined;
-    }
-
-    $scope.getFormattedDistanceInMiles = function(input) {
-      return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
-    }
-
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
-        tripgj.display_distance = $scope.getFormattedDistanceInMiles(tripgj.distance);
-        tripgj.display_date = moment(tripgj.start_ts * 1000).format('DD MMM YY');
-        tripgj.display_time = $scope.getFormattedTimeRange(tripgj.start_ts,
+        tripgj.display_distance = DiaryHelper.getFormattedDistance(tripgj.distance);
+        tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YY');
+        tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.start_ts,
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
+        // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
+        tripgj.start_display_name = "\xa0";
+        tripgj.end_display_name = "\xa0";
     }
 
     const fillPlacesForTripAsync = function(tripgj) {
@@ -314,98 +336,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.common = {}
         DiaryHelper.fillCommonTripCount(tripgj);
         tripgj.common.different = $scope.differentCommon(tripgj);
-        tripgj.common.longerOrShorter = $scope.getLongerOrShorter(tripgj.data, tripgj.data.id);
+        tripgj.common.longerOrShorter = DiaryHelper.getLongerOrShorter(tripgj.data, tripgj.data.id);
         tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
         tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
-        tripgj.common.arrowColor = $scope.arrowColor(tripgj.common.longerOrShorter[0]);
-        tripgj.common.arrowClass = $scope.getArrowClass(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowColor = DiaryHelper.arrowColor(tripgj.common.longerOrShorter[0]);
+        tripgj.common.arrowClass = DiaryHelper.getArrowClass(tripgj.common.longerOrShorter[0]);
 
-        tripgj.common.earlierOrLater = $scope.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
-        tripgj.common.displayEarlierLater = $scope.parseEarlierOrLater(tripgj.common.earlierOrLater);
+        tripgj.common.earlierOrLater = DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
+        tripgj.common.displayEarlierLater = DiaryHelper.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
-
-    $scope.explainDraft = function($event) {
-      $event.stopPropagation();
-      $ionicPopup.alert({
-        template: $translate.instant('list-explainDraft-alert')
-      });
-      // don't want to go to the detail screen
-    }
-
-    /*
-     * Disabling the reload of the page on background sync because it doesn't
-     * work correctly.  on iOS, plugins are not loaded if backgroundFetch or
-     * remote push are invoked, since they don't initialize the app. On
-     * android, it looks like the thread ends before the maps are fully loaded,
-     * so we have half displayed, frozen maps. We should really check the
-     * status, reload here if active and reload everything on resume.
-     * For now, we just add a refresh button to avoid maintaining state.
-    window.broadcaster.addEventListener( "edu.berkeley.eecs.emission.sync.NEW_DATA", function( e ) {
-        window.Logger.log(window.Logger.LEVEL_INFO,
-            "new data received! reload data for the current day"+$scope.data.currDay);
-        $window.location.reload();
-        // readAndUpdateForDay($scope.data.currDay);
-    });
-    */
 
     $scope.refresh = function() {
        $scope.setupInfScroll();
-    };
-
-    /* For UI control */
-    $scope.groups = [];
-    for (var i=0; i<10; i++) {
-      $scope.groups[i] = {
-        name: i,
-        items: ["good1", "good2", "good3"]
-      };
-      for (var j=0; j<3; j++) {
-        $scope.groups[i].items.push(i + '-' + j);
-      }
-    }
-    $scope.toggleGroup = function(group) {
-      if ($scope.isGroupShown(group)) {
-        $scope.shownGroup = null;
-      } else {
-        $scope.shownGroup = group;
-      }
-    };
-    $scope.isGroupShown = function(group) {
-      return $scope.shownGroup === group;
-    };
-    $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
-    $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
-    $scope.getHumanReadable = DiaryHelper.getHumanReadable;
-    $scope.getKmph = DiaryHelper.getKmph;
-    $scope.getPercentages = DiaryHelper.getPercentages;
-    $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
-    $scope.getSectionDetails = DiaryHelper.getSectionDetails;
-    $scope.getFormattedTime = DiaryHelper.getFormattedTime;
-    $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
-    $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-    $scope.getTripDetails = DiaryHelper.getTripDetails;
-    $scope.starColor = DiaryHelper.starColor;
-    $scope.arrowColor = DiaryHelper.arrowColor;
-    $scope.getArrowClass = DiaryHelper.getArrowClass;
-    $scope.isCommon = DiaryHelper.isCommon;
-    $scope.isDraft = DiaryHelper.isDraft;
-    // $scope.expandEarlierOrLater = DiaryHelper.expandEarlierOrLater;
-    // $scope.increaseRestElementsTranslate3d = DiaryHelper.increaseRestElementsTranslate3d;
-
-    $scope.makeCurrent = function() {
-      $ionicPopup.alert({
-        template: "Coming soon, after Shankari's quals in early March!"
-      });
-    }
-
-    $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
-
-    $scope.getTimeSplit = function(tripList) {
-        var retVal = {};
-        var tripTimes = tripList.map(function(dt) {
-            return dt.data.properties.duration;
-        });
-
     };
 
     // Tour steps
@@ -419,7 +361,67 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         nextText: $translate.instant('tour-next'),
         finishText: $translate.instant('tour-finish')
       },
-      steps: []
+      steps: [{
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.0')
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.1')
+      },
+      {
+        target: '.labelfilter.last',
+        content: $translate.instant('new_label_tour.2')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.3')
+      },
+      {
+        target: '.control-icon-button',
+        content: $translate.instant('new_label_tour.4'),
+        before: function() {
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollTop(true);
+            resolve();
+          });
+        }
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.5')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.6')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.7')
+      },
+      {
+        target: '.diary-entry',
+        content: $translate.instant('new_label_tour.8'),
+        after: function() {
+          return new Promise(function(resolve, reject) {
+            $ionicScrollDelegate.scrollBottom(true);
+            resolve();
+          });
+        }
+      },
+      {
+        target: '.labelfilter',
+        content: $translate.instant('new_label_tour.9')
+      },
+      {
+        target: '.ion-view-background',
+        content: $translate.instant('new_label_tour.10')
+      },
+      {
+        target: '.walkthrough-button',
+        content: $translate.instant('new_label_tour.11')
+      }
+      ]
     };
 
     var startWalkthrough = function () {
@@ -431,15 +433,15 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
 
     /*
-    * Checks if it is the first time the user has loaded the diary tab. If it is then
+    * Checks if it is the first time the user has loaded the new label tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
     */
-    var checkDiaryTutorialDone = function () {
-      var DIARY_DONE_KEY = 'diary_tutorial_done';
-      var diaryTutorialDone = KVStore.getDirect(DIARY_DONE_KEY);
-      if (!diaryTutorialDone) {
+    var checkNewlabelTutorialDone = function () {
+      var NEWLABEL_DONE_KEY = 'newlabel_tutorial_done';
+      var newlabelTutorialDone = KVStore.getDirect(NEWLABEL_DONE_KEY);
+      if (!newlabelTutorialDone) {
         startWalkthrough();
-        KVStore.set(DIARY_DONE_KEY, true);
+        KVStore.set(NEWLABEL_DONE_KEY, true);
       }
     };
 
@@ -449,11 +451,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     $scope.$on('$ionicView.enter', function(ev) {
       $scope.startTime = moment().utc()
-      // Workaround from
+      // This workaround seems to no longer work
+      // In any case, only the first call to checkNewlabelTutorialDone does anything
+      /*// Workaround from
       // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
       if(ev.targetScope !== $scope)
-        return;
-      checkDiaryTutorialDone();
+        return;*/
+      // checkNewlabelTutorialDone();
     });
 
     $scope.$on('$ionicView.leave',function() {
@@ -474,173 +478,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       }
     })
 
-    $scope.prevDay = function() {
-        console.log("Called prevDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-        var prevDay = moment(Timeline.data.currDay).subtract(1, 'days');
-        console.log("prevDay = "+prevDay.format('YYYY-MM-DD'));
-        readAndUpdateForDay(prevDay);
-    };
-
-    $scope.nextDay = function() {
-        console.log("Called nextDay when currDay = "+Timeline.data.currDay.format('YYYY-MM-DD'));
-        var nextDay = moment(Timeline.data.currDay).add(1, 'days');
-        console.log("nextDay = "+nextDay);
-        readAndUpdateForDay(nextDay);
-    };
-
-    $scope.toDetail = function (param) {
-      $state.go('root.main.diary-detail', {
-        tripId: param
-      });
-    };
-
-    $scope.showModes = DiaryHelper.showModes;
-
-    $scope.popovers = {};
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
-        return $ionicPopover.fromTemplateUrl(popoverPath, {
-          scope: $scope
-        }).then(function (popover) {
-          $scope.popovers[item] = popover;
-        });
-    });
-
-    $scope.openPopover = function ($event, tripgj, inputType) {
-      var userInput = tripgj.userInput[inputType];
-      if (angular.isDefined(userInput)) {
-        $scope.selected[inputType].value = userInput.value;
-      } else {
-        $scope.selected[inputType].value = '';
-      }
-      $scope.draftInput = {
-        "start_ts": tripgj.start_ts,
-        "end_ts": tripgj.end_ts
-      };
-      $scope.editingTrip = tripgj;
-      Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
-      $scope.popovers[inputType].show($event);
-    };
-
-    var closePopover = function (inputType) {
-      $scope.selected[inputType] = {
-        value: ''
-      };
-      $scope.popovers[inputType].hide();
-    };
-
-    /**
-     * Store selected value for options
-     * $scope.selected is for display only
-     * the value is displayed on popover selected option
-     */
-    $scope.selected = {}
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        $scope.selected[item] = {value: ''};
-    });
-    $scope.selected.other = {text: '', value: ''};
-
-    /*
-     * This is a curried function that curries the `$scope` variable
-     * while returing a function that takes `e` as the input
-     */
-    var checkOtherOptionOnTap = function ($scope, inputType) {
-        return function (e) {
-          if (!$scope.selected.other.text) {
-            e.preventDefault();
-          } else {
-            Logger.log("in choose other, other = " + JSON.stringify($scope.selected));
-            $scope.store(inputType, $scope.selected.other, true /* isOther */);
-            $scope.selected.other = '';
-            return $scope.selected.other;
-          }
-        }
-    };
-
-    $scope.choose = function (inputType) {
-      var isOther = false
-      if ($scope.selected[inputType].value != "other") {
-        $scope.store(inputType, $scope.selected[inputType], isOther);
-      } else {
-        isOther = true
-        ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
-      }
-      closePopover(inputType);
-    };
-
-    $scope.$on('$ionicView.loaded', function() {
-        $scope.inputParams = {}
-        ConfirmHelper.INPUTS.forEach(function(item) {
-            ConfirmHelper.getOptionsAndMaps(item).then(function(omObj) {
-                $scope.inputParams[item] = omObj;
-            });
-        });
-    });
-
-    $scope.store = function (inputType, input, isOther) {
-      if(isOther) {
-        // Let's make the value for user entered inputs look consistent with our
-        // other values
-        input.value = ConfirmHelper.otherTextToValue(input.text);
-      }
-      $scope.draftInput.label = input.value;
-      Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
-      var tripToUpdate = $scope.editingTrip;
-      $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
-        $scope.$apply(function() {
-          if (isOther) {
-            tripToUpdate.userInput[inputType] = ConfirmHelper.getFakeEntry(input.value);
-            $scope.inputParams[inputType].options.push(tripToUpdate.userInput[inputType]);
-            $scope.inputParams[inputType].value2entry[input.value] = tripToUpdate.userInput[inputType];
-          } else {
-            tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
-          }
-        });
-      });
-      if (isOther == true)
-        $scope.draftInput = angular.undefined;
-    }
-
-    $scope.redirect = function(){
-      $state.go("root.main.current");
-    };
-
-    var in_trip;
-    $scope.checkTripState = function() {
-      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-        Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
-          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
-          in_trip = true;
-        } else {
-          in_trip = false;
-        }
-      });
-    };
-
-    // storing boolean to in_trip and return it in inTrip function
-    // work because ng-show is watching the inTrip function.
-    // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function
-    // to return bool value and using checkTripState function in ng-show
-    // did not work.
-    $scope.inTrip = function() {
-      $ionicPlatform.ready().then(function() {
-          $scope.checkTripState();
-          return in_trip;
-      });
-    };
-
     $ionicPlatform.ready().then(function() {
       $scope.setupInfScroll();
       $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
 
       $scope.$on('$ionicView.enter', function(ev) {
-        // Workaround from
+        // This workaround seems to no longer work
+        // In any case, only the first call to checkNewlabelTutorialDone does anything
+        /*// Workaround from
         // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
         if(ev.targetScope !== $scope)
-          return;
-        checkDiaryTutorialDone();
+          return;*/
+        // checkNewlabelTutorialDone();
       });
 
       $scope.$on('$ionicView.afterEnter', function() {

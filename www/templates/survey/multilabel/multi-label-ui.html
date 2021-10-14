@@ -1,0 +1,28 @@
+<!-- Label -->
+ <div class="row" style="margin-top: 0px">
+  <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
+    {{input.labeltext}}
+  </div>
+ </div>
+<!-- Buttons (if confirmed) -->
+<div class="row input-confirm-row">
+    <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name }}">
+        <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
+            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+                {{trip.userInput[input.name].text}}
+            </button>
+        </div>
+<!-- Buttons (if inferred but not confirmed) -->
+        <div ng-if="!trip.userInput[input.name] && trip.finalInference[input.name]" class="input-confirm-container">
+            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-yellow" translate>
+                {{trip.finalInference[input.name].text}}
+            </button>
+        </div>
+<!-- Buttons (if not inferred or confirmed) -->
+        <div ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container">
+            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red" translate>
+            {{input.choosetext}}
+            </button>
+        </div>
+    </div>
+ </div>   

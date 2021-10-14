@@ -9,7 +9,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.checkinout',
                                  'emission.main.metrics',
                                  'emission.main.bear',
-                                 'emission.tripconfirm.posttrip.map',
+                                 'emission.survey.multilabel.posttrip.map',
                                  'emission.services',
                                  'emission.services.upload'])
 

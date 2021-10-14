@@ -1,9 +1,8 @@
 'use strict';
 
-angular.module('emission.survey.launch', ['emission.services',
+angular.module('emission.survey.external.launch', ['emission.services',
                     'emission.plugin.logger',
                     'emission.stats.clientstats'])
-
 .factory('SurveyLaunch', function($http, $window, $ionicPopup, $rootScope, ClientStats,
     CommHelper, Logger) {
 
@@ -158,20 +157,52 @@ angular.module('emission.survey.launch', ['emission.services',
         startSurveyCommon(url, elementXPath, "js/survey/uuid_insert_xpath.js");
     }
 
-    surveylaunch.startSurveyPrefilled = function (url, uuidSearchParam) {
-      CommHelper.getUser().then(function(userProfile) {
+    /**
+     * startSurveyPrefilled start the survey and prefill the UUID field.
+     * @param {string} url survey url
+     * @param {{
+     *  uuidSearchParam: string
+     *  returnURLSearchParam: string
+     *  returnURL: string
+     *  autoCloseURL: string
+     * }} [opts] options
+     */
+    surveylaunch.startSurveyPrefilled = function (url, opts = {}) {
+      opts = Object.assign({
+        uuidSearchParam: 'uuid',
+        returnURLSearchParam: 'return_url',
+        returnURL: '',
+        autoCloseURL: undefined,
+      }, opts);
+      return CommHelper.getUser().then(function(userProfile) {
         // alert("finished loading script");
         let uuid = userProfile.user_id['$uuid']
         Logger.log("inserting user id into survey. userId = "+ uuid
                       +" base url = "+url);
-        let urlObj = new URL(url);
-        urlObj.searchParams.append(uuidSearchParam, uuid);
-        let modifiedURL = urlObj.href;
+        const urlObj = new URL(url);
+        urlObj.searchParams.append(opts.returnURLSearchParam, encodeURIComponent(opts.returnURL));
+        urlObj.searchParams.append(opts.uuidSearchParam, uuid);
+        const modifiedURL = urlObj.toString();
         Logger.log("modified URL = "+modifiedURL);
         let iab = $window.cordova.InAppBrowser.open(modifiedURL, '_blank', surveylaunch.options);
         iab.addEventListener('loaderror', function(event) {
           Logger.displayError("Unable to launch survey", event);
+          return Promise.reject();
         });
+        if (opts.autoCloseURL) {
+          return new Promise((resolve, reject) => {
+            const autoClose = function(event) {
+              console.log("started loading, event = " + JSON.stringify(event));
+              if (opts.autoCloseURL.includes(event.url)) {
+                iab.removeEventListener('loadstart', autoClose);
+                iab.close();
+                return resolve();
+              }
+            };
+            iab.addEventListener('loadstart', autoClose);
+          });
+        }
+        return Promise.resolve();
       });
     }
 
@@ -194,7 +225,9 @@ angular.module('emission.survey.launch', ['emission.services',
                 } else if (angular.isDefined(survey_spec.uuidXPath)) {
                   surveylaunch.startSurveyWithXPath(survey_spec.url, survey_spec.uuidXPath);
                 } else if (angular.isDefined(survey_spec.uuidSearchParam)) {
-                  surveylaunch.startSurveyPrefilled(survey_spec.url, survey_spec.uuidSearchParam);
+                  surveylaunch.startSurveyPrefilled(survey_spec.url, {
+                    uuidSearchParam: survey_spec.uuidSearchParam
+                  });
                 } else {
                     $ionicPopup.alert("survey was not specified correctly. spec is "+JSON.stringify(survey_spec));
                 }
