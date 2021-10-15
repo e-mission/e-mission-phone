@@ -14,6 +14,9 @@
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">
+        <button class="button button-icon" ng-click="increaseHeight()">
+            <i class="icon ion-arrow-resize"></i>
+        </button>
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
@@ -49,12 +52,12 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-		<div collection-repeat="trip in data.displayTrips" item-height="'160px'">
+		<div collection-repeat="trip in data.displayTrips" item-height="itemHt + 10">
             <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
+                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '{{itemHt}}px'}">
                     <div class="row">
                         <div ng-click="showDetail($event, trip)" class="col-90 center-vert" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0; justify-self: flex-start;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
                         <div ng-click="showDetail($event, trip)" class="col-10 diary-more-container center-vert center-horiz">

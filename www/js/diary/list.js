@@ -22,10 +22,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
+                                    $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
     Config, PostTripManualMarker, ConfirmHelper, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
+  const DEFAULT_ITEM_HT = 335;
+  $scope.itemHt = DEFAULT_ITEM_HT;
   // Add option
 
   $scope.$on('leafletDirectiveMap.resize', function(event, data) {
@@ -45,6 +48,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // based on the time when the database finishes reading.
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
+    $scope.itemHt = DEFAULT_ITEM_HT;
     Timeline.updateForDay(day);
     // This will be used to show the date of datePicker in the user language.
     $scope.currDay = moment(day).format('LL');
@@ -418,10 +422,34 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
+<<<<<<< HEAD
     $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
     };
 
+=======
+    $scope.increaseHeight = function () {
+        // let's increase by a small amount to workaround the issue with the
+        // card not resizing the first time
+        $scope.itemHt = $scope.itemHt + 5;
+        const oldDisplayTrips = $scope.data.currDayTripWrappers;
+        const TEN_MS = 10;
+        $scope.data.currDayTripWrappers = [];
+        $timeout(() => {
+            $scope.$apply(() => {
+                // make sure that the new item-height is calculated by resetting the list
+                // that we iterate over
+                $scope.data.currDayTripWrappers = oldDisplayTrips;
+                // make sure that the cards within the items are set to the new
+                // size. Apparently, `ng-style` is not recalulated although the
+                // variable has changed and the items have changed.
+                $(".list-card").css("height", $scope.itemHt + "px");
+           });
+        }, TEN_MS);
+    };
+
+
+>>>>>>> 38271303... Allow users to resize the items
     /*
     * Checks if it is the first time the user has loaded the diary tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
