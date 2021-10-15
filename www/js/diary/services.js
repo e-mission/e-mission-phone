@@ -144,34 +144,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return background;
   }
 
-  dh.getKmph = function(section) {
-    var metersPerSec = section.properties.distance / section.properties.duration;
-    return (metersPerSec * 3.6).toFixed(2);
-  };
-  dh.getFormattedDistance = function(dist_in_meters) {
-    if (dist_in_meters > 1000) {
-      return (dist_in_meters/1000).toFixed(0);
-    } else {
-      return (dist_in_meters/1000).toFixed(3);
-    }
-  }
-
-  dh.getFormattedDistanceInMiles = function(input) {
-      return (0.621371 * dh.getFormattedDistance(input)).toFixed(1);
-  }
-
-  dh.getSectionDetails = function(section) {
-    var startMoment = moment(section.properties.start_ts * 1000);
-    var endMoment = moment(section.properties.end_ts * 1000);
-    var retVal = [startMoment.format('LT'),
-    endMoment.format('LT'),
-    endMoment.to(startMoment, true),
-    formatDistance(section.properties.distance),
-    tokmph(section.properties.distance, section.properties.duration).toFixed(2),
-    dh.getHumanReadable(section.properties.sensed_mode)];
-    return retVal;
-  };
-
   dh.getLocalTimeString = function (dt) {
     //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
     let mdt = angular.copy(dt)

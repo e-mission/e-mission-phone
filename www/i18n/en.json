@@ -145,8 +145,8 @@
         "began": "Began {{startTime}}",
         "report-incident": "Report Incident",
         "draft": "DRAFT",
-        "distance-in-time": "{{distance}} km in {{time}}",
-        "date-distance-in-time": "{{date}}: {{distance}} km in {{time}}",
+        "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} {{distsuffix}} in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
@@ -256,7 +256,7 @@
 
     "details":{
         "speed": "Speed",
-        "time": "Temps",
+        "time": "Time",
         "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a ☻ or ☹ incident",
         "tour-sectionList-content": "Trip sections, along with times and modes",
         "tour-sectionPct-content": "% of time spent in each mode for this trip"

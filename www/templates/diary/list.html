@@ -2,6 +2,9 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="right">
+        <button class="button button-icon" ng-click="increaseHeight()">
+            <i class="icon ion-arrow-resize"></i>
+        </button>
         <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
     </ion-nav-buttons> 
     <ion-nav-buttons side="left">
@@ -36,7 +39,7 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
+		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? itemHt + 80 : itemHt + 30">
            <div class="start-time-tag">{{tripgj.display_start_time}}</div>
             <div  style="padding-left: 19%;">
 
@@ -46,13 +49,13 @@
                 </div>
 
 
-                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
+                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '{{itemHt}}px'}">
                 <div>
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common.count) }};"></i> -->
 
                 <div class="row" ng-click="toDetail(tripgj.data.id)">
                     <div ng-class="tripgj.common.listColLeftClass">
-                        <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
+                        <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-distsuffix="{{ tripgj.display_distance_suffix }}" translate-value-time="{{ tripgj.display_time }}"></p>
 
                         <a style="font-size: 0.6em; line-height: 0.6em; color: {{tripgj.common.arrowColor}};"><i class="{{ tripgj.common.arrowClass }}" style="font-size: 1em; color: {{ tripgj.common.arrowColor }};"></i>{{ tripgj.common.longerOrShorter[1] }}</a>
                     </div>
