@@ -1,14 +1,15 @@
 'use strict';
 angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'nvd3', 'emission.plugin.kvstore',
-                                      'emission.services', 'emission.plugin.logger',
-                                      'emission.stats.clientstats',
+                                      'emission.services',
+                                      'emission.config.imperial',
+                                      'emission.plugin.logger',
                                       'emission.incident.posttrip.manual'])
 
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $state, $stateParams, $ionicActionSheet,
                                         $ionicPlatform, ClientStats,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
-                                        Logger, Timeline, DiaryHelper, Config,
+                                        Logger, Timeline, DiaryHelper, Config, ImperialConfig,
                                         CommHelper, PostTripManualMarker, $translate) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
@@ -49,23 +50,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       $scope.$broadcast('invalidateSize');
   };
 
-  $scope.getFormattedDate = DiaryHelper.getFormattedDate;
-  $scope.arrowColor = DiaryHelper.arrowColor;
-  $scope.parseEarlierOrLater = DiaryHelper.parseEarlierOrLater;
-  $scope.getEarlierOrLater = DiaryHelper.getEarlierOrLater;
-  $scope.getLongerOrShorter = DiaryHelper.getLongerOrShorter;
-  $scope.getIcon = DiaryHelper.getIcon;
-  $scope.getHumanReadable = DiaryHelper.getHumanReadable;
   $scope.trip = Timeline.getTrip($stateParams.tripId);
-  $scope.getKmph = DiaryHelper.getKmph;
-  $scope.getFormattedDistance = DiaryHelper.getFormattedDistance;
-  $scope.getSectionDetails = DiaryHelper.getSectionDetails;
-  $scope.getFormattedTime = DiaryHelper.getFormattedTime;
-  $scope.getLocalTimeString = DiaryHelper.getLocalTimeString;
-  $scope.getFormattedTimeRange = DiaryHelper.getFormattedTimeRange;
-  $scope.getFormattedDuration = DiaryHelper.getFormattedDuration;
-  $scope.getTripDetails = DiaryHelper.getTripDetails
-  $scope.tripgj = Timeline.getTripWrapper($stateParams.tripId);
+  $scope.tripgj = $scope.trip == undefined? {"sections": []} : Timeline.getTripWrapper($stateParams.tripId);
 
   $scope.getFormattedDistanceInMiles = function(input) {
     return (0.621371 * $scope.getFormattedDistance(input)).toFixed(1);
@@ -74,7 +60,12 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.formattedSectionProperties = $scope.tripgj.sections.map(function(s) {
     return {"fmt_time": DiaryHelper.getLocalTimeString(s.properties.start_local_dt),
             "fmt_time_range": DiaryHelper.getFormattedTimeRange(s.properties.end_ts, s.properties.start_ts),
+<<<<<<< HEAD
             "fmt_distance": $scope.getFormattedDistanceInMiles(s.properties.distance),
+=======
+            "fmt_distance": ImperialConfig.getFormattedDistance(s.properties.distance),
+            "fmt_distance_suffix": ImperialConfig.getDistanceSuffix,
+>>>>>>> 333dfa3d8b795beecfa0c5c77aab1bc1daad1e5b
             "icon": DiaryHelper.getIcon(s.properties.sensed_mode),
             "colorStyle": {color: DiaryHelper.getColor(s.properties.sensed_mode)}
             };

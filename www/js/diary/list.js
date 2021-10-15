@@ -12,6 +12,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.main.common.services',
                                       'emission.services',
+                                      'emission.config.imperial',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
@@ -23,22 +24,26 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
+                                    $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
+  const DEFAULT_ITEM_HT = 335;
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
     {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   // Add option
   $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+  $scope.itemHt = DEFAULT_ITEM_HT;
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
     // based on the time when the database finishes reading.
     // TODO: Convert the usercache calls into promises so that we don't have to
     // do this juggling
+    $scope.itemHt = DEFAULT_ITEM_HT;
     Timeline.updateForDay(day);
     // This will be used to show the date of datePicker in the user language.
     $scope.currDay = moment(day).format('LL');
@@ -164,7 +169,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
-        tripgj.display_distance = DiaryHelper.getFormattedDistanceInMiles(tripgj.data.properties.distance);
+        tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.data.properties.distance);
+        tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
         tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = DiaryHelper.isDraft(tripgj);
@@ -339,6 +345,27 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         Logger.displayError("list walkthrough start errored", err);
       });
     };
+
+    $scope.increaseHeight = function () {
+        // let's increase by a small amount to workaround the issue with the
+        // card not resizing the first time
+        $scope.itemHt = $scope.itemHt + 5;
+        const oldDisplayTrips = $scope.data.currDayTripWrappers;
+        const TEN_MS = 10;
+        $scope.data.currDayTripWrappers = [];
+        $timeout(() => {
+            $scope.$apply(() => {
+                // make sure that the new item-height is calculated by resetting the list
+                // that we iterate over
+                $scope.data.currDayTripWrappers = oldDisplayTrips;
+                // make sure that the cards within the items are set to the new
+                // size. Apparently, `ng-style` is not recalulated although the
+                // variable has changed and the items have changed.
+                $(".list-card").css("height", $scope.itemHt + "px");
+           });
+        }, TEN_MS);
+    };
+
 
     /*
     * Checks if it is the first time the user has loaded the diary tab. If it is then

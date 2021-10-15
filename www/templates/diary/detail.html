@@ -33,7 +33,7 @@
         <div style="height: 15px;"></div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
-          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.distance'}}</p>{{tripgj.display_distance}} mi</div>
+          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.distance'}}</p>{{tripgj.display_distance}} {{tripgj.display_distance_suffix}}</div>
           <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.time'}}</p>{{tripgj.display_time}}</div>
           <div id="sectionPct" class="col">
             <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in tripgj.percentages" style="margin-left: 10px; margin-right: 10px; font-size: 15px;" ng-style="{{sectionPct.color}}"></i>
@@ -51,7 +51,7 @@
                   </div>
 
 
-                  <div class="col" style="font-size: 22px;">{{sectionFmt.fmt_distance}} mi</div>
+                  <div class="col" style="font-size: 22px;">{{sectionFmt.fmt_distance}} {{sectionFmt.fmt_distance_suffix}}</div>
                   <div class="col" style="text-align: center"><i class="{{sectionFmt.icon}}", style="font-size: 25px;" ng-style="{{sectionFmt.colorStyle}}"></i></div>
 
               </div>
