@@ -31,7 +31,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
+  const DEFAULT_ITEM_HT = 150;
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
+  $scope.itemHt = DEFAULT_ITEM_HT;
   // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -138,6 +140,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.setupInfScroll = function() {
     Logger.log("Setting up the scrolling");
+    $scope.itemHt = DEFAULT_ITEM_HT;
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
     $scope.data.displayTrips = [];
@@ -432,6 +435,26 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       }).catch(function(err) {
         Logger.displayError("list walkthrough start errored", err);
       });
+    };
+
+    $scope.increaseHeight = function () {
+        // let's increase by a small amount to workaround the issue with the
+        // card not resizing the first time
+        $scope.itemHt = $scope.itemHt + 5;
+        const oldDisplayTrips = $scope.data.displayTrips;
+        const TEN_MS = 10;
+        $scope.data.displayTrips = [];
+        $timeout(() => {
+            $scope.$apply(() => {
+                // make sure that the new item-height is calculated by resetting the list
+                // that we iterate over
+                $scope.data.displayTrips = oldDisplayTrips;
+                // make sure that the cards within the items are set to the new
+                // size. Apparently, `ng-style` is not recalulated although the
+                // variable has changed and the items have changed.
+                $(".list-card").css("height", $scope.itemHt + "px");
+           });
+        }, TEN_MS);
     };
 
     /*
