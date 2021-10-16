@@ -422,12 +422,10 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
-<<<<<<< HEAD
     $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
     };
 
-=======
     $scope.increaseHeight = function () {
         // let's increase by a small amount to workaround the issue with the
         // card not resizing the first time
@@ -449,7 +447,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
 
->>>>>>> 38271303... Allow users to resize the items
     /*
     * Checks if it is the first time the user has loaded the diary tab. If it is then
     * show a walkthrough and store the info that the user has seen the tutorial.
