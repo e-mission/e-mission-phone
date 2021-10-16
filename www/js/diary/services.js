@@ -817,6 +817,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             start_local_dt: moment2localdate(startMoment),
             start_ts: startPoint.data.ts,
             times: times,
+            inferred_labels: [],
+            expectation: 0,
+            confidence_threshold: 0,
+            user_input: {},
             trip_id: {$oid: tripAndSectionId}
         }
       }
@@ -939,6 +943,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             id: section_gj.features[0].id,
             type: "FeatureCollection",
             features: features,
+            inferred_labels: [],
+            expectation: 0,
+            confidence_threshold: 0,
+            user_input: {},
             properties: angular.copy(section_gj.features[0].properties)
           }
 
