@@ -1078,13 +1078,13 @@ angular.module('emission.main.metrics',['nvd3',
 
   $scope.$on('$ionicView.leave',function() {
     var timeOnPage = moment().utc() - $scope.startTime;
-    ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    ClientStats.addReading(ClientStats.getStatKeys().METRICS_TIME, timeOnPage);
   });
 
   $ionicPlatform.on("pause", function() {
     if ($state.$current == "root.main.metrics") {
       var timeOnPage = moment().utc() - $scope.startTime;
-      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+      ClientStats.addReading(ClientStats.getStatKeys().METRICS_TIME, timeOnPage);
     }
   })
 
