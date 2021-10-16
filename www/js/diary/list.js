@@ -223,6 +223,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             tripgj.end_ts = tripgj.data.properties.end_ts;
             tripgj.inferred_labels = tripgj.data.properties.inferred_labels;
             tripgj.user_input = tripgj.data.properties.user_input;
+            if (tripgj.user_input == undefined) {
+                console.log("while populating trips, user_input not found", tripgj.data.properties);
+            }
             $scope.labelPopulateFactory.populateInputsAndInferences(tripgj, $scope.data.unifiedConfirmsResults);
             $scope.populateCommonInfo(tripgj);
           });
@@ -410,7 +413,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.checkTripState = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" || 
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\"" ||
           JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
           in_trip = true;
         } else {
@@ -422,7 +425,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // storing boolean to in_trip and return it in inTrip function
     // work because ng-show is watching the inTrip function.
     // Returning a promise to ng-show did not work.
-    // Changing in_trip = bool value; in checkTripState function 
+    // Changing in_trip = bool value; in checkTripState function
     // to return bool value and using checkTripState function in ng-show
     // did not work.
     $scope.inTrip = function() {
@@ -465,7 +468,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.startTime = moment().utc()
         }
       })
-  
 
       $scope.$on('$ionicView.afterEnter', function() {
         ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {

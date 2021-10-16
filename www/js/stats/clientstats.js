@@ -4,7 +4,7 @@ angular.module('emission.stats.clientstats', [])
 
 .factory('ClientStats', function($window) {
   var clientStat = {};
-  
+
   clientStat.CLIENT_TIME = "stats/client_time";
   clientStat.CLIENT_ERROR = "stats/client_error";
   clientStat.CLIENT_NAV_EVENT = "stats/client_nav_event";
@@ -85,4 +85,3 @@ angular.module('emission.stats.clientstats', [])
 
   return clientStat;
 })
-

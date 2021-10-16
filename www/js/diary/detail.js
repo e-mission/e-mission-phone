@@ -4,9 +4,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.plugin.logger',
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, $ionicActionSheet,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $ionicPlatform,
+                                        $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config, ImperialConfig,
                                         CommHelper, PostTripManualMarker, $translate) {
@@ -62,7 +64,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
             };
   });
 
-  console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
+  if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {
+    console.log("Detail trip not defined, going back to the list view")
+    $state.go("root.main.diary");
+  } else {
+  console.log("trip.start_place = " , $scope.trip);
 
   var data  = [];
   var start_ts = $scope.trip.properties.start_ts;
@@ -102,6 +108,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
+  }
 
   /* START: ng-walkthrough code */
   // Tour steps
@@ -150,11 +157,38 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   }
 
   $scope.$on('$ionicView.afterEnter', function(ev) {
-    // Workaround from 
+    // Workaround from
     // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
     if(ev.targetScope !== $scope)
       return;
     checkDetailTutorialDone();
   });
+
+  $scope.$on('$ionicView.enter',function(){
+    $scope.startTime = moment().utc()
+    ClientStats.addEvent(ClientStats.getStatKeys().EXPANDED_TRIP).then(
+      function() {
+        console.log("Added "+ClientStats.getStatKeys().EXPANDED_TRIP+" event");
+      }
+    );
+  });
+
+  $scope.$on('$ionicView.leave',function() {
+    var timeOnPage = moment().utc() - $scope.startTime;
+    ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+  });
+
+  $ionicPlatform.on("pause", function() {
+    if ($state.$current == "root.main.diary.detail") {
+      var timeOnPage = moment().utc() - $scope.startTime;
+      ClientStats.addReading(ClientStats.getStatKeys().DIARY_TIME, timeOnPage);
+    }
+  })
+
+  $ionicPlatform.on("resume", function() {
+    if ($state.$current == "root.main.diary.detail") {
+      $scope.startTime = moment().utc()
+    }
+  })
   /* END: ng-walkthrough code */
 })
