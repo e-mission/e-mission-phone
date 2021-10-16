@@ -1166,11 +1166,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
       timeline.getTrip = function(tripId) {
-        return timeline.data.tripMap[tripId];
+        return angular.isDefined(timeline.data.tripMap)? timeline.data.tripMap[tripId] : undefined;
       };
 
       timeline.getTripWrapper = function(tripId) {
-        return timeline.data.tripWrapperMap[tripId];
+        return angular.isDefined(timeline.data.tripWrapperMap)? timeline.data.tripWrapperMap[tripId] : undefined;
       };
 
       /*

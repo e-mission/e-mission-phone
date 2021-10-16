@@ -7,7 +7,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $stateParams, ClientStats, $ionicActionSheet,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $ionicPlatform,
+                                        $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config, ImperialConfig,
                                         CommHelper, PostTripManualMarker, $translate) {
@@ -63,7 +64,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
             };
   });
 
-  console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
+  if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {
+    console.log("Detail trip not defined, going back to the list view")
+    $state.go("root.main.diary");
+  } else {
+  console.log("trip.start_place = " , $scope.trip);
 
   var data  = [];
   var start_ts = $scope.trip.properties.start_ts;
@@ -103,6 +108,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
+  }
 
   /* START: ng-walkthrough code */
   // Tour steps
