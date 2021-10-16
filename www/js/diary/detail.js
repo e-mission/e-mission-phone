@@ -4,10 +4,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.plugin.logger',
+                                      'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $state, $stateParams, $ionicActionSheet,
-                                        $ionicPlatform, ClientStats,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $ionicPlatform,
+                                        $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, Config, ImperialConfig,
                                         CommHelper, PostTripManualMarker, $translate) {
@@ -60,18 +61,17 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   $scope.formattedSectionProperties = $scope.tripgj.sections.map(function(s) {
     return {"fmt_time": DiaryHelper.getLocalTimeString(s.properties.start_local_dt),
             "fmt_time_range": DiaryHelper.getFormattedTimeRange(s.properties.end_ts, s.properties.start_ts),
-<<<<<<< HEAD
-            "fmt_distance": $scope.getFormattedDistanceInMiles(s.properties.distance),
-=======
             "fmt_distance": ImperialConfig.getFormattedDistance(s.properties.distance),
             "fmt_distance_suffix": ImperialConfig.getDistanceSuffix,
->>>>>>> 333dfa3d8b795beecfa0c5c77aab1bc1daad1e5b
             "icon": DiaryHelper.getIcon(s.properties.sensed_mode),
-            "colorStyle": {color: DiaryHelper.getColor(s.properties.sensed_mode)}
             };
   });
 
-  console.log("trip.start_place = " + JSON.stringify($scope.trip.start_place));
+  if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {
+    console.log("Detail trip not defined, going back to the list view")
+    $state.go("root.main.diary");
+  } else {
+  console.log("trip.start_place = " , $scope.trip);
 
   var data  = [];
   var start_ts = $scope.trip.properties.start_ts;
@@ -111,6 +111,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   //Update the chart when window resizes.
   nv.utils.windowResize(chart.update);
   nv.addGraph(chart);
+  }
 
   /* START: ng-walkthrough code */
   // Tour steps

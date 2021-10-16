@@ -227,6 +227,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
             tripgj.end_ts = tripgj.data.properties.end_ts;
             tripgj.inferred_labels = tripgj.data.properties.inferred_labels;
             tripgj.user_input = tripgj.data.properties.user_input;
+            if (tripgj.user_input == undefined) {
+                console.log("while populating trips, user_input not found", tripgj.data.properties);
+            }
             $scope.labelPopulateFactory.populateInputsAndInferences(tripgj, $scope.data.unifiedConfirmsResults);
             $scope.populateCommonInfo(tripgj);
           });
@@ -496,7 +499,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           $scope.startTime = moment().utc()
         }
       })
-  
 
       $scope.$on('$ionicView.afterEnter', function() {
         ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {

@@ -10,10 +10,9 @@
 
 angular.module('emission.survey.multilabel.infscrollfilters',[
     'emission.survey.multilabel.services',
-    'emission.stats.clientstats',
     'emission.plugin.logger'
   ])
-.factory('InfScrollFilters', function(Logger, ConfirmHelper, ClientStats, $translate){
+.factory('InfScrollFilters', function(Logger, ConfirmHelper, $translate){
     var sf = {};
     var unlabeledCheck = function(t) {
        return ConfirmHelper.INPUTS

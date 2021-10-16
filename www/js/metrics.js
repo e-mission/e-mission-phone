@@ -4,13 +4,14 @@ angular.module('emission.main.metrics',['nvd3',
                                         'emission.services',
                                         'ionic-datepicker',
                                         'emission.main.metrics.factory',
+                                        'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
                                         'emission.plugin.logger',
                                         'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, $ionicPopup,
-                                    ionicDatePicker, $ionicPlatform, ClientStats,
+                                    ClientStats, CommHelper, $window, $ionicPopup,
+                                    ionicDatePicker, $ionicPlatform,
                                     FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                     $rootScope, $location, $state, ReferHelper, Logger,
                                     $translate) {
@@ -1219,8 +1220,8 @@ angular.module('emission.main.metrics',['nvd3',
   })
 
   $scope.linkToMaps = function() {
-    var start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
-    var destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
+    let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
+    let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
     if(ionic.Platform.isIOS()){
       if (mode === 'bike') {
