@@ -610,7 +610,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               +" end of current day = "
               +eod+"("+moment.unix(eod).toString()+")"
               +" retVal = "+retVal);
-          return retVal;
+          return [result.complete_ts, retVal];
       });
     }
 
@@ -1130,7 +1130,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       let allTripsPromise = tripsReadPromise.then((processedTripList) => {
         console.log("Reading trips from server finished successfully with length "
           +processedTripList.length+" completeStatus = "+completeStatus);
-        return addUnprocessedTrips(processedTripList, completeStatus);
+        return addUnprocessedTrips(processedTripList, day, completeStatus);
       }).then((combinedTripList) => processOrDisplayNone(day, combinedTripList));
       return Promise.all([allManualPromise, allTripsPromise]).then(() => {
         console.log("Finished reading processed/unprocessed trips with length "
@@ -1144,7 +1144,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var isProcessingCompletePromise = timeline.isProcessingComplete(day);
 
       // First get the pipeline complete timestamp
-      isProcessingCompletePromise.then((completeTs, completeStatus) => {
+      isProcessingCompletePromise.then(([completeTs, completeStatus]) => {
           // then, in parallel, read unprocessed user inputs
           // and trips
           // Also mode/purpose and (currently disabled) survey answers
