@@ -19,7 +19,9 @@
     ],
     "plugins": {
       "@havesource/cordova-plugin-push": {
-        "FCM_VERSION": "17.0.0"
+        "ANDROID_SUPPORT_V13_VERSION": "28.0.0",
+        "FCM_VERSION": "18.+",
+        "IOS_FIREBASE_MESSAGING_VERSION": "~> 6.32.2"
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-app-version": {},
