@@ -1,0 +1,258 @@
+{
+    "loading": "Chargement...",
+    "map-refresh": "Rafraîchir",
+    "map-fixmap": "Ré-afficher la Carte",
+    "pull-to-refresh": "Tirer pour rafraîchir",
+
+    "weekdays-all": "Tout",
+    "weekdays-select": "Jour de la semaine",
+
+    "post-trip-prompt": {
+        "notification-option-mute": "Silencieux",
+        "notification-option-snooze": "En Sommeil",
+        "notification-option-choose": "votre choix",
+        "notification-title": "Comment et pourquoi êtes-vous venu.e?",
+        "choose-mode": "Mode principal",
+        "skip": "Sauter",
+        "snoozed-reminder": "Rappel : en sommeil",
+        "snoozed-reapper-message": "Affiché à nouveau dans 30'",
+        "platform-specific-message-ios": "Glisser vers la G ou toucher pour ajouter une info sur ce déplacement.",
+        "platform-specific-message-android": "Voir les options ou toucher l'écran pour ajouter une info.",
+        "platform-specific-message-other": "Toucher l'écran pour ajouter une info sur ce déplacement",
+        "notifications-muted": "Arrêt des notifications en fin de déplacement",
+        "notifications-reenabled": "Peut être réactivé depuis Profil / Dev Zone, ou réactivez maintenant.",
+        "muted": "Silencieux",
+        "unmute": "Réactiver",
+        "keep-muted": "Laisser silencieux"
+    },
+
+    "post-trip-map-display-tour-incident": "Zoomez puis indiquez le lieu de l'incident et cliquez sur la ligne bleue pour qualifier l'incident ☻ ou ☹",
+    "tour-next": "Suivant",
+    "tour-previous": "Précédent",
+    "tour-finish": "Fin",
+
+    "trip-confirm": {
+        "recenttrip": "Déplacement de: {{startTime}} → à: {{endTime}}",
+        "continue": "Continuer",
+        "done": "OK",
+        "services-please-fill-in": "Renseignez le {{text}} non listé.",
+        "services-cancel": "Annuler",
+        "services-save": "Enregistrer"
+    },
+
+    "place-common-place": "Lieu fréquent",
+    "place-successor-trips": "Déplacements suivants",
+    "place-trips-to": "{{trips}} déplacements vers",
+    "place-usually-starts": "Commence en général à: {{hour}}:00",
+    "place-usually-takes": "Dure en général: {{duration}}",
+    "trip-start-hours": "Heures de départ",
+    "trip-start-duration": "Durée",
+
+    "control": {
+        "profile": "Profil",
+        "tracking": "Tracking activé",
+        "medium-accuracy": "Précision moyenne",
+        "dark-theme": "Thème sombre",
+        "force-sync": "Forcer la synchro",
+        "share": "Partager",
+        "check-ui-updates": "Vérifier les mises à jour",
+        "download-json-dump": "Télécharger les données json",
+        "email-log": "Envoyer les logs",
+        "upload-log": "Copier les logs",
+        "view-privacy": "Voir la politique de confidentialité",
+        "user-data": "Mes données",
+        "erase-data": "Effacer mes données",
+        "dev-zone": "Dev zone",
+        "refresh": "Rafraîchir",
+        "end-trip-sync": "Forcer End trip + synchro",
+        "check-consent": "Validation des conditions",
+        "invalidate-cached-docs": "Invalider les docs en cache",
+        "nuke-all": "Supprimer buffers et cache",
+        "set-ui-channel": "Channel",
+        "check-log": "Voir les logs",
+        "check-sensed-data": "Données recueillies",
+        "check-map": "Vérifier la carte",
+        "collection": "Recueil",
+        "sync": "Synchro",
+        "transition-notify": "Notifier une transition"
+    },
+
+    "general-settings": {
+        "choose-date": "Date",
+        "nuke-ui-state-only": "UI state only",
+        "nuke-native-cache-only": "Native cache only",
+        "nuke-everything": "Tout",
+        "clear-data": "Effacer les données",
+        "cancel": "Annuler",
+        "user-data-erased": "Données effacées.",
+        "consent-not-found": "Consentement utilisateur non trouvé, êtes-vous Ok pour accepter maintenant ?",
+        "no-consent-message": "OK! Note que vous n'aurez pas de stats sans votre accord!",
+        "consent-found": "Consentement trouvé!",
+        "consented-to": "Accord pour le protocole {{protocol_id}}, {{approval_date}}",
+        "consented-ok": "OK",
+        "share-message": "Rejoins moi pour rendre les moyens de transports plus écolos \nTélécharges l'application emission:",
+        "share-subject": "Emission - UC Berkeley Research Project",
+        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
+    },
+
+    "metrics": {
+        "cancel": "Annuler",
+        "confirm": "Confirmer",
+        "get": "Ok",
+        "range": "Range",
+        "filter": "Filtre",
+        "from": "de :",
+        "to": "à :",
+        "last-week": "Semaine dernière",
+        "frequency": "Fréquence:",
+        "pandafreqoptions-daily": "par JOUR",
+        "pandafreqoptions-weekly": "par SEMAINE",
+        "pandafreqoptions-biweekly": "BI-HEBDO",
+        "pandafreqoptions-monthly": "MENSUEL",
+        "pandafreqoptions-yearly": "ANNUEL",
+        "freqoptions-daily": "par JOUR",
+        "freqoptions-monthly": "MENSUEL",
+        "freqoptions-yearly": "ANNUEL",
+        "select-pandafrequency": "Fréquence des stats",
+        "select-frequency": "Fréquence des stats",
+        "chart-xaxis-date": "Date",
+        "chart-no-data": "Pas de données!",
+        "trips-yaxis-number": "Nombre",
+        "calorie-data-change": " d'écart",
+        "carbon-data-change": " d'écart",
+        "carbon-data-calculating": "Je calcule...",
+        "carbon-data-unknown": "Inconnu",
+        "calorie-data-unknown": "Inconnu...",
+        "calorie-data-change-increase": " d'augmentation en 1 semaine",
+        "calorie-data-change-decrease": " de diminution en 1 semaine",
+        "carbon-data-change-increase": " d'augmentation en 1 semaine",
+        "carbon-data-change-decrease": " de diminution en 1 semaine",
+        "pick-a-date": "Choisissez la date",
+        "trips": "déplacements",
+        "custom": "Dates personnalisées"
+    },
+
+    "diary": {
+        "current-trip": "Déplacement en cours",
+        "current-yesterday": "Hier",
+        "current-weekago": "Semaine dernière",
+        "history": "Historique",
+        "began": "A commencé {{startTime}}",
+        "report-incident": "Signalez un Incident",
+        "draft": "BROUILLON",
+        "distance-in-time": "{{distance}} km en {{time}}",
+        "distance": "Distance",
+        "time": "Durée",
+        "mode": "Mode",
+        "purpose": "Motif",
+        "choose-mode": "Mode principal",
+        "choose-purpose": "Motif principal",
+        "how-did-you-get-here": "Mode principal ?",
+        "why-did-you-come-here": "Motif principal ?",
+        "list-pick-a-date": "Date"
+    },
+
+    "user-gender": "Genre",
+    "gender-male": "Homme",
+    "gender-female": "Femme",
+    "user-height": "Taille",
+    "user-weight": "Poids",
+    "user-age": "Age",
+
+    "main-metrics": {
+        "dashboard": "Tableau de bord",
+        "summary": "Résumé",
+        "chart": "Graphique",
+        "change-data": "Changer date",
+        "distance": "Distance",
+        "trips": "Déplacements",
+        "duration": "Durée",
+        "speed": "Vitesse",
+        "footprint": "Empreinte",
+        "optimal": "Optimal :",
+        "average": "Moyenne :",
+        "worst": "Pire :",
+        "lastweek": "Semaine dernière :",
+        "calories": "Calories",
+        "calibrate": "Calibrer",
+        "no-summary-data": "Pas de données résumées",
+        "median-speed": "Vitesse médiane",
+        "equals-cookies": "soit {cookies, plural, =0{0 cookies} one {1 cookie} other {# cookies}}",
+        "equals-icecream": "soit {icecream, plural, =0{0 glaces à la vanille} one {1 glace à la vanille} other {# glaces à la vanille}}",
+        "equals-bananas": "soit {bananas, plural, =0{0 bananes} one {1 banane} other {# bananes}}"
+    },
+
+    "main-diary": "Journal",
+    
+    "main-heatmap": {
+        "title": "Points chauds",
+        "counts": "Comptage",
+        "stress": "Stress",
+        "from": "De :",
+        "to": "à :",
+        "get": "Go !",
+        "all": "TOUT",
+        "none": "AUCUN",
+        "bicycling": "VELO",
+        "walking": "MARCHE",
+        "in-vehicle": "VEHICULE",
+        "select-travel-mode": "Choix du mode",
+        "cancel": "Annuler",
+        "tour-datepicker": "Cette carte superpose les données de tous les utilisateurs. Choisissez les dates, filtrez selon l'heure et le jour de la semaine.",
+        "tour-mode": "Cliquez ici pour filtrer par mode. Par défaut, tous les modes sont affichés.",
+        "tour-get": "Cliquez ici pour générer la carte."
+    },
+
+    "details": {
+        "speed": "Vitesse",
+        "time": "Durée",
+        "tour-detail-content": "Pour signaler un incident, Zoomez puis indiquez le lieu de l'incident et cliquez sur la ligne bleue pour qualifier l'incident ☻ ou ☹",
+        "tour-sectionList-content": "Trajets, heures et modes",
+        "tour-sectionPct-content": "% du temps passé dans chaque mode"
+    },
+
+    "list-explainDraft-alert": "Le déplacement n'a pas encore été analysé. Si cela dure + de 24H, signalez-le à votre administrateur système !",
+    "list-datepicker-today": "Aujourd'hui",
+    "list-datepicker-close": "Fermer",
+    "list-datepicker-set": "Définir",
+    "list-tour-datepicker-button": "Choisissez le jour à afficher.",
+    "list-tour-diary-entry": "Cliquez sur la carte pour + de détails.",
+    "list-tour-map-fix-button": "Cliquez pour rafraichir la carte.",
+
+    "service": {
+        "reading-server": "Données lues du serveur...",
+        "reading-cache": "Données lues dans le cache...",
+        "reading-unprocessed-data": "Données non traitées en cours de lecture..."
+    },
+
+    "post-trip-manual-incident-time": "Jour/Heure de l'incident",
+
+    "email-service":{
+        "email-account-not-configured": "Le compte email n'est pas configuré",
+        "email-account-mail-app": "L'appli e-mail doit être configuré sinon cela ne fonctionnera pas.",
+        "going-to-email": "Transfert par mail de la Base de Données {{parentDir}}",
+        "email-log":{
+            "subject-logs": "emission logs",
+            "body-please-fill-in-what-is-wrong": "Merci d'indiquer ce qui ne fonctionne pas"
+        },
+        "no-email-address-configured": "Aucune adresse e-mail configurée.",
+        "email-data":{
+            "subject-data-dump-from-to": "Données du {{start}} au {{end}}",
+            "body-data-consists-of-list-of-entries": "Les données sont une liste d'entrées.\n Vous pouvez trouver le format d'une entrée au lien suivant : https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nLes données peuvent être chargées localement en suivant les instructions indiquées ici https://github.com/e-mission/e-mission-server#loading-test-data \n et peuvent être manipulées en suivant l'exemple disponible à ce lien : https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
+        }
+    },
+    
+    "consent": {
+        "button-accept": "J'accepte",
+        "button-decline": "Je refuse"
+    },
+
+    "updatecheck": {
+        "downloading-update": "Mise à jour de l'UI uniquement",
+        "extracting-update": "Récupération de la mise à jour",
+        "done": "Mise à jour faire, chargement en cours...",
+        "download-new-ui": "Télécharger la mise à jour ?",
+        "download-not-now": "Pas maintenant",
+        "download-apply": "Appliquer"
+    }
+}

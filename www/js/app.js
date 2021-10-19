@@ -113,7 +113,8 @@ angular.module('emission', ['ionic',
 
   // Define where we can find the .json and the fallback language
   $translateProvider
-    .fallbackLanguage('it')
+    .fallbackLanguage('fr')
+    
     .registerAvailableLanguageKeys(['en', 'fr', 'it'], {
       'en_*': 'en',
       'fr_*': 'fr',
@@ -127,4 +128,11 @@ angular.module('emission', ['ionic',
     });
   
   console.log("Ending config");
+
+  
+  // Tell the module what language to use by default
+  // $translateProvider.preferredLanguage('en');
+
+  // Tell the module to store the language in the cookie
+  // $translateProvider.useCookieStorage();
 });
