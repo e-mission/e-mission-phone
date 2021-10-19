@@ -728,8 +728,10 @@ angular
       };
 
       $scope.modeOptions = [
-        { text: "english", value: ["english"] },
-        { text: "french", value: ["français"] },
+        { text: "english", value: ["en"] },
+        { text: "français", value: ["fr"] },
+        { text: "italiano", value: ["it"] },
+
       ];
 
       $scope.changeMode = function () {
@@ -740,11 +742,7 @@ angular
           buttonClicked: function (index, button) {
             $scope.selectCtrl.modeString = button.text;
             $scope.selectCtrl.modes = button.value;
-            if (button.text == "english") {
-              $translate.use("en");
-            } else {
-              $translate.use("fr");
-            }
+            $translate.use(button.value[0]);
             return true;
           },
         });
