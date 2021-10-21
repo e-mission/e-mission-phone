@@ -157,6 +157,7 @@
         "invalid-ebike": "Invalid",
         "to-label": "To Label",
         "show-all": "All Trips",
+        "confirm-reminder": "Change your trip labels as needed, then don’t forget to click the checkmark so your trip will count!",
         "no-trips-found": "No trips found",
         "for-current-filter": "for current filter. Show All to remove filters",
         "scroll-to-load-more": "Scroll to load more",

@@ -503,18 +503,28 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       }
     })
 
+    $scope.popupLabelReminder = function() {
+      $ionicPopup.alert({
+        template: $translate.instant('diary.confirm-reminder')
+      });
+    }
+
     $ionicPlatform.ready().then(function() {
       $scope.setupInfScroll();
       $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
 
+      $ionicPlatform.on('resume', function(ev) {
+        console.log("resume called");
+        if ($state.is("root.main.inf_scroll")) {
+            $scope.popupLabelReminder();
+        }
+      });
+
       $scope.$on('$ionicView.enter', function(ev) {
-        // This workaround seems to no longer work
-        // In any case, only the first call to checkNewlabelTutorialDone does anything
-        /*// Workaround from
-        // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-        if(ev.targetScope !== $scope)
-          return;*/
-        // checkNewlabelTutorialDone();
+        console.log("ionicView.enter called");
+        if ($state.is("root.main.inf_scroll")) {
+            $scope.popupLabelReminder();
+        }
       });
 
       $scope.$on('$ionicView.afterEnter', function() {
