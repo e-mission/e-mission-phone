@@ -95,6 +95,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
 
   dh.getColor = function(sensed_mode) {
+    return "black";
+    /*
     var mode_string = dh.getHumanReadable(sensed_mode);
     var colors = {
       "WALKING": 'brown',
@@ -116,6 +118,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     } else {
         return "black";
     }
+    */
   }
 
   dh.starColor = function(num) {
