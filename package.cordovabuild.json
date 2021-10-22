@@ -66,8 +66,7 @@
       "cordova-plugin-em-unifiedlogger": {},
       "cordova-plugin-em-usercache": {},
       "cordova-plugin-androidx-adapter": {},
-      "phonegap-plugin-barcodescanner": {},
-      "cordova-plugin-badge": {}
+      "phonegap-plugin-barcodescanner": {}
     }
   },
   "dependencies": {
@@ -97,7 +96,6 @@
     "fs-extra": "^9.0.1",
     "klaw-sync": "^6.0.0",
     "phonegap-plugin-barcodescanner": "git+https://github.com/phonegap/phonegap-plugin-barcodescanner#v8.1.0",
-    "cordova-plugin-badge": "git+https://github.com/katzer/cordova-plugin-badge.git",
     "@havesource/cordova-plugin-push": "2.0.0"
   }
 }
