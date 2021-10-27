@@ -1,0 +1,69 @@
+<details>
+<summary><h4 ng-class="overallLocStatusClass"> Location {{overallLocStatusIcon}} </h4></summary>
+
+We need this this sensor to read your location data and automatically generate
+a trip log that is displayed to you for annotation. We need the background
+location permission to track your location in the background, even when the app
+is closed. This makes the app easier to use and saves battery since you don't
+have to remember to start and stop trip recording.
+<ion-list>
+<ion-item ng-repeat="locCheck in locChecks">
+    <div class="row">
+        <div class="col-90" ng-class="locCheck.statusClass">{{locCheck.name}}</div>
+        <div class="col-10">{{locCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{locCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="locCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="locCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
+
+<div ng-if="fitnessPermNeeded">
+<details>
+<summary><h4 ng-class="overallFitnessStatusClass"> Motion and Fitness {{overallFitnessStatusIcon}} </h4></summary>
+The fitness sensors distinguish between walking, bicycling and motorized modes.
+We use this data in order to separate the parts of multi-modal travel such as
+transit. 
+<ion-list>
+<ion-item ng-repeat="fitnessCheck in fitnessChecks">
+    <div class="row">
+        <div class="col-90" ng-class="fitnessCheck.statusClass">{{fitnessCheck.name}}</div>
+        <div class="col-10">{{fitnessCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{fitnessCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="fitnessCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="fitnessCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</div>
+</details>
+
+<div ng-if="platform.toLowerCase() == 'ios'">
+<h3> Notifications </h3>
+We need this permission in order to prompt you for your travel mode and purpose.
+Please allow.
+</div>
+
+<div ng-if="backgroundRestricted">
+<h3> Allow background restrictions </h3>
+Your phone restricts app operation in the background. This prevents the app
+from tracking your location or pushing it to the server. Please enable
+background operation for this app with the following instructions:
+{{allowBackgroundRestrictions}}.
+</div>
+
+<div class="row" style="margin-top: 20px;" translate-namespace="consent">
+  <div class="col" style="margin-right: 5px">
+      <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button"><span translate>{{'.button-decline'}}</span></button>
+  </div>
+  <div class="col" style="margin-left: 5px">
+      <button class="button button-block button-positive button-outline" ng-click="agree()" id="consent-button"><span translate>{{'.button-accept'}}</span></button>
+  </div>
+</div>
+</div>
+<div class="consent-space"></div>
