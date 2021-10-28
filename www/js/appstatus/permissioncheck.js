@@ -50,12 +50,12 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     $scope.setupAndroidLocChecks = function(platform, version) {
-        let checkOrFixSettings = function(nativeFn, showError=true) {
+        let checkOrFix = function(checkObj, nativeFn, showError=true) {
             return nativeFn()
                 .then((status) => {
                     console.log("availability ", status)
                     $scope.$apply(() => {
-                        locSettingsCheck.statusState = true;
+                        checkObj.statusState = true;
                         $scope.recomputeLocStatus();
                     });
                     return status;
@@ -69,7 +69,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
                         });
                     };
                     $scope.$apply(() => {
-                        locSettingsCheck.statusState = false;
+                        checkObj.statusState = false;
                         $scope.recomputeLocStatus();
                     });
                     return error;
@@ -77,14 +77,19 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         }
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
-            return checkOrFixSettings($window.cordova.plugins.BEMDataCollection.fixLocationSettings, showError=true);
+            return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationSettings, showError=true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
-            return checkOrFixSettings($window.cordova.plugins.BEMDataCollection.isValidLocationSettings, showError=false);
+            return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.isValidLocationSettings, showError=false);
         };
-        let fixAndRefreshPermissionsPlaceholder = function() {
-            console.log("fix or refresh location permissions");
+        let fixPerms = function() {
+            console.log("fix and refresh location permissions");
+            return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationPermissions, showError=true);
+        };
+        let checkPerms = function() {
+            console.log("fix and refresh location permissions");
+            return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.isValidLocationPermissions, showError=false);
         };
         var androidSettingsDescTag = "intro.appstatus.locsettings.description.android-gte-9";
         if (version < 9) {
@@ -111,8 +116,8 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             name: $translate.instant("intro.appstatus.locperms.name"),
             desc: $translate.instant(androidPermDescTag),
             statusState: false,
-            fix: fixAndRefreshPermissionsPlaceholder,
-            refresh: fixAndRefreshPermissionsPlaceholder
+            fix: fixPerms,
+            refresh: checkPerms
         }
         $scope.locChecks = [locSettingsCheck, locPermissionsCheck];
         let locCheckPromises = $scope.locChecks.map((lc) => lc.refresh());
