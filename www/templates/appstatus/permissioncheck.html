@@ -40,14 +40,26 @@ transit.
     </div>
 </ion-item>
 </ion-list>
-</div>
 </details>
-
-<div ng-if="platform.toLowerCase() == 'ios'">
-<h3> Notifications </h3>
-We need this permission in order to prompt you for your travel mode and purpose.
-Please allow.
 </div>
+
+<details>
+<summary><h4 ng-class="overallNotificationStatusClass"> Notifications {{overallNotificationStatusIcon}}</h4></summary>
+We need to use notifications to inform you if the settings are incorrect. We also use notifications to remind you to label your trips.
+<ion-list>
+<ion-item ng-repeat="notificationCheck in notificationChecks">
+    <div class="row">
+        <div class="col-90" ng-class="notificationCheck.statusClass">{{notificationCheck.name}}</div>
+        <div class="col-10">{{notificationCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{notificationCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="notificationCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="notificationCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
 
 <div ng-if="backgroundRestricted">
 <h3> Allow background restrictions </h3>

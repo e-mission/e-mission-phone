@@ -36,6 +36,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         }
     }
 
+    $scope.setupNotificationChecks = function(platform, version) {
+        if (platform.toLowerCase() == "android") {
+            return $scope.setupAndroidNotificationChecks(version);
+        } else if (platform.toLowerCase() == "ios") {
+            return $scope.setupIOSNotificationChecks(version);
+        } else {
+            alert("Unknown platform, no tracking");
+        }
+    }
+
     let iconMap = (statusState) => statusState? "✅" : "❌";
     let classMap = (statusState) => statusState? "status-green" : "status-red";
 
@@ -59,6 +69,17 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("overallFitnessStatus = "+$scope.overallFitnessStatus+" from ", $scope.fitnessChecks);
         $scope.overallFitnessStatusIcon = iconMap($scope.overallFitnessStatus);
         $scope.overallFitnessStatusClass = classMap($scope.overallFitnessStatus);
+    }
+
+    $scope.recomputeNotificationStatus = function() {
+        $scope.notificationChecks.forEach((nc) => {
+            nc.statusIcon = iconMap(nc.statusState);
+            nc.statusClass = classMap(nc.statusState)
+        });
+        $scope.overallNotificationStatus = $scope.notificationChecks.map((nc) => nc.statusState).reduce((pv, cv) => pv && cv);
+        console.log("overallNotificationStatus = "+$scope.overallNotificationStatus+" from ", $scope.notificationChecks);
+        $scope.overallNotificationStatusIcon = iconMap($scope.overallNotificationStatus);
+        $scope.overallNotificationStatusClass = classMap($scope.overallNotificationStatus);
     }
 
     let checkOrFix = function(checkObj, nativeFn, recomputeFn, showError=true) {
@@ -172,6 +193,32 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             .catch((error) => $scope.recomputeFitnessStatus())
     }
 
+    $scope.setupAndroidNotificationChecks = function() {
+        let fixPerms = function() {
+            console.log("fix and refresh notification permissions");
+            return checkOrFix(appAndChannelNotificationsCheck, $window.cordova.plugins.BEMDataCollection.fixShowNotifications,
+                $scope.recomputeNotificationStatus, showError=true);
+        };
+        let checkPerms = function() {
+            console.log("fix and refresh notification permissions");
+            return checkOrFix(appAndChannelNotificationsCheck, $window.cordova.plugins.BEMDataCollection.isValidShowNotifications,
+                $scope.recomputeNotificationStatus, showError=false);
+        };
+        let appAndChannelNotificationsCheck = {
+            name: $translate.instant("intro.appstatus.notificationperms.app-enabled-name"),
+            desc: $translate.instant("intro.appstatus.notificationperms.description.android-enable"),
+            fix: fixPerms,
+            refresh: checkPerms
+        }
+        $scope.notificationChecks = [appAndChannelNotificationsCheck];
+        let notificationCheckPromises = $scope.notificationChecks.map((fc) => fc.refresh());
+        console.log("About to initialize notification status");
+        console.log(notificationCheckPromises);
+        Promise.all(notificationCheckPromises)
+            .then((result) => $scope.recomputeNotificationStatus())
+            .catch((error) => $scope.recomputeNotificationStatus())
+    }
+
     $scope.setupPermissionText = function() {
         if($scope.platform.toLowerCase() == "ios") {
           if($scope.osver < 13) {
@@ -200,6 +247,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         $scope.setupPermissionText();
         $scope.setupLocChecks($scope.platform, $scope.osver);
         $scope.setupFitnessChecks($scope.platform, $scope.osver);
+        $scope.setupNotificationChecks($scope.platform, $scope.osver);
     });
 
     $ionicPlatform.on("resume", function() {
