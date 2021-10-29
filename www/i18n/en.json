@@ -337,7 +337,7 @@
                 "not-paused-name": "Not Paused",
                 "description": {
                     "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
-                    "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
+                    "android-unpause": "App is suspended or marked as 'distracting'. Please report to your admin.",
                     "ios": "Please allow."
                 }
             }

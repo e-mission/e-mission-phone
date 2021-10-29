@@ -204,13 +204,29 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             return checkOrFix(appAndChannelNotificationsCheck, $window.cordova.plugins.BEMDataCollection.isValidShowNotifications,
                 $scope.recomputeNotificationStatus, showError=false);
         };
+        let fixPaused = function() {
+            console.log("refresh notification pause status");
+            return checkOrFix(appUnpausedCheck, $window.cordova.plugins.BEMDataCollection.isNotificationsUnpaused,
+                $scope.recomputeNotificationStatus, showError=true);
+        };
+        let checkPaused = function() {
+            console.log("refresh notification pause status");
+            return checkOrFix(appUnpausedCheck, $window.cordova.plugins.BEMDataCollection.isNotificationsUnpaused,
+                $scope.recomputeNotificationStatus, showError=false);
+        };
         let appAndChannelNotificationsCheck = {
             name: $translate.instant("intro.appstatus.notificationperms.app-enabled-name"),
             desc: $translate.instant("intro.appstatus.notificationperms.description.android-enable"),
             fix: fixPerms,
             refresh: checkPerms
         }
-        $scope.notificationChecks = [appAndChannelNotificationsCheck];
+        let appUnpausedCheck = {
+            name: $translate.instant("intro.appstatus.notificationperms.not-paused-name"),
+            desc: $translate.instant("intro.appstatus.notificationperms.description.android-unpause"),
+            fix: fixPaused,
+            refresh: checkPaused
+        }
+        $scope.notificationChecks = [appAndChannelNotificationsCheck, appUnpausedCheck];
         let notificationCheckPromises = $scope.notificationChecks.map((fc) => fc.refresh());
         console.log("About to initialize notification status");
         console.log(notificationCheckPromises);
