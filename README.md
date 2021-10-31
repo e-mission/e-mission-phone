@@ -95,9 +95,7 @@ Pre-requisites
     - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
 - the most recent version of android studio
-    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK 1.8 using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
-    - NOTE: The setup script below will modify this install to workaround
-        https://github.com/actions/virtual-environments/issues/3757
+    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. The build now requires Java 11. Installed [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
 
 Important
 ---
