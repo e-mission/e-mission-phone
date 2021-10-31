@@ -29,7 +29,7 @@ jobs:
     - name: Print the java version
       run: |
         java -version
-        export JAVA_HOME=JAVA_HOME_11_X64
+        export JAVA_HOME=$JAVA_HOME_11_X64
         java -version
 
     - name: Tries to figure out where android is installed
@@ -45,7 +45,7 @@ jobs:
     - name: Check tool versions
       shell: bash -l {0}
       run: |
-        export JAVA_HOME=JAVA_HOME_11_X64
+        export JAVA_HOME=$JAVA_HOME_11_X64
         source setup/activate_native.sh
         echo "cordova version"
         npx cordova -version
@@ -63,7 +63,7 @@ jobs:
         gradle -version
         echo "Let's rerun the activation"
         source setup/activate_native.sh
-        export JAVA_HOME=JAVA_HOME_11_X64
+        export JAVA_HOME=$JAVA_HOME_11_X64
         echo $PATH
         which gradle
         gradle --version
