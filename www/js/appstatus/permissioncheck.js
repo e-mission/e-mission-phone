@@ -46,6 +46,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         }
     }
 
+    $scope.setupBackgroundRestrictionChecks = function(platform, version) {
+        if (platform.toLowerCase() == "android") {
+            return $scope.setupAndroidBackgroundRestrictionChecks(version);
+        } else if (platform.toLowerCase() == "ios") {
+            return $scope.setupIOSBackgroundRestrictionChecks(version);
+        } else {
+            alert("Unknown platform, no tracking");
+        }
+    }
+
     let iconMap = (statusState) => statusState? "✅" : "❌";
     let classMap = (statusState) => statusState? "status-green" : "status-red";
 
@@ -80,6 +90,17 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("overallNotificationStatus = "+$scope.overallNotificationStatus+" from ", $scope.notificationChecks);
         $scope.overallNotificationStatusIcon = iconMap($scope.overallNotificationStatus);
         $scope.overallNotificationStatusClass = classMap($scope.overallNotificationStatus);
+    }
+
+    $scope.recomputeBackgroundRestrictionStatus = function() {
+        $scope.backgroundRestrictionChecks.forEach((brc) => {
+            brc.statusIcon = iconMap(brc.statusState);
+            brc.statusClass = classMap(brc.statusState)
+        });
+        $scope.overallBackgroundRestrictionStatus = $scope.backgroundRestrictionChecks.map((nc) => nc.statusState).reduce((pv, cv) => pv && cv);
+        console.log("overallBackgroundRestrictionStatus = "+$scope.overallBackgroundRestrictionStatus+" from ", $scope.backgroundRestrictionChecks);
+        $scope.overallBackgroundRestrictionStatusIcon = iconMap($scope.overallBackgroundRestrictionStatus);
+        $scope.overallBackgroundRestrictionStatusClass = classMap($scope.overallBackgroundRestrictionStatus);
     }
 
     let checkOrFix = function(checkObj, nativeFn, recomputeFn, showError=true) {
@@ -219,6 +240,32 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             .catch((error) => $scope.recomputeNotificationStatus())
     }
 
+    $scope.setupAndroidBackgroundRestrictionChecks = function() {
+        let fixPerms = function() {
+            console.log("fix and refresh backgroundRestriction permissions");
+            return checkOrFix(unusedAppsUnrestrictedCheck, $window.cordova.plugins.BEMDataCollection.fixUnusedAppRestrictions,
+                $scope.recomputeBackgroundRestrictionStatus, showError=true);
+        };
+        let checkPerms = function() {
+            console.log("fix and refresh backgroundRestriction permissions");
+            return checkOrFix(unusedAppsUnrestrictedCheck, $window.cordova.plugins.BEMDataCollection.isUnusedAppUnrestricted,
+                $scope.recomputeBackgroundRestrictionStatus, showError=false);
+        };
+        let unusedAppsUnrestrictedCheck = {
+            name: $translate.instant("intro.appstatus.unusedapprestrict.name"),
+            desc: $translate.instant("intro.appstatus.unusedapprestrict.description.android-disable"),
+            fix: fixPerms,
+            refresh: checkPerms
+        }
+        $scope.backgroundRestrictionChecks = [unusedAppsUnrestrictedCheck];
+        let backgroundRestrictionCheckPromises = $scope.backgroundRestrictionChecks.map((fc) => fc.refresh());
+        console.log("About to initialize backgroundRestriction status");
+        console.log(backgroundRestrictionCheckPromises);
+        Promise.all(backgroundRestrictionCheckPromises)
+            .then((result) => $scope.recomputeBackgroundRestrictionStatus())
+            .catch((error) => $scope.recomputeBackgroundRestrictionStatus())
+    }
+
     $scope.setupPermissionText = function() {
         if($scope.platform.toLowerCase() == "ios") {
           if($scope.osver < 13) {
@@ -248,6 +295,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         $scope.setupLocChecks($scope.platform, $scope.osver);
         $scope.setupFitnessChecks($scope.platform, $scope.osver);
         $scope.setupNotificationChecks($scope.platform, $scope.osver);
+        $scope.setupBackgroundRestrictionChecks($scope.platform, $scope.osver);
     });
 
     $ionicPlatform.on("resume", function() {

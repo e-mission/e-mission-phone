@@ -340,6 +340,13 @@
                     "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
                     "ios": "Please allow."
                 }
+            },
+            "unusedapprestrict": {
+                "name": "Unused apps disabled",
+                "description": {
+                    "android-disable": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "ios": "Please allow."
+                }
             }
         },
         "permissions": {

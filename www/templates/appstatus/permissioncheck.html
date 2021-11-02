@@ -61,21 +61,28 @@ We need to use notifications to inform you if the settings are incorrect. We als
 </ion-list>
 </details>
 
-<div ng-if="backgroundRestricted">
-<h3> Allow background restrictions </h3>
-Your phone restricts app operation in the background. This prevents the app
-from tracking your location or pushing it to the server. Please enable
-background operation for this app with the following instructions:
-{{allowBackgroundRestrictions}}.
+<details>
+<summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> Background restrictions {{overallBackgroundRestrictionIcon}} </h3> </summary>
+
+The app runs in the background most of the time to make your life easier. You
+only need to open it periodically to label trips. Android sometimes restricts
+apps from working in the background. This prevents us from generating an
+accurate trip diary. Please remove background restrictions on this app.
+
+<ion-list>
+<ion-item ng-repeat="backgroundRestrictionCheck in backgroundRestrictionChecks">
+    <div class="row">
+        <div class="col-90" ng-class="backgroundRestrictionCheck.statusClass">{{backgroundRestrictionCheck.name}}</div>
+        <div class="col-10">{{backgroundRestrictionCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{backgroundRestrictionCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="backgroundRestrictionCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="backgroundRestrictionCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
+
 </div>
 
-<div class="row" style="margin-top: 20px;" translate-namespace="consent">
-  <div class="col" style="margin-right: 5px">
-      <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button"><span translate>{{'.button-decline'}}</span></button>
-  </div>
-  <div class="col" style="margin-left: 5px">
-      <button class="button button-block button-positive button-outline" ng-click="agree()" id="consent-button"><span translate>{{'.button-accept'}}</span></button>
-  </div>
-</div>
-</div>
-<div class="consent-space"></div>
