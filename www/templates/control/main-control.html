@@ -14,6 +14,17 @@
         <i class="icon ion-log-out"></i>
       </div>
     </div>
+    
+    <div style="height: 40px; width: 100%">
+      <div
+        ng-disabled="$scope.selectCtrl.showStress"
+        class="heatmap-mode-button hvcenter"
+        ng-click="changeMode()"
+      >
+        {{selectCtrl.modeString}}
+      </div>
+    </div>
+
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.view-privacy'}}</div>
       <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button">
@@ -133,16 +144,6 @@
           </div>
         </ion-item>
       </ion-list>
-    </div>
-
-    <div style="height: 40px; width: 100%">
-      <div
-        ng-disabled="$scope.selectCtrl.showStress"
-        class="heatmap-mode-button hvcenter"
-        ng-click="changeMode()"
-      >
-        {{selectCtrl.modeString}}
-      </div>
     </div>
 
     <div class="control-list-item">
