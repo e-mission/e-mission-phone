@@ -125,7 +125,8 @@ angular.module('emission', ['ionic',
     .useStaticFilesLoader({
       prefix: 'i18n/',
       suffix: '.json'
-    });
+    })
+    .useLocalStorage();
   
   console.log("Ending config");
 
