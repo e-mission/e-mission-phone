@@ -77,7 +77,8 @@
         "check-map": "Check map",
         "collection": "Collection",
         "sync": "Sync",
-        "transition-notify": "Transition Notify"
+        "transition-notify": "Transition Notify",
+        "select-language": "Select language"
     },
 
     "general-settings":{

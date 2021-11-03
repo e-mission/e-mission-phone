@@ -727,45 +727,43 @@ angular
         );
       };
 
-      $scope.modeOptions = [
+      $scope.languageOptions = [
         { text: "english", value: ["en"] },
         { text: "français", value: ["fr"] },
-
       ];
 
-      $scope.changeMode = function () {
+      $scope.changeLanguage = function () {
         $ionicActionSheet.show({
-          buttons: $scope.modeOptions,
-          titleText: $translate.instant("main-heatmap.select-travel-mode"),
-          cancelText: $translate.instant("main-heatmap.cancel"),
+          buttons: $scope.languageOptions,
+          titleText: $translate.instant("control.select-language"),
           buttonClicked: function (index, button) {
-            $scope.selectCtrl.modeString = button.text;
-            $scope.selectCtrl.modes = button.value;
+            $scope.selectCtrl.languageString = button.text;
+            $scope.selectCtrl.language = button.value;
             $translate.use(button.value[0]);
             return true;
           },
         });
       };
-      $scope.displayMode = function () {
-        for (var i in $scope.modeOptions) {
-          var modeMapping = $scope.modeOptions[i];
+      $scope.displayLanguage = function () {
+        for (var i in $scope.languageOptions) {
+          var languageMapping = $scope.languageOptions[i];
           // this is the ALL case
-          if (i == 0 && $scope.selectCtrl.modes == null) {
-            return modeMapping.text;
+          if (i == 0 && $scope.selectCtrl.language == null) {
+            return languageMapping.text;
           }
           // this is the NONE case
-          if (i == 1 && $scope.selectCtrl.modes == []) {
-            return modeMapping.text;
+          if (i == 1 && $scope.selectCtrl.language == []) {
+            return languageMapping.text;
           }
           // TODO: Right now, we have single element arrays. Change this if we want
           // a different representation
           if (
             i > 1 &&
-            $scope.selectCtrl.modes != null &&
-            $scope.selectCtrl.modes.length > 0 &&
-            modeMapping.value[0] == $scope.selectCtrl.modes[0]
+            $scope.selectCtrl.language != null &&
+            $scope.selectCtrl.language.length > 0 &&
+            languageMapping.value[0] == $scope.selectCtrl.language[0]
           ) {
-            return modeMapping.text;
+            return languageMapping.text;
           }
         }
         return "unknown";
@@ -773,7 +771,7 @@ angular
 
       $scope.selectCtrl = {};
 
-      $scope.selectCtrl.modes = null;
-      $scope.selectCtrl.modeString = $scope.modeOptions[0].text; //$translate.instant('main-heatmap.all');
+      $scope.selectCtrl.language = null;
+      $scope.selectCtrl.languageString = $scope.languageOptions[0].text;
     }
   );
