@@ -730,7 +730,6 @@ angular
       $scope.modeOptions = [
         { text: "english", value: ["en"] },
         { text: "français", value: ["fr"] },
-        { text: "italiano", value: ["it"] },
 
       ];
 

@@ -115,10 +115,9 @@ angular.module('emission', ['ionic',
   $translateProvider
     .fallbackLanguage('fr')
     
-    .registerAvailableLanguageKeys(['en', 'fr', 'it'], {
+    .registerAvailableLanguageKeys(['en', 'fr'], {
       'en_*': 'en',
       'fr_*': 'fr',
-      'it_*': 'it',
       '*': 'en'
     })
     .determinePreferredLanguage()
