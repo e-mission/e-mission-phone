@@ -27,7 +27,7 @@
                     <div style="height: 100%; padding-top: 10px;" >
                         <ion-scroll style="height: 40%;" id=mode_list>
                             <ion-list ng-repeat="mode in modeOptions">
-                                <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value" style="color: #585858 !important ;">{{mode.text}}</ion-radio>
+                                <ion-radio ng-click="chooseMode()" ng-model="selected.mode.value" ng-value="mode.value" style="color: #585858 !important ;" translate>{{mode.text}}</ion-radio>
                             </ion-list>
                         </ion-scroll>
                     </div>
@@ -39,7 +39,7 @@
                     <div style="height: 100%;padding-top: 10px;">
                         <ion-scroll style="height: 40%;">
                             <ion-list ng-repeat="purpose in purposeOptions">
-                                <ion-radio ng-click="choosePurpose()" ng-value="purpose.value" ng-model="selected.purpose.value" style="color: #585858 !important ;">{{purpose.text}}</ion-radio>
+                                <ion-radio ng-click="choosePurpose()" ng-value="purpose.value" ng-model="selected.purpose.value" style="color: #585858 !important ;" translate>{{purpose.text}}</ion-radio>
                             </ion-list>
                         </ion-scroll>
                     </div>

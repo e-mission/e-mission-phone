@@ -170,6 +170,37 @@
         "list-pick-a-date": "Pick a date"
     },
 
+    "modes" : {
+        "walk": "Walk",
+        "bike": "Bike",
+        "drove-alone": "Drove Alone",
+        "shared-ride": "Shared Ride",
+        "taxi": "Taxi/Uber/Lyft",
+        "bus": "Bus",
+        "train": "Train",
+        "subway": "Subway",
+        "tramway": "Tramway",
+        "free-shuttle": "Free Shuttle",
+        "other": "Other"
+    },
+
+    "purposes" : {
+        "home": "Home",
+        "work": "To Work",
+        "at-work": "At Work",
+        "school": "School",
+        "transit-transfer": "Transit Transfer",
+        "shopping": "Shopping",
+        "meal": "Meal",
+        "pick-drop": "Pick-up/Drop off",
+        "personal-med": "Personal/Medical",
+        "access-recreation": "Access Recreation",
+        "exercise": "Exercice",
+        "entertainment": "Entertainment",
+        "religious": "Religious",
+        "other": "Other"
+    },
+
     "new_label_tour": {
         "0": "This is the new Label user interface. Label trips here instead of on the Diary page. Trips take longer to appear here, but when they do they will be more accurate and you will be able to use our new features to label them faster.",
         "1": "This is the To Label tab. On this tab, only the trips you need to label will appear; when you label them, they will automatically disappear after a few seconds.",

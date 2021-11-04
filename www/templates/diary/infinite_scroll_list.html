@@ -84,7 +84,7 @@
                     <div class="row input-confirm-row">
                         <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
                             <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
-                                <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+                                <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green" translate>
                                     {{trip.userInput[input.name].text}}
                                 </button>
                             </div>
