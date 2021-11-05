@@ -2,117 +2,118 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="right">
-        <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
+      <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
     </ion-nav-buttons> 
     <ion-nav-buttons side="left">
-        <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-        <!-- <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
-        <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-            <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-            </button>
-            <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-            <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-            </button>
-        </div>
+      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
+      <!-- <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
+      <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
+        <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+        </button>
+        <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()">
+          {{currDay}}
+          <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
+        </button>
+        <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
+        </button>
+      </div>
     </ion-nav-buttons>
     <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
 	<ion-content class="diary-entry">
-        <!--
-        <div  ng-if="inTrip()" class="control-list-item">
-            <div class="control-list-text">Current Trip</div>
-            <div ng-click="redirect()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
-        </div>
-        -->
+    <!--
+    <div  ng-if="inTrip()" class="control-list-item">
+        <div class="control-list-text">Current Trip</div>
+        <div ng-click="redirect()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+    </div>
+    -->
 		<ion-list>
-        <ion-nav-view ></ion-nav-view>
-        <!--
-        This needs to be collection-repeat instead of ng-repeat on android.
-        Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
-        I have no clue why this happens, but it is not worth it to understand
-        this deeply. It is not purely a leaflet issue, but it also clearly something to
-        do with leaflet because scrolling on the details part does work.
+      <ion-nav-view ></ion-nav-view>
+      <!--
+      This needs to be collection-repeat instead of ng-repeat on android.
+      Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
+      I have no clue why this happens, but it is not worth it to understand
+      this deeply. It is not purely a leaflet issue, but it also clearly something to
+      do with leaflet because scrolling on the details part does work.
 
-        If you want to change this from collection-repeat to ng-repeat, you
-        MUST test on android first to make sure that the scrolling works.
-        -->
+      If you want to change this from collection-repeat to ng-repeat, you
+      MUST test on android first to make sure that the scrolling works.
+      -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
-           <div class="start-time-tag">{{tripgj.display_start_time}}</div>
-            <div  style="padding-left: 19%;">
-
-			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div ng-class="listExpandClass" ng-if="tripgj.common.different" id="hidden-{{tripgj.data.id}}">
-                    {{tripgj.common.displayEarlierOrLater}}
-                </div>
-
-
-                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
-                <div ng-click="toDetail(tripgj.data.id)">
+      <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
+        <div class="start-time-tag">{{tripgj.display_start_time}}</div>
+        <div  style="padding-left: 19%;">
+          <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
+            <div ng-class="listExpandClass" ng-if="tripgj.common.different" id="hidden-{{tripgj.data.id}}">
+              {{tripgj.common.displayEarlierOrLater}}
+            </div>
+            <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
+              <div ng-click="toDetail(tripgj.data.id)">
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common.count) }};"></i> -->
-
+                <!-- Menu -->
                 <div class="row">
-                    <div ng-class="tripgj.common.listColLeftClass">
-                        <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
+                  <!-- Distance and time -->
+                  <div ng-class="tripgj.common.listColLeftClass">
+                    <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
 
-                        <a style="font-size: 0.6em; line-height: 0.6em; color: {{tripgj.common.arrowColor}};"><i class="{{ tripgj.common.arrowClass }}" style="font-size: 1em; color: {{ tripgj.common.arrowColor }};"></i>{{ tripgj.common.longerOrShorter[1] }}</a>
+                    <a style="font-size: 0.6em; line-height: 0.6em; color: {{tripgj.common.arrowColor}};"><i class="{{ tripgj.common.arrowClass }}" style="font-size: 1em; color: {{ tripgj.common.arrowColor }};"></i>{{ tripgj.common.longerOrShorter[1] }}</a>
+                  </div>
+                  <!-- Draft -->
+                  <div ng-class="listColRightClass">
+                    <div ng-if="!tripgj.isDraft">
+                      <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="{{sectionPct.color}}"></i>
+                      <div style="margin-top: -5px;">
+                        <a ng-class="listTextClass" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.6em; margin-right: 0.4em;">{{sectionPct.pct}}%</a>
+                      </div>
                     </div>
-
-                    <div ng-class="listColRightClass">
-                        <div ng-if="!tripgj.isDraft">
-                            <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="{{sectionPct.color}}"></i>
-                            <div style="margin-top: -5px;">
-                                <a ng-class="listTextClass" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.6em; margin-right: 0.4em;">{{sectionPct.pct}}%</a>
-                            </div>
-                        </div>
-                        <button ng-if="tripgj.isDraft" class="button bg-unprocessed button-outline button-dark button-small icon-right ion-loop" ng-click="explainDraft($event)" style="font-size: 0.6em; margin-right: 0.4em" translate> {{'.draft'}} </button>
-                    </div>
+                    <button ng-if="tripgj.isDraft" class="button bg-unprocessed button-outline button-dark button-small icon-right ion-loop" ng-click="explainDraft($event)" style="font-size: 0.6em; margin-right: 0.4em" translate> {{'.draft'}} </button>
+                  </div>
                 </div>
 
+                <!-- Map -->
                 <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
+                <!-- Locations -->
                 <div style="padding: 0.5em;" class="row">
-                    <div class="col-90 start-end-addresses-container">
-                        <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
-                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
-                                {{tripgj.start_place.properties.display_name.split(',')[0]}}
-
-                        </div>
-                        <div ng-class="listLocationClass" id="no-border" href="#">
-                        <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-                                {{tripgj.end_place.properties.display_name.split(',')[0]}}
-                        </div>
+                  <div class="col-90 start-end-addresses-container">
+                    <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
+                      <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #33e0bb;"></i>
+                      {{tripgj.start_place.properties.display_name.split(',')[0]}}
                     </div>
-                    <div class="col-10 diary-arrow-container">
-                        <i class="ion-ios-arrow-right"></i>
+                    <div ng-class="listLocationClass" id="no-border" href="#">
+                      <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
+                      {{tripgj.end_place.properties.display_name.split(',')[0]}}
                     </div>
+                  </div>
+                  <div class="col-10 diary-arrow-container">
+                    <i class="ion-ios-arrow-right"></i>
+                  </div>
                 </div>
-             </div>
-             <div class="row" style="padding-left: 5px;padding-right: 5px;">
-              <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
-                {{input.labeltext}}
               </div>
-             </div>
-             <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name }}">
-                    <div ng-if="tripgj.userInput[input.name]" class="input-confirm-container">
-                        <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-green" translate>
-                            {{tripgj.userInput[input.name].text}}
-                        </button>
-                    </div>
-                    <div  ng-if="!tripgj.userInput[input.name]" class="input-confirm-container">
-                        <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
-                        {{input.choosetext}}
-                        </button>
-                    </div>
+              <!-- Mode and purpose labels -->
+              <div class="row" style="padding-left: 5px;padding-right: 5px;">
+                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
+                  {{input.labeltext}}
                 </div>
-             </div>   
+              </div>
+              <!-- Mode and purpose selection -->
+              <div class="row" style="padding-left: 5px;padding-right: 5px;">
+                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name }}">
+                  <div ng-if="tripgj.userInput[input.name]" class="input-confirm-container">
+                    <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-green" translate>
+                      {{tripgj.userInput[input.name].text}}
+                    </button>
+                  </div>
+                  <div  ng-if="!tripgj.userInput[input.name]" class="input-confirm-container">
+                    <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
+                      {{input.choosetext}}
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            </ion-item>
-
-            </div>
-            <div ng-class="tripgj.common.stopTimeTagClass">{{tripgj.display_end_time}}</div>
+          </ion-item>
         </div>
+        <div ng-class="tripgj.common.stopTimeTagClass">{{tripgj.display_end_time}}</div>
+      </div>
 		</ion-list>    
 	</ion-content>
-
-
 </ion-view>
