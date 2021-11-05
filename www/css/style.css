@@ -359,39 +359,20 @@ img.center {
   display: block;
   position: relative;
   width: 187px;
-  height: 191x;
-}
-.footprint-card{
-  height: 140px !important;
+  height: 191px;
 }
 
 #dashboard-calorie.card {
-  background: #fff;
-  color: #54DCC1;
-  border-radius: 5px;
+  background-image: 
+    linear-gradient(60.08deg, rgba(255, 136, 159, 0.9) -22.82%, rgba(17, 35, 203, 0.9) 82.29%),
+    url("../img/cristina-matos-albers-c4sGBJkDrjg-unsplash 1.png");
+  mix-blend-mode: normal;
+  color: #ffffff;
+  border-radius: 25px;
   display: block;
-  margin: 10px;
   position: relative;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
-  /*background: rgba(40,218,183,1);
-  background: -moz-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(40,218,183,1)), color-stop(30%, rgba(99,230,199,1)), color-stop(51%, rgba(94,235,212,1)), color-stop(69%, rgba(87,235,223,1)), color-stop(85%, rgba(99,237,226,1)), color-stop(100%, rgba(127,250,250,1)));
-  background: -webkit-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: -o-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: -ms-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: linear-gradient(135deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#28dab7', endColorstr='#7ffafa', GradientType=1 );*/
-  text-align: center;
-  transition: height 0.3s ease-out;
-  overflow: hidden;
-}
-
-.small-calorie-card{
-  height: 140px !important;
-}
-
-.expanded-calorie-card{
-  height: 370px !important;
+  width: 187px;
+  height: 191px;
 }
 
 /*#dashboard.card.inactive:after{
@@ -469,6 +450,7 @@ h4.dashboard-headers{
   background-repeat: no-repeat;
   padding-left: 25px;
   margin-left: 15px;
+  margin-top: 20px;
 }
 
 .user-calorie-no-percentage{
@@ -484,9 +466,17 @@ h4.dashboard-headers{
 }
 
 .user-calorie{
-  font-weight: 700;
-  color: #54DCC1;
-  font-size: 18px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  color: #ffffff;
+  background-image: url("../img/icons/whatshot_black_24dp\ 1.png");
+  background-repeat: no-repeat;
+  padding-left: 25px;
+  margin-left: 15px;
+  margin-top: 20px;
 }
 
 .percentage-change{
@@ -1724,14 +1714,11 @@ span.rz-bar-wrapper {
 }
 .metric-summary-option-button {
   float: right;
-  color: #54DCC1;
-  background-color: white;
-  height: 20px;
-  border-radius: 5px;
-  width: 80px;
+  background-image: url("../img/icons/mode_edit_black_24dp 1.png");
+  height: 24px;
+  width: 24px;
   margin-right: 5px;
-  margin-top: -28px;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05);
+  margin-top: -30px;
 }
 .full-toggle-container {
  height: 35px;

@@ -1176,31 +1176,4 @@ angular.module('emission.main.metrics',['nvd3',
   $scope.pickToDay = function() {
     ionicDatePicker.openDatePicker($scope.datepickerObjTo);
   }
-
-  $scope.extendFootprintCard = function() {
-    if($scope.expandedf){
-      $scope.expandedf = false;
-    } else {
-      $scope.expandedf = true
-    }
-  }
-  $scope.checkFootprintCardExpanded = function() {
-        return ($scope.expandedf)? "icon ion-chevron-up" : "icon ion-chevron-down";
-  }
-  $scope.extendCalorieCard = function() {
-    if($scope.expandedc){
-      $scope.expandedc = false;
-    } else {
-      $scope.expandedc = true
-    }
-  }
-  $scope.checkCalorieCardExpanded = function() {
-        return ($scope.expandedc)? "icon ion-chevron-up" : "icon ion-chevron-down";
-  }
-
-  $scope.changeCalorieCardHeight = function() {
-        return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
-  }
-
-
 });
