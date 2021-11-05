@@ -132,6 +132,7 @@ angular.module('emission.main', ['emission.main.recent',
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
+  $ionicConfigProvider.navBar.alignTitle('center'); 
 })
 
 .controller('appCtrl', function($scope, $ionicModal, $timeout) {
