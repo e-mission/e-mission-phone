@@ -1,5 +1,26 @@
 /* Empty. Add your own CSS if you like */
 
+@font-face {
+  font-family: 'Lato';
+  src: 
+    url('../fonts/Lato-Black.ttf') format('truetype'),
+    url('../fonts/Lato-BlackItalic.ttf') format('truetype'),
+    url('../fonts/Lato-Bold.ttf') format('truetype'),
+    url('../fonts/Lato-BoldItalic.ttf') format('truetype'),
+    url('../fonts/Lato-Italic.ttf') format('truetype'),
+    url('../fonts/Lato-Light.ttf') format('truetype'),
+    url('../fonts/Lato-LightItalic.ttf') format('truetype'),
+    url('../fonts/Lato-Regular.ttf') format('truetype'),
+    url('../fonts/Lato-Thin.ttf') format('truetype'),
+    url('../fonts/Lato-ThinItalic.ttf') format('truetype')
+    ;
+  font-weight: normal;
+  font-style: normal;
+}
+
+body {
+  font-family: 'Lato';
+}
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
@@ -329,33 +350,19 @@ img.center {
 }
 
 #dashboard-footprint.card {
-  background: #fff;
-  color: #54DCC1;
-  border-radius: 5px;
+  background-image: 
+    linear-gradient(307.28deg, rgba(255, 128, 166, 0.77) -10.18%, rgba(17, 35, 203, 0.77) 99.61%),
+    url("../img/daniel-roe-lpjb_UMOyx8-unsplash 1.png");
+  mix-blend-mode: normal;
+  color: #ffffff;
+  border-radius: 25px;
   display: block;
-  margin: 10px;
-  margin-top: 55px;
   position: relative;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
-  /*background: rgba(40,218,183,1);
-  background: -moz-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: -webkit-gradient(left top, right bottom, color-stop(0%, rgba(40,218,183,1)), color-stop(30%, rgba(99,230,199,1)), color-stop(51%, rgba(94,235,212,1)), color-stop(69%, rgba(87,235,223,1)), color-stop(85%, rgba(99,237,226,1)), color-stop(100%, rgba(127,250,250,1)));
-  background: -webkit-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: -o-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: -ms-linear-gradient(-45deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  background: linear-gradient(135deg, rgba(40,218,183,1) 0%, rgba(99,230,199,1) 30%, rgba(94,235,212,1) 51%, rgba(87,235,223,1) 69%, rgba(99,237,226,1) 85%, rgba(127,250,250,1) 100%);
-  filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#28dab7', endColorstr='#7ffafa', GradientType=1 );*/
-  text-align: center;
-  transition: height 0.3s ease-out;
-  overflow: hidden;
+  width: 187px;
+  height: 191x;
 }
-
-.small-footprint-card{
+.footprint-card{
   height: 140px !important;
-}
-
-.expanded-footprint-card{
-  height: 460px !important;
 }
 
 #dashboard-calorie.card {
@@ -430,13 +437,13 @@ img.center {
 
 h4.dashboard-headers{
   color: #fff;
-  background: #54DCC1;
-  padding-top: 5px;
-  padding-bottom: 5px;
-  margin-top: -1px;
-  font-weight: 700;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
   font-size: 20px;
-  margin-bottom: 0px !important;
+  line-height: 24px;
+  margin-left: 15px;
+  margin-top: 25px;
 }
 
 .user-carbon-no-percentage{
@@ -452,9 +459,16 @@ h4.dashboard-headers{
 }
 
 .user-carbon{
-  font-weight: 700;
-  color: #54DCC1;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
   font-size: 16px;
+  line-height: 19px;
+  color: #ffffff;
+  background-image: url("../img/icons/noun_leaf_3501175 3.png");
+  background-repeat: no-repeat;
+  padding-left: 25px;
+  margin-left: 15px;
 }
 
 .user-calorie-no-percentage{

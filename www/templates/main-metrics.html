@@ -15,34 +15,21 @@
     <div class="metric-change-data-button hvcenter" ng-click="openModal()" translate>{{'.change-data'}}</div>
     <div overflow-scroll="true">
       <!-- Footprint -->
-      <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
+      <div id="dashboard-footprint" class="card footprint-card">
         <div>
-          <div class="circle">
+          <!-- <div class="circle">
             <div id="green-leaf" class="icon ion-leaf">
             </div>
+          </div> -->
+          <h4 class="dashboard-headers" translate>{{'.footprint'}}</h4>
+          <div ng-class="currentQueryForCarbon()">
+            <div class="user-carbon">{{carbonData.userCarbon}}</div>
+            <div ng-if="uictrl.current == 'Last week'">
+              <div id="arrow-color" ng-if="carbonUp" class="icon ion-arrow-up-a"></div>
+              <div id="arrow-color" ng-if="carbonDown" class="icon ion-arrow-down-a"></div>
+              <div class="percentage-change">{{carbonData.changeInPercentage}}{{carbonData.change}}</div>
+            </div>
           </div>
-            <h4 class="dashboard-headers" translate>{{'.footprint'}}</h4>
-            <div ng-if="uictrl.showContent">
-              <div ng-class="currentQueryForCarbon()">
-                <div class="user-carbon">{{carbonData.userCarbon}}</div>
-                <div ng-if="uictrl.current == 'Last week'">
-                  <div id="arrow-color" ng-if="carbonUp" class="icon ion-arrow-up-a"></div>
-                  <div id="arrow-color" ng-if="carbonDown" class="icon ion-arrow-down-a"></div>
-                  <div class="percentage-change">{{carbonData.changeInPercentage}}{{carbonData.change}}</div>
-                </div>
-              </div>
-            </div>
-            <div style="margin-top: 110px;">
-              <div class="card dashboard-list"><b translate>{{'.optimal'}}</b> {{carbonData.optimalCarbon}}</div>
-              <div class="card dashboard-list"><b translate>{{'.average'}}</b> {{carbonData.aggrCarbon}}</div>
-              <div class="card dashboard-list"><b translate>{{'.worst'}}</b> {{carbonData.worstCarbon}}</div>
-              <div class="card dashboard-list"><b translate>{{'.lastweek'}}</b> {{carbonData.lastWeekUserCarbon}}</div>
-              <div class="card dashboard-list"><b>CA 2035:</b> {{carbonData.ca2035}}</div>
-              <div class="card dashboard-list"><b>CA 2050:</b> {{carbonData.ca2050}}</div>
-            </div>
-        </div>
-        <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
-          <i ng-class="checkFootprintCardExpanded()"></i>
         </div>
       </div>
 

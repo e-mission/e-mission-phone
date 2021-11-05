@@ -1198,10 +1198,6 @@ angular.module('emission.main.metrics',['nvd3',
         return ($scope.expandedc)? "icon ion-chevron-up" : "icon ion-chevron-down";
   }
 
-  $scope.changeFootprintCardHeight = function() {
-        return ($scope.expandedf)? "expanded-footprint-card" : "small-footprint-card";
-  }
-
   $scope.changeCalorieCardHeight = function() {
         return ($scope.expandedc)? "expanded-calorie-card" : "small-calorie-card";
   }
