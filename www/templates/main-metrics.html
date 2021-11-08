@@ -14,32 +14,20 @@
   <ion-content class="has-header">
     <div class="metric-change-data-button hvcenter" ng-click="openModal()" translate>{{'.change-data'}}</div>
     <div overflow-scroll="true">
-      <!-- Footprint -->
-      <div id="dashboard-footprint" class="card">
-        <div>
+      <div id="dashboard-top">
+        <!-- Footprint -->
+        <div id="dashboard-footprint" class="card">
           <h4 class="dashboard-headers" translate>{{'.footprint'}}</h4>
           <div ng-class="currentQueryForCarbon()">
             <div class="user-carbon">{{carbonData.userCarbon}}</div>
-            <div ng-if="uictrl.current == 'Last week'">
-              <div id="arrow-color" ng-if="carbonUp" class="icon ion-arrow-up-a"></div>
-              <div id="arrow-color" ng-if="carbonDown" class="icon ion-arrow-down-a"></div>
-              <div class="percentage-change">{{carbonData.changeInPercentage}}{{carbonData.change}}</div>
-            </div>
           </div>
         </div>
-      </div>
-      <!-- Calories -->
-      <div id="dashboard-calorie" class="card">
-        <div>
+        <!-- Calories -->
+        <div id="dashboard-calorie" class="card">
           <h4 class="dashboard-headers" translate>{{'.calories'}}</h4>
-        </div>
-        <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate><!-- {{'.calibrate'}} --></div>
-        <div ng-class="currentQueryForCalorie()">
-          <div class="user-calorie">{{caloriesData.userCalories}} kcal</div>
-          <div ng-if="uictrl.current == 'Last week'">
-            <div id="arrow-color" ng-if="caloriesUp" class="icon ion-arrow-up-a"></div>
-            <div id="arrow-color" ng-if="caloriesDown" class="icon ion-arrow-down-a"></div>
-            <div class="percentage-change">{{caloriesData.changeInPercentage}}{{caloriesData.change}}</div>
+          <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate><!-- {{'.calibrate'}} --></div>
+          <div ng-class="currentQueryForCalorie()">
+            <div class="user-calorie">{{caloriesData.userCalories}} kcal</div>
           </div>
         </div>
       </div>

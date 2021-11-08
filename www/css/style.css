@@ -349,6 +349,10 @@ img.center {
     padding: 0px 49px 0px 0px !important;
 }
 
+#dashboard-top {
+  display: flex;
+}
+
 #dashboard-footprint.card {
   background-image: 
     linear-gradient(307.28deg, rgba(255, 128, 166, 0.77) -10.18%, rgba(17, 35, 203, 0.77) 99.61%),
@@ -356,10 +360,10 @@ img.center {
   mix-blend-mode: normal;
   color: #ffffff;
   border-radius: 25px;
-  display: block;
-  position: relative;
+  display: inline-block;
   width: 187px;
   height: 191px;
+  margin-right: 5px;
 }
 
 #dashboard-calorie.card {
@@ -369,25 +373,11 @@ img.center {
   mix-blend-mode: normal;
   color: #ffffff;
   border-radius: 25px;
-  display: block;
-  position: relative;
+  display: inline-block;
   width: 187px;
   height: 191px;
+  margin-left: 5px;
 }
-
-/*#dashboard.card.inactive:after{
-  content: "";
-  position: absolute;
-  bottom:0px;
-  left:0;
-  height: 200px;
-  display: block;
-}
-
-#dashboard.card.active{
-  max-height: 500px;
-  transition: max-height 0.3s ease-out;
-}*/
 
 #dashboard-bottom.card {
   background-color: #fff;
