@@ -170,7 +170,6 @@ div.labelfilterlist {
   color: #1123CB;
   border-radius: 0px;
   border-width: 0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
   padding: 0 0.1em !important;
 }
 
@@ -302,7 +301,6 @@ div.labelfilterlist {
   color: #1123CB;
 }
 .start-time-tag-inf-scroll {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   text-align: center;
   background-color: #1123CB;
   color: black;
@@ -316,7 +314,6 @@ div.labelfilterlist {
   line-height: 16px;
 }
 .stop-time-tag-inf-scroll {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   text-align: center;
   background-color: #ff5251;
   color: black;
@@ -330,7 +327,6 @@ div.labelfilterlist {
   line-height: 16px;
 }
 .stop-time-tag-lower {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   text-align: center;
   background-color: #ff5251;
   color: black;

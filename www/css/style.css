@@ -119,7 +119,6 @@ body {
 
 .item-thumbnail-left-avatar.activated {
   background-color: transparent;
-  box-shadow: none;
   color: #fff; 
 }
 
@@ -147,7 +146,6 @@ body {
 .button.button-light-green.button-clear {
     border-color: transparent;
     background: none;
-    box-shadow: none;
     color: #1123CB; }
 .button.button-light-green.button-icon {
     border-color: transparent;
@@ -158,7 +156,6 @@ body {
     color: #1123CB; }
 .button.button-light-green.button-outline.active, .button.button-gold.button-outline.activated {
     background-color: #1123CB;
-    box-shadow: none;
     color: #fff; }
 
 progress{
@@ -188,7 +185,6 @@ progress.download{
 progress.download::-webkit-progress-bar{
   background: transparent;
   border-radius: 0;
-  /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
 
 progress.download::-webkit-progress-value{
@@ -204,18 +200,7 @@ progress::-webkit-progress-value{
 progress::-webkit-progress-bar{
   background: #d1d1d1;
   border-radius: 10px;
-  /*box-shadow: 0 2px 5px rgba(0, 0, 0, 0.25) inset;*/
 }
-
-/*.item-content {
-    padding-top: 8px;
-    padding-bottom: 12px;
-    padding-left: 1px;
-    padding-right: 1px;
-    margin-top: -12px;
-    margin-bottom: -4px;
-    height: 70px;
-}*/
 
 progress.golden::-webkit-progress-value{
   background: #ffd700;
@@ -315,7 +300,6 @@ img.center {
   display: block;
   margin: 10px;
   position: relative;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
 }
 
 #costume-tab .button {
@@ -501,7 +485,6 @@ background-image: none !important; }
 
 .tab-nav{
   background-color: #f5f5f5 !important; background-size: 0 !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
     color: #1123CB;
@@ -509,7 +492,6 @@ background-image: none !important; }
 
 ion-header-bar {
   background-color: #ffffff !important;
-  box-shadow: none;
 }
 .ion-view-background{
   background-color: #ffffff !important;
@@ -543,7 +525,7 @@ ion-header-bar {
   color: #303030;
 }
 .date-picker-button {
-  color: #303030 !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
+  color: #303030 !important; padding: 0 15px; border-color: transparent; margin-top: 4px;
                  border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
 }
 .date-picker-arrow {
@@ -581,28 +563,7 @@ a.list-text {
 }
 
 .card-1 {
-  box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
   transition: all 0.3s cubic-bezier(.25,.8,.25,1);
-}
-
-.card-1:hover {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-}
-
-.card-2 {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-}
-
-.card-3 {
-  box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
-}
-
-.card-4 {
-  box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
-}
-
-.card-5 {
-  box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
 button.button.ng-binding {
@@ -747,7 +708,6 @@ html, body, #chart2, svg {
   width: 33%;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #1123CB;
   height: 35px;
   
@@ -780,7 +740,6 @@ html, body, #chart2, svg {
   border-radius: 10px;
   color: #6A6A6A;
   left: 30%;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 #current-start-time-text {
@@ -799,7 +758,6 @@ html, body, #chart2, svg {
 
 #current-speed {
   background-color: #8F8F8F;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2), 0 2px 4px rgba(0, 0, 0, 0.05);
   opacity: 0.9;
   color: white;
   width: 60px;
@@ -845,7 +803,6 @@ Algularjs-slider custom css
  */
 span.rz-bar-wrapper {
     background-color: #f5f5f5;
-    box-shadow: 1px 0 2px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 .rzslider.rz-vertical .rz-bar-wrapper {
@@ -896,15 +853,10 @@ span.rz-bar-wrapper {
   width: 60%;
   height: 35px;
   z-index: 1;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3), 0 2px 4px rgba(0, 0, 0, 0.05);
   position: absolute;
   display: block;
   bottom: 40px;
   left: 20%;
-}
-
-.report-button:active{
-  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(0, 0, 0, 0.05) !important;
 }
 
 .hvcenter {
@@ -930,7 +882,6 @@ span.rz-bar-wrapper {
   left: 18%;
   height: 35px;
   border-width: 0;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
 }
 .heatmap-filter-month {
   position: absolute;
@@ -938,7 +889,6 @@ span.rz-bar-wrapper {
   left: 35%;
   height: 35px;
   border-width: 0;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
 }
 .heatmap-filter-day {
   position: absolute;
@@ -946,7 +896,6 @@ span.rz-bar-wrapper {
   left: 47%;
   height: 35px;
   border-width: 0;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
 }
 .heatmap-filter-hour {
   position: absolute;
@@ -954,7 +903,6 @@ span.rz-bar-wrapper {
   left: 59%;
   height: 35px;
   border-width: 0;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05) !important;
 }
 .heatmap-weekday-container-upper {
   left: 71%;
@@ -962,7 +910,6 @@ span.rz-bar-wrapper {
   position: absolute;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
   color: #1123CB;
   height: 35px;
 }
@@ -972,7 +919,6 @@ span.rz-bar-wrapper {
   position: absolute;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
   color: #1123CB;
   height: 35px;
 }
@@ -982,7 +928,6 @@ span.rz-bar-wrapper {
   margin-right: 10px;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #1123CB;
   height: 35px;
 }
@@ -991,7 +936,6 @@ span.rz-bar-wrapper {
   width: 30%;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
   color: #1123CB;
   height: 35px;
 }
