@@ -233,6 +233,14 @@ div.labelfilterlist {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
 
+
+.list-card {
+  margin: 16px 0;
+  border: 2px solid rgba(17, 35, 203, 0.2);
+  box-sizing: border-box;
+  border-radius: 30px;
+}
+
 .list-card-sm {
   width: 95%;
 }

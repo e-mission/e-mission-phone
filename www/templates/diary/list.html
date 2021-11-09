@@ -6,7 +6,6 @@
     </ion-nav-buttons> 
     <ion-nav-buttons side="left">
       <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-      <!-- <button id="map-fix-button" class="button refresh-tiles" ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button> -->
       <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
         <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
         </button>
@@ -20,12 +19,6 @@
     </ion-nav-buttons>
     
 	<ion-content class="diary-entry">
-    <!--
-    <div  ng-if="inTrip()" class="control-list-item">
-        <div class="control-list-text">Current Trip</div>
-        <div ng-click="redirect()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
-    </div>
-    -->
 		<ion-list>
       <ion-nav-view ></ion-nav-view>
       <!--
@@ -48,29 +41,10 @@
             </div>
             <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
               <div ng-click="toDetail(tripgj.data.id)">
-                <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common.count) }};"></i> -->
-                <!-- Menu -->
-                <div class="row">
-                  <!-- Distance and time -->
-                  <div ng-class="tripgj.common.listColLeftClass">
-                    <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
-
-                    <a style="font-size: 0.6em; line-height: 0.6em; color: {{tripgj.common.arrowColor}};"><i class="{{ tripgj.common.arrowClass }}" style="font-size: 1em; color: {{ tripgj.common.arrowColor }};"></i>{{ tripgj.common.longerOrShorter[1] }}</a>
-                  </div>
-                  <!-- Draft -->
-                  <div ng-class="listColRightClass">
-                    <div ng-if="!tripgj.isDraft">
-                      <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.9em; margin-left: 0.4em; margin-right: 1em; margin-top: 0.2em;" ng-style="{{sectionPct.color}}"></i>
-                      <div style="margin-top: -5px;">
-                        <a ng-class="listTextClass" ng-repeat="sectionPct in tripgj.percentages" style="font-size: 0.6em; margin-right: 0.4em;">{{sectionPct.pct}}%</a>
-                      </div>
-                    </div>
-                    <button ng-if="tripgj.isDraft" class="button bg-unprocessed button-outline button-dark button-small icon-right ion-loop" ng-click="explainDraft($event)" style="font-size: 0.6em; margin-right: 0.4em" translate> {{'.draft'}} </button>
-                  </div>
-                </div>
-
                 <!-- Map -->
                 <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
+                <!-- Distance and time -->
+                <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
                 <!-- Locations -->
                 <div style="padding: 0.5em;" class="row">
                   <div class="col-90 start-end-addresses-container">
