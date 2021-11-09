@@ -207,19 +207,22 @@ h4.dashboard-headers{
 
 .metric-change-data-button{
   margin: auto;
-  width: 120px;
-  border-radius: 20px;
-  background-color: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
-  color: #01D0A7;
-  font-weight: 700;
-  height: 30px;
+  width: 158px;
+  height: 40px;
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
 }
 
 .metric-change-data-button:active{
-  background-color: #01D0A7;
+  background-color:#1123CB;
   color: white;
-  box-shadow: none;
 }
 
 .metric-metric-button {
