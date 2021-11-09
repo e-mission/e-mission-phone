@@ -15,9 +15,9 @@
                 height="30%" width="100%" data-tap-disabled="true">
             </leaflet>
         <div class="row" style="height: 10px;width: 75%;margin: auto;margin-top: 10px;">
-            <div class="col-50" style="background-color: #01D0A7;margin: 2px;border-radius: 10%;"></div>
+            <div class="col-50" style="background-color: #1123CB;margin: 2px;border-radius: 10%;"></div>
             <div ng-if="!secondSlide" class="col-50" style="background-color: #A6A6A6;margin: 2px;border-radius: 10%;"></div>
-            <div ng-if="secondSlide" class="col-50" style="background-color: #01D0A7;margin: 2px;border-radius: 10%;"></div>
+            <div ng-if="secondSlide" class="col-50" style="background-color: #1123CB;margin: 2px;border-radius: 10%;"></div>
         </div>
          <ion-slide-box show-pager="false" ng-init="disableSwipe()" style="background: transparent !important;">
             <ion-slide id="modes">
@@ -46,10 +46,10 @@
             </ion-slide>
         </ion-slide-box>
         <div style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;" ng-if="!secondSlide">
-            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="nextSlide()" translate>{{'.continue'}}</button>
+            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #1123CB;" class="button" ng-click="nextSlide()" translate>{{'.continue'}}</button>
         </div>
         <div style="text-align: center;width: 100%;position: absolute;left: 0;bottom: 0;" ng-if="secondSlide">
-            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #01D0A7;" class="button" ng-click="doneSlide()" translate>{{'.done'}}</button>
+            <button style="width: 100%;color: #fff;font-weight: 600;border: 0px;background-color: #1123CB;" class="button" ng-click="doneSlide()" translate>{{'.done'}}</button>
         </div>
         <!--div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"

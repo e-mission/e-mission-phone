@@ -265,7 +265,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     if (pn == 0) {
       return 'transparent';
     } else if (pn == -1) {
-      return '#33e0bb';
+      return '#1123CB';
     } else {
       return '#ff5251';
     }

@@ -18,7 +18,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
         },
         "android": {
           "senderID": "1096592179912",
-          "iconColor": "#54DCC1",
+          "iconColor": "#1123CB",
           "icon": "ic_question_answer",
           "clearNotifications": true
         }

@@ -25,11 +25,11 @@
   font-size:7px;
 }
 .bg-color{
-  background:#71bc98!important;
+  background:#1123CB!important;
   color:whitesmoke !important;
 }
 .summary-color{
-  background:#1b9e77!important;
+  background:#1123CB!important;
   color:whitesmoke !important;
 }
 .place-color{
@@ -95,7 +95,7 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #33e0bb;
+  background-color: #1123CB;
   border-radius: 6px;
 }
 .leaflet-div-icon-stop {
@@ -125,7 +125,7 @@ a.item-content {
 .btn-input-confirm-green,
 .btn-input-confirm-green:hover,
 .btn-input-confirm-green:active {
-  background-color: #30A64A;
+  background-color: #1123CB;
   color: white;
 }
 /* White confirm buttons are currently unused */
@@ -167,7 +167,7 @@ div.labelfilterlist {
 }
 
 .button.labelfilter {
-  color: #01D0A7;
+  color: #1123CB;
   border-radius: 0px;
   border-width: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
@@ -175,7 +175,7 @@ div.labelfilterlist {
 }
 
 .button.labelfilter.on {
-    background-color: #01D0A7;
+    background-color: #1123CB;
     color: white;
 }
 

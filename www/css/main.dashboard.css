@@ -117,14 +117,14 @@ h4.dashboard-headers{
 
 .percentage-change{
   font-weight: 700;
-  color: #54DCC1;
+  color: #1123CB;
   margin-bottom: 20px;
 }
 
 .calorie-change{
   padding-top: 5px;
   font-weight: 700;
-  color: #54DCC1;
+  color: #1123CB;
 }
 
 .dashboard-list{
@@ -136,7 +136,7 @@ h4.dashboard-headers{
   margin-bottom: 3px !important;
   margin-top: 3px !important;
   width: 90%;
-  background-color: #54DCC1 !important;
+  background-color: #1123CB !important;
   box-shadow: 0 0px 0px rgba(0, 0, 0, 0.3) !important;
 }
   
@@ -149,7 +149,7 @@ h4.dashboard-headers{
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -173,7 +173,7 @@ h4.dashboard-headers{
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -184,7 +184,7 @@ h4.dashboard-headers{
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -231,7 +231,7 @@ h4.dashboard-headers{
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -241,7 +241,7 @@ h4.dashboard-headers{
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -249,7 +249,7 @@ h4.dashboard-headers{
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   height: 35px;
 }
 
@@ -257,7 +257,7 @@ h4.dashboard-headers{
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   opacity: 0.7;
   height: 35px;
 }
@@ -267,7 +267,7 @@ h4.dashboard-headers{
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -276,7 +276,7 @@ h4.dashboard-headers{
   width: 100%;
   border-radius: 5px;
   background-color: white;
-  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);  color: #01D0A7;
+  box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);  color: #1123CB;
   height: 30px;
   overflow: hidden;
   position: relative;
@@ -319,7 +319,7 @@ h4.dashboard-headers{
   width: 25%;
   left: 50%;
   height: 35px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
 }
 
@@ -337,7 +337,7 @@ h4.dashboard-headers{
   width: 25%;
   left: 75%;
   height: 35px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -359,7 +359,7 @@ h4.dashboard-headers{
   position: absolute;
   left: 50%;
   height: 30px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -387,7 +387,7 @@ h4.dashboard-headers{
   border-right-style: solid;
   border-right-width: 1px;
   height: 30px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -439,7 +439,7 @@ h4.dashboard-headers{
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   overflow: hidden;
   border-top-left-radius: 5px;
@@ -453,7 +453,7 @@ h4.dashboard-headers{
   font-size: 12px;
   font-weight: 700;
   overflow: hidden;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -465,7 +465,7 @@ h4.dashboard-headers{
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   overflow: hidden;
   float: left;
@@ -476,7 +476,7 @@ h4.dashboard-headers{
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   overflow: hidden;
   float: left;

@@ -52,29 +52,29 @@ body {
 
 }
 .button.ng-binding.button-positive {
-  background-color: #01D0A7;
+  background-color: #1123CB;
   height: 40px;
 }
 .button.ng-binding.button-assertive {
-  background-color: #01D0A7;
+  background-color: #1123CB;
   height: 40px;
 
 }
 .selected_date_full.ng-binding {
-  color: #01D0A7;
+  color: #1123CB;
 }
 .icon.ion-chevron-left {
- color: #01D0A7;
+ color: #1123CB;
 }
 .icon.ion-chevron-right {
- color: #01D0A7;
+ color: #1123CB;
 }
 .date_col.date_selected {
- background-color: #01D0A7 !important;
+ background-color: #1123CB !important;
 
 }
 .date_col:active {
- background-color: #01D0A7 !important;
+ background-color: #1123CB !important;
 }
 .customButtomIconSize:before {
     font-size: 25px !important;
@@ -137,27 +137,27 @@ body {
 
 .button.button-light-green {
   border-color: transparent;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: #fff; }
 .button.button-light-green:hover {
     color: #fff;
     text-decoration: none; }
 .button.button-light-green.active, .button.button-gold.activated {
-    background-color:#01D0A7; }
+    background-color:#1123CB; }
 .button.button-light-green.button-clear {
     border-color: transparent;
     background: none;
     box-shadow: none;
-    color: #01D0A7; }
+    color: #1123CB; }
 .button.button-light-green.button-icon {
     border-color: transparent;
     background: none; }
 .button.button-light-green.button-outline {
-    border-color: #01D0A7;
+    border-color: #1123CB;
     background: transparent;
-    color: #01D0A7; }
+    color: #1123CB; }
 .button.button-light-green.button-outline.active, .button.button-gold.button-outline.activated {
-    background-color: #01D0A7;
+    background-color: #1123CB;
     box-shadow: none;
     color: #fff; }
 
@@ -192,7 +192,7 @@ progress.download::-webkit-progress-bar{
 }
 
 progress.download::-webkit-progress-value{
-  background: #5eedce;
+  background: #1123CB;
   border-radius: 0;
 }
 
@@ -327,10 +327,10 @@ img.center {
   float:left;
 }
 #challenge.active {
-  color: #01D0A7 !important;
+  color: #1123CB !important;
 }
 #party.active {
-  color: #01D0A7 !important;
+  color: #1123CB !important;
 }
 #add-goal:active {
   color: #ededed !important;
@@ -350,7 +350,7 @@ img.center {
 }
 
 #arrow-color{
-  color: #54DCC1;
+  color: #1123CB;
   font-size: 25px !important;
 }
 
@@ -487,8 +487,8 @@ background-image: none !important; }
 }
 
 .toggle-on-ourcolor-bg{
-  border-color: #01D0A7 !important;
-  background-color: #01D0A7 !important;
+  border-color: #1123CB !important;
+  background-color: #1123CB !important;
 }
 
 .toggle-color{
@@ -504,7 +504,7 @@ background-image: none !important; }
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
-    color: #01D0A7;
+    color: #1123CB;
 }
 
 ion-header-bar {
@@ -679,7 +679,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag {
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
-        background-color: #33e0bb;
+        background-color: #1123CB;
         color: black;
         width: 16%;
         height: 16px;
@@ -707,7 +707,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag-inf-scroll {
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
-        background-color: #33e0bb;
+        background-color: #1123CB;
         color: black;
         width: 16%;
         height: 25px;
@@ -760,7 +760,7 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 
 .diary-checkmark-container i.can-verify {
-  color: #30A64A;
+  color: #1123CB;
   background-color: #ddd;
   border-radius: 5px;
 }
@@ -826,7 +826,7 @@ button.button.back-button.buttons.button-clear.header-item {
   padding: 0 8% 0 8%;
   border-left-width: 5px;
   border-left-style: solid;
-  border-left-color: #01D0A7;
+  border-left-color: #1123CB;
 }
 .succ-title {
   font-weight: 400;
@@ -870,7 +870,7 @@ html, body, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
   
 }
@@ -1085,7 +1085,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 .heatmap-weekday-container-lower {
@@ -1095,7 +1095,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 .heatmap-fixmap-button {
@@ -1105,7 +1105,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 .heatmap-get-button {
@@ -1114,7 +1114,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #1123CB;
   height: 35px;
 }
 
@@ -1130,7 +1130,7 @@ span.rz-bar-wrapper {
   border-bottom-left-radius: 5px;
 
   background-color: white;
-  color: #01D0A7;
+  color: #1123CB;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1143,7 +1143,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1158,7 +1158,7 @@ span.rz-bar-wrapper {
   border-bottom-right-radius: 5px;
 
   background-color: white;
-  color: #01D0A7;
+  color: #1123CB;
 }
 .full-toggle-right-active {
   width: 50%;
@@ -1168,7 +1168,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
 }
 .unit-toggle-container {
@@ -1181,7 +1181,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: white;
-  color: #01D0A7;
+  color: #1123CB;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1192,7 +1192,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1205,7 +1205,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: white;
-  color: #01D0A7;
+  color: #1123CB;
 }
 .unit-toggle-right-active {
   width: 50%;
@@ -1213,7 +1213,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   color: white;
 }
 .userdata-title {
@@ -1221,7 +1221,7 @@ span.rz-bar-wrapper {
 }
 .carbon-goal-chart {
   height: 5px;
-  background-color: #01D0A7;
+  background-color: #1123CB;
   opacity: 0.6;
   border-radius: 2px;
   width: 100%;
