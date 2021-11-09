@@ -13,6 +13,7 @@
   width: 187px;
   height: 191px;
   margin-right: 5px;
+  margin-bottom: 10px;
 }
 
 #dashboard-calorie.card {
@@ -26,6 +27,7 @@
   width: 187px;
   height: 191px;
   margin-left: 5px;
+  margin-bottom: 10px;
 }
 
 #dashboard-bottom .card {
@@ -58,6 +60,7 @@ h4.dashboard-headers{
   line-height: 24px;
   margin-left: 15px;
   margin-top: 30px;
+  text-align: left;
 }
   
 .user-carbon-no-percentage{
@@ -529,14 +532,24 @@ h4.dashboard-headers{
 
 .metric-summary-title {
   padding: 2px;
-  color: #54DCC1;
-  font-weight: 700;
+  color: #FFFFFF;
+  text-align: left;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
 }
 
 .metric-summary-content {
-  color: #54DCC1;
+  color: #FFFFFF;
   font-size: 12px;
-  font-weight: 600;
+  text-align: left;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  line-height: 19px;
 }
 
 .metric-summary-left {
@@ -544,19 +557,17 @@ h4.dashboard-headers{
   margin-top: 10px;
   width: 40px !important;
   margin-left: 10px;
-
+  font-size: 30px !important;
+  color: #FFFFFF;
 }
 
 .metric-summary-right {
-  margin-left: 40px;
-}
-
-.metric-summary-separator {
-  border-bottom-color: #ccc;
-  border-bottom-style: solid;
-  border-bottom-width: 1px;
-  color: #ccc;
-  margin-bottom: 10px;
+  margin-left: 0px;
+  font-family: Lato;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
 }
 
 .metric-summary-option-button {

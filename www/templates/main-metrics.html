@@ -36,92 +36,91 @@
         <ion-slide>
           <div class="card">
             <h4 class="dashboard-headers" translate>{{'.distance'}}</h4>
-              <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #54DCC1;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
-              <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
-                <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
-                  
-                  <div class="metric-summary-left">
-                    <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+            <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #FFFFFF;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 30px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title" translate>
+                    {{ modeTitle(summaryData.defaultSummary.distance[dIndex + i].key) }}
                   </div>
-                  <div class="metric-summary-right">
-                    <div class="metric-summary-title">
-                      {{ summaryData.defaultSummary.distance[dIndex + i].key }}
-                    </div>
-                    <div class="metric-summary-content">
-                      {{ summaryData.defaultSummary.distance[dIndex + i].values }}
-                    </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.distance[dIndex + i].values }}
                   </div>
-                </div> 
-              </div>
+                </div>
+              </div> 
+            </div>
           </div>
         </ion-slide>
         <!-- Trips -->
         <ion-slide>
           <div class="card">
             <h4 class="dashboard-headers" translate>{{'.trips'}}</h4>
-              <div ng-if="summaryData.defaultSummary.count.length == 0" style="margin-bottom: 20px; color: #54DCC1;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
-              <div class="row" ng-repeat="d in summaryData.defaultSummary.count" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
-                <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.count.length" class="col-50" style="margin-bottom: 10px;">
-                  
-                  <div class="metric-summary-left">
-                    <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.count[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+            <div ng-if="summaryData.defaultSummary.count.length == 0" style="margin-bottom: 20px; color: #FFFFFF;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.count" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.count.length" class="col-50" style="margin-bottom: 30px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.count[dIndex + i].key)"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title" translate>
+                    {{ modeTitle(summaryData.defaultSummary.count[dIndex + i].key) }}
                   </div>
-                  <div class="metric-summary-right">
-                    <div class="metric-summary-title">
-                      {{ summaryData.defaultSummary.count[dIndex + i].key }}
-                    </div>
-                    <div class="metric-summary-content">
-                      {{ summaryData.defaultSummary.count[dIndex + i].values }}
-                    </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.count[dIndex + i].values }}
                   </div>
-                </div> 
-              </div>
+                </div>
+              </div> 
+            </div>
           </div>
         </ion-slide>
         <!-- Duration -->
         <ion-slide>
           <div class="card">
             <h4 class="dashboard-headers" translate>{{'.duration'}}</h4>
-              <div ng-if="summaryData.defaultSummary.duration.length == 0" style="margin-bottom: 20px; color: #54DCC1;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
-              <div class="row" ng-repeat="d in summaryData.defaultSummary.duration" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
-                <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.duration.length" class="col-50" style="margin-bottom: 10px;">
-                  
-                  <div class="metric-summary-left">
-                    <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.duration[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+            <div ng-if="summaryData.defaultSummary.duration.length == 0" style="margin-bottom: 20px; color: #FFFFFF;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
+            <div class="row" ng-repeat="d in summaryData.defaultSummary.duration" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.duration.length" class="col-50" style="margin-bottom: 30px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.duration[dIndex + i].key)"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title" translate>
+                    {{ modeTitle(summaryData.defaultSummary.duration[dIndex + i].key) }}
                   </div>
-                  <div class="metric-summary-right">
-                    <div class="metric-summary-title">
-                      {{ summaryData.defaultSummary.duration[dIndex + i].key }}
-                    </div>
-                    <div class="metric-summary-content">
-                      {{ summaryData.defaultSummary.duration[dIndex + i].values }}
-                    </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.duration[dIndex + i].values }}
                   </div>
-                </div> 
-              </div>
+                </div>
+              </div> 
+            </div>
           </div>
         </ion-slide>
         <!-- Median Speed -->
         <ion-slide>
           <div class="card">
             <h4 class="dashboard-headers" translate>{{'.median-speed'}}</h4>
-              <div ng-if="summaryData.userSummary.median_speed.length == 0" style="margin-bottom: 20px; color: #54DCC1;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
-              <div class="row" ng-repeat="d in summaryData.userSummary.median_speed" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
-                <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.userSummary.median_speed.length" class="col-50" style="margin-bottom: 10px;">
-                  
-                  <div class="metric-summary-left">
-                    <i ng-class="'icon ' + modeIcon(summaryData.userSummary.median_speed[dIndex + i].key)" style="font-size: 30px !important; color: #54DCC1;"></i>
+            <div class="row" ng-repeat="d in summaryData.userSummary.median_speed" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
+              <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.userSummary.median_speed.length" class="col-50" style="margin-bottom: 30px;">
+                
+                <div class="metric-summary-left">
+                  <i ng-class="'icon ' + modeIcon(summaryData.userSummary.median_speed[dIndex + i].key)"></i>
+                </div>
+                <div class="metric-summary-right">
+                  <div class="metric-summary-title" translate>
+                    {{ modeTitle(summaryData.defaultSummary.median_speed[dIndex + i].key) }}
                   </div>
-                  <div class="metric-summary-right">
-                    <div class="metric-summary-title">
-                      {{ summaryData.defaultSummary.median_speed[dIndex + i].key }}
-                    </div>
-                    <div class="metric-summary-content">
-                      {{ summaryData.defaultSummary.median_speed[dIndex + i].values }}
-                    </div>
+                  <div class="metric-summary-content">
+                    {{ summaryData.defaultSummary.median_speed[dIndex + i].values }}
                   </div>
-                </div> 
-              </div>
+                </div>
+              </div> 
+            </div>
           </div>
         </ion-slide>
       </ion-slide-box> 

@@ -1072,7 +1072,7 @@ angular.module('emission.main.metrics',['nvd3',
     "ON_FOOT":" ion-android-walk",
     "WALKING":" ion-android-walk",
     "IN_VEHICLE":"ion-speedometer",
-    "CAR":"ion-android-car",
+    "CAR":"ion-android-car", //ion-android-walk
     "BUS": "ion-android-bus",
     "LIGHT_RAIL":"lightrail fas fa-subway",
     "TRAIN": "ion-android-train",
@@ -1081,6 +1081,22 @@ angular.module('emission.main.metrics',['nvd3',
     "UNKNOWN": "ion-ios-help",
     "AIR_OR_HSR": "ion-plane"}
     return icons[key];
+  }
+
+  $scope.modeTitle = function(key) {
+    var titles = {"BICYCLING":"modes.bike",
+    "ON_FOOT": "modes.walk",
+    "WALKING": "modes.walk",
+    "IN_VEHICLE": "modes.car",
+    "CAR": "modes.car",
+    "BUS": "modes.bus",
+    "LIGHT_RAIL":"modes.subway",
+    "TRAIN": "modes.train",
+    "TRAM": "modes.train",
+    "SUBWAY":"modes.subway",
+    "UNKNOWN": "modes.other",
+    "AIR_OR_HSR": "modes.plane"}
+    return titles[key];
   }
 
   $scope.setCurDayFrom = function(val) {

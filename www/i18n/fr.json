@@ -176,6 +176,8 @@
         "subway": "Métro",
         "tramway": "Tram",
         "free-shuttle": "Navette",
+        "car": "Voiture",
+        "plane": "Avion",
         "other": "Autre"
     },
 

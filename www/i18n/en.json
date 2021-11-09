@@ -181,6 +181,8 @@
         "subway": "Subway",
         "tramway": "Tramway",
         "free-shuttle": "Free Shuttle",
+        "car": "Voiture",
+        "plane": "Avion",
         "other": "Other"
     },
 
