@@ -38,7 +38,7 @@
       -->
 
       <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
-        <div class="start-time-tag">{{tripgj.display_start_time}}</div>
+        <div class="start-time-tag hvcenter">{{tripgj.display_start_time}}</div>
         <div  style="padding-left: 19%;">
           <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
             <div ng-class="listExpandClass" ng-if="tripgj.common.different" id="hidden-{{tripgj.data.id}}">
@@ -91,7 +91,7 @@
             </div>
           </ion-item>
         </div>
-        <div ng-class="tripgj.common.stopTimeTagClass">{{tripgj.display_end_time}}</div>
+        <div ng-class="tripgj.common.stopTimeTagClass" class="hvcenter">{{tripgj.display_end_time}}</div>
       </div>
 		</ion-list>    
 	</ion-content>

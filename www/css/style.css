@@ -526,9 +526,9 @@ ion-header-bar {
 
 .date-picker-arrow {
   color: #1123CB !important;
+  flex-direction: column;
+  justify-content: center;
 }
-/* Light theme ends */
-
 
 .earlier-later-expand {
   color: #303030;
