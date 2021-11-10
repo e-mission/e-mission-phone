@@ -475,8 +475,9 @@ background-image: none !important; }
   background-color: #1123CB !important;
 }
 
-.toggle-color{
-  @include toggle-small-style($toggle-on-ourcolor-bg);
+.toggle input:checked + .track {
+  border-color: #1123CB !important;
+  background-color: #1123CB !important;
 }
 
 .control-info{
