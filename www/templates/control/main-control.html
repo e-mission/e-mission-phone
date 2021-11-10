@@ -6,65 +6,84 @@
   <ion-content>
 
     <!-- Profile -->
-    <div
-      ng-click="returnToIntro()"
-      id="switch-user"
-    >
-      <i class="icon ion-log-out"></i>
+    <div class="control-profile-picture-box hvcenter">
+      <img class="control-profile-picture hvcenter" alt="profile picture" src="../../img/icons/person_outline_black_24dp.png">
     </div>
 
-    <h2 translate>{{".state"}}</h2>
+    <h2 class="control-list-header" translate>{{".state"}}</h2>
     <ion-list>
+      <ion-item class="control-list-item">
+        <div class="control-list-status">
+          <img class="control-list-status-icon" alt="wifi icon" src="../../img/icons/wifi_black_24dp 1.png">
+          <span translate>{{".wifi-activation"}}</span>
+        </div>
+        <div class="control-list-status" style="text-align: center;">
+          <img class="control-list-status-icon" alt="tracing icon" src="../../img/icons/place_black_24dp 1.png">
+          <span translate>{{".tracing-activation"}}</span>
+        </div>
+        <div class="control-list-status" style="text-align: right">
+          <img class="control-list-status-icon" alt="signal icon" src="../../img/icons/signal_cellular_alt_black_24dp 1.png">
+          <span translate>{{".signal-activation"}}</span>
+        </div>
+      </ion-item>
       <!-- Waiting for trip -->
-      <ion-item>
-        <div class="control-list-text" translate>{{".waiting-for-trip"}}</div>
+      <ion-item class="control-list-item">
+        <div class="control-list-label" translate>{{".waiting-for-trip"}}</div>
+        <div class="control-list-option control-list-button hvcenter" translate>
+          {{".waiting-for-trip-start"}}
+        </div>
       </ion-item>
       
       <!-- Current position -->
-      <ion-item>
-        <div class="control-list-text" translate>{{".current-position"}}</div>
+      <ion-item class="control-list-item">
+        <div class="control-list-label" translate>{{".current-position"}}</div>
+        <div class="control-list-option" translate>
+          {{".unknown-position"}}
+        </div>
       </ion-item>
     
     </ion-list>
 
-    <h2 translate>{{".parameters"}}</h2>
+    <h2 class="control-list-header" translate>{{".parameters"}}</h2>
     <ion-list>
       <!-- Language -->
-      <ion-item>
-        <div class="control-list-text" translate>{{".select-language"}}</div>
-        <div
-          ng-disabled="$scope.selectCtrl.showStress"
-          class="button hvcenter"
-          ng-click="changeLanguage()"
-        >
+      <ion-item class="control-list-item"
+        ng-disabled="$scope.selectCtrl.showStress"
+        ng-click="changeLanguage()"
+      >
+        <div class="control-list-label" translate>{{".select-language"}}</div>
+        <div class="control-list-option">
           {{selectCtrl.languageString}}
         </div>
       </ion-item>
 
       <!-- Identifier -->
-      <ion-item>
-        <div class="control-list-text" translate>{{'.identifier'}}</div>
-        <div class="control-list-text">{{settings.auth.email}}</div>
+      <ion-item class="control-list-item" ng-click="returnToIntro()">
+        <div class="control-list-label" translate>{{'.identifier'}}</div>
+        <div class="control-list-option">{{settings.auth.email}}</div>
       </ion-item>
 
       <!-- Privacy policy -->
-      <ion-item>
-        <div class="control-list-text" ng-click="viewPrivacyPolicy($event)" translate>{{'.view-privacy'}}</div>
+      <ion-item class="control-list-item" ng-click="viewPrivacyPolicy($event)">
+        <div class="control-list-label" translate>{{'.view-privacy'}}</div>
       </ion-item>
 
       <!-- Tracking -->
-      <ion-item>
-        <div class="control-list-text" translate>{{'.tracking'}}</div>
-        <label
-          ng-click="userStartStopTracking()"
-          class="toggle toggle-color"
-        >
-          <input type="checkbox" ng-checked="settings.collect.trackingOn" />
-          <div class="track">
-            <div class="handle"></div>
-          </div>
-        </label>
+      <ion-item class="control-list-item">
+        <div class="control-list-label" translate>{{'.tracking'}}</div>
+        <div class="control-list-option">
+          <label
+            ng-click="userStartStopTracking()"
+            class="toggle"
+          >
+            <input type="checkbox" ng-checked="settings.collect.trackingOn" />
+            <div class="track">
+              <div class="handle"></div>
+            </div>
+          </label>
+        </div>
       </ion-item>
+
     </ion-list>
 
   </ion-content>

@@ -1,0 +1,53 @@
+.control-profile-picture-box {
+  margin:auto;
+  padding:auto;
+  width: 90px;
+  height: 90px;
+  border-radius: 50%;
+  background-color: #1123CB;
+  overflow:hidden;
+}
+
+.control-list-header {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  padding: 15px;
+}
+
+.control-list-label {
+  float: left;
+  height: 24px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.control-list-option {
+  color: #1123CB;
+  float: right;
+  height: 24px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+}
+
+.control-list-status {
+  width: 33%;
+  float: left;
+}
+
+.control-list-button {
+  width: 98px;
+  /* height: 40px; */ /* too big */
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  color: black;
+  text-align: center;
+  padding: 0px;
+  margin: 0px;
+}

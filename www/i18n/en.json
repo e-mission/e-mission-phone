@@ -53,13 +53,18 @@
     "control":{
         "profile": "Profile",
         "state": "State",
+        "wifi-activation": "Wifi",
+        "tracing-activation": "Active",
+        "signal-activation": "Active",
         "waiting-for-trip": "Waiting For Trip",
+        "waiting-for-trip-start": "Start",
         "current-position": "Current Position",
+        "unknown-position": "unknown",
         "parameters": "Parameters",
         "identifier": "Identifier",
         "tracking": "Tracking",
         "view-privacy": "View Privacy Policy",
-        "select-language": "Select language"
+        "select-language": "Languages"
     },
 
     "general-settings":{
