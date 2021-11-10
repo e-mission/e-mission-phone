@@ -134,6 +134,7 @@
     },
 
     "diary": {
+        "diary": "Journal",
         "current-trip": "Déplacement en cours",
         "current-yesterday": "Hier",
         "current-weekago": "Semaine dernière",

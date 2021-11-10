@@ -139,6 +139,7 @@
     },
 
     "diary": {
+        "diary": "Diary",
         "current-trip": "Current Trip",
         "current-yesterday": "Yesterday",
         "current-weekago": "Week ago",

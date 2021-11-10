@@ -1,24 +1,29 @@
-<ion-view ng-class="ion-view-background" translate-namespace="diary">
-    <ion-nav-bar class="bar-stable">
-    </ion-nav-bar>
-    <ion-nav-buttons side="right">
-      <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
-    </ion-nav-buttons> 
-    <ion-nav-buttons side="left">
-      <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
-      <div class="buttons dark-color" style="text-align:center; background-color: transparent !important;" id="toget">
-        <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
-        </button>
-        <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()">
-          {{currDay}}
-          <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
-        </button>
-        <button class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow" ng-click="nextDay()">
-        </button>
-      </div>
-    </ion-nav-buttons>
-    
+<ion-view
+  ng-class="ion-view-background"
+  view-title="{{'diary.diary' | translate}}"
+  translate-namespace="diary"
+>
+  <ion-nav-bar class="bar-stable">
+  </ion-nav-bar>
+
+  <!-- Refresh button -->
+  <ion-nav-buttons side="right">
+    <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
+  </ion-nav-buttons> 
+
 	<ion-content class="diary-entry">
+
+    <!-- Date picker -->
+    <div style="text-align:center;">
+      <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+      </button>
+      <button id="date-picker-button" class="date-picker-button" ng-click="pickDay()">
+        {{currDay}}
+      </button>
+      <button class="button button-icon icon ion-arrow-right-b date-picker-arrow" ng-click="nextDay()">
+      </button>
+    </div>
+
 		<ion-list>
       <ion-nav-view ></ion-nav-view>
       <!--

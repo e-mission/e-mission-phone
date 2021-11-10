@@ -526,11 +526,23 @@ ion-header-bar {
   color: #303030;
 }
 .date-picker-button {
-  color: #303030 !important; padding: 0 15px; border-color: transparent; margin-top: 4px;
-                 border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
+  margin: auto;
+  width: 158px;
+  height: 40px;
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 16px;
+  line-height: 19px;
+  text-align: center;
+  background-color: #ffffff;
 }
+
 .date-picker-arrow {
-  color: #303030 !important; margin-top: 4px; background-color: transparent !important;
+  color: #1123CB !important;
 }
 /* Light theme ends */
 
