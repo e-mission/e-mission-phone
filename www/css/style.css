@@ -449,7 +449,6 @@ background-image: none !important; }
   position: relative;
 }
 
-/* Light theme */
 .control-icon-button{
   text-align: center;
   float: right;
@@ -459,11 +458,6 @@ background-image: none !important; }
   padding-top: 16px;
   width: 64px;
   font-size:20px;
-}
-
-
-#switch-user.control-icon-button{
-  background-color: #E0A1A1 !important;
 }
 
 .gray-icon.control-icon-button{
@@ -591,16 +585,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .nav-bar-title {
   color: #303030; opacity: 0.7;
 }
-/* Profile tab */
-.control-list-item {
-  background-color: white! important; height: 50px; margin-top: 0.5px;
-}
-.control-list-text {
-  background-color: white! important; padding: 15px; float: left;
-}
-.control-list-toggle {
-  float: right; margin-top: 5px; margin-right: 2px;
-}
+
 /* Diary list tab */
 
 .lightrail {

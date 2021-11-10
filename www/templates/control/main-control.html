@@ -6,49 +6,66 @@
   <ion-content>
 
     <!-- Profile -->
-    <div class="control-list-item">
-      <div class="control-list-text">{{settings.auth.email}}</div>
-      <div
-        ng-click="returnToIntro()"
-        id="switch-user"
-        class="control-icon-button"
-      >
-        <i class="icon ion-log-out"></i>
-      </div>
+    <div
+      ng-click="returnToIntro()"
+      id="switch-user"
+    >
+      <i class="icon ion-log-out"></i>
     </div>
+
+    <h2 translate>{{".state"}}</h2>
+    <ion-list>
+      <!-- Waiting for trip -->
+      <ion-item>
+        <div class="control-list-text" translate>{{".waiting-for-trip"}}</div>
+      </ion-item>
+      
+      <!-- Current position -->
+      <ion-item>
+        <div class="control-list-text" translate>{{".current-position"}}</div>
+      </ion-item>
     
-    <!-- Language -->
-    <div style="height: 40px; width: 100%">
-      <div
-        ng-disabled="$scope.selectCtrl.showStress"
-        class="button hvcenter"
-        ng-click="changeLanguage()"
-      >
-        {{selectCtrl.languageString}}
-      </div>
-    </div>
+    </ion-list>
 
-    <!-- Privacy policy -->
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.view-privacy'}}</div>
-      <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button">
-        <i class="ion-eye"></i>
-      </div>
-    </div>
-
-    <!-- Tracking -->
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.tracking'}}</div>
-      <label
-        ng-click="userStartStopTracking()"
-        class="toggle control-list-toggle toggle-color"
-      >
-        <input type="checkbox" ng-checked="settings.collect.trackingOn" />
-        <div class="track">
-          <div class="handle"></div>
+    <h2 translate>{{".parameters"}}</h2>
+    <ion-list>
+      <!-- Language -->
+      <ion-item>
+        <div class="control-list-text" translate>{{".select-language"}}</div>
+        <div
+          ng-disabled="$scope.selectCtrl.showStress"
+          class="button hvcenter"
+          ng-click="changeLanguage()"
+        >
+          {{selectCtrl.languageString}}
         </div>
-      </label>
-    </div>
+      </ion-item>
+
+      <!-- Identifier -->
+      <ion-item>
+        <div class="control-list-text" translate>{{'.identifier'}}</div>
+        <div class="control-list-text">{{settings.auth.email}}</div>
+      </ion-item>
+
+      <!-- Privacy policy -->
+      <ion-item>
+        <div class="control-list-text" ng-click="viewPrivacyPolicy($event)" translate>{{'.view-privacy'}}</div>
+      </ion-item>
+
+      <!-- Tracking -->
+      <ion-item>
+        <div class="control-list-text" translate>{{'.tracking'}}</div>
+        <label
+          ng-click="userStartStopTracking()"
+          class="toggle toggle-color"
+        >
+          <input type="checkbox" ng-checked="settings.collect.trackingOn" />
+          <div class="track">
+            <div class="handle"></div>
+          </div>
+        </label>
+      </ion-item>
+    </ion-list>
 
   </ion-content>
 </ion-view>
