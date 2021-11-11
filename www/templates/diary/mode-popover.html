@@ -4,7 +4,7 @@
    </ion-header-bar>
    <ion-content>
         <ion-list ng-repeat="mode in inputParams.MODE.options">
-		    <ion-radio ng-click="choose('MODE')" ng-model="selected.MODE.value" ng-value="mode.value" translate>{{mode.text}}</ion-radio>
+		    <ion-radio ng-click="choose('MODE')" ng-model="selected.MODE.value" ng-value="mode.value"><span translate>{{mode.text}}</span></ion-radio>
 		</ion-list>
    </ion-content>
 </ion-popover-view>
