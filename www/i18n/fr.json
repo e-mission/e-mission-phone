@@ -128,7 +128,7 @@
         "history": "Historique",
         "began": "A commencé {{startTime}}",
         "report-incident": "Signalez un Incident",
-        "draft": "BROUILLON",
+        "draft": "Brouillon",
         "distance-in-time": "{{distance}} km en {{time}}",
         "date-distance-in-time": "{{date}}: {{distance}} km en {{time}}",
         "distance": "Distance",

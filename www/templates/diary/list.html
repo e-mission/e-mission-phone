@@ -37,61 +37,83 @@
       MUST test on android first to make sure that the scrolling works.
       -->
 
-      <div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
-        <div class="start-time-tag hvcenter">{{tripgj.display_start_time}}</div>
-        <div  style="padding-left: 19%;">
-          <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-            <div ng-class="listExpandClass" ng-if="tripgj.common.different" id="hidden-{{tripgj.data.id}}">
-              {{tripgj.common.displayEarlierOrLater}}
-            </div>
-            <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
-              <div ng-click="toDetail(tripgj.data.id)">
-                <!-- Map -->
-                <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
-                <!-- Distance and time -->
-                <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
-                <!-- Locations -->
-                <div style="padding: 0.5em;" class="row">
-                  <div class="col-90 start-end-addresses-container">
-                    <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
-                      <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #1123CB;"></i>
-                      {{tripgj.start_place.properties.display_name.split(',')[0]}}
-                    </div>
-                    <div ng-class="listLocationClass" id="no-border" href="#">
-                      <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-                      {{tripgj.end_place.properties.display_name.split(',')[0]}}
-                    </div>
-                  </div>
-                  <div class="col-10 diary-arrow-container">
-                    <i class="ion-ios-arrow-right"></i>
-                  </div>
+      <div collection-repeat="tripgj in data.currDayTripWrappers">
+        
+        <ion-item class="diary-item">
+
+          <div class="diary-start-time-tag">{{tripgj.display_start_time}}</div>
+
+          <div class="diary-card">
+
+            <!-- Map -->
+            <leaflet class="diary-map" geojson="tripgj" id="$index" defaults="defaults" ng-click="toDetail(tripgj.data.id)"></leaflet>
+
+            <div class="diary-infos">
+
+              <!-- Button for details -->
+              <div class="diary-detail-button ion-ios-arrow-right" ng-click="toDetail(tripgj.data.id)"></div>
+
+              <!-- Distance and time -->
+              <div
+                class="diary-distance-time"
+                translate=".distance-in-time"
+                translate-value-distance="{{ tripgj.display_distance }}"
+                translate-value-time="{{ tripgj.display_time }}"
+              >
+              </div>
+              
+              <!-- Modes percentages -->
+              <div class="diary-modes-percents">
+                <span
+                  class="diary-modes-percents-text"
+                  ng-if="!tripgj.isDraft"
+                  ng-repeat="sectionPct in tripgj.percentages"
+                >
+                  <span class="diary-modes-percents-icon {{sectionPct.icon}}"></span>
+                  <span>{{sectionPct.pct}}%</span>
+                </span>
+                <button
+                  class="diary-button"
+                  ng-if="tripgj.isDraft"
+                  ng-click="explainDraft($event)"
+                  translate
+                >
+                  {{'.draft'}}
+                </button>
+              </div>
+
+              <!-- Locations -->
+              <div class="diary-route">
+                <div class="diary-street">
+                  <i class="icon ion-ios-location" style="color: #1123CB;"></i>
+                  {{tripgj.start_place.properties.display_name.split(',')[0]}}
+                </div>
+                <div class="diary-street">
+                  <i class="icon ion-ios-location" style="color: #ff5251;"></i>
+                  {{tripgj.end_place.properties.display_name.split(',')[0]}}
                 </div>
               </div>
-              <!-- Mode and purpose labels -->
-              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
-                  {{input.labeltext}}
-                </div>
-              </div>
+            
               <!-- Mode and purpose selection -->
-              <div class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name }}">
-                  <div ng-if="tripgj.userInput[input.name]" class="input-confirm-container">
-                    <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-green" translate>
-                      {{tripgj.userInput[input.name].text}}
-                    </button>
-                  </div>
-                  <div  ng-if="!tripgj.userInput[input.name]" class="input-confirm-container">
-                    <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
-                      {{input.choosetext}}
-                    </button>
-                  </div>
-                </div>
+              <div ng-repeat="input in userInputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
+                <button class="diary-button" ng-click ="openPopover($event, tripgj, input.name)">
+                  <span ng-if="tripgj.userInput[input.name]" translate>
+                    {{tripgj.userInput[input.name].text}}
+                  </span>
+                  <span ng-if="!tripgj.userInput[input.name]" translate>
+                    {{input.choosetext}}
+                  </span>
+                </button>
               </div>
+              
             </div>
-          </ion-item>
-        </div>
-        <div ng-class="tripgj.common.stopTimeTagClass" class="hvcenter">{{tripgj.display_end_time}}</div>
+            
+          </div>
+
+          <div class="diary-stop-time-tag">{{tripgj.display_end_time}}</div>
+          
+        </ion-item>
+
       </div>
 		</ion-list>    
 	</ion-content>

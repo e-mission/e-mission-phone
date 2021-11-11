@@ -3,11 +3,6 @@
   padding:0px !important;
 }
 
-/*.item {
-  border:0px !important;
-
-}*/
-
 .main {
     padding-top:50px;
     padding-bottom:50px !important;
@@ -128,14 +123,7 @@ a.item-content {
   background-color: #1123CB;
   color: white;
 }
-/* White confirm buttons are currently unused */
-/* .btn-input-confirm-white,
-.btn-input-confirm-white:hover,
-.btn-input-confirm-white:active {
-  background-color: #ddd;
-  color: #333;
-  font-size: 0.8em;
-} */
+
 .btn-input-confirm {
   line-height: 30px;
   min-height: 30px;
@@ -157,9 +145,11 @@ a.item-content {
   width: 75%;
 }
 
-#diary-item {
+.diary-item {
   padding: 0;
+  margin: 1rem;
   border-width: 0;
+  background-color: transparent;
 }
 
 div.labelfilterlist {
@@ -188,7 +178,6 @@ div.labelfilterlist {
   border-bottom-right-radius: 5px;
 }
 
-
 .diary-more-container i {
   font-size: 32px;
 }
@@ -209,33 +198,9 @@ div.labelfilterlist {
   color: #B8E6C2;
 }
 
-.list-card-sm {
-  width: 95%;
-}
-.list-card-md {
-  width: 95%;
-}
-.list-card-lg {
- width: 95%;
-}
-.list-card .row {
-  padding-left: 5px;
-  padding-right: 5px;
-}
-.list-col-left-margin {
-  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
-}
-.list-col-left {
-  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
-}
-.list-col-right {
-  text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
-}
-
-
 .list-card {
   margin: 16px 0;
-  border: 2px solid rgba(17, 35, 203, 0.2);
+  border: 2px solid #CFD3F5;
   box-sizing: border-box;
   border-radius: 30px;
 }
@@ -262,43 +227,46 @@ div.labelfilterlist {
 .list-col-right {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
-.start-time-tag {
-  left: 1%;
-  top: 15px;
-  position: absolute;
+.diary-start-time-tag {
   width: 68px;
   height: 30px;
   background: #1123CB;
   border: 2px solid #1123CB;
   box-sizing: border-box;
   border-radius: 50px;
-
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: 'Lato';
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
-  line-height: 16px;
   text-align: center;
   color: #FFFFFF;
+  position: relative;
+  bottom: -15px;
 }
-.stop-time-tag {
-  left: 1%;
-  bottom: 15px;
-  position: absolute;
+
+.diary-stop-time-tag {
   width: 68px;
   height: 30px;
-  background: rgba(17, 35, 203, 0.2);
-  border: 2px rgba(17, 35, 203, 0.2);
+  background: #CFD3F5;
+  border: 2px #CFD3F5;
   box-sizing: border-box;
   border-radius: 50px;
-
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   font-family: 'Lato';
   font-style: normal;
   font-weight: bold;
   font-size: 13px;
-  line-height: 16px;
   text-align: center;
   color: #1123CB;
+  position: relative;
+  top: -15px;
 }
 .start-time-tag-inf-scroll {
   text-align: center;
@@ -343,4 +311,89 @@ div.labelfilterlist {
 .start-end-addresses-container {
   display: inline-block;
   width: calc(100% - 25px);
+}
+
+.diary-map {
+  float: left;
+  width: 50%;
+  height: 286px; /* 12px larger than diary-card to hide OpenStreetMap logo*/
+  z-index: -1;
+}
+
+.diary-infos {
+  float: right;
+  width: 50%;
+  padding-left: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 100%;
+}
+
+.diary-card {
+  width: 100%;
+  height: 274px;
+  margin: 0;
+  border: 2px solid #CFD3F5;
+  box-sizing: border-box;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.diary-button {
+  width: 15vh;
+  height: 30px;
+  margin: 2px;
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  background-color: #ffffff;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.diary-distance-time {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.diary-route {
+  margin: 5px 0;
+}
+
+.diary-street {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.diary-detail-button {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  right: 5px;
+  height: 100%;
+  width: 5%;
+  color: #1123CB;
+  font-size: 32px;
+}
+
+.diary-modes-percents {
+  margin: 5px 0;
+}
+
+.diary-modes-percents-text {
+  color: #1123CB;
+}
+
+.diary-modes-percents-icon {
+  color: #1123CB;
 }
