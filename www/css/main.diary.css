@@ -324,10 +324,11 @@ div.labelfilterlist {
 .diary-infos {
   float: right;
   width: 50%;
-  padding-left: 1rem;
+  padding: 10% 5%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  /* justify-content: center; */
+  justify-content: space-between;
   height: 100%;
 }
 
@@ -342,7 +343,7 @@ div.labelfilterlist {
 }
 
 .diary-button {
-  width: 15vh;
+  width: 100%;
   height: 30px;
   margin: 2px;
   border: 2px solid #1123CB;
@@ -354,6 +355,22 @@ div.labelfilterlist {
   font-weight: normal;
   font-size: 13px;
 }
+
+.diary-draft-button {
+  width: 100%;
+  height: 30px;
+  margin: 2px;
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  background-color: #1123CB;
+  color: #ffffff;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+}
+
 
 .diary-distance-time {
   font-family: 'Lato';
@@ -371,20 +388,19 @@ div.labelfilterlist {
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
+  white-space: normal;
 }
 
 .diary-detail-button {
-  position: absolute;
+  float: right;
   display: flex;
   flex-direction: column;
   justify-content: center;
   padding: 0;
   margin: 0;
-  right: 5px;
   height: 100%;
-  width: 5%;
   color: #1123CB;
-  font-size: 32px;
+  font-size: 13px;
 }
 
 .diary-modes-percents {

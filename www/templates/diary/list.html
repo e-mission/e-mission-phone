@@ -59,9 +59,6 @@
 
             <div class="diary-infos">
 
-              <!-- Button for details -->
-              <div class="diary-detail-button ion-ios-arrow-right" ng-click="toDetail(tripgj.data.id)"></div>
-
               <!-- Distance and time -->
               <div
                 class="diary-distance-time"
@@ -82,37 +79,44 @@
                   <span>{{sectionPct.pct}}%</span>
                 </span>
                 <button
-                  class="diary-button"
+                  class="diary-draft-button"
                   ng-if="tripgj.isDraft"
                   ng-click="explainDraft($event)"
-                  translate
                 >
-                  {{'.draft'}}
+                  <img class="control-list-status-icon" src="../../img/icons/help_outline_black_24dp 1.png" alt="help">
+                  <span translate>{{'.draft'}}</span>
                 </button>
               </div>
 
               <!-- Locations -->
               <div class="diary-route">
-                <div class="diary-street">
+
+                <!-- Button for details -->
+                <div class="diary-detail-button ion-ios-arrow-right" ng-click="toDetail(tripgj.data.id)"></div>
+                
+                <div class="diary-street"> <!-- origin -->
                   <i class="icon ion-ios-location" style="color: #1123CB;"></i>
                   {{tripgj.start_place.properties.display_name.split(',')[0]}}
                 </div>
-                <div class="diary-street">
+                <div class="diary-street"> <!-- destination -->
                   <i class="icon ion-ios-location" style="color: #ff5251;"></i>
                   {{tripgj.end_place.properties.display_name.split(',')[0]}}
                 </div>
+
               </div>
             
               <!-- Mode and purpose selection -->
-              <div ng-repeat="input in userInputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
-                <button class="diary-button" ng-click ="openPopover($event, tripgj, input.name)">
-                  <span ng-if="tripgj.userInput[input.name]" translate>
-                    {{tripgj.userInput[input.name].text}}
-                  </span>
-                  <span ng-if="!tripgj.userInput[input.name]" translate>
-                    {{input.choosetext}}
-                  </span>
-                </button>
+              <div> <!-- container to keep buttons together -->
+                <div ng-repeat="input in userInputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
+                  <button class="diary-button" ng-click ="openPopover($event, tripgj, input.name)">
+                    <span ng-if="tripgj.userInput[input.name]" translate>
+                      {{tripgj.userInput[input.name].text}}
+                    </span>
+                    <span ng-if="!tripgj.userInput[input.name]" translate>
+                      {{input.choosetext}}
+                    </span>
+                  </button>
+                </div>
               </div>
               
             </div>
