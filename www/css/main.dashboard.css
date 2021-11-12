@@ -569,3 +569,7 @@ h4.dashboard-headers{
   margin-right: 5px;
   margin-top: -30px;
 }
+
+.metric-date-range {
+  text-align: center;
+}

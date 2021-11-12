@@ -1099,6 +1099,22 @@ angular.module('emission.main.metrics',['nvd3',
     return titles[key];
   }
 
+  $scope.diffDateInDays = '';
+  var setDiffDateInDays = function() {
+    var date1 = moment.utc($scope.selectCtrl.fromDateTimestamp);
+    var date2 = moment.utc($scope.selectCtrl.toDateTimestamp).set({'hour': 23});
+    var days = moment(date2).diff(date1, 'days') + 1;
+    if (days < 1) {
+      $scope.diffDateInDays = '';
+    }
+    else if (days == 1) {
+      $scope.diffDateInDays = days + ' ' + $translate.instant('metrics.day');
+    }
+    else {
+      $scope.diffDateInDays = days + ' ' + $translate.instant('metrics.days');
+    }
+  };
+
   $scope.setCurDayFrom = function(val) {
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
@@ -1106,7 +1122,7 @@ angular.module('emission.main.metrics',['nvd3',
     } else {
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
-
+    setDiffDateInDays();
   };
   $scope.setCurDayTo = function(val) {
     if (val) {
@@ -1115,7 +1131,7 @@ angular.module('emission.main.metrics',['nvd3',
     } else {
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
-
+    setDiffDateInDays();
   };
 
 
@@ -1184,6 +1200,7 @@ angular.module('emission.main.metrics',['nvd3',
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
+  setDiffDateInDays();
 
   $scope.pickFromDay = function() {
     ionicDatePicker.openDatePicker($scope.datepickerObjFrom);

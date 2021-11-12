@@ -13,6 +13,7 @@
 
   <ion-content class="has-header">
     <div class="metric-change-data-button hvcenter" ng-click="openModal()" translate>{{'.change-data'}}</div>
+    <div class="metric-date-range" ng-if="uictrl.showRange">{{diffDateInDays}}</div>
     <div overflow-scroll="true">
       <div id="dashboard-top">
         <!-- Footprint -->

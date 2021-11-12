@@ -117,7 +117,9 @@
         "carbon-data-change-decrease": " de diminution en 1 semaine",
         "pick-a-date": "Choisissez la date",
         "trips": "déplacements",
-        "custom": "Dates personnalisées"
+        "custom": "Dates personnalisées",
+        "day": "jour",
+        "days": "jours"
     },
 
     "diary": {
