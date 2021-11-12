@@ -46,7 +46,16 @@
           <div class="diary-card">
 
             <!-- Map -->
-            <leaflet class="diary-map" geojson="tripgj" id="$index" defaults="defaults" ng-click="toDetail(tripgj.data.id)"></leaflet>
+            <leaflet
+              class="diary-map"
+              geojson="tripgj"
+              id="$index"
+              defaults="defaults"
+              ng-click="toDetail(tripgj.data.id)"
+              height="286px" 
+            >
+              <!-- height is assigned direcly to the html instead of css, otherwise it does not zoom on startup. Mystery. -->
+            </leaflet>
 
             <div class="diary-infos">
 

@@ -316,7 +316,8 @@ div.labelfilterlist {
 .diary-map {
   float: left;
   width: 50%;
-  height: 286px; /* 12px larger than diary-card to hide OpenStreetMap logo*/
+  /* height is assigned direcly to the html, otherwise it does not zoom on startup. Mystery. */
+  /* height: 286px; */ /* 12px larger than diary-card to hide OpenStreetMap logo*/
   z-index: -1;
 }
 
