@@ -1,6 +1,7 @@
 #dashboard-top {
-    display: flex;
-  }
+  display: flex;
+  margin: auto;
+}
   
 #dashboard-footprint.card {
   background-image: 
@@ -79,13 +80,9 @@ h4.dashboard-headers{
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 19px;
   color: #ffffff;
-  background-image: url("../img/icons/noun_leaf_3501175 3.png");
-  background-repeat: no-repeat;
-  padding-left: 25px;
   margin-left: 15px;
-  margin-top: 20px;
+  margin-top: 50px;
 }
 
 .user-calorie-no-percentage{
@@ -105,13 +102,9 @@ h4.dashboard-headers{
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 19px;
   color: #ffffff;
-  background-image: url("../img/icons/whatshot_black_24dp\ 1.png");
-  background-repeat: no-repeat;
-  padding-left: 25px;
   margin-left: 15px;
-  margin-top: 20px;
+  margin-top: 50px;
 }
 
 .percentage-change{
@@ -562,12 +555,12 @@ h4.dashboard-headers{
 }
 
 .metric-summary-option-button {
-  float: right;
+  position: absolute;
+  top: 15px;
+  right: 15px;
   background-image: url("../img/icons/mode_edit_black_24dp 1.png");
   height: 24px;
   width: 24px;
-  margin-right: 5px;
-  margin-top: -30px;
 }
 
 .metric-date-range {

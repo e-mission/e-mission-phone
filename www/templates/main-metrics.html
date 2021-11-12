@@ -19,16 +19,18 @@
         <!-- Footprint -->
         <div id="dashboard-footprint" class="card">
           <h4 class="dashboard-headers" translate>{{'.footprint'}}</h4>
-          <div ng-class="currentQueryForCarbon()">
-            <div class="user-carbon">{{carbonData.userCarbon}}</div>
+          <div class="user-carbon">
+            <img src="../img/icons/noun_leaf_3501175 3.png" alt="leaf"></img>
+            {{carbonData.userCarbon}}
           </div>
         </div>
         <!-- Calories -->
         <div id="dashboard-calorie" class="card">
           <h4 class="dashboard-headers" translate>{{'.calories'}}</h4>
-          <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate><!-- {{'.calibrate'}} --></div>
-          <div ng-class="currentQueryForCalorie()">
-            <div class="user-calorie">{{caloriesData.userCalories}} kcal</div>
+          <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate></div>
+          <div class="user-calorie">
+            <img src="../img/icons/whatshot_black_24dp 1.png" alt="fire">
+            {{caloriesData.userCalories}} kcal
           </div>
         </div>
       </div>
