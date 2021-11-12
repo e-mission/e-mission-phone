@@ -193,24 +193,23 @@ h4.dashboard-headers{
   float: right;
 }
 
+.metric-change-data {
+  width: 100%;
+  text-align: center;
+}
+
 .metric-change-data-button{
-  margin: auto;
   width: 158px;
   height: 40px;
   border: 2px solid #1123CB;
+  background-color: #ffffff;
   box-sizing: border-box;
   border-radius: 50px;
   font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 19px;
   text-align: center;
-}
-
-.metric-change-data-button:active{
-  background-color:#1123CB;
-  color: white;
 }
 
 .metric-metric-button {

@@ -1123,6 +1123,7 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
     setDiffDateInDays();
+    setMetricsHelper(getMetrics);
   };
   $scope.setCurDayTo = function(val) {
     if (val) {
@@ -1132,6 +1133,7 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
     setDiffDateInDays();
+    setMetricsHelper(getMetrics);
   };
 
 

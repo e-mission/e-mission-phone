@@ -12,7 +12,20 @@
   </ion-nav-buttons>
 
   <ion-content class="has-header">
-    <div class="metric-change-data-button hvcenter" ng-click="openModal()" translate>{{'.change-data'}}</div>
+    <div class="metric-change-data">
+      <button class="metric-change-data-button" ng-click="pickFromDay()">
+          {{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}
+      </button>
+      <span translate>{{'.to'}}</span>
+      <button class="metric-change-data-button" ng-click="pickToDay()">
+          {{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}
+      </button>
+    </div>
+
+      <!-- <button ng-click="getMetricsHelper()" translate>{{'.get'}}</button> -->
+    </div>
+
+
     <div class="metric-date-range" ng-if="uictrl.showRange">{{diffDateInDays}}</div>
     <div overflow-scroll="true">
       <div id="dashboard-top">
