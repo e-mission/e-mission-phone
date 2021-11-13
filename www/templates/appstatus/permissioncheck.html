@@ -61,8 +61,9 @@ We need to use notifications to inform you if the settings are incorrect. We als
 </ion-list>
 </details>
 
+<div ng-if="backgroundUnrestrictionsNeeded">
 <details>
-<summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> Background restrictions {{overallBackgroundRestrictionIcon}} </h3> </summary>
+<summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> Background restrictions {{overallBackgroundRestrictionStatusIcon}} </h3> </summary>
 
 The app runs in the background most of the time to make your life easier. You
 only need to open it periodically to label trips. Android sometimes restricts
@@ -83,6 +84,4 @@ accurate trip diary. Please remove background restrictions on this app.
 </ion-item>
 </ion-list>
 </details>
-
 </div>
-

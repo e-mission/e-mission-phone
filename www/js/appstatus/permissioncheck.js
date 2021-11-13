@@ -48,8 +48,10 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
 
     $scope.setupBackgroundRestrictionChecks = function(platform, version) {
         if (platform.toLowerCase() == "android") {
+            $scope.backgroundUnrestrictionsNeeded = true;
             return $scope.setupAndroidBackgroundRestrictionChecks(version);
         } else if (platform.toLowerCase() == "ios") {
+            $scope.backgroundUnrestrictionsNeeded = false;
             return $scope.setupIOSBackgroundRestrictionChecks(version);
         } else {
             alert("Unknown platform, no tracking");
@@ -143,7 +145,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
-                $scope.recomputeLocStatus, showError=true);
+                $scope.recomputeLocStatus, showError=true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
