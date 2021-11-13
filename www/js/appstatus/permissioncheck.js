@@ -194,7 +194,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
-                $scope.recomputeFitnessStatus, showError=true);
+                $scope.recomputeFitnessStatus, showError=true).then((error) => fitnessPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
