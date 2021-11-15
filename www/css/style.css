@@ -7,9 +7,6 @@
   font-style: normal;
 }
 
-body {
-  font-family: 'Lato';
-}
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
@@ -1063,4 +1060,14 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+.button-refresh {
+  background-image: url("../img/icons/restart_alt_black_24dp.svg");
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  transform: matrix(-1, 0, 0, 1, 0, 0);
+  border: none;
+  width: 24px;
+  height: 24px;
 }
