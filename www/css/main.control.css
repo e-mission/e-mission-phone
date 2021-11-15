@@ -17,12 +17,16 @@
 }
 
 .control-list-label {
-  float: left;
   height: 24px;
   font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  left: 15px;
 }
 
 .control-list-option {
@@ -35,19 +39,38 @@
   font-size: 16px;
 }
 
-.control-list-status {
-  width: 33%;
-  float: left;
-}
-
 .control-list-button {
   width: 98px;
-  /* height: 40px; */ /* too big */
+  height: 40px;
   border: 2px solid #1123CB;
   box-sizing: border-box;
   border-radius: 50px;
   color: black;
   text-align: center;
-  padding: 0px;
-  margin: 0px;
+}
+
+.control-list-button,
+.control-list-option {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: 15px;
+}
+
+.control-list-status {
+  float: left;
+  width: 33%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  display: flex;
+	justify-content: center;
+	align-items: center;
+}
+  
+.control-list-item {
+  height: 60px;
+  padding: 0;
+  margin: 0;
 }
