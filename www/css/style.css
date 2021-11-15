@@ -519,7 +519,6 @@ ion-header-bar {
   font-style: normal;
   font-weight: normal;
   font-size: 16px;
-  line-height: 19px;
   text-align: center;
   background-color: #ffffff;
 }
@@ -572,7 +571,10 @@ button.button.back-button.buttons.button-clear.header-item {
   color: #303030; opacity: 0.7;
 }
 .nav-bar-title {
-  color: #303030; opacity: 0.7;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 20px;
 }
 
 /* Diary list tab */
