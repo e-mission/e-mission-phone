@@ -1,6 +1,6 @@
 #dashboard-top {
-  display: flex;
-  margin: auto;
+  width:100%;
+  text-align: center;
 }
   
 #dashboard-footprint.card {
@@ -15,6 +15,7 @@
   height: 191px;
   margin-right: 5px;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 #dashboard-calorie.card {
@@ -29,6 +30,7 @@
   height: 191px;
   margin-left: 5px;
   margin-bottom: 10px;
+  text-align: left;
 }
 
 #dashboard-bottom .card {

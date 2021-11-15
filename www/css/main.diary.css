@@ -150,6 +150,7 @@ a.item-content {
   margin: 1rem;
   border-width: 0;
   background-color: transparent;
+  height: 319px; /* (diary-card height) + 1.5*(time-tag height) */
 }
 
 div.labelfilterlist {
