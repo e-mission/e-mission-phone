@@ -482,11 +482,9 @@ ion-header-bar {
   color: #303030;
 }
 .date-picker-button {
-  margin: auto;
   width: 158px;
   height: 40px;
   border: 2px solid #1123CB;
-  box-sizing: border-box;
   border-radius: 50px;
   font-family: 'Lato';
   font-style: normal;
@@ -497,9 +495,27 @@ ion-header-bar {
 }
 
 .date-picker-arrow {
-  color: #1123CB !important;
-  flex-direction: column;
-  justify-content: center;
+  width: 24px;
+  height: 40px;
+  background-image: url("../img/icons/navigate_next_black_24dp\ 3.png");
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
+}
+
+.date-picker-arrow-left-icon {
+  background-image: url("../img/icons/navigate_next_black_24dp\ 3.png");
+}
+
+.date-picker-arrow-right-icon {
+  width: 24px;
+  height: 40px;
+  background-image: url("../img/icons/navigate_next_black_24dp\ 2.png");
+  background-color: #ffffff;
+  background-repeat: no-repeat;
+  background-position: center;
+  border: none;
 }
 
 .earlier-later-expand {
@@ -1047,3 +1063,4 @@ span.rz-bar-wrapper {
   width: 24px;
   height: 24px;
 }
+

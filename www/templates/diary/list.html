@@ -15,12 +15,14 @@
 
     <!-- Date picker -->
     <div style="text-align:center;">
-      <button class="button button-icon icon ion-arrow-left-b date-picker-arrow" ng-click="prevDay()">
+      <button class="date-picker-arrow date-picker-arrow-left-icon" ng-click="prevDay()">
+         <span style="opacity:0;"> &lt </span> <!-- invisible character to align text -->
       </button>
       <button id="date-picker-button" class="date-picker-button" ng-click="pickDay()">
         {{currDay}}
       </button>
-      <button class="button button-icon icon ion-arrow-right-b date-picker-arrow" ng-click="nextDay()">
+      <button class="date-picker-arrow date-picker-arrow-right-icon" ng-click="nextDay()">
+         <span style="opacity:0;"> &gt </span>
       </button>
     </div>
 
