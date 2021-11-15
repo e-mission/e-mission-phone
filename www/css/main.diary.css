@@ -357,18 +357,16 @@ div.labelfilterlist {
 }
 
 .diary-draft-button {
-  width: 100%;
-  height: 30px;
-  margin: 2px;
-  border: 2px solid #1123CB;
-  box-sizing: border-box;
-  border-radius: 50px;
-  background-color: #1123CB;
-  color: #ffffff;
   font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
-  font-size: 13px;
+  font-style: 13px;
+  background-color: #ffffff;
+  border: none;
+  background-image: url("../img/icons/help_outline_black_24dp.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 25px;
 }
 
 
