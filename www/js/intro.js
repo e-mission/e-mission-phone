@@ -156,20 +156,16 @@ angular
       };
 
       $scope.startSurvey = function () {
-        const lang = $translate.use();
-        if (lang == "en") {
+        CommHelper.getUser().then(function(userProfile) {
+          const fillers = [{
+            "elementId": "wpforms-25100-field_14",
+            "elementValue": userProfile.user_id['$uuid']
+          }];
           SurveyLaunch.startSurveyPrefilled(
-            // "https://docs.google.com/forms/d/e/1FAIpQLSeMqtl_rHJkg-lZ-9xnQQHrJyBYOQl83zpKmwXfgOUFVOOwLg/viewform",
-            "https://docs.google.com/forms/d/e/1FAIpQLSf9NzWdlyNFyTX6AFzsY6cqtYewzWDrpq5h9GnU2FR8QS058g/viewform",
-            "entry.318047746"
+            "https://fabmobqc.ca/questionnaire-ma-mobilite/",
+            fillers
           );
-        } else {
-          SurveyLaunch.startSurveyPrefilled(
-            // "https://docs.google.com/forms/d/e/1FAIpQLSf9fBC-xtEBaMxyq264hjLMaVvIODh4E5h_WmLRw87-m1rqyQ/viewform",
-            "https://docs.google.com/forms/d/e/1FAIpQLSf9NzWdlyNFyTX6AFzsY6cqtYewzWDrpq5h9GnU2FR8QS058g/viewform",
-            "entry.318047746"
-          );
-        }
+        });
       };
 
       $scope.next = function () {

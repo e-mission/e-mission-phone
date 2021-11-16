@@ -161,20 +161,19 @@ angular.module('emission.survey.launch', ['emission.services',
         startSurveyCommon(url, elementXPath, "js/survey/uuid_insert_xpath.js");
     }
 
-    surveylaunch.startSurveyPrefilled = function (url, uuidSearchParam) {
-      CommHelper.getUser().then(function(userProfile) {
-        // alert("finished loading script");
-        let uuid = userProfile.user_id['$uuid']
-        Logger.log("inserting user id into survey. userId = "+ uuid
-                      +" base url = "+url);
-        let urlObj = new URL(url);
-        urlObj.searchParams.append(uuidSearchParam, uuid);
-        let modifiedURL = urlObj.href;
-        Logger.log("modified URL = "+modifiedURL);
-        let iab = $window.cordova.InAppBrowser.open(modifiedURL, '_blank', surveylaunch.options);
-        iab.addEventListener('loaderror', function(event) {
-          Logger.displayError("Unable to launch survey", event);
-        });
+    surveylaunch.startSurveyPrefilled = function (url, fillers) {
+      const code = fillers.reduce( (previous, {elementId, elementValue}) => {
+        previous.push(`document.getElementById("${elementId}").value = "${elementValue}"`);
+        return previous;
+      }, [])
+      .join("; ");
+
+      let iab = $window.cordova.InAppBrowser.open(url, '_blank', surveylaunch.options);
+      iab.addEventListener('loaderror', function(event) {
+        Logger.displayError("Unable to launch survey", event);
+      });
+      iab.addEventListener('loadstop', function() {
+        iab.executeScript({ code });
       });
     }
 
@@ -193,7 +192,13 @@ angular.module('emission.survey.launch', ['emission.services',
                 } else if (angular.isDefined(survey_spec.uuidXPath)) {
                   surveylaunch.startSurveyWithXPath(survey_spec.url, survey_spec.uuidXPath);
                 } else if (angular.isDefined(survey_spec.uuidSearchParam)) {
-                  surveylaunch.startSurveyPrefilled(survey_spec.url, survey_spec.uuidSearchParam);
+                  CommHelper.getUser().then(function(userProfile) {
+                    const fillers = [{
+                      "elementId": survey_spec.uuidSearchParam,
+                      "elementValue": userProfile.user_id['$uuid']
+                    }];
+                    SurveyLaunch.startSurveyPrefilled(survey_spec.url, fillers);
+                  });
                 } else {
                     $ionicPopup.alert("survey was not specified correctly. spec is "+JSON.stringify(survey_spec));
                 }
