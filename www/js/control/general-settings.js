@@ -728,8 +728,8 @@ angular
       };
 
       $scope.languageOptions = [
-        { text: "english", value: ["en"] },
-        { text: "français", value: ["fr"] },
+        { text: "English", value: ["en"] },
+        { text: "Français", value: ["fr"] },
       ];
 
       $scope.changeLanguage = function () {
@@ -737,7 +737,6 @@ angular
           buttons: $scope.languageOptions,
           titleText: $translate.instant("control.select-language"),
           buttonClicked: function (index, button) {
-            $scope.selectCtrl.languageString = button.text;
             $scope.selectCtrl.language = button.value;
             $translate.use(button.value[0]);
             return true;
@@ -772,6 +771,5 @@ angular
       $scope.selectCtrl = {};
 
       $scope.selectCtrl.language = null;
-      $scope.selectCtrl.languageString = $scope.languageOptions[0].text;
     }
   );

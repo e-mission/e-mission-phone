@@ -64,7 +64,8 @@
         "identifier": "Identifier",
         "tracking": "Tracking",
         "view-privacy": "View Privacy Policy",
-        "select-language": "Languages"
+        "select-language": "Languages",
+        "current-language": "English"
     },
 
     "general-settings":{

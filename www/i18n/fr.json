@@ -62,7 +62,8 @@
         "identifier": "Identifiant",
         "tracking": "Suivi",
         "view-privacy": "Voir la politique de confidentialité",
-        "select-language": "Langues"
+        "select-language": "Langues",
+        "current-language": "Français"
     },
 
     "general-settings": {
