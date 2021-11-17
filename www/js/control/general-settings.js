@@ -17,7 +17,7 @@ angular.module('emission.main.control',['emission.services',
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
-               $ionicModal,
+               $ionicModal, $stateParams,
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
@@ -58,6 +58,9 @@ angular.module('emission.main.control',['emission.services',
         scope: $scope
     }).then(function(modal) {
         $scope.appStatusModal = modal;
+        if ($stateParams.launchAppStatusModal == true) {
+            $scope.appStatusModal.show();
+        }
     });
 
     $scope.openDatePicker = function(){
@@ -294,8 +297,12 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.$on('$ionicView.afterEnter', function() {
+        console.log("afterEnter called with stateparams", $stateParams);
         $ionicPlatform.ready().then(function() {
             $scope.refreshScreen();
+            if ($stateParams.launchAppStatusModal == true) {
+                $scope.appStatusModal.show();
+            }
         });
     })
 

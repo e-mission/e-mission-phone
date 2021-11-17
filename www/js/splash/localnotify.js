@@ -25,7 +25,7 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
   localNotify.handleLaunch = function(targetState, targetParams) {
     $rootScope.redirectTo = targetState;
     $rootScope.redirectParams = targetParams;
-    $state.go(targetState, targetParams);
+    $state.go(targetState, targetParams, { reload : true });
   }
 
   localNotify.handlePrompt = function(notification, targetState, targetParams) {
