@@ -140,12 +140,21 @@ angular
         );
       };
 
+      $scope.generateRandomToken = function(length) {
+        var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
+        var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
+        var randomString = randomChars.join("");
+        var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
+        return validRandomString.substring(0, length);
+      }
+
       $scope.disagree = function () {
         $state.go("root.main.heatmap");
       };
 
       $scope.agree = function () {
         StartPrefs.markConsented().then(function (response) {
+          $scope.randomToken = $scope.generateRandomToken(16);
           $ionicHistory.clearHistory();
           if ($state.is("root.intro")) {
             $scope.next();
@@ -189,8 +198,8 @@ angular
       };
 
       $scope.login = function () {
-        window.cordova.plugins.BEMJWTAuth.signIn().then(
-          function (userEmail) {
+        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken($scope.randomToken)
+        .then( function (userEmail) {
             // ionicToast.show(message, position, stick, time);
             // $scope.next();
             ionicToast.show(userEmail, "middle", false, 2500);
