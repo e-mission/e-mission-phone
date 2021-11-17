@@ -1,5 +1,5 @@
 {
-    "connectUrl": "http://159.203.62.159:8080",
+    "connectUrl": "https://e-mission.fabmobqc.ca",
     "aggregate_call_auth": "no_auth",
     "android": {
         "auth": {
