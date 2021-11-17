@@ -7,6 +7,7 @@ angular.module('emission.appstatus.permissioncheck',
 .directive('permissioncheck', function() {
     return {
         scope: {
+            overallstatus: "=",
         },
         controller: "PermissionCheckControl",
         templateUrl: "templates/appstatus/permissioncheck.html"
@@ -14,7 +15,7 @@ angular.module('emission.appstatus.permissioncheck',
 }).
 controller("PermissionCheckControl", function($scope, $element, $attrs,
         $ionicPlatform, $ionicPopup, $window, $translate) {
-    console.log("PermissionCheckControl initialized");
+    console.log("PermissionCheckControl initialized with status "+$scope.overallstatus);
 
     $scope.setupLocChecks = function(platform, version) {
         if (platform.toLowerCase() == "android") {
@@ -61,6 +62,13 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     let iconMap = (statusState) => statusState? "✅" : "❌";
     let classMap = (statusState) => statusState? "status-green" : "status-red";
 
+    $scope.recomputeOverallStatus = function() {
+        $scope.overallstatus = $scope.overallLocStatus
+            && $scope.overallFitnessStatus
+            && $scope.overallNotificationStatus
+            && $scope.overallBackgroundRestrictionStatus;
+    }
+
     $scope.recomputeLocStatus = function() {
         $scope.locChecks.forEach((lc) => {
             lc.statusIcon = iconMap(lc.statusState);
@@ -70,6 +78,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("overallLocStatus = "+$scope.overallLocStatus+" from ", $scope.locChecks);
         $scope.overallLocStatusIcon = iconMap($scope.overallLocStatus);
         $scope.overallLocStatusClass = classMap($scope.overallLocStatus);
+        $scope.recomputeOverallStatus();
     }
 
     $scope.recomputeFitnessStatus = function() {
@@ -81,6 +90,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("overallFitnessStatus = "+$scope.overallFitnessStatus+" from ", $scope.fitnessChecks);
         $scope.overallFitnessStatusIcon = iconMap($scope.overallFitnessStatus);
         $scope.overallFitnessStatusClass = classMap($scope.overallFitnessStatus);
+        $scope.recomputeOverallStatus();
     }
 
     $scope.recomputeNotificationStatus = function() {
@@ -92,6 +102,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("overallNotificationStatus = "+$scope.overallNotificationStatus+" from ", $scope.notificationChecks);
         $scope.overallNotificationStatusIcon = iconMap($scope.overallNotificationStatus);
         $scope.overallNotificationStatusClass = classMap($scope.overallNotificationStatus);
+        $scope.recomputeOverallStatus();
     }
 
     $scope.recomputeBackgroundRestrictionStatus = function() {
@@ -103,6 +114,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("overallBackgroundRestrictionStatus = "+$scope.overallBackgroundRestrictionStatus+" from ", $scope.backgroundRestrictionChecks);
         $scope.overallBackgroundRestrictionStatusIcon = iconMap($scope.overallBackgroundRestrictionStatus);
         $scope.overallBackgroundRestrictionStatusClass = classMap($scope.overallBackgroundRestrictionStatus);
+        $scope.recomputeOverallStatus();
     }
 
     let checkOrFix = function(checkObj, nativeFn, recomputeFn, showError=true) {
