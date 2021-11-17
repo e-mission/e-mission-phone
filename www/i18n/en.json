@@ -53,6 +53,7 @@
     "control":{
         "profile": "Profile",
         "tracking": "Tracking",
+        "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",
         "force-sync": "Force sync",
@@ -77,7 +78,8 @@
         "check-map": "Check map",
         "collection": "Collection",
         "sync": "Sync",
-        "transition-notify": "Transition Notify"
+        "transition-notify": "Transition Notify",
+        "button-accept": "I accept"
     },
 
     "general-settings":{

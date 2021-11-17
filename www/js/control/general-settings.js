@@ -17,6 +17,7 @@ angular.module('emission.main.control',['emission.services',
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
+               $ionicModal,
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
@@ -25,6 +26,8 @@ angular.module('emission.main.control',['emission.services',
                UpdateCheck, i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
+
+    console.log("controller ControlCtrl called without params");
 
     var datepickerObject = {
       todayLabel: $translate.instant('list-datepicker-today'),  //Optional
@@ -48,6 +51,14 @@ angular.module('emission.main.control',['emission.services',
       dateFormat: 'dd MMM yyyy', //Optional
       closeOnSelect: true //Optional
     }
+
+    $scope.overallAppStatus = false;
+
+    $ionicModal.fromTemplateUrl('templates/control/app-status-modal.html', {
+        scope: $scope
+    }).then(function(modal) {
+        $scope.appStatusModal = modal;
+    });
 
     $scope.openDatePicker = function(){
       ionicDatePicker.openDatePicker(datepickerObject);
@@ -78,6 +89,14 @@ angular.module('emission.main.control',['emission.services',
                 });
             }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
         }
+    }
+
+    $scope.fixAppStatus = function() {
+        $scope.appStatusModal.show();
+    }
+
+    $scope.appStatusChecked = function() {
+        $scope.appStatusModal.hide();
     }
 
     $scope.userData = []
@@ -276,7 +295,7 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.$on('$ionicView.afterEnter', function() {
         $ionicPlatform.ready().then(function() {
-        $scope.refreshScreen();
+            $scope.refreshScreen();
         });
     })
 
