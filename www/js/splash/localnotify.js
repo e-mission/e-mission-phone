@@ -57,6 +57,10 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
   }
 
   localNotify.handleNotification = function(notification,state,data) {
+    // Comment this out for ease of testing. But in the real world, we do in fact want to 
+    // cancel the notification to avoid "hey! I just fixed this, why is the notification still around!"
+    // issues
+    // $window.cordova.plugins.notification.local.cancel(notification.id);
     var [targetState, targetParams] = localNotify.getRedirectState(notification);
     Logger.log("targetState = "+targetState);
     if (angular.isDefined(targetState)) {

@@ -99,6 +99,9 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.appStatusChecked = function() {
+        // Hardcoded value so we can publish the hacky version today and then debug/fix the
+        // infinite loop around waiting_for_trip_start -> tracking_error
+        $window.cordova.plugins.notification.local.clearAll();
         $scope.appStatusModal.hide();
     }
 
