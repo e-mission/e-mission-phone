@@ -154,10 +154,9 @@ angular
 
       $scope.agree = function () {
         StartPrefs.markConsented().then(function (response) {
-          $scope.randomToken = $scope.generateRandomToken(16);
           $ionicHistory.clearHistory();
           if ($state.is("root.intro")) {
-            $scope.next();
+            $scope.loginNew();
           } else {
             StartPrefs.loadPreferredScreen();
           }
@@ -197,8 +196,13 @@ angular
         });
       };
 
-      $scope.login = function () {
-        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken($scope.randomToken)
+      $scope.loginNew = function() {
+        $scope.randomToken = $scope.generateRandomToken(16);
+        $scope.login($scope.randomToken);
+      };
+
+      $scope.login = function (token) {
+        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token)
         .then( function (userEmail) {
             // ionicToast.show(message, position, stick, time);
             // $scope.next();
