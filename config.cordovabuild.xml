@@ -1,12 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget android-versionCode="41" id="com.fabmoqc.mamobilite" ios-CFBundleVersion="41" version="3.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:android="http://schemas.android.com/apk/res/android" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-    <name>emission</name>
+    <name>Ma Mobilité</name>
     <description>
         A commute pattern tracker and carbon footprint estimator.
     </description>
-    <author email="shankari@eecs.berkeley.edu" href="https://e-mission.eecs.berkeley.edu">
-        E-Mission Team
-  </author>
+    <author email="communications@fabmobqc.ca" href=" https://fabmobqc.ca">
+        Fabrique des Mobilités Québec
+    </author>
     <content src="index.html" />
     <access origin="*" />
     <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
