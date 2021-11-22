@@ -1,54 +1,53 @@
 #dashboard-top {
-  width:100%;
+  width: 100%;
   text-align: center;
+  margin: 0;
+}
+
+.dashboard-top-card {
+  background-size: 100% 100%;
+  mix-blend-mode: normal;
+  color: #ffffff;
+  border-radius: 30px;
+  display: inline-block;
+  text-align: left;
+  width: 45vw;
+  height: 45vw;
+  overflow: hidden;
 }
   
-#dashboard-footprint.card {
+#dashboard-footprint {
   background-image: 
     linear-gradient(307.28deg, rgba(255, 128, 166, 0.77) -10.18%, rgba(17, 35, 203, 0.77) 99.61%),
     url("../img/daniel-roe-lpjb_UMOyx8-unsplash 1.png");
-  mix-blend-mode: normal;
-  color: #ffffff;
-  border-radius: 30px;
-  display: inline-block;
-  width: 187px;
-  height: 191px;
-  margin-right: 5px;
-  margin-left: 0;
-  margin-bottom: 10px;
-  text-align: left;
+    margin: 0vw 1.5vw 3vw 0vw;
 }
 
-#dashboard-calorie.card {
+#dashboard-calorie {
   background-image: 
     linear-gradient(60.08deg, rgba(255, 136, 159, 0.9) -22.82%, rgba(17, 35, 203, 0.9) 82.29%),
     url("../img/cristina-matos-albers-c4sGBJkDrjg-unsplash 1.png");
-  mix-blend-mode: normal;
-  color: #ffffff;
-  border-radius: 30px;
-  display: inline-block;
-  width: 187px;
-  height: 191px;
-  margin-right: 0;
-  margin-left: 5px;
-  margin-bottom: 10px;
-  text-align: left;
+  margin: 0vw 0vw 3vw 1.5vw;
 }
 
-#dashboard-bottom .card {
+.dashboard-bottom-card {
   border-radius: 30px;
   display: block;
-  height: 325px;
-  width: 384px;
+  width: 94vw;
+  height: 79.56vw; /* width*325/384 */
   margin: auto;
+  margin-top: 0;
   margin-bottom: 50px;
 
   /* The background image should not slide */
   background-image:
     linear-gradient(6.41deg, rgba(17, 35, 203, 0.77) 13.13%, rgba(255, 128, 166, 0.77) 146.11%),
     url("../img/ricardo-gomez-angel-_7favoo7jy8-unsplash 1.png");
+  background-size: 100% 100%;
   mix-blend-mode: normal;
   background-repeat: no-repeat;
+
+  display: inline-block;
 }
 
 #dashboard-bottom .slider-slide{
@@ -558,9 +557,9 @@ h4.dashboard-headers{
 }
 
 .metric-summary-option-button {
-  position: absolute;
-  top: 15px;
-  right: 15px;
+  display: block;
+  float: right;
+  margin-right: 20px;
   background-image: url("../img/icons/mode_edit_black_24dp 1.png");
   height: 24px;
   width: 24px;

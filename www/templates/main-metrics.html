@@ -21,15 +21,12 @@
       </button>
     </div>
 
-      <!-- <button ng-click="getMetricsHelper()" translate>{{'.get'}}</button> -->
-    </div>
-
 
     <div class="metric-date-range" ng-if="uictrl.showRange">{{diffDateInDays}}</div>
     <div overflow-scroll="true">
       <div id="dashboard-top">
         <!-- Footprint -->
-        <div id="dashboard-footprint" class="card">
+        <div id="dashboard-footprint" class="dashboard-top-card"> 
           <h4 class="dashboard-headers" translate>{{'.footprint'}}</h4>
           <div class="user-carbon">
             <img src="../img/icons/noun_leaf_3501175 3.png" alt="leaf"></img>
@@ -37,9 +34,12 @@
           </div>
         </div>
         <!-- Calories -->
-        <div id="dashboard-calorie" class="card">
-          <h4 class="dashboard-headers" translate>{{'.calories'}}</h4>
-          <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate></div>
+        <div id="dashboard-calorie" class="dashboard-top-card">
+          <h4 class="dashboard-headers">
+            <span translate>{{'.calories'}}</span>
+            <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate></div>
+          </h4>
+          
           <div class="user-calorie">
             <img src="../img/icons/whatshot_black_24dp 1.png" alt="fire">
             {{caloriesData.userCalories}} kcal
@@ -49,7 +49,7 @@
       <ion-slide-box show-pager="true" id="dashboard-bottom">
         <!-- Distance -->
         <ion-slide>
-          <div class="card">
+          <div class="dashboard-bottom-card">
             <h4 class="dashboard-headers" translate>{{'.distance'}}</h4>
             <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #FFFFFF;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
             <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
@@ -72,7 +72,7 @@
         </ion-slide>
         <!-- Trips -->
         <ion-slide>
-          <div class="card">
+          <div class="dashboard-bottom-card">
             <h4 class="dashboard-headers" translate>{{'.trips'}}</h4>
             <div ng-if="summaryData.defaultSummary.count.length == 0" style="margin-bottom: 20px; color: #FFFFFF;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
             <div class="row" ng-repeat="d in summaryData.defaultSummary.count" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
@@ -95,7 +95,7 @@
         </ion-slide>
         <!-- Duration -->
         <ion-slide>
-          <div class="card">
+          <div class="dashboard-bottom-card">
             <h4 class="dashboard-headers" translate>{{'.duration'}}</h4>
             <div ng-if="summaryData.defaultSummary.duration.length == 0" style="margin-bottom: 20px; color: #FFFFFF;font-weight: 700;" translate>{{'.no-summary-data'}}</div>
             <div class="row" ng-repeat="d in summaryData.defaultSummary.duration" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
@@ -118,7 +118,7 @@
         </ion-slide>
         <!-- Median Speed -->
         <ion-slide>
-          <div class="card">
+          <div class="dashboard-bottom-card">
             <h4 class="dashboard-headers" translate>{{'.median-speed'}}</h4>
             <div class="row" ng-repeat="d in summaryData.userSummary.median_speed" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
               <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.userSummary.median_speed.length" class="col-50" style="margin-bottom: 30px;">
