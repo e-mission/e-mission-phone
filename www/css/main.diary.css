@@ -147,7 +147,7 @@ a.item-content {
 
 .diary-item {
   padding: 0;
-  margin: 1rem;
+  margin: 0 1rem 0 1rem;
   border-width: 0;
   background-color: transparent;
   height: 319px; /* (diary-card height) + 1.5*(time-tag height) */
