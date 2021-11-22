@@ -1180,7 +1180,7 @@ angular.module('emission.main.metrics',['nvd3',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'dd/MM/yyyy',
+      dateFormat: 'dd MMM',
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
@@ -1198,7 +1198,7 @@ angular.module('emission.main.metrics',['nvd3',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'dd/MM/yyyy',
+      dateFormat: 'dd MMM',
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
