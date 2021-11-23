@@ -62,6 +62,8 @@
         "identifier": "Identifiant",
         "tracking": "Suivi",
         "view-privacy": "Voir la politique de confidentialité",
+        "delete-my-data": "Supprimer mes données",
+        "leave-comment": "Laisser un commentaire",
         "select-language": "Langues",
         "current-language": "Français"
     },

@@ -64,6 +64,8 @@
         "identifier": "Identifier",
         "tracking": "Tracking",
         "view-privacy": "View Privacy Policy",
+        "delete-my-data": "Delete my data",
+        "leave-comment": "Leave a comment",
         "select-language": "Languages",
         "current-language": "English"
     },

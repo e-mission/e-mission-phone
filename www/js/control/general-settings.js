@@ -113,6 +113,18 @@ angular
         }
       };
 
+      $scope.deleteMyData = function ($event) {
+        const url = "https://fabmobqc.ca/ma-mobilite-suppression-des-donnees/";
+        const options = "location=yes,clearcache=no,toolbar=yes,hideurlbar=yes";
+        $window.cordova.InAppBrowser.open(url, '_blank', options);
+      }
+
+      $scope.leaveComment = function ($event) {
+        const url = "https://fabmobqc.ca/ma-mobilite-nous-contacter/";
+        const options = "location=yes,clearcache=no,toolbar=yes,hideurlbar=yes";
+        $window.cordova.InAppBrowser.open(url, '_blank', options);
+      }
+
       $scope.userData = [];
       $scope.getUserData = function () {
         return CalorieCal.get().then(function (userDataFromStorage) {
