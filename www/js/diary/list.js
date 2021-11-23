@@ -467,26 +467,32 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     });
 
     $scope.openPopover = function ($event, tripgj, inputType) {
-      var userInput = tripgj.userInput[inputType];
-      if (angular.isDefined(userInput)) {
-        $scope.selected[inputType].value = userInput.value;
-      } else {
-        $scope.selected[inputType].value = '';
-      }
       $scope.draftInput = {
         "start_ts": tripgj.data.properties.start_ts,
         "end_ts": tripgj.data.properties.end_ts
       };
       $scope.editingTrip = tripgj;
       Logger.log("in openPopover, setting draftInput = " + JSON.stringify($scope.draftInput));
-      $scope.popovers[inputType].show($event);
-    };
 
-    var closePopover = function (inputType) {
-      $scope.selected[inputType] = {
-        value: ''
-      };
-      $scope.popovers[inputType].hide();
+      var options = [];
+      // translate options.
+      // Would be nicer not to do this everytime function is called
+      $scope.inputParams[inputType].options.forEach( (item) => {
+        options.push( {
+          "text": $translate.instant(item.text),
+          "value": item.value
+        });
+      })
+
+      $ionicActionSheet.show({
+        buttons: options,
+        titleText: $translate.instant("diary"+ConfirmHelper.inputDetails[inputType].labeltext),
+        buttonClicked: function (index, button) {
+          var input = $scope.inputParams[inputType].options[index]; // get the non translated input
+          $scope.choose(inputType, input);
+          return true;
+        },
+      });
     };
 
     /**
@@ -517,15 +523,14 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         }
     };
 
-    $scope.choose = function (inputType) {
+    $scope.choose = function (inputType, input) {
       var isOther = false
-      if ($scope.selected[inputType].value != "other") {
-        $scope.store(inputType, $scope.selected[inputType], isOther);
+      if (input.value != "other") {
+        $scope.store(inputType, input, isOther);
       } else {
         isOther = true
         ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
       }
-      closePopover(inputType);
     };
 
     $scope.$on('$ionicView.loaded', function() {
