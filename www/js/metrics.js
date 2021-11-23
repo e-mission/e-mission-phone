@@ -942,6 +942,7 @@ angular.module('emission.main.metrics',['nvd3',
               break;
           }
           if (metric === "median_speed") {
+            // This is actually an average, not a median
             data[i].values = Math.round(temp / data[i].values.length  ) + ' ' + unit;
           } else if(metric === "distance" && temp.toString().length > 4){
             data[i].values = Math.round(temp / 1000) + ' ' + "km";

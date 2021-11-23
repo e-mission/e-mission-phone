@@ -219,7 +219,7 @@
         "calories": "Calories",
         "calibrate": "Calibrer",
         "no-summary-data": "Pas de données résumées",
-        "median-speed": "Vitesse médiane",
+        "median-speed": "Vitesse moyenne",
         "equals-cookies": "soit {cookies, plural, =0{0 cookies} one {1 cookie} other {# cookies}}",
         "equals-icecream": "soit {icecream, plural, =0{0 glaces à la vanille} one {1 glace à la vanille} other {# glaces à la vanille}}",
         "equals-bananas": "soit {bananas, plural, =0{0 bananes} one {1 banane} other {# bananes}}",

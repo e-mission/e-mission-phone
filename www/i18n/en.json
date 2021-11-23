@@ -251,7 +251,7 @@
         "calories": "Calories",
         "calibrate": "Calibrate",
         "no-summary-data": "No summary data",
-        "median-speed": "Median Speed",
+        "median-speed": "Average Speed",
         "equals-cookies": "Equals {cookies, plural, =0{0 homemade chocolate chip cookies} one {1 homemade chocolate chip cookie} other {# homemade chocolate chip cookies}}",
         "equals-icecream": "Equals {icecream, plural, =0{0 half cups vanilla ice cream} one {1 half cup vanilla ice cream} other {# half cups vanilla ice cream}}",
         "equals-bananas": "Equals {bananas, plural, =0{0 bananas} one {1 banana} other {# bananas}}",
