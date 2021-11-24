@@ -22,6 +22,8 @@ angular.module('emission.i18n.utils', [])
     var defaultVal = defaultPath + fpFirstPart + fpSecondPart;
     if (lang != 'en') {
       var url = i18nPath + fpFirstPart + "-" + lang + fpSecondPart;
+      return Promise.resolve(url);
+      // Following code would be nice to have, but it seems broken.
       return $http.get(url).then( function(result){
         window.Logger.log(window.Logger.LEVEL_DEBUG,
           "Successfully found the "+url+", result is " + JSON.stringify(result.data).substring(0,10));

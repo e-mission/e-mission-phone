@@ -46,19 +46,36 @@
   padding: 15px;
   height: 90px;
 }
-.consent-title {
-  padding-top: 10%;
-  padding-right: 8%;
-  padding-left: 8%;
-  font-size: 18px;
-}
 .consent-text {
   padding-top: 5%;
   padding-right: 8%;
   padding-left: 8%;
-  font-size: 15px;
-  line-height: 1.5;
   text-align: left;
+}
+.consent-text h1 {
+  font-size: 2em;
+}
+.consent-text h2 {
+  font-size: 1.5em;
+}
+.consent-text h3 {
+  font-size: 1.25em;
+}
+.consent-text h4 {
+  font-size: 1.12em;
+}
+.consent-text p {
+  text-align: justify;
+  font-size: 1em;
+  line-height: 1.5;
+}
+.consent-text ol {
+  list-style-type: decimal;
+  padding-left: 8%;
+  text-align: justify;
+}
+.consent-text ul {
+  list-style-type: disc;
 }
 .consent-space {
   height: 15px;
