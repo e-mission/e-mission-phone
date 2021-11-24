@@ -149,7 +149,7 @@ angular
       }
 
       $scope.disagree = function () {
-        $state.go("root.main.heatmap");
+        $scope.getIntroBox().previous();
       };
 
       $scope.agree = function () {
