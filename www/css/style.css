@@ -468,8 +468,15 @@ background-image: none !important; }
   background-color: #EEF0FC !important; background-size: 0 !important;
 }
 
-.tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
-    color: #1123CB;
+.tab-item.active, .tab-item.activated {
+  color: #1123CB;
+}
+
+.tab-item-active {
+  background-image: linear-gradient(#1123CB, #1123CB);
+  background-repeat: no-repeat;
+  background-size: 30% 3px;
+  background-position: top;
 }
 
 ion-header-bar {
