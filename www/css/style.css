@@ -468,7 +468,7 @@ background-image: none !important; }
   background-color: #EEF0FC !important; background-size: 0 !important;
 }
 
-.tab-item.active, .tab-item.activated {
+.tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
   color: #1123CB;
 }
 
