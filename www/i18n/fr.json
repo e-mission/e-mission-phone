@@ -65,7 +65,10 @@
         "delete-my-data": "Supprimer mes données",
         "leave-comment": "Laisser un commentaire",
         "select-language": "Langues",
-        "current-language": "Français"
+        "current-language": "Français",
+        "download-json-dump": "Télécharger les données json",
+        "force-sync": "Forcer la synchro",
+        "email-log": "Envoyer les logs"
     },
 
     "general-settings": {

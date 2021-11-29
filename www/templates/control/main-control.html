@@ -60,7 +60,7 @@
       </ion-item>
 
       <!-- Identifier -->
-     <!--  <ion-item class="control-list-item" ng-click="returnToIntro()"> -->
+      <!-- <ion-item class="control-list-item" ng-click="returnToIntro()"> -->
       <ion-item class="control-list-item">
         <div class="control-list-label" translate>{{'.identifier'}}</div>
         <div class="control-list-option">{{settings.auth.email}}</div>
@@ -95,6 +95,19 @@
       <!-- Leave a comment -->
       <ion-item class="control-list-item" ng-click="leaveComment($event)">
         <div class="control-list-label" translate>{{'.leave-comment'}}</div>
+      </ion-item>
+
+      <ion-item class="control-list-item" ng-click="openDatePicker()">
+        <div class="control-list-label" translate>{{'.download-json-dump'}}</div>
+      </ion-item>
+
+      <ion-item class="control-list-item" ng-click="forceSync()">
+        <div class="control-list-label" translate>{{'.force-sync'}}</div>
+      </ion-item>
+
+
+      <ion-item class="control-list-item" ng-click="emailLog()">
+        <div class="control-list-label" translate>{{'.email-log'}}</div>
       </ion-item>
       
 
