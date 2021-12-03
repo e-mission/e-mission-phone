@@ -6,6 +6,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
                                         'emission.survey.launch',
+                                        'emission.splash.remotenotify',
                                         'emission.stats.clientstats',
                                         'emission.tripconfirm.posttrip.prompt'])
 
@@ -15,7 +16,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     UpdateCheck, StartPrefs, PushNotify, StoreDeviceSettings,
-    LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
+    LocalNotify, RemoteNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
