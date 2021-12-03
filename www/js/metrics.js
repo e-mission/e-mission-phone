@@ -28,6 +28,7 @@ angular.module('emission.main.metrics',['nvd3',
     var COUNT = "count";
     var DISTANCE = "distance";
 
+    /*
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
@@ -37,6 +38,7 @@ angular.module('emission.main.metrics',['nvd3',
         }
       });
     };
+    */
 
     $ionicPlatform.ready(function() {
         CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
