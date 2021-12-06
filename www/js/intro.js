@@ -3,6 +3,7 @@
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
                                   'emission.survey.external.launch',
+                                  'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
 
@@ -23,42 +24,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, $translate, i18nUtils) {
-
-  $scope.setupPermissionText = function() {
-      $scope.platform = $window.device.platform;
-      $scope.osver = $window.device.version.split(".")[0];
-      if($scope.platform.toLowerCase() == "android") {
-        if($scope.osver < 6) {
-            $scope.locationPermExplanation = $translate.instant('intro.permissions.locationPermExplanation-android-lt-6');
-        } else if ($scope.osver < 10) {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-6-9");
-        } else if ($scope.osver < 11) {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-10");
-        } else {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-android-gte-11");
-        }
-      }
-
-      if($scope.platform.toLowerCase() == "ios") {
-        if($scope.osver < 13) {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-lt-13");
-        } else {
-            $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
-        }
-      }
-
-      $scope.backgroundRestricted = false;
-      if($window.device.manufacturer.toLowerCase() == "samsung") {
-        $scope.backgroundRestricted = true;
-        $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
-      }
-
-      $scope.fitnessPermNeeded = ($scope.platform.toLowerCase() == "ios" ||
-        (($scope.platform.toLowerCase() == "android") && ($scope.osver >= 10)));
-
-      console.log("Explanation = "+$scope.locationPermExplanation);
-  }
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, i18nUtils) {
 
   var allIntroFiles = Promise.all([
     i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
@@ -99,6 +65,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError('getting settings', error);
     });
   };
+
+  $scope.overallStatus = false;
 
   $scope.disagree = function() {
     $state.go('root.main.heatmap');
@@ -184,7 +152,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $ionicPlatform.ready().then(function() {
-    $scope.setupPermissionText();
+    console.log("app is launched, currently NOP");
   });
 });
 

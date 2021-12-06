@@ -18,6 +18,10 @@
       </label>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.app-status'}}</div>
+      <div ng-click="fixAppStatus()" class="control-icon-button"><i class="ion-checkmark"></i></div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">

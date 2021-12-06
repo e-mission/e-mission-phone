@@ -54,6 +54,9 @@ angular.module('emission.main', ['emission.main.recent',
 
   .state('root.main.control', {
     url: '/control',
+    params: {
+        launchAppStatusModal: false
+    },
     views: {
       'main-control': {
         templateUrl: 'templates/control/main-control.html',

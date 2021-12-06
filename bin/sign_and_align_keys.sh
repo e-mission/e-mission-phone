@@ -11,6 +11,7 @@ fi
 # Sign and release the L+ version
 # Make sure the highest supported version has the biggest version code
 npx cordova build android --release -- --minSdkVersion=22
-cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.apk platforms/android/app/build/outputs/apk/app-release-signed-unaligned.apk
-jarsigner -verbose -sigalg SHA1withRSA -digestalg SHA1 -keystore ../config_files/production.keystore ./platforms/android/app/build/outputs/apk/app-release-signed-unaligned.apk androidproductionkey
-~/Library/Android/sdk/build-tools/30.0.1/zipalign -v 4 platforms/android/app/build/outputs/apk/app-release-signed-unaligned.apk $1-build-$2.apk
+# cp platforms/android/app/build/outputs/apk/release/app-release-unsigned.aab platforms/android/app/build/outputs/apk/app-release-signed-unaligned.apk
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 -keystore ../config_files/production.keystore ./platforms/android/app/build/outputs/bundle/release/app-release.aab androidproductionkey
+cp platforms/android/app/build/outputs/bundle/release/app-release.aab $1-build-$2.aab
+# ~/Library/Android/sdk/build-tools/30.0.1/zipalign -v 4 platforms/android/app/build/outputs/apk/app-release-signed-unaligned.apk $1-build-$2.apk

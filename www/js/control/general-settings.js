@@ -17,6 +17,7 @@ angular.module('emission.main.control',['emission.services',
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
+               $ionicModal, $stateParams,
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
@@ -25,6 +26,8 @@ angular.module('emission.main.control',['emission.services',
                UpdateCheck, i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
+
+    console.log("controller ControlCtrl called without params");
 
     var datepickerObject = {
       todayLabel: $translate.instant('list-datepicker-today'),  //Optional
@@ -48,6 +51,17 @@ angular.module('emission.main.control',['emission.services',
       dateFormat: 'dd MMM yyyy', //Optional
       closeOnSelect: true //Optional
     }
+
+    $scope.overallAppStatus = false;
+
+    $ionicModal.fromTemplateUrl('templates/control/app-status-modal.html', {
+        scope: $scope
+    }).then(function(modal) {
+        $scope.appStatusModal = modal;
+        if ($stateParams.launchAppStatusModal == true) {
+            $scope.appStatusModal.show();
+        }
+    });
 
     $scope.openDatePicker = function(){
       ionicDatePicker.openDatePicker(datepickerObject);
@@ -78,6 +92,17 @@ angular.module('emission.main.control',['emission.services',
                 });
             }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
         }
+    }
+
+    $scope.fixAppStatus = function() {
+        $scope.appStatusModal.show();
+    }
+
+    $scope.appStatusChecked = function() {
+        // Hardcoded value so we can publish the hacky version today and then debug/fix the
+        // infinite loop around waiting_for_trip_start -> tracking_error
+        $window.cordova.plugins.notification.local.clearAll();
+        $scope.appStatusModal.hide();
     }
 
     $scope.userData = []
@@ -275,8 +300,12 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.$on('$ionicView.afterEnter', function() {
+        console.log("afterEnter called with stateparams", $stateParams);
         $ionicPlatform.ready().then(function() {
-        $scope.refreshScreen();
+            $scope.refreshScreen();
+            if ($stateParams.launchAppStatusModal == true) {
+                $scope.appStatusModal.show();
+            }
         });
     })
 

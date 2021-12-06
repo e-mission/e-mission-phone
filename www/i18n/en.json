@@ -53,6 +53,7 @@
     "control":{
         "profile": "Profile",
         "tracking": "Tracking",
+        "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",
         "force-sync": "Force sync",
@@ -77,7 +78,8 @@
         "check-map": "Check map",
         "collection": "Collection",
         "sync": "Sync",
-        "transition-notify": "Transition Notify"
+        "transition-notify": "Transition Notify",
+        "button-accept": "I accept"
     },
 
     "general-settings":{
@@ -306,6 +308,49 @@
     },
 
     "intro": {
+        "appstatus": {
+            "locsettings": {
+                "name": "Location Settings",
+                "description": {
+                    "android-lt-9": "Location services should be enabled and set to High Accuracy. This allows us to accurately record the trajectory of the travel",
+                    "android-gte-9": "Location services should be enabled. This allows us to access location data and generate the trip log",
+                    "ios": "Placeholder"
+                }
+            },
+            "locperms": {
+                "name": "Location Permissions",
+                "description": {
+                    "android-lt-6": "Enabled during app installation.",
+                    "android-6-9": "Please select 'allow'",
+                    "android-10": "Please select 'Allow all the time'",
+                    "android-gte-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "ios": "Placeholder"
+                }
+            },
+            "fitnessperms": {
+                "name": "Fitness Permission",
+                "description": {
+                    "android": "Please allow.",
+                    "ios": "Please allow."
+                }
+            },
+            "notificationperms": {
+                "app-enabled-name": "App Notifications",
+                "not-paused-name": "Not Paused",
+                "description": {
+                    "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
+                    "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
+                    "ios": "Please allow."
+                }
+            },
+            "unusedapprestrict": {
+                "name": "Unused apps disabled",
+                "description": {
+                    "android-disable": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "ios": "Please allow."
+                }
+            }
+        },
         "permissions": {
             "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
             "locationPermExplanation-android-6-9": "please select 'allow'",
