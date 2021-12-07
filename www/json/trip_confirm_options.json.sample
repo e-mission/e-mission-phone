@@ -4,7 +4,7 @@
        {"text":"modes.bike","value":"bike"},
        {"text":"modes.car-drove-alone","value":"car_drove_alone"},
        {"text":"modes.car-shared-ride","value":"car_shared_ride"},
-       {"text":"modes.e-car-drove-alone","value":"car_drove_alone"},
+       {"text":"modes.e-car-drove-alone","value":"e-car_drove_alone"},
        {"text":"modes.e-car-shared-ride","value":"e-car_shared_ride"},
        {"text":"modes.taxi","value":"taxi"},
        {"text":"modes.bus","value":"bus"},
