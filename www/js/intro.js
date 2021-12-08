@@ -169,8 +169,11 @@ angular
             "elementId": "wpforms-25100-field_14",
             "elementValue": userProfile.user_id['$uuid']
           }];
+          const url = $translate.use() == "fr"
+            ? "https://fabmobqc.ca/questionnaire-ma-mobilite/"
+            : "https://fabmobqc.ca/questionnaire-ma-mobilite-en/";
           SurveyLaunch.startSurveyPrefilled(
-            "https://fabmobqc.ca/questionnaire-ma-mobilite/",
+            url,
             fillers
           );
         });
