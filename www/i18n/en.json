@@ -174,12 +174,12 @@
         "e-car-shared-ride": "E-Car (Shared Ride)",
         "taxi": "Taxi/Uber",
         "bus": "Bus",
-        "subway": "Metro",
+        "subway": "Subway",
         "train": "Train",
         "tramway": "Tramway",
         "free-shuttle": "Free Shuttle",
-        "car": "Voiture",
-        "plane": "Avion",
+        "car": "Car",
+        "plane": "Plane",
         "other": "Other"
     },
 
