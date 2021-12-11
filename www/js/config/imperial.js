@@ -25,12 +25,11 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
         return (KM_TO_MILES * ic.getFormattedDistanceInKm(dist_in_meters)).toFixed(1);
     }
 
-    ic.getKmph = function(section) {
-        var metersPerSec = section.properties.distance / section.properties.duration;
+    ic.getKmph = function(metersPerSec) {
         return (metersPerSec * 3.6).toFixed(2);
     };
 
-    ic.getMph = function(section) {
+    ic.getMph = function(metersPerSecond) {
         return (KM_TO_MILES * ic.getKmph(section));
     };
 
