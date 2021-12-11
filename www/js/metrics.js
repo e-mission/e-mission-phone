@@ -3,6 +3,7 @@
 angular.module('emission.main.metrics',['nvd3',
                                         'emission.services',
                                         'ionic-datepicker',
+                                        'emission.config.imperial',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
@@ -11,7 +12,7 @@ angular.module('emission.main.metrics',['nvd3',
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     ClientStats, CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
+                                    FootprintHelper, CalorieCal, ImperialConfig, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                     $rootScope, $location, $state, ReferHelper, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
@@ -957,13 +958,13 @@ angular.module('emission.main.metrics',['nvd3',
               break;
           }
           if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length  ) + ' ' + unit;
-          } else if(metric === "distance" && temp.toString().length > 4){
-            data[i].values = Math.round(temp / 1000) + ' ' + "km";
+            data[i].values = ImperialConfig.getFormattedSpeed(temp / data[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
+          } else if(metric === "distance"){
+            data[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
           } else if(metric === "duration" && temp > 60){
-            data[i].values = Math.round(temp / 60) + ' ' + "mins";
+            data[i].values = moment.duration(temp * 1000).humanize();
           } else {
-            data[i].values = Math.round(temp) + ' ' + unit;
+            data[i].values = Math.round(temp) + ' ' + $translate.instant('metrics.trips');
           }
 
         }
