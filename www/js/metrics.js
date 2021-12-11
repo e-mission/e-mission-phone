@@ -44,7 +44,7 @@ angular.module('emission.main.metrics',['nvd3',
         CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
           getData();
         });
-        $scope.onCurrentTrip();
+        // $scope.onCurrentTrip();
     });
 
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
@@ -477,6 +477,7 @@ angular.module('emission.main.metrics',['nvd3',
 
       getUserMetricsFromServer().then(function(results) {
           $ionicLoading.hide();
+          console.log("user results ", results);
           if(results.user_metrics.length == 1){
             console.log("first = "+first);
             first = false;
@@ -506,6 +507,7 @@ angular.module('emission.main.metrics',['nvd3',
       })
 
       getAggMetricsFromServer().then(function(results) {
+          console.log("aggregate results ", results);
           $scope.fillAggregateValues(results.aggregate_metrics);
           $scope.uictrl.hasAggr = true;
           if (angular.isDefined($scope.chartDataAggr)) { //Only have to check one because
@@ -554,9 +556,9 @@ angular.module('emission.main.metrics',['nvd3',
               twoWeeksAgoDistance.push(user_metrics_arr[3][i]);
             }
           }
-          console.log("twoWeeksAgoDuration = "+twoWeeksAgoDuration);
-          console.log("twoWeeksAgoMedianSpeed = "+twoWeeksAgoMedianSpeed);
-          console.log("twoWeeksAgoDistance = "+twoWeeksAgoDistance);
+          console.log("twoWeeksAgoDuration = ",twoWeeksAgoDuration);
+          console.log("twoWeeksAgoMedianSpeed = ",twoWeeksAgoMedianSpeed);
+          console.log("twoWeeksAgoDistance = ",twoWeeksAgoDistance);
         } else {
           var userDuration = user_metrics_arr[0];
           var userMedianSpeed = user_metrics_arr[1];
@@ -823,10 +825,9 @@ angular.module('emission.main.metrics',['nvd3',
         metrics.forEach(function(metric) {
             var on_foot_val = 0;
             for (var field in metric) {
-                // TODO: Consider creating a prefix such as M_ to signal
-                // modes. Is that really less fragile than caps, though?
-                // Here, we check if the string is all upper case by
-                // converting it to upper case and seeing if it is changed
+                // For modes inferred from sensor data, we check if the string
+                // is all upper case by converting it to upper case and seeing
+                // if it is changed
                 if (field == field.toUpperCase()) {
                     // since we can have multiple possible ON_FOOT modes, we
                     // add all of them up here
@@ -842,6 +843,17 @@ angular.module('emission.main.metrics',['nvd3',
                     // off on handling them until we have considered all fields
                     if (field != "ON_FOOT") {
                         mode_bins[field].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
+                    }
+                }
+                // For modes from user labels, we assume that the field stars with
+                // the label_ prefix
+                if (field.startsWith("label_")) {
+                    // "label_" is 6 characters
+                    let actualMode = field.slice(6, field.length);
+                    console.log("Mapped field "+field+" to mode "+actualMode);
+                    if (actualMode in mode_bins == false) {
+                        mode_bins[actualMode] = []
+                        mode_bins[actualMode].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
                     }
                 }
             }
