@@ -854,8 +854,8 @@ angular.module('emission.main.metrics',['nvd3',
                     console.log("Mapped field "+field+" to mode "+actualMode);
                     if (actualMode in mode_bins == false) {
                         mode_bins[actualMode] = []
-                        mode_bins[actualMode].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
                     }
+                    mode_bins[actualMode].push([metric.ts, Math.round(metric2val(metric, field)), moment(metric.fmt_time).format()]);
                 }
             }
             // here's where we handle the ON_FOOT
