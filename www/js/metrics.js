@@ -29,6 +29,31 @@ angular.module('emission.main.metrics',['nvd3',
     var COUNT = "count";
     var DISTANCE = "distance";
 
+    var METRIC_LIST = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+
+    /*
+     * BEGIN: Data structures to parse and store the data in different formats.
+     * So that we don't have to keep re-creating them over and over as we used
+     * to, slowing down the processing.
+     */
+
+    /*
+     Both of these have the same format. They are a metric map, with the key
+     as the metric, and the value as a list of ModeStatTimeSummary objects for
+     the metric.
+     i.e. {count: [
+              {fmt_time: "2021-12-03T00:00:00+00:00",
+                label_drove_alone: 4 label_walk: 1
+                local_dt: {year: 2021, month: 12, day: 3, hour: 0, minute: 0, …}
+                nUsers: 1
+                ts: 1638489600},....],
+         duration: [...]
+         distance: [...]
+         median_speed: [...]}
+    */
+    $scope.userCurrentResults = {};
+    $scope.userTwoWeeksAgo = {};
+
     /*
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
@@ -413,7 +438,7 @@ angular.module('emission.main.metrics',['nvd3',
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
-      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      clonedData.metric_list = METRIC_LIST;
       clonedData.is_return_aggregate = false;
       var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
       return getMetricsResult;
@@ -421,7 +446,7 @@ angular.module('emission.main.metrics',['nvd3',
    var getAggMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
-      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      clonedData.metric_list = METRIC_LIST;
       clonedData.is_return_aggregate = true;
       var getMetricsResult = CommHelper.getAggregateData(
         "result/metrics/timestamp", clonedData)
@@ -536,49 +561,36 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillUserValues = function(user_metrics_arr) {
         var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
-        var twoWeeksAgoDuration = [];
-        var twoWeeksAgoMedianSpeed = [];
-        var twoWeeksAgoDistance = [];
-        var userDuration = [];
-        var userMedianSpeed = [];
-        var userCount = [];
-        var userDistance = [];
+        METRIC_LIST.forEach((m) => $scope.userCurrentResults[m] = []);
+
+        METRIC_LIST.forEach((m) => $scope.userTwoWeeksAgo[m] = []);
 
         if(first){
           for(var i in user_metrics_arr[0]) {
             if(seventhDayAgo.isSameOrBefore(moment.unix(user_metrics_arr[0][i].ts).utc())){
-              userDuration.push(user_metrics_arr[0][i]);
-              userMedianSpeed.push(user_metrics_arr[1][i]);
-              userCount.push(user_metrics_arr[2][i]);
-              userDistance.push(user_metrics_arr[3][i]);
+              METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m].push(user_metrics_arr[idx][i]));
             } else {
-              twoWeeksAgoDuration.push(user_metrics_arr[0][i]);
-              twoWeeksAgoMedianSpeed.push(user_metrics_arr[1][i]);
-              twoWeeksAgoDistance.push(user_metrics_arr[3][i]);
+              METRIC_LIST.forEach((m, idx) => $scope.userTwoWeeksAgo[m].push(user_metrics_arr[idx][i]));
             }
           }
-          console.log("twoWeeksAgoDuration = ",twoWeeksAgoDuration);
-          console.log("twoWeeksAgoMedianSpeed = ",twoWeeksAgoMedianSpeed);
-          console.log("twoWeeksAgoDistance = ",twoWeeksAgoDistance);
+          METRIC_LIST.forEach((m) => console.log("userTwoWeeksAgo."+m+" = "+$scope.userTwoWeeksAgo[m]));
         } else {
-          var userDuration = user_metrics_arr[0];
-          var userMedianSpeed = user_metrics_arr[1];
-          var userCount = user_metrics_arr[2];
-          var userDistance = user_metrics_arr[3];
+          METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m] = user_metrics_arr[idx]);
         }
-        $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
-        $scope.summaryData.userSummary.median_speed = getSummaryData(userMedianSpeed, "median_speed");
-        $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
-        $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
-        $scope.chartDataUser.duration = userDuration? userDuration : [];
-        $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
-        $scope.chartDataUser.count = userCount? userCount : [];
-        $scope.chartDataUser.distance = userDistance? userDistance : [];
+        $scope.summaryData.userSummary.duration = getSummaryData($scope.userCurrentResults.duration, "duration");
+        $scope.summaryData.userSummary.median_speed = getSummaryData($scope.userCurrentResults.median_speed, "median_speed");
+        $scope.summaryData.userSummary.count = getSummaryData($scope.userCurrentResults.count, "count");
+        $scope.summaryData.userSummary.distance = getSummaryData($scope.userCurrentResults.distance, "distance");
+
+        $scope.chartDataUser = $scope.userCurrentResults;
 
         // Fill in user calorie information
-        $scope.fillCalorieCardUserVals(userDuration, userMedianSpeed,
-                                       twoWeeksAgoDuration, twoWeeksAgoMedianSpeed);
-        $scope.fillFootprintCardUserVals(userDistance, twoWeeksAgoDistance);
+        $scope.fillCalorieCardUserVals($scope.userCurrentResults.duration,
+                                       $scope.userCurrentResults.median_speed,
+                                       $scope.userTwoWeeksAgo.duration,
+                                       $scope.userTwoWeeksAgo.median_speed);
+        $scope.fillFootprintCardUserVals($scope.userCurrentResults.distance,
+            $scope.userTwoWeeksAgo.distance);
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
@@ -783,7 +795,7 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
       $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);
       $scope.data.duration = getDataFromMetrics(agg_metrics.duration, metric2valUser);
-      $scope.data.speed = getDataFromMetrics(agg_metrics.speed, metric2valUser);
+      $scope.data.median_speed = getDataFromMetrics(agg_metrics.median_speed, metric2valUser);
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)

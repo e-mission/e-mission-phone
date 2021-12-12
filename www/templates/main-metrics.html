@@ -49,7 +49,7 @@
         <nvd3 ng-if="uictrl.showTrips" options="countOptions" data="data.count" style="padding: 10px;"></nvd3>
         <nvd3 ng-if="uictrl.showDistance" options="distanceOptions" data="data.distance" style="padding: 10px;"></nvd3>
         <nvd3 ng-if="uictrl.showDuration" options="durationOptions" data="data.duration" style="padding: 10px;"></nvd3>
-        <nvd3 ng-if="uictrl.showSpeed" options="speedOptions" data="data.speed" style="padding: 10px;"></nvd3>
+        <nvd3 ng-if="uictrl.showSpeed" options="speedOptions" data="data.median_speed" style="padding: 10px;"></nvd3>
       </div>
       <div ng-if="uictrl.showSummary" overflow-scroll="true">
         <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
