@@ -53,6 +53,7 @@ angular.module('emission.main.metrics',['nvd3',
     */
     $scope.userCurrentResults = {};
     $scope.userTwoWeeksAgo = {};
+    $scope.aggCurrentResults = {};
 
     /*
     $scope.onCurrentTrip = function() {
@@ -594,25 +595,17 @@ angular.module('emission.main.metrics',['nvd3',
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
+        METRIC_LIST.forEach((m) => $scope.aggCurrentResults[m] = []);
         if (first) {
-            var aggDuration = agg_metrics_arr[0].slice(0, 7);
-            var aggMedianSpeed = agg_metrics_arr[1].slice(0, 7);
-            var aggCount = agg_metrics_arr[2].slice(0, 7);
-            var aggDistance = agg_metrics_arr[3].slice(0, 7);
+            METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx].slice(0,7));
         } else {
-            var aggDuration = agg_metrics_arr[0];
-            var aggMedianSpeed = agg_metrics_arr[1];
-            var aggCount = agg_metrics_arr[2];
-            var aggDistance = agg_metrics_arr[3];
+            METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx]);
         }
 
-        $scope.chartDataAggr.duration = aggDuration? aggDuration : [];
-        $scope.chartDataAggr.speed = aggMedianSpeed? aggMedianSpeed : [];
-        $scope.chartDataAggr.count = aggCount? aggCount : [];
-        $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
-
-        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed);
-        $scope.fillFootprintAggVals(aggDistance);
+        $scope.chartDataAggr = $scope.aggCurrentResults;
+        $scope.fillCalorieAggVals($scope.aggCurrentResults.duration,
+                                  $scope.aggCurrentResults.median_speed);
+        $scope.fillFootprintAggVals($scope.aggCurrentResults.distance);
    }
 
    $scope.fillCalorieCardUserVals = function(userDuration, userMedianSpeed,
