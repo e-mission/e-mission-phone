@@ -38,9 +38,8 @@ angular.module('emission.main.metrics',['nvd3',
      */
 
     /*
-     Both of these have the same format. They are a metric map, with the key
-     as the metric, and the value as a list of ModeStatTimeSummary objects for
-     the metric.
+     These are metric maps, with the key as the metric, and the value as a
+     list of ModeStatTimeSummary objects for the metric.
      i.e. {count: [
               {fmt_time: "2021-12-03T00:00:00+00:00",
                 label_drove_alone: 4 label_walk: 1
@@ -54,6 +53,26 @@ angular.module('emission.main.metrics',['nvd3',
     $scope.userCurrentResults = {};
     $scope.userTwoWeeksAgo = {};
     $scope.aggCurrentResults = {};
+
+    /*
+     These are metric mode maps, with a nested map of maps. The outer key is
+     the metric, and the inner key is the , with the key as the metric, and the
+     inner key is the mode. The innermost value is the list of
+     ModeStatTimeSummary objects for that mode.
+     list of ModeStatTimeSummary objects for the metric.
+     i.e. {
+     count: [
+        {key: drove_alone, values: : [[1638489600, 4, "2021-12-03T00:00:00+00:00"], ...]},
+        { key: walk, values: [[1638489600, 4, "2021-12-03T00:00:00+00:00"],...]}],
+     duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     }
+    */
+    $scope.userCurrentModeMap = {};
+    $scope.userCurrentModeMapFormatted = {};
+    $scope.userTwoWeeksAgoModeMap = {};
+    $scope.aggCurrentModeMap = {};
 
     /*
     $scope.onCurrentTrip = function() {
@@ -578,12 +597,19 @@ angular.module('emission.main.metrics',['nvd3',
         } else {
           METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m] = user_metrics_arr[idx]);
         }
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userCurrentModeMap[m] = getDataFromMetrics($scope.userCurrentResults[m], metric2valUser));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userCurrentModeMapFormatted[m] = formatData($scope.userCurrentModeMap[m], m));
+
         $scope.summaryData.userSummary.duration = getSummaryData($scope.userCurrentResults.duration, "duration");
         $scope.summaryData.userSummary.median_speed = getSummaryData($scope.userCurrentResults.median_speed, "median_speed");
         $scope.summaryData.userSummary.count = getSummaryData($scope.userCurrentResults.count, "count");
         $scope.summaryData.userSummary.distance = getSummaryData($scope.userCurrentResults.distance, "distance");
 
-        $scope.chartDataUser = $scope.userCurrentResults;
+        $scope.chartDataUser = $scope.userCurrentModeMapFormatted;
 
         // Fill in user calorie information
         $scope.fillCalorieCardUserVals($scope.userCurrentResults.duration,
@@ -785,18 +811,15 @@ angular.module('emission.main.metrics',['nvd3',
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
-      $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);
-      $scope.data.duration = getDataFromMetrics(agg_metrics.duration, metric2valUser);
-      $scope.data.median_speed = getDataFromMetrics(agg_metrics.median_speed, metric2valUser);
+      $scope.data = agg_metrics;
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)
-      $scope.distanceOptions.chart.yAxis.axisLabel = 'm';
+      $scope.distanceOptions.chart.yAxis.axisLabel = ImperialConfig.getDistanceSuffix;
       $scope.durationOptions = angular.copy($scope.options)
-      $scope.durationOptions.chart.yAxis.axisLabel = 'secs'
+      $scope.durationOptions.chart.yAxis.axisLabel = $translate.instant('metrics.hours');
       $scope.speedOptions = angular.copy($scope.options)
-      $scope.speedOptions.chart.yAxis.axisLabel = 'm/sec'
+      $scope.speedOptions.chart.yAxis.axisLabel = ImperialConfig.getSpeedSuffix;
     };
     $scope.pandaFreqOptions = [
       {text: $translate.instant('metrics.pandafreqoptions-daily'), value: 'D'},
@@ -848,7 +871,7 @@ angular.module('emission.main.metrics',['nvd3',
                     // since we can have multiple on_foot entries, let's hold
                     // off on handling them until we have considered all fields
                     if (field != "ON_FOOT") {
-                        mode_bins[field].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
+                        mode_bins[field].push([metric.ts, metric2val(metric, field), metric.fmt_time]);
                     }
                 }
                 // For modes from user labels, we assume that the field stars with
@@ -940,6 +963,55 @@ angular.module('emission.main.metrics',['nvd3',
         }
         return data;
     }
+
+    var formatData = function(modeMapList, metric) {
+        var unit = "";
+        switch(metric) {
+          case "count":
+            unit = $translate.instant('metrics.trips');
+            break;
+          case "distance":
+            unit = ImperialConfig.getDistanceSuffix;
+            break;
+          case "duration":
+            // we pick hours as a reasonable formatted metric
+            unit = $translate.instant('metrics.hours');
+            break;
+          case "median_speed":
+            unit = ImperialConfig.getSpeedSuffix;
+            break;
+        }
+        let formattedModeList = [];
+        modeMapList.forEach((modeMap) => {
+            let currMode = modeMap["key"];
+            let modeStatList = modeMap["values"];
+            let formattedModeStatList = angular.copy(modeStatList);
+            formattedModeStatList.forEach((modeStat) => {
+                var stringRep = "";
+                if (metric === "median_speed") {
+                  let spdStr = ImperialConfig.getFormattedSpeed( modeStat[1]);
+                  modeStat[1] = Number.parseFloat(spdStr);
+                  stringRep = spdStr + " " + unit;      
+                } else if(metric === "distance"){
+                  let distStr = ImperialConfig.getFormattedDistance(modeStat[1]);
+                  modeStat[1] = Number.parseFloat(distStr);
+                  stringRep = distStr + " " + unit;      
+                } else if(metric === "duration"){
+                  let durM = moment.duration(modeStat[1] * 1000);
+                  modeStat[1] = durM.asHours().toFixed(2);
+                  stringRep = durM.humanize();
+                } else {
+                  modeStat[1] = Math.round(modeStat[1]);
+                  stringRep = modeStat[1] + " " + unit;
+                }
+                modeStat.push(unit);
+                modeStat.push(stringRep);
+            });
+            formattedModeList.push({key: currMode, values: formattedModeStatList});
+        });
+        return formattedModeList;
+    }
+
     var getSummaryData = function(metrics, metric) {
         var data = getDataFromMetrics(metrics, metric2valUser);
         for (var i = 0; i < data.length; i++) {
