@@ -73,6 +73,24 @@ angular.module('emission.main.metrics',['nvd3',
     $scope.userCurrentModeMapFormatted = {};
     $scope.aggCurrentModeMap = {};
     $scope.aggCurrentModeMapFormatted = {};
+    $scope.aggCurrentPerCapitaModeMap = {};
+
+    /*
+     These are summary mode maps, which have the same structure as the mode
+     maps, but with a value that is a single array instead of an array of arrays.
+     The single array is the summation of the values in the individual arrays of the non-summary mode maps.
+     i.e. {
+        count: [{key: "drove_alone", values: [10, "trips", "10 trips"],
+                {key: "walk", values: [5, "trips", "5 trips"]}],
+
+     duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     }
+    */
+    $scope.userCurrentSummaryModeMap = {};
+    $scope.aggCurrentSummaryModeMap = {};
+    $scope.aggCurrentSummaryPerCapitaModeMap = {};
 
     /*
     $scope.onCurrentTrip = function() {
@@ -604,10 +622,11 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentModeMapFormatted[m] = formatData($scope.userCurrentModeMap[m], m));
 
-        $scope.summaryData.userSummary.duration = getSummaryData($scope.userCurrentResults.duration, "duration");
-        $scope.summaryData.userSummary.median_speed = getSummaryData($scope.userCurrentResults.median_speed, "median_speed");
-        $scope.summaryData.userSummary.count = getSummaryData($scope.userCurrentResults.count, "count");
-        $scope.summaryData.userSummary.distance = getSummaryData($scope.userCurrentResults.distance, "distance");
+        METRIC_LIST.forEach((m) =>
+            $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
 
         $scope.chartDataUser = $scope.userCurrentModeMapFormatted;
 
@@ -634,6 +653,14 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
 
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.aggCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentPerCapitaModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valAvg));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentSummaryPerCapitaModeMap[m] = getSummaryDataRaw($scope.aggCurrentPerCapitaModeMap[m], m));
 
         $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
         $scope.fillCalorieAggVals($scope.aggCurrentResults.duration,
@@ -907,21 +934,21 @@ angular.module('emission.main.metrics',['nvd3',
         return rtn;
     }
 
-    var getSummaryDataRaw = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics, metric2valUser);
-        for (var i = 0; i < data.length; i++) {
+    var getSummaryDataRaw = function(modeMap, metric) {
+        let summaryMap = angular.copy(modeMap);
+        for (var i = 0; i < modeMap.length; i++) {
           var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
+          for (var j = 0; j < modeMap[i].values.length; j++) {
+            temp += modeMap[i].values[j][1];
           }
           if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length);
+            summaryMap[i].values = Math.round(temp / modeMap[i].values.length);
           } else {
-            data[i].values = Math.round(temp);
+            summaryMap[i].values = Math.round(temp);
           }
 
         }
-        return data;
+        return summaryMap;
     }
 
     /*var sortNumber = function(a,b) {
@@ -1019,12 +1046,12 @@ angular.module('emission.main.metrics',['nvd3',
         return formattedModeList;
     }
 
-    var getSummaryData = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics, metric2valUser);
-        for (var i = 0; i < data.length; i++) {
+    var getSummaryData = function(modeMap, metric) {
+        var summaryData = angular.copy(modeMap);
+        for (var i = 0; i < summaryData.length; i++) {
           var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
+          for (var j = 0; j < summaryData[i].values.length; j++) {
+            temp += summaryData[i].values[j][1];
           }
           var unit = "";
           switch(metric) {
@@ -1042,17 +1069,17 @@ angular.module('emission.main.metrics',['nvd3',
               break;
           }
           if (metric === "median_speed") {
-            data[i].values = ImperialConfig.getFormattedSpeed(temp / data[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
+            summaryData[i].values = ImperialConfig.getFormattedSpeed(temp / summaryData[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
           } else if(metric === "distance"){
-            data[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
+            summaryData[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
           } else if(metric === "duration" && temp > 60){
-            data[i].values = moment.duration(temp * 1000).humanize();
+            summaryData[i].values = moment.duration(temp * 1000).humanize();
           } else {
-            data[i].values = Math.round(temp) + ' ' + $translate.instant('metrics.trips');
+            summaryData[i].values = Math.round(temp) + ' ' + $translate.instant('metrics.trips');
           }
 
         }
-        return data;
+        return summaryData;
     }
 
     $scope.changeFromWeekday = function() {
