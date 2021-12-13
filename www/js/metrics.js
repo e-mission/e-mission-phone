@@ -70,6 +70,7 @@ angular.module('emission.main.metrics',['nvd3',
      }
     */
     $scope.userCurrentModeMap = {};
+    $scope.userTwoWeeksAgoModeMap = {};
     $scope.userCurrentModeMapFormatted = {};
     $scope.aggCurrentModeMap = {};
     $scope.aggCurrentModeMapFormatted = {};
@@ -89,6 +90,7 @@ angular.module('emission.main.metrics',['nvd3',
      }
     */
     $scope.userCurrentSummaryModeMap = {};
+    $scope.userTwoWeeksAgoSummaryModeMap = {};
     $scope.aggCurrentSummaryModeMap = {};
     $scope.aggCurrentSummaryPerCapitaModeMap = {};
 
@@ -620,10 +622,16 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.userCurrentModeMap[m] = getDataFromMetrics($scope.userCurrentResults[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
+            $scope.userTwoWeeksAgoModeMap[m] = getDataFromMetrics($scope.userTwoWeeksAgo[m], metric2valUser));
+
+        METRIC_LIST.forEach((m) =>
             $scope.userCurrentModeMapFormatted[m] = formatData($scope.userCurrentModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
             $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
@@ -631,12 +639,12 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.chartDataUser = $scope.userCurrentModeMapFormatted;
 
         // Fill in user calorie information
-        $scope.fillCalorieCardUserVals($scope.userCurrentResults.duration,
-                                       $scope.userCurrentResults.median_speed,
-                                       $scope.userTwoWeeksAgo.duration,
-                                       $scope.userTwoWeeksAgo.median_speed);
-        $scope.fillFootprintCardUserVals($scope.userCurrentResults.distance,
-            $scope.userTwoWeeksAgo.distance);
+        $scope.fillCalorieCardUserVals($scope.userCurrentSummaryModeMap.duration,
+                                       $scope.userCurrentSummaryModeMap.median_speed,
+                                       $scope.userTwoWeeksAgoSummaryModeMap.duration,
+                                       $scope.userTwoWeeksAgoSummaryModeMap.median_speed);
+        $scope.fillFootprintCardUserVals($scope.userCurrentModeMap.distance,
+            $scope.userTwoWeeksAgoModeMap.distance);
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
@@ -663,23 +671,17 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.aggCurrentSummaryPerCapitaModeMap[m] = getSummaryDataRaw($scope.aggCurrentPerCapitaModeMap[m], m));
 
         $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
-        $scope.fillCalorieAggVals($scope.aggCurrentResults.duration,
-                                  $scope.aggCurrentResults.median_speed);
-        $scope.fillFootprintAggVals($scope.aggCurrentResults.distance);
+        $scope.fillCalorieAggVals($scope.aggCurrentSummaryPerCapitaModeMap.duration,
+                                  $scope.aggCurrentSummaryPerCapitaModeMap.median_speed);
+        $scope.fillFootprintAggVals($scope.aggCurrentSummaryPerCapitaModeMap.distance);
    }
 
-   $scope.fillCalorieCardUserVals = function(userDuration, userMedianSpeed,
-                                             twoWeeksAgoDuration, twoWeeksAgoMedianSpeed) {
-       if (userDuration) {
-         var durationData = getSummaryDataRaw(userDuration, "duration");
-       }
-       if (userMedianSpeed) {
-         var speedData = getSummaryDataRaw(userMedianSpeed, "median_speed");
-       }
-       for (var i in durationData) {
-         var met = $scope.getCorrectedMetFromUserData(durationData[i], speedData[i])
+   $scope.fillCalorieCardUserVals = function(userDurationSummary, userMedianSpeedSummary,
+                                             twoWeeksAgoDurationSummary, twoWeeksAgoMedianSpeedSummary) {
+       for (var i in userDurationSummary) {
+         var met = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMedianSpeedSummary[i])
          $scope.caloriesData.userCalories +=
-           Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) //+ ' cal'
+           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
        }
 
        if(first){
@@ -693,17 +695,12 @@ angular.module('emission.main.metrics',['nvd3',
        $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
                                            $scope.food.banana);
 
-       if(first){
-         if (twoWeeksAgoDuration) {
-           var durationData = getSummaryDataRaw(twoWeeksAgoDuration, "duration");
-         }
-         if (twoWeeksAgoMedianSpeed) {
-           var speedData = getSummaryDataRaw(twoWeeksAgoMedianSpeed, "median_speed");
-         }
-         for (var i in durationData) {
-           var met = $scope.getCorrectedMetFromUserData(durationData[i], speedData[i])
+       if(first && angular.isDefined(twoWeeksAgoDurationSummary)) {
+         for (var i in twoWeeksAgoDurationSummary) {
+           var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
+                        twoWeeksAgoMedianSpeedSummary[i])
            twoWeeksAgoCalories +=
-             Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
+             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, met));
          }
        }
 
@@ -735,19 +732,13 @@ angular.module('emission.main.metrics',['nvd3',
        }
    }
 
-   $scope.fillCalorieAggVals = function(aggDuration, aggMedianSpeed) {
-       if (aggDuration) {
-         var avgDurationData = getAvgSummaryDataRaw(aggDuration, "duration");
-       }
-       if (aggMedianSpeed) {
-         var avgSpeedData = getAvgSummaryDataRaw(aggMedianSpeed, "median_speed");
-       }
-       for (var i in avgDurationData) {
+   $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMedianSpeedSummaryAvg) {
+       for (var i in aggDurationSummaryAvg) {
 
-         var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
+         var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMedianSpeedSummaryAvg[i].values);
 
          $scope.caloriesData.aggrCalories +=
-           Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) //+ ' cal'
+           Math.round(CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, met)) //+ ' cal'
        }
    }
 
@@ -775,6 +766,7 @@ angular.module('emission.main.metrics',['nvd3',
 
         var optimalDistance = getOptimalFootprintDistance(userDistance);
         var worstDistance   = getWorstFootprintDistance(userDistance);
+
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
         var duration = moment.duration(date2.diff(date1));
@@ -829,7 +821,7 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillFootprintAggVals = function(aggDistance) {
       if (aggDistance) {
-        var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
+        var aggrCarbonData = aggDistance;
 
         // Issue 422:
         // https://github.com/e-mission/e-mission-docs/issues/422
@@ -980,22 +972,6 @@ angular.module('emission.main.metrics',['nvd3',
         }
       }
       return distance;
-    }
-    var getAvgSummaryDataRaw = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics, metric2valAvg);
-        for (var i = 0; i < data.length; i++) {
-          var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
-          }
-          if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length);
-          } else {
-            data[i].values = Math.round(temp);
-          }
-
-        }
-        return data;
     }
 
     var formatData = function(modeMapList, metric) {
