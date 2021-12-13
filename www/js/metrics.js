@@ -5,6 +5,7 @@ angular.module('emission.main.metrics',['nvd3',
                                         'ionic-datepicker',
                                         'emission.config.imperial',
                                         'emission.main.metrics.factory',
+                                        'emission.main.metrics.mappings',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
                                         'emission.plugin.logger'])
