@@ -71,8 +71,8 @@ angular.module('emission.main.metrics',['nvd3',
     */
     $scope.userCurrentModeMap = {};
     $scope.userCurrentModeMapFormatted = {};
-    $scope.userTwoWeeksAgoModeMap = {};
     $scope.aggCurrentModeMap = {};
+    $scope.aggCurrentModeMapFormatted = {};
 
     /*
     $scope.onCurrentTrip = function() {
@@ -628,7 +628,14 @@ angular.module('emission.main.metrics',['nvd3',
             METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx]);
         }
 
-        $scope.chartDataAggr = $scope.aggCurrentResults;
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valUser));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
+
+
+        $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
         $scope.fillCalorieAggVals($scope.aggCurrentResults.duration,
                                   $scope.aggCurrentResults.median_speed);
         $scope.fillFootprintAggVals($scope.aggCurrentResults.distance);
@@ -991,11 +998,11 @@ angular.module('emission.main.metrics',['nvd3',
                 if (metric === "median_speed") {
                   let spdStr = ImperialConfig.getFormattedSpeed( modeStat[1]);
                   modeStat[1] = Number.parseFloat(spdStr);
-                  stringRep = spdStr + " " + unit;      
+                  stringRep = spdStr + " " + unit;
                 } else if(metric === "distance"){
                   let distStr = ImperialConfig.getFormattedDistance(modeStat[1]);
                   modeStat[1] = Number.parseFloat(distStr);
-                  stringRep = distStr + " " + unit;      
+                  stringRep = distStr + " " + unit;
                 } else if(metric === "duration"){
                   let durM = moment.duration(modeStat[1] * 1000);
                   modeStat[1] = durM.asHours().toFixed(2);
