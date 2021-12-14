@@ -164,16 +164,35 @@ angular
       };
 
       $scope.startSurvey = function () {
+        const frenchForm = {
+          "userIdElementId": "wpforms-25100-field_14",
+          "url": "https://fabmobqc.ca/questionnaire-ma-mobilite/"
+        };
+
+        const englishForm = {
+          "userIdElementId": "wpforms-25278-field_14",
+          "url": "https://fabmobqc.ca/questionnaire-ma-mobilite-en/"
+        };
+
+        const form = ((language) => {
+            switch (language) {
+              case "fr":
+                return frenchForm;
+              case "en":
+                return englishForm;
+              default:
+                return englishForm;
+            }
+        })($translate.use());
+
         CommHelper.getUser().then(function(userProfile) {
           const fillers = [{
-            "elementId": "wpforms-25100-field_14",
+            "elementId": form.userIdElementId,
             "elementValue": userProfile.user_id['$uuid']
           }];
-          const url = $translate.use() == "fr"
-            ? "https://fabmobqc.ca/questionnaire-ma-mobilite/"
-            : "https://fabmobqc.ca/questionnaire-ma-mobilite-en/";
+          
           SurveyLaunch.startSurveyPrefilled(
-            url,
+            form.url,
             fillers
           );
         });
