@@ -637,6 +637,10 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
 
+        $scope.isCustomLabelResult = isCustomLabels($scope.userCurrentModeMap);
+        FootprintHelper.setUseCustomFootprint($scope.isCustomLabelResult);
+        CalorieCal.setUseCustomFootprint($scope.isCustomLabelResult);
+
         $scope.chartDataUser = $scope.userCurrentModeMapFormatted;
 
         // Fill in user calorie information
@@ -676,6 +680,48 @@ angular.module('emission.main.metrics',['nvd3',
                                   $scope.aggCurrentSummaryPerCapitaModeMap.median_speed);
         $scope.fillFootprintAggVals($scope.aggCurrentSummaryPerCapitaModeMap.distance);
    }
+
+   /*
+    * We use the results to determine whether these results are from custom
+    * labels or from the automatically sensed labels. Automatically sensedV
+    * labels are in all caps, custom labels are prefixed by label, but have had
+    * the label_prefix stripped out before this. Results should have either all
+    * sensed labels or all custom labels.
+    */
+   var isCustomLabels = function(modeMap) {
+      const isSensed = (mode) => mode == mode.toUpperCase();
+      const isCustom = (mode) => mode == mode.toLowerCase();
+      const metricSummaryChecksCustom = [];
+      const metricSummaryChecksSensed = [];
+      for (const metric in modeMap) {
+        const metricKeys = modeMap[metric].map((e) => e.key);
+        const isSensedKeys = metricKeys.map(isSensed);
+        const isCustomKeys = metricKeys.map(isCustom);
+        console.log("Checking metric keys", metricKeys, " sensed ", isSensedKeys,
+            " custom ", isCustomKeys);
+        const isAllCustomForMetric = isAllCustom(isSensedKeys, isCustomKeys);
+        metricSummaryChecksSensed.push(!isAllCustomForMetric);
+        metricSummaryChecksCustom.push(isAllCustomForMetric);
+      }
+      console.log("overall custom/not results for each metric = ", metricSummaryChecksCustom);
+      return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
+   }
+
+   var isAllCustom = function(isSensedKeys, isCustomKeys) {
+        const allSensed = isSensedKeys.reduce((a, b) => a && b, true);
+        const anySensed = isSensedKeys.reduce((a, b) => a || b, false);
+        const allCustom = isCustomKeys.reduce((a, b) => a && b, true);
+        const anyCustom = isCustomKeys.reduce((a, b) => a || b, false);
+        if ((allSensed && !anyCustom)) {
+            return false; // sensed, not custom
+        }
+        if ((!anySensed && allCustom)) {
+            return true; // custom, not sensed; false implies that the other option is true
+        }
+        Logger.displayError("Mixed entries that combine sensed and custom labels",
+            "Please report to your program admin");
+        return undefined;
+    }
 
    $scope.fillCalorieCardUserVals = function(userDurationSummary, userMedianSpeedSummary,
                                              twoWeeksAgoDurationSummary, twoWeeksAgoMedianSpeedSummary) {

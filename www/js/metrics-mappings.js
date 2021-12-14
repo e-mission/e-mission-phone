@@ -1,4 +1,5 @@
 angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
+                                     'emission.survey.multilabel.services',
                                      'emission.plugin.kvstore'])
 
 .service('CarbonDatasetHelper', function(KVStore) {
@@ -309,4 +310,53 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
   this.getStandardMETs = function() {
     return standardMETs;
   }
+})
+.service('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper) {
+    this.getCustomMETs = function() {
+        console.log("Getting custom METs", this.customMETs);
+        return this.customMETs;
+    };
+
+    this.getCustomFootprint = function() {
+        console.log("Getting custom footprint");
+    };
+
+    this.populateCustomMETs = function() {
+        let standardMETs = METDatasetHelper.getStandardMETs();
+        let modeOptions = this.inputParams["MODE"].options;
+        let modeMETEntries = modeOptions.map((opt) => {
+            if (opt.met_equivalent) {
+                let currMET = standardMETs[opt.met_equivalent];
+                return [opt.value, currMET];
+            } else {
+                if (opt.met) {
+                    let currMET = opt.met;
+                    // if the user specifies a custom MET, they can't specify
+                    // Number.MAX_VALUE since it is not valid JSON
+                    // we assume that they specify -1 instead, and we will
+                    // map -1 to Number.MAX_VALUE here by iterating over all the ranges
+                    for (const rangeName in currMET) {
+                        // console.log("Handling range ", rangeName);
+                        currMET[rangeName].range = currMET[rangeName].range.map((i) => i == -1? Number.MAX_VALUE : i);
+                    }
+                    return [opt.value, currMET];
+                } else {
+                    console.warn("Did not find either met_equivalent or met for "
+                        +opt.value+" ignoring entry");
+                    return undefined;
+                }
+            }
+        });
+        this.customMETs = Object.fromEntries(modeMETEntries.filter((e) => angular.isDefined(e)));
+        console.log("After populating, custom METs = ", this.customMETs);
+    };
+
+    this.init = function() {
+        ConfirmHelper.inputParamsPromise.then((inputParams) => {
+            console.log("Input params = ", inputParams);
+            this.inputParams = inputParams;
+            this.populateCustomMETs();
+        });
+    }
+    this.init();
 });
