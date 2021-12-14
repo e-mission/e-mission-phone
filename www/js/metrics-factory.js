@@ -16,7 +16,11 @@ angular.module('emission.main.metrics.factory',
   }
 
   fh.getFootprint = function() {
-    return CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    if (this.useCustom == true) {
+        return CustomDatasetHelper.getCustomFootprint();
+    } else {
+        return CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    }
   }
 
   fh.readableFormat = function(v) {

@@ -318,7 +318,8 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     };
 
     this.getCustomFootprint = function() {
-        console.log("Getting custom footprint");
+        console.log("Getting custom footprint", this.customPerMeterFootprint);
+        return this.customPerMeterFootprint;
     };
 
     this.populateCustomMETs = function() {
@@ -351,11 +352,21 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
         console.log("After populating, custom METs = ", this.customMETs);
     };
 
+    this.populateCustomFootprints = function() {
+        let modeOptions = this.inputParams["MODE"].options;
+        let modeCO2PerMeter = modeOptions.map((opt) => {
+            return [opt.value, opt.co2PerMeter];
+        });
+        this.customPerMeterFootprint = Object.fromEntries(modeCO2PerMeter);
+        console.log("After populating, custom perMeterFootprint", this.customPerMeterFootprint);
+    }
+
     this.init = function() {
         ConfirmHelper.inputParamsPromise.then((inputParams) => {
             console.log("Input params = ", inputParams);
             this.inputParams = inputParams;
             this.populateCustomMETs();
+            this.populateCustomFootprints();
         });
     }
     this.init();
