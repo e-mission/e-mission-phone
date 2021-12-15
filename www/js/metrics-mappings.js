@@ -324,7 +324,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
     this.populateCustomMETs = function() {
         let standardMETs = METDatasetHelper.getStandardMETs();
-        let modeOptions = this.inputParams["MODE"].options;
+        let modeOptions = this.inputParams.options;
         let modeMETEntries = modeOptions.map((opt) => {
             if (opt.met_equivalent) {
                 let currMET = standardMETs[opt.met_equivalent];
@@ -353,7 +353,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     };
 
     this.populateCustomFootprints = function() {
-        let modeOptions = this.inputParams["MODE"].options;
+        let modeOptions = this.inputParams.options;
         let modeCO2PerMeter = modeOptions.map((opt) => {
             return [opt.value, opt.co2PerMeter];
         });
@@ -362,7 +362,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     }
 
     this.init = function() {
-        ConfirmHelper.inputParamsPromise.then((inputParams) => {
+        ConfirmHelper.getOptionsAndMaps("MODE").then((inputParams) => {
             console.log("Input params = ", inputParams);
             this.inputParams = inputParams;
             this.populateCustomMETs();
