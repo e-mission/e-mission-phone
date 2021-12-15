@@ -819,8 +819,15 @@ angular.module('emission.main.metrics',['nvd3',
         var duration = moment.duration(date2.diff(date1));
         var days = duration.asDays();
 
-        $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
-        $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
+        /*
+         * 54 and 14 are the per-week CO2 estimates.
+         * https://github.com/e-mission/e-mission-docs/issues/688
+         * Since users can choose a custom range which can be less or greater
+         * than 7 days, we calculate the per day value by dividing by 7 and
+         * then multiplying by the actual number of days.
+         */
+        $scope.carbonData.us2030 = Math.round(54 / 7 * days) + ' kg CO₂'; // kg/day
+        $scope.carbonData.us2050 = Math.round(14 / 7 * days) + ' kg CO₂';
 
         $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
         $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
