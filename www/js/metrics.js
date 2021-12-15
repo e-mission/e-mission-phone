@@ -3,15 +3,18 @@
 angular.module('emission.main.metrics',['nvd3',
                                         'emission.services',
                                         'ionic-datepicker',
+                                        'emission.config.imperial',
                                         'emission.main.metrics.factory',
+                                        'emission.main.metrics.mappings',
+                                        'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
                                         'emission.plugin.logger',
                                         'emission.stats.clientstats'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
-                                    CommHelper, $window, $ionicPopup,
-                                    ionicDatePicker, $ionicPlatform, ClientStats,
-                                    FootprintHelper, CalorieCal, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
+                                    ClientStats, CommHelper, $window, $ionicPopup,
+                                    ionicDatePicker, $ionicPlatform,
+                                    FootprintHelper, CalorieCal, ImperialConfig, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
                                     $rootScope, $location, $state, ReferHelper, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
@@ -28,6 +31,72 @@ angular.module('emission.main.metrics',['nvd3',
     var COUNT = "count";
     var DISTANCE = "distance";
 
+    var METRIC_LIST = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+
+    /*
+     * BEGIN: Data structures to parse and store the data in different formats.
+     * So that we don't have to keep re-creating them over and over as we used
+     * to, slowing down the processing.
+     */
+
+    /*
+     These are metric maps, with the key as the metric, and the value as a
+     list of ModeStatTimeSummary objects for the metric.
+     i.e. {count: [
+              {fmt_time: "2021-12-03T00:00:00+00:00",
+                label_drove_alone: 4 label_walk: 1
+                local_dt: {year: 2021, month: 12, day: 3, hour: 0, minute: 0, …}
+                nUsers: 1
+                ts: 1638489600},....],
+         duration: [...]
+         distance: [...]
+         median_speed: [...]}
+    */
+    $scope.userCurrentResults = {};
+    $scope.userTwoWeeksAgo = {};
+    $scope.aggCurrentResults = {};
+
+    /*
+     These are metric mode maps, with a nested map of maps. The outer key is
+     the metric, and the inner key is the , with the key as the metric, and the
+     inner key is the mode. The innermost value is the list of
+     ModeStatTimeSummary objects for that mode.
+     list of ModeStatTimeSummary objects for the metric.
+     i.e. {
+     count: [
+        {key: drove_alone, values: : [[1638489600, 4, "2021-12-03T00:00:00+00:00"], ...]},
+        { key: walk, values: [[1638489600, 4, "2021-12-03T00:00:00+00:00"],...]}],
+     duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     }
+    */
+    $scope.userCurrentModeMap = {};
+    $scope.userTwoWeeksAgoModeMap = {};
+    $scope.userCurrentModeMapFormatted = {};
+    $scope.aggCurrentModeMap = {};
+    $scope.aggCurrentModeMapFormatted = {};
+    $scope.aggCurrentPerCapitaModeMap = {};
+
+    /*
+     These are summary mode maps, which have the same structure as the mode
+     maps, but with a value that is a single array instead of an array of arrays.
+     The single array is the summation of the values in the individual arrays of the non-summary mode maps.
+     i.e. {
+        count: [{key: "drove_alone", values: [10, "trips", "10 trips"],
+                {key: "walk", values: [5, "trips", "5 trips"]}],
+
+     duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
+     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     }
+    */
+    $scope.userCurrentSummaryModeMap = {};
+    $scope.userTwoWeeksAgoSummaryModeMap = {};
+    $scope.aggCurrentSummaryModeMap = {};
+    $scope.aggCurrentSummaryPerCapitaModeMap = {};
+
+    /*
     $scope.onCurrentTrip = function() {
       window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
         Logger.log("Current trip state" + JSON.stringify(result));
@@ -37,12 +106,13 @@ angular.module('emission.main.metrics',['nvd3',
         }
       });
     };
+    */
 
     $ionicPlatform.ready(function() {
         CarbonDatasetHelper.loadCarbonDatasetLocale().then(function(result) {
           getData();
         });
-        $scope.onCurrentTrip();
+        // $scope.onCurrentTrip();
     });
 
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
@@ -420,7 +490,7 @@ angular.module('emission.main.metrics',['nvd3',
    var getUserMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
-      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      clonedData.metric_list = METRIC_LIST;
       clonedData.is_return_aggregate = false;
       var getMetricsResult = CommHelper.getMetrics(theMode, clonedData);
       return getMetricsResult;
@@ -428,7 +498,7 @@ angular.module('emission.main.metrics',['nvd3',
    var getAggMetricsFromServer = function() {
       var clonedData = angular.copy(data);
       delete clonedData.metric;
-      clonedData.metric_list = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+      clonedData.metric_list = METRIC_LIST;
       clonedData.is_return_aggregate = true;
       var getMetricsResult = CommHelper.getAggregateData(
         "result/metrics/timestamp", clonedData)
@@ -494,6 +564,7 @@ angular.module('emission.main.metrics',['nvd3',
 
       getUserMetricsFromServer().then(function(results) {
           $ionicLoading.hide();
+          console.log("user results ", results);
           if(results.user_metrics.length == 1){
             console.log("first = "+first);
             first = false;
@@ -522,7 +593,11 @@ angular.module('emission.main.metrics',['nvd3',
         Logger.displayError("Error loading user data", error);
       })
 
+      /*
+       * REMOVE ME BEFORE MERGE:
+       *
       getAggMetricsFromServer().then(function(results) {
+          console.log("aggregate results ", results);
           $scope.fillAggregateValues(results.aggregate_metrics);
           $scope.uictrl.hasAggr = true;
           if (angular.isDefined($scope.chartDataAggr)) { //Only have to check one because
@@ -546,6 +621,7 @@ angular.module('emission.main.metrics',['nvd3',
         Logger.displayError("Error loading aggregate data, averages not available",
             error);
       });
+    */
    };
 
 
@@ -555,89 +631,141 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillUserValues = function(user_metrics_arr) {
         var seventhDayAgo = moment().utc().startOf('day').subtract(7, 'days');
-        var twoWeeksAgoDuration = [];
-        var twoWeeksAgoMedianSpeed = [];
-        var twoWeeksAgoDistance = [];
-        var userDuration = [];
-        var userMedianSpeed = [];
-        var userCount = [];
-        var userDistance = [];
+        METRIC_LIST.forEach((m) => $scope.userCurrentResults[m] = []);
+
+        METRIC_LIST.forEach((m) => $scope.userTwoWeeksAgo[m] = []);
 
         if(first){
           for(var i in user_metrics_arr[0]) {
             if(seventhDayAgo.isSameOrBefore(moment.unix(user_metrics_arr[0][i].ts).utc())){
-              userDuration.push(user_metrics_arr[0][i]);
-              userMedianSpeed.push(user_metrics_arr[1][i]);
-              userCount.push(user_metrics_arr[2][i]);
-              userDistance.push(user_metrics_arr[3][i]);
+              METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m].push(user_metrics_arr[idx][i]));
             } else {
-              twoWeeksAgoDuration.push(user_metrics_arr[0][i]);
-              twoWeeksAgoMedianSpeed.push(user_metrics_arr[1][i]);
-              twoWeeksAgoDistance.push(user_metrics_arr[3][i]);
+              METRIC_LIST.forEach((m, idx) => $scope.userTwoWeeksAgo[m].push(user_metrics_arr[idx][i]));
             }
           }
-          console.log("twoWeeksAgoDuration = "+twoWeeksAgoDuration);
-          console.log("twoWeeksAgoMedianSpeed = "+twoWeeksAgoMedianSpeed);
-          console.log("twoWeeksAgoDistance = "+twoWeeksAgoDistance);
+          METRIC_LIST.forEach((m) => console.log("userTwoWeeksAgo."+m+" = "+$scope.userTwoWeeksAgo[m]));
         } else {
-          var userDuration = user_metrics_arr[0];
-          var userMedianSpeed = user_metrics_arr[1];
-          var userCount = user_metrics_arr[2];
-          var userDistance = user_metrics_arr[3];
+          METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m] = user_metrics_arr[idx]);
         }
-        $scope.summaryData.userSummary.duration = getSummaryData(userDuration, "duration");
-        $scope.summaryData.userSummary.median_speed = getSummaryData(userMedianSpeed, "median_speed");
-        $scope.summaryData.userSummary.count = getSummaryData(userCount, "count");
-        $scope.summaryData.userSummary.distance = getSummaryData(userDistance, "distance");
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userCurrentModeMap[m] = getDataFromMetrics($scope.userCurrentResults[m], metric2valUser));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userTwoWeeksAgoModeMap[m] = getDataFromMetrics($scope.userTwoWeeksAgo[m], metric2valUser));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userCurrentModeMapFormatted[m] = formatData($scope.userCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], metric2valUser));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
+
         $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
         $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
+
+        /*
         $scope.summaryData.userSummary.recentTrips = [];
         getRecentTrips(3);
-        $scope.chartDataUser.duration = userDuration? userDuration : [];
-        $scope.chartDataUser.speed = userMedianSpeed? userMedianSpeed : [];
-        $scope.chartDataUser.count = userCount? userCount : [];
-        $scope.chartDataUser.distance = userDistance? userDistance : [];
+        */
+
+        $scope.isCustomLabelResult = isCustomLabels($scope.userCurrentModeMap);
+        FootprintHelper.setUseCustomFootprint($scope.isCustomLabelResult);
+        CalorieCal.setUseCustomFootprint($scope.isCustomLabelResult);
+
+        $scope.chartDataUser = $scope.userCurrentModeMapFormatted;
 
         // Fill in user calorie information
-        $scope.fillCalorieCardUserVals(userDuration, userMedianSpeed,
-                                       twoWeeksAgoDuration, twoWeeksAgoMedianSpeed);
-        $scope.fillFootprintCardUserVals(userDistance, twoWeeksAgoDistance);
+        $scope.fillCalorieCardUserVals($scope.userCurrentSummaryModeMap.duration,
+                                       $scope.userCurrentSummaryModeMap.median_speed,
+                                       $scope.userTwoWeeksAgoSummaryModeMap.duration,
+                                       $scope.userTwoWeeksAgoSummaryModeMap.median_speed);
+        $scope.fillFootprintCardUserVals($scope.userCurrentModeMap.distance,
+            $scope.userTwoWeeksAgoModeMap.distance);
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
+        METRIC_LIST.forEach((m) => $scope.aggCurrentResults[m] = []);
         if (first) {
-            var aggDuration = agg_metrics_arr[0].slice(0, 7);
-            var aggMedianSpeed = agg_metrics_arr[1].slice(0, 7);
-            var aggCount = agg_metrics_arr[2].slice(0, 7);
-            var aggDistance = agg_metrics_arr[3].slice(0, 7);
+            METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx].slice(0,7));
         } else {
-            var aggDuration = agg_metrics_arr[0];
-            var aggMedianSpeed = agg_metrics_arr[1];
-            var aggCount = agg_metrics_arr[2];
-            var aggDistance = agg_metrics_arr[3];
+            METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx]);
         }
 
-        $scope.chartDataAggr.duration = aggDuration? aggDuration : [];
-        $scope.chartDataAggr.speed = aggMedianSpeed? aggMedianSpeed : [];
-        $scope.chartDataAggr.count = aggCount? aggCount : [];
-        $scope.chartDataAggr.distance = aggDistance? aggDistance : [];
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valUser));
 
-        $scope.fillCalorieAggVals(aggDuration, aggMedianSpeed);
-        $scope.fillFootprintAggVals(aggDistance);
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.aggCurrentModeMap[m], m));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentPerCapitaModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valAvg));
+
+        METRIC_LIST.forEach((m) =>
+            $scope.aggCurrentSummaryPerCapitaModeMap[m] = getSummaryDataRaw($scope.aggCurrentPerCapitaModeMap[m], m));
+
+        $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
+        $scope.fillCalorieAggVals($scope.aggCurrentSummaryPerCapitaModeMap.duration,
+                                  $scope.aggCurrentSummaryPerCapitaModeMap.median_speed);
+        $scope.fillFootprintAggVals($scope.aggCurrentSummaryPerCapitaModeMap.distance);
    }
 
-   $scope.fillCalorieCardUserVals = function(userDuration, userMedianSpeed,
-                                             twoWeeksAgoDuration, twoWeeksAgoMedianSpeed) {
-       if (userDuration) {
-         var durationData = getSummaryDataRaw(userDuration, "duration");
-       }
-       if (userMedianSpeed) {
-         var speedData = getSummaryDataRaw(userMedianSpeed, "median_speed");
-       }
-       for (var i in durationData) {
-         var met = $scope.getCorrectedMetFromUserData(durationData[i], speedData[i])
+   /*
+    * We use the results to determine whether these results are from custom
+    * labels or from the automatically sensed labels. Automatically sensedV
+    * labels are in all caps, custom labels are prefixed by label, but have had
+    * the label_prefix stripped out before this. Results should have either all
+    * sensed labels or all custom labels.
+    */
+   var isCustomLabels = function(modeMap) {
+      const isSensed = (mode) => mode == mode.toUpperCase();
+      const isCustom = (mode) => mode == mode.toLowerCase();
+      const metricSummaryChecksCustom = [];
+      const metricSummaryChecksSensed = [];
+      for (const metric in modeMap) {
+        const metricKeys = modeMap[metric].map((e) => e.key);
+        const isSensedKeys = metricKeys.map(isSensed);
+        const isCustomKeys = metricKeys.map(isCustom);
+        console.log("Checking metric keys", metricKeys, " sensed ", isSensedKeys,
+            " custom ", isCustomKeys);
+        const isAllCustomForMetric = isAllCustom(isSensedKeys, isCustomKeys);
+        metricSummaryChecksSensed.push(!isAllCustomForMetric);
+        metricSummaryChecksCustom.push(isAllCustomForMetric);
+      }
+      console.log("overall custom/not results for each metric = ", metricSummaryChecksCustom);
+      return isAllCustom(metricSummaryChecksSensed, metricSummaryChecksCustom);
+   }
+
+   var isAllCustom = function(isSensedKeys, isCustomKeys) {
+        const allSensed = isSensedKeys.reduce((a, b) => a && b, true);
+        const anySensed = isSensedKeys.reduce((a, b) => a || b, false);
+        const allCustom = isCustomKeys.reduce((a, b) => a && b, true);
+        const anyCustom = isCustomKeys.reduce((a, b) => a || b, false);
+        if ((allSensed && !anyCustom)) {
+            return false; // sensed, not custom
+        }
+        if ((!anySensed && allCustom)) {
+            return true; // custom, not sensed; false implies that the other option is true
+        }
+        Logger.displayError("Mixed entries that combine sensed and custom labels",
+            "Please report to your program admin");
+        return undefined;
+    }
+
+   $scope.fillCalorieCardUserVals = function(userDurationSummary, userMedianSpeedSummary,
+                                             twoWeeksAgoDurationSummary, twoWeeksAgoMedianSpeedSummary) {
+       for (var i in userDurationSummary) {
+         var met = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMedianSpeedSummary[i])
          $scope.caloriesData.userCalories +=
-           Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met)) //+ ' cal'
+           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
        }
 
        if(first){
@@ -651,17 +779,12 @@ angular.module('emission.main.metrics',['nvd3',
        $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
                                            $scope.food.banana);
 
-       if(first){
-         if (twoWeeksAgoDuration) {
-           var durationData = getSummaryDataRaw(twoWeeksAgoDuration, "duration");
-         }
-         if (twoWeeksAgoMedianSpeed) {
-           var speedData = getSummaryDataRaw(twoWeeksAgoMedianSpeed, "median_speed");
-         }
-         for (var i in durationData) {
-           var met = $scope.getCorrectedMetFromUserData(durationData[i], speedData[i])
+       if(first && angular.isDefined(twoWeeksAgoDurationSummary)) {
+         for (var i in twoWeeksAgoDurationSummary) {
+           var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
+                        twoWeeksAgoMedianSpeedSummary[i])
            twoWeeksAgoCalories +=
-             Math.round(CalorieCal.getuserCalories(durationData[i].values / 3600, met));
+             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, met));
          }
        }
 
@@ -693,19 +816,13 @@ angular.module('emission.main.metrics',['nvd3',
        }
    }
 
-   $scope.fillCalorieAggVals = function(aggDuration, aggMedianSpeed) {
-       if (aggDuration) {
-         var avgDurationData = getAvgSummaryDataRaw(aggDuration, "duration");
-       }
-       if (aggMedianSpeed) {
-         var avgSpeedData = getAvgSummaryDataRaw(aggMedianSpeed, "median_speed");
-       }
-       for (var i in avgDurationData) {
+   $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMedianSpeedSummaryAvg) {
+       for (var i in aggDurationSummaryAvg) {
 
-         var met = CalorieCal.getMet(avgDurationData[i].key, avgSpeedData[i].values);
+         var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMedianSpeedSummaryAvg[i].values);
 
          $scope.caloriesData.aggrCalories +=
-           Math.round(CalorieCal.getuserCalories(avgDurationData[i].values / 3600, met)) //+ ' cal'
+           Math.round(CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, met)) //+ ' cal'
        }
    }
 
@@ -733,13 +850,21 @@ angular.module('emission.main.metrics',['nvd3',
 
         var optimalDistance = getOptimalFootprintDistance(userDistance);
         var worstDistance   = getWorstFootprintDistance(userDistance);
+
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
         var duration = moment.duration(date2.diff(date1));
         var days = duration.asDays();
 
-        $scope.carbonData.ca2035 = Math.round(40.142892 / 5 * days) + ' kg CO₂'; // kg/day
-        $scope.carbonData.ca2050 = Math.round(8.28565 / 5 * days) + ' kg CO₂';
+        /*
+         * 54 and 14 are the per-week CO2 estimates.
+         * https://github.com/e-mission/e-mission-docs/issues/688
+         * Since users can choose a custom range which can be less or greater
+         * than 7 days, we calculate the per day value by dividing by 7 and
+         * then multiplying by the actual number of days.
+         */
+        $scope.carbonData.us2030 = Math.round(54 / 7 * days) + ' kg CO₂'; // kg/day
+        $scope.carbonData.us2050 = Math.round(14 / 7 * days) + ' kg CO₂';
 
         $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
         $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
@@ -787,7 +912,7 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillFootprintAggVals = function(aggDistance) {
       if (aggDistance) {
-        var aggrCarbonData = getAvgSummaryDataRaw(aggDistance, 'distance');
+        var aggrCarbonData = aggDistance;
 
         // Issue 422:
         // https://github.com/e-mission/e-mission-docs/issues/422
@@ -803,18 +928,15 @@ angular.module('emission.main.metrics',['nvd3',
    };
 
     $scope.showCharts = function(agg_metrics) {
-      $scope.data.count = getDataFromMetrics(agg_metrics.count, metric2valUser);
-      $scope.data.distance = getDataFromMetrics(agg_metrics.distance, metric2valUser);
-      $scope.data.duration = getDataFromMetrics(agg_metrics.duration, metric2valUser);
-      $scope.data.speed = getDataFromMetrics(agg_metrics.speed, metric2valUser);
+      $scope.data = agg_metrics;
       $scope.countOptions = angular.copy($scope.options)
       $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)
-      $scope.distanceOptions.chart.yAxis.axisLabel = 'm';
+      $scope.distanceOptions.chart.yAxis.axisLabel = ImperialConfig.getDistanceSuffix;
       $scope.durationOptions = angular.copy($scope.options)
-      $scope.durationOptions.chart.yAxis.axisLabel = 'secs'
+      $scope.durationOptions.chart.yAxis.axisLabel = $translate.instant('metrics.hours');
       $scope.speedOptions = angular.copy($scope.options)
-      $scope.speedOptions.chart.yAxis.axisLabel = 'm/sec'
+      $scope.speedOptions.chart.yAxis.axisLabel = ImperialConfig.getSpeedSuffix;
     };
     $scope.pandaFreqOptions = [
       {text: $translate.instant('metrics.pandafreqoptions-daily'), value: 'D'},
@@ -849,10 +971,9 @@ angular.module('emission.main.metrics',['nvd3',
         metrics.forEach(function(metric) {
             var on_foot_val = 0;
             for (var field in metric) {
-                // TODO: Consider creating a prefix such as M_ to signal
-                // modes. Is that really less fragile than caps, though?
-                // Here, we check if the string is all upper case by
-                // converting it to upper case and seeing if it is changed
+                // For modes inferred from sensor data, we check if the string
+                // is all upper case by converting it to upper case and seeing
+                // if it is changed
                 if (field == field.toUpperCase()) {
                     // since we can have multiple possible ON_FOOT modes, we
                     // add all of them up here
@@ -867,8 +988,19 @@ angular.module('emission.main.metrics',['nvd3',
                     // since we can have multiple on_foot entries, let's hold
                     // off on handling them until we have considered all fields
                     if (field != "ON_FOOT") {
-                        mode_bins[field].push([metric.ts, Math.round(metric2val(metric, field)), metric.fmt_time]);
+                        mode_bins[field].push([metric.ts, metric2val(metric, field), metric.fmt_time]);
                     }
+                }
+                // For modes from user labels, we assume that the field stars with
+                // the label_ prefix
+                if (field.startsWith("label_")) {
+                    // "label_" is 6 characters
+                    let actualMode = field.slice(6, field.length);
+                    console.log("Mapped field "+field+" to mode "+actualMode);
+                    if (actualMode in mode_bins == false) {
+                        mode_bins[actualMode] = []
+                    }
+                    mode_bins[actualMode].push([metric.ts, Math.round(metric2val(metric, field)), moment(metric.fmt_time).format()]);
                 }
             }
             // here's where we handle the ON_FOOT
@@ -885,21 +1017,21 @@ angular.module('emission.main.metrics',['nvd3',
         return rtn;
     }
 
-    var getSummaryDataRaw = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics, metric2valUser);
-        for (var i = 0; i < data.length; i++) {
+    var getSummaryDataRaw = function(modeMap, metric) {
+        let summaryMap = angular.copy(modeMap);
+        for (var i = 0; i < modeMap.length; i++) {
           var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
+          for (var j = 0; j < modeMap[i].values.length; j++) {
+            temp += modeMap[i].values[j][1];
           }
           if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length);
+            summaryMap[i].values = Math.round(temp / modeMap[i].values.length);
           } else {
-            data[i].values = Math.round(temp);
+            summaryMap[i].values = Math.round(temp);
           }
 
         }
-        return data;
+        return summaryMap;
     }
 
     /*var sortNumber = function(a,b) {
@@ -932,28 +1064,61 @@ angular.module('emission.main.metrics',['nvd3',
       }
       return distance;
     }
-    var getAvgSummaryDataRaw = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics, metric2valAvg);
-        for (var i = 0; i < data.length; i++) {
-          var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
-          }
-          if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length);
-          } else {
-            data[i].values = Math.round(temp);
-          }
 
+    var formatData = function(modeMapList, metric) {
+        var unit = "";
+        switch(metric) {
+          case "count":
+            unit = $translate.instant('metrics.trips');
+            break;
+          case "distance":
+            unit = ImperialConfig.getDistanceSuffix;
+            break;
+          case "duration":
+            // we pick hours as a reasonable formatted metric
+            unit = $translate.instant('metrics.hours');
+            break;
+          case "median_speed":
+            unit = ImperialConfig.getSpeedSuffix;
+            break;
         }
-        return data;
+        let formattedModeList = [];
+        modeMapList.forEach((modeMap) => {
+            let currMode = modeMap["key"];
+            let modeStatList = modeMap["values"];
+            let formattedModeStatList = angular.copy(modeStatList);
+            formattedModeStatList.forEach((modeStat) => {
+                var stringRep = "";
+                if (metric === "median_speed") {
+                  let spdStr = ImperialConfig.getFormattedSpeed( modeStat[1]);
+                  modeStat[1] = Number.parseFloat(spdStr);
+                  stringRep = spdStr + " " + unit;
+                } else if(metric === "distance"){
+                  let distStr = ImperialConfig.getFormattedDistance(modeStat[1]);
+                  modeStat[1] = Number.parseFloat(distStr);
+                  stringRep = distStr + " " + unit;
+                } else if(metric === "duration"){
+                  let durM = moment.duration(modeStat[1] * 1000);
+                  modeStat[1] = durM.asHours().toFixed(2);
+                  stringRep = durM.humanize();
+                } else {
+                  modeStat[1] = Math.round(modeStat[1]);
+                  stringRep = modeStat[1] + " " + unit;
+                }
+                modeStat.push(unit);
+                modeStat.push(stringRep);
+            });
+            formattedModeList.push({key: currMode, values: formattedModeStatList});
+        });
+        return formattedModeList;
     }
-    var getSummaryData = function(metrics, metric) {
-        var data = getDataFromMetrics(metrics, metric2valUser);
-        for (var i = 0; i < data.length; i++) {
+
+    var getSummaryData = function(modeMap, metric) {
+        var summaryData = angular.copy(modeMap);
+        for (var i = 0; i < summaryData.length; i++) {
           var temp = 0;
-          for (var j = 0; j < data[i].values.length; j++) {
-            temp += data[i].values[j][1];
+          for (var j = 0; j < summaryData[i].values.length; j++) {
+            temp += summaryData[i].values[j][1];
           }
           var unit = "";
           switch(metric) {
@@ -971,17 +1136,17 @@ angular.module('emission.main.metrics',['nvd3',
               break;
           }
           if (metric === "median_speed") {
-            data[i].values = Math.round(temp / data[i].values.length  ) + ' ' + unit;
-          } else if(metric === "distance" && temp.toString().length > 4){
-            data[i].values = Math.round(temp / 1000) + ' ' + "km";
+            summaryData[i].values = ImperialConfig.getFormattedSpeed(temp / summaryData[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
+          } else if(metric === "distance"){
+            summaryData[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
           } else if(metric === "duration" && temp > 60){
-            data[i].values = Math.round(temp / 60) + ' ' + "mins";
+            summaryData[i].values = moment.duration(temp * 1000).humanize();
           } else {
-            data[i].values = Math.round(temp) + ' ' + unit;
+            summaryData[i].values = Math.round(temp) + ' ' + $translate.instant('metrics.trips');
           }
 
         }
-        return data;
+        return summaryData;
     }
 
     var getTotalDistance = function(distances) {
@@ -1007,6 +1172,7 @@ angular.module('emission.main.metrics',['nvd3',
         return maxTripMethod;
     }
 
+    /*
     var getRecentTrips = function(numTrips) {
       var now = moment().utc();
       var twoDaysAgo = moment().utc().subtract(7, 'd');
@@ -1059,6 +1225,7 @@ angular.module('emission.main.metrics',['nvd3',
       }
       $scope.summaryData.userSummary.recentTrips = trips;
     }
+    */
 
     $scope.getFormattedTime = function(ts_in_secs) { //found in diary/services.js
       if (angular.isDefined(ts_in_secs)) {
@@ -1219,8 +1386,8 @@ angular.module('emission.main.metrics',['nvd3',
   })
 
   $scope.linkToMaps = function() {
-    var start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
-    var destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
+    let start = $scope.suggestionData.startCoordinates[1] + ',' + $scope.suggestionData.startCoordinates[0];
+    let destination = $scope.suggestionData.endCoordinates[1] + ',' + $scope.suggestionData.endCoordinates[0];
     var mode = $scope.suggestionData.mode
     if(ionic.Platform.isIOS()){
       if (mode === 'bike') {

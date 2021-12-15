@@ -135,6 +135,7 @@
         "carbon-data-change-decrease": " decrease over a week",
         "pick-a-date": "Pick a date",
         "trips": "trips",
+        "hours": "hours",
         "custom": "Custom"
     },
 
@@ -227,6 +228,8 @@
 
     "main-metrics":{
         "dashboard": "Dashboard",
+        "summary": "Summary",
+        "chart": "Chart",
         "mybear": "My Bear",
         "leaderboard": "Leaderboard",
         "carbon-usage": "Carbon Usage Past 7 Days",
