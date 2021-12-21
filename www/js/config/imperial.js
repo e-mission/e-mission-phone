@@ -30,7 +30,7 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
     };
 
     ic.getMph = function(metersPerSecond) {
-        return (KM_TO_MILES * ic.getKmph(section));
+        return (KM_TO_MILES * ic.getKmph(metersPerSec));
     };
 
     ic.getFormattedDistance = USE_IMPERIAL? ic.getFormattedDistanceInMiles : ic.getFormattedDistanceInKm;
