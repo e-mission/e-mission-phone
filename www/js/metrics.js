@@ -17,7 +17,7 @@ angular.module('emission.main.metrics',['nvd3',
                                     $rootScope, $location, $state, ReferHelper, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
-    var first = true;
+    var defaultTwoWeekUserCall = true;
     var lastWeekCalories = 0;
     var lastWeekCarbon = "0 kg CO₂";
     var twoWeeksAgoCarbon = "";
@@ -506,7 +506,7 @@ angular.module('emission.main.metrics',['nvd3',
       $ionicLoading.show({
         template: $translate.instant('loading')
       });
-      if(!first){
+      if(!defaultTwoWeekUserCall){
         $scope.uictrl.currentString = $translate.instant('metrics.custom');
         $scope.uictrl.current = false;
       }
@@ -546,14 +546,14 @@ angular.module('emission.main.metrics',['nvd3',
           $ionicLoading.hide();
           console.log("user results ", results);
           if(results.user_metrics.length == 1){
-            console.log("first = "+first);
-            first = false;
+            console.log("defaultTwoWeekUserCall = "+defaultTwoWeekUserCall);
+            defaultTwoWeekUserCall = false;
             // If there is no data from last week (ex. new user)
             // Don't store the any other data as last we data
           }
           $scope.fillUserValues(results.user_metrics);
           $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
-          first = false; //If there is data from last week store the data only first time
+          defaultTwoWeekUserCall = false; //If there is data from last week store the data only first time
           $scope.uictrl.showContent = true;
           if (angular.isDefined($scope.chartDataUser)) {
             $scope.$apply(function() {
@@ -606,7 +606,7 @@ angular.module('emission.main.metrics',['nvd3',
 
         METRIC_LIST.forEach((m) => $scope.userTwoWeeksAgo[m] = []);
 
-        if(first){
+        if(defaultTwoWeekUserCall){
           for(var i in user_metrics_arr[0]) {
             if(seventhDayAgo.isSameOrBefore(moment.unix(user_metrics_arr[0][i].ts).utc())){
               METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m].push(user_metrics_arr[idx][i]));
@@ -654,7 +654,7 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
         METRIC_LIST.forEach((m) => $scope.aggCurrentResults[m] = []);
-        if (first) {
+        if (defaultTwoWeekUserCall) {
             METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx].slice(0,7));
         } else {
             METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx]);
@@ -731,7 +731,7 @@ angular.module('emission.main.metrics',['nvd3',
            Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
        }
 
-       if(first){
+       if(defaultTwoWeekUserCall){
            lastWeekCalories = $scope.caloriesData.userCalories;
        }
 
@@ -742,7 +742,7 @@ angular.module('emission.main.metrics',['nvd3',
        $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
                                            $scope.food.banana);
 
-       if(first && angular.isDefined(twoWeeksAgoDurationSummary)) {
+       if(defaultTwoWeekUserCall && angular.isDefined(twoWeeksAgoDurationSummary)) {
          for (var i in twoWeeksAgoDurationSummary) {
            var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
                         twoWeeksAgoMedianSpeedSummary[i])
@@ -751,7 +751,7 @@ angular.module('emission.main.metrics',['nvd3',
          }
        }
 
-       if (first) {
+       if (defaultTwoWeekUserCall) {
           $scope.caloriesData.lastWeekUserCalories = twoWeeksAgoCalories;
        } else {
           $scope.caloriesData.lastWeekUserCalories = ""
@@ -835,7 +835,7 @@ angular.module('emission.main.metrics',['nvd3',
         lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
       }
 
-      if (first) {
+      if (defaultTwoWeekUserCall) {
         if (twoWeeksAgoDistance) {
           var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
           twoWeeksAgoCarbon    = 0;
@@ -1220,7 +1220,7 @@ angular.module('emission.main.metrics',['nvd3',
   initSelect();
 
   $scope.doRefresh = function() {
-    first = true;
+    defaultTwoWeekUserCall = true;
     getMetrics();
   }
 
