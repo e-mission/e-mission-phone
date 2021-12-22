@@ -525,7 +525,7 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.caloriesData.changeInPercentage = "0%"
       $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change');
 
-      $scope.carbonData.userCarbon = "0 kg CO₂";
+      $scope.carbonData.userCarbon = 0;
       $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-calculating');;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
       $scope.carbonData.worstCarbon = "0 kg CO₂";
@@ -826,10 +826,10 @@ angular.module('emission.main.metrics',['nvd3',
          * than 7 days, we calculate the per day value by dividing by 7 and
          * then multiplying by the actual number of days.
          */
-        $scope.carbonData.us2030 = Math.round(54 / 7 * days) + ' kg CO₂'; // kg/day
-        $scope.carbonData.us2050 = Math.round(14 / 7 * days) + ' kg CO₂';
+        $scope.carbonData.us2030 = Math.round(54 / 7 * days); // kg/day
+        $scope.carbonData.us2050 = Math.round(14 / 7 * days);
 
-        $scope.carbonData.userCarbon    = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(userCarbonData));
+        $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userCarbonData);
         $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
         $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
         lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
