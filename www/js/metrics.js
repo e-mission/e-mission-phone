@@ -526,12 +526,8 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change');
 
       $scope.carbonData.userCarbon = 0;
-      $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-calculating');;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
       $scope.carbonData.worstCarbon = "0 kg CO₂";
-      $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
-      $scope.carbonData.changeInPercentage = "0%";
-      $scope.carbonData.change = $translate.instant('metrics.carbon-data-change');
 
       $scope.summaryData.userSummary = [];
       $scope.chartDataUser = {};
@@ -830,47 +826,26 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.carbonData.us2050 = Math.round(14 / 7 * days);
 
         $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userCarbonData);
-        $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
-        $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
-        lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
+        $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
+        $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
       }
 
       if (defaultTwoWeekUserCall) {
-        if (twoWeeksAgoDistance) {
+        // This is a default call in which we retrieved the current week and
+        // the previous week of data
+        if (twoWeeksAgoDistance.length > 0) {
+          // and this user has been around long enough that they have two weeks
+          // of data, or they haven't turned off tracking for all of last week,
+          // or....
           var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-          twoWeeksAgoCarbon    = 0;
-          twoWeeksAgoCarbonInt = 0;
 
-          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
+          $scope.carbonData.lastWeekUserCarbon = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
 
-          twoWeeksAgoCarbon = FootprintHelper.readableFormat(twoWeeksAgoCarbonInt);
-          lastWeekCarbon    = twoWeeksAgoCarbon;
-        }
+          console.log("Running calculation with " + $scope.carbonData.userCarbon + " and " + $scope.carbonData.lastWeekUserCarbon);
+          console.log("Running calculation with ", $scope.carbonData);
+          $scope.carbonData.greaterLesserPct = ($scope.carbonData.userCarbon/$scope.carbonData.lastWeekUserCarbon) * 100 - 100;
       }
-      $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-
-      var change = "";
-      console.log("Running calculation with " + lastWeekCarbonInt + " and " + twoWeeksAgoCarbonInt);
-      var calculation = (lastWeekCarbonInt/twoWeeksAgoCarbonInt) * 100 - 100;
-
-      // TODO: Refactor this so that we can filter out bad values ahead of time
-      // instead of having to work around it here
-      if (isValidNumber(calculation)) {
-        if(lastWeekCarbonInt > twoWeeksAgoCarbonInt){
-          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-increase');
-          $scope.carbonUp = true;
-          $scope.carbonDown = false;
-        } else {
-          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-decrease');
-          $scope.carbonUp = false;
-          $scope.carbonDown = true;
-        }
-        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
-      }
-      else {
-        $scope.carbonData.change = "";
-        $scope.carbonData.changeInPercentage = "0%";
-      }
+     }
    };
 
    $scope.fillFootprintAggVals = function(aggDistance) {
@@ -886,7 +861,7 @@ angular.module('emission.main.metrics',['nvd3',
           }
         }
 
-        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
+        $scope.carbonData.aggrCarbon = FootprintHelper.getFootprintForMetrics(aggrCarbonData);
       }
    };
 
