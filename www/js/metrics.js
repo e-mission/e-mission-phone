@@ -613,7 +613,7 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.userTwoWeeksAgoModeMap[m] = getDataFromMetrics($scope.userTwoWeeksAgo[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
-            $scope.userCurrentModeMapFormatted[m] = formatData($scope.userCurrentModeMap[m], m));
+            $scope.userCurrentModeMapFormatted[m] = formatModeMap($scope.userCurrentModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
@@ -653,7 +653,7 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.aggCurrentModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
-            $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
+            $scope.aggCurrentModeMapFormatted[m] = formatModeMap($scope.aggCurrentModeMap[m], m));
 
         COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.aggCurrentPerCapitaModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valAvg));
@@ -971,48 +971,54 @@ angular.module('emission.main.metrics',['nvd3',
       return distance;
     }
 
-    var formatData = function(modeMapList, metric) {
-        var unit = "";
-        switch(metric) {
-          case "count":
-            unit = $translate.instant('metrics.trips');
-            break;
-          case "distance":
-            unit = ImperialConfig.getDistanceSuffix;
-            break;
-          case "duration":
-            // we pick hours as a reasonable formatted metric
-            unit = $translate.instant('metrics.hours');
-            break;
-          case "mean_speed":
-            unit = ImperialConfig.getSpeedSuffix;
-            break;
-        }
+    $scope.formatCount = function(value) {
+        const formatVal = Math.round(value);
+        const unit = $translate.instant('metrics.trips');
+        const stringRep = formatVal + " " + unit;
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatDistance = function(value) {
+        const formatVal = Number.parseFloat(ImperialConfig.getFormattedDistance(value));
+        const unit = ImperialConfig.getDistanceSuffix;
+        const stringRep = formatVal + " " + unit;
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatDuration = function(value) {
+        const durM = moment.duration(value * 1000);
+        const formatVal = durM.asHours();
+        const unit = $translate.instant('metrics.hours');
+        const stringRep = durM.humanize();
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatMeanSpeed = function(value) {
+        const formatVal = Number.parseFloat(ImperialConfig.getFormattedSpeed(value));
+        const unit = ImperialConfig.getSpeedSuffix;
+        const stringRep = formatVal + " " + unit;
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatterMap = {
+        count: $scope.formatCount,
+        distance: $scope.formatDistance,
+        duration: $scope.formatDuration,
+        mean_speed: $scope.formatMeanSpeed
+    }
+
+    var formatModeMap = function(modeMapList, metric) {
+        const formatter = $scope.formatterMap[metric];
         let formattedModeList = [];
         modeMapList.forEach((modeMap) => {
             let currMode = modeMap["key"];
             let modeStatList = modeMap["values"];
-            let formattedModeStatList = angular.copy(modeStatList);
-            formattedModeStatList.forEach((modeStat) => {
-                var stringRep = "";
-                if (metric === "mean_speed") {
-                  let spdStr = ImperialConfig.getFormattedSpeed( modeStat[1]);
-                  modeStat[1] = Number.parseFloat(spdStr);
-                  stringRep = spdStr + " " + unit;
-                } else if(metric === "distance"){
-                  let distStr = ImperialConfig.getFormattedDistance(modeStat[1]);
-                  modeStat[1] = Number.parseFloat(distStr);
-                  stringRep = distStr + " " + unit;
-                } else if(metric === "duration"){
-                  let durM = moment.duration(modeStat[1] * 1000);
-                  modeStat[1] = durM.asHours().toFixed(2);
-                  stringRep = durM.humanize();
-                } else {
-                  modeStat[1] = Math.round(modeStat[1]);
-                  stringRep = modeStat[1] + " " + unit;
-                }
-                modeStat.push(unit);
-                modeStat.push(stringRep);
+            let formattedModeStatList = modeStatList.map((modeStat) => {
+                let [formatVal, unit, stringRep] = formatter(modeStat[1]);
+                let copiedModeStat = angular.copy(modeStat);
+                copiedModeStat[1] = formatVal;
+                copiedModeStat.push(unit);
+                copiedModeStat.push(stringRep);
             });
             formattedModeList.push({key: currMode, values: formattedModeStatList});
         });
