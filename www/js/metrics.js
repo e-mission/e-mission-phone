@@ -1217,8 +1217,10 @@ angular.module('emission.main.metrics',['nvd3',
   $scope.setCurDayFrom = function(val) {
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
+      $scope.datepickerObjFrom.inputMoment = $scope.selectCtrl.fromDateTimestamp;
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     } else {
+      $scope.datepickerObjFrom.inputMoment = $scope.selectCtrl.fromDateTimestamp;
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
 
@@ -1226,11 +1228,12 @@ angular.module('emission.main.metrics',['nvd3',
   $scope.setCurDayTo = function(val) {
     if (val) {
       $scope.selectCtrl.toDateTimestamp = moment(val).utc();
+      $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
+      $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
-
   };
 
 
@@ -1263,9 +1266,12 @@ angular.module('emission.main.metrics',['nvd3',
       ]
     });
   }
+
+  $scope.localDateFormat = moment.localeData().longDateFormat('ll');
   $scope.datepickerObjFrom = {
       callback: $scope.setCurDayFrom,
       inputDate: $scope.selectCtrl.fromDateTimestamp.toDate(),
+      inputMoment: $scope.selectCtrl.fromDateTimestamp,
       todayLabel: $translate.instant('list-datepicker-today'),  //Optional
       closeLabel: $translate.instant('list-datepicker-close'),  //Optional
       setLabel: $translate.instant('list-datepicker-set'),  //Optional
@@ -1277,13 +1283,14 @@ angular.module('emission.main.metrics',['nvd3',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'dd/MM/yyyy',
+      dateFormat: $scope.localDateFormat,
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };
   $scope.datepickerObjTo = {
       callback: $scope.setCurDayTo,
       inputDate: $scope.selectCtrl.toDateTimestamp.toDate(),
+      inputMoment: $scope.selectCtrl.toDateTimestamp,
       todayLabel: $translate.instant('list-datepicker-today'),  //Optional
       closeLabel: $translate.instant('list-datepicker-close'),  //Optional
       setLabel: $translate.instant('list-datepicker-set'),  //Optional
@@ -1295,7 +1302,7 @@ angular.module('emission.main.metrics',['nvd3',
       from: new Date(2015, 1, 1),
       to: new Date(),
       showTodayButton: true,
-      dateFormat: 'dd/MM/yyyy',
+      dateFormat: $scope.localDateFormat,
       closeOnSelect: false,
       // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
     };

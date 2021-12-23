@@ -22,7 +22,7 @@
           </div>
           <div class="metric-right">
             <button id="date-picker-button" ng-click="pickFromDay()">
-            <div class="metric-datepicker">{{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
+            <div class="metric-datepicker">{{ datepickerObjFrom.inputMoment.format('LL') }}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </button>
           </div>
         </div>
@@ -37,7 +37,7 @@
           </div>
           <div class="metric-right">
             <button id="date-picker-button" ng-click="pickToDay()">
-            <div class="metric-datepicker">{{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
+            <div class="metric-datepicker">{{ datepickerObjTo.inputMoment.format('LL') }}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </ionic-datepicker>
           </div>
         </div>

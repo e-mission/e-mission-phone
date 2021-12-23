@@ -18,11 +18,13 @@
         <div ng-class="chartButtonClass()" ng-click="showChart()" translate>{{'.chart'}}</div>
       </div>
     </div>
-    <div ng-if="uictrl.showChart" style="width:50%; float:right; padding-top: 10px;">
+    <div style="width:50%; float:right; padding-top: 10px;">
       <div class="metric-change-data-button hvcenter" ng-click="openModal()" translate>{{'.change-data'}}</div>
     </div>
-    <div ng-if="uictrl.showSummary" style="width:100%; float:right; padding-top: 10px;">
-      <div class="metric-change-data-button hvcenter" ng-click="openModal()" translate>{{'.change-data'}}</div>
+    <div ng-if="uictrl.showSummary" style="width:50%; float:right; padding-top: 10px;">
+      <div class="metric-second-half">
+      <div> {{ selectCtrl.fromDateTimestamp.format('ll') }} ➡️  {{ selectCtrl.toDateTimestamp.format('ll') }} </div>
+      </div>
     </div>
     <div ng-if="uictrl.showChart" style="width:50%;float:right; padding-top: 10px">
       <div class="metric-second-half">
