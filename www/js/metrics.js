@@ -1026,42 +1026,6 @@ angular.module('emission.main.metrics',['nvd3',
         return formattedModeList;
     }
 
-    var getSummaryData = function(modeMap, metric) {
-        var summaryData = angular.copy(modeMap);
-        for (var i = 0; i < summaryData.length; i++) {
-          var temp = 0;
-          for (var j = 0; j < summaryData[i].values.length; j++) {
-            temp += summaryData[i].values[j][1];
-          }
-          var unit = "";
-          switch(metric) {
-            case "count":
-              unit = $translate.instant('metrics.trips');
-              break;
-            case "distance":
-              unit = "m";
-              break;
-            case "duration":
-              unit = "s";
-              break;
-            case "mean_speed":
-              unit = "m/s";
-              break;
-          }
-          if (metric === "mean_speed") {
-            summaryData[i].values = ImperialConfig.getFormattedSpeed(temp / summaryData[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
-          } else if(metric === "distance"){
-            summaryData[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
-          } else if(metric === "duration" && temp > 60){
-            summaryData[i].values = moment.duration(temp * 1000).humanize();
-          } else {
-            summaryData[i].values = Math.round(temp) + ' ' + $translate.instant('metrics.trips');
-          }
-
-        }
-        return summaryData;
-    }
-
     $scope.changeFromWeekday = function() {
       return $scope.changeWeekday(function(newVal) {
                                     $scope.selectCtrl.fromDateWeekdayString = newVal;
