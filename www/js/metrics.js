@@ -520,10 +520,6 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.carbonData = {};
       $scope.summaryData = {};
       $scope.caloriesData.userCalories = 0;
-      $scope.caloriesData.aggrCalories = 0;
-      $scope.caloriesData.lastWeekUserCalories = 0;
-      $scope.caloriesData.changeInPercentage = "0%"
-      $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change');
 
       $scope.carbonData.userCarbon = 0;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
@@ -727,10 +723,6 @@ angular.module('emission.main.metrics',['nvd3',
            Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
        }
 
-       if(defaultTwoWeekUserCall){
-           lastWeekCalories = $scope.caloriesData.userCalories;
-       }
-
        $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/
                                            $scope.food.chocolateChip);
        $scope.numberOfIceCreams = Math.floor($scope.caloriesData.userCalories/
@@ -738,44 +730,25 @@ angular.module('emission.main.metrics',['nvd3',
        $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
                                            $scope.food.banana);
 
-       if(defaultTwoWeekUserCall && angular.isDefined(twoWeeksAgoDurationSummary)) {
+       if(defaultTwoWeekUserCall) {
+        if (twoWeeksAgoDurationSummary.length > 0) {
          for (var i in twoWeeksAgoDurationSummary) {
            var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
                         twoWeeksAgoMedianSpeedSummary[i])
            twoWeeksAgoCalories +=
              Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, met));
          }
-       }
-
-       if (defaultTwoWeekUserCall) {
-          $scope.caloriesData.lastWeekUserCalories = twoWeeksAgoCalories;
-       } else {
-          $scope.caloriesData.lastWeekUserCalories = ""
-       }
-
-
-       console.log("Running calorieData with "
-                    + (lastWeekCalories)
-                    + " and "
-                    + (twoWeeksAgoCalories));
-       // TODO: Refactor this so that we can filter out bad values ahead of time
-       // instead of having to work around it here
-       var calorieCalculation = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100));
-       if (isValidNumber(calorieCalculation)) {
-          $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
-          if(lastWeekCalories > twoWeeksAgoCalories){
-            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-increase');
-            $scope.caloriesUp = true;
-            $scope.caloriesDown = false;
-          } else {
-            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-decrease');
-            $scope.caloriesUp = false;
-            $scope.caloriesDown = true;
-          }
+         $scope.caloriesData.lastWeekUserCalories = twoWeeksAgoCalories;
+         console.log("Running calorieData with ", $scope.caloriesData);
+         // TODO: Refactor this so that we can filter out bad values ahead of time
+         // instead of having to work around it here
+         $scope.caloriesData.greaterLesserPct = ($scope.caloriesData.userCalories/$scope.caloriesData.lastWeekUserCalories) * 100 - 100;
+        }
        }
    }
 
    $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMedianSpeedSummaryAvg) {
+       $scope.caloriesData.aggrCalories = 0;
        for (var i in aggDurationSummaryAvg) {
 
          var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMedianSpeedSummaryAvg[i].values);
