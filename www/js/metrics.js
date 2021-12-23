@@ -18,12 +18,6 @@ angular.module('emission.main.metrics',['nvd3',
                                     $translate) {
     var lastTwoWeeksQuery = true;
     var defaultTwoWeekUserCall = true;
-    var lastWeekCalories = 0;
-    var lastWeekCarbon = "0 kg CO₂";
-    var twoWeeksAgoCarbon = "";
-    var lastWeekCarbonInt = 0;
-    var twoWeeksAgoCarbonInt = 0;
-    var twoWeeksAgoCalories = 0;
 
     var DURATION = "duration";
     var MEDIAN_SPEED = "median_speed";
@@ -732,6 +726,7 @@ angular.module('emission.main.metrics',['nvd3',
 
        if(defaultTwoWeekUserCall) {
         if (twoWeeksAgoDurationSummary.length > 0) {
+         var twoWeeksAgoCalories = 0;
          for (var i in twoWeeksAgoDurationSummary) {
            var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
                         twoWeeksAgoMedianSpeedSummary[i])
