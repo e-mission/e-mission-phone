@@ -618,7 +618,7 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
-            $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], metric2valUser));
+            $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
             $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
@@ -635,7 +635,9 @@ angular.module('emission.main.metrics',['nvd3',
                                        $scope.userTwoWeeksAgoSummaryModeMap.duration,
                                        $scope.userTwoWeeksAgoSummaryModeMap.median_speed);
         $scope.fillFootprintCardUserVals($scope.userCurrentModeMap.distance,
-            $scope.userTwoWeeksAgoModeMap.distance);
+            $scope.userCurrentSummaryModeMap.distance,
+            $scope.userTwoWeeksAgoModeMap.distance,
+            $scope.userTwoWeeksAgoSummaryModeMap.distance);
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
@@ -651,9 +653,6 @@ angular.module('emission.main.metrics',['nvd3',
 
         METRIC_LIST.forEach((m) =>
             $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
-
-        METRIC_LIST.forEach((m) =>
-            $scope.aggCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.aggCurrentModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
             $scope.aggCurrentPerCapitaModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valAvg));
@@ -771,12 +770,12 @@ angular.module('emission.main.metrics',['nvd3',
        }
    };
 
-   $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
+   $scope.fillFootprintCardUserVals = function(
+        userDistance, userDistanceSummary,
+        twoWeeksAgoDistance, twoWeeksAgoDistanceSummary) {
       if (userDistance) {
-        var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
-
-        var optimalDistance = getOptimalFootprintDistance(userDistance);
-        var worstDistance   = getWorstFootprintDistance(userDistance);
+        // var optimalDistance = getOptimalFootprintDistance(userDistance);
+        // var worstDistance   = getWorstFootprintDistance(userDistance);
 
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
@@ -793,9 +792,9 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.carbonData.us2030 = Math.round(54 / 7 * days); // kg/day
         $scope.carbonData.us2050 = Math.round(14 / 7 * days);
 
-        $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userCarbonData);
-        $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
-        $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
+        $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userDistanceSummary);
+        // $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
+        // $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
       }
 
       if (defaultTwoWeekUserCall) {
@@ -805,9 +804,7 @@ angular.module('emission.main.metrics',['nvd3',
           // and this user has been around long enough that they have two weeks
           // of data, or they haven't turned off tracking for all of last week,
           // or....
-          var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-
-          $scope.carbonData.lastWeekUserCarbon = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
+          $scope.carbonData.lastWeekUserCarbon = FootprintHelper.getFootprintForMetrics(twoWeeksAgoDistanceSummary);
 
           console.log("Running calculation with " + $scope.carbonData.userCarbon + " and " + $scope.carbonData.lastWeekUserCarbon);
           console.log("Running calculation with ", $scope.carbonData);
@@ -873,6 +870,7 @@ angular.module('emission.main.metrics',['nvd3',
     }
 
     var getDataFromMetrics = function(metrics, metric2val) {
+        console.log("Called getDataFromMetrics on ", metrics);
         var mode_bins = {};
         metrics.forEach(function(metric) {
             var on_foot_val = 0;
@@ -924,6 +922,7 @@ angular.module('emission.main.metrics',['nvd3',
     }
 
     var getSummaryDataRaw = function(modeMap, metric) {
+        console.log("Invoked getSummaryDataRaw on ", modeMap, "with", metric);
         let summaryMap = angular.copy(modeMap);
         for (var i = 0; i < modeMap.length; i++) {
           var temp = 0;
