@@ -622,7 +622,7 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
-            $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
+            $scope.summaryData.userSummary[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
 
         $scope.isCustomLabelResult = isCustomLabels($scope.userCurrentModeMap);
         FootprintHelper.setUseCustomFootprint($scope.isCustomLabelResult);
