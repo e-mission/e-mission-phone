@@ -1019,6 +1019,7 @@ angular.module('emission.main.metrics',['nvd3',
                 copiedModeStat[1] = formatVal;
                 copiedModeStat.push(unit);
                 copiedModeStat.push(stringRep);
+                return copiedModeStat;
             });
             formattedModeList.push({key: currMode, values: formattedModeStatList});
         });
