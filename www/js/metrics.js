@@ -25,6 +25,7 @@ angular.module('emission.main.metrics',['nvd3',
     var DISTANCE = "distance";
 
     var METRIC_LIST = [DURATION, MEAN_SPEED, COUNT, DISTANCE];
+    var COMPUTATIONAL_METRIC_LIST = [DURATION, MEAN_SPEED, DISTANCE];
 
     /*
      * BEGIN: Data structures to parse and store the data in different formats.
@@ -608,7 +609,7 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentModeMap[m] = getDataFromMetrics($scope.userCurrentResults[m], metric2valUser));
 
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.userTwoWeeksAgoModeMap[m] = getDataFromMetrics($scope.userTwoWeeksAgo[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
@@ -617,7 +618,7 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
 
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
@@ -654,10 +655,10 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
 
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.aggCurrentPerCapitaModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valAvg));
 
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.aggCurrentSummaryPerCapitaModeMap[m] = getSummaryDataRaw($scope.aggCurrentPerCapitaModeMap[m], m));
 
         $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
