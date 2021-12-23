@@ -20,11 +20,11 @@ angular.module('emission.main.metrics',['nvd3',
     var defaultTwoWeekUserCall = true;
 
     var DURATION = "duration";
-    var MEDIAN_SPEED = "median_speed";
+    var MEAN_SPEED = "mean_speed";
     var COUNT = "count";
     var DISTANCE = "distance";
 
-    var METRIC_LIST = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+    var METRIC_LIST = [DURATION, MEAN_SPEED, COUNT, DISTANCE];
 
     /*
      * BEGIN: Data structures to parse and store the data in different formats.
@@ -43,7 +43,7 @@ angular.module('emission.main.metrics',['nvd3',
                 ts: 1638489600},....],
          duration: [...]
          distance: [...]
-         median_speed: [...]}
+         mean_speed: [...]}
     */
     $scope.userCurrentResults = {};
     $scope.userTwoWeeksAgo = {};
@@ -61,7 +61,7 @@ angular.module('emission.main.metrics',['nvd3',
         { key: walk, values: [[1638489600, 4, "2021-12-03T00:00:00+00:00"],...]}],
      duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
      distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
-     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     mean_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
      }
     */
     $scope.userCurrentModeMap = {};
@@ -81,7 +81,7 @@ angular.module('emission.main.metrics',['nvd3',
 
      duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
      distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
-     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     mean_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
      }
     */
     $scope.userCurrentSummaryModeMap = {};
@@ -631,9 +631,9 @@ angular.module('emission.main.metrics',['nvd3',
 
         // Fill in user calorie information
         $scope.fillCalorieCardUserVals($scope.userCurrentSummaryModeMap.duration,
-                                       $scope.userCurrentSummaryModeMap.median_speed,
+                                       $scope.userCurrentSummaryModeMap.mean_speed,
                                        $scope.userTwoWeeksAgoSummaryModeMap.duration,
-                                       $scope.userTwoWeeksAgoSummaryModeMap.median_speed);
+                                       $scope.userTwoWeeksAgoSummaryModeMap.mean_speed);
         $scope.fillFootprintCardUserVals($scope.userCurrentModeMap.distance,
             $scope.userCurrentSummaryModeMap.distance,
             $scope.userTwoWeeksAgoModeMap.distance,
@@ -662,7 +662,7 @@ angular.module('emission.main.metrics',['nvd3',
 
         $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
         $scope.fillCalorieAggVals($scope.aggCurrentSummaryPerCapitaModeMap.duration,
-                                  $scope.aggCurrentSummaryPerCapitaModeMap.median_speed);
+                                  $scope.aggCurrentSummaryPerCapitaModeMap.mean_speed);
         $scope.fillFootprintAggVals($scope.aggCurrentSummaryPerCapitaModeMap.distance);
    }
 
@@ -708,10 +708,10 @@ angular.module('emission.main.metrics',['nvd3',
         return undefined;
     }
 
-   $scope.fillCalorieCardUserVals = function(userDurationSummary, userMedianSpeedSummary,
-                                             twoWeeksAgoDurationSummary, twoWeeksAgoMedianSpeedSummary) {
+   $scope.fillCalorieCardUserVals = function(userDurationSummary, userMeanSpeedSummary,
+                                             twoWeeksAgoDurationSummary, twoWeeksAgoMeanSpeedSummary) {
        for (var i in userDurationSummary) {
-         var met = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMedianSpeedSummary[i])
+         var met = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMeanSpeedSummary[i])
          $scope.caloriesData.userCalories +=
            Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
        }
@@ -728,7 +728,7 @@ angular.module('emission.main.metrics',['nvd3',
          var twoWeeksAgoCalories = 0;
          for (var i in twoWeeksAgoDurationSummary) {
            var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
-                        twoWeeksAgoMedianSpeedSummary[i])
+                        twoWeeksAgoMeanSpeedSummary[i])
            twoWeeksAgoCalories +=
              Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, met));
          }
@@ -741,11 +741,11 @@ angular.module('emission.main.metrics',['nvd3',
        }
    }
 
-   $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMedianSpeedSummaryAvg) {
+   $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMeanSpeedSummaryAvg) {
        $scope.caloriesData.aggrCalories = 0;
        for (var i in aggDurationSummaryAvg) {
 
-         var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMedianSpeedSummaryAvg[i].values);
+         var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMeanSpeedSummaryAvg[i].values);
 
          $scope.caloriesData.aggrCalories +=
            Math.round(CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, met)) //+ ' cal'
@@ -929,7 +929,7 @@ angular.module('emission.main.metrics',['nvd3',
           for (var j = 0; j < modeMap[i].values.length; j++) {
             temp += modeMap[i].values[j][1];
           }
-          if (metric === "median_speed") {
+          if (metric === "mean_speed") {
             summaryMap[i].values = Math.round(temp / modeMap[i].values.length);
           } else {
             summaryMap[i].values = Math.round(temp);
@@ -983,7 +983,7 @@ angular.module('emission.main.metrics',['nvd3',
             // we pick hours as a reasonable formatted metric
             unit = $translate.instant('metrics.hours');
             break;
-          case "median_speed":
+          case "mean_speed":
             unit = ImperialConfig.getSpeedSuffix;
             break;
         }
@@ -994,7 +994,7 @@ angular.module('emission.main.metrics',['nvd3',
             let formattedModeStatList = angular.copy(modeStatList);
             formattedModeStatList.forEach((modeStat) => {
                 var stringRep = "";
-                if (metric === "median_speed") {
+                if (metric === "mean_speed") {
                   let spdStr = ImperialConfig.getFormattedSpeed( modeStat[1]);
                   modeStat[1] = Number.parseFloat(spdStr);
                   stringRep = spdStr + " " + unit;
@@ -1036,11 +1036,11 @@ angular.module('emission.main.metrics',['nvd3',
             case "duration":
               unit = "s";
               break;
-            case "median_speed":
+            case "mean_speed":
               unit = "m/s";
               break;
           }
-          if (metric === "median_speed") {
+          if (metric === "mean_speed") {
             summaryData[i].values = ImperialConfig.getFormattedSpeed(temp / summaryData[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
           } else if(metric === "distance"){
             summaryData[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
