@@ -1267,45 +1267,35 @@ angular.module('emission.main.metrics',['nvd3',
     });
   }
 
-  $scope.localDateFormat = moment.localeData().longDateFormat('ll');
-  $scope.datepickerObjFrom = {
+  $scope.datepickerObjBase = {
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
+      mondayFirst: false,
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),
+      templateType: 'popup',
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      showTodayButton: true,
+      closeOnSelect: false,
+      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
+    };
+
+  $scope.datepickerObjFrom = angular.copy($scope.datepickerObjBase);
+  angular.extend($scope.datepickerObjFrom, {
       callback: $scope.setCurDayFrom,
       inputDate: $scope.selectCtrl.fromDateTimestamp.toDate(),
       inputMoment: $scope.selectCtrl.fromDateTimestamp,
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      titleLabel: $translate.instant('metrics.pick-a-date'),
-      mondayFirst: false,
-      weeksList: moment.weekdaysMin(),
-      monthsList: moment.monthsShort(),
-      templateType: 'popup',
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      showTodayButton: true,
-      dateFormat: $scope.localDateFormat,
-      closeOnSelect: false,
-      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
-    };
-  $scope.datepickerObjTo = {
+  });
+
+  $scope.datepickerObjTo = angular.copy($scope.datepickerObjBase);
+  angular.extend($scope.datepickerObjTo, {
       callback: $scope.setCurDayTo,
       inputDate: $scope.selectCtrl.toDateTimestamp.toDate(),
       inputMoment: $scope.selectCtrl.toDateTimestamp,
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      titleLabel: $translate.instant('metrics.pick-a-date'),
-      mondayFirst: false,
-      weeksList: moment.weekdaysMin(),
-      monthsList: moment.monthsShort(),
-      templateType: 'popup',
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      showTodayButton: true,
-      dateFormat: $scope.localDateFormat,
-      closeOnSelect: false,
-      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
-    };
+  });
 
   $scope.pickFromDay = function() {
     ionicDatePicker.openDatePicker($scope.datepickerObjFrom);
