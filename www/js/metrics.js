@@ -518,7 +518,6 @@ angular.module('emission.main.metrics',['nvd3',
 
       $scope.carbonData.userCarbon = 0;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
-      $scope.carbonData.worstCarbon = "0 kg CO₂";
 
       $scope.summaryData.userSummary = [];
       $scope.chartDataUser = {};
@@ -776,7 +775,7 @@ angular.module('emission.main.metrics',['nvd3',
         twoWeeksAgoDistance, twoWeeksAgoDistanceSummary) {
       if (userDistance) {
         // var optimalDistance = getOptimalFootprintDistance(userDistance);
-        // var worstDistance   = getWorstFootprintDistance(userDistance);
+        var worstDistance   = getWorstFootprintDistance(userDistanceSummary);
 
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
@@ -795,7 +794,7 @@ angular.module('emission.main.metrics',['nvd3',
 
         $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userDistanceSummary);
         // $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
-        // $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
+        $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
       }
 
       if (defaultTwoWeekUserCall) {
@@ -960,15 +959,9 @@ angular.module('emission.main.metrics',['nvd3',
       }
       return distance;
     }
-    var getWorstFootprintDistance = function(metrics){
-      var data = getDataFromMetrics(metrics, metric2valUser);
-      var distance = 0;
-      for(var i = 0; i < data.length; i++) {
-        for(var j = 0; j < data[i].values.length; j++){
-          distance += data[i].values[j][1];
-        }
-      }
-      return distance;
+    var getWorstFootprintDistance = function(modeMapSummary) {
+      var totalDistance = modeMapSummary.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
+      return totalDistance;
     }
 
     $scope.formatCount = function(value) {

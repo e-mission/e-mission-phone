@@ -61,10 +61,11 @@ angular.module('emission.main.metrics.factory',
   }
   fh.getHighestFootprintForDistance = function(distance) {
     var footprint = fh.getFootprint();
-    var highestFootprint = 0;
+    let footprintList = [];
     for (var mode in footprint) {
-      highestFootprint = Math.max(highestFootprint, footprint[mode]);
+        footprintList.push(footprint[mode]);
     }
+    const highestFootprint = Math.max(...footprintList);
     return highestFootprint * mtokm(distance);
   }
 
