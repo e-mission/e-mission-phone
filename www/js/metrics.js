@@ -516,7 +516,6 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.summaryData = {};
       $scope.caloriesData.userCalories = 0;
 
-      $scope.carbonData.userCarbon = 0;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
 
       $scope.summaryData.userSummary = [];
@@ -792,7 +791,11 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.carbonData.us2030 = Math.round(54 / 7 * days); // kg/day
         $scope.carbonData.us2050 = Math.round(14 / 7 * days);
 
-        $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userDistanceSummary);
+        $scope.carbonData.userCarbon = {
+            low: FootprintHelper.getFootprintForMetrics(userDistanceSummary,0),
+            high: FootprintHelper.getFootprintForMetrics(userDistanceSummary,
+                FootprintHelper.getHighestFootprint()),
+        };
         // $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
         $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
       }
@@ -804,11 +807,18 @@ angular.module('emission.main.metrics',['nvd3',
           // and this user has been around long enough that they have two weeks
           // of data, or they haven't turned off tracking for all of last week,
           // or....
-          $scope.carbonData.lastWeekUserCarbon = FootprintHelper.getFootprintForMetrics(twoWeeksAgoDistanceSummary);
+          $scope.carbonData.lastWeekUserCarbon = {
+            low: FootprintHelper.getFootprintForMetrics(twoWeeksAgoDistanceSummary,0),
+            high: FootprintHelper.getFootprintForMetrics(twoWeeksAgoDistanceSummary,
+                FootprintHelper.getHighestFootprint()),
+          };
 
           console.log("Running calculation with " + $scope.carbonData.userCarbon + " and " + $scope.carbonData.lastWeekUserCarbon);
           console.log("Running calculation with ", $scope.carbonData);
-          $scope.carbonData.greaterLesserPct = ($scope.carbonData.userCarbon/$scope.carbonData.lastWeekUserCarbon) * 100 - 100;
+          $scope.carbonData.greaterLesserPct = {
+            low: ($scope.carbonData.userCarbon.low/$scope.carbonData.lastWeekUserCarbon.low) * 100 - 100,
+            high: ($scope.carbonData.userCarbon.high/$scope.carbonData.lastWeekUserCarbon.high) * 100 - 100,
+        }
       }
      }
    };
@@ -826,7 +836,11 @@ angular.module('emission.main.metrics',['nvd3',
           }
         }
 
-        $scope.carbonData.aggrCarbon = FootprintHelper.getFootprintForMetrics(aggrCarbonData);
+        $scope.carbonData.aggrCarbon = {
+            low: FootprintHelper.getFootprintForMetrics(aggrCarbonData, 0),
+            high: FootprintHelper.getFootprintForMetrics(aggrCarbonData,
+                FootprintHelper.getHighestFootprint()),
+        };
       }
    };
 
@@ -1342,4 +1356,20 @@ angular.module('emission.main.metrics',['nvd3',
   }
 
 
+})
+.directive('diffdisplay', function() {
+    return {
+        scope: {
+            change: "="
+        },
+        templateUrl: "templates/metrics/arrow-greater-lesser.html"
+    }
+})
+.directive('rangedisplay', function() {
+    return {
+        scope: {
+            range: "="
+        },
+        templateUrl: "templates/metrics/range-display.html"
+    }
 });

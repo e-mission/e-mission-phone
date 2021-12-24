@@ -6,6 +6,7 @@ angular.module('emission.main.metrics.factory',
 
 .factory('FootprintHelper', function(CarbonDatasetHelper, CustomDatasetHelper) {
   var fh = {};
+  var highestFootprint = 0;
 
   var mtokm = function(v) {
     return v / 1000;
@@ -27,7 +28,7 @@ angular.module('emission.main.metrics.factory',
   fh.readableFormat = function(v) {
     return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprintForMetrics = function(userMetrics) {
+  fh.getFootprintForMetrics = function(userMetrics, defaultIfMissing=0) {
     var footprint = fh.getFootprint();
     var result = 0;
     for (var i in userMetrics) {
@@ -43,6 +44,7 @@ angular.module('emission.main.metrics.factory',
       }
       else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+        result += defaultIfMissing * mtokm(userMetrics[i].values);
       }
     }
     return result;
@@ -60,14 +62,21 @@ angular.module('emission.main.metrics.factory',
     }
     return lowestFootprint * mtokm(distance);
   }
-  fh.getHighestFootprintForDistance = function(distance) {
-    var footprint = fh.getFootprint();
-    let footprintList = [];
-    for (var mode in footprint) {
-        footprintList.push(footprint[mode]);
+
+  fh.getHighestFootprint = function() {
+    if (!highestFootprint) {
+        var footprint = fh.getFootprint();
+        let footprintList = [];
+        for (var mode in footprint) {
+            footprintList.push(footprint[mode]);
+        }
+        highestFootprint = Math.max(...footprintList);
     }
-    const highestFootprint = Math.max(...footprintList);
-    return highestFootprint * mtokm(distance);
+    return highestFootprint;
+  }
+
+  fh.getHighestFootprintForDistance = function(distance) {
+    return fh.getHighestFootprint() * mtokm(distance);
   }
 
   var getLowestMotorizedNonAirFootprint = function(footprint, rlmCO2) {

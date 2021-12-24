@@ -63,15 +63,8 @@
               <h4 class="dashboard-headers" translate>{{'.footprint'}}</h4>
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
-                  <div class="user-carbon">{{ carbonData.userCarbon | number:0 }} kg CO₂</div>
-                  <div ng-if="carbonData.greaterLesserPct > 0">
-                    <div id="arrow-color" class="icon ion-arrow-up-a"></div>
-                    <div class="percentage-change"> {{ carbonData.greaterLesserPct | number:0 }}% {{'metrics.greater-than-last-week' | translate }} </div>
-                  </div>
-                  <div ng-if="carbonData.greaterLesserPct < 0">
-                    <div id="arrow-color" class="icon ion-arrow-down-a"></div>
-                    <div class="percentage-change"> {{ (-1) * carbonData.greaterLesserPct | number:0 }}% {{'metrics.less-than-last-week' | translate }}</div>
-                  </div>
+                  <div class="user-carbon"> <rangedisplay range="carbonData.userCarbon"></rangeDisplay> kg CO₂ </div>
+                  <diffdisplay change="carbonData.greaterLesserPct"></diffdisplay>
                 </div>
               </div>
               <div style="margin-top: 110px;">
@@ -79,17 +72,14 @@
                 <!--
                 <div class="card dashboard-list"><b translate>{{'.optimal'}}</b> {{carbonData.optimalCarbon}}</div>
                 -->
-                <div class="card dashboard-list" ng-if="carbonData.aggrCarbon"><b translate>{{'.average'}}</b> {{carbonData.aggrCarbon | number:0 }} kg CO₂</div>
+                <div class="card dashboard-list" ng-if="carbonData.aggrCarbon"><b translate>{{'.average'}}</b> <rangedisplay range="carbonData.aggrCarbon"></rangeDisplay> kg CO₂</div>
                 <div class="card dashboard-list" style="background-color: {{ carbonData.worstCarbon > carbonData.us2030? '#DB536F !important' : '' }};"><b translate>{{'.worst'}}</b> {{carbonData.worstCarbon | number:0 }} kg CO₂</div>
-                <div class="card dashboard-list" ng-if="carbonData.lastWeekUserCarbon"><b translate>{{'.lastweek'}}</b> {{carbonData.lastWeekUserCarbon | number:0 }} kg CO₂</div>
+                <div class="card dashboard-list" ng-if="carbonData.lastWeekUserCarbon"><b translate>{{'.lastweek'}}</b> <rangedisplay range="carbonData.lastWeekUserCarbon"></rangeDisplay> kg CO₂</div>
                 <!-- see rationale at 
                 https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-994922690
                 -->
-                <div class="card dashboard-list" style="background-color: {{ carbonData.userCarbon > carbonData.us2030? '#DB536F !important' : '' }};"><b translate>{{'.us-2030-goal'}}</b> {{carbonData.us2030 | number}} kg CO₂</div>
-                <div class="card dashboard-list" style="background-color: {{ carbonData.userCarbon > carbonData.us2050? '#DB536F !important' : '' }};"><b translate>{{'.us-2050-goal'}}</b> {{carbonData.us2050 | number}} kg CO₂</div>
-                <!--
-                <div class="card dashboard-list" style="background-color: {{ carbonData.userCarbon > carbonData.us2050 ? '#DB536F !important' : '' }};"><b translate>{{'.us-2050-goal'}}</b> {{carbonData.us2050}}</div>
-                -->
+                <div class="card dashboard-list" style="background-color: {{ carbonData.userCarbon.high > carbonData.us2030? '#DB536F !important' : '' }};"><b translate>{{'.us-2030-goal'}}</b> {{carbonData.us2030 | number}} kg CO₂</div>
+                <div class="card dashboard-list" style="background-color: {{ carbonData.userCarbon.high > carbonData.us2050? '#DB536F !important' : '' }};"><b translate>{{'.us-2050-goal'}}</b> {{carbonData.us2050 | number}} kg CO₂</div>
               </div>
           </div>
           <div id="dashboard-first-demo" ng-click="extendFootprintCard()" class="arrow-position">
@@ -118,11 +108,11 @@
               <div class="calorie-change" ng-if="foodCompare == 'banana'">{{'main-metrics.equals-bananas' | translate:{bananas: numberOfBananas}:"messageformat"}}</div>
               <div ng-if="caloriesData.greaterLesserPct > 0">
                 <div id="arrow-color" class="icon ion-arrow-up-a"></div>
-                <div class="percentage-change"> {{ caloriesData.greaterLesserPct | number:0 }}% {{'metrics.greater-than-last-week' | translate }} </div>
+                <div class="percentage-change"> {{ caloriesData.greaterLesserPct | number:0 }}% {{'metrics.greater-than' | translate }} {{ 'metrics.last-week' | translate }} </div>
               </div>
               <div ng-if="caloriesData.greaterLesserPct < 0">
                 <div id="arrow-color" class="icon ion-arrow-down-a"></div>
-                <div class="percentage-change"> {{ (-1) * caloriesData.greaterLesserPct | number:0 }}% {{'metrics.less-than-last-week' | translate }}</div>
+                <div class="percentage-change"> {{ (-1) * caloriesData.greaterLesserPct | number:0 }}% {{'metrics.less-than' | translate }} {{ 'metrics.last-week' | translate }}</div>
               </div>
             </div>
             </div>
