@@ -943,6 +943,20 @@ angular.module('emission.main.metrics',['nvd3',
       return a - b;
     }*/
 
+    /*
+     * This is _broken_ because what we see on the client is summary values,
+     * not individual trip values. So value > longTrip just means that the
+     * overall travel by that mode was long, not that each individual trip
+     * was long.
+     *
+     * As an obvious example, if I had 10 1k car trips, they would show up as
+     * daily travel of 10k by car, and be counted as a long trip, although each
+     * individual trip was actually 1k and short.
+     *
+     * Leaving this disabled until we come up with a principled solution.
+     * https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-1000626564
+     */
+
     var getOptimalFootprintDistance = function(metrics){
       var data = getDataFromMetrics(metrics, metric2valUser);
       var distance = 0;
