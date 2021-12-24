@@ -6,6 +6,7 @@ angular.module('emission.main.metrics.factory',
 
 .factory('FootprintHelper', function(CarbonDatasetHelper, CustomDatasetHelper) {
   var fh = {};
+
   var mtokm = function(v) {
     return v / 1000;
   }
@@ -67,6 +68,65 @@ angular.module('emission.main.metrics.factory',
     }
     const highestFootprint = Math.max(...footprintList);
     return highestFootprint * mtokm(distance);
+  }
+
+  var getLowestMotorizedNonAirFootprint = function(footprint, rlmCO2) {
+    var lowestFootprint = Number.MAX_SAFE_INTEGER;
+    for (var mode in footprint) {
+      if (mode == 'AIR_OR_HSR' || mode == 'air') {
+        console.log("Air mode, ignoring");
+      }
+      else {
+        if (footprint[mode] == 0 || footprint[mode] <= rlmCO2) {
+            console.log("Non motorized mode or footprint <= range_limited_motorized", mode, footprint[mode], rlmCO2);
+        } else {
+            lowestFootprint = Math.min(lowestFootprint, footprint[mode]);
+        }
+      }
+    }
+    return lowestFootprint;
+  }
+
+  fh.getOptimalDistanceRanges = function() {
+    const FIVE_KM = 5 * 1000;
+    const SIX_HUNDRED_KM = 600 * 1000;
+    if (!fh.useCustom) {
+        const defaultFootprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+        const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(defaultFootprint);
+        const airFootprint = defaultFootprint["AIR_OR_HSR"];
+        return [
+            {low: 0, high: FIVE_KM, optimal: 0},
+            {low: FIVE_KM, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+            {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+    } else {
+        // custom footprint, let's get the custom values
+        const customFootprint = CustomDatasetHelper.getCustomFootprint();
+        let airFootprint = customFootprint["air"]
+        if (!airFootprint) {
+            // 2341 BTU/PMT from
+            // https://tedb.ornl.gov/wp-content/uploads/2021/02/TEDB_Ed_39.pdf#page=68
+            // 159.25 lb per million BTU from EIA
+            // https://www.eia.gov/environment/emissions/co2_vol_mass.php
+            // (2341 * (159.25/1000000))/(1.6*2.2) = 0.09975, rounded up a bit
+            console.log("No entry for air in ", customFootprint," using default");
+            airFootprint = 0.1;
+        }
+        const rlm = CustomDatasetHelper.range_limited_motorized;
+        if (!rlm) {
+            return [
+                {low: 0, high: FIVE_KM, optimal: 0},
+                {low: FIVE_KM, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+                {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+        } else {
+            console.log("Found range_limited_motorized mode", rlm);
+            const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(customFootprint, rlm.co2PerMeter);
+            return [
+                {low: 0, high: FIVE_KM, optimal: 0},
+                {low: FIVE_KM, high: rlm.range_limit_km * 1000, optimal: rlm.co2PerMeter},
+                {low: rlm.range_limit_km * 1000, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+                {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+        }
+    }
   }
 
   return fh;
