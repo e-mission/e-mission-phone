@@ -514,7 +514,6 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.caloriesData = {};
       $scope.carbonData = {};
       $scope.summaryData = {};
-      $scope.caloriesData.userCalories = 0;
 
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
 
@@ -709,54 +708,83 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillCalorieCardUserVals = function(userDurationSummary, userMeanSpeedSummary,
                                              twoWeeksAgoDurationSummary, twoWeeksAgoMeanSpeedSummary) {
+       $scope.caloriesData.userCalories = {low: 0, high: 0};
+       const highestMET = CalorieCal.getHighestMET();
        for (var i in userDurationSummary) {
-         var met = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMeanSpeedSummary[i])
-         $scope.caloriesData.userCalories +=
-           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
+         var lowMET = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMeanSpeedSummary[i], 0);
+         var highMET = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMeanSpeedSummary[i], highestMET);
+         $scope.caloriesData.userCalories.low +=
+           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, lowMET)) //+ ' cal'
+         $scope.caloriesData.userCalories.high +=
+           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, highMET)) //+ ' cal'
        }
 
-       $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/
-                                           $scope.food.chocolateChip);
-       $scope.numberOfIceCreams = Math.floor($scope.caloriesData.userCalories/
-                                             $scope.food.vanillaIceCream);
-       $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
-                                           $scope.food.banana);
+       $scope.numberOfCookies = {
+            low: Math.floor($scope.caloriesData.userCalories.low/
+                                           $scope.food.chocolateChip),
+            high: Math.floor($scope.caloriesData.userCalories.high/
+                                           $scope.food.chocolateChip),
+       };
+       $scope.numberOfIceCreams = {
+            low: Math.floor($scope.caloriesData.userCalories.low/
+                                             $scope.food.vanillaIceCream),
+            high: Math.floor($scope.caloriesData.userCalories.high/
+                                             $scope.food.vanillaIceCream),
+       };
+       $scope.numberOfBananas = {
+            low: Math.floor($scope.caloriesData.userCalories.low/
+                                           $scope.food.banana),
+            high: Math.floor($scope.caloriesData.userCalories.high/
+                                           $scope.food.banana),
+       };
 
        if(defaultTwoWeekUserCall) {
         if (twoWeeksAgoDurationSummary.length > 0) {
-         var twoWeeksAgoCalories = 0;
+         var twoWeeksAgoCalories = {low: 0, high: 0};
          for (var i in twoWeeksAgoDurationSummary) {
-           var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
-                        twoWeeksAgoMeanSpeedSummary[i])
-           twoWeeksAgoCalories +=
-             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, met));
+           var lowMET = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
+                        twoWeeksAgoMeanSpeedSummary[i], 0)
+           var highMET = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
+                        twoWeeksAgoMeanSpeedSummary[i], highestMET)
+           twoWeeksAgoCalories.low +=
+             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, lowMET));
+           twoWeeksAgoCalories.high +=
+             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, highMET));
          }
-         $scope.caloriesData.lastWeekUserCalories = twoWeeksAgoCalories;
+         $scope.caloriesData.lastWeekUserCalories = {
+            low: twoWeeksAgoCalories.low,
+            high: twoWeeksAgoCalories.high
+         };
          console.log("Running calorieData with ", $scope.caloriesData);
          // TODO: Refactor this so that we can filter out bad values ahead of time
          // instead of having to work around it here
-         $scope.caloriesData.greaterLesserPct = ($scope.caloriesData.userCalories/$scope.caloriesData.lastWeekUserCalories) * 100 - 100;
+         $scope.caloriesData.greaterLesserPct = {
+            low: ($scope.caloriesData.userCalories.low/$scope.caloriesData.lastWeekUserCalories.low) * 100 - 100,
+            high: ($scope.caloriesData.userCalories.high/$scope.caloriesData.lastWeekUserCalories.high) * 100 - 100,
+         }
         }
        }
    }
 
    $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMeanSpeedSummaryAvg) {
-       $scope.caloriesData.aggrCalories = 0;
+       $scope.caloriesData.aggrCalories = {low: 0, high: 0};
+       const highestMET = CalorieCal.getHighestMET();
        for (var i in aggDurationSummaryAvg) {
-
-         var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMeanSpeedSummaryAvg[i].values);
-
-         $scope.caloriesData.aggrCalories +=
-           Math.round(CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, met)) //+ ' cal'
+         var lowMET = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMeanSpeedSummaryAvg[i].values, 0);
+         var highMET = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMeanSpeedSummaryAvg[i].values, highestMET);
+         $scope.caloriesData.aggrCalories.low +=
+           CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, lowMET); //+ ' cal'
+         $scope.caloriesData.aggrCalories.high +=
+           CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, highMET); //+ ' cal'
        }
    }
 
-   $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData) {
+   $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData, defaultIfMissing) {
        if ($scope.userDataSaved()) {
          // this is safe because userDataSaved will never be set unless there
          // is stored user data that we have loaded
          var userDataFromStorage = $scope.savedUserData;
-         var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
+         var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values, defaultIfMissing);
          var gender = userDataFromStorage.gender;
          var heightUnit = userDataFromStorage.heightUnit;
          var height = userDataFromStorage.height;
@@ -765,7 +793,7 @@ angular.module('emission.main.metrics',['nvd3',
          var age = userDataFromStorage.age;
          return CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
        } else {
-         return CalorieCal.getMet(currDurationData.key, currSpeedData.values);
+         return CalorieCal.getMet(currDurationData.key, currSpeedData.values, defaultIfMissing);
        }
    };
 

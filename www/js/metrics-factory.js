@@ -144,6 +144,7 @@ angular.module('emission.main.metrics.factory',
 .factory('CalorieCal', function(KVStore, METDatasetHelper, CustomDatasetHelper) {
 
   var cc = {};
+  var highestMET = 0;
   var USER_DATA_KEY = "user-data";
   cc.useCustom = false;
 
@@ -171,15 +172,29 @@ angular.module('emission.main.metrics.factory',
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
   };
-  cc.getMet = function(mode, speed) {
+  cc.getHighestMET = function() {
+    if (!highestMET) {
+        var met = cc.getMETs();
+        let metList = [];
+        for (var mode in met) {
+            var rangeList = met[mode];
+            for (var range in rangeList) {
+                metList.push(rangeList[range].mets);
+            }
+        }
+        highestMET = Math.max(...metList);
+    }
+    return highestMET;
+  }
+  cc.getMet = function(mode, speed, defaultIfMissing) {
     if (mode == 'ON_FOOT') {
       console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
       mode = 'WALKING';
     }
     let currentMETs = cc.getMETs();
     if (!currentMETs[mode]) {
-      console.log("CalorieCal.getMet() Illegal mode: " + mode);
-      return 0; //So the calorie sum does not break with wrong return type
+      console.warn("CalorieCal.getMet() Illegal mode: " + mode);
+      return defaultIfMissing; //So the calorie sum does not break with wrong return type
     }
     for (var i in currentMETs[mode]) {
       if (mpstomph(speed).between(currentMETs[mode][i].range[0], currentMETs[mode][i].range[1])) {
