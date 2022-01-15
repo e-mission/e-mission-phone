@@ -15,23 +15,22 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
 
     ic.getFormattedDistanceInKm = function(dist_in_meters) {
       if (dist_in_meters > 1000) {
-        return (dist_in_meters/1000).toFixed(0);
+        return Number.parseFloat((dist_in_meters/1000).toFixed(0));
       } else {
-        return (dist_in_meters/1000).toFixed(3);
+        return Number.parseFloat((dist_in_meters/1000).toFixed(3));
       }
     }
 
     ic.getFormattedDistanceInMiles = function(dist_in_meters) {
-        return (KM_TO_MILES * ic.getFormattedDistanceInKm(dist_in_meters)).toFixed(1);
+        return Number.parseFloat((KM_TO_MILES * ic.getFormattedDistanceInKm(dist_in_meters)).toFixed(1));
     }
 
-    ic.getKmph = function(section) {
-        var metersPerSec = section.properties.distance / section.properties.duration;
+    ic.getKmph = function(metersPerSec) {
         return (metersPerSec * 3.6).toFixed(2);
     };
 
-    ic.getMph = function(section) {
-        return (KM_TO_MILES * ic.getKmph(section));
+    ic.getMph = function(metersPerSecond) {
+        return (KM_TO_MILES * ic.getKmph(metersPerSecond));
     };
 
     ic.getFormattedDistance = USE_IMPERIAL? ic.getFormattedDistanceInMiles : ic.getFormattedDistanceInKm;

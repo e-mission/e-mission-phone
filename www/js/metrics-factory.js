@@ -1,18 +1,35 @@
 'use strict';
 
-angular.module('emission.main.metrics.factory', ['emission.services', 'emission.plugin.kvstore'])
+angular.module('emission.main.metrics.factory',
+        ['emission.main.metrics.mappings',
+        'emission.plugin.kvstore'])
 
-.factory('FootprintHelper', function(CarbonDatasetHelper) {
+.factory('FootprintHelper', function(CarbonDatasetHelper, CustomDatasetHelper) {
   var fh = {};
+  var highestFootprint = 0;
+
   var mtokm = function(v) {
     return v / 1000;
+  }
+  fh.useCustom = false;
+
+  fh.setUseCustomFootprint = function () {
+    fh.useCustom = true;
+  }
+
+  fh.getFootprint = function() {
+    if (this.useCustom == true) {
+        return CustomDatasetHelper.getCustomFootprint();
+    } else {
+        return CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    }
   }
 
   fh.readableFormat = function(v) {
     return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprintForMetrics = function(userMetrics) {
-    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+  fh.getFootprintForMetrics = function(userMetrics, defaultIfMissing=0) {
+    var footprint = fh.getFootprint();
     var result = 0;
     for (var i in userMetrics) {
       var mode = userMetrics[i].key;
@@ -27,12 +44,13 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
       }
       else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+        result += defaultIfMissing * mtokm(userMetrics[i].values);
       }
     }
     return result;
   }
   fh.getLowestFootprintForDistance = function(distance) {
-    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+    var footprint = fh.getFootprint();
     var lowestFootprint = Number.MAX_SAFE_INTEGER;
     for (var mode in footprint) {
       if (mode == 'WALKING' || mode == 'BICYCLING') {
@@ -44,21 +62,103 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
     }
     return lowestFootprint * mtokm(distance);
   }
-  fh.getHighestFootprintForDistance = function(distance) {
-    var footprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
-    var highestFootprint = 0;
-    for (var mode in footprint) {
-      highestFootprint = Math.max(highestFootprint, footprint[mode]);
+
+  fh.getHighestFootprint = function() {
+    if (!highestFootprint) {
+        var footprint = fh.getFootprint();
+        let footprintList = [];
+        for (var mode in footprint) {
+            footprintList.push(footprint[mode]);
+        }
+        highestFootprint = Math.max(...footprintList);
     }
-    return highestFootprint * mtokm(distance);
+    return highestFootprint;
   }
+
+  fh.getHighestFootprintForDistance = function(distance) {
+    return fh.getHighestFootprint() * mtokm(distance);
+  }
+
+  var getLowestMotorizedNonAirFootprint = function(footprint, rlmCO2) {
+    var lowestFootprint = Number.MAX_SAFE_INTEGER;
+    for (var mode in footprint) {
+      if (mode == 'AIR_OR_HSR' || mode == 'air') {
+        console.log("Air mode, ignoring");
+      }
+      else {
+        if (footprint[mode] == 0 || footprint[mode] <= rlmCO2) {
+            console.log("Non motorized mode or footprint <= range_limited_motorized", mode, footprint[mode], rlmCO2);
+        } else {
+            lowestFootprint = Math.min(lowestFootprint, footprint[mode]);
+        }
+      }
+    }
+    return lowestFootprint;
+  }
+
+  fh.getOptimalDistanceRanges = function() {
+    const FIVE_KM = 5 * 1000;
+    const SIX_HUNDRED_KM = 600 * 1000;
+    if (!fh.useCustom) {
+        const defaultFootprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+        const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(defaultFootprint);
+        const airFootprint = defaultFootprint["AIR_OR_HSR"];
+        return [
+            {low: 0, high: FIVE_KM, optimal: 0},
+            {low: FIVE_KM, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+            {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+    } else {
+        // custom footprint, let's get the custom values
+        const customFootprint = CustomDatasetHelper.getCustomFootprint();
+        let airFootprint = customFootprint["air"]
+        if (!airFootprint) {
+            // 2341 BTU/PMT from
+            // https://tedb.ornl.gov/wp-content/uploads/2021/02/TEDB_Ed_39.pdf#page=68
+            // 159.25 lb per million BTU from EIA
+            // https://www.eia.gov/environment/emissions/co2_vol_mass.php
+            // (2341 * (159.25/1000000))/(1.6*2.2) = 0.09975, rounded up a bit
+            console.log("No entry for air in ", customFootprint," using default");
+            airFootprint = 0.1;
+        }
+        const rlm = CustomDatasetHelper.range_limited_motorized;
+        if (!rlm) {
+            return [
+                {low: 0, high: FIVE_KM, optimal: 0},
+                {low: FIVE_KM, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+                {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+        } else {
+            console.log("Found range_limited_motorized mode", rlm);
+            const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(customFootprint, rlm.co2PerMeter);
+            return [
+                {low: 0, high: FIVE_KM, optimal: 0},
+                {low: FIVE_KM, high: rlm.range_limit_km * 1000, optimal: rlm.co2PerMeter},
+                {low: rlm.range_limit_km * 1000, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+                {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+        }
+    }
+  }
+
   return fh;
 })
 
-.factory('CalorieCal', function(KVStore){
+.factory('CalorieCal', function(KVStore, METDatasetHelper, CustomDatasetHelper) {
 
   var cc = {};
+  var highestMET = 0;
   var USER_DATA_KEY = "user-data";
+  cc.useCustom = false;
+
+  cc.setUseCustomFootprint = function () {
+    cc.useCustom = true;
+  }
+
+  cc.getMETs = function() {
+    if (this.useCustom == true) {
+        return CustomDatasetHelper.getCustomMETs();
+    } else {
+        return METDatasetHelper.getStandardMETs();
+    }
+  }
 
   cc.set = function(info) {
     return KVStore.set(USER_DATA_KEY, info);
@@ -72,18 +172,33 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
   };
-  cc.getMet = function(mode, speed) {
+  cc.getHighestMET = function() {
+    if (!highestMET) {
+        var met = cc.getMETs();
+        let metList = [];
+        for (var mode in met) {
+            var rangeList = met[mode];
+            for (var range in rangeList) {
+                metList.push(rangeList[range].mets);
+            }
+        }
+        highestMET = Math.max(...metList);
+    }
+    return highestMET;
+  }
+  cc.getMet = function(mode, speed, defaultIfMissing) {
     if (mode == 'ON_FOOT') {
       console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
       mode = 'WALKING';
     }
-    if (!standardMETs[mode]) {
-      console.log("CalorieCal.getMet() Illegal mode: " + mode);
-      return 0; //So the calorie sum does not break with wrong return type
+    let currentMETs = cc.getMETs();
+    if (!currentMETs[mode]) {
+      console.warn("CalorieCal.getMet() Illegal mode: " + mode);
+      return defaultIfMissing; //So the calorie sum does not break with wrong return type
     }
-    for (var i in standardMETs[mode]) {
-      if (mpstomph(speed).between(standardMETs[mode][i].range[0], standardMETs[mode][i].range[1])) {
-        return standardMETs[mode][i].mets;
+    for (var i in currentMETs[mode]) {
+      if (mpstomph(speed).between(currentMETs[mode][i].range[0], currentMETs[mode][i].range[1])) {
+        return currentMETs[mode][i].mets;
       } else if (mpstomph(speed) < 0 ) {
         console.log("CalorieCal.getMet() Negative speed: " + mpstomph(speed));
         return 0;
@@ -116,128 +231,5 @@ angular.module('emission.main.metrics.factory', ['emission.services', 'emission.
   cc.getCalories = function(weightInKg, durationInMin, met) {
     return weightInKg * durationInMin * met;
   }
-  var standardMETs = {
-    "WALKING": {
-      "VERY_SLOW": {
-        range: [0, 2.0],
-        mets: 2.0
-      },
-      "SLOW": {
-        range: [2.0, 2.5],
-        mets: 2.8
-      },
-      "MODERATE_0": {
-        range: [2.5, 2.8],
-        mets: 3.0
-      },
-      "MODERATE_1": {
-        range: [2.8, 3.2],
-        mets: 3.5
-      },
-      "FAST": {
-        range: [3.2, 3.5],
-        mets: 4.3
-      },
-      "VERY_FAST_0": {
-        range: [3.5, 4.0],
-        mets: 5.0
-      },
-      "VERY_FAST_!": {
-        range: [4.0, 4.5],
-        mets: 6.0
-      },
-      "VERY_VERY_FAST": {
-        range: [4.5, 5],
-        mets: 7.0
-      },
-      "SUPER_FAST": {
-        range: [5, 6],
-        mets: 8.3
-      },
-      "RUNNING": {
-        range: [6, Number.MAX_VALUE],
-        mets: 9.8
-      }
-    },
-    "BICYCLING": {
-      "VERY_VERY_SLOW": {
-        range: [0, 5.5],
-        mets: 3.5
-      },
-      "VERY_SLOW": {
-        range: [5.5, 10],
-        mets: 5.8
-      },
-      "SLOW": {
-        range: [10, 12],
-        mets: 6.8
-      },
-      "MODERATE": {
-        range: [12, 14],
-        mets: 8.0
-      },
-      "FAST": {
-        range: [14, 16],
-        mets: 10.0
-      },
-      "VERT_FAST": {
-        range: [16, 19],
-        mets: 12.0
-      },
-      "RACING": {
-        range: [20, Number.MAX_VALUE],
-        mets: 15.8
-      }
-    },
-    "IN_VEHICLE": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "CAR": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "BUS": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "LIGHT_RAIL": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "TRAIN": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "TRAM": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "SUBWAY": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    },
-    "AIR_OR_HSR": {
-      "ALL": {
-        range: [0, Number.MAX_VALUE],
-        mets: 0
-      }
-    }
-  }
   return cc;
-
 });

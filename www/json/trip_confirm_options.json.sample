@@ -1,14 +1,14 @@
 {
   "MODE" : [
-       {"text":"Walk", "value":"walk"},
-       {"text":"Bike","value":"bike"},
-       {"text":"Drove Alone","value":"drove_alone"},
-       {"text":"Shared Ride","value":"shared_ride"},
-       {"text":"Taxi/Uber/Lyft","value":"taxi"},
-       {"text":"Bus","value":"bus"},
-       {"text":"Train","value":"train"},
-       {"text":"Free Shuttle","value":"free_shuttle"},
-       {"text":"Other","value":"other"}],
+       {"text":"Walk", "value":"walk", "met_equivalent": "WALKING", "co2PerMeter": 0},
+       {"text":"Bike","value":"bike", "met_equivalent": "BICYCLING", "co2PerMeter": 0},
+       {"text":"Drove Alone","value":"drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.22031},
+       {"text":"Shared Ride","value":"shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.11015},
+       {"text":"Taxi/Uber/Lyft","value":"taxi", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.30741},
+       {"text":"Bus","value":"bus", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
+       {"text":"Train","value":"train", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.12256},
+       {"text":"Free Shuttle","value":"free_shuttle", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
+       {"text":"Other","value":"other", "met_equivalent": "UNKNOWN", "co2PerMeter": 0}],
     "PURPOSE" : [
        {"text":"Home", "value":"home"},
        {"text":"To Work","value":"work"},
