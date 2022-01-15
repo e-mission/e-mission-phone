@@ -19,19 +19,14 @@ angular.module('emission.main.metrics',['nvd3',
                                     $translate) {
     var lastTwoWeeksQuery = true;
     var defaultTwoWeekUserCall = true;
-    var lastWeekCalories = 0;
-    var lastWeekCarbon = "0 kg CO₂";
-    var twoWeeksAgoCarbon = "";
-    var lastWeekCarbonInt = 0;
-    var twoWeeksAgoCarbonInt = 0;
-    var twoWeeksAgoCalories = 0;
 
     var DURATION = "duration";
-    var MEDIAN_SPEED = "median_speed";
+    var MEAN_SPEED = "mean_speed";
     var COUNT = "count";
     var DISTANCE = "distance";
 
-    var METRIC_LIST = [DURATION, MEDIAN_SPEED, COUNT, DISTANCE];
+    var METRIC_LIST = [DURATION, MEAN_SPEED, COUNT, DISTANCE];
+    var COMPUTATIONAL_METRIC_LIST = [DURATION, MEAN_SPEED, DISTANCE];
 
     /*
      * BEGIN: Data structures to parse and store the data in different formats.
@@ -50,7 +45,7 @@ angular.module('emission.main.metrics',['nvd3',
                 ts: 1638489600},....],
          duration: [...]
          distance: [...]
-         median_speed: [...]}
+         mean_speed: [...]}
     */
     $scope.userCurrentResults = {};
     $scope.userTwoWeeksAgo = {};
@@ -68,7 +63,7 @@ angular.module('emission.main.metrics',['nvd3',
         { key: walk, values: [[1638489600, 4, "2021-12-03T00:00:00+00:00"],...]}],
      duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
      distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
-     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     mean_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
      }
     */
     $scope.userCurrentModeMap = {};
@@ -88,7 +83,7 @@ angular.module('emission.main.metrics',['nvd3',
 
      duration: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
      distance: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ],
-     median_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
+     mean_speed: [ { key: drove_alone, values: [...]}, {key: walk, values: [...]} ]
      }
     */
     $scope.userCurrentSummaryModeMap = {};
@@ -531,20 +526,8 @@ angular.module('emission.main.metrics',['nvd3',
       $scope.carbonData = {};
       $scope.summaryData = {};
       $scope.leaderboard = {};
-      $scope.caloriesData.userCalories = 0;
-      $scope.caloriesData.aggrCalories = 0;
-      $scope.caloriesData.lastWeekUserCalories = 0;
-      $scope.caloriesData.changeInPercentage = "0%"
-      $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change');
-
       $scope.leaderboard.tiers = []
-      $scope.carbonData.userCarbon = 0;
-      $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-calculating');;
       $scope.carbonData.optimalCarbon = "0 kg CO₂";
-      $scope.carbonData.worstCarbon = "0 kg CO₂";
-      $scope.carbonData.lastWeekUserCarbon = "0 kg CO₂";
-      $scope.carbonData.changeInPercentage = "0%";
-      $scope.carbonData.change = $translate.instant('metrics.carbon-data-change');
 
       $scope.summaryData.userSummary = [];
       $scope.chartDataUser = {};
@@ -647,20 +630,20 @@ angular.module('emission.main.metrics',['nvd3',
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentModeMap[m] = getDataFromMetrics($scope.userCurrentResults[m], metric2valUser));
 
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.userTwoWeeksAgoModeMap[m] = getDataFromMetrics($scope.userTwoWeeksAgo[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
-            $scope.userCurrentModeMapFormatted[m] = formatData($scope.userCurrentModeMap[m], m));
+            $scope.userCurrentModeMapFormatted[m] = formatModeMap($scope.userCurrentModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
             $scope.userCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
 
-        METRIC_LIST.forEach((m) =>
-            $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], metric2valUser));
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
+            $scope.userTwoWeeksAgoSummaryModeMap[m] = getSummaryDataRaw($scope.userTwoWeeksAgoModeMap[m], m));
 
         METRIC_LIST.forEach((m) =>
-            $scope.summaryData.userSummary[m] = getSummaryData($scope.userCurrentModeMap[m], m));
+            $scope.summaryData.userSummary[m] = getSummaryDataRaw($scope.userCurrentModeMap[m], m));
 
         $scope.summaryData.userSummary.totalDistance = getTotalDistance($scope.summaryData.userSummary.distance);
         $scope.summaryData.userSummary.favMode = getFavoriteMode($scope.summaryData.userSummary.count);
@@ -678,11 +661,13 @@ angular.module('emission.main.metrics',['nvd3',
 
         // Fill in user calorie information
         $scope.fillCalorieCardUserVals($scope.userCurrentSummaryModeMap.duration,
-                                       $scope.userCurrentSummaryModeMap.median_speed,
+                                       $scope.userCurrentSummaryModeMap.mean_speed,
                                        $scope.userTwoWeeksAgoSummaryModeMap.duration,
-                                       $scope.userTwoWeeksAgoSummaryModeMap.median_speed);
+                                       $scope.userTwoWeeksAgoSummaryModeMap.mean_speed);
         $scope.fillFootprintCardUserVals($scope.userCurrentModeMap.distance,
-            $scope.userTwoWeeksAgoModeMap.distance);
+            $scope.userCurrentSummaryModeMap.distance,
+            $scope.userTwoWeeksAgoModeMap.distance,
+            $scope.userTwoWeeksAgoSummaryModeMap.distance);
    }
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
@@ -697,20 +682,17 @@ angular.module('emission.main.metrics',['nvd3',
             $scope.aggCurrentModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valUser));
 
         METRIC_LIST.forEach((m) =>
-            $scope.aggCurrentModeMapFormatted[m] = formatData($scope.aggCurrentModeMap[m], m));
+            $scope.aggCurrentModeMapFormatted[m] = formatModeMap($scope.aggCurrentModeMap[m], m));
 
-        METRIC_LIST.forEach((m) =>
-            $scope.aggCurrentSummaryModeMap[m] = getSummaryDataRaw($scope.aggCurrentModeMap[m], m));
-
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.aggCurrentPerCapitaModeMap[m] = getDataFromMetrics($scope.aggCurrentResults[m], metric2valAvg));
 
-        METRIC_LIST.forEach((m) =>
+        COMPUTATIONAL_METRIC_LIST.forEach((m) =>
             $scope.aggCurrentSummaryPerCapitaModeMap[m] = getSummaryDataRaw($scope.aggCurrentPerCapitaModeMap[m], m));
 
         $scope.chartDataAggr = $scope.aggCurrentModeMapFormatted;
         $scope.fillCalorieAggVals($scope.aggCurrentSummaryPerCapitaModeMap.duration,
-                                  $scope.aggCurrentSummaryPerCapitaModeMap.median_speed);
+                                  $scope.aggCurrentSummaryPerCapitaModeMap.mean_speed);
         $scope.fillFootprintAggVals($scope.aggCurrentSummaryPerCapitaModeMap.distance);
    }
 
@@ -756,78 +738,85 @@ angular.module('emission.main.metrics',['nvd3',
         return undefined;
     }
 
-   $scope.fillCalorieCardUserVals = function(userDurationSummary, userMedianSpeedSummary,
-                                             twoWeeksAgoDurationSummary, twoWeeksAgoMedianSpeedSummary) {
+   $scope.fillCalorieCardUserVals = function(userDurationSummary, userMeanSpeedSummary,
+                                             twoWeeksAgoDurationSummary, twoWeeksAgoMeanSpeedSummary) {
+       $scope.caloriesData.userCalories = {low: 0, high: 0};
+       const highestMET = CalorieCal.getHighestMET();
        for (var i in userDurationSummary) {
-         var met = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMedianSpeedSummary[i])
-         $scope.caloriesData.userCalories +=
-           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, met)) //+ ' cal'
+         var lowMET = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMeanSpeedSummary[i], 0);
+         var highMET = $scope.getCorrectedMetFromUserData(userDurationSummary[i], userMeanSpeedSummary[i], highestMET);
+         $scope.caloriesData.userCalories.low +=
+           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, lowMET)) //+ ' cal'
+         $scope.caloriesData.userCalories.high +=
+           Math.round(CalorieCal.getuserCalories(userDurationSummary[i].values / 3600, highMET)) //+ ' cal'
        }
 
-       if(defaultTwoWeekUserCall){
-           lastWeekCalories = $scope.caloriesData.userCalories;
-       }
+       $scope.numberOfCookies = {
+            low: Math.floor($scope.caloriesData.userCalories.low/
+                                           $scope.food.chocolateChip),
+            high: Math.floor($scope.caloriesData.userCalories.high/
+                                           $scope.food.chocolateChip),
+       };
+       $scope.numberOfIceCreams = {
+            low: Math.floor($scope.caloriesData.userCalories.low/
+                                             $scope.food.vanillaIceCream),
+            high: Math.floor($scope.caloriesData.userCalories.high/
+                                             $scope.food.vanillaIceCream),
+       };
+       $scope.numberOfBananas = {
+            low: Math.floor($scope.caloriesData.userCalories.low/
+                                           $scope.food.banana),
+            high: Math.floor($scope.caloriesData.userCalories.high/
+                                           $scope.food.banana),
+       };
 
-       $scope.numberOfCookies = Math.floor($scope.caloriesData.userCalories/
-                                           $scope.food.chocolateChip);
-       $scope.numberOfIceCreams = Math.floor($scope.caloriesData.userCalories/
-                                             $scope.food.vanillaIceCream);
-       $scope.numberOfBananas = Math.floor($scope.caloriesData.userCalories/
-                                           $scope.food.banana);
-
-       if(defaultTwoWeekUserCall && angular.isDefined(twoWeeksAgoDurationSummary)) {
+       if(defaultTwoWeekUserCall) {
+        if (twoWeeksAgoDurationSummary.length > 0) {
+         var twoWeeksAgoCalories = {low: 0, high: 0};
          for (var i in twoWeeksAgoDurationSummary) {
-           var met = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
-                        twoWeeksAgoMedianSpeedSummary[i])
-           twoWeeksAgoCalories +=
-             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, met));
+           var lowMET = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
+                        twoWeeksAgoMeanSpeedSummary[i], 0)
+           var highMET = $scope.getCorrectedMetFromUserData(twoWeeksAgoDurationSummary[i],
+                        twoWeeksAgoMeanSpeedSummary[i], highestMET)
+           twoWeeksAgoCalories.low +=
+             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, lowMET));
+           twoWeeksAgoCalories.high +=
+             Math.round(CalorieCal.getuserCalories(twoWeeksAgoDurationSummary[i].values / 3600, highMET));
          }
-       }
-
-       if (defaultTwoWeekUserCall) {
-          $scope.caloriesData.lastWeekUserCalories = twoWeeksAgoCalories;
-       } else {
-          $scope.caloriesData.lastWeekUserCalories = ""
-       }
-
-
-       console.log("Running calorieData with "
-                    + (lastWeekCalories)
-                    + " and "
-                    + (twoWeeksAgoCalories));
-       // TODO: Refactor this so that we can filter out bad values ahead of time
-       // instead of having to work around it here
-       var calorieCalculation = Math.abs(Math.round((lastWeekCalories/twoWeeksAgoCalories) * 100 - 100));
-       if (isValidNumber(calorieCalculation)) {
-          $scope.caloriesData.changeInPercentage =  calorieCalculation + "%";
-          if(lastWeekCalories > twoWeeksAgoCalories){
-            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-increase');
-            $scope.caloriesUp = true;
-            $scope.caloriesDown = false;
-          } else {
-            $scope.caloriesData.change = $translate.instant('metrics.calorie-data-change-decrease');
-            $scope.caloriesUp = false;
-            $scope.caloriesDown = true;
-          }
+         $scope.caloriesData.lastWeekUserCalories = {
+            low: twoWeeksAgoCalories.low,
+            high: twoWeeksAgoCalories.high
+         };
+         console.log("Running calorieData with ", $scope.caloriesData);
+         // TODO: Refactor this so that we can filter out bad values ahead of time
+         // instead of having to work around it here
+         $scope.caloriesData.greaterLesserPct = {
+            low: ($scope.caloriesData.userCalories.low/$scope.caloriesData.lastWeekUserCalories.low) * 100 - 100,
+            high: ($scope.caloriesData.userCalories.high/$scope.caloriesData.lastWeekUserCalories.high) * 100 - 100,
+         }
+        }
        }
    }
 
-   $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMedianSpeedSummaryAvg) {
+   $scope.fillCalorieAggVals = function(aggDurationSummaryAvg, aggMeanSpeedSummaryAvg) {
+       $scope.caloriesData.aggrCalories = {low: 0, high: 0};
+       const highestMET = CalorieCal.getHighestMET();
        for (var i in aggDurationSummaryAvg) {
-
-         var met = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMedianSpeedSummaryAvg[i].values);
-
-         $scope.caloriesData.aggrCalories +=
-           Math.round(CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, met)) //+ ' cal'
+         var lowMET = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMeanSpeedSummaryAvg[i].values, 0);
+         var highMET = CalorieCal.getMet(aggDurationSummaryAvg[i].key, aggMeanSpeedSummaryAvg[i].values, highestMET);
+         $scope.caloriesData.aggrCalories.low +=
+           CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, lowMET); //+ ' cal'
+         $scope.caloriesData.aggrCalories.high +=
+           CalorieCal.getuserCalories(aggDurationSummaryAvg[i].values / 3600, highMET); //+ ' cal'
        }
    }
 
-   $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData) {
+   $scope.getCorrectedMetFromUserData = function(currDurationData, currSpeedData, defaultIfMissing) {
        if ($scope.userDataSaved()) {
          // this is safe because userDataSaved will never be set unless there
          // is stored user data that we have loaded
          var userDataFromStorage = $scope.savedUserData;
-         var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values);
+         var met = CalorieCal.getMet(currDurationData.key, currSpeedData.values, defaultIfMissing);
          var gender = userDataFromStorage.gender;
          var heightUnit = userDataFromStorage.heightUnit;
          var height = userDataFromStorage.height;
@@ -836,16 +825,16 @@ angular.module('emission.main.metrics',['nvd3',
          var age = userDataFromStorage.age;
          return CalorieCal.getCorrectedMet(met, gender, age, height, heightUnit, weight, weightUnit);
        } else {
-         return CalorieCal.getMet(currDurationData.key, currSpeedData.values);
+         return CalorieCal.getMet(currDurationData.key, currSpeedData.values, defaultIfMissing);
        }
    };
 
-   $scope.fillFootprintCardUserVals = function(userDistance, twoWeeksAgoDistance) {
+   $scope.fillFootprintCardUserVals = function(
+        userDistance, userDistanceSummary,
+        twoWeeksAgoDistance, twoWeeksAgoDistanceSummary) {
       if (userDistance) {
-        var userCarbonData = getSummaryDataRaw(userDistance, 'distance');
-
-        var optimalDistance = getOptimalFootprintDistance(userDistance);
-        var worstDistance   = getWorstFootprintDistance(userDistance);
+        // var optimalDistance = getOptimalFootprintDistance(userDistance);
+        var worstDistance   = getWorstFootprintDistance(userDistanceSummary);
 
         var date1 = $scope.selectCtrl.fromDateTimestamp;
         var date2 = $scope.selectCtrl.toDateTimestamp;
@@ -862,48 +851,36 @@ angular.module('emission.main.metrics',['nvd3',
         $scope.carbonData.us2030 = Math.round(54 / 7 * days); // kg/day
         $scope.carbonData.us2050 = Math.round(14 / 7 * days);
 
-        $scope.carbonData.userCarbon    = FootprintHelper.getFootprintForMetrics(userCarbonData);
-        $scope.carbonData.optimalCarbon = FootprintHelper.readableFormat(FootprintHelper.getLowestFootprintForDistance(optimalDistance));
-        $scope.carbonData.worstCarbon   = FootprintHelper.readableFormat(FootprintHelper.getHighestFootprintForDistance(worstDistance));
-        lastWeekCarbonInt               = FootprintHelper.getFootprintForMetrics(userCarbonData);
+        $scope.carbonData.userCarbon = {
+            low: FootprintHelper.getFootprintForMetrics(userDistanceSummary,0),
+            high: FootprintHelper.getFootprintForMetrics(userDistanceSummary,
+                FootprintHelper.getHighestFootprint()),
+        };
+        // $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
+        $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
       }
 
       if (defaultTwoWeekUserCall) {
-        if (twoWeeksAgoDistance) {
-          var userCarbonDataTwoWeeks = getSummaryDataRaw(twoWeeksAgoDistance, 'distance');
-          twoWeeksAgoCarbon    = 0;
-          twoWeeksAgoCarbonInt = 0;
+        // This is a default call in which we retrieved the current week and
+        // the previous week of data
+        if (twoWeeksAgoDistance.length > 0) {
+          // and this user has been around long enough that they have two weeks
+          // of data, or they haven't turned off tracking for all of last week,
+          // or....
+          $scope.carbonData.lastWeekUserCarbon = {
+            low: FootprintHelper.getFootprintForMetrics(twoWeeksAgoDistanceSummary,0),
+            high: FootprintHelper.getFootprintForMetrics(twoWeeksAgoDistanceSummary,
+                FootprintHelper.getHighestFootprint()),
+          };
 
-          twoWeeksAgoCarbonInt = FootprintHelper.getFootprintForMetrics(userCarbonDataTwoWeeks);
-
-          twoWeeksAgoCarbon = FootprintHelper.readableFormat(twoWeeksAgoCarbonInt);
-          lastWeekCarbon    = twoWeeksAgoCarbon;
+          console.log("Running calculation with " + $scope.carbonData.userCarbon + " and " + $scope.carbonData.lastWeekUserCarbon);
+          console.log("Running calculation with ", $scope.carbonData);
+          $scope.carbonData.greaterLesserPct = {
+            low: ($scope.carbonData.userCarbon.low/$scope.carbonData.lastWeekUserCarbon.low) * 100 - 100,
+            high: ($scope.carbonData.userCarbon.high/$scope.carbonData.lastWeekUserCarbon.high) * 100 - 100,
         }
       }
-      $scope.carbonData.lastWeekUserCarbon = lastWeekCarbon;
-
-      var change = "";
-      console.log("Running calculation with " + lastWeekCarbonInt + " and " + twoWeeksAgoCarbonInt);
-      var calculation = (lastWeekCarbonInt[0]/twoWeeksAgoCarbonInt[0]) * 100 - 100;
-
-      // TODO: Refactor this so that we can filter out bad values ahead of time
-      // instead of having to work around it here
-      if (isValidNumber(calculation)) {
-        if(lastWeekCarbonInt > twoWeeksAgoCarbonInt){
-          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-increase');
-          $scope.carbonUp = true;
-          $scope.carbonDown = false;
-        } else {
-          $scope.carbonData.change = $translate.instant('metrics.carbon-data-change-decrease');
-          $scope.carbonUp = false;
-          $scope.carbonDown = true;
-        }
-        $scope.carbonData.changeInPercentage = Math.abs(Math.round(calculation)) + "%"
-      }
-      else {
-        $scope.carbonData.change = "";
-        $scope.carbonData.changeInPercentage = "0%";
-      }
+     }
    };
 
    $scope.fillFootprintAggVals = function(aggDistance) {
@@ -919,7 +896,11 @@ angular.module('emission.main.metrics',['nvd3',
           }
         }
 
-        $scope.carbonData.aggrCarbon = FootprintHelper.readableFormat(FootprintHelper.getFootprintForMetrics(aggrCarbonData));
+        $scope.carbonData.aggrCarbon = {
+            low: FootprintHelper.getFootprintForMetrics(aggrCarbonData, 0),
+            high: FootprintHelper.getFootprintForMetrics(aggrCarbonData,
+                FootprintHelper.getHighestFootprint()),
+        };
       }
    };
 
@@ -963,6 +944,7 @@ angular.module('emission.main.metrics',['nvd3',
     }
 
     var getDataFromMetrics = function(metrics, metric2val) {
+        console.log("Called getDataFromMetrics on ", metrics);
         var mode_bins = {};
         metrics.forEach(function(metric) {
             var on_foot_val = 0;
@@ -1014,13 +996,14 @@ angular.module('emission.main.metrics',['nvd3',
     }
 
     var getSummaryDataRaw = function(modeMap, metric) {
+        console.log("Invoked getSummaryDataRaw on ", modeMap, "with", metric);
         let summaryMap = angular.copy(modeMap);
         for (var i = 0; i < modeMap.length; i++) {
           var temp = 0;
           for (var j = 0; j < modeMap[i].values.length; j++) {
             temp += modeMap[i].values[j][1];
           }
-          if (metric === "median_speed") {
+          if (metric === "mean_speed") {
             summaryMap[i].values = Math.round(temp / modeMap[i].values.length);
           } else {
             summaryMap[i].values = Math.round(temp);
@@ -1033,6 +1016,20 @@ angular.module('emission.main.metrics',['nvd3',
     /*var sortNumber = function(a,b) {
       return a - b;
     }*/
+
+    /*
+     * This is _broken_ because what we see on the client is summary values,
+     * not individual trip values. So value > longTrip just means that the
+     * overall travel by that mode was long, not that each individual trip
+     * was long.
+     *
+     * As an obvious example, if I had 10 1k car trips, they would show up as
+     * daily travel of 10k by car, and be counted as a long trip, although each
+     * individual trip was actually 1k and short.
+     *
+     * Leaving this disabled until we come up with a principled solution.
+     * https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-1000626564
+     */
 
     var getOptimalFootprintDistance = function(metrics){
       var data = getDataFromMetrics(metrics, metric2valUser);
@@ -1050,99 +1047,64 @@ angular.module('emission.main.metrics',['nvd3',
       }
       return distance;
     }
-    var getWorstFootprintDistance = function(metrics){
-      var data = getDataFromMetrics(metrics, metric2valUser);
-      var distance = 0;
-      for(var i = 0; i < data.length; i++) {
-        for(var j = 0; j < data[i].values.length; j++){
-          distance += data[i].values[j][1];
-        }
-      }
-      return distance;
+    var getWorstFootprintDistance = function(modeMapSummary) {
+      var totalDistance = modeMapSummary.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
+      return totalDistance;
     }
 
-    var formatData = function(modeMapList, metric) {
-        var unit = "";
-        switch(metric) {
-          case "count":
-            unit = $translate.instant('metrics.trips');
-            break;
-          case "distance":
-            unit = ImperialConfig.getDistanceSuffix;
-            break;
-          case "duration":
-            // we pick hours as a reasonable formatted metric
-            unit = $translate.instant('metrics.hours');
-            break;
-          case "median_speed":
-            unit = ImperialConfig.getSpeedSuffix;
-            break;
-        }
+    $scope.formatCount = function(value) {
+        const formatVal = Math.round(value);
+        const unit = $translate.instant('metrics.trips');
+        const stringRep = formatVal + " " + unit;
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatDistance = function(value) {
+        const formatVal = Number.parseFloat(ImperialConfig.getFormattedDistance(value));
+        const unit = ImperialConfig.getDistanceSuffix;
+        const stringRep = formatVal + " " + unit;
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatDuration = function(value) {
+        const durM = moment.duration(value * 1000);
+        const formatVal = durM.asHours();
+        const unit = $translate.instant('metrics.hours');
+        const stringRep = durM.humanize();
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatMeanSpeed = function(value) {
+        const formatVal = Number.parseFloat(ImperialConfig.getFormattedSpeed(value));
+        const unit = ImperialConfig.getSpeedSuffix;
+        const stringRep = formatVal + " " + unit;
+        return [formatVal, unit, stringRep];
+    }
+
+    $scope.formatterMap = {
+        count: $scope.formatCount,
+        distance: $scope.formatDistance,
+        duration: $scope.formatDuration,
+        mean_speed: $scope.formatMeanSpeed
+    }
+
+    var formatModeMap = function(modeMapList, metric) {
+        const formatter = $scope.formatterMap[metric];
         let formattedModeList = [];
         modeMapList.forEach((modeMap) => {
             let currMode = modeMap["key"];
             let modeStatList = modeMap["values"];
-            let formattedModeStatList = angular.copy(modeStatList);
-            formattedModeStatList.forEach((modeStat) => {
-                var stringRep = "";
-                if (metric === "median_speed") {
-                  let spdStr = ImperialConfig.getFormattedSpeed( modeStat[1]);
-                  modeStat[1] = Number.parseFloat(spdStr);
-                  stringRep = spdStr + " " + unit;
-                } else if(metric === "distance"){
-                  let distStr = ImperialConfig.getFormattedDistance(modeStat[1]);
-                  modeStat[1] = Number.parseFloat(distStr);
-                  stringRep = distStr + " " + unit;
-                } else if(metric === "duration"){
-                  let durM = moment.duration(modeStat[1] * 1000);
-                  modeStat[1] = durM.asHours().toFixed(2);
-                  stringRep = durM.humanize();
-                } else {
-                  modeStat[1] = Math.round(modeStat[1]);
-                  stringRep = modeStat[1] + " " + unit;
-                }
-                modeStat.push(unit);
-                modeStat.push(stringRep);
+            let formattedModeStatList = modeStatList.map((modeStat) => {
+                let [formatVal, unit, stringRep] = formatter(modeStat[1]);
+                let copiedModeStat = angular.copy(modeStat);
+                copiedModeStat[1] = formatVal;
+                copiedModeStat.push(unit);
+                copiedModeStat.push(stringRep);
+                return copiedModeStat;
             });
             formattedModeList.push({key: currMode, values: formattedModeStatList});
         });
         return formattedModeList;
-    }
-
-    var getSummaryData = function(modeMap, metric) {
-        var summaryData = angular.copy(modeMap);
-        for (var i = 0; i < summaryData.length; i++) {
-          var temp = 0;
-          for (var j = 0; j < summaryData[i].values.length; j++) {
-            temp += summaryData[i].values[j][1];
-          }
-          var unit = "";
-          switch(metric) {
-            case "count":
-              unit = $translate.instant('metrics.trips');
-              break;
-            case "distance":
-              unit = "m";
-              break;
-            case "duration":
-              unit = "s";
-              break;
-            case "median_speed":
-              unit = "m/s";
-              break;
-          }
-          if (metric === "median_speed") {
-            summaryData[i].values = ImperialConfig.getFormattedSpeed(temp / summaryData[i].values.length  ) + ' ' + ImperialConfig.getSpeedSuffix;
-          } else if(metric === "distance"){
-            summaryData[i].values = ImperialConfig.getFormattedDistance(temp) + ' ' + ImperialConfig.getDistanceSuffix;
-          } else if(metric === "duration" && temp > 60){
-            summaryData[i].values = moment.duration(temp * 1000).humanize();
-          } else {
-            summaryData[i].values = Math.round(temp) + ' ' + $translate.instant('metrics.trips');
-          }
-
-        }
-        return summaryData;
     }
 
     var getTotalDistance = function(distances) {
@@ -1434,8 +1396,10 @@ angular.module('emission.main.metrics',['nvd3',
   $scope.setCurDayFrom = function(val) {
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
+      $scope.datepickerObjFrom.inputMoment = $scope.selectCtrl.fromDateTimestamp;
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     } else {
+      $scope.datepickerObjFrom.inputMoment = $scope.selectCtrl.fromDateTimestamp;
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     }
 
@@ -1443,11 +1407,12 @@ angular.module('emission.main.metrics',['nvd3',
   $scope.setCurDayTo = function(val) {
     if (val) {
       $scope.selectCtrl.toDateTimestamp = moment(val).utc();
+      $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
+      $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     }
-
   };
 
 
@@ -1480,42 +1445,36 @@ angular.module('emission.main.metrics',['nvd3',
       ]
     });
   }
-  $scope.datepickerObjFrom = {
+
+  $scope.datepickerObjBase = {
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
+      mondayFirst: false,
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),
+      templateType: 'popup',
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      showTodayButton: true,
+      closeOnSelect: false,
+      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
+    };
+
+  $scope.datepickerObjFrom = angular.copy($scope.datepickerObjBase);
+  angular.extend($scope.datepickerObjFrom, {
       callback: $scope.setCurDayFrom,
       inputDate: $scope.selectCtrl.fromDateTimestamp.toDate(),
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      titleLabel: $translate.instant('metrics.pick-a-date'),
-      mondayFirst: false,
-      weeksList: moment.weekdaysMin(),
-      monthsList: moment.monthsShort(),
-      templateType: 'popup',
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      showTodayButton: true,
-      dateFormat: 'dd/MM/yyyy',
-      closeOnSelect: false,
-      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
-    };
-  $scope.datepickerObjTo = {
+      inputMoment: $scope.selectCtrl.fromDateTimestamp,
+  });
+
+  $scope.datepickerObjTo = angular.copy($scope.datepickerObjBase);
+  angular.extend($scope.datepickerObjTo, {
       callback: $scope.setCurDayTo,
       inputDate: $scope.selectCtrl.toDateTimestamp.toDate(),
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      titleLabel: $translate.instant('metrics.pick-a-date'),
-      mondayFirst: false,
-      weeksList: moment.weekdaysMin(),
-      monthsList: moment.monthsShort(),
-      templateType: 'popup',
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      showTodayButton: true,
-      dateFormat: 'dd/MM/yyyy',
-      closeOnSelect: false,
-      // add this instruction if you want to exclude a particular weekday, e.g. Saturday  disableWeekdays: [6]
-    };
+      inputMoment: $scope.selectCtrl.toDateTimestamp,
+  });
 
   $scope.pickFromDay = function() {
     ionicDatePicker.openDatePicker($scope.datepickerObjFrom);
@@ -1562,4 +1521,25 @@ angular.module('emission.main.metrics',['nvd3',
       console.log("finished going to the list view, moving to the detail view now");
     });
   }
+})
+.directive('diffdisplay', function() {
+    return {
+        scope: {
+            change: "="
+        },
+        link: function(scope) {
+            if (isNaN(scope.change.low)) scope.change.low = 0;
+            if (isNaN(scope.change.high)) scope.change.high = 0;
+            console.log("In diffdisplay, after changes, scope = ", scope);
+        },
+        templateUrl: "templates/metrics/arrow-greater-lesser.html"
+    }
+})
+.directive('rangedisplay', function() {
+    return {
+        scope: {
+            range: "="
+        },
+        templateUrl: "templates/metrics/range-display.html"
+    }
 });

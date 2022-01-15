@@ -6,6 +6,8 @@ angular.module('emission.main.metrics.factory',
 
 .factory('FootprintHelper', function(CarbonDatasetHelper, CustomDatasetHelper) {
   var fh = {};
+  var highestFootprint = 0;
+
   var mtokm = function(v) {
     return v / 1000;
   }
@@ -26,7 +28,7 @@ angular.module('emission.main.metrics.factory',
   fh.readableFormat = function(v) {
     return v > 999? Math.round(v / 1000) + 'k kg CO₂' : Math.round(v) + ' kg CO₂';
   }
-  fh.getFootprintForMetrics = function(userMetrics) {
+  fh.getFootprintForMetrics = function(userMetrics, defaultIfMissing=0) {
     var footprint = fh.getFootprint();
     var result = 0;
     for (var i in userMetrics) {
@@ -42,6 +44,7 @@ angular.module('emission.main.metrics.factory',
       }
       else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+        result += defaultIfMissing * mtokm(userMetrics[i].values);
       }
     }
     return result;
@@ -59,13 +62,80 @@ angular.module('emission.main.metrics.factory',
     }
     return lowestFootprint * mtokm(distance);
   }
-  fh.getHighestFootprintForDistance = function(distance) {
-    var footprint = fh.getFootprint();
-    var highestFootprint = 0;
-    for (var mode in footprint) {
-      highestFootprint = Math.max(highestFootprint, footprint[mode]);
+
+  fh.getHighestFootprint = function() {
+    if (!highestFootprint) {
+        var footprint = fh.getFootprint();
+        let footprintList = [];
+        for (var mode in footprint) {
+            footprintList.push(footprint[mode]);
+        }
+        highestFootprint = Math.max(...footprintList);
     }
-    return highestFootprint * mtokm(distance);
+    return highestFootprint;
+  }
+
+  fh.getHighestFootprintForDistance = function(distance) {
+    return fh.getHighestFootprint() * mtokm(distance);
+  }
+
+  var getLowestMotorizedNonAirFootprint = function(footprint, rlmCO2) {
+    var lowestFootprint = Number.MAX_SAFE_INTEGER;
+    for (var mode in footprint) {
+      if (mode == 'AIR_OR_HSR' || mode == 'air') {
+        console.log("Air mode, ignoring");
+      }
+      else {
+        if (footprint[mode] == 0 || footprint[mode] <= rlmCO2) {
+            console.log("Non motorized mode or footprint <= range_limited_motorized", mode, footprint[mode], rlmCO2);
+        } else {
+            lowestFootprint = Math.min(lowestFootprint, footprint[mode]);
+        }
+      }
+    }
+    return lowestFootprint;
+  }
+
+  fh.getOptimalDistanceRanges = function() {
+    const FIVE_KM = 5 * 1000;
+    const SIX_HUNDRED_KM = 600 * 1000;
+    if (!fh.useCustom) {
+        const defaultFootprint = CarbonDatasetHelper.getCurrentCarbonDatasetFootprint();
+        const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(defaultFootprint);
+        const airFootprint = defaultFootprint["AIR_OR_HSR"];
+        return [
+            {low: 0, high: FIVE_KM, optimal: 0},
+            {low: FIVE_KM, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+            {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+    } else {
+        // custom footprint, let's get the custom values
+        const customFootprint = CustomDatasetHelper.getCustomFootprint();
+        let airFootprint = customFootprint["air"]
+        if (!airFootprint) {
+            // 2341 BTU/PMT from
+            // https://tedb.ornl.gov/wp-content/uploads/2021/02/TEDB_Ed_39.pdf#page=68
+            // 159.25 lb per million BTU from EIA
+            // https://www.eia.gov/environment/emissions/co2_vol_mass.php
+            // (2341 * (159.25/1000000))/(1.6*2.2) = 0.09975, rounded up a bit
+            console.log("No entry for air in ", customFootprint," using default");
+            airFootprint = 0.1;
+        }
+        const rlm = CustomDatasetHelper.range_limited_motorized;
+        if (!rlm) {
+            return [
+                {low: 0, high: FIVE_KM, optimal: 0},
+                {low: FIVE_KM, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+                {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+        } else {
+            console.log("Found range_limited_motorized mode", rlm);
+            const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(customFootprint, rlm.co2PerMeter);
+            return [
+                {low: 0, high: FIVE_KM, optimal: 0},
+                {low: FIVE_KM, high: rlm.range_limit_km * 1000, optimal: rlm.co2PerMeter},
+                {low: rlm.range_limit_km * 1000, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
+                {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
+        }
+    }
   }
 
   return fh;
@@ -74,6 +144,7 @@ angular.module('emission.main.metrics.factory',
 .factory('CalorieCal', function(KVStore, METDatasetHelper, CustomDatasetHelper) {
 
   var cc = {};
+  var highestMET = 0;
   var USER_DATA_KEY = "user-data";
   cc.useCustom = false;
 
@@ -101,15 +172,29 @@ angular.module('emission.main.metrics.factory',
   Number.prototype.between = function (min, max) {
     return this >= min && this <= max;
   };
-  cc.getMet = function(mode, speed) {
+  cc.getHighestMET = function() {
+    if (!highestMET) {
+        var met = cc.getMETs();
+        let metList = [];
+        for (var mode in met) {
+            var rangeList = met[mode];
+            for (var range in rangeList) {
+                metList.push(rangeList[range].mets);
+            }
+        }
+        highestMET = Math.max(...metList);
+    }
+    return highestMET;
+  }
+  cc.getMet = function(mode, speed, defaultIfMissing) {
     if (mode == 'ON_FOOT') {
       console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
       mode = 'WALKING';
     }
     let currentMETs = cc.getMETs();
     if (!currentMETs[mode]) {
-      console.log("CalorieCal.getMet() Illegal mode: " + mode);
-      return 0; //So the calorie sum does not break with wrong return type
+      console.warn("CalorieCal.getMet() Illegal mode: " + mode);
+      return defaultIfMissing; //So the calorie sum does not break with wrong return type
     }
     for (var i in currentMETs[mode]) {
       if (mpstomph(speed).between(currentMETs[mode][i].range[0], currentMETs[mode][i].range[1])) {

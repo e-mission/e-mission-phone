@@ -1392,6 +1392,14 @@ span.rz-bar-wrapper {
   width: 28%;
   height: 35px;
 }
+.metric-current-title-nofilter {
+  position: absolute;
+  color: white;
+  background-color: #01D0A7;
+  text-align: center;
+  width: 100%;
+  height: 35px;
+}
 .metric-range-button {
   border-left-color: #ccc;
   border-left-style: solid;
