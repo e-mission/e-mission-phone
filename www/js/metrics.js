@@ -1390,6 +1390,11 @@ angular.module('emission.main.metrics',['nvd3',
         scope: {
             change: "="
         },
+        link: function(scope) {
+            if (isNaN(scope.change.low)) scope.change.low = 0;
+            if (isNaN(scope.change.high)) scope.change.high = 0;
+            console.log("In diffdisplay, after changes, scope = ", scope);
+        },
         templateUrl: "templates/metrics/arrow-greater-lesser.html"
     }
 })
