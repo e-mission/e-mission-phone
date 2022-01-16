@@ -1,0 +1,38 @@
+<!-- <div>This is the change directive with {{change.low}} to {{change.high}}</div> -->
+<!-- Truth table
+https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-1000692615
+-->
+<div ng-if="change.low == change.high">
+  <!-- Branch one: both values are the same, so only one arrow and one message -->
+    <div ng-if="change.low >= 0">
+      <div id="arrow-color" class="icon ion-arrow-up-a"></div>
+      <div class="percentage-change"> {{ change.low | number:0 }}% {{'metrics.greater-than' | translate }} {{ 'metrics.last-week' | translate }}</div>
+    </div>
+    <div ng-if="change.low < 0">
+      <div id="arrow-color" class="icon ion-arrow-down-a"></div>
+      <div class="percentage-change"> {{ (-1) * change.low | number:0 }}% {{'metrics.less-than' | translate }} {{ 'metrics.last-week' | translate }} </div>
+    </div>
+</div>
+<div ng-if="change.low != change.high">
+  <!-- Branch two: values are different, so two arrows and two messages -->
+  <div class="row">
+    <div class="col col-45">
+        <div id="arrow-color" class="icon ion-arrow-down-a" ng-if="change.low < 0"></div>
+        <div id="arrow-color" class="icon ion-arrow-up-a" ng-if="change.low > 0"></div>
+        <div id="arrow-color" ng-if="change.low == 0"> = </div>
+        <div class="percentage-change" ng-if="change.low < 0"> {{ (-1) * change.low | number:0 }}% {{'metrics.less' | translate }} </div>
+        <div class="percentage-change" ng-if="change.low >= 0"> {{ change.low | number:0 }}% {{'metrics.greater' | translate }} </div>
+    </div>
+    <div class="col-15">
+        <div id="arrow-color"> {{'metrics.or' | translate }} </div>
+        <div class="percentage-change"> {{'metrics.week-before' | translate }} </div>
+    </div>
+    <div class="col col-45">
+        <div id="arrow-color" class="icon ion-arrow-down-a" ng-if="change.high < 0"></div>
+        <div id="arrow-color" class="icon ion-arrow-up-a" ng-if="change.high > 0"></div>
+        <div id="arrow-color" ng-if="change.high == 0"> = </div>
+        <div class="percentage-change" ng-if="change.high < 0"> {{ (-1) * change.high | number:0 }}% {{'metrics.less' | translate }} </div>
+        <div class="percentage-change" ng-if="change.high >= 0"> {{ change.high | number:0 }}% {{'metrics.greater' | translate }} </div>
+    </div>
+  </div>
+</div>
