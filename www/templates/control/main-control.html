@@ -96,6 +96,21 @@
       <ion-item class="control-list-item" ng-click="leaveComment($event)">
         <div class="control-list-label" translate>{{'.leave-comment'}}</div>
       </ion-item>
+
+      <!-- Force sync -->
+      <ion-item class="control-list-item" ng-click="forceSync()">
+        <div class="control-list-label" translate>{{'.force-sync'}}</div>
+      </ion-item>
+
+      <!-- Json dump -->
+      <ion-item class="control-list-item" ng-click="openDatePicker()">
+        <div class="control-list-label" translate>{{'.download-json-dump'}}</div>
+      </ion-item>
+
+      <!-- Email logs -->
+      <ion-item class="control-list-item" ng-click="emailLog()">
+        <div class="control-list-label" translate>{{'.email-log'}}</div>
+      </ion-item>
       
     </ion-list>
 
