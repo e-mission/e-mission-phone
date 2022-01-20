@@ -355,8 +355,20 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     this.populateCustomFootprints = function() {
         let modeOptions = this.inputParams.options;
         let modeCO2PerMeter = modeOptions.map((opt) => {
-            return [opt.value, opt.co2PerMeter];
-        });
+            if (opt.range_limit_km) {
+                if (this.range_limited_motorized) {
+                    Logger.displayError("Found two range limited motorized options", {
+                        first: this.range_limited_motorized, second: opt});
+                }
+                this.range_limited_motorized = opt;
+                console.log("Found range limited motorized mode", this.range_limited_motorized);
+            }
+            if (angular.isDefined(opt.co2PerMeter)) {
+                return [opt.value, opt.co2PerMeter];
+            } else {
+                return undefined;
+            }
+        }).filter((modeCO2) => angular.isDefined(modeCO2));;
         this.customPerMeterFootprint = Object.fromEntries(modeCO2PerMeter);
         console.log("After populating, custom perMeterFootprint", this.customPerMeterFootprint);
     }
