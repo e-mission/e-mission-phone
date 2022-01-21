@@ -64,6 +64,7 @@
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
                   <div class="user-carbon"> <rangedisplay range="carbonData.userCarbon"></rangeDisplay> kg CO₂ </div>
+                  <div class="calorie-change">{{'main-metrics.equals-phone-charges' | translate:{charges: numberOfCharges.low}:"messageformat"}}</div>
                   <diffdisplay change="carbonData.greaterLesserPct"></diffdisplay>
                 </div>
               </div>

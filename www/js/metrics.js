@@ -525,6 +525,11 @@ angular.module('emission.main.metrics',['nvd3',
         'vanillaIceCream' : 137, //1/2 cup
         'banana' : 105, //medium banana 118g
       };
+      // calculation is at
+      // https://github.com/e-mission/e-mission-docs/issues/696#issuecomment-1018181638
+      $scope.carbon = {
+        'phoneCharge' : 8.22 * 10**(-3), // 8.22 x 10^-6 metric tons CO2/smartphone charge
+      };
 
       getUserMetricsFromServer().then(function(results) {
           $ionicLoading.hide();
@@ -831,6 +836,13 @@ angular.module('emission.main.metrics',['nvd3',
             high: $scope.carbonData.worstCarbon - $scope.carbonData.userCarbon.high,
         };
       }
+
+      $scope.numberOfCharges = {
+           low: Math.floor($scope.carbonData.carbonAvoided.low/
+                                          $scope.carbon.phoneCharge),
+           high: Math.floor($scope.carbonData.carbonAvoided.high/
+                                          $scope.carbon.phoneCharge),
+      };
 
       if (defaultTwoWeekUserCall) {
         // This is a default call in which we retrieved the current week and
