@@ -13,6 +13,7 @@
        {"text":"Bus","value":"bus", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
        {"text":"Train","value":"train", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.12256},
        {"text":"Free Shuttle","value":"free_shuttle", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
+       {"text":"Air","value":"air", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.09975},
        {"text":"Not a Trip","value":"not_a_trip", "met_equivalent": "UNKNOWN", "co2PerMeter": 0},
        {"text":"Other","value":"other", "met_equivalent": "UNKNOWN", "co2PerMeter": 0}],
   "REPLACED_MODE" : [

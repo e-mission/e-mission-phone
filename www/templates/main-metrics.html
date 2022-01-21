@@ -64,6 +64,7 @@
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
                   <div class="user-carbon"> <rangedisplay range="carbonData.userCarbon"></rangeDisplay> kg CO₂ </div>
+                  <div class="calorie-change">{{'main-metrics.equals-phone-charges' | translate:{charges: numberOfCharges.low}:"messageformat"}}</div>
                   <diffdisplay change="carbonData.greaterLesserPct"></diffdisplay>
                 </div>
               </div>
@@ -73,7 +74,7 @@
                 <div class="card dashboard-list"><b translate>{{'.optimal'}}</b> {{carbonData.optimalCarbon}}</div>
                 -->
                 <div class="card dashboard-list" ng-if="carbonData.aggrCarbon"><b translate>{{'.average'}}</b> <rangedisplay range="carbonData.aggrCarbon"></rangeDisplay> kg CO₂</div>
-                <div class="card dashboard-list" style="background-color: {{ carbonData.worstCarbon > carbonData.us2030? '#DB536F !important' : '' }};"><b translate>{{'.worst'}}</b> {{carbonData.worstCarbon | number:0 }} kg CO₂</div>
+                <div class="card dashboard-list"><b translate>{{'.avoided'}}</b> <rangedisplay range="carbonData.carbonAvoided"></rangeDisplay> kg CO₂</div>
                 <div class="card dashboard-list" ng-if="carbonData.lastWeekUserCarbon"><b translate>{{'.lastweek'}}</b> <rangedisplay range="carbonData.lastWeekUserCarbon"></rangeDisplay> kg CO₂</div>
                 <!-- see rationale at 
                 https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-994922690

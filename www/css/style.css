@@ -453,13 +453,13 @@ h4.dashboard-headers{
 }
 
 .user-carbon-no-percentage{
-  padding-top: 40px;
+  padding-top: 30px;
   position: absolute;
   width: 100%;
 }
 
 .user-carbon-percentage{
-  padding-top: 20px;
+  padding-top: 10px;
   position: absolute;
   width: 100%;
 }
