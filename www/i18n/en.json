@@ -223,7 +223,7 @@
         "how-it-compares": "Ballpark comparisons",
         "optimal": "Optimal (perfect mode choice for all my trips):",
         "average": "Average for group:",
-        "worst": "Worst ('drive alone' for all my trips):",
+        "avoided": "CO₂ avoided (vs. all 'taxi'):",
         "lastweek": "My last week value:",
         "us-2030-goal": "US 2030 Goal Estimate:",
         "us-2050-goal": "US 2050 Goal Estimate:",
