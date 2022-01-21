@@ -832,8 +832,8 @@ angular.module('emission.main.metrics',['nvd3',
         // $scope.carbonData.optimalCarbon = FootprintHelper.getLowestFootprintForDistance(optimalDistance);
         $scope.carbonData.worstCarbon   = FootprintHelper.getHighestFootprintForDistance(worstDistance);
         $scope.carbonData.carbonAvoided = {
-            low: $scope.carbonData.worstCarbon - $scope.carbonData.userCarbon.low,
-            high: $scope.carbonData.worstCarbon - $scope.carbonData.userCarbon.high,
+            low: $scope.carbonData.worstCarbon - $scope.carbonData.userCarbon.high,
+            high: $scope.carbonData.worstCarbon - $scope.carbonData.userCarbon.low,
         };
       }
 
