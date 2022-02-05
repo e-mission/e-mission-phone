@@ -1,11 +1,12 @@
+Make sure that all the settings below are green so that the app can work properly!
+
 <details>
 <summary><h4 ng-class="overallLocStatusClass"> {{ 'intro.appstatus.overall-loc-name' | translate }} {{overallLocStatusIcon}} </h4></summary>
-
-We need this this sensor to read your location data and automatically generate
-a trip log that is displayed to you for annotation. We need the background
-location permission to track your location in the background, even when the app
-is closed. This makes the app easier to use and saves battery since you don't
-have to remember to start and stop trip recording.
+We use location permissions to automatically generate a trip diary for annotation.
+We use the background location permission to track your location in the
+background, even when the app is closed. Reading background locations obviates
+the need to turn tracking on and off, making the app easier to use and
+preventing battery drain.
 <ion-list>
 <ion-item ng-repeat="locCheck in locChecks">
     <div class="row">
