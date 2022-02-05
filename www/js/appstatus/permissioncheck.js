@@ -220,6 +220,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             fix: fixPerms,
             refresh: checkPerms
         }
+        $scope.overallFitnessName = $translate.instant("intro.appstatus.overall-fitness-name-android");
         $scope.fitnessChecks = [fitnessPermissionsCheck];
         let fitnessCheckPromises = $scope.fitnessChecks.map((fc) => fc.refresh());
         console.log(fitnessCheckPromises);
