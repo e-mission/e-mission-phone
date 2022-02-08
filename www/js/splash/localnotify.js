@@ -93,6 +93,8 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
 
   $ionicPlatform.ready().then(function() {
     localNotify.registerRedirectHandler();
+    Logger.log("finished registering handlers, about to fire queued events");
+    $window.cordova.plugins.notification.local.fireQueuedEvents();
   });
 
   return localNotify;    
