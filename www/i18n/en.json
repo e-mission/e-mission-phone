@@ -315,6 +315,7 @@
 
     "intro": {
         "appstatus": {
+            "overall-loc-name": "Location",
             "locsettings": {
                 "name": "Location Settings",
                 "description": {
@@ -333,6 +334,8 @@
                     "ios": "Placeholder"
                 }
             },
+            "overall-fitness-name-android": "Physical activity",
+            "overall-fitness-name-ios": "Motion & Fitness",
             "fitnessperms": {
                 "name": "Fitness Permission",
                 "description": {
@@ -340,6 +343,7 @@
                     "ios": "Please allow."
                 }
             },
+            "overall-notification-name": "Notifications",
             "notificationperms": {
                 "app-enabled-name": "App Notifications",
                 "not-paused-name": "Not Paused",
@@ -349,6 +353,7 @@
                     "ios": "Please allow."
                 }
             },
+            "overall-background-restrictions-name": "Background restrictions",
             "unusedapprestrict": {
                 "name": "Unused apps disabled",
                 "description": {
