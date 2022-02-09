@@ -59,6 +59,7 @@ angular.module('emission.main.control',['emission.services',
     }).then(function(modal) {
         $scope.appStatusModal = modal;
         if ($stateParams.launchAppStatusModal == true) {
+            $scope.$broadcast("recomputeAppStatus");
             $scope.appStatusModal.show();
         }
     });
@@ -95,6 +96,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.fixAppStatus = function() {
+        $scope.$broadcast("recomputeAppStatus");
         $scope.appStatusModal.show();
     }
 
@@ -304,6 +306,7 @@ angular.module('emission.main.control',['emission.services',
         $ionicPlatform.ready().then(function() {
             $scope.refreshScreen();
             if ($stateParams.launchAppStatusModal == true) {
+                $scope.$broadcast("recomputeAppStatus");
                 $scope.appStatusModal.show();
             }
         });
