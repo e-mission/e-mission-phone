@@ -143,6 +143,14 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             });
     }
 
+    let refreshChecks = function(checksList, recomputeFn) {
+        let checkPromises = checksList.map((lc) => lc.refresh());
+        console.log(checkPromises);
+        Promise.all(checkPromises)
+            .then((result) => recomputeFn())
+            .catch((error) => recomputeFn())
+    }
+
     $scope.setupAndroidLocChecks = function(platform, version) {
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
@@ -193,11 +201,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             refresh: checkPerms
         }
         $scope.locChecks = [locSettingsCheck, locPermissionsCheck];
-        let locCheckPromises = $scope.locChecks.map((lc) => lc.refresh());
-        console.log(locCheckPromises);
-        Promise.all(locCheckPromises)
-            .then((result) => $scope.recomputeLocStatus())
-            .catch((error) => $scope.recomputeLocStatus())
+        refreshChecks($scope.locChecks, $scope.recomputeLocStatus);
     }
 
     $scope.setupAndroidFitnessChecks = function(platform, version) {
@@ -222,11 +226,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         }
         $scope.overallFitnessName = $translate.instant("intro.appstatus.overall-fitness-name-android");
         $scope.fitnessChecks = [fitnessPermissionsCheck];
-        let fitnessCheckPromises = $scope.fitnessChecks.map((fc) => fc.refresh());
-        console.log(fitnessCheckPromises);
-        Promise.all(fitnessCheckPromises)
-            .then((result) => $scope.recomputeFitnessStatus())
-            .catch((error) => $scope.recomputeFitnessStatus())
+        refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
     }
 
     $scope.setupAndroidNotificationChecks = function() {
@@ -247,12 +247,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             refresh: checkPerms
         }
         $scope.notificationChecks = [appAndChannelNotificationsCheck];
-        let notificationCheckPromises = $scope.notificationChecks.map((fc) => fc.refresh());
-        console.log("About to initialize notification status");
-        console.log(notificationCheckPromises);
-        Promise.all(notificationCheckPromises)
-            .then((result) => $scope.recomputeNotificationStatus())
-            .catch((error) => $scope.recomputeNotificationStatus())
+        refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus);
     }
 
     $scope.setupAndroidBackgroundRestrictionChecks = function() {
@@ -273,12 +268,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             refresh: checkPerms
         }
         $scope.backgroundRestrictionChecks = [unusedAppsUnrestrictedCheck];
-        let backgroundRestrictionCheckPromises = $scope.backgroundRestrictionChecks.map((fc) => fc.refresh());
-        console.log("About to initialize backgroundRestriction status");
-        console.log(backgroundRestrictionCheckPromises);
-        Promise.all(backgroundRestrictionCheckPromises)
-            .then((result) => $scope.recomputeBackgroundRestrictionStatus())
-            .catch((error) => $scope.recomputeBackgroundRestrictionStatus())
+        refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
     }
 
     $scope.setupPermissionText = function() {
@@ -314,6 +304,14 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     });
 
     $ionicPlatform.on("resume", function() {
-        console.log("app has resumed, should refresh");
+        console.log("PERMISSION CHECK: app has resumed, should refresh");
+    });
+
+    $scope.$on("recomputeAppStatus", function() {
+        console.log("PERMISSION CHECK: recomputing state");
+        refreshChecks($scope.locChecks, $scope.recomputeLocStatus);
+        refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
+        refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus);
+        refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
     });
 });
