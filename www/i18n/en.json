@@ -321,7 +321,7 @@
                 "description": {
                     "android-lt-9": "Location services should be enabled and set to High Accuracy. This allows us to accurately record the trajectory of the travel",
                     "android-gte-9": "Location services should be enabled. This allows us to access location data and generate the trip log",
-                    "ios": "Placeholder"
+                    "ios": "Location services should be enabled. This allows us to access location data and generate the trip log"
                 }
             },
             "locperms": {
@@ -331,11 +331,12 @@
                     "android-6-9": "Please select 'allow'",
                     "android-10": "Please select 'Allow all the time'",
                     "android-gte-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
-                    "ios": "Placeholder"
+                    "ios-lt-13": "Please select 'Always allow'",
+                    "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
                 }
             },
             "overall-fitness-name-android": "Physical activity",
-            "overall-fitness-name-ios": "Motion & Fitness",
+            "overall-fitness-name-ios": "Motion and Fitness",
             "fitnessperms": {
                 "name": "Fitness Permission",
                 "description": {
@@ -350,7 +351,7 @@
                 "description": {
                     "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
                     "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
-                    "ios": "Please allow."
+                    "ios-enable": "Please allow, on the popup or the app settings page if necessary"
                 }
             },
             "overall-background-restrictions-name": "Background restrictions",
