@@ -134,9 +134,17 @@ $ cp ..... www/json/connectionConfig.json
 $ source setup/activate_native.sh
 ```
 
+### Activation (after install, and in every new shell)
 
+If connecting to a development server over http, make sure to turn on http support on android
 
-Run in the emulator
+```
+    <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <application android:usesCleartextTraffic="true"/>
+    </edit-config>
+```
+
+### Run in the emulator
 
 ```
 $ npx cordova emulate ios
