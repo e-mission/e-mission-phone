@@ -371,6 +371,10 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
 
     $ionicPlatform.on("resume", function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
+        refreshChecks($scope.locChecks, $scope.recomputeLocStatus);
+        refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
+        refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus);
+        refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
     });
 
     $scope.$on("recomputeAppStatus", function() {
