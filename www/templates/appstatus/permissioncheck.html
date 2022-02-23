@@ -1,12 +1,9 @@
-Make sure that all the settings below are green so that the app can work properly!
+{{'intro.appstatus.overall-description' | translate }}
 
 <details>
 <summary><h4 ng-class="overallLocStatusClass"> {{ 'intro.appstatus.overall-loc-name' | translate }} {{overallLocStatusIcon}} </h4></summary>
-We use location permissions to automatically generate a trip diary for annotation.
-We use the background location permission to track your location in the
-background, even when the app is closed. Reading background locations obviates
-the need to turn tracking on and off, making the app easier to use and
-preventing battery drain.
+{{'intro.appstatus.overall-loc-description' | translate }}
+
 <ion-list>
 <ion-item ng-repeat="locCheck in locChecks">
     <div class="row">
@@ -25,9 +22,8 @@ preventing battery drain.
 <div ng-if="fitnessPermNeeded">
 <details>
 <summary><h4 ng-class="overallFitnessStatusClass"> {{ overallFitnessName }} {{overallFitnessStatusIcon}} </h4></summary>
-The fitness sensors distinguish between walking, bicycling and motorized modes.
-We use this data in order to separate the parts of multi-modal travel such as
-transit. 
+{{'intro.appstatus.overall-fitness-description' | translate }}
+
 <ion-list>
 <ion-item ng-repeat="fitnessCheck in fitnessChecks">
     <div class="row">
@@ -46,7 +42,7 @@ transit.
 
 <details>
 <summary><h4 ng-class="overallNotificationStatusClass"> {{ 'intro.appstatus.overall-notification-name' | translate }} {{overallNotificationStatusIcon}}</h4></summary>
-We need to use notifications to inform you if the settings are incorrect. We also use notifications to remind you to label your trips.
+{{'intro.appstatus.overall-notification-description' | translate }}
 <ion-list>
 <ion-item ng-repeat="notificationCheck in notificationChecks">
     <div class="row">
@@ -65,11 +61,7 @@ We need to use notifications to inform you if the settings are incorrect. We als
 <div ng-if="backgroundUnrestrictionsNeeded">
 <details>
 <summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> {{ 'intro.appstatus.overall-background-restrictions-name' | translate }} {{overallBackgroundRestrictionStatusIcon}} </h3> </summary>
-
-The app runs in the background most of the time to make your life easier. You
-only need to open it periodically to label trips. Android sometimes restricts
-apps from working in the background. This prevents us from generating an
-accurate trip diary. Please remove background restrictions on this app.
+{{'intro.appstatus.overall-background-restrictions-description' | translate }}
 
 <ion-list>
 <ion-item ng-repeat="backgroundRestrictionCheck in backgroundRestrictionChecks">
