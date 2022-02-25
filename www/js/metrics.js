@@ -17,7 +17,7 @@ angular.module('emission.main.metrics',['nvd3',
                                     $rootScope, $location, $state, ReferHelper, Logger,
                                     $translate) {
     var lastTwoWeeksQuery = true;
-    var defaultTwoWeekUserCall = true;
+    $scope.defaultTwoWeekUserCall = true;
 
     var DURATION = "duration";
     var MEAN_SPEED = "mean_speed";
@@ -501,7 +501,7 @@ angular.module('emission.main.metrics',['nvd3',
       $ionicLoading.show({
         template: $translate.instant('loading')
       });
-      if(!defaultTwoWeekUserCall){
+      if(!$scope.defaultTwoWeekUserCall){
         $scope.uictrl.currentString = $translate.instant('metrics.custom');
         $scope.uictrl.current = false;
       }
@@ -535,14 +535,14 @@ angular.module('emission.main.metrics',['nvd3',
           $ionicLoading.hide();
           console.log("user results ", results);
           if(results.user_metrics.length == 1){
-            console.log("defaultTwoWeekUserCall = "+defaultTwoWeekUserCall);
-            defaultTwoWeekUserCall = false;
+            console.log("$scope.defaultTwoWeekUserCall = "+$scope.defaultTwoWeekUserCall);
+            $scope.defaultTwoWeekUserCall = false;
             // If there is no data from last week (ex. new user)
             // Don't store the any other data as last we data
           }
           $scope.fillUserValues(results.user_metrics);
           $scope.summaryData.defaultSummary = $scope.summaryData.userSummary;
-          defaultTwoWeekUserCall = false; //If there is data from last week store the data only first time
+          $scope.defaultTwoWeekUserCall = false; //If there is data from last week store the data only first time
           $scope.uictrl.showContent = true;
           if (angular.isDefined($scope.chartDataUser)) {
             $scope.$apply(function() {
@@ -595,7 +595,7 @@ angular.module('emission.main.metrics',['nvd3',
 
         METRIC_LIST.forEach((m) => $scope.userTwoWeeksAgo[m] = []);
 
-        if(defaultTwoWeekUserCall){
+        if($scope.defaultTwoWeekUserCall){
           for(var i in user_metrics_arr[0]) {
             if(seventhDayAgo.isSameOrBefore(moment.unix(user_metrics_arr[0][i].ts).utc())){
               METRIC_LIST.forEach((m, idx) => $scope.userCurrentResults[m].push(user_metrics_arr[idx][i]));
@@ -645,7 +645,7 @@ angular.module('emission.main.metrics',['nvd3',
 
    $scope.fillAggregateValues = function(agg_metrics_arr) {
         METRIC_LIST.forEach((m) => $scope.aggCurrentResults[m] = []);
-        if (defaultTwoWeekUserCall) {
+        if ($scope.defaultTwoWeekUserCall) {
             METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx].slice(0,7));
         } else {
             METRIC_LIST.forEach((m, idx) => $scope.aggCurrentResults[m] = agg_metrics_arr[idx]);
@@ -743,7 +743,7 @@ angular.module('emission.main.metrics',['nvd3',
                                            $scope.food.banana),
        };
 
-       if(defaultTwoWeekUserCall) {
+       if($scope.defaultTwoWeekUserCall) {
         if (twoWeeksAgoDurationSummary.length > 0) {
          var twoWeeksAgoCalories = {low: 0, high: 0};
          for (var i in twoWeeksAgoDurationSummary) {
@@ -844,7 +844,7 @@ angular.module('emission.main.metrics',['nvd3',
                                           $scope.carbon.phoneCharge),
       };
 
-      if (defaultTwoWeekUserCall) {
+      if ($scope.defaultTwoWeekUserCall) {
         // This is a default call in which we retrieved the current week and
         // the previous week of data
         if (twoWeeksAgoDistance.length > 0) {
@@ -1199,7 +1199,7 @@ angular.module('emission.main.metrics',['nvd3',
   initSelect();
 
   $scope.doRefresh = function() {
-    defaultTwoWeekUserCall = true;
+    $scope.defaultTwoWeekUserCall = true;
     getMetrics();
   }
 
