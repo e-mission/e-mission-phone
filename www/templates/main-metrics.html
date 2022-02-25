@@ -64,7 +64,10 @@
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
                   <div class="user-carbon"> <rangedisplay range="carbonData.userCarbon"></rangeDisplay> kg CO₂ </div>
+                  <div ng-if="carbonData.userCarbon.low != carbonData.userCarbon.high">{{ 'main-metrics.label-to-squish' | translate }} </div>
+                  <!--
                   <div class="calorie-change">{{'main-metrics.equals-phone-charges' | translate:{charges: numberOfCharges.low}:"messageformat"}}</div>
+                  -->
                   <diffdisplay change="carbonData.greaterLesserPct"></diffdisplay>
                 </div>
               </div>
@@ -98,12 +101,12 @@
             <div class="circle" ng-if="foodCompare == 'banana'">
               <img src="img/banana.png" id="foodB"> 
             </div>
-            <h4 class="dashboard-headers" translate>{{'.calories'}}</h4>
+            <h4 class="dashboard-headers" translate>{{'.calories'}} </h4>
           </div>
           <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate>{{'.calibrate'}}</div>
           <div ng-if="uictrl.showContent">
             <div ng-class="currentQueryForCalorie()">
-              <div class="user-calorie"><rangedisplay range="caloriesData.userCalories"></rangedisplay></div>
+              <div class="user-calorie"><rangedisplay range="caloriesData.userCalories"></rangedisplay> kcal</div>
               <div class="calorie-change" ng-if="foodCompare == 'cookie'">{{'main-metrics.equals-cookies' | translate:{cookies: numberOfCookies.low}:"messageformat"}}</div>
               <div class="calorie-change" ng-if="foodCompare == 'iceCream'">{{'main-metrics.equals-icecream' | translate:{icecream: numberOfIceCreams.low}:"messageformat"}}</div>
               <div class="calorie-change" ng-if="foodCompare == 'banana'">{{'main-metrics.equals-bananas' | translate:{bananas: numberOfBananas.low}:"messageformat"}}</div>

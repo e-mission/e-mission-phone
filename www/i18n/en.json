@@ -224,6 +224,7 @@
         "optimal": "Optimal (perfect mode choice for all my trips):",
         "average": "Average for group:",
         "avoided": "CO₂ avoided (vs. all 'taxi'):",
+        "label-to-squish": "Label trips to collapse the range into a single number",
         "equals-phone-charges": "Saved {charges, plural, =0{at least 0 smartphone charges} one {at least 1 smartphone charge} other {at least # smartphone charges}} vs. all 'taxi'",
         "lastweek": "My last week value:",
         "us-2030-goal": "US 2030 Goal Estimate:",
