@@ -453,9 +453,11 @@ angular.module('emission.main.metrics',['nvd3',
           var tempFrom = moment2Timestamp(moment().utc().startOf('day').subtract(14, 'days'));
           var tempTo = moment2Timestamp(moment().utc().startOf('day').subtract(1, 'days'))
           lastTwoWeeksQuery = false; // Only get last week's data once
+          $scope.defaultTwoWeekUserCall = true;
         } else {
           var tempFrom = moment2Timestamp($scope.selectCtrl.fromDateTimestamp);
           var tempTo = moment2Timestamp($scope.selectCtrl.toDateTimestamp);
+          $scope.defaultTwoWeekUserCall = false;
         }
         data = {
           freq: $scope.selectCtrl.pandaFreq,
@@ -1199,7 +1201,6 @@ angular.module('emission.main.metrics',['nvd3',
   initSelect();
 
   $scope.doRefresh = function() {
-    $scope.defaultTwoWeekUserCall = true;
     getMetrics();
   }
 
