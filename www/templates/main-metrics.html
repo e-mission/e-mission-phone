@@ -77,7 +77,7 @@
                 <div class="card dashboard-list"><b translate>{{'.optimal'}}</b> {{carbonData.optimalCarbon}}</div>
                 -->
                 <div class="card dashboard-list" ng-if="carbonData.aggrCarbon"><b translate>{{'.average'}}</b> <rangedisplay range="carbonData.aggrCarbon"></rangeDisplay> kg CO₂</div>
-                <div class="card dashboard-list"><b translate>{{'.avoided'}}</b> <rangedisplay range="carbonData.carbonAvoided"></rangeDisplay> kg CO₂</div>
+                <div class="card dashboard-list" ng-if="carbonData.carbonAvoided"><b translate>{{'.avoided'}}</b> <rangedisplay range="carbonData.carbonAvoided"></rangeDisplay> kg CO₂</div>
                 <div class="card dashboard-list" ng-if="carbonData.lastWeekUserCarbon"><b translate>{{'.lastweek'}}</b> <rangedisplay range="carbonData.lastWeekUserCarbon"></rangeDisplay> kg CO₂</div>
                 <!-- see rationale at 
                 https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-994922690
@@ -114,7 +114,7 @@
             </div>
             </div>
             <div style="margin-top: 120px;">
-              <div class="card dashboard-list"><b translate>{{'.average'}}</b> <rangedisplay range="caloriesData.aggrCalories"></rangedisplay> cal</div>
+              <div class="card dashboard-list" ng-if="caloriesData.aggrCalories"><b translate>{{'.average'}}</b> <rangedisplay range="caloriesData.aggrCalories"></rangedisplay> cal</div>
               <div class="card dashboard-list" ng-if="caloriesData.lastWeekUserCalories"><b translate>{{'.lastweek'}}</b> <rangedisplay range="caloriesData.lastWeekUserCalories"></rangedisplay> cal</div>
               <div style="align:center;">
                  <div class="circle" id="circle-food" ng-click="setCookie()">
