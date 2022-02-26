@@ -440,7 +440,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.increaseHeight = function () {
         // let's increase by a small amount to workaround the issue with the
         // card not resizing the first time
-        $scope.itemHt = $scope.itemHt + 5;
+        $scope.itemHt = $scope.itemHt + 20;
         const oldDisplayTrips = $scope.data.displayTrips;
         const TEN_MS = 10;
         $scope.data.displayTrips = [];
