@@ -1420,6 +1420,22 @@ angular.module('emission.main.metrics',['nvd3',
         scope: {
             range: "="
         },
+        link: function(scope) {
+            // console.log("RANGE DISPLAY "+JSON.stringify(scope.range));
+            var humanize = function(num) {
+                if (Math.abs(num) < 1) {
+                    return num.toFixed(2);
+                } else {
+                    return num.toFixed(0);
+                }
+            }
+
+            if (Math.abs(scope.range.high - scope.range.low) < 1) {
+                scope.tinyDiff = true;
+            }
+            scope.lowFmt = humanize(scope.range.low);
+            scope.highFmt = humanize(scope.range.high);
+        },
         templateUrl: "templates/metrics/range-display.html"
     }
 });

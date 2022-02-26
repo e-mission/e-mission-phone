@@ -1,2 +1,2 @@
-<span ng-if="range.low === range.high">{{ range.low | number:0 }}</span>
-<span ng-if="range.low !== range.high">{{ range.low | number:0 }} - {{ range.high | number:0 }} </span>
+<span ng-if="tinyDiff">{{ lowFmt }}</span>
+<span ng-if="!tinyDiff">{{ lowFmt }} - {{ highFmt }} </span>
