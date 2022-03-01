@@ -68,7 +68,7 @@
                   <!--
                   <div class="calorie-change">{{'main-metrics.equals-phone-charges' | translate:{charges: numberOfCharges.low}:"messageformat"}}</div>
                   -->
-                  <diffdisplay ng-if="defaultTwoWeekUserCall" change="carbonData.greaterLesserPct"></diffdisplay>
+                  <diffdisplay ng-if="carbonData.greaterLesserPct" change="carbonData.greaterLesserPct"></diffdisplay>
                 </div>
               </div>
               <div style="margin-top: 110px;">
@@ -110,7 +110,7 @@
               <div class="calorie-change" ng-if="foodCompare == 'cookie'">{{'main-metrics.equals-cookies' | translate:{cookies: numberOfCookies.low}:"messageformat"}}</div>
               <div class="calorie-change" ng-if="foodCompare == 'iceCream'">{{'main-metrics.equals-icecream' | translate:{icecream: numberOfIceCreams.low}:"messageformat"}}</div>
               <div class="calorie-change" ng-if="foodCompare == 'banana'">{{'main-metrics.equals-bananas' | translate:{bananas: numberOfBananas.low}:"messageformat"}}</div>
-              <diffdisplay ng-if="defaultTwoWeekUserCall" change="caloriesData.greaterLesserPct"></diffdisplay>
+              <diffdisplay ng-if="caloriesData.greaterLesserPct" change="caloriesData.greaterLesserPct"></diffdisplay>
             </div>
             </div>
             <div style="margin-top: 120px;">
