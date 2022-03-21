@@ -2,35 +2,33 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>AD_UNIT_ID_FOR_BANNER_TEST</key>
-	<string>ab-cde-fgh-1111111111111111/1111111111</string>
-	<key>AD_UNIT_ID_FOR_INTERSTITIAL_TEST</key>
-	<string>ab-cde-fgh-1111111111111111/1111111111</string>
 	<key>CLIENT_ID</key>
-	<string>1111111111111-abcdefghijklmnopqrstuvwxyzABCDEF.apps.googleusercontent.com</string>
+	<string>463780887765-d48a77jepjhssklo5754tt1gfgqn3ikb.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.1111111111111-abcdefghijklmnopqrstuvwxyzABCDEF</string>
+	<string>com.googleusercontent.apps.463780887765-d48a77jepjhssklo5754tt1gfgqn3ikb</string>
 	<key>API_KEY</key>
-	<string>ABCDEFGHIJKLMNOP-abcdefghijklmnopqrstuv</string>
+	<string>AIzaSyD6YAnUtO7-9AO_K4Rj_kK0V36x86CJPYI</string>
 	<key>GCM_SENDER_ID</key>
-	<string>1111111111111</string>
+	<string>463780887765</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>edu.berkeley.eecs.embase</string>
+	<string>com.fabmoqc.mamobilite</string>
 	<key>PROJECT_ID</key>
-	<string>emission-push-both</string>
+	<string>fabmobqc</string>
+	<key>STORAGE_BUCKET</key>
+	<string>fabmobqc.appspot.com</string>
 	<key>IS_ADS_ENABLED</key>
 	<false></false>
 	<key>IS_ANALYTICS_ENABLED</key>
 	<false></false>
 	<key>IS_APPINVITE_ENABLED</key>
-	<false></false>
+	<true></true>
 	<key>IS_GCM_ENABLED</key>
 	<true></true>
 	<key>IS_SIGNIN_ENABLED</key>
-	<false></false>
+	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:1111111111111:ios:1111111111111111</string>
+	<string>1:463780887765:ios:87059551c7e24e16bc365c</string>
 </dict>
 </plist>
