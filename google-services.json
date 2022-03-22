@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:463780887765:android:5394442e4333f4ddbc365c",
+        "mobilesdk_app_id": "1:463780887765:android:598cde1db65f1cc9bc365c",
         "android_client_info": {
-          "package_name": "com.fabmobqc.mamobilite"
+          "package_name": "com.fabmoqc.mamobilite"
         }
       },
       "oauth_client": [
