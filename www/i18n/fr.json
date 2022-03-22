@@ -68,7 +68,8 @@
         "current-language": "Français",
         "download-json-dump": "Télécharger les données json",
         "force-sync": "Forcer la synchro",
-        "email-log": "Envoyer les logs"
+        "email-log": "Envoyer les logs",
+        "version": "Version"
     },
 
     "general-settings": {

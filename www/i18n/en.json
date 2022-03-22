@@ -70,7 +70,8 @@
         "current-language": "English",
         "download-json-dump": "Download json dump",
         "force-sync": "Force sync",
-        "email-log": "Email log"
+        "email-log": "Email log",
+        "version": "Version"
     },
 
     "general-settings":{
