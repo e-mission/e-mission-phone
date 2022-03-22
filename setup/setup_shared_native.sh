@@ -3,9 +3,9 @@ echo "Ensure that we fail on error"
 set -e
 ./bin/configure_xml_and_json.js cordovabuild
 
-echo "Copying fake FCM configurations for android and iOS"
-cp setup/GoogleService-Info.fake.for_ci.plist GoogleService-Info.plist
-cp setup/google-services.fake.for_ci.json google-services.json
+#echo "Copying fake FCM configurations for android and iOS"
+#cp setup/GoogleService-Info.fake.for_ci.plist GoogleService-Info.plist
+#cp setup/google-services.fake.for_ci.json google-services.json
 
 echo "Setting up all npm packages"
 npm install
