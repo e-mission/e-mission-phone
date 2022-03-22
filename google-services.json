@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:463780887765:android:0c23bb5403bece78bc365c",
+        "mobilesdk_app_id": "1:463780887765:android:5394442e4333f4ddbc365c",
         "android_client_info": {
-          "package_name": "com.fabmoqc.mamobilite"
+          "package_name": "com.fabmobqc.mamobilite"
         }
       },
       "oauth_client": [
@@ -29,6 +29,13 @@
             {
               "client_id": "463780887765-6mguoskq0k2v0t2eaj6mes3hrtu9vn74.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "463780887765-d48a77jepjhssklo5754tt1gfgqn3ikb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fabmoqc.mamobilite"
+              }
             }
           ]
         }
