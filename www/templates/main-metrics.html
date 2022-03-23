@@ -64,8 +64,11 @@
               <div ng-if="uictrl.showContent">
                 <div ng-class="currentQueryForCarbon()">
                   <div class="user-carbon"> <rangedisplay range="carbonData.userCarbon"></rangeDisplay> kg CO₂ </div>
+                  <div ng-if="carbonData.userCarbon.low != carbonData.userCarbon.high">{{ 'main-metrics.label-to-squish' | translate }} </div>
+                  <!--
                   <div class="calorie-change">{{'main-metrics.equals-phone-charges' | translate:{charges: numberOfCharges.low}:"messageformat"}}</div>
-                  <diffdisplay change="carbonData.greaterLesserPct"></diffdisplay>
+                  -->
+                  <diffdisplay ng-if="carbonData.greaterLesserPct" change="carbonData.greaterLesserPct"></diffdisplay>
                 </div>
               </div>
               <div style="margin-top: 110px;">
@@ -74,7 +77,7 @@
                 <div class="card dashboard-list"><b translate>{{'.optimal'}}</b> {{carbonData.optimalCarbon}}</div>
                 -->
                 <div class="card dashboard-list" ng-if="carbonData.aggrCarbon"><b translate>{{'.average'}}</b> <rangedisplay range="carbonData.aggrCarbon"></rangeDisplay> kg CO₂</div>
-                <div class="card dashboard-list"><b translate>{{'.avoided'}}</b> <rangedisplay range="carbonData.carbonAvoided"></rangeDisplay> kg CO₂</div>
+                <div class="card dashboard-list" ng-if="carbonData.carbonAvoided"><b translate>{{'.avoided'}}</b> <rangedisplay range="carbonData.carbonAvoided"></rangeDisplay> kg CO₂</div>
                 <div class="card dashboard-list" ng-if="carbonData.lastWeekUserCarbon"><b translate>{{'.lastweek'}}</b> <rangedisplay range="carbonData.lastWeekUserCarbon"></rangeDisplay> kg CO₂</div>
                 <!-- see rationale at 
                 https://github.com/e-mission/e-mission-docs/issues/688#issuecomment-994922690
@@ -98,20 +101,20 @@
             <div class="circle" ng-if="foodCompare == 'banana'">
               <img src="img/banana.png" id="foodB"> 
             </div>
-            <h4 class="dashboard-headers" translate>{{'.calories'}}</h4>
+            <h4 class="dashboard-headers" translate>{{'.calories'}} </h4>
           </div>
           <div class="metric-summary-option-button hvcenter" ng-click="caloriePopup()" translate>{{'.calibrate'}}</div>
           <div ng-if="uictrl.showContent">
             <div ng-class="currentQueryForCalorie()">
-              <div class="user-calorie"><rangedisplay range="caloriesData.userCalories"></rangedisplay></div>
+              <div class="user-calorie"><rangedisplay range="caloriesData.userCalories"></rangedisplay> kcal</div>
               <div class="calorie-change" ng-if="foodCompare == 'cookie'">{{'main-metrics.equals-cookies' | translate:{cookies: numberOfCookies.low}:"messageformat"}}</div>
               <div class="calorie-change" ng-if="foodCompare == 'iceCream'">{{'main-metrics.equals-icecream' | translate:{icecream: numberOfIceCreams.low}:"messageformat"}}</div>
               <div class="calorie-change" ng-if="foodCompare == 'banana'">{{'main-metrics.equals-bananas' | translate:{bananas: numberOfBananas.low}:"messageformat"}}</div>
-              <diffdisplay change="caloriesData.greaterLesserPct"></diffdisplay>
+              <diffdisplay ng-if="caloriesData.greaterLesserPct" change="caloriesData.greaterLesserPct"></diffdisplay>
             </div>
             </div>
             <div style="margin-top: 120px;">
-              <div class="card dashboard-list"><b translate>{{'.average'}}</b> <rangedisplay range="caloriesData.aggrCalories"></rangedisplay> cal</div>
+              <div class="card dashboard-list" ng-if="caloriesData.aggrCalories"><b translate>{{'.average'}}</b> <rangedisplay range="caloriesData.aggrCalories"></rangedisplay> cal</div>
               <div class="card dashboard-list" ng-if="caloriesData.lastWeekUserCalories"><b translate>{{'.lastweek'}}</b> <rangedisplay range="caloriesData.lastWeekUserCalories"></rangedisplay> cal</div>
               <div style="align:center;">
                  <div class="circle" id="circle-food" ng-click="setCookie()">
