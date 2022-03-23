@@ -139,7 +139,7 @@ $ source setup/activate_native.sh
 If connecting to a development server over http, make sure to turn on http support on android
 
 ```
-    <edit-config file="AndroidManifest.xml" mode="merge" target="/manifest/application">
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
         <application android:usesCleartextTraffic="true"/>
     </edit-config>
 ```
