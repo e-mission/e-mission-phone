@@ -439,9 +439,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             var endChecks = (userInput.data.end_ts <= trip.end_ts ||
                     (userInput.data.end_ts - trip.end_ts) <= 15 * 60);
             if (startChecks && !endChecks) {
-                if (angular.isDefined(nextTripgj)) {
-                    endChecks = userInput.data.end_ts <= nextTripgj.data.properties.start_ts;
-                    Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextTripgj.data.properties.start_ts+") = "+endChecks);
+                if (angular.isDefined(nextTrip)) {
+                    endChecks = userInput.data.end_ts <= nextTrip.start_ts;
+                    Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextTrip.start_ts+") = "+endChecks);
                 } else {
                     // next trip is not defined, last trip
                     endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
