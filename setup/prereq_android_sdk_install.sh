@@ -1,6 +1,8 @@
 TOOLS_VERSION=8092744
 TOOLS_ZIP_FILENAME=commandlinetools-mac-${TOOLS_VERSION}_latest.zip
 
+echo "Installing command line tools from $TOOLS_ZIP_FILENAME"
+
 if [ -z $ANDROID_SDK_ROOT ];
 then
     echo "ANDROID_SDK_ROOT not set, install location unknown not found, exiting"
