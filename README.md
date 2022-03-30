@@ -94,8 +94,14 @@ Pre-requisites
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
     - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
-- the most recent version of android studio
-    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. The build now requires Java 11. Installed [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
+- Java 11. Tested with [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html).
+- android command line tools version 8092744, [downloaded from the android site](https://developer.android.com/studio/) and installed (on OSX) in `~/Library/Android/sdk/cmdline-tools`
+- android SDK, installed using `~/Library/Android/cmdline-tools/bin/sdkmanager --package_file=setup/android_sdk_packages`
+- SDK root and PATH environment variables set correctly
+    ```
+    export ANDROID_SDK_ROOT=~/Library/Android/sdk`
+    export PATH=$ANDROID_SDK_ROOT/sdk/cmdline-tools/bin:$ANDROID_SDK_ROOT/emulator:$PATH
+    ```
 
 Important
 ---
