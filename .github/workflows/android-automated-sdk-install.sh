@@ -4,11 +4,11 @@ name: osx-install-android-sdk-automated
 # events but only for the master branch
 on:
   push:
-    paths:
-      - 'setup/prereq_android_sdk_install.sh'
+#     paths:
+#       - 'setup/prereq_android_sdk_install.sh'
   pull_request:
-    paths:
-      - 'setup/prereq_android_sdk_install.sh'
+#     paths:
+#       - 'setup/prereq_android_sdk_install.sh'
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
@@ -36,39 +36,39 @@ jobs:
         echo "Existing installed packages"
         $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list-installed
 
-    - name: Install to a new SDK root
-      run: |
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
-        yes Y | setup/prereq_android_sdk_install.sh
-
-    - name: Verify that all packages are as expected
-      shell: bash -l {0}
-      run: |
-        echo "Comparing $ANDROID_SDK_ROOT and $NEW_ANDROID_SDK_ROOT"
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/existing_packages
-        $NEW_ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/new_packages
-        diff /tmp/existing_packages /tmp/new_packages
-
-    - name: Verify that directory structure is consistent
-      shell: bash -l {0}
-      run: |
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
-        ls -al $ANDROID_SDK_ROOT
-        if [ ! -f $ANDROID_SDK_ROOT/emulator ]; then exit 1 fi
-        if [ ! -f $ANDROID_SDK_ROOT/build-tools ]; then exit 1 fi
-        if [ ! -f $ANDROID_SDK_ROOT/patcher ]; then exit 1 fi
-        if [ ! -f $ANDROID_SDK_ROOT/extras ]; then exit 1 fi
-        if [ ! -f $ANDROID_SDK_ROOT/platforms ]; then exit 1 fi
-        if [ ! -f $ANDROID_SDK_ROOT/platform-tools ]; then exit 1 fi
-        if [ ! -f $ANDROID_SDK_ROOT/system-images ]; then exit 1 fi
-
-    - name: Ensure that the path is correct and installed programs are runnable
-      shell: bash -l {0}
-      run: |
-        export JAVA_HOME=$JAVA_HOME_11_X64
-        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
-        echo "New SDK root $ANDROID_SDK_ROOT"
-        source setup/activate_native.sh
-        $ANDROID_SDK_ROOT/emulator/emulator -list-avds
+#     - name: Install to a new SDK root
+#       run: |
+#         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+#         echo "New SDK root $ANDROID_SDK_ROOT"
+#         yes Y | setup/prereq_android_sdk_install.sh
+# 
+#     - name: Verify that all packages are as expected
+#       shell: bash -l {0}
+#       run: |
+#         echo "Comparing $ANDROID_SDK_ROOT and $NEW_ANDROID_SDK_ROOT"
+#         $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/existing_packages
+#         $NEW_ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/new_packages
+#         diff /tmp/existing_packages /tmp/new_packages
+# 
+#     - name: Verify that directory structure is consistent
+#       shell: bash -l {0}
+#       run: |
+#         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+#         echo "New SDK root $ANDROID_SDK_ROOT"
+#         ls -al $ANDROID_SDK_ROOT
+#         if [ ! -f $ANDROID_SDK_ROOT/emulator ]; then exit 1 fi
+#         if [ ! -f $ANDROID_SDK_ROOT/build-tools ]; then exit 1 fi
+#         if [ ! -f $ANDROID_SDK_ROOT/patcher ]; then exit 1 fi
+#         if [ ! -f $ANDROID_SDK_ROOT/extras ]; then exit 1 fi
+#         if [ ! -f $ANDROID_SDK_ROOT/platforms ]; then exit 1 fi
+#         if [ ! -f $ANDROID_SDK_ROOT/platform-tools ]; then exit 1 fi
+#         if [ ! -f $ANDROID_SDK_ROOT/system-images ]; then exit 1 fi
+# 
+#     - name: Ensure that the path is correct and installed programs are runnable
+#       shell: bash -l {0}
+#       run: |
+#         export JAVA_HOME=$JAVA_HOME_11_X64
+#         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+#         echo "New SDK root $ANDROID_SDK_ROOT"
+#         source setup/activate_native.sh
+#         $ANDROID_SDK_ROOT/emulator/emulator -list-avds
