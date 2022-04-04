@@ -94,8 +94,32 @@ Pre-requisites
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
     - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
-- the most recent version of android studio
-    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. The build now requires Java 11. Installed [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
+- Java 11. Tested with [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html).
+- android SDK; install manually or use setup script below. Note that you only need to run this once **per computer**.
+    ```
+    $ bash setup/prereq_android_sdk_install.sh
+    ```
+
+    <details><summary>Expected output</summary>
+
+    ```
+    Downloading the command line tools for mac
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+    100  114M  100  114M    0     0  8092k      0  0:00:14  0:00:14 --:--:-- 8491k
+    Found downloaded file at /tmp/commandlinetools-mac-8092744_latest.zip
+    Installing the command line tools
+    Archive:  /tmp/commandlinetools-mac-8092744_latest.zip
+    ...
+    Downloading the android SDK. This will take a LONG time and will require you to agree to lots of licenses.
+    Do you wish to continue? (Y/N)Y
+    ...
+    Accept? (y/N): Y
+    ...
+    [======                                 ] 17% Downloading x86_64-23_r33.zip... s
+    ```
+
+    </details>
 
 Important
 ---
