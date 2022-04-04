@@ -57,13 +57,13 @@ jobs:
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         ls -al $ANDROID_SDK_ROOT
-        if [ ! -f $ANDROID_SDK_ROOT/emulator ]; then exit 1; fi
-        if [ ! -f $ANDROID_SDK_ROOT/build-tools ]; then exit 1; fi
-        if [ ! -f $ANDROID_SDK_ROOT/patcher ]; then exit 1; fi
-        if [ ! -f $ANDROID_SDK_ROOT/extras ]; then exit 1; fi
-        if [ ! -f $ANDROID_SDK_ROOT/platforms ]; then exit 1; fi
-        if [ ! -f $ANDROID_SDK_ROOT/platform-tools ]; then exit 1; fi
-        if [ ! -f $ANDROID_SDK_ROOT/system-images ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/emulator ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/build-tools ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/patcher ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/extras ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/platforms ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/platform-tools ]; then exit 1; fi
+        if [ ! -d $ANDROID_SDK_ROOT/system-images ]; then exit 1; fi
 
     - name: Ensure that the path is correct and installed programs are runnable
       shell: bash -l {0}
