@@ -33,11 +33,7 @@ read -p "Do you wish to continue? (Y/N)" CONTINUE
 if [ $CONTINUE == "Y" ];
 then
     echo "BEGIN: About to start android SDK download"
-    # $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --package_file=setup/android_sdk_packages
-        read -p "Do you wish to continue? (Y/N)" CONTINUE2
-        if [ $CONTINUE2 == "Y" ]; then
-            read -p "Do you wish to continue? (Y/N)" CONTINUE3
-        fi
+    $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --package_file=setup/android_sdk_packages
     echo "END: Done with android SDK download, exiting script"
 else
     echo "Please install this before proceeding with the installation steps"
