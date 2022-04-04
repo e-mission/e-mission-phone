@@ -28,18 +28,20 @@ unzip /tmp/$TOOLS_ZIP_FILENAME -d $ANDROID_SDK_ROOT/cmdline-tools/latest/
 mv $ANDROID_SDK_ROOT/cmdline-tools/latest/cmdline-tools/* $ANDROID_SDK_ROOT/cmdline-tools/latest/
 rm -rf $ANDROID_SDK_ROOT/cmdline-tools/latest/cmdline-tools/
 
-echo "Downloading the android SDK. This will take a LONG time and will require you to agree to lots of licenses."
-read -p "Do you wish to continue? (Y/N)" CONTINUE
-if [ $CONTINUE == "Y" ];
-then
-    echo "BEGIN: About to start android SDK download"
-    # $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --package_file=setup/android_sdk_packages
-        read -p "Do you wish to continue? (Y/N)" CONTINUE2
-        if [ $CONTINUE2 == "Y" ]; then
-            read -p "Do you wish to continue? (Y/N)" CONTINUE3
-        fi
-    echo "END: Done with android SDK download, exiting script"
-else
-    echo "Please install this before proceeding with the installation steps"
-    exit 1
-fi
+echo "Skipping actual download to go from working to working"
+
+# echo "Downloading the android SDK. This will take a LONG time and will require you to agree to lots of licenses."
+# read -p "Do you wish to continue? (Y/N)" CONTINUE
+# if [ $CONTINUE == "Y" ];
+# then
+#     echo "BEGIN: About to start android SDK download"
+#     # $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --package_file=setup/android_sdk_packages
+#         read -p "Do you wish to continue? (Y/N)" CONTINUE2
+#         if [ $CONTINUE2 == "Y" ]; then
+#             read -p "Do you wish to continue? (Y/N)" CONTINUE3
+#         fi
+#     echo "END: Done with android SDK download, exiting script"
+# else
+#     echo "Please install this before proceeding with the installation steps"
+#     exit 1
+# fi
