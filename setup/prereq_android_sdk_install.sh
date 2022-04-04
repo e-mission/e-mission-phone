@@ -34,7 +34,8 @@ if [ $CONTINUE == "Y" ];
 then
     echo "BEGIN: About to start android SDK download"
     $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --package_file=setup/android_sdk_packages
-    echo "END: Done with android SDK download"
+    echo "END: Done with android SDK download, exiting script"
+    exit 0
 else
     echo "Please install this before proceeding with the installation steps"
     exit 1
