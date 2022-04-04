@@ -71,5 +71,12 @@ jobs:
         export JAVA_HOME=$JAVA_HOME_11_X64
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
-        source setup/activate_native.sh
         $ANDROID_SDK_ROOT/emulator/emulator -list-avds
+
+    - name: Ensure that the path is correct and the project can be activated
+      shell: bash -l {0}
+      run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+        echo "New SDK root $ANDROID_SDK_ROOT"
+        source setup/activate_native.sh
