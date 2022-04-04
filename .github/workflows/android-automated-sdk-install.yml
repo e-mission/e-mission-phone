@@ -40,7 +40,7 @@ jobs:
       run: |
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
-        yes Y | setup/prereq_android_sdk_install.sh
+        yes Y | bash setup/prereq_android_sdk_install.sh
 
     - name: Verify that all packages are as expected
       shell: bash -l {0}
