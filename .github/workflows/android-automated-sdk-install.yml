@@ -4,11 +4,11 @@ name: osx-install-android-sdk-automated
 # events but only for the master branch
 on:
   push:
-#     paths:
-#       - 'setup/prereq_android_sdk_install.sh'
+    paths:
+      - 'setup/prereq_android_sdk_install.sh'
   pull_request:
-#     paths:
-#       - 'setup/prereq_android_sdk_install.sh'
+    paths:
+      - 'setup/prereq_android_sdk_install.sh'
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
@@ -41,6 +41,7 @@ jobs:
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         yes Y | bash setup/prereq_android_sdk_install.sh
+        echo "Install script exited"
 
     - name: Verify that all packages are as expected
       shell: bash -l {0}
