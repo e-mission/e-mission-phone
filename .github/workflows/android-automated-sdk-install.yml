@@ -34,7 +34,7 @@ jobs:
         echo "SDK root before install $ANDROID_SDK_ROOT"
         cat $ANDROID_SDK_ROOT/cmdline-tools/latest/source.properties
         echo "Existing installed packages"
-        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list-installed
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed
 
 #     - name: Install to a new SDK root
 #       run: |
