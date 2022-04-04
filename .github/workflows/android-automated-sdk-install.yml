@@ -41,9 +41,6 @@ jobs:
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         printf "Y\nY\nY\nY\nY\n" | bash setup/prereq_android_sdk_install.sh
-        echo "Install script exited"
-        echo "Let's see if the expect tool is installed"
-        which expect
 
     - name: Verify that all packages are as expected
       shell: bash -l {0}
@@ -51,7 +48,8 @@ jobs:
         echo "Comparing $ANDROID_SDK_ROOT and $NEW_ANDROID_SDK_ROOT"
         $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/existing_packages
         $NEW_ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/new_packages
-        diff /tmp/existing_packages /tmp/new_packages
+        diff -uw /tmp/existing_packages /tmp/new_packages
+        echo "Expected differences; emulators, SDK versions, tool versions"
 
     - name: Verify that directory structure is consistent
       shell: bash -l {0}
