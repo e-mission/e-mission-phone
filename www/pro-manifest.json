@@ -1952,7 +1952,7 @@
   {
     "href": "templates/control/main-control.html",
     "size": 4591,
-    "integrity": "sha256-PbEMuCa4Li+hbjFKwbioTKW1oda42U8zdiXxvl1MVMI= sha384-mRepe/HWrSdaBAlOuG8kUKHpYjw+PCfpSflJPqhyxXzKQWiSouPhk6xod57B+hYb sha512-AEIgl0mRsKp45WIJld7J0gUaevnEPP8JRCeTguzZcWoYBtH9GfvACVbSyny5itkETFH8nRGYJ6Ss51O/uakVrw=="
+    "integrity": "sha256-qD9dXxjqYDK+qy5QnuMpPqbBnEf3VzlbZ5lZCJQncag= sha384-9oR1N4FJLGAgsrIYz1zfb4aI4uvl2BlJ9W91FHV2sE2asKMDmVFx22ZZFFCbwLwL sha512-VCSDcSphPTQN895VKMZOYn2eUv7UJUlW3mWqHGce6RkSopkvFqnH2G2JvnbfveFJ2QVvsJW3oxsKbHjZz5JjFA=="
   },
   {
     "href": "templates/control/main-sync-settings.html",
