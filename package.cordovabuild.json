@@ -1,7 +1,7 @@
 {
-  "name": "edu.berkeley.eecs.emission",
-  "version": "3.0.0",
-  "displayName": "TraceMe",
+  "name": "com.fabmoqc.mamobilite",
+  "version": "3.0.3",
+  "displayName": "Ma Mobilité",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",
@@ -18,8 +18,10 @@
       "ios"
     ],
     "plugins": {
-      "phonegap-plugin-push": {
-        "FCM_VERSION": "17.0.0"
+      "@havesource/cordova-plugin-push": {
+        "ANDROID_SUPPORT_V13_VERSION": "28.0.0",
+        "FCM_VERSION": "18.+",
+        "IOS_FIREBASE_MESSAGING_VERSION": "~> 6.32.2"
       },
       "cordova-plugin-ionic-keyboard": {},
       "cordova-plugin-app-version": {},
@@ -91,6 +93,6 @@
     "cordova-plugin-x-socialsharing": "6.0.0",
     "fs-extra": "^9.0.1",
     "klaw-sync": "^6.0.0",
-    "phonegap-plugin-push": "=2.3.0"
+    "@havesource/cordova-plugin-push": "2.0.0"
   }
 }
