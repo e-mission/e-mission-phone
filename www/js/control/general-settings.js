@@ -114,16 +114,18 @@ angular
       };
 
       $scope.deleteMyData = function ($event) {
-        const url = "https://fabmobqc.ca/ma-mobilite-suppression-des-donnees/";
+        const url =
+          "https://fabmobqc.ca/nos-donnees-en-mobilite/ma-mobilite/ma-mobilite-suppression-des-donnees/";
         const options = "location=yes,clearcache=no,toolbar=yes,hideurlbar=yes";
-        $window.cordova.InAppBrowser.open(url, '_blank', options);
-      }
+        $window.cordova.InAppBrowser.open(url, "_blank", options);
+      };
 
       $scope.leaveComment = function ($event) {
-        const url = "https://fabmobqc.ca/ma-mobilite-nous-contacter/";
+        const url =
+          "https://fabmobqc.ca/nos-donnees-en-mobilite/ma-mobilite/ma-mobilite-nous-contacter/";
         const options = "location=yes,clearcache=no,toolbar=yes,hideurlbar=yes";
-        $window.cordova.InAppBrowser.open(url, '_blank', options);
-      }
+        $window.cordova.InAppBrowser.open(url, "_blank", options);
+      };
 
       $scope.userData = [];
       $scope.getUserData = function () {

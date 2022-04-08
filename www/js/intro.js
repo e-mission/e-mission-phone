@@ -140,13 +140,17 @@ angular
         );
       };
 
-      $scope.generateRandomToken = function(length) {
-        var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
-        var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
+      $scope.generateRandomToken = function (length) {
+        var randomInts = window.crypto.getRandomValues(
+          new Uint8Array(length * 2)
+        );
+        var randomChars = Array.from(randomInts).map((b) =>
+          String.fromCharCode(b)
+        );
         var randomString = randomChars.join("");
         var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
         return validRandomString.substring(0, length);
-      }
+      };
 
       $scope.disagree = function () {
         $scope.getIntroBox().previous();
@@ -165,36 +169,35 @@ angular
 
       $scope.startSurvey = function () {
         const frenchForm = {
-          "userIdElementId": "wpforms-25100-field_14",
-          "url": "https://fabmobqc.ca/questionnaire-ma-mobilite/"
+          userIdElementId: "wpforms-25100-field_14",
+          url: "https://fabmobqc.ca/nos-donnees-en-mobilite/ma-mobilite/questionnaire-ma-mobilite/",
         };
 
         const englishForm = {
-          "userIdElementId": "wpforms-25278-field_14",
-          "url": "https://fabmobqc.ca/questionnaire-ma-mobilite-en/"
+          userIdElementId: "wpforms-25278-field_14",
+          url: "https://fabmobqc.ca/en/our-mobility-data/my-mobility/my-mobility-questionnaire/",
         };
 
         const form = ((language) => {
-            switch (language) {
-              case "fr":
-                return frenchForm;
-              case "en":
-                return englishForm;
-              default:
-                return englishForm;
-            }
+          switch (language) {
+            case "fr":
+              return frenchForm;
+            case "en":
+              return englishForm;
+            default:
+              return englishForm;
+          }
         })($translate.use());
 
-        CommHelper.getUser().then(function(userProfile) {
-          const fillers = [{
-            "elementId": form.userIdElementId,
-            "elementValue": userProfile.user_id['$uuid']
-          }];
-          
-          SurveyLaunch.startSurveyPrefilled(
-            form.url,
-            fillers
-          );
+        CommHelper.getUser().then(function (userProfile) {
+          const fillers = [
+            {
+              elementId: form.userIdElementId,
+              elementValue: userProfile.user_id["$uuid"],
+            },
+          ];
+
+          SurveyLaunch.startSurveyPrefilled(form.url, fillers);
         });
       };
 
@@ -218,14 +221,14 @@ angular
         });
       };
 
-      $scope.loginNew = function() {
+      $scope.loginNew = function () {
         $scope.randomToken = $scope.generateRandomToken(16);
         $scope.login($scope.randomToken);
       };
 
       $scope.login = function (token) {
-        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token)
-        .then( function (userEmail) {
+        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(
+          function (userEmail) {
             // ionicToast.show(message, position, stick, time);
             // $scope.next();
             ionicToast.show(userEmail, "middle", false, 2500);
