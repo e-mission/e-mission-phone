@@ -45,7 +45,7 @@ angular
       ClientStats,
       CommHelper,
       Logger,
-      $translate
+      $translate,
     ) {
       var datepickerObject = {
         todayLabel: $translate.instant("list-datepicker-today"), //Optional
@@ -757,6 +757,11 @@ angular
           },
         });
       };
+
+      $scope.copyIdentifierToClipBoard = function (identifier) {
+        $window.cordova.plugins.clipboard.copy(identifier);
+      };
+
       $scope.displayLanguage = function () {
         for (var i in $scope.languageOptions) {
           var languageMapping = $scope.languageOptions[i];

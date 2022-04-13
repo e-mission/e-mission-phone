@@ -1,6 +1,4 @@
-<ion-view
-  translate-namespace="control"
->
+<ion-view translate-namespace="control">
   <ion-nav-title translate>
     {{'control.profile'}}
   </ion-nav-title>>
@@ -9,7 +7,8 @@
 
     <!-- Profile -->
     <div class="control-profile-picture-box hvcenter">
-      <img class="control-profile-picture hvcenter" alt="profile picture" src="../../img/icons/person_outline_black_24dp.png">
+      <img class="control-profile-picture hvcenter" alt="profile picture"
+        src="../../img/icons/person_outline_black_24dp.png">
     </div>
 
     <!-- <h2 class="control-list-header" translate>{{".state"}}</h2>
@@ -28,15 +27,15 @@
           <span translate>{{".signal-activation"}}</span>
         </div>
       </ion-item> -->
-      <!-- Waiting for trip -->
+    <!-- Waiting for trip -->
     <!--   <ion-item class="control-list-item">
         <div class="control-list-label" translate>{{".waiting-for-trip"}}</div>
         <div class="control-list-option control-list-button hvcenter" translate>
           {{".waiting-for-trip-start"}}
         </div>
       </ion-item> -->
-      
-      <!-- Current position -->
+
+    <!-- Current position -->
     <!--   <ion-item class="control-list-item">
         <div class="control-list-label" translate>{{".current-position"}}</div>
         <div class="control-list-option" translate>
@@ -49,10 +48,7 @@
     <h2 class="control-list-header" translate>{{".parameters"}}</h2>
     <ion-list>
       <!-- Language -->
-      <ion-item class="control-list-item"
-        ng-disabled="$scope.selectCtrl.showStress"
-        ng-click="changeLanguage()"
-      >
+      <ion-item class="control-list-item" ng-disabled="$scope.selectCtrl.showStress" ng-click="changeLanguage()">
         <div class="control-list-label" translate>{{".select-language"}}</div>
         <div class="control-list-option" translate>
           {{".current-language"}}
@@ -61,9 +57,11 @@
 
       <!-- Identifier -->
       <!-- <ion-item class="control-list-item" ng-click="returnToIntro()"> -->
-      <ion-item class="control-list-item">
+      <ion-item class="control-list-item" ng-click="copyIdentifierToClipBoard(settings.auth.email)">
         <div class="control-list-label" translate>{{'.identifier'}}</div>
-        <div class="control-list-option">{{settings.auth.email}}</div>
+        <div class="control-list-option">
+          {{settings.auth.email}}
+        </div>
       </ion-item>
 
       <!-- Privacy policy -->
@@ -75,11 +73,8 @@
       <ion-item class="control-list-item">
         <div class="control-list-label" translate>{{'.tracking'}}</div>
         <div class="control-list-option">
-          <label
-            ng-click="userStartStopTracking()"
-            class="toggle"
-          >
-            <input type="checkbox" ng-checked="settings.collect.trackingOn" disabled/>
+          <label ng-click="userStartStopTracking()" class="toggle">
+            <input type="checkbox" ng-checked="settings.collect.trackingOn" disabled />
             <div class="track">
               <div class="handle"></div>
             </div>
@@ -113,11 +108,11 @@
       </ion-item>
 
       <!-- Version -->
-        <ion-item class="control-list-item">
-          <div class="control-list-label" translate>{{'.version'}}</div>
-          <div class="control-list-option">3.0.3</div>
-        </ion-item>
-      
+      <ion-item class="control-list-item">
+        <div class="control-list-label" translate>{{'.version'}}</div>
+        <div class="control-list-option">3.0.3</div>
+      </ion-item>
+
     </ion-list>
 
   </ion-content>

@@ -1,11 +1,11 @@
 .control-profile-picture-box {
-  margin:auto;
-  padding:auto;
+  margin: auto;
+  padding: auto;
   width: 90px;
   height: 90px;
   border-radius: 50%;
   background-color: #1123CB;
-  overflow:hidden;
+  overflow: hidden;
 }
 
 .control-list-header {
@@ -65,10 +65,10 @@
   margin: 0;
   padding: 0;
   display: flex;
-	justify-content: center;
-	align-items: center;
+  justify-content: center;
+  align-items: center;
 }
-  
+
 .control-list-item {
   height: 60px;
   padding: 0;
