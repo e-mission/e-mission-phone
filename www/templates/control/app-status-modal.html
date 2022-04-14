@@ -1,13 +1,14 @@
 <ion-modal-view translate-namespace="control">
-    <ion-header-bar>
-      <h1 class="title">Permissions</h1>
-    </ion-header-bar>
-    <ion-content>
-      <div class="consent-text">
-          <permissioncheck overallstatus="overallAppStatus"></permissioncheck>
-          <div class="col" style="margin-left: 5px; margin-right: 5px">
-              <button class="button button-block button-positive button-outline" ng-disabled="!overallAppStatus" ng-click="appStatusChecked()"><span translate>{{'.button-accept'}}</span></button>
-          </div>
+  <ion-header-bar>
+    <h1 class="title">Permissions</h1>
+  </ion-header-bar>
+  <ion-content>
+    <div class="consent-text">
+      <permissioncheck overallstatus="overallAppStatus"></permissioncheck>
+      <div class="col" style="margin-left: 5px; margin-right: 5px">
+        <button class="button button-block button-positive button-outline" ng-disabled="!overallAppStatus"
+          ng-click="appStatusChecked()"><span translate>{{'consent.button-accept'}}</span></button>
       </div>
-    </ion-content>
+    </div>
+  </ion-content>
 </ion-modal-view>

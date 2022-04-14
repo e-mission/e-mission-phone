@@ -3,10 +3,8 @@
     "map-refresh": "Rafraîchir",
     "map-fixmap": "Ré-afficher la Carte",
     "pull-to-refresh": "Tirer pour rafraîchir",
-
     "weekdays-all": "Tout",
     "weekdays-select": "Jour de la semaine",
-
     "post-trip-prompt": {
         "notification-option-mute": "Silencieux",
         "notification-option-snooze": "En Sommeil",
@@ -25,12 +23,10 @@
         "unmute": "Réactiver",
         "keep-muted": "Laisser silencieux"
     },
-
     "post-trip-map-display-tour-incident": "Zoomez puis indiquez le lieu de l'incident et cliquez sur la ligne bleue pour qualifier l'incident ☻ ou ☹",
     "tour-next": "Suivant",
     "tour-previous": "Précédent",
     "tour-finish": "Fin",
-
     "trip-confirm": {
         "recenttrip": "Déplacement de: {{startTime}} → à: {{endTime}}",
         "continue": "Continuer",
@@ -39,7 +35,6 @@
         "services-cancel": "Annuler",
         "services-save": "Enregistrer"
     },
-
     "place-common-place": "Lieu fréquent",
     "place-successor-trips": "Déplacements suivants",
     "place-trips-to": "{{trips}} déplacements vers",
@@ -47,7 +42,6 @@
     "place-usually-takes": "Dure en général: {{duration}}",
     "trip-start-hours": "Heures de départ",
     "trip-start-duration": "Durée",
-
     "control": {
         "profile": "Profil",
         "state": "État",
@@ -69,9 +63,9 @@
         "download-json-dump": "Télécharger les données json",
         "force-sync": "Forcer la synchro",
         "email-log": "Envoyer les logs",
-        "version": "Version"
+        "version": "Version",
+        "app-status": "Status de l'application"
     },
-
     "general-settings": {
         "choose-date": "Date",
         "nuke-ui-state-only": "UI state only",
@@ -89,7 +83,6 @@
         "share-subject": "Emission - UC Berkeley Research Project",
         "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
     },
-
     "metrics": {
         "cancel": "Annuler",
         "confirm": "Confirmer",
@@ -128,7 +121,6 @@
         "day": "jour",
         "days": "jours"
     },
-
     "diary": {
         "diary": "Journal",
         "current-trip": "Déplacement en cours",
@@ -149,7 +141,7 @@
         "to-label": "Étiquetter",
         "show-all": "Tous les déplacements",
         "no-trips-found": "Aucun déplacement trouvé",
-        "for-current-filter": "pour les filtres sélectionnés. « Tous les déplacemets » pour retirer les filtres",
+        "for-current-filter": "pour les filtres sélectionnés. 'Tous les déplacemets' pour retirer les filtres",
         "scroll-to-load-more": "Défiler la page pour plus de résultats",
         "filter-display-status": "Affichage de {{displayTripsLength}} / {{allTripsLength}} déplacements",
         "filter-display-range": "{{currentEnd | date}} à {{currentStart | date:'medium' }}",
@@ -161,9 +153,7 @@
         "select-purpose-scroll": "Motif (👇 pour plus)",
         "list-pick-a-date": "Date"
     },
-    
-
-    "modes" : {
+    "modes": {
         "walk": "Marche à pied",
         "bike": "Vélo",
         "car-drove-alone": "Voiture (seul)",
@@ -180,8 +170,7 @@
         "plane": "Avion",
         "other": "Autre"
     },
-
-    "purposes" : {
+    "purposes": {
         "home": "Maison",
         "work": "Travail",
         "at-work": "Au travail",
@@ -200,14 +189,12 @@
         "religious": "Religieux",
         "other": "Autre"
     },
-
     "user-gender": "Genre",
     "gender-male": "Homme",
     "gender-female": "Femme",
     "user-height": "Taille",
     "user-weight": "Poids",
     "user-age": "Age",
-
     "main-metrics": {
         "dashboard": "Tableau de bord",
         "summary": "Résumé",
@@ -233,9 +220,7 @@
         "from": "de",
         "to": "à"
     },
-
     "main-diary": "Journal",
-    
     "main-heatmap": {
         "title": "Points chauds",
         "counts": "Comptage",
@@ -254,7 +239,6 @@
         "tour-mode": "Cliquez ici pour filtrer par mode. Par défaut, tous les modes sont affichés.",
         "tour-get": "Cliquez ici pour générer la carte."
     },
-
     "details": {
         "speed": "Vitesse",
         "time": "Durée",
@@ -262,7 +246,6 @@
         "tour-sectionList-content": "Trajets, heures et modes",
         "tour-sectionPct-content": "% du temps passé dans chaque mode"
     },
-
     "list-explainDraft-alert": "Le déplacement n'a pas encore été analysé. Si cela dure + de 24H, signalez-le à votre administrateur système !",
     "list-datepicker-today": "Aujourd'hui",
     "list-datepicker-close": "Fermer",
@@ -270,35 +253,30 @@
     "list-tour-datepicker-button": "Choisissez le jour à afficher.",
     "list-tour-diary-entry": "Cliquez sur la carte pour + de détails.",
     "list-tour-map-fix-button": "Cliquez pour rafraichir la carte.",
-
     "service": {
         "reading-server": "Données lues du serveur...",
         "reading-cache": "Données lues dans le cache...",
         "reading-unprocessed-data": "Données non traitées en cours de lecture..."
     },
-
     "post-trip-manual-incident-time": "Jour/Heure de l'incident",
-
-    "email-service":{
+    "email-service": {
         "email-account-not-configured": "Le compte email n'est pas configuré",
         "email-account-mail-app": "L'appli e-mail doit être configuré sinon cela ne fonctionnera pas.",
         "going-to-email": "Transfert par mail de la Base de Données {{parentDir}}",
-        "email-log":{
+        "email-log": {
             "subject-logs": "emission logs",
             "body-please-fill-in-what-is-wrong": "Merci d'indiquer ce qui ne fonctionne pas"
         },
         "no-email-address-configured": "Aucune adresse e-mail configurée.",
-        "email-data":{
+        "email-data": {
             "subject-data-dump-from-to": "Données du {{start}} au {{end}}",
             "body-data-consists-of-list-of-entries": "Les données sont une liste d'entrées.\n Vous pouvez trouver le format d'une entrée au lien suivant : https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nLes données peuvent être chargées localement en suivant les instructions indiquées ici https://github.com/e-mission/e-mission-server#loading-test-data \n et peuvent être manipulées en suivant l'exemple disponible à ce lien : https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
         }
     },
-    
     "consent": {
         "button-accept": "J'accepte",
         "button-decline": "Je refuse"
     },
-
     "updatecheck": {
         "downloading-update": "Mise à jour de l'UI uniquement",
         "extracting-update": "Récupération de la mise à jour",
@@ -306,5 +284,69 @@
         "download-new-ui": "Télécharger la mise à jour ?",
         "download-not-now": "Pas maintenant",
         "download-apply": "Appliquer"
+    },
+    "intro": {
+        "appstatus": {
+            "overall-description": "Cette application fonctionne en arrière-plan pour créer automatiquement un journal de voyage pour vous. Assurez-vous que tous les paramètres ci-dessous sont verts afin que l'application puisse fonctionner correctement !",
+            "overall-loc-name": "Localisation",
+            "overall-loc-description": "Nous utilisons l'autorisation de localisation en arrière-plan pour suivre votre position en arrière-plan, même lorsque l'application est fermée. La lecture des emplacements en arrière-plan élimine le besoin d'activer et de désactiver le suivi, ce qui facilite l'utilisation de l'application et évite l'épuisement de la batterie.",
+            "locsettings": {
+                "name": "Les paramètres de localisation",
+                "description": {
+                    "android-lt-9": "Les services de localisation doivent être activés et définis sur Haute précision. Cela nous permet d'enregistrer avec précision la trajectoire du voyage",
+                    "android-gte-9": "Les services de localisation doivent être activés. Cela nous permet d'accéder aux données de localisation et de générer le journal de bord",
+                    "ios": "Les services de localisation doivent être activés. Cela nous permet d'accéder aux données de localisation et de générer le journal de bord"
+                }
+            },
+            "locperms": {
+                "name": "Autorisations de localisation",
+                "description": {
+                    "android-lt-6": "Activé lors de l'installation de l'application.",
+                    "android-6-9": "Veuillez sélectionner 'autoriser'",
+                    "android-10": "Veuillez sélectionner 'Autoriser tout le temps'",
+                    "android-gte-11": "Sur la page des paramètres de l'application, choisissez l'autorisation 'Emplacement' et définissez-la sur 'Autoriser tout le temps'",
+                    "ios-lt-13": "Veuillez sélectionner 'Toujours autoriser'",
+                    "ios-gte-13": "Veuillez sélectionner 'Toujours autoriser' Sur la page des paramètres de l'application, veuillez sélectionner 'Toujours' et 'Précis' et revenez ici pour continuer"
+                }
+            },
+            "overall-fitness-name-android": "Activité physique",
+            "overall-fitness-name-ios": "Activité physique",
+            "overall-fitness-description": "Les capteurs de fitness distinguent les modes marche, vélo et motorisé. Nous utilisons ces données afin de séparer les parties des déplacements multimodaux comme le transport en commun. Nous l'utilisons également pour contre-vérifier les trajets potentiellement erronés - si le capteur de localisation saute à travers la ville mais que le capteur de condition physique est stationnaire, nous pouvons deviner que le trajet n'était pas valide.",
+            "fitnessperms": {
+                "name": "Autorisation d'activité physique",
+                "description": {
+                    "android": "Merci d'autoriser.",
+                    "ios": "Merci d'autoriser."
+                }
+            },
+            "overall-notification-name": "Notifications",
+            "overall-notification-description": "Nous devons utiliser des notifications pour vous informer si les paramètres sont incorrects. Nous utilisons également des notifications push invisibles toutes les heures pour réveiller l'application et lui permettre de télécharger des données et de vérifier l'état de l'application. Nous utilisons également des notifications pour vous rappeler d'étiqueter vos trajets.",
+            "notificationperms": {
+                "app-enabled-name": "Notifications de l'application",
+                "not-paused-name": "Pas mis en pause",
+                "description": {
+                    "android-enable": "Sur la page des paramètres de l'application, assurez-vous que toutes les notifications et tous les canaux sont activés.",
+                    "android-unpause": "Sur la page des paramètres de l'application, assurez-vous que toutes les notifications sont activées. Si cela ne résout pas le problème, demandez de l'aide à votre administrateur",
+                    "ios-enable": "Veuillez autoriser, dans la fenêtre contextuelle ou la page des paramètres de l'application si nécessaire"
+                }
+            },
+            "overall-background-restrictions-name": "Restrictions d'arrière-plan",
+            "overall-background-restrictions-description": "L'application fonctionne la plupart du temps en arrière-plan pour vous faciliter la vie. Il vous suffit de l'ouvrir périodiquement pour étiqueter les trajets. Android empêche parfois les applications de fonctionner en arrière-plan. Cela nous empêche de générer un carnet de voyage précis. Veuillez supprimer les restrictions d'arrière-plan sur cette application.",
+            "unusedapprestrict": {
+                "name": "Applications inutilisées désactivées",
+                "description": {
+                    "android-disable": "Sur la page des paramètres de l'application, accédez à 'Autorisations' et assurez-vous que les autorisations de l'application ne seront pas automatiquement réinitialisées.",
+                    "ios": "Merci d'autoriser."
+                }
+            }
+        },
+        "permissions": {
+            "locationPermExplanation-android-lt-6": "vous avez accepté l'autorisation lors de l'installation. Vous n'avez rien à faire maintenant.",
+            "locationPermExplanation-android-6-9": "veuillez sélectionnera 'Autoriser'",
+            "locationPermExplanation-android-10": "veuillez sélectionner 'Autoriser tout le temps'",
+            "locationPermExplanation-android-gte-11": "veuillez sélectionner 'Autoriser tout le temps' pour les autorisations de localisation sur la page de l'application",
+            "locationPermExplanation-ios-lt-13": "veuillez sélectionner 'Toujours autoriser'. Cela nous permet de comprendre votre voyage même lorsque vous n'utilisez pas activement l'application",
+            "locationPermExplanation-ios-gte-13": "veuillez sélectionner 'toujours' et 'précis' dans la page des paramètres de l'application et revenir ici pour continuer"
+        }
     }
 }

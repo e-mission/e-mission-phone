@@ -82,10 +82,10 @@
         </div>
       </ion-item>
 
-      <div class="control-list-item">
-        <div class="control-list-text" translate>{{'.app-status'}}</div>
-        <div ng-click="fixAppStatus()" class="control-icon-button"><i class="ion-checkmark"></i></div>
-      </div>
+      <ion-item ng-click="fixAppStatus()" class="control-list-item">
+        <div class="control-list-label" translate>{{'control.app-status'}}</div>
+        <div class="control-icon-button control-check-icon"><i class="ion-checkmark"></i></div>
+      </ion-item>
 
       <!-- Delete my data -->
       <ion-item class="control-list-item" ng-click="deleteMyData($event)">

@@ -3,7 +3,7 @@
  */
 
 angular.module('emission.appstatus.permissioncheck',
-    [])
+    ['emission.i18n.utils',])
 .directive('permissioncheck', function() {
     return {
         scope: {

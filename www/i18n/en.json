@@ -63,7 +63,8 @@
         "download-json-dump": "Download json dump",
         "force-sync": "Force sync",
         "email-log": "Email log",
-        "version": "Version"
+        "version": "Version",
+        "app-status": "App Status"
     },
     "general-settings": {
         "choose-date": "Choose date to download data",
