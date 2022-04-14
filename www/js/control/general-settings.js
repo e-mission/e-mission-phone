@@ -28,6 +28,7 @@ angular
       $ionicPopup,
       $ionicActionSheet,
       $ionicPopover,
+      $ionicModal,
       $rootScope,
       KVStore,
       ionicDatePicker,
@@ -69,6 +70,18 @@ angular
         dateFormat: "dd MMM yyyy", //Optional
         closeOnSelect: true, //Optional
       };
+
+      $scope.overallAppStatus = false;
+
+      $ionicModal.fromTemplateUrl('templates/control/app-status-modal.html', {
+          scope: $scope
+      }).then(function(modal) {
+          $scope.appStatusModal = modal;
+          if ($stateParams.launchAppStatusModal == true) {
+              $scope.$broadcast("recomputeAppStatus");
+              $scope.appStatusModal.show();
+          }
+      });
 
       $scope.openDatePicker = function () {
         ionicDatePicker.openDatePicker(datepickerObject);
@@ -112,6 +125,18 @@ angular
             );
         }
       };
+
+      $scope.fixAppStatus = function() {
+          $scope.$broadcast("recomputeAppStatus");
+          $scope.appStatusModal.show();
+      }
+
+      $scope.appStatusChecked = function() {
+          // Hardcoded value so we can publish the hacky version today and then debug/fix the
+          // infinite loop around waiting_for_trip_start -> tracking_error
+          $window.cordova.plugins.notification.local.clearAll();
+          $scope.appStatusModal.hide();
+      }
 
       $scope.deleteMyData = function ($event) {
         const url =

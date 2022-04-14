@@ -1,13 +1,11 @@
 {
-    "loading" : "Loading...",
+    "loading": "Loading...",
     "map-refresh": "Refresh",
     "map-fixmap": "Fix Map",
     "pull-to-refresh": "Pull to refresh",
-
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
-
-    "post-trip-prompt":{
+    "post-trip-prompt": {
         "notification-option-mute": "Mute",
         "notification-option-snooze": "Snooze",
         "notification-option-choose": "Choose",
@@ -25,13 +23,10 @@
         "unmute": "Unmute",
         "keep-muted": "Keep muted"
     },
-
     "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a ☻ or ☹ incident",
-
     "tour-next": "Next",
     "tour-previous": "Previous",
     "tour-finish": "Finish",
-
     "trip-confirm": {
         "recenttrip": "Recent trip from: {{startTime}} → to: {{endTime}}",
         "continue": "Continue",
@@ -40,17 +35,14 @@
         "services-cancel": "Cancel",
         "services-save": "Save"
     },
-
     "place-common-place": "Common place",
     "place-successor-trips": "Successor trips",
     "place-trips-to": "{{trips}} trips to",
     "place-usually-starts": "Usually starts at: {{hour}}:00",
     "place-usually-takes": "Usually takes: {{duration}}",
-
     "trip-start-hours": "Start hours",
     "trip-start-duration": "Duration",
-
-    "control":{
+    "control": {
         "profile": "Profile",
         "state": "State",
         "wifi-activation": "Wifi",
@@ -73,14 +65,13 @@
         "email-log": "Email log",
         "version": "Version"
     },
-
-    "general-settings":{
-        "choose-date" : "Choose date to download data",
-        "choose-dataset" : "Choose a dataset for carbon footprint calculations",
-        "carbon-dataset" : "Carbon dataset",
-        "nuke-ui-state-only" : "UI state only",
-        "nuke-native-cache-only" : "Native cache only",
-        "nuke-everything" : "Everything",
+    "general-settings": {
+        "choose-date": "Choose date to download data",
+        "choose-dataset": "Choose a dataset for carbon footprint calculations",
+        "carbon-dataset": "Carbon dataset",
+        "nuke-ui-state-only": "UI state only",
+        "nuke-native-cache-only": "Native cache only",
+        "nuke-everything": "Everything",
         "clear-data": "Clear data",
         "cancel": "Cancel",
         "user-data-erased": "User data erased.",
@@ -93,8 +84,7 @@
         "share-subject": "Emission - UC Berkeley Research Project",
         "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
     },
-
-    "metrics":{
+    "metrics": {
         "cancel": "Cancel",
         "confirm": "Confirm",
         "get": "Get",
@@ -132,7 +122,6 @@
         "day": "day",
         "days": "days"
     },
-
     "diary": {
         "diary": "Diary",
         "current-trip": "Current Trip",
@@ -165,8 +154,7 @@
         "select-purpose-scroll": "Purpose (👇 for more)",
         "list-pick-a-date": "Pick a date"
     },
-
-    "modes" : {
+    "modes": {
         "walk": "Walk",
         "bike": "Bike",
         "car-drove-alone": "Car (Drove Alone)",
@@ -183,8 +171,7 @@
         "plane": "Plane",
         "other": "Other"
     },
-
-    "purposes" : {
+    "purposes": {
         "home": "Home",
         "work": "Work",
         "school": "School",
@@ -202,7 +189,6 @@
         "religious": "Religious",
         "other": "Other"
     },
-
     "new_label_tour": {
         "0": "This is the new Label user interface. Label trips here instead of on the Diary page. Trips take longer to appear here, but when they do they will be more accurate and you will be able to use our new features to label them faster.",
         "1": "This is the To Label tab. On this tab, only the trips you need to label will appear; when you label them, they will automatically disappear after a few seconds.",
@@ -217,7 +203,6 @@
         "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!",
         "11": "Click the ‘?’ button whenever you'd like to view this tour again."
     },
-
     "new_label_tour": {
         "0": "This is the new Label user interface. Label trips here instead of on the Diary page. Trips take longer to appear here, but when they do they will be more accurate and you will be able to use our new features to label them faster.",
         "1": "This is the To Label tab. On this tab, only the trips you need to label will appear; when you label them, they will automatically disappear after a few seconds.",
@@ -232,15 +217,13 @@
         "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!",
         "11": "Click the ‘?’ button whenever you'd like to view this tour again."
     },
-
     "user-gender": "Gender",
     "gender-male": "Male",
     "gender-female": "Female",
     "user-height": "Height",
     "user-weight": "Weight",
     "user-age": "Age",
-
-    "main-metrics":{
+    "main-metrics": {
         "dashboard": "Dashboard",
         "summary": "Summary",
         "chart": "Chart",
@@ -265,73 +248,63 @@
         "from": "from",
         "to": "to"
     },
-
-    "main-diary" : "Diary",
-
-    "main-inf-scroll" : {
+    "main-diary": "Diary",
+    "main-inf-scroll": {
         "tab": "Label"
     },
-
-    "main-heatmap":{
+    "main-heatmap": {
         "title": "Heatmap",
-        "counts" : "Counts",
-        "stress" : "Stress",
-        "from" : "From:",
-        "to" : "To:",
-        "get" : "Get!",
+        "counts": "Counts",
+        "stress": "Stress",
+        "from": "From:",
+        "to": "To:",
+        "get": "Get!",
         "all": "ALL",
         "none": "NONE",
         "bicycling": "BICYCLING",
         "walking": "WALKING",
         "in-vehicle": "IN_VEHICLE",
-        "select-travel-mode" : "Select travel mode",
+        "select-travel-mode": "Select travel mode",
         "cancel": "Cancel",
         "tour-datepicker": "This heatmap shows the aggregate data for all E-mission users. Select the dates you want to see, and filter by hours of the day (24h format) and days of the week. For example, if you enter 16 and 19 in the last field, and select Monday and Friday, you'll see the Heatmap filtered to show the traffic on weekdays between 4pm and 7pm.",
         "tour-mode": "Click here to filter your results by mode of transportation. The default is to show all modes.",
         "tour-get": "Click here to generate the heatmap."
     },
-
-    "details":{
+    "details": {
         "speed": "Speed",
         "time": "Temps",
         "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a ☻ or ☹ incident",
         "tour-sectionList-content": "Trip sections, along with times and modes",
         "tour-sectionPct-content": "% of time spent in each mode for this trip"
     },
-
     "list-explainDraft-alert": "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong.",
     "list-datepicker-today": "Today",
     "list-datepicker-close": "Close",
     "list-datepicker-set": "Set",
-    "list-tour-datepicker-button" : "Use this to select the day you want to see.",
-    "list-tour-diary-entry" : "Click on the map to see more details about each trip.",
-    "list-tour-map-fix-button" : "Use this to fix the map tiles if they have not loaded properly.",
-
-    "service":{
+    "list-tour-datepicker-button": "Use this to select the day you want to see.",
+    "list-tour-diary-entry": "Click on the map to see more details about each trip.",
+    "list-tour-map-fix-button": "Use this to fix the map tiles if they have not loaded properly.",
+    "service": {
         "reading-server": "Reading from server...",
         "reading-cache": "Reading from cache...",
         "reading-unprocessed-data": "Reading unprocessed data..."
     },
-
-
-    "post-trip-manual-incident-time" : "Choose incident time",
-
-    "email-service":{
+    "post-trip-manual-incident-time": "Choose incident time",
+    "email-service": {
         "email-account-not-configured": "Email account is not configured, cannot send email",
         "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
         "going-to-email": "Going to email database from {{parentDir}}",
-        "email-log":{
+        "email-log": {
             "subject-logs": "emission logs",
             "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
         },
         "no-email-address-configured": "No email address configured.",
-        "email-data":{
+        "email-data": {
             "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
             "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
         }
     },
-
-    "upload-service":{
+    "upload-service": {
         "upload-database": "Uploading database {{db}}",
         "upload-from-dir": "from directory {{parentDir}}",
         "upload-to-server": "to servers {{serverURL}}",
@@ -341,8 +314,61 @@
         "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
         "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
     },
-
     "intro": {
+        "appstatus": {
+            "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
+            "overall-loc-name": "Location",
+            "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
+            "locsettings": {
+                "name": "Location Settings",
+                "description": {
+                    "android-lt-9": "Location services should be enabled and set to High Accuracy. This allows us to accurately record the trajectory of the travel",
+                    "android-gte-9": "Location services should be enabled. This allows us to access location data and generate the trip log",
+                    "ios": "Location services should be enabled. This allows us to access location data and generate the trip log"
+                }
+            },
+            "locperms": {
+                "name": "Location Permissions",
+                "description": {
+                    "android-lt-6": "Enabled during app installation.",
+                    "android-6-9": "Please select 'allow'",
+                    "android-10": "Please select 'Allow all the time'",
+                    "android-gte-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "ios-lt-13": "Please select 'Always allow'",
+                    "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
+                }
+            },
+            "overall-fitness-name-android": "Physical activity",
+            "overall-fitness-name-ios": "Motion and Fitness",
+            "overall-fitness-description": "The fitness sensors distinguish between walking, bicycling and motorized modes.  We use this data in order to separate the parts of multi-modal travel such as transit. We also use it to as a cross-check potentially spurious trips - if the location sensor jumps across town but the fitness sensor is stationary, we can guess that the trip was invalid.",
+            "fitnessperms": {
+                "name": "Fitness Permission",
+                "description": {
+                    "android": "Please allow.",
+                    "ios": "Please allow."
+                }
+            },
+            "overall-notification-name": "Notifications",
+            "overall-notification-description": "We need to use notifications to inform you if the settings are incorrect. We also use hourly invisible push notifications to wake up the app and allow it to upload data and check app status. We also use notifications to remind you to label your trips.",
+            "notificationperms": {
+                "app-enabled-name": "App Notifications",
+                "not-paused-name": "Not Paused",
+                "description": {
+                    "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
+                    "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
+                    "ios-enable": "Please allow, on the popup or the app settings page if necessary"
+                }
+            },
+            "overall-background-restrictions-name": "Background restrictions",
+            "overall-background-restrictions-description": "The app runs in the background most of the time to make your life easier. You only need to open it periodically to label trips. Android sometimes restricts apps from working in the background. This prevents us from generating an accurate trip diary. Please remove background restrictions on this app.",
+            "unusedapprestrict": {
+                "name": "Unused apps disabled",
+                "description": {
+                    "android-disable": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "ios": "Please allow."
+                }
+            }
+        },
         "permissions": {
             "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
             "locationPermExplanation-android-6-9": "please select 'allow'",
@@ -355,11 +381,11 @@
     "allow_background": {
         "samsung": "Disable 'Medium power saving mode'"
     },
-    "consent":{
+    "consent": {
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
-    "updatecheck":{
+    "updatecheck": {
         "downloading-update": "Downloading UI-only update",
         "extracting-update": "Extracting UI-only update",
         "done": "Update done, reloading...",
@@ -367,7 +393,7 @@
         "download-not-now": "Not now",
         "download-apply": "Apply"
     },
-    "sensor_explanation":{
+    "sensor_explanation": {
         "button-accept": "OK",
         "button-decline": "Stop"
     }
