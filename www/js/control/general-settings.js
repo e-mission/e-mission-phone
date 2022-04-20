@@ -784,7 +784,7 @@ angular
       };
 
       $scope.copyIdentifierToClipBoard = function (identifier) {
-        $window.cordova.plugins.clipboard.copy(identifier);
+        cordova.plugins.clipboard.copy(identifier);
       };
 
       $scope.displayLanguage = function () {

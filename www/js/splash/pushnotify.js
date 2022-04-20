@@ -60,7 +60,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
 
     pushnotify.registerPush = function() {
       pushnotify.registerPromise().then(function(t) {
-         alert("Token = "+JSON.stringify(t));
+        //  alert("Token = "+JSON.stringify(t));
          Logger.log("Token = "+JSON.stringify(t));
          return $window.cordova.plugins.BEMServerSync.getConfig().then(function(config) {
             return config.sync_interval;
