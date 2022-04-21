@@ -4,6 +4,7 @@ angular
   .module("emission.intro", [
     "emission.splash.startprefs",
     "emission.splash.updatecheck",
+    'emission.appstatus.permissioncheck',
     "emission.i18n.utils",
     "ionic-toast",
   ])

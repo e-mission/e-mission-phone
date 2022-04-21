@@ -1,144 +1,149 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self' data: gap: https://ssl.gstatic.com https://api.ionicjs.com https://pro-deploy.ionicjs.com https://nominatim.openstreetmap.org emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' ionic: data: https://*.tile.openstreetmap.org 'unsafe-inline'">
-    <title></title>
 
-    <link href="lib/ionic/css/ionic.css" rel="stylesheet">
-    <link href="css/style.css" rel="stylesheet">
-    <link href="css/intro.css" rel="stylesheet">
-    <link href="css/main.recent.css" rel="stylesheet">
-    <link href="css/main.diary.css" rel="stylesheet">
-    <link href="css/main.dashboard.css" rel="stylesheet">
-    <link href="css/main.control.css" rel="stylesheet">
-    <link href="css/datepicker-override.css" rel="stylesheet">
-    <link href="lib/animate.css/animate.min.css" rel="stylesheet">
-    <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
-    <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
-    <link href="lib/nz-tour/dist/nz-tour.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
-    <link href="build/app.css" rel="stylesheet">
-    <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
-    <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
-    <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
-    <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
-    <link href="manual_lib/fontawesome/css/all.min.css" rel="stylesheet">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="initial-scale=1, maximum-scale=1, user-scalable=no, width=device-width">
+  <meta http-equiv="Content-Security-Policy"
+    content="default-src 'self' data: gap: https://ssl.gstatic.com https://api.ionicjs.com https://pro-deploy.ionicjs.com https://nominatim.openstreetmap.org emission: 'unsafe-eval'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; img-src 'self' ionic: data: https://*.tile.openstreetmap.org 'unsafe-inline'">
+  <title></title>
 
-    <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
+  <link href="lib/ionic/css/ionic.css" rel="stylesheet">
+  <link href="css/style.css" rel="stylesheet">
+  <link href="css/intro.css" rel="stylesheet">
+  <link href="css/main.recent.css" rel="stylesheet">
+  <link href="css/main.diary.css" rel="stylesheet">
+  <link href="css/main.dashboard.css" rel="stylesheet">
+  <link href="css/main.control.css" rel="stylesheet">
+  <link href="css/datepicker-override.css" rel="stylesheet">
+  <link href="lib/animate.css/animate.min.css" rel="stylesheet">
+  <link href="lib/leaflet/dist/leaflet.css" rel="stylesheet">
+  <link href="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.css" rel="stylesheet">
+  <link href="lib/nz-tour/dist/nz-tour.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
+  <link href="build/app.css" rel="stylesheet">
+  <link href="common/dist/sprites/habitrpg-shared.css" rel="stylesheet">
+  <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
+  <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
+  <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
+  <link href="manual_lib/fontawesome/css/all.min.css" rel="stylesheet">
+
+  <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
     <link href="css/ionic.app.css" rel="stylesheet">
     -->
 
-    <!-- ionic/angularjs js -->
-    <script src="lib/jquery/dist/jquery.min.js"></script>
-    <script src="lib/ionic/js/ionic.bundle.js"></script>
-    <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
-    <script src="lib/angular-translate/angular-translate.min.js"></script>
-    <script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
-    <script src="lib/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js"></script>
-    <script src="lib/angular-translate-storage-local/angular-translate-storage-local.min.js"></script>
-    <script src="lib/messageformat/messageformat.min.js"></script>
-    <script src="lib/angular-translate-interpolation-messageformat/angular-translate-interpolation-messageformat.min.js"></script>
-    <script src="lib/moment/min/moment.min.js"></script>
-    <script src="lib/moment/min/locales.min.js"></script>
-    <script src="lib/moment/min/moment-with-locales.min.js"></script>
-    <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
-    <script src="lib/ngCordova/dist/ng-cordova.js"></script>
-    <script src="lib/angular-animate/angular-animate.js"></script>
-    <script src="lib/ng-walkthrough/ng-walkthrough.js"></script>
-    <script src="lib/ng-walkthrough/ng-walkthrough.tap_icons.js"></script>
-    <!-- Made a copy to deal with scrolling properly -->
-    <script src="manual_lib/leaflet/dist/leaflet-src.js"></script>
-    <script src="lib/angular-simple-logger/dist/angular-simple-logger.js"></script>
-    <script src="manual_lib/ui-leaflet/dist/ui-leaflet.js"></script>
-    <!-- Made a copy to deal with proper directives -->
-    <script src="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
-    <script src="lib/leaflet-plugins/layer/Marker.Rotate.js"></script>
-    <script src="manual_lib/ionic-datepicker/ionic-datepicker.bundle.min.js"></script>
-    <script src="non-bower-lib/simple-leaflet-plugins/leaflet-heat.js"></script>
-    <script src="lib/d3/d3.js"></script>
-    <script src="lib/nvd3/build/nv.d3.min.js"></script>
-    <script src="lib/angular-nvd3/dist/angular-nvd3.min.js"></script>
-    <script src="lib/angular-cookies/angular-cookies.min.js"></script>
-    <script src="lib/angularLocalStorage/dist/angularLocalStorage.min.js"></script>
-    <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
-    <!-- Manually installed javascript for libraries that are not published through bower -->
-    <!-- cordova script (this will be a 404 in the browser) -->
-    <script type="text/javascript" src="cordova.js"></script>
+  <!-- ionic/angularjs js -->
+  <script src="lib/jquery/dist/jquery.min.js"></script>
+  <script src="lib/ionic/js/ionic.bundle.js"></script>
+  <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
+  <script src="lib/angular-translate/angular-translate.min.js"></script>
+  <script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
+  <script src="lib/angular-translate-storage-cookie/angular-translate-storage-cookie.min.js"></script>
+  <script src="lib/angular-translate-storage-local/angular-translate-storage-local.min.js"></script>
+  <script src="lib/messageformat/messageformat.min.js"></script>
+  <script
+    src="lib/angular-translate-interpolation-messageformat/angular-translate-interpolation-messageformat.min.js"></script>
+  <script src="lib/moment/min/moment.min.js"></script>
+  <script src="lib/moment/min/locales.min.js"></script>
+  <script src="lib/moment/min/moment-with-locales.min.js"></script>
+  <script src="lib/moment-timezone/builds/moment-timezone-with-data.min.js"></script>
+  <script src="lib/ngCordova/dist/ng-cordova.js"></script>
+  <script src="lib/angular-animate/angular-animate.js"></script>
+  <script src="lib/ng-walkthrough/ng-walkthrough.js"></script>
+  <script src="lib/ng-walkthrough/ng-walkthrough.tap_icons.js"></script>
+  <!-- Made a copy to deal with scrolling properly -->
+  <script src="manual_lib/leaflet/dist/leaflet-src.js"></script>
+  <script src="lib/angular-simple-logger/dist/angular-simple-logger.js"></script>
+  <script src="manual_lib/ui-leaflet/dist/ui-leaflet.js"></script>
+  <!-- Made a copy to deal with proper directives -->
+  <script src="lib/Leaflet.awesome-markers/dist/leaflet.awesome-markers.js"></script>
+  <script src="lib/leaflet-plugins/layer/Marker.Rotate.js"></script>
+  <script src="manual_lib/ionic-datepicker/ionic-datepicker.bundle.min.js"></script>
+  <script src="non-bower-lib/simple-leaflet-plugins/leaflet-heat.js"></script>
+  <script src="lib/d3/d3.js"></script>
+  <script src="lib/nvd3/build/nv.d3.min.js"></script>
+  <script src="lib/angular-nvd3/dist/angular-nvd3.min.js"></script>
+  <script src="lib/angular-cookies/angular-cookies.min.js"></script>
+  <script src="lib/angularLocalStorage/dist/angularLocalStorage.min.js"></script>
+  <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
+  <!-- Manually installed javascript for libraries that are not published through bower -->
+  <!-- cordova script (this will be a 404 in the browser) -->
+  <script type="text/javascript" src="cordova.js"></script>
 
-    <!-- your app's js -->
-    <script src="js/app.js"></script>
-    <script src="js/stats/clientstats.js"></script>
-    <script src="js/splash/referral.js"></script>
-    <script src="js/splash/customURL.js"></script>
-    <script src="js/splash/updatecheck.js"></script>
-    <script src="js/splash/startprefs.js"></script>
-    <script src="js/splash/pushnotify.js"></script>
-    <script src="js/splash/storedevicesettings.js"></script>
-    <script src="js/splash/localnotify.js"></script>
-    <script src="js/controllers.js"></script>
-    <script src="js/services.js"></script>
-    <script src="js/i18n-utils.js"></script>
-    <script src="js/intro.js"></script>
-    <script src="js/main.js"></script>
-    <script src="js/recent.js"></script>
-    <script src="js/incident/post-trip-manual.js"></script>
-    <script src="js/tripconfirm/post-trip-prompt.js"></script>
-    <script src="js/tripconfirm/post-trip-map-display.js"></script>
-    <script src="js/tripconfirm/trip-confirm-services.js"></script>
-    <script src="js/diary.js"></script>
-    <script src="js/diary/list.js"></script>
-    <script src="js/diary/infinite_scroll_list.js"></script>
-    <script src="js/diary/infinite_scroll_filters.js"></script>
-    <script src="js/diary/current.js"></script>
-    <script src="js/diary/detail.js"></script>
-    <script src="js/diary/services.js"></script>
-    <script src="js/common.js"></script>
-    <script src="js/common/map.js"></script>
-    <script src="js/common/trip-list.js"></script>
-    <script src="js/common/trip-detail.js"></script>
-    <script src="js/common/place-list.js"></script>
-    <script src="js/common/place-detail.js"></script>
-    <script src="js/common/services.js"></script>
-    <script src="js/survey/launch.js"></script>
-    <script src="js/heatmap.js"></script>
-    <script src="js/metrics.js"></script>
-    <script src="js/goals.js"></script>
-    <script src="js/control/general-settings.js"></script>
-    <script src="js/control/emailService.js"></script>
-    <script src="js/control/uploadService.js"></script>
-    <script src="js/control/collect-settings.js"></script>
-    <script src="js/control/sync-settings.js"></script>
-    <script src="js/control/transition-notify-settings.js"></script>
-    <script src="js/metrics-factory.js"></script>
-    <!--script src="js/goals/party.js"></script-->
-    <script src="js/goals/signup.js"></script>
-    <script src="js/plugin/logger.js"></script>
-    <script src="js/plugin/storage.js"></script>
+  <!-- your app's js -->
+  <script src="js/app.js"></script>
+  <script src="js/stats/clientstats.js"></script>
+  <script src="js/splash/referral.js"></script>
+  <script src="js/splash/customURL.js"></script>
+  <script src="js/splash/updatecheck.js"></script>
+  <script src="js/splash/startprefs.js"></script>
+  <script src="js/splash/pushnotify.js"></script>
+  <script src="js/splash/storedevicesettings.js"></script>
+  <script src="js/splash/localnotify.js"></script>
+  <script src="js/controllers.js"></script>
+  <script src="js/services.js"></script>
+  <script src="js/i18n-utils.js"></script>
+  <script src="js/intro.js"></script>
+  <script src="js/main.js"></script>
+  <script src="js/recent.js"></script>
+  <script src="js/incident/post-trip-manual.js"></script>
+  <script src="js/tripconfirm/post-trip-prompt.js"></script>
+  <script src="js/tripconfirm/post-trip-map-display.js"></script>
+  <script src="js/tripconfirm/trip-confirm-services.js"></script>
+  <script src="js/diary.js"></script>
+  <script src="js/diary/list.js"></script>
+  <script src="js/diary/infinite_scroll_list.js"></script>
+  <script src="js/diary/infinite_scroll_filters.js"></script>
+  <script src="js/diary/current.js"></script>
+  <script src="js/diary/detail.js"></script>
+  <script src="js/diary/services.js"></script>
+  <script src="js/common.js"></script>
+  <script src="js/common/map.js"></script>
+  <script src="js/common/trip-list.js"></script>
+  <script src="js/common/trip-detail.js"></script>
+  <script src="js/common/place-list.js"></script>
+  <script src="js/common/place-detail.js"></script>
+  <script src="js/common/services.js"></script>
+  <script src="js/survey/launch.js"></script>
+  <script src="js/heatmap.js"></script>
+  <script src="js/metrics.js"></script>
+  <script src="js/goals.js"></script>
+  <script src="js/control/general-settings.js"></script>
+  <script src="js/control/emailService.js"></script>
+  <script src="js/control/uploadService.js"></script>
+  <script src="js/control/collect-settings.js"></script>
+  <script src="js/control/sync-settings.js"></script>
+  <script src="js/control/transition-notify-settings.js"></script>
+  <script src="js/metrics-factory.js"></script>
+  <!--script src="js/goals/party.js"></script-->
+  <script src="js/goals/signup.js"></script>
+  <script src="js/plugin/logger.js"></script>
+  <script src="js/plugin/storage.js"></script>
 
+  <script src="js/appstatus/permissioncheck.js"></script>
 
-    <script src="lib/d3/d3.js"></script>
-    <script src="lib/nvd3/build/nv.d3.min.js"></script>
-    <script src="lib/angular-nvd3/dist/angular-nvd3.min.js"></script>
-    <script src="lib/nz-tour/dist/nz-tour.min.js"></script>
-    <script src="lib/bottleneck/es5.js"></script>
-    <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
-  </head>
+  <script src="lib/d3/d3.js"></script>
+  <script src="lib/nvd3/build/nv.d3.min.js"></script>
+  <script src="lib/angular-nvd3/dist/angular-nvd3.min.js"></script>
+  <script src="lib/nz-tour/dist/nz-tour.min.js"></script>
+  <script src="lib/bottleneck/es5.js"></script>
+  <link rel="stylesheet" href="lib/nvd3/build/nv.d3.css">
+</head>
 
-  <body ng-app="emission">
-    <!--
+<body ng-app="emission">
+  <!--
       The nav bar that will be updated as we navigate between views.
     -->
-    <ion-nav-bar class="bar-stable" style="background-color: #212121 !important;">
-      <ion-nav-back-button>
-      </ion-nav-back-button>
-    </ion-nav-bar>
-    <!--
+  <ion-nav-bar class="bar-stable" style="background-color: #212121 !important;">
+    <ion-nav-back-button>
+    </ion-nav-back-button>
+  </ion-nav-bar>
+  <!--
       The views will be rendered in the <ion-nav-view> directive below
       Templates are in the /templates folder (but you could also
       have templates inline in this html file if you'd like).
     -->
-    <ion-nav-view></ion-nav-view>
-  </body>
+  <ion-nav-view></ion-nav-view>
+</body>
+
 </html>

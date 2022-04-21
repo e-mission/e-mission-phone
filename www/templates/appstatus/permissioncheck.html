@@ -1,0 +1,80 @@
+{{'intro.appstatus.overall-description' | translate }}
+
+<details>
+<summary><h4 ng-class="overallLocStatusClass"> {{ 'intro.appstatus.overall-loc-name' | translate }} {{overallLocStatusIcon}} </h4></summary>
+{{'intro.appstatus.overall-loc-description' | translate }}
+
+<ion-list>
+<ion-item ng-repeat="locCheck in locChecks">
+    <div class="row">
+        <div class="col-90" ng-class="locCheck.statusClass">{{locCheck.name}}</div>
+        <div class="col-10">{{locCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{locCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="locCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="locCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
+
+<div ng-if="fitnessPermNeeded">
+<details>
+<summary><h4 ng-class="overallFitnessStatusClass"> {{ overallFitnessName }} {{overallFitnessStatusIcon}} </h4></summary>
+{{'intro.appstatus.overall-fitness-description' | translate }}
+
+<ion-list>
+<ion-item ng-repeat="fitnessCheck in fitnessChecks">
+    <div class="row">
+        <div class="col-90" ng-class="fitnessCheck.statusClass">{{fitnessCheck.name}}</div>
+        <div class="col-10">{{fitnessCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{fitnessCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="fitnessCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="fitnessCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
+</div>
+
+<details>
+<summary><h4 ng-class="overallNotificationStatusClass"> {{ 'intro.appstatus.overall-notification-name' | translate }} {{overallNotificationStatusIcon}}</h4></summary>
+{{'intro.appstatus.overall-notification-description' | translate }}
+<ion-list>
+<ion-item ng-repeat="notificationCheck in notificationChecks">
+    <div class="row">
+        <div class="col-90" ng-class="notificationCheck.statusClass">{{notificationCheck.name}}</div>
+        <div class="col-10">{{notificationCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{notificationCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="notificationCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="notificationCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
+
+<div ng-if="backgroundUnrestrictionsNeeded">
+<details>
+<summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> {{ 'intro.appstatus.overall-background-restrictions-name' | translate }} {{overallBackgroundRestrictionStatusIcon}} </h3> </summary>
+{{'intro.appstatus.overall-background-restrictions-description' | translate }}
+
+<ion-list>
+<ion-item ng-repeat="backgroundRestrictionCheck in backgroundRestrictionChecks">
+    <div class="row">
+        <div class="col-90" ng-class="backgroundRestrictionCheck.statusClass">{{backgroundRestrictionCheck.name}}</div>
+        <div class="col-10">{{backgroundRestrictionCheck.statusIcon}}</div>
+    </div>
+    <div class="row item-text-wrap">{{backgroundRestrictionCheck.desc}}</div>
+    <div class="row">
+        <button class="button button-icon" ng-click="backgroundRestrictionCheck.fix()">Fix</button>
+        <button class="button button-icon" ng-click="backgroundRestrictionCheck.refresh()">Refresh</button>
+    </div>
+</ion-item>
+</ion-list>
+</details>
+</div>

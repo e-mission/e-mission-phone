@@ -82,6 +82,11 @@
         </div>
       </ion-item>
 
+      <ion-item ng-click="fixAppStatus()" class="control-list-item">
+        <div class="control-list-label" translate>{{'control.app-status'}}</div>
+        <div class="control-icon-button control-check-icon"><i class="ion-checkmark"></i></div>
+      </ion-item>
+
       <!-- Delete my data -->
       <ion-item class="control-list-item" ng-click="deleteMyData($event)">
         <div class="control-list-label" translate>{{'.delete-my-data'}}</div>
@@ -110,7 +115,7 @@
       <!-- Version -->
       <ion-item class="control-list-item">
         <div class="control-list-label" translate>{{'.version'}}</div>
-        <div class="control-list-option">3.0.3</div>
+        <div class="control-list-option">3.0.4</div>
       </ion-item>
 
     </ion-list>
