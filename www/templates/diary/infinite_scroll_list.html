@@ -56,7 +56,7 @@
             <div  style="padding-left: 19%;">
 
 			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '{{itemHt}}px'}">
+                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{'height': '{{itemHt}}px', 'margin-bottom': '1px'}">
                     <div class="row">
                         <div ng-click="showDetail($event, trip)" class="col-90 center-vert" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0; justify-self: flex-start;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-distsuffix="{{ trip.display_distance_suffix }}" translate-value-time="{{ trip.display_time }}"></div>
                         <div ng-click="showDetail($event, trip)" class="col-10 diary-more-container center-vert center-horiz">

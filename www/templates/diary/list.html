@@ -72,7 +72,9 @@
                 </div>
 
                 <div class="row diary-arrow-container" ng-click="toDetail(tripgj.data.id)">
-                    <leaflet class="col-90" geojson="tripgj" id="$index" defaults="defaults"></leaflet>
+                    <leaflet class="col-90" geojson="tripgj" id="map_{{tripgj.data.id}}" defaults="defaults" height="150px"></leaflet>
+                    <!-- Height needs to be specified directly in the HTML not in CSS otherwise
+                    zoom doesn't work. Mystery!! -->
                     <button class="col-10 ion-ios-arrow-right"></button>
                 </div>
                 <!-- Don't go to the detail screen below this because that's

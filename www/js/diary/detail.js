@@ -27,9 +27,19 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   for (var k in mapEvents) {
     var eventName = 'leafletDirectiveMap.detail.' + mapEvents[k];
     $scope.$on(eventName, function(event, data){
-        console.log("in mapEvents, event = "+JSON.stringify(event.name)+
-              " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
-              " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+        try {
+            console.log("in mapEvents, event = "+JSON.stringify(event.name)+
+                  " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+                  " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
+        } catch (e) {
+            if (e instanceof TypeError) {
+                console.log("in mapEvents, event = "+JSON.stringify(event.name)+
+                      " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
+                      " leafletObject is undefined");
+            } else {
+                console.log(e);
+            }
+        }
         $scope.eventDetected = event.name;
     });
   }
