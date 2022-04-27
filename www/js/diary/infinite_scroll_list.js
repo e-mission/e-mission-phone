@@ -95,6 +95,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.$broadcast('scroll.infiniteScrollComplete')
         return;
     }
+    $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+    });
     Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
         ctList.forEach($scope.populateBasicClasses);
@@ -127,6 +130,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
         $scope.recomputeDisplayTrips();
         Logger.log("Broadcasting infinite scroll complete");
+        $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete');
 
     }).catch((err) => {
@@ -134,6 +138,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Reached the end of the scrolling");
         $scope.infScrollControl.reachedEnd = true;
         Logger.log("Broadcasting infinite scroll complete");
+        $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete');
     });
   };
@@ -144,6 +149,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
     $scope.data.displayTrips = [];
+    $ionicLoading.show({
+        template: $translate.instant('service.reading-server')
+    });
     Timeline.getUnprocessedLabels().then(([pipelineRange, manualResultMap]) => {
         if (pipelineRange.end_ts) {
             $scope.$apply(() => {
@@ -160,6 +168,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.$apply(() => {
                 $scope.infScrollControl.reachedEnd = true;
             });
+            $ionicLoading.hide();
             $scope.$broadcast('scroll.infiniteScrollComplete')
         }
     });
