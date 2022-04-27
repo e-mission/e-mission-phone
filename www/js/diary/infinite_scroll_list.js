@@ -85,16 +85,19 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.readDataFromServer = function() {
+    Logger.log("Called readDataFromServer");
     $scope.infScrollControl.fromBottom = getFromBottom()
     $scope.infScrollControl.callback = adjustScrollAfterDownload;
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;
     if (!angular.isDefined(currEnd)) {
-        console.log("trying to read data too early, early return");
+        Logger.log("trying to read data too early, early return");
+        $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete')
         return;
     }
+    Logger.log("Turning on the ionic loading overlay in setupInfScroll");
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
@@ -149,6 +152,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
     $scope.data.displayTrips = [];
+    Logger.log("Turning on the ionic loading overlay in setupInfScroll");
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
