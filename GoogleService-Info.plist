@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>463780887765-d48a77jepjhssklo5754tt1gfgqn3ikb.apps.googleusercontent.com</string>
+	<string>463780887765-etam5pe3elp6u2tfkoluiamebfqhj9o4.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.463780887765-d48a77jepjhssklo5754tt1gfgqn3ikb</string>
+	<string>com.googleusercontent.apps.463780887765-etam5pe3elp6u2tfkoluiamebfqhj9o4</string>
 	<key>API_KEY</key>
 	<string>AIzaSyD6YAnUtO7-9AO_K4Rj_kK0V36x86CJPYI</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.fabmoqc.mamobilite</string>
+	<string>com.fabmobqc.mamobiliteapp</string>
 	<key>PROJECT_ID</key>
 	<string>fabmobqc</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:463780887765:ios:dacdf5c9bcf2a37cbc365c</string>
+	<string>1:463780887765:ios:40fe635c5ee976bcbc365c</string>
 </dict>
 </plist>
