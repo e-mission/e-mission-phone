@@ -537,7 +537,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return Promise.all(readPromises)
         .then(([ctList]) => {
             $ionicLoading.hide();
-            return ctList.phone_data.map((ct) => ct.data);
+            return ctList.phone_data.map((ct) => {
+                const retVal = ct.data;
+                retVal.id = ct._id["$oid"];
+                return retVal;
+            });
         })
         .catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
@@ -860,6 +864,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     timeline.confirmedTrip2Geojson = function(trip) {
+      if (trip == undefined) {
+        return Promise.resolve(undefined);
+      }
       Logger.log("About to pull location data for range "
         + moment.unix(trip.start_ts).toString() + " -> " 
         + moment.unix(trip.end_ts).toString());
@@ -1181,6 +1188,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return angular.isDefined(timeline.data.tripWrapperMap)? timeline.data.tripWrapperMap[tripId] : undefined;
       };
 
+      timeline.getConfirmedTrip = function(tripId) {
+        return angular.isDefined(timeline.data.infScrollConfirmedTripMap)? timeline.data.infScrollConfirmedTripMap[tripId] : undefined;
+      };
+
       /*
        Let us assume that we have recieved a list of trips for that date from somewhere
        (either local usercache or the internet). Now, what do we need to process them?
@@ -1259,6 +1270,16 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
         timeline.data.currDayTripWrappers.forEach(function(tripw, index, array) {
           timeline.data.tripWrapperMap[tripw.data.id] = tripw;
+        });
+    }
+
+    timeline.setInfScrollConfirmedTripList = function(confirmedTripList) {
+        timeline.data.infScrollConfirmedTripList = confirmedTripList;
+
+        timeline.data.infScrollConfirmedTripMap = {};
+
+        timeline.data.infScrollConfirmedTripList.forEach(function(trip, index, array) {
+          timeline.data.infScrollConfirmedTripMap[trip.id] = trip;
         });
     }
 
