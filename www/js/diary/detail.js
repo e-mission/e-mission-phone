@@ -10,10 +10,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 .controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $ionicPlatform,
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
-                                        Logger, Timeline, DiaryHelper, Config, ImperialConfig,
+                                        Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
                                         CommHelper, PostTripManualMarker, $translate) {
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
+  $scope.surveyOpt = SurveyOptions.MULTILABEL;
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
@@ -73,6 +74,11 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
             "colorStyle": {color: DiaryHelper.getColor(s.properties.sensed_mode)}
             };
   });
+
+  $scope.recomputeDisplayTrips = function() {
+    console.log("Called diary details.recomputeDisplayTrips");
+    $state.go("root.main.diary");
+  };
 
   if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {
     console.log("Detail trip not defined, going back to the list view")
