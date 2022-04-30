@@ -7,7 +7,7 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                       'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
-.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $ionicPlatform,
+.controller("DiaryDetailCtrl", function($scope, $rootScope, $window, $injector, $ionicPlatform,
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
@@ -15,6 +15,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
   console.log("controller DiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
+  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
@@ -77,7 +79,19 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
 
   $scope.recomputeDisplayTrips = function() {
     console.log("Called diary details.recomputeDisplayTrips");
-    $state.go("root.main.diary");
+    // Let's copy over the userInput to the field expected by the checks (user_input)
+    // We definitely need to unify this ASAP
+    $scope.tripgj.user_input = $scope.tripgj.userInput;
+    const filterMap = $scope.filterInputs.map((f) => f.filter($scope.tripgj));
+    // again, we cannot use both filters in the detail screen because the trip
+    // version of in the list view doesn't have the expectation value filled
+    // out. We really need to unify ASAP!
+    console.log("filterMap = "+filterMap+" we will only use the second (unlabeled check)");
+    // if the trip was going to stay (not be filtered), we should not go back to the scroll list
+    // TODO: Unify with infinite scroll and remove this hack
+    if (!filterMap[1]) {
+        $state.go("root.main.diary");
+    }
   };
 
   if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {

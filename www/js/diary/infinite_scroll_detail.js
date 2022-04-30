@@ -7,7 +7,7 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
                                       'emission.stats.clientstats',
                                       'emission.incident.posttrip.manual'])
 
-.controller("InfiniteDiaryDetailCtrl", function($scope, $rootScope, $window, $ionicPlatform,
+.controller("InfiniteDiaryDetailCtrl", function($scope, $rootScope, $injector, $window, $ionicPlatform,
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
@@ -15,6 +15,8 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
+  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
@@ -80,7 +82,13 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
 
   $scope.recomputeDisplayTrips = function() {
     console.log("Called inf scroll details.recomputeDisplayTrips");
-    $state.go("root.main.inf_scroll");
+    const filterMap = $scope.filterInputs.map((f) => f.filter($scope.trip));
+    const filterValue = filterMap.reduce((a, b) => a || b, false);
+    console.log("filterMap = "+filterMap+" value = "+filterValue);
+    // if the trip was going to stay (not be filtered), we should not go back to the scroll list
+    if (!filterValue) {
+        $state.go("root.main.inf_scroll");
+    }
   };
 
   /* START: ng-walkthrough code */
