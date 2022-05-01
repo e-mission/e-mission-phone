@@ -99,11 +99,11 @@ angular.module('emission.survey.multilabel.buttons',
    * END: Required external interface for all label directives
    */
 
-  if (angular.isDefined($scope.recomputedelay)) {
-    $scope.recomputedelay = $scope.recomputedelay * 1000;
-  } else {
+  if ($scope.recomputedelay == "") {
     let THIRTY_SECS = 30 * 1000;
     $scope.recomputedelay = THIRTY_SECS;
+  } else {
+    $scope.recomputedelay = $scope.recomputedelay * 1000;
   }
 
   MultiLabelService.setRecomputeDelay($scope.recomputedelay);
