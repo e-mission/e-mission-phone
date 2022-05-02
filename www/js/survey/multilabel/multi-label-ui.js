@@ -216,11 +216,14 @@ angular.module('emission.survey.multilabel.buttons',
     $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
       $scope.$apply(function() {
         if (isOther) {
-          tripToUpdate.userInput[inputType] = ConfirmHelper.getFakeEntry(input.value);
-          $scope.inputParams[inputType].options.push(tripToUpdate.userInput[inputType]);
-          $scope.inputParams[inputType].value2entry[input.value] = tripToUpdate.userInput[inputType];
+          let fakeEntry = ConfirmHelper.getFakeEntry(input.value);
+          $scope.inputParams[inputType].options.push(fakeEntry);
+          $scope.inputParams[inputType].value2entry[input.value] = fakeEntry;
+          tripToUpdate.userInput[inputType] = angular.copy(fakeEntry);
+          tripToUpdate.userInput[inputType].write_ts = Date.now();
         } else {
-          tripToUpdate.userInput[inputType] = $scope.inputParams[inputType].value2entry[input.value];
+          tripToUpdate.userInput[inputType] = angular.copy($scope.inputParams[inputType].value2entry[input.value]);
+          tripToUpdate.userInput[inputType].write_ts = Date.now();
         }
         let viewScope = findViewScope();
        MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
@@ -305,6 +308,20 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
+  /*
+   * This is a HACK to work around the issue that the label screen and diary
+   * screen are not unified. We should remove this, and the timestamp in the
+   * userInput field when we do.
+   */
+  mls.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
+    ConfirmHelper.INPUTS.forEach(function(item, index) {
+        let pmInput = potentiallyModifiedTrip.userInput;
+        let origInput = originalTrip.userInput;
+        if (((pmInput[item] || {}).write_ts || 0) > ((origInput[item] || {}).write_ts || 0)) {
+            origInput[item] = pmInput[item];
+        }
+    });
+  }
 
   mls.updateTripProperties = function(trip, viewScope) {
     mls.inferFinalLabels(trip);

@@ -522,6 +522,21 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_INF_SCROLL).then(function() {
            console.log("Added "+ClientStats.getStatKeys().CHECKED_INF_SCROLL+" event");
         });
+        $scope.$apply(() => {
+            if ($scope.data && $scope.data.allTrips) {
+                $scope.data.allTrips.forEach(function(tripgj, tripIndex, array) {
+                    let tripFromDiary = Timeline.getTripWrapper(tripgj.id);
+                    // Since the label screen has trips from multiple days, we
+                    // may not always find a matching trip in the diary
+                    if (tripFromDiary) {
+                        $scope.labelPopulateFactory.copyInputIfNewer(tripFromDiary, tripgj);
+                    }
+                });
+                $scope.recomputeDisplayTrips();
+            } else {
+                console.log("No trips loaded yet, no inputs to copy over");
+            }
+        });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;

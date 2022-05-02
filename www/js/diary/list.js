@@ -474,6 +474,27 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_DIARY).then(function() {
            console.log("Added "+ClientStats.getStatKeys().CHECKED_DIARY+" event");
         });
+        /*
+         In case we have set the labels in the label screen, we want them to
+         show up when we come to this screen. It is really hard to do this
+         using the original code, because the unification is not complete, and
+         the code to read the manual inputs is completely different.
+         Instead, let's find the corresponding trip from the label view and
+         copy over the `userInput` (and potentially the `user_input`) values over
+         */
+        $scope.$apply(() => {
+            if ($scope.data && $scope.data.currDayTripWrappers) {
+                $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
+                    let tripFromLabel = Timeline.getConfirmedTrip(tripgj.data.id);
+                    // Should we just copy over the entry from the label screen
+                    // NO, what if the user changed the labels here, then went to
+                    // the profile and came back. Don't want to lose the upgraded entries
+                    $scope.labelPopulateFactory.copyInputIfNewer(tripFromLabel, tripgj);
+                });
+            } else {
+                console.log("No trips loaded yet, no inputs to copy over");
+            }
+        });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;
