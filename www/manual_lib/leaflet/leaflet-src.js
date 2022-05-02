@@ -3523,6 +3523,11 @@
   	// pan by default.
   	invalidateSize: function (options) {
   		if (!this._loaded) { return this; }
+        // Hack added by shankari to fix
+        // https://github.com/e-mission/e-mission-docs/issues/111#issuecomment-1114128934
+        // console.log("LEAFLET: clientWidth = "+this._container.clientWidth+" clientHeight = "+this._container.clientHeight + " combined: "+ (this._container.clientWidth && this._container._clientHeight));
+        if ((this._container.clientWidth || 0) == 0 && (this._container.clientHeight || 0) == 0) { return this; }
+
 
   		options = extend({
   			animate: false,

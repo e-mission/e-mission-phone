@@ -26,7 +26,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $ionicModal, $translate) {
+    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
 
   // TODO: load only a subset of entries instead of everything
 
@@ -114,6 +114,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         });
         $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
+        Timeline.setInfScrollConfirmedTripList($scope.data.allTrips);
         const oldestTrip = ctList[0];
         if (oldestTrip) {
             if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
@@ -186,22 +187,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
   });
 
-  $ionicModal.fromTemplateUrl("templates/diary/trip-detail-popover.html", {
-    scope: $scope,
-    animation: 'slide-in-up'
-  }).then((popover) => {
-    $scope.tripDetailPopover = popover;
-  });
-
   $scope.showDetail = function($event, trip) {
-    Timeline.confirmedTrip2Geojson(trip).then((tripgj) => {
-        $scope.currgj = trip;
-        $scope.currgj.data = tripgj;
-        $scope.currgj.pointToLayer = DiaryHelper.pointFormat;
-        $scope.tripDetailPopover.show();
-        leafletData.getMap("detailPopoverMap").then(function(map) {
-            map.invalidateSize();
-        });
+    $state.go("root.main.inf_scroll-detail", {
+        tripId: trip.id
     });
   }
 
@@ -533,6 +521,21 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.$on('$ionicView.afterEnter', function() {
         ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_INF_SCROLL).then(function() {
            console.log("Added "+ClientStats.getStatKeys().CHECKED_INF_SCROLL+" event");
+        });
+        $scope.$apply(() => {
+            if ($scope.data && $scope.data.allTrips) {
+                $scope.data.allTrips.forEach(function(tripgj, tripIndex, array) {
+                    let tripFromDiary = Timeline.getTripWrapper(tripgj.id);
+                    // Since the label screen has trips from multiple days, we
+                    // may not always find a matching trip in the diary
+                    if (tripFromDiary) {
+                        $scope.labelPopulateFactory.copyInputIfNewer(tripFromDiary, tripgj);
+                    }
+                });
+                $scope.recomputeDisplayTrips();
+            } else {
+                console.log("No trips loaded yet, no inputs to copy over");
+            }
         });
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);

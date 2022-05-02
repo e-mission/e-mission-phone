@@ -23,6 +23,7 @@ angular.module('emission.survey', [
         scope: {
             elementTag:"@",
             trip: "=",
+            recomputedelay: "@",
         },
         templateUrl: "templates/survey/wrapper.html",
     };
