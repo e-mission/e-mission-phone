@@ -2,7 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual', 'emission.survey.multilabel.services', 'emission.enketo-survey.answer'])
+    'emission.incident.posttrip.manual', 'emission.survey.multilabel.services', 'emission.survey.enketo.answer'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {

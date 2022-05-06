@@ -1,8 +1,8 @@
-angular.module('emission.enketo-survey.service', [
+angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
   'emission.main.diary.services',
-  'emission.enketo-survey.answer'
+  'emission.survey.enketo.answer'
 ])
 .factory('EnketoSurvey', function(
   $window, $http, UnifiedDataLoader,

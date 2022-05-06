@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('emission.enketo-survey.launch', [
+angular.module('emission.survey.enketo.launch', [
   'emission.services',
-  'emission.enketo-survey.service',
+  'emission.survey.enketo.service',
   'emission.plugin.logger',
 ])
 .factory('EnketoSurveyLaunch', function(
@@ -95,7 +95,7 @@ angular.module('emission.enketo-survey.launch', [
     _state.name = name;
     Object.assign(_state.opts, opts);
     return new Promise(function(resolve, reject) {
-      $ionicModal.fromTemplateUrl('templates/survey/enketo-survey-modal.html', { scope })
+      $ionicModal.fromTemplateUrl('templates/survey/enketo/enketo-survey-modal.html', { scope })
         .then(modal => {
           _state.modal = modal;
           _state.scope.enketoSurvey = {

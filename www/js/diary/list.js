@@ -14,7 +14,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.survey',
-                                      'emission.enketo-survey.launch',
+                                      'emission.survey.enketo.launch',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'

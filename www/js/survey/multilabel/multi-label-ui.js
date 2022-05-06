@@ -15,7 +15,7 @@
 angular.module('emission.survey.multilabel.buttons',
     ['emission.survey.multilabel.services',
         'emission.stats.clientstats',
-        'emission.enketo-survey.launch',
+        'emission.survey.enketo.launch',
         'emission.main.diary.services'])
 .directive('multilabel', function() {
   return {
