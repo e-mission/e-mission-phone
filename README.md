@@ -84,8 +84,8 @@ One advantage of using `skip` authentication in development mode is that any use
 
 Updating the e-mission-\* plugins or adding new plugins
 ---
-[![osx-build-ios](https://github.com/e-mission/e-mission-phone/workflows/osx-build-ios/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-ubuntu-build-android)
-[![osx-ubuntu-build-android](https://github.com/e-mission/e-mission-phone/workflows/osx-ubuntu-build-android/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-build-ios)
+[![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml)
+[![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml)
 
 Pre-requisites
 ---
@@ -94,10 +94,32 @@ Pre-requisites
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
     - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
-- the most recent version of android studio
-    - **NOTE**: although Catalina has a `/usr/bin/java`, trying to run it gives the error `No Java runtime present, requesting install.`. Installed [OpenJDK 1.8 using AdoptOpenJDK](https://adoptopenjdk.net/releases.html) to be consistent with the CI.
-    - NOTE: The setup script below will modify this install to workaround
-        https://github.com/actions/virtual-environments/issues/3757
+- Java 11. Tested with [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html).
+- android SDK; install manually or use setup script below. Note that you only need to run this once **per computer**.
+    ```
+    $ bash setup/prereq_android_sdk_install.sh
+    ```
+
+    <details><summary>Expected output</summary>
+
+    ```
+    Downloading the command line tools for mac
+      % Total    % Received % Xferd  Average Speed   Time    Time     Time  Current
+                                     Dload  Upload   Total   Spent    Left  Speed
+    100  114M  100  114M    0     0  8092k      0  0:00:14  0:00:14 --:--:-- 8491k
+    Found downloaded file at /tmp/commandlinetools-mac-8092744_latest.zip
+    Installing the command line tools
+    Archive:  /tmp/commandlinetools-mac-8092744_latest.zip
+    ...
+    Downloading the android SDK. This will take a LONG time and will require you to agree to lots of licenses.
+    Do you wish to continue? (Y/N)Y
+    ...
+    Accept? (y/N): Y
+    ...
+    [======                                 ] 17% Downloading x86_64-23_r33.zip... s
+    ```
+
+    </details>
 
 Important
 ---
@@ -136,9 +158,17 @@ $ cp ..... www/json/connectionConfig.json
 $ source setup/activate_native.sh
 ```
 
+### Activation (after install, and in every new shell)
 
+If connecting to a development server over http, make sure to turn on http support on android
 
-Run in the emulator
+```
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <application android:usesCleartextTraffic="true"/>
+    </edit-config>
+```
+
+### Run in the emulator
 
 ```
 $ npx cordova emulate ios

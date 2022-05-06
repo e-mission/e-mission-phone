@@ -29,6 +29,10 @@
         </div>
       </label>
     </div>
+    <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.app-status'}}</div>
+      <div ng-click="fixAppStatus()" class="control-icon-button"><i class="ion-checkmark"></i></div>
+    </div>
     <!-- <div class="control-list-item">
       <div class="control-list-text" translate>{{'.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
@@ -90,7 +94,7 @@
     <div class="" ng-show="userDataExpanded()">
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.erase-data'}}</div>
-        <div ng-click="eraseUserData()" id="gray" class=" control-icon-button"><i class="ion-trash-b"></i></div>
+        <div ng-click="eraseUserData()" class="gray-icon control-icon-button"><i class="ion-trash-b"></i></div>
       </div>
       <ion-list>
 
@@ -141,23 +145,23 @@
       </div>
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
-        <div ng-click="forceState()" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+        <div ng-click="forceState()" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.check-log'}}</div>
-        <div ng-click="showLog()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+        <div ng-click="showLog()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.check-sensed-data'}}</div>
-        <div ng-click="showSensed()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+        <div ng-click="showSensed()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.check-map'}}</div>
-        <div ng-click="showMap()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+        <div ng-click="showMap()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.collection'}}</div>
-        <div ng-click="editCollectionConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+        <div ng-click="editCollectionConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
 
@@ -169,7 +173,7 @@
 
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.sync'}}</div>
-        <div ng-click="editSyncConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+        <div ng-click="editSyncConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
         <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
@@ -184,7 +188,7 @@
 
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.transition-notify'}}</div>
-        <div ng-click="editTNotifyConfig($event)" id="gray" class="control-icon-button"><i class="ion-edit"></i></div>
+        <div ng-click="editTNotifyConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <ion-list>
         <ion-item ng-repeat="entry in settings.tnotify.show_config">

@@ -4,7 +4,7 @@ angular.module('emission.stats.clientstats', [])
 
 .factory('ClientStats', function($window) {
   var clientStat = {};
-  
+
   clientStat.CLIENT_TIME = "stats/client_time";
   clientStat.CLIENT_ERROR = "stats/client_error";
   clientStat.CLIENT_NAV_EVENT = "stats/client_nav_event";
@@ -13,11 +13,16 @@ angular.module('emission.stats.clientstats', [])
     return {
       STATE_CHANGED: "state_changed",
       BUTTON_FORCE_SYNC: "button_sync_forced",
+      CHECKED_DIARY: "checked_diary",
+      DIARY_TIME: "diary_time",
+      METRICS_TIME: "metrics_time",
       CHECKED_INF_SCROLL: "checked_inf_scroll",
       INF_SCROLL_TIME: "inf_scroll_time",
       VERIFY_TRIP: "verify_trip",
       LABEL_TAB_SWITCH: "label_tab_switch",
-      SELECT_LABEL: "select_label"
+      SELECT_LABEL: "select_label",
+      EXPANDED_TRIP: "expanded_trip",
+      NOTIFICATION_OPEN: "notification_open"
     };
   }
 
@@ -81,4 +86,3 @@ angular.module('emission.stats.clientstats', [])
 
   return clientStat;
 })
-

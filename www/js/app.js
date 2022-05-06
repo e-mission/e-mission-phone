@@ -17,6 +17,9 @@ angular.module('emission', ['ionic',
 .run(function($ionicPlatform, $rootScope, $http, Logger,
     CustomURLScheme, ReferralHandler, UpdateCheck) {
   console.log("Starting run");
+  // ensure that plugin events are delivered after the ionicPlatform is ready
+  // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
+  window.skipLocalNotificationReady = true;
   // alert("Starting run");
   // BEGIN: Global listeners, no need to wait for the platform
   // TODO: Although the onLaunch call doesn't need to wait for the platform the

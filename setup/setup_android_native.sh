@@ -17,11 +17,6 @@ ANDROID_BUILD_TOOLS_VERSION=27.0.3
 MIN_SDK_VERSION=21
 TARGET_SDK_VERSION=28
 
-echo "Uninstalling build tools > 30"
-echo "As a temporary workaround until we upgrade to cordova 10"
-SDKMANAGER=$ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager
-echo y | $SDKMANAGER --uninstall "build-tools;31.0.0"
-
 # Setup the development environment
 source setup/setup_shared.sh
 

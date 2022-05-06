@@ -53,6 +53,7 @@
     "control":{
         "profile": "Profile",
         "tracking": "Tracking",
+        "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",
         "force-sync": "Force sync",
@@ -77,7 +78,8 @@
         "check-map": "Check map",
         "collection": "Collection",
         "sync": "Sync",
-        "transition-notify": "Transition Notify"
+        "transition-notify": "Transition Notify",
+        "button-accept": "I accept"
     },
 
     "general-settings":{
@@ -108,7 +110,7 @@
         "filter": "Filter",
         "from": "From:",
         "to": "To:",
-        "last-week": "Last week",
+        "last-week": "last week",
         "frequency": "Frequency:",
         "pandafreqoptions-daily": "DAILY",
         "pandafreqoptions-weekly": "WEEKLY",
@@ -124,16 +126,18 @@
         "chart-no-data": "No Data Available",
         "trips-yaxis-number": "Number",
         "calorie-data-change": " change",
-        "carbon-data-change": " change",
-        "carbon-data-calculating": "Calculating...",
-        "carbon-data-unknown": "Unknown",
         "calorie-data-unknown": "Unknown...",
+        "greater-than": " greater than ",
+        "greater": " greater ",
+        "or": "or",
+        "less-than": " less than ",
+        "less": " less ",
+        "week-before": "vs. week before",
         "calorie-data-change-increase": " increase over a week",
         "calorie-data-change-decrease": " decrease over a week",
-        "carbon-data-change-increase": " increase over a week",
-        "carbon-data-change-decrease": " decrease over a week",
         "pick-a-date": "Pick a date",
         "trips": "trips",
+        "hours": "hours",
         "custom": "Custom"
     },
 
@@ -145,8 +149,8 @@
         "began": "Began {{startTime}}",
         "report-incident": "Report Incident",
         "draft": "DRAFT",
-        "distance-in-time": "{{distance}} km in {{time}}",
-        "date-distance-in-time": "{{date}}: {{distance}} km in {{time}}",
+        "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} {{distsuffix}} in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
@@ -210,25 +214,30 @@
 
     "main-metrics":{
         "dashboard": "Dashboard",
-        "summary": "Summary",
+        "summary": "My Summary",
         "chart": "Chart",
-        "change-data": "Change data:",
-        "distance": "Distance",
-        "trips": "Trips",
-        "duration": "Duration",
-        "speed": "Speed",
-        "footprint": "Footprint",
-        "optimal": "Optimal:",
-        "average": "Average:",
-        "worst": "Worst:",
-        "lastweek": "Last Week:",
-        "calories": "Calories",
+        "change-data": "Change dates:",
+        "distance": "My Distance",
+        "trips": "My Trips",
+        "duration": "My Duration",
+        "speed": "My Speed",
+        "footprint": "My Footprint",
+        "how-it-compares": "Ballpark comparisons",
+        "optimal": "Optimal (perfect mode choice for all my trips):",
+        "average": "Average for group:",
+        "avoided": "CO₂ avoided (vs. all 'taxi'):",
+        "label-to-squish": "Label trips to collapse the range into a single number",
+        "equals-phone-charges": "Saved {charges, plural, =0{at least 0 smartphone charges} one {at least 1 smartphone charge} other {at least # smartphone charges}} vs. all 'taxi'",
+        "lastweek": "My last week value:",
+        "us-2030-goal": "US 2030 Goal Estimate:",
+        "us-2050-goal": "US 2050 Goal Estimate:",
+        "calories": "My Calories",
         "calibrate": "Calibrate",
         "no-summary-data": "No summary data",
-        "median-speed": "Median Speed",
-        "equals-cookies": "Equals {cookies, plural, =0{0 homemade chocolate chip cookies} one {1 homemade chocolate chip cookie} other {# homemade chocolate chip cookies}}",
-        "equals-icecream": "Equals {icecream, plural, =0{0 half cups vanilla ice cream} one {1 half cup vanilla ice cream} other {# half cups vanilla ice cream}}",
-        "equals-bananas": "Equals {bananas, plural, =0{0 bananas} one {1 banana} other {# bananas}}"
+        "mean-speed": "My Average Speed",
+        "equals-cookies": "Equals {cookies, plural, =0{at least 0 homemade chocolate chip cookies} one {at least 1 homemade chocolate chip cookie} other {at least # homemade chocolate chip cookies}}",
+        "equals-icecream": "Equals {icecream, plural, =0{at least 0 half cups vanilla ice cream} one {at least 1 half cup vanilla ice cream} other {at least # half cups vanilla ice cream}}",
+        "equals-bananas": "Equals {bananas, plural, =0{at least 0 bananas} one {at least 1 banana} other {at least # bananas}}"
     },
 
     "main-diary" : "Diary",
@@ -258,7 +267,7 @@
 
     "details":{
         "speed": "Speed",
-        "time": "Temps",
+        "time": "Time",
         "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a ☻ or ☹ incident",
         "tour-sectionList-content": "Trip sections, along with times and modes",
         "tour-sectionPct-content": "% of time spent in each mode for this trip"
@@ -308,6 +317,60 @@
     },
 
     "intro": {
+        "appstatus": {
+            "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
+            "overall-loc-name": "Location",
+            "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
+            "locsettings": {
+                "name": "Location Settings",
+                "description": {
+                    "android-lt-9": "Location services should be enabled and set to High Accuracy. This allows us to accurately record the trajectory of the travel",
+                    "android-gte-9": "Location services should be enabled. This allows us to access location data and generate the trip log",
+                    "ios": "Location services should be enabled. This allows us to access location data and generate the trip log"
+                }
+            },
+            "locperms": {
+                "name": "Location Permissions",
+                "description": {
+                    "android-lt-6": "Enabled during app installation.",
+                    "android-6-9": "Please select 'allow'",
+                    "android-10": "Please select 'Allow all the time'",
+                    "android-gte-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "ios-lt-13": "Please select 'Always allow'",
+                    "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
+                }
+            },
+            "overall-fitness-name-android": "Physical activity",
+            "overall-fitness-name-ios": "Motion and Fitness",
+            "overall-fitness-description": "The fitness sensors distinguish between walking, bicycling and motorized modes.  We use this data in order to separate the parts of multi-modal travel such as transit. We also use it to as a cross-check potentially spurious trips - if the location sensor jumps across town but the fitness sensor is stationary, we can guess that the trip was invalid.",
+            "fitnessperms": {
+                "name": "Fitness Permission",
+                "description": {
+                    "android": "Please allow.",
+                    "ios": "Please allow."
+                }
+            },
+            "overall-notification-name": "Notifications",
+            "overall-notification-description": "We need to use notifications to inform you if the settings are incorrect. We also use hourly invisible push notifications to wake up the app and allow it to upload data and check app status. We also use notifications to remind you to label your trips.",
+            "notificationperms": {
+                "app-enabled-name": "App Notifications",
+                "not-paused-name": "Not Paused",
+                "description": {
+                    "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
+                    "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
+                    "ios-enable": "Please allow, on the popup or the app settings page if necessary"
+                }
+            },
+            "overall-background-restrictions-name": "Background restrictions",
+            "overall-background-restrictions-description": "The app runs in the background most of the time to make your life easier. You only need to open it periodically to label trips. Android sometimes restricts apps from working in the background. This prevents us from generating an accurate trip diary. Please remove background restrictions on this app.",
+            "unusedapprestrict": {
+                "name": "Unused apps disabled",
+                "description": {
+                    "android-disable": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "ios": "Please allow."
+                }
+            }
+        },
         "permissions": {
             "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
             "locationPermExplanation-android-6-9": "please select 'allow'",
