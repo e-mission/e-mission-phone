@@ -26,22 +26,32 @@ jobs:
     - uses: actions/checkout@v2
 
     # Runs a single command using the runners shell
-    - name: Print the java version
-      run: java -version
+    - name: Print the java and gradle versions
+      run: |
+        echo "Default java version"
+        java -version
+        echo "Setting to Java 11 instead"
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        java -version
+        echo "Checking gradle"
+        which gradle
+        gradle -version
 
     - name: Tries to figure out where android is installed
       run: |
-        echo "Android listed at $ANDROID_HOME"
+        echo "Android listed at $ANDROID_SDK_ROOT"
         ls -al /opt/
 
     - name: Setup the cordova environment
       shell: bash -l {0}
       run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
         bash setup/setup_android_native.sh
 
     - name: Check tool versions
       shell: bash -l {0}
       run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
         source setup/activate_native.sh
         echo "cordova version"
         npx cordova -version
@@ -59,6 +69,7 @@ jobs:
         gradle -version
         echo "Let's rerun the activation"
         source setup/activate_native.sh
+        export JAVA_HOME=$JAVA_HOME_11_X64
         echo $PATH
         which gradle
         gradle --version

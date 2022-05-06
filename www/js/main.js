@@ -7,7 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
-                                 'emission.tripconfirm.posttrip.map',
+                                 'emission.survey.multilabel.posttrip.map',
                                  'emission.services',
                                  'emission.services.upload'])
 
@@ -54,6 +54,9 @@ angular.module('emission.main', ['emission.main.recent',
 
   .state('root.main.control', {
     url: '/control',
+    params: {
+        launchAppStatusModal: false
+    },
     views: {
       'main-control': {
         templateUrl: 'templates/control/main-control.html',

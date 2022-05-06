@@ -6,9 +6,12 @@
   <ion-content class="padding">
   <div style="height: 40px; width: 100%; margin-bottom: 5px;"> <!-- query control -->
     <div class="metric-basic">
-      <div class="metric-current-title hvcenter">{{ uictrl.currentString }}</div>
+      <div class="metric-current-title-nofilter hvcenter">{{ uictrl.currentString }}</div>
+      <!--
+      Re-enable if we want to turn on FILTERS again
       <div ng-class="rangeButtonClass()" ng-click="showRange()" translate>{{'.range'}}</div>
       <div ng-class="filterButtonClass()" ng-click="showFilter()" translate>{{'.filter'}}</div>
+      -->
     </div>
   </div>
   <div ng-if="uictrl.showRange"> <!-- range -->
@@ -19,7 +22,7 @@
           </div>
           <div class="metric-right">
             <button id="date-picker-button" ng-click="pickFromDay()">
-            <div class="metric-datepicker">{{datepickerObjFrom.inputDate | date:datepickerObjFrom.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
+            <div class="metric-datepicker">{{ datepickerObjFrom.inputMoment.format('LL') }}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </button>
           </div>
         </div>
@@ -34,7 +37,7 @@
           </div>
           <div class="metric-right">
             <button id="date-picker-button" ng-click="pickToDay()">
-            <div class="metric-datepicker">{{datepickerObjTo.inputDate | date:datepickerObjTo.dateFormat}}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
+            <div class="metric-datepicker">{{ datepickerObjTo.inputMoment.format('LL') }}<i class="ion-ios-calendar-outline" style="font-size: 16px !important; margin-left: 4px !important;"></i></div>
             </ionic-datepicker>
           </div>
         </div>
@@ -47,6 +50,8 @@
     </div>
   </div>
 
+  <!--
+  /* Re-enable if we want to turn on FILTERS again
   <div ng-if="uictrl.showFilter">
   <div style="height: 40px; width: 100%;">
     <div class="metric-filter-title" translate>{{'.from'}}</div>
@@ -69,6 +74,7 @@
     <div class="metric-freq-button hvcenter" ng-click="changePandaFreq()">{{selectCtrl.freqString}}</div>
   </div>
   </div>
+-->
 
   </ion-content>
 </ion-modal-view>

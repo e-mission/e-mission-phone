@@ -2,6 +2,9 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="right">
+        <button class="button button-icon" ng-click="increaseHeight()">
+            <i class="icon ion-arrow-resize"></i>
+        </button>
         <button class="button button-icon ion-refresh" ng-click="refresh()"></button>
     </ion-nav-buttons> 
     <ion-nav-buttons side="left">
@@ -20,7 +23,7 @@
         <!--
         <div  ng-if="inTrip()" class="control-list-item">
             <div class="control-list-text">Current Trip</div>
-            <div ng-click="redirect()" id="gray" class="control-icon-button"><i class="ion-ios-arrow-right"></i></div>
+            <div ng-click="redirect()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
         </div>
         -->
 		<ion-list>
@@ -36,7 +39,7 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? '413px':'365px'">
+		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? itemHt + 80 : itemHt + 30">
            <div class="start-time-tag">{{tripgj.display_start_time}}</div>
             <div  style="padding-left: 19%;">
 
@@ -46,13 +49,13 @@
                 </div>
 
 
-                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '335px'}">
-                <div ng-click="toDetail(tripgj.data.id)">
+                <div id="diary-card" ng-class="tripgj.listCardClass" ng-style="{height: '{{itemHt}}px'}">
+                <div>
                 <!-- <i class="icon ion-ios-star" style="font-size: 24px; position: absolute; right: 5px; top: 5px; color: {{ starColor(tripgj.common.count) }};"></i> -->
 
-                <div class="row">
+                <div class="row" ng-click="toDetail(tripgj.data.id)">
                     <div ng-class="tripgj.common.listColLeftClass">
-                        <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-time="{{ tripgj.display_time }}"></p>
+                        <p ng-class="listTextClass" style="font-size: 0.8em; line-height: 1em; margin-bottom: 0;" translate=".distance-in-time" translate-value-distance="{{ tripgj.display_distance }}" translate-value-distsuffix="{{ tripgj.display_distance_suffix }}" translate-value-time="{{ tripgj.display_time }}"></p>
 
                         <a style="font-size: 0.6em; line-height: 0.6em; color: {{tripgj.common.arrowColor}};"><i class="{{ tripgj.common.arrowClass }}" style="font-size: 1em; color: {{ tripgj.common.arrowColor }};"></i>{{ tripgj.common.longerOrShorter[1] }}</a>
                     </div>
@@ -68,7 +71,14 @@
                     </div>
                 </div>
 
-                <leaflet geojson="tripgj" id="$index" defaults="defaults"></leaflet>
+                <div class="row diary-arrow-container" ng-click="toDetail(tripgj.data.id)">
+                    <leaflet class="col-90" geojson="tripgj" id="map_{{tripgj.data.id}}" defaults="defaults" height="150px"></leaflet>
+                    <!-- Height needs to be specified directly in the HTML not in CSS otherwise
+                    zoom doesn't work. Mystery!! -->
+                    <button class="col-10 ion-ios-arrow-right"></button>
+                </div>
+                <!-- Don't go to the detail screen below this because that's
+                    where we have the confirm button -->
                 <div style="padding: 0.5em;" class="row">
                     <div class="col-90 start-end-addresses-container">
                         <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
@@ -81,40 +91,20 @@
                                 {{tripgj.end_place.properties.display_name.split(',')[0]}}
                         </div>
                     </div>
-                    <div class="col-10 diary-arrow-container">
-                        <i class="ion-ios-arrow-right"></i>
+                    <div class="col-10 center-vert center-horiz">
+                        <verifycheck linkedtag="{{surveyOpt.elementTag}}" class="row"></verifycheck>
                     </div>
                 </div>
              </div>
-             <div 
-                ng-if="!tripgj.isDraft"
-                class="row" style="padding-left: 5px;padding-right: 5px;">
-              <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name }}" translate>
-                {{input.labeltext}}
-              </div>
+             <div class="row" style="padding-left: 5px;padding-right: 5px;">
+              <linkedsurvey element-tag="{{surveyOpt.elementTag}}" class="col" trip="tripgj"></linkedsurvey>
              </div>
-             <div 
-                ng-if="!tripgj.isDraft"
-                class="row" style="padding-left: 5px;padding-right: 5px;">
-                <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name }}">
-                    <div ng-if="tripgj.userInput[input.name]" class="input-confirm-container">
-                        <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-green">
-                            {{tripgj.userInput[input.name].text}}
-                        </button>
-                    </div>
-                    <div  ng-if="!tripgj.userInput[input.name]" class="input-confirm-container">
-                        <button ng-click ="openPopover($event, tripgj, input.name)" class="button btn-input-confirm btn-input-confirm-white" translate>
-                        {{input.choosetext}}
-                        </button>
-                    </div>
-                </div>
-             </div>   
             </div>
             </ion-item>
 
             </div>
             <div ng-class="tripgj.common.stopTimeTagClass">{{tripgj.display_end_time}}</div>
-        </div>
+          </div>
 		</ion-list>    
 	</ion-content>
 

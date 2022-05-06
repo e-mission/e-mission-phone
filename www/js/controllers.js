@@ -5,9 +5,9 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
-                                        'emission.survey.launch',
+                                        'emission.splash.remotenotify',
                                         'emission.stats.clientstats',
-                                        'emission.tripconfirm.posttrip.prompt'])
+                                        'emission.survey.multilabel.posttrip.prompt'])
 
 .controller('RootCtrl', function($scope) {})
 
@@ -15,7 +15,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     UpdateCheck, StartPrefs, PushNotify, StoreDeviceSettings,
-    LocalNotify, ClientStats, PostTripAutoPrompt, SurveyLaunch)  {
+    LocalNotify, RemoteNotify, ClientStats, PostTripAutoPrompt)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();

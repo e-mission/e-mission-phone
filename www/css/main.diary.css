@@ -181,7 +181,6 @@ div.labelfilterlist {
 }
 
 .labelfilter:first-of-type {
-  margin-left:5%;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 }
