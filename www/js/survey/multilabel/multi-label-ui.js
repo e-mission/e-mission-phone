@@ -311,7 +311,7 @@ angular.module('emission.survey.multilabel.buttons',
         var userInputEntry;
         switch(inputType) {
           case 'SURVEY':
-            userInputEntry = {text: userInput.data.label};
+            userInputEntry = {text: userInputLabel};
             break;
           default:
             userInputEntry = mls.inputParams[inputType].value2entry[userInputLabel];
@@ -320,9 +320,10 @@ angular.module('emission.survey.multilabel.buttons',
               mls.inputParams[inputType].options.push(userInputEntry);
               mls.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
             }
-            console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
-            tripField[inputType] = userInputEntry;
+            break;
         }
+        console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
+        tripField[inputType] = userInputEntry;
     }
   }
 
