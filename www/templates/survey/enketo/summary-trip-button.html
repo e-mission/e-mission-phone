@@ -6,10 +6,9 @@
 </div>
 <!-- Buttons (if confirmed) -->
 <div class="row input-confirm-row">
-
-        <div ng-if="trip.userInput[input.name]" class="input-confirm-container col">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
-                {{trip.userInput[input.name].text}}
+        <div ng-if="trip.userInput['SURVEY']" class="input-confirm-container col">
+            <button ng-click ="openPopover($event, trip, 'SURVEY')" class="button btn-input-confirm btn-input-confirm-green">
+                {{trip.userInput['SURVEY'].text}}
             </button>
         </div>
 <!-- Buttons (if inferred but not confirmed)
@@ -20,8 +19,8 @@
             </button>
         </div> -->
 <!-- Buttons (if not inferred or confirmed) -->
-        <div ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container col">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red" translate>
+        <div ng-if="!trip.userInput['SURVEY'] && !trip.finalInference['SURVEY']" class="input-confirm-container col">
+            <button ng-click ="openPopover($event, trip, 'SURVEY')" class="button btn-input-confirm btn-input-confirm-red" translate>
             {{'.choose-survey'}}
             </button>
     </div>
