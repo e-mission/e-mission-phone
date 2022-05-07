@@ -14,7 +14,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.survey',
-                                      'emission.survey.enketo.launch',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'
@@ -32,7 +31,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
   const DEFAULT_ITEM_HT = 335;
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
+  $scope.surveyOpt = SurveyOptions.ENKETO;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
     {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   // Add option
