@@ -1,5 +1,5 @@
 /*
- * Directive to display a set of configurable labels for each trip
+ * Directive to display a survey for each trip
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
@@ -27,9 +27,9 @@ angular.module('emission.survey.enketo.trip.button',
   };
 })
 .controller("EnketoTripButtonCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, EnketoSurveyLaunch, $ionicPopover, $window, ClientStats,
+    EnketoSurveyLaunch, $ionicPopover, $window, ClientStats,
     EnketoTripButtonService) {
-  console.log("Invoked enketo directive controller for labels "+ConfirmHelper.INPUTS);
+  console.log("Invoked enketo directive controller for labels "+EnketoTripButtonService.SINGLE_KEY);
 
   var findViewElement = function() {
       // console.log("$element is ", $element);
@@ -71,6 +71,8 @@ angular.module('emission.survey.enketo.trip.button',
       console.log("About to verify trip "+$scope.trip.start_ts
         +" -> "+$scope.trip.end_ts+" with current visibility"
         + $scope.trip.verifiability);
+      // Return early since we don't want to support trip verification yet
+      return;
       if ($scope.trip.verifiability != "can-verify") {
         ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
             {"verifiable": false, "currView": $scope.currentViewState});
@@ -88,11 +90,9 @@ angular.module('emission.survey.enketo.trip.button',
       };
       $scope.editingTrip = $scope.trip;
 
-      for (const inputType of ConfirmHelper.INPUTS) {
-        const inferred = $scope.trip.finalInference[inputType];
-        // TODO: figure out what to do with "other". For now, do not verify.
-        if (inferred && !$scope.trip.userInput[inputType] && inferred != "other") $scope.store(inputType, inferred, false);
-      }
+      const inferred = $scope.trip.finalInference[EnketoTripButtonService.SINGLE_KEY];
+      // TODO: figure out what to do with "other". For now, do not verify.
+      if (inferred && !$scope.trip.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
     }
 
   /*
@@ -115,8 +115,20 @@ angular.module('emission.survey.enketo.trip.button',
         if (!result) {
           return;
         }
-        $scope.$apply(() => trip.userInput[inputType] = {text: result.label});
+        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {text: result.label});
+        // store is commented out since the enketo survey launch currently
+        // stores the value as well
+        // $scope.store(inputType, result, false);
       });
+  };
+
+
+  $scope.store = function (inputType, input, isOther) {
+    // This used to be in `$scope.store` in the multi-label-ui 
+    // but the enketo libraries store the values internally now, so we move
+    // this here
+    let viewScope = findViewScope();
+    EnketoTripButtonService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
   };
 
   $scope.init = function() {
@@ -126,10 +138,11 @@ angular.module('emission.survey.enketo.trip.button',
 
   $scope.init();
 })
-.factory("EnketoTripButtonService", function(ConfirmHelper, DiaryHelper, $timeout) {
+.factory("EnketoTripButtonService", function(DiaryHelper, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
-  ConfirmHelper.inputParamsPromise.then((inputParams) => etbs.inputParams = inputParams);
+  etbs.key = "manual/trip_user_input";
+  etbs.SINGLE_KEY="SURVEY";
 
   /**
    * Embed 'inputType' to the trip.
@@ -140,10 +153,8 @@ angular.module('emission.survey.enketo.trip.button',
         // console.log("Expectation: "+JSON.stringify(trip.expectation));
         // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
         trip.userInput = {};
-        ConfirmHelper.INPUTS.forEach(function(item, index) {
-            etbs.populateManualInputs(trip, trip.nextTrip, item,
-                manualResultMap[item]);
-        });
+        etbs.populateManualInputs(trip, trip.nextTrip, etbs.SINGLE_KEY,
+            manualResultMap[etbs.SINGLE_KEY]);
         trip.finalInference = {};
         etbs.inferFinalLabels(trip);
         etbs.updateVerifiability(trip);
@@ -188,16 +199,16 @@ angular.module('emission.survey.enketo.trip.button',
    * userInput field when we do.
    */
   etbs.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        let pmInput = potentiallyModifiedTrip.userInput;
-        let origInput = originalTrip.userInput;
-        if (((pmInput[item] || {}).write_ts || 0) > ((origInput[item] || {}).write_ts || 0)) {
-            origInput[item] = pmInput[item];
-        }
-    });
+    let pmInput = potentiallyModifiedTrip.userInput;
+    let origInput = originalTrip.userInput;
+    if (((pmInput[etbs.SINGLE_INPUT] || {}).write_ts || 0) > ((origInput[etbs.SINGLE_INPUT] || {}).write_ts || 0)) {
+        origInput[etbs.SINGLE_INPUT] = pmInput[etbs.SINGLE_INPUT];
+    }
   }
 
   etbs.updateTripProperties = function(trip, viewScope) {
+    // currently a NOP since we don't have any other trip properties
+    return;
     etbs.inferFinalLabels(trip);
     etbs.updateVerifiability(trip);
     etbs.updateVisibilityAfterDelay(trip, viewScope);
@@ -211,6 +222,8 @@ angular.module('emission.survey.enketo.trip.button',
    *   - Never show user yellow labels that have a lower probability of being correct than confidenceThreshold
    */
   etbs.inferFinalLabels = function(trip) {
+    // currently a NOP since we don't have any other trip properties
+    return;
     // Deep copy the possibility tuples
     let labelsList = [];
     if (angular.isDefined(trip.inferred_labels)) {
@@ -221,44 +234,40 @@ angular.module('emission.survey.enketo.trip.button',
     const totalCertainty = labelsList.map(item => item.p).reduce(((item, rest) => item + rest), 0);
 
     // Filter out the tuples that are inconsistent with existing green labels
-    for (const inputType of ConfirmHelper.INPUTS) {
-      const userInput = trip.userInput[inputType];
-      if (userInput) {
-        const retKey = etbs.inputType2retKey(inputType);
-        labelsList = labelsList.filter(item => item.labels[retKey] == userInput.value);
-      }
+    const userInput = trip.userInput[etbs.SINGLE_KEY];
+    if (userInput) {
+      const retKey = etbs.inputType2retKey(inputType);
+      labelsList = labelsList.filter(item => item.labels[retKey] == userInput.value);
     }
 
     // Red labels if we have no possibilities left
     if (labelsList.length == 0) {
-      for (const inputType of ConfirmHelper.INPUTS) etbs.populateInput(trip.finalInference, inputType, undefined);
+      etbs.populateInput(trip.finalInference, etbs.SINGLE_INPUT, undefined);
     }
     else {
       // Normalize probabilities to previous level of certainty
       const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
       labelsList.forEach(item => item.p*=certaintyScalar);
 
-      for (const inputType of ConfirmHelper.INPUTS) {
-        // For each label type, find the most probable value by binning by label value and summing
-        const retKey = etbs.inputType2retKey(inputType);
-        let valueProbs = new Map();
-        for (const tuple of labelsList) {
-          const labelValue = tuple.labels[retKey];
-          if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
-          valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
-        }
-        let max = {p: 0, labelValue: undefined};
-        for (const [thisLabelValue, thisP] of valueProbs) {
-          // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
-          if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
-        }
-
-        // Display a label as red if its most probable inferred value has a probability less than or equal to the trip's confidence_threshold
-        // Fails safe if confidence_threshold doesn't exist
-        if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
-
-        etbs.populateInput(trip.finalInference, inputType, max.labelValue);
+      // For each label type, find the most probable value by binning by label value and summing
+      const retKey = etbs.inputType2retKey(etbs.SINGLE_INPUT);
+      let valueProbs = new Map();
+      for (const tuple of labelsList) {
+        const labelValue = tuple.labels[retKey];
+        if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
+        valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
       }
+      let max = {p: 0, labelValue: undefined};
+      for (const [thisLabelValue, thisP] of valueProbs) {
+        // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
+        if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
+      }
+
+      // Display a label as red if its most probable inferred value has a probability less than or equal to the trip's confidence_threshold
+      // Fails safe if confidence_threshold doesn't exist
+      if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
+
+      etbs.populateInput(trip.finalInference, etbs.SINGLE_INPUT, max.labelValue);
     }
   }
 
@@ -266,7 +275,7 @@ angular.module('emission.survey.enketo.trip.button',
    * MODE (becomes manual/mode_confirm) becomes mode_confirm
    */
   etbs.inputType2retKey = function(inputType) {
-    return ConfirmHelper.inputDetails[inputType].key.split("/")[1];
+    return etbs.key.split("/")[1];
   }
 
   /**
@@ -281,14 +290,15 @@ angular.module('emission.survey.enketo.trip.button',
   }
 
   etbs.updateVerifiability = function(trip) {
+    // currently a NOP since we don't have any other trip properties
+    trip.verifiability = "cannot-verify";
+    return;
     var allGreen = true;
     var someYellow = false;
-    for (const inputType of ConfirmHelper.INPUTS) {
-        const green = trip.userInput[inputType];
-        const yellow = trip.finalInference[inputType] && !green;
-        if (yellow) someYellow = true;
-        if (!green) allGreen = false;
-    }
+    const green = trip.userInput[etbs.SINGLE_KEY];
+    const yellow = trip.finalInference[etbs.SINGLE_KEY] && !green;
+    if (yellow) someYellow = true;
+    if (!green) allGreen = false;
     trip.verifiability = someYellow ? "can-verify" : (allGreen ? "already-verified" : "cannot-verify");
   }
 
@@ -302,6 +312,8 @@ angular.module('emission.survey.enketo.trip.button',
    * - clear the existing timeout (if any)
    */
   etbs.updateVisibilityAfterDelay = function(trip, viewScope) {
+    // currently a NOP since we don't have any other trip properties
+    return;
     // We have just edited this trip, and are now waiting to see if the user
     // is going to modify it further
     trip.waitingForMod = true;
