@@ -15,7 +15,6 @@
 angular.module('emission.survey.multilabel.buttons',
     ['emission.survey.multilabel.services',
         'emission.stats.clientstats',
-        'emission.survey.enketo.launch',
         'emission.main.diary.services'])
 .directive('multilabel', function() {
   return {
@@ -29,7 +28,7 @@ angular.module('emission.survey.multilabel.buttons',
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, EnketoSurveyLaunch, $ionicPopover, $window, ClientStats, MultiLabelService) {
+    ConfirmHelper, $ionicPopover, $window, ClientStats, MultiLabelService) {
   console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
 
   var findViewElement = function() {
@@ -136,16 +135,6 @@ angular.module('emission.survey.multilabel.buttons',
   });
 
   $scope.openPopover = function ($event, trip, inputType) {
-      if (inputType === 'SURVEY') {
-        return EnketoSurveyLaunch
-          .launch($scope, 'TripConfirmSurvey', { trip: trip })
-          .then(result => {
-            if (!result) {
-              return;
-            }
-            $scope.$apply(() => trip.userInput[inputType] = {text: result.label});
-          });
-      }
     var userInput = trip.userInput[inputType];
     if (angular.isDefined(userInput)) {
       $scope.selected[inputType].value = userInput.value;
@@ -308,19 +297,11 @@ angular.module('emission.survey.multilabel.buttons',
    */
   mls.populateInput = function(tripField, inputType, userInputLabel) {
     if (angular.isDefined(userInputLabel)) {
-        var userInputEntry;
-        switch(inputType) {
-          case 'SURVEY':
-            userInputEntry = {text: userInputLabel};
-            break;
-          default:
-            userInputEntry = mls.inputParams[inputType].value2entry[userInputLabel];
-            if (!angular.isDefined(userInputEntry)) {
-              userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
-              mls.inputParams[inputType].options.push(userInputEntry);
-              mls.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
-            }
-            break;
+        var userInputEntry = mls.inputParams[inputType].value2entry[userInputLabel];
+        if (!angular.isDefined(userInputEntry)) {
+          userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
+          mls.inputParams[inputType].options.push(userInputEntry);
+          mls.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
         }
         console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
         tripField[inputType] = userInputEntry;
