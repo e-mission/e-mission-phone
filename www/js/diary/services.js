@@ -519,13 +519,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
                   ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
             });
-            return Promise.all(manualPromises).then((manualResults) => {
-                const manualConfirmResults = {};
-                manualResults.forEach(function(mr, index) {
-                  manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
-                });
-                return [result, manualConfirmResults];
-            });
+            const manualConfirmResults = {};
+            return [result, Promise.all(manualPromises).then((manualResults) =>
+                processManualInputs(manualResults, manualConfirmResults))];
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
             return [{}, {}];
@@ -1103,15 +1099,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var localCacheReadFn = timeline.updateFromDatabase;
 
-    var processManualInputs = function(manualResults) {
+    var processManualInputs = function(manualResults, resultMap) {
         var mrString = 'unprocessed manual inputs '
             + manualResults.map(function(item, index) {
                 return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
             });
         console.log(mrString);
-        timeline.data.unifiedConfirmsResults = {}
         manualResults.forEach(function(mr, index) {
-          timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
+          resultMap[ConfirmHelper.INPUTS[index]] = mr;
         });
     }
 
@@ -1146,7 +1141,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       });
       let tripsReadPromise = tripReadFn(day);
       // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
-      let allManualPromise = Promise.all(manualPromises).then(processManualInputs);
+      timeline.data.unifiedConfirmsResults = {};
+      let allManualPromise = Promise.all(manualPromises).then((manualResults) =>
+        processManualInputs(manualResults, timeline.data.unifiedConfirmsResults));
 
       let allTripsPromise = tripsReadPromise.then((processedTripList) => {
         console.log("Reading trips from server finished successfully with length "
