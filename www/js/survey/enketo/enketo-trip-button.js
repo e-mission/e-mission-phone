@@ -15,6 +15,7 @@
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',
         'emission.survey.enketo.launch',
+        'emission.survey.enketo.answer',
         'emission.survey.inputmatcher'])
 .directive('enketoTripButton', function() {
   return {
@@ -138,7 +139,7 @@ angular.module('emission.survey.enketo.trip.button',
 
   $scope.init();
 })
-.factory("EnketoTripButtonService", function(InputMatcher, $timeout) {
+.factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
   etbs.key = "manual/trip_user_input";
@@ -147,6 +148,7 @@ angular.module('emission.survey.enketo.trip.button',
   /**
    * Embed 'inputType' to the trip.
    */
+   etbs.extractResult = (results) => EnketoSurveyAnswer.filterByNameAndVersion('TripConfirmSurvey', results);
 
    etbs.processManualInputs = function(manualResults, resultMap) {
     if (manualResults.length > 1) {

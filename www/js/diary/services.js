@@ -2,7 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual', 'emission.survey.enketo.answer'])
+    'emission.incident.posttrip.manual'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -375,7 +375,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 })
 .factory('Timeline', function(CommHelper, ConfirmHelper, SurveyOptions, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, EnketoSurveyAnswer, $translate) {
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -1005,15 +1005,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var readTripsAndUnprocessedInputs = function(day, tripReadFn, completeStatus, tq) {
       var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
         return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq).then(function(results) {
-          switch(ConfirmHelper.inputDetails[inp].key) {
-            // Post-process survey answers
-            case 'manual/survey_response':
-              return EnketoSurveyAnswer.filterByNameAndVersion('TripConfirmSurvey', results);
-            default:
-              return results;
-          }
-        });
+            ConfirmHelper.inputDetails[inp].key, tq).then(manualInputFactory.extractResult);
       });
       let tripsReadPromise = tripReadFn(day);
       // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });

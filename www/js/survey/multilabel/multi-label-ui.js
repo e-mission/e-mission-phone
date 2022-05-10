@@ -257,6 +257,8 @@ angular.module('emission.survey.multilabel.buttons',
    * Embed 'inputType' to the trip.
    */
 
+   mls.extractResult = (results) => results;
+
    mls.processManualInputs = function(manualResults, resultMap) {
      var mrString = 'unprocessed manual inputs '
           + manualResults.map(function(item, index) {
