@@ -252,6 +252,7 @@ angular.module('emission.survey.multilabel.buttons',
   var mls = {};
   console.log("Creating MultiLabelService");
   ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
+  mls.MANUAL_KEYS = ConfirmHelper.INPUTS.map((inp) => ConfirmHelper.inputDetails[inp].key);
 
   /**
    * Embed 'inputType' to the trip.

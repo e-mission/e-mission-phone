@@ -142,8 +142,9 @@ angular.module('emission.survey.enketo.trip.button',
 .factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
-  etbs.key = "manual/trip_user_input";
+  etbs.key = "manual/survey_response";
   etbs.SINGLE_KEY="SURVEY";
+  etbs.MANUAL_KEYS = [etbs.key];
 
   /**
    * Embed 'inputType' to the trip.
@@ -154,6 +155,7 @@ angular.module('emission.survey.enketo.trip.button',
     if (manualResults.length > 1) {
         Logger.displayError("Found "+manualResults.length+" results expected 1", manualResults);
     } else {
+        console.log("ENKETO: processManualInputs with ", manualResults, " and ", resultMap);
         const surveyResult = manualResults[0];
         resultMap[etbs.SINGLE_KEY] = surveyResult;
     }

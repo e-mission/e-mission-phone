@@ -374,7 +374,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, ConfirmHelper, SurveyOptions, $http, $ionicLoading, $window,
+.factory('Timeline', function(CommHelper, SurveyOptions, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -402,9 +402,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 startTs: result.end_ts - 10,
                 endTs: moment().unix() + 10
             }
-            var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+            var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
+                  inp_key, pendingLabelQuery).then(manualInputFactory.extractResult);
             });
             const manualConfirmResults = {};
             return [result, Promise.all(manualPromises).then((manualResults) =>
@@ -1003,12 +1003,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var readTripsAndUnprocessedInputs = function(day, tripReadFn, completeStatus, tq) {
-      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+      console.log("Reading values for list ", manualInputFactory.MANUAL_KEYS);
+      var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
         return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq).then(manualInputFactory.extractResult);
+            inp_key, tq).then(manualInputFactory.extractResult);
       });
       let tripsReadPromise = tripReadFn(day);
-      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
       timeline.data.unifiedConfirmsResults = {};
       let allManualPromise = Promise.all(manualPromises).then((manualResults) =>
         manualInputFactory.processManualInputs(manualResults, timeline.data.unifiedConfirmsResults));
