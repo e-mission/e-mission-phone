@@ -15,7 +15,7 @@
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',
         'emission.survey.enketo.launch',
-        'emission.main.diary.services'])
+        'emission.survey.inputmatcher'])
 .directive('enketoTripButton', function() {
   return {
     scope: {
@@ -138,7 +138,7 @@ angular.module('emission.survey.enketo.trip.button',
 
   $scope.init();
 })
-.factory("EnketoTripButtonService", function(DiaryHelper, $timeout) {
+.factory("EnketoTripButtonService", function(InputMatcher, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
   etbs.key = "manual/trip_user_input";
@@ -149,6 +149,7 @@ angular.module('emission.survey.enketo.trip.button',
    */
 
   etbs.populateInputsAndInferences = function(trip, manualResultMap) {
+    console.log("ENKETO: populating trip,", trip, " with result map", manualResultMap);
     if (angular.isDefined(trip)) {
         // console.log("Expectation: "+JSON.stringify(trip.expectation));
         // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
@@ -170,7 +171,7 @@ angular.module('emission.survey.enketo.trip.button',
    */
   etbs.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(trip, nextTrip,
+      const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip,
           inputList);
       var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
       if (!angular.isDefined(userInputLabel)) {

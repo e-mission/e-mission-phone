@@ -15,7 +15,7 @@
 angular.module('emission.survey.multilabel.buttons',
     ['emission.survey.multilabel.services',
         'emission.stats.clientstats',
-        'emission.main.diary.services'])
+        'emission.survey.inputmatcher'])
 .directive('multilabel', function() {
   return {
     scope: {
@@ -248,7 +248,7 @@ angular.module('emission.survey.multilabel.buttons',
 
   $scope.init();
 })
-.factory("MultiLabelService", function(ConfirmHelper, DiaryHelper, $timeout) {
+.factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout) {
   var mls = {};
   console.log("Creating MultiLabelService");
   ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
@@ -281,7 +281,7 @@ angular.module('emission.survey.multilabel.buttons',
    */
   mls.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = DiaryHelper.getUserInputForTrip(trip, nextTrip,
+      const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip,
           inputList);
       var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
       if (!angular.isDefined(userInputLabel)) {

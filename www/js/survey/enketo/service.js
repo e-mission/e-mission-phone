@@ -1,12 +1,12 @@
 angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
-  'emission.main.diary.services',
+  'emission.survey.inputmatcher',
   'emission.survey.enketo.answer'
 ])
 .factory('EnketoSurvey', function(
   $window, $http, UnifiedDataLoader,
-  DiaryHelper, EnketoSurveyAnswer,
+  InputMatcher, EnketoSurveyAnswer,
 ) {
   /**
    * @typedef EnketoSurveyConfig
@@ -114,7 +114,7 @@ angular.module('emission.survey.enketo.service', [
         return null;
       }
       if (_state.opts.trip) {
-        answer = DiaryHelper.getUserInputForTrip(_state.opts.trip, undefined, answers);
+        answer = InputMatcher.getUserInputForTrip(_state.opts.trip, undefined, answers);
         if (answer) {
           return answer.data.xmlResponse;
         }
