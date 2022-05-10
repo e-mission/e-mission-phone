@@ -15,7 +15,6 @@ angular.module('emission.survey.enketo.launch', [
    *  name: string;
    *  opts: {
    *    trip: object;
-   *    uuid: string;
    *    disableDismiss: boolean;
    *    onInit: Function;
    *    onNext: Function;
@@ -39,7 +38,6 @@ angular.module('emission.survey.enketo.launch', [
       name: null,
       opts: {
         trip: null,
-        uuid: null,
         disableDismiss: false,
         onInit: () => {},
         onNext: () => {},
@@ -53,7 +51,6 @@ angular.module('emission.survey.enketo.launch', [
    * @param {string} name survey name
    * @param {{
    *  trip?: object;
-   *  uuid?: string;
    * }} [opts] survey launch options 
    * @returns {Promise<void>}
    */
@@ -82,7 +79,6 @@ angular.module('emission.survey.enketo.launch', [
    * @param {string} name survey name
    * @param {{
    *  trip?: object;
-   *  uuid?: string;
    *  disableDismiss?: boolean;
    *  onInit?: Function;
    *  onNext?: Function;

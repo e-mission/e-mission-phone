@@ -33,7 +33,6 @@ angular.module('emission.survey.enketo.service', [
    *  };
    *  opts: {
    *    trip: object;
-   *    uuid: string;
    *  };
    * }}
    */
@@ -97,7 +96,6 @@ angular.module('emission.survey.enketo.service', [
       },
       opts: {
         trip: null,
-        uuid: null,
       },
     };
   }
@@ -118,10 +116,6 @@ angular.module('emission.survey.enketo.service', [
         if (answer) {
           return answer.data.xmlResponse;
         }
-      }
-      if (_state.opts.uuid) {
-        answers = answers.filter(answer => answer.data.user_uuid === _state.opts.uuid);
-        answer = answers.length ? answers[0] : null;
       }
       return answer ? answer.data.xmlResponse : null;
     });
@@ -148,9 +142,6 @@ angular.module('emission.survey.enketo.service', [
         data.start_ts = _state.opts.trip.data.properties.start_ts;
         data.end_ts = _state.opts.trip.data.properties.end_ts;
     }
-    if (_state.opts.uuid) {
-        data.user_uuid = _state.opts.uuid;
-    }
     return $window.cordova.plugins.BEMUserCache
       .putMessage(DATA_KEY, data)
       .then(() => data);
@@ -169,7 +160,6 @@ angular.module('emission.survey.enketo.service', [
    * @param {string} name survey name
    * @param {{
    *    trip?: object;
-   *    uuid?: string;
    *  }} [opts]
    * @returns {Promise<void>}
    */
