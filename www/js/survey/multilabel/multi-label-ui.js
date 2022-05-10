@@ -257,6 +257,17 @@ angular.module('emission.survey.multilabel.buttons',
    * Embed 'inputType' to the trip.
    */
 
+   mls.processManualInputs = function(manualResults, resultMap) {
+     var mrString = 'unprocessed manual inputs '
+          + manualResults.map(function(item, index) {
+              return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
+          });
+      console.log(mrString);
+      manualResults.forEach(function(mr, index) {
+        resultMap[ConfirmHelper.INPUTS[index]] = mr;
+      });
+  }
+
   mls.populateInputsAndInferences = function(trip, manualResultMap) {
     if (angular.isDefined(trip)) {
         // console.log("Expectation: "+JSON.stringify(trip.expectation));

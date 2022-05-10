@@ -374,14 +374,17 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, ConfirmHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger, EnketoSurveyAnswer, $translate) {
+.factory('Timeline', function(CommHelper, ConfirmHelper, SurveyOptions, $http, $ionicLoading, $window,
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, EnketoSurveyAnswer, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
     timeline.data = {};
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
+
+    const surveyOpt = SurveyOptions.ENKETO;
+    const manualInputFactory = $injector.get(surveyOpt.service);
 
     // Internal function, not publicly exposed
     var getKeyForDate = function(date) {
@@ -405,7 +408,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             });
             const manualConfirmResults = {};
             return [result, Promise.all(manualPromises).then((manualResults) =>
-                processManualInputs(manualResults, manualConfirmResults))];
+                manualInputFactory.processManualInputs(manualResults, manualConfirmResults))];
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
             return [{}, {}];
@@ -983,17 +986,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var localCacheReadFn = timeline.updateFromDatabase;
 
-    var processManualInputs = function(manualResults, resultMap) {
-        var mrString = 'unprocessed manual inputs '
-            + manualResults.map(function(item, index) {
-                return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
-            });
-        console.log(mrString);
-        manualResults.forEach(function(mr, index) {
-          resultMap[ConfirmHelper.INPUTS[index]] = mr;
-        });
-    }
-
     var addUnprocessedTrips = function(processedTripList, day, completeStatus) {
         var tripList = processedTripList;
         if (!completeStatus) {
@@ -1027,7 +1019,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
       timeline.data.unifiedConfirmsResults = {};
       let allManualPromise = Promise.all(manualPromises).then((manualResults) =>
-        processManualInputs(manualResults, timeline.data.unifiedConfirmsResults));
+        manualInputFactory.processManualInputs(manualResults, timeline.data.unifiedConfirmsResults));
 
       let allTripsPromise = tripsReadPromise.then((processedTripList) => {
         console.log("Reading trips from server finished successfully with length "

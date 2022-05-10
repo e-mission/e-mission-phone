@@ -148,6 +148,15 @@ angular.module('emission.survey.enketo.trip.button',
    * Embed 'inputType' to the trip.
    */
 
+   etbs.processManualInputs = function(manualResults, resultMap) {
+    if (manualResults.length > 1) {
+        Logger.displayError("Found "+manualResults.length+" results expected 1", manualResults);
+    } else {
+        const surveyResult = manualResults[0];
+        resultMap[etbs.SINGLE_KEY] = surveyResult;
+    }
+  }
+
   etbs.populateInputsAndInferences = function(trip, manualResultMap) {
     console.log("ENKETO: populating trip,", trip, " with result map", manualResultMap);
     if (angular.isDefined(trip)) {
