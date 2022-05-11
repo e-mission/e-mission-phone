@@ -116,7 +116,7 @@ angular.module('emission.survey.enketo.trip.button',
         if (!result) {
           return;
         }
-        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {text: result.label});
+        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {data: result});
         // store is commented out since the enketo survey launch currently
         // stores the value as well
         // $scope.store(inputType, result, false);
@@ -186,11 +186,11 @@ angular.module('emission.survey.enketo.trip.button',
       // Check unprocessed labels first since they are more recent
       const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip,
           inputList);
-      var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
-      if (!angular.isDefined(userInputLabel)) {
-          userInputLabel = trip.user_input[etbs.inputType2retKey(inputType)];
+      var userInputEntry = unprocessedLabelEntry;
+      if (!angular.isDefined(userInputEntry)) {
+          userInputEntry = trip.user_input[etbs.inputType2retKey(inputType)];
       }
-      etbs.populateInput(trip.userInput, inputType, userInputLabel);
+      etbs.populateInput(trip.userInput, inputType, userInputEntry);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
       etbs.editingTrip = angular.undefined;
   }
@@ -198,11 +198,8 @@ angular.module('emission.survey.enketo.trip.button',
   /**
    * Insert the given userInputLabel into the given inputType's slot in inputField
    */
-  etbs.populateInput = function(tripField, inputType, userInputLabel) {
-    if (angular.isDefined(userInputLabel)) {
-        var userInputEntry;
-        userInputEntry = {text: userInputLabel};
-        console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
+  etbs.populateInput = function(tripField, inputType, userInputEntry) {
+    if (angular.isDefined(userInputEntry)) {
         tripField[inputType] = userInputEntry;
     }
   }

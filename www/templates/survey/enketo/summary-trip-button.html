@@ -8,7 +8,7 @@
 <div class="row input-confirm-row">
         <div ng-if="trip.userInput['SURVEY']" class="input-confirm-container col">
             <button ng-click ="openPopover($event, trip, 'SURVEY')" class="button btn-input-confirm btn-input-confirm-green">
-                {{trip.userInput['SURVEY'].text}}
+                {{trip.userInput['SURVEY'].data.label}}
             </button>
         </div>
 <!-- Buttons (if inferred but not confirmed)

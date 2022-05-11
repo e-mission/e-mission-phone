@@ -105,20 +105,14 @@ angular.module('emission.survey.enketo.service', [
    * @param {EnketoAnswer[]} answers survey answers
    * @returns {Promise<string>} answer string promise
    */
-  function _restoreAnswer(answers) {
-    return EnketoSurveyAnswer.filterByNameAndVersion(_state.name, answers).then(answers => {
-      let answer = null;
-      if (!answers.length) {
-        return null;
-      }
-      if (_state.opts.trip) {
-        answer = InputMatcher.getUserInputForTrip(_state.opts.trip, undefined, answers);
-        if (answer) {
-          return answer.data.xmlResponse;
-        }
-      }
+  function _restoreAnswer() {
+    if (_state.opts.trip) {
+      answer = _state.opts.trip.userInput["SURVEY"];
       return answer ? answer.data.xmlResponse : null;
-    });
+    } else {
+        // TODO: Figure out how to retrieve and match the profile survey
+        return answer ? answer.data.xmlResponse : null;
+    }
   }
 
   /**
@@ -183,10 +177,8 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string[]} errors
    */
   function showModal() {
-    const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-    return UnifiedDataLoader.getUnifiedMessagesForInterval(DATA_KEY, tq)
-      .then(answers => _restoreAnswer(answers))
-      .then(instanceStr => _loadForm({ instanceStr }));
+    const instanceStr = _restoreAnswer();
+    return Promise.resolve(_loadForm({ instanceStr }));
   }
 
   /**
