@@ -142,7 +142,7 @@ angular.module('emission.survey.enketo.trip.button',
 .factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
-  etbs.key = "manual/survey_response";
+  etbs.key = "manual/trip_user_input";
   etbs.SINGLE_KEY="SURVEY";
   etbs.MANUAL_KEYS = [etbs.key];
 

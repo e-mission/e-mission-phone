@@ -37,7 +37,6 @@ angular.module('emission.survey.enketo.service', [
    * }}
    */
 
-  const DATA_KEY = 'manual/survey_response';
   const ENKETO_SURVEY_CONFIG_PATH = 'json/enketoSurveyConfig.json';
   /** @type {EnketoSurveyState} _state */
   let _state;
@@ -137,7 +136,7 @@ angular.module('emission.survey.enketo.service', [
         data.end_ts = _state.opts.trip.data.properties.end_ts;
     }
     return $window.cordova.plugins.BEMUserCache
-      .putMessage(DATA_KEY, data)
+      .putMessage(_state.config[_state.name].dataKey, data)
       .then(() => data);
   }
 
