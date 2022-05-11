@@ -33,6 +33,7 @@ angular.module('emission.survey.enketo.service', [
    *  };
    *  opts: {
    *    trip: object;
+   *    prev_demographic_survey: object;
    *  };
    * }}
    */
@@ -95,6 +96,7 @@ angular.module('emission.survey.enketo.service', [
       },
       opts: {
         trip: null,
+        prev_demographic_survey: null,
       },
     };
   }
@@ -106,11 +108,14 @@ angular.module('emission.survey.enketo.service', [
    */
   function _restoreAnswer() {
     if (_state.opts.trip) {
-      answer = _state.opts.trip.userInput["SURVEY"];
+      const answer = _state.opts.trip.userInput["SURVEY"];
       return answer ? answer.data.xmlResponse : null;
-    } else {
+    } else if (_state.opts.prev_demographic_survey) {
+        const answer = _state.opts.prev_demographic_survey;
         // TODO: Figure out how to retrieve and match the profile survey
-        return answer ? answer.data.xmlResponse : null;
+        return answer? answer.data.xmlResponse : null;
+    } else {
+        return null;
     }
   }
 

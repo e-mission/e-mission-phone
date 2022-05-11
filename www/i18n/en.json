@@ -52,6 +52,7 @@
 
     "control":{
         "profile": "Profile",
+        "edit-demographics": "Edit Demographics",
         "tracking": "Tracking",
         "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",

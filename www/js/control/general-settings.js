@@ -12,6 +12,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
+                                        'emission.survey.enketo.demographics',
                                         'emission.survey.external.launch',
                                         'emission.plugin.logger'])
 
@@ -491,11 +492,6 @@ angular.module('emission.main.control',['emission.services',
             } else if ($scope.isIOS()) {
                 return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
             }
-        });
-    };
-    $scope.editUserProfile = function() {
-        SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/', {
-            autoCloseURL: 'https://ee.kobotoolbox.org/thanks'
         });
     };
     $scope.launchEndSurvey = function() {
