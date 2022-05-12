@@ -2,7 +2,7 @@
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
-                                  'emission.survey.external.launch',
+                                  'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
@@ -30,7 +30,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
     i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
     i18nUtils.geti18nFileName("templates/", "intro/sensor_explanation", ".html"),
-    i18nUtils.geti18nFileName("templates/", "intro/login", ".html")
+    i18nUtils.geti18nFileName("templates/", "intro/login", ".html"),
+    i18nUtils.geti18nFileName("templates/", "intro/survey", ".html")
   ]);
   allIntroFiles.then(function(allIntroFilePaths) {
     $scope.$apply(function() {
@@ -39,6 +40,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       $scope.consentFile = allIntroFilePaths[1];
       $scope.explainFile = allIntroFilePaths[2];
       $scope.loginFile = allIntroFilePaths[3];
+      $scope.surveyFile = allIntroFilePaths[4];
     });
   });
 
@@ -149,12 +151,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-          SurveyLaunch.startSurveyPrefilled('https://up.fourstep.dev/', {
-            autoCloseURL: 'https://ee.kobotoolbox.org/thanks',
-          }).then(() => {
             ionicToast.show(userEmail, 'middle', false, 2500);
-            $scope.finish();
-          });
+            $scope.next();
+            // $scope.finish();
         }, function(errorResult) {
           // ionicToast.show(userEmail, 'middle', false, 2500);
           $scope.alertError('User registration error', errorResult);

@@ -26,6 +26,15 @@ angular.module('emission.survey.enketo.demographics',
     templateUrl: 'templates/survey/enketo/demographics-button.html'
   };
 })
+.directive('enketoDemographicsInline', function() {
+  return {
+    scope: {
+        ngdone: "=",
+    },
+    controller: "EnketoDemographicsInlineCtrl",
+    templateUrl: 'templates/survey/enketo/content.html'
+  };
+})
 .controller("EnketoDemographicsButtonCtrl", function($scope, $element, $attrs,
     EnketoSurveyLaunch, $ionicPopover, ClientStats,
     EnketoDemographicsService) {
@@ -43,6 +52,44 @@ angular.module('emission.survey.enketo.demographics',
 
   $scope.init = function() {
       console.log("During initialization of the button control", $scope.trip);
+  }
+
+  $scope.init();
+})
+.controller("EnketoDemographicsInlineCtrl", function($scope, $window, $element, $attrs,
+    $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats,
+    EnketoDemographicsService) {
+  console.log("Invoked enketo inline directive controller for demographics ");
+
+  var validateAndSave = function() {
+    return EnketoSurvey.validateAndSave()
+    .then(result => {
+      if (!result) {
+        $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
+      } else {
+        $scope.ngdone();
+      }
+    });
+  }
+
+  $scope.enketoSurvey = {
+    disableDismiss: true,
+    validateAndSave
+  }
+
+  $scope.initForm = function() {
+        return EnketoSurveyLaunch
+          .initSurvey('UserProfileSurvey', { })
+          .then(result => {
+            console.log("demographic survey result ", result);
+          }).catch(e => console.trace(e));
+  };
+
+  $scope.init = function() {
+      console.log("During initialization of the button control", $scope.trip);
+      $scope.initForm().then(() => {
+        console.log("finished loading form");
+      });;
   }
 
   $scope.init();

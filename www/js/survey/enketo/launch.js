@@ -120,5 +120,5 @@ angular.module('emission.survey.enketo.launch', [
     });
   }
 
-  return { launch };
+  return { initSurvey, launch };
 });
