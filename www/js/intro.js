@@ -188,6 +188,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     StartPrefs.markIntroDone();
     $scope.getIntroBox().slide(0);
     StartPrefs.loadPreferredScreen();
+    // remove this view since the intro is done
+    // when we go back to the intro state, it will be recreated
+    $("[state='root.intro']").remove();
+    $scope.$destroy();
   }
 
   $ionicPlatform.ready().then(function() {
