@@ -29,7 +29,7 @@ angular.module('emission.survey.enketo.demographics',
 .directive('enketoDemographicsInline', function() {
   return {
     scope: {
-        ngdone: "=",
+        ngDone: "=",
     },
     controller: "EnketoDemographicsInlineCtrl",
     templateUrl: 'templates/survey/enketo/content.html'
@@ -67,7 +67,7 @@ angular.module('emission.survey.enketo.demographics',
       if (!result) {
         $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
       } else {
-        $scope.ngdone();
+        $scope.ngDone();
       }
     });
   }
