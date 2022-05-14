@@ -32,7 +32,7 @@ angular.module('emission.survey.enketo.demographics',
         ngDone: "=",
     },
     controller: "EnketoDemographicsInlineCtrl",
-    templateUrl: 'templates/survey/enketo/content.html'
+    templateUrl: 'templates/survey/enketo/inline.html'
   };
 })
 .controller("EnketoDemographicsButtonCtrl", function($scope, $element, $attrs,
@@ -58,7 +58,7 @@ angular.module('emission.survey.enketo.demographics',
 })
 .controller("EnketoDemographicsInlineCtrl", function($scope, $window, $element, $attrs,
     $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats,
-    EnketoDemographicsService) {
+    EnketoDemographicsService, $ionicPlatform, $timeout) {
   console.log("Invoked enketo inline directive controller for demographics ");
 
   var validateAndSave = function() {
@@ -77,12 +77,45 @@ angular.module('emission.survey.enketo.demographics',
     validateAndSave
   }
 
+  $scope.setEditSurveyAnswer = function(newVal) {
+    $scope.editSurveyAnswer = newVal;
+    $timeout(() => {
+        if (newVal) {
+            /*
+             * if we had an existing survey, we want to wait until the user chooses
+             * to edit it to display the form. But then we also have to wait to
+             * initialize the form.
+             * https://github.com/e-mission/e-mission-docs/issues/727#issuecomment-1126720935
+             */
+            return EnketoSurveyLaunch
+              .initSurvey('UserProfileSurvey', { prev_demographic_survey: $scope.existingSurvey })
+              .then(result => {
+                console.log("demographic survey result ", result);
+              }).catch(e => console.trace(e));
+        }
+    }, 10); // wait for 10 ms to load to ensure that the form is in place
+  }
+
   $scope.initForm = function() {
-        return EnketoSurveyLaunch
-          .initSurvey('UserProfileSurvey', { })
-          .then(result => {
-            console.log("demographic survey result ", result);
-          }).catch(e => console.trace(e));
+    return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
+        $scope.$apply(() => $scope.existingSurvey = lastSurvey);
+        console.log("ENKETO: existing survey ", $scope.existingSurvey);
+        if (!$scope.existingSurvey) {
+            /*
+             * if we don't have an existing survey, we will display the form
+             * without any prompt and want to show it immediately. However, if
+             * we have an existing response, then we want to see if the user
+             * wants to edit it, which means that we won't have a form to
+             * initialize here. We will initialize the form in
+             * setEditSurveyAnswer instead
+             */
+            return EnketoSurveyLaunch
+              .initSurvey('UserProfileSurvey', { prev_demographic_survey: $scope.existingSurvey })
+              .then(result => {
+                console.log("demographic survey result ", result);
+              }).catch(e => console.trace(e));
+        }
+    });
   };
 
   $scope.init = function() {
@@ -92,7 +125,7 @@ angular.module('emission.survey.enketo.demographics',
       });;
   }
 
-  $scope.init();
+  $ionicPlatform.ready(() => $scope.init());
 })
 .factory("EnketoDemographicsService", function(UnifiedDataLoader, $window) {
   var eds = {};

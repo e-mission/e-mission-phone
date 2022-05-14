@@ -399,5 +399,11 @@
     "sensor_explanation":{
         "button-accept": "OK",
         "button-decline": "Stop"
+    },
+    "survey": {
+        "prev-survey-found": "Found previous survey response",
+        "use-prior-response": "Use prior response",
+        "edit-response": "Edit response",
+        "move-on": "Move on"
     }
 }

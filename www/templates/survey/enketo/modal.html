@@ -7,5 +7,7 @@
           ng-show="!enketoSurvey.disableDismiss"
       >Dismiss</button>
   </ion-header-bar>
-  <ng-include src="'templates/survey/enketo/content.html'"></ng-include>
+  <ion-content class="enketo-plugin overflow-scroll">
+      <ng-include src="'templates/survey/enketo/form-base.html'"></ng-include>
+  </ion-content>
 </ion-modal-view>
