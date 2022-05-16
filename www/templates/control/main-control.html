@@ -9,6 +9,10 @@
       <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
     </div>
     <div class="control-list-item">
+      <div class="control-list-text" translate>{{'.view-qrc'}}</div>
+      <div ng-click="viewQRCode($event)" class="control-icon-button"><i class="ion-ios-barcode-outline"></i></div>
+    </div>
+    <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">

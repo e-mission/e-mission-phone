@@ -82,9 +82,10 @@ angular.module('emission.main.control',['emission.services',
     $scope.viewPrivacyPolicy = function($event) {
         // button -> list element -> scroll
         // const targetEl = $event.currentTarget.parentElement.parentElement;
-        if ($scope.ppp) {
-            $scope.ppp.show($event);
-        } else {
+
+        // if ($scope.ppp) {
+        //     $scope.ppp.show($event);
+        // } else {
             i18nUtils.geti18nFileName("templates/", "intro/consent-text", ".html").then((consentFileName) => {
                 $scope.consentTextFile = consentFileName;
                 $ionicPopover.fromTemplateUrl("templates/control/main-consent.html", {scope: $scope}).then((p) => {
@@ -92,7 +93,17 @@ angular.module('emission.main.control',['emission.services',
                     $scope.ppp.show($event);
                 });
             }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
-        }
+        // }
+    }
+
+    $scope.viewQRCode = function($event) {
+        i18nUtils.geti18nFileName("templates/", "control/qrc", ".html").then((qrcFileName) => {
+            $scope.qrcTextFile = qrcFileName;
+            $ionicPopover.fromTemplateUrl("templates/control/main-qrc.html", {scope: $scope}).then((p) => {
+                $scope.ppp = p;
+                $scope.ppp.show($event);
+            });
+        }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
     }
 
     $scope.fixAppStatus = function() {
