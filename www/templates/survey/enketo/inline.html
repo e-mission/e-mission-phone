@@ -2,9 +2,9 @@
 
   <div ng-if="existingSurvey">
     <!-- If there is an existing survey, we want to ask the user whether they want to use it-->
-    <div ng-if="editSurveyAnswer === undefined" class="col" style="margin-top: 20px;" translate-namespace="survey">
+    <div ng-if="editSurveyAnswer === undefined" class="col" style="margin-top: 25%;" translate-namespace="survey">
         <!-- if the user hasn't answered yet, we offer the options -->
-        <div class="row" style="text-align:center; margin-right: 5px" translate>{{'.prev-survey-found'}}</div>
+        <div class="row"><div class="col" style="font-weight: bold; font-size: 2em;" translate>{{'.prev-survey-found'}}</div></div>
         <div class="row">
             <div class="col" style="margin-right: 5px">
                 <button class="button button-block button-assertive button-outline" ng-click="ngDone()" id="consent-button"><span translate>{{'.use-prior-response'}}</span></button>
@@ -13,7 +13,7 @@
                 <button class="button button-block button-positive button-outline" ng-click="setEditSurveyAnswer(true)" id="consent-button"><span translate>{{'.edit-response'}}</span></button>
             </div>
         </div>
-        <enketo-survey-preview survey-result="existingSurvey"></enketo-survey-preview>
+        <!-- <enketo-survey-preview survey-result="existingSurvey"></enketo-survey-preview> -->
     </div>
     <div class="col" ng-if="editSurveyAnswer" style="margin-top: 20px;" translate-namespace="survey">
         <!-- if the user wants to edit, we show the form-->
