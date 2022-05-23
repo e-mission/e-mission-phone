@@ -13,6 +13,7 @@
                 <button class="button button-block button-positive button-outline" ng-click="setEditSurveyAnswer(true)" id="consent-button"><span translate>{{'.edit-response'}}</span></button>
             </div>
         </div>
+        <enketo-survey-preview survey-result="existingSurvey"></enketo-survey-preview>
     </div>
     <div class="col" ng-if="editSurveyAnswer" style="margin-top: 20px;" translate-namespace="survey">
         <!-- if the user wants to edit, we show the form-->
