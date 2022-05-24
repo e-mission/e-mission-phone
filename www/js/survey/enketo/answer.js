@@ -11,6 +11,7 @@ angular.module('emission.survey.enketo.answer', [
    * @property {string} name - survey name
    * @property {string} version - survey version
    * @property {string} xmlResponse - survey answer XML string
+   * @property {string} jsonDocResponse - survey answer JSON object
    */
 
   /**
