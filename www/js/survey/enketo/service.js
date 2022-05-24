@@ -128,7 +128,6 @@ angular.module('emission.survey.enketo.service', [
     const xmlParser = new $window.DOMParser();
     const xmlResponse = _state.form.getDataStr();
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
-    const jsonDocResponse = $.xml2json(xmlResponse);
 
     const data = {
       label: EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc),
@@ -136,7 +135,6 @@ angular.module('emission.survey.enketo.service', [
       timestamp: new Date(),
       version: _state.config[_state.name].version,
       xmlResponse,
-      jsonDocResponse,
     };
     if (_state.opts.trip && _state.opts.trip.data.properties) {
         data.start_ts = _state.opts.trip.data.properties.start_ts;
