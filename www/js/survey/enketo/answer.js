@@ -8,6 +8,8 @@ angular.module('emission.survey.enketo.answer', [
    * @typedef EnketoAnswerData
    * @type {object}
    * @property {string} label - display label (this value is use for displaying on the button)
+   * @property {string} ts - the timestamp at which the survey was filled out (in seconds)
+   * @property {string} fmt_time - the formatted timestamp at which the survey was filled out
    * @property {string} name - survey name
    * @property {string} version - survey version
    * @property {string} xmlResponse - survey answer XML string

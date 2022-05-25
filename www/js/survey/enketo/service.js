@@ -128,12 +128,11 @@ angular.module('emission.survey.enketo.service', [
     const xmlParser = new $window.DOMParser();
     const xmlResponse = _state.form.getDataStr();
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
-    const jsonDocResponse = $.xml2json(xmlResponse);
+    const jsonDocResponse = $.xml2json(xmlResponse, {attrkey: 'attr'});
 
     const data = {
       label: EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc),
       name: _state.name,
-      timestamp: new Date(),
       version: _state.config[_state.name].version,
       xmlResponse,
       jsonDocResponse,
@@ -141,6 +140,10 @@ angular.module('emission.survey.enketo.service', [
     if (_state.opts.trip && _state.opts.trip.data.properties) {
         data.start_ts = _state.opts.trip.data.properties.start_ts;
         data.end_ts = _state.opts.trip.data.properties.end_ts;
+    } else {
+        const now = Date.now();
+        data.ts = now/1000; // convert to seconds to be consistent with the server
+        data.fmt_time = new Date(now);
     }
     return $window.cordova.plugins.BEMUserCache
       .putMessage(_state.config[_state.name].dataKey, data)
