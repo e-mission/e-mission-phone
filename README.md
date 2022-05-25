@@ -99,6 +99,14 @@ Pre-requisites
     ```
     $ bash setup/prereq_android_sdk_install.sh
     ```
+    - To run this script, open a terminal from your local root of the e-mission-phone repository.
+    - ***For (Y/N) confirmations**, be sure to type a **CAPTIAL Y** or else it will end the command and you will have to start over.*
+    - You may be requested to set the ANDROID_SDK_ROOT, in that case run these following commands before running the above prerequisite command **(be sure to replace the *{{your user}}* with your account username)**:
+    ```
+    $ export ANDROID_HOME=/Users/{{your user}}/Library/Android/sdk
+    $ export ANDROID_SDK_ROOT=/Users/{{your user}}/Library/Android/sdk
+    $ export ANDROID_AVD_HOME=/Users/{{your user}}/.android/avd
+    ```
 
     <details><summary>Expected output</summary>
 
@@ -120,6 +128,18 @@ Pre-requisites
     ```
 
     </details>
+- Installing Android SDK emulator for Pixel 9.0
+    - ``` cd /Users/{{your user}}/Library/Android/sdk/cmdline-tools/latest/bin ```
+    - ``` ./sdkmanager --install "system-images;android-28;google_apis;x86" ```
+    - ``` echo "no" | ./avdmanager --verbose create avd --force --name "pixel_9.0" --device "pixel" --package "system-images;android-28;google_apis;x86" --tag "google_apis" --abi "x86" ```
+    - Run the emulator: ```./emulator @pixel_9.0 &```
+
+[9:28 AM] Guttman, Andrew
+https://gist.github.com/mrk-han/66ac1a724456cadf1c93f4218c6060ae
+Installing and creating Emulators with AVDMANAGER (For Continuous Integration Server or Local Use)
+Installing and creating Emulators with AVDMANAGER (For Continuous Integration Server or Local Use) - emulator-install-using-avdmanager.md
+
+
 
 Important
 ---
@@ -244,6 +264,3 @@ $ git pull upstream master
 $ git push origin master
 $ git branch -d mybranch
 ```
-
-
-test change made by sebastian
