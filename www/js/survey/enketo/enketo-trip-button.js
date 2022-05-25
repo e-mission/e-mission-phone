@@ -220,9 +220,6 @@ angular.module('emission.survey.enketo.trip.button',
   etbs.updateTripProperties = function(trip, viewScope) {
     // currently a NOP since we don't have any other trip properties
     return;
-    etbs.inferFinalLabels(trip);
-    etbs.updateVerifiability(trip);
-    etbs.updateVisibilityAfterDelay(trip, viewScope);
   }
   /**
    * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
@@ -235,51 +232,6 @@ angular.module('emission.survey.enketo.trip.button',
   etbs.inferFinalLabels = function(trip) {
     // currently a NOP since we don't have any other trip properties
     return;
-    // Deep copy the possibility tuples
-    let labelsList = [];
-    if (angular.isDefined(trip.inferred_labels)) {
-        labelsList = JSON.parse(JSON.stringify(trip.inferred_labels));
-    }
-
-    // Capture the level of certainty so we can reconstruct it later
-    const totalCertainty = labelsList.map(item => item.p).reduce(((item, rest) => item + rest), 0);
-
-    // Filter out the tuples that are inconsistent with existing green labels
-    const userInput = trip.userInput[etbs.SINGLE_KEY];
-    if (userInput) {
-      const retKey = etbs.inputType2retKey(inputType);
-      labelsList = labelsList.filter(item => item.labels[retKey] == userInput.value);
-    }
-
-    // Red labels if we have no possibilities left
-    if (labelsList.length == 0) {
-      etbs.populateInput(trip.finalInference, etbs.SINGLE_INPUT, undefined);
-    }
-    else {
-      // Normalize probabilities to previous level of certainty
-      const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
-      labelsList.forEach(item => item.p*=certaintyScalar);
-
-      // For each label type, find the most probable value by binning by label value and summing
-      const retKey = etbs.inputType2retKey(etbs.SINGLE_INPUT);
-      let valueProbs = new Map();
-      for (const tuple of labelsList) {
-        const labelValue = tuple.labels[retKey];
-        if (!valueProbs.has(labelValue)) valueProbs.set(labelValue, 0);
-        valueProbs.set(labelValue, valueProbs.get(labelValue) + tuple.p);
-      }
-      let max = {p: 0, labelValue: undefined};
-      for (const [thisLabelValue, thisP] of valueProbs) {
-        // In the case of a tie, keep the label with earlier first appearance in the labelsList (we used a Map to preserve this order)
-        if (thisP > max.p) max = {p: thisP, labelValue: thisLabelValue};
-      }
-
-      // Display a label as red if its most probable inferred value has a probability less than or equal to the trip's confidence_threshold
-      // Fails safe if confidence_threshold doesn't exist
-      if (max.p <= trip.confidence_threshold) max.labelValue = undefined;
-
-      etbs.populateInput(trip.finalInference, etbs.SINGLE_INPUT, max.labelValue);
-    }
   }
 
   /**
@@ -304,13 +256,6 @@ angular.module('emission.survey.enketo.trip.button',
     // currently a NOP since we don't have any other trip properties
     trip.verifiability = "cannot-verify";
     return;
-    var allGreen = true;
-    var someYellow = false;
-    const green = trip.userInput[etbs.SINGLE_KEY];
-    const yellow = trip.finalInference[etbs.SINGLE_KEY] && !green;
-    if (yellow) someYellow = true;
-    if (!green) allGreen = false;
-    trip.verifiability = someYellow ? "can-verify" : (allGreen ? "already-verified" : "cannot-verify");
   }
 
   /*
