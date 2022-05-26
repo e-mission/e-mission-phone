@@ -119,7 +119,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
              client: retVal
             });
           });
-          $scope.finish();
+          $scope.next();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);
         });
