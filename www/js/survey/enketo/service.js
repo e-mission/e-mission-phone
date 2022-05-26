@@ -104,7 +104,7 @@ angular.module('emission.survey.enketo.service', [
   /**
    * _restoreAnswer restore the most recent answer for the survey
    * @param {EnketoAnswer[]} answers survey answers
-   * @returns {Promise<string>} answer string promise
+   * @returns {string} answer string
    */
   function _restoreAnswer() {
     if (_state.opts.trip) {

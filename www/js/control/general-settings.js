@@ -13,14 +13,13 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
                                         'emission.survey.enketo.demographics',
-                                        'emission.survey.external.launch',
                                         'emission.plugin.logger'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $ionicModal, $stateParams,
-               $rootScope, KVStore, SurveyLaunch, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
@@ -493,12 +492,6 @@ angular.module('emission.main.control',['emission.services',
                 return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
             }
         });
-    };
-    $scope.launchEndSurvey = function() {
-        SurveyLaunch.startSurveyPrefilled('https://pe.fourstep.dev/', {
-            returnURL: 'https://www.taharashidi.com/endsurvey',
-        });
-        $scope.endForceSync();
     };
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){

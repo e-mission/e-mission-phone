@@ -383,7 +383,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
-    const surveyOpt = SurveyOptions.ENKETO;
+    const surveyOpt = SurveyOptions.MULTILABEL;
     const manualInputFactory = $injector.get(surveyOpt.service);
 
     // Internal function, not publicly exposed
