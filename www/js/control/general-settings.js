@@ -495,9 +495,8 @@ angular.module('emission.main.control',['emission.services',
         });
     };
     $scope.launchEndSurvey = function() {
-        SurveyLaunch.startSurveyPrefilled('https://pe.fourstep.dev/', {
-            returnURL: 'https://www.taharashidi.com/endsurvey',
-        });
+        const returnURL = 'https://www.taharashidi.com/endsurvey';
+        SurveyLaunch.startSurveyPrefilled(`https://pe.fourstep.dev/?returnUrl=${returnURL}`, 'uuid');
         $scope.endForceSync();
     };
     $scope.userStartStopTracking = function() {
