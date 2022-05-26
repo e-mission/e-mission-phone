@@ -136,6 +136,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
 
+  // rciti start
+  // Custom isAnalyzed logic for rciti
+  dh.isAnalyzed = function(tripgj) {
+    return (tripgj.data.id.indexOf('unprocessed_') === -1);
+  }
+  // rciti end
+
   dh.getTripBackground = function(tripgj) {
       var background = "bg-light";
       if (dh.isDraft(tripgj)) {
