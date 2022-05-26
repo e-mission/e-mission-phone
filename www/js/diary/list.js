@@ -305,10 +305,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
        readAndUpdateForDay(Timeline.data.currDay);
     };
 
-    // rciti start
-    $scope.isAnalyzed = DiaryHelper.isAnalyzed;
-    // rciti end
-
     $scope.makeCurrent = function() {
       $ionicPopup.alert({
         template: "Coming soon, after Shankari's quals in early March!"
