@@ -132,12 +132,8 @@ angular.module('emission.survey.enketo.service', [
 
     const data = {
       label: EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc),
-<<<<<<< HEAD:www/js/survey/enketo/service.js
       name: _state.name,
       version: _state.config[_state.name].version,
-=======
-      timestamp: new Date(),
->>>>>>> parent of 04eb99fa (patch(Enketo): fix answers not restore correctly):www/js/survey/enketo-survey-service.js
       xmlResponse,
       jsonDocResponse,
     };
