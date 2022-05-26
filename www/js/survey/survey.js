@@ -5,6 +5,7 @@ angular.module('emission.survey', [
                     "emission.survey.external.launch",
                     "emission.survey.multilabel.buttons",
                     "emission.survey.multilabel.infscrollfilters",
+                    "emission.survey.enketo.trip.button",
                     ])
 
 .factory("SurveyOptions", function() {
@@ -14,6 +15,11 @@ angular.module('emission.survey', [
         filter: "InfScrollFilters",
         service: "MultiLabelService",
         elementTag: "multilabel"
+    }
+    surveyoptions.ENKETO = {
+        filter: "InfScrollFilters",
+        service: "EnketoTripButtonService",
+        elementTag: "enketo-trip-button"
     }
 
     return surveyoptions;

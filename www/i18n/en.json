@@ -52,6 +52,7 @@
 
     "control":{
         "profile": "Profile",
+        "edit-demographics": "Edit Demographics",
         "tracking": "Tracking",
         "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
@@ -97,9 +98,9 @@
         "consent-found": "Consent found!",
         "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
         "consented-ok": "OK",
-        "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
-        "share-subject": "Emission - UC Berkeley Research Project",
-        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
+        "share-message": "Join me in making transportation greener and healthier \nDownload the emTripLog app:",
+        "share-subject": "UNSW Travel Survey",
+        "share-url": "https://www.taharashidi.com/travel-survey"
     },
 
     "metrics":{
@@ -155,6 +156,7 @@
         "time": "Time",
         "mode": "Mode",
         "purpose": "Purpose",
+        "survey": "Details",
         "unlabeled": "All Unlabeled",
         "invalid-ebike": "Invalid",
         "to-label": "To Label",
@@ -167,6 +169,7 @@
         "choose-mode": "Mode 📝 ",
         "choose-replaced-mode": "Replaces 📝",
         "choose-purpose": "Purpose 📝",
+        "choose-survey": "Add Trip Details 📝 ",
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
@@ -396,5 +399,11 @@
     "sensor_explanation":{
         "button-accept": "OK",
         "button-decline": "Stop"
+    },
+    "survey": {
+        "prev-survey-found": "Found previous survey response",
+        "use-prior-response": "Use prior response",
+        "edit-response": "Edit response",
+        "move-on": "Move on"
     }
 }

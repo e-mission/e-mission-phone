@@ -92,13 +92,13 @@ angular.module('emission.main.metrics',['nvd3',
 
     /*
     $scope.onCurrentTrip = function() {
-      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-        Logger.log("Current trip state" + JSON.stringify(result));
-        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
-          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
-          $state.go("root.main.current");
-        }
-      });
+      // window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+      //   Logger.log("Current trip state" + JSON.stringify(result));
+      //   if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
+      //     JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+      //     $state.go("root.main.current");
+      //   }
+      // });
     };
     */
 
@@ -112,9 +112,9 @@ angular.module('emission.main.metrics',['nvd3',
     // If we want to share this function (see the pun?) between the control screen and the dashboard, we need to put it into a service/factory.
     // But it is not clear to me why it needs to be in the profile screen...
     var prepopulateMessage = {
-      message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emission app:', // not supported on some apps (Facebook, Instagram)
-      subject: 'Help Berkeley become more bikeable and walkable', // fi. for email
-      url: 'https://bic2cal.eecs.berkeley.edu/#download'
+      message: 'Have fun, support research and get active. Your privacy is protected. \nDownload the emTripLog app:', // not supported on some apps (Facebook, Instagram)
+      subject: 'Help Sydney become more bikeable and walkable', // fi. for email
+      url: 'https://www.taharashidi.com/travel-survey'
     }
 
     $scope.share = function() {

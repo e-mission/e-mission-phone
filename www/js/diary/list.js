@@ -27,11 +27,11 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    SurveyOptions,
+                                    SurveyOptions, 
     Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
   const DEFAULT_ITEM_HT = 335;
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
+  $scope.surveyOpt = SurveyOptions.ENKETO;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
     {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   // Add option
@@ -160,7 +160,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     $scope.pickDay = function() {
       ionicDatePicker.openDatePicker($scope.datepickerObject);
     }
-
 
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.start_local_dt);
@@ -481,7 +480,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
          the code to read the manual inputs is completely different.
          Instead, let's find the corresponding trip from the label view and
          copy over the `userInput` (and potentially the `user_input`) values over
-         */
         $scope.$apply(() => {
             if ($scope.data && $scope.data.currDayTripWrappers) {
                 $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
@@ -495,6 +493,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                 console.log("No trips loaded yet, no inputs to copy over");
             }
         });
+         */
         if($rootScope.barDetail){
           readAndUpdateForDay($rootScope.barDetailDate);
           $rootScope.barDetail = false;

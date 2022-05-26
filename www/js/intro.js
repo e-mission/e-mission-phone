@@ -2,7 +2,7 @@
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.splash.updatecheck',
-                                  'emission.survey.external.launch',
+                                  'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'ionic-toast'])
@@ -22,7 +22,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   });
 })
 
-.controller('IntroCtrl', function($scope, $rootScope, $state, $window,
+.controller('IntroCtrl', function($scope, $rootScope, $http, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
     $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, i18nUtils) {
 
@@ -30,7 +30,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
     i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
     i18nUtils.geti18nFileName("templates/", "intro/sensor_explanation", ".html"),
-    i18nUtils.geti18nFileName("templates/", "intro/login", ".html")
+    i18nUtils.geti18nFileName("templates/", "intro/login", ".html"),
+    i18nUtils.geti18nFileName("templates/", "intro/survey", ".html")
   ]);
   allIntroFiles.then(function(allIntroFilePaths) {
     $scope.$apply(function() {
@@ -39,6 +40,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       $scope.consentFile = allIntroFilePaths[1];
       $scope.explainFile = allIntroFilePaths[2];
       $scope.loginFile = allIntroFilePaths[3];
+      $scope.surveyFile = allIntroFilePaths[4];
     });
   });
 
@@ -103,8 +105,45 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       });
   }
 
-  $scope.login = function() {
-    window.cordova.plugins.BEMJWTAuth.signIn().then(function(userEmail) {
+  $scope.loginExisting = function() {
+    $scope.data = {};
+    const tokenPopup = $ionicPopup.show({
+        template: '<input type="String" ng-model="data.existing_token">',
+        title: 'Enter the existing token that you have',
+        scope: $scope,
+        buttons: [
+          {
+            text: '<b>OK</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              if (!$scope.data.existing_token) {
+                //don't allow the user to close unless he enters a username
+
+                e.preventDefault();
+              } else {
+                return $scope.data.existing_token;
+              }
+            }
+          },{
+            text: '<b>Cancel</b>',
+            type: 'button-stable',
+            onTap: function(e) {
+              return null;
+            }
+          }
+        ]
+    });
+    tokenPopup.then(function(token) {
+        if (token != null) {
+            $scope.login(token);
+        }
+    }).catch(function(err) {
+        $scope.alertError(err);
+    });
+  };
+
+  $scope.login = function(token) {
+    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(userEmail, 'middle', false, 2500);
@@ -112,18 +151,18 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-          UpdateCheck.getChannel().then(function(retVal) {
-            CommHelper.updateUser({
-             client: retVal
-            });
-          });
-          $scope.finish();
+            ionicToast.show(userEmail, 'middle', false, 2500);
+            $scope.next();
+            // $scope.finish();
         }, function(errorResult) {
+          // ionicToast.show(userEmail, 'middle', false, 2500);
           $scope.alertError('User registration error', errorResult);
+          // $scope.finish();
         });
       }
     }, function(error) {
         $scope.alertError('Sign in error', error);
+        // $scope.finish();
     });
   };
 
@@ -149,6 +188,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     StartPrefs.markIntroDone();
     $scope.getIntroBox().slide(0);
     StartPrefs.loadPreferredScreen();
+    // remove this view since the intro is done
+    // when we go back to the intro state, it will be recreated
+    $("[state='root.intro']").remove();
+    $scope.$destroy();
   }
 
   $ionicPlatform.ready().then(function() {
