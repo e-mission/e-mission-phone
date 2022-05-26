@@ -92,13 +92,13 @@ angular.module('emission.main.metrics',['nvd3',
 
     /*
     $scope.onCurrentTrip = function() {
-      // window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
-      //   Logger.log("Current trip state" + JSON.stringify(result));
-      //   if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
-      //     JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
-      //     $state.go("root.main.current");
-      //   }
-      // });
+      window.cordova.plugins.BEMDataCollection.getState().then(function(result) {
+        Logger.log("Current trip state" + JSON.stringify(result));
+        if(JSON.stringify(result) ==  "\"STATE_ONGOING_TRIP\""||
+          JSON.stringify(result) ==  "\"local.state.ongoing_trip\"") {
+          $state.go("root.main.current");
+        }
+      });
     };
     */
 
