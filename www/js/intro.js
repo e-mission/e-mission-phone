@@ -114,9 +114,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+userEmail);
       } else {
         CommHelper.registerUser(function(successResult) {
-            ionicToast.show(userEmail, 'middle', false, 2500);
-            $scope.next();
-            // $scope.finish();
+          UpdateCheck.getChannel().then(function(retVal) {
+            CommHelper.updateUser({
+             client: retVal
+            });
+          });
+          $scope.finish();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);
         });
