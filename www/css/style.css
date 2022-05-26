@@ -701,14 +701,7 @@ background-image: none !important; }
   width: 64px;
   font-size:20px;
 }
-/* rciti start */
-.control-icon-user-profile {
-  background-color: rgb(201, 217, 236);
-}
-.control-icon-end-survey {
-  background-color: #E0A1A1 !important;
-}
-/* rciti end */
+
 
 #switch-user.control-icon-button{
   background-color: #E0A1A1 !important;

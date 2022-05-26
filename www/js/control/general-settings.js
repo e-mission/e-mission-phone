@@ -494,11 +494,6 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
-    $scope.launchEndSurvey = function() {
-        const returnURL = 'https://www.taharashidi.com/endsurvey';
-        SurveyLaunch.startSurveyPrefilled(`https://pe.byamarin.com/?returnUrl=${returnURL}`, 'uuid');
-        $scope.endForceSync();
-    };
     $scope.userStartStopTracking = function() {
         if ($scope.settings.collect.trackingOn){
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');
