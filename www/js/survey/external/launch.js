@@ -162,7 +162,6 @@ angular.module('emission.survey.external.launch', ['emission.services',
         startSurveyCommon(url, elementXPath, "js/survey/uuid_insert_xpath.js");
     }
 
-<<<<<<< HEAD:www/js/survey/external/launch.js
     /**
      * startSurveyPrefilled start the survey and prefill the UUID field.
      * @param {string} url survey url
