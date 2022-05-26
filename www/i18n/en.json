@@ -98,8 +98,8 @@
         "consent-found": "Consent found!",
         "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
         "consented-ok": "OK",
-        "share-message": "Join me in making transportation greener and healthier \nDownload the emTripLog app:",
-        "share-subject": "UNSW Travel Survey",
+        "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
+        "share-subject": "https://bic2cal.eecs.berkeley.edu/#download",
         "share-url": "https://www.taharashidi.com/travel-survey"
     },
 
@@ -156,6 +156,7 @@
         "time": "Time",
         "mode": "Mode",
         "purpose": "Purpose",
+        "survey": "Details",
         "unlabeled": "All Unlabeled",
         "invalid-ebike": "Invalid",
         "to-label": "To Label",
@@ -168,6 +169,7 @@
         "choose-mode": "Mode 📝 ",
         "choose-replaced-mode": "Replaces 📝",
         "choose-purpose": "Purpose 📝",
+        "choose-survey": "Add Trip Details 📝 ",
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
