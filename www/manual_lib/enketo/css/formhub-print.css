@@ -1,0 +1,447 @@
+/** The next styles are meant to easily customize the background and border of radiobuttons and checkboxes, not their size! */
+/** end radiobuttons and checkboxes */
+/** CORE **/
+
+/* * */
+.enketo-plugin,
+.enketo-plugin * {
+  float: none;
+}
+
+/* body */
+.enketo-plugin {
+  display: block;
+  overflow: visible;
+  background: none;
+}
+.enketo-plugin .main {
+  overflow: visible;
+  display: block;
+  margin: 0;
+  padding: 0;
+}
+.enketo-plugin .main .paper {
+  padding: 3px;
+  display: block;
+}
+.enketo-plugin .paper {
+  overflow: visible;
+  border: none;
+  margin: 0;
+}
+
+.enketo-plugin .side-slider,
+.enketo-plugin .side-slider__toggle,
+.enketo-plugin #feedback-bar,
+.enketo-plugin #dialog-alert,
+.enketo-plugin #dialog-confirm,
+.enketo-plugin #dialog-save,
+.enketo-plugin #form-languages,
+.enketo-plugin .form-header,
+.enketo-plugin .form-logo,
+.enketo-plugin .form-footer,
+.enketo-plugin .or-appearance-no-print,
+.enketo-plugin .notification,
+.enketo-plugin .paper #submit-form,
+.enketo-plugin h4::before {
+  display: none !important;
+}
+
+.enketo-plugin .or .hint,
+.enketo-plugin .or .or-appearance-no-print,
+.enketo-plugin .or .geopoint .search-bar,
+.enketo-plugin .or .or-constraint-msg,
+.enketo-plugin .or .add-on,
+.enketo-plugin .or .file-feedback,
+.enketo-plugin .or video,
+.enketo-plugin .or audio,
+.enketo-plugin .or button,
+.enketo-plugin .or .invalid-required .or-required-msg.active,
+.enketo-plugin .or .invalid-constraint .or-constraint-msg.active {
+  display: none;
+}
+
+.enketo-plugin .or:not(.print-relevant-only) .or-branch.disabled {
+  display: block;
+}
+
+.enketo-plugin .or input[type="file"] {
+  visibility: hidden;
+}
+
+.enketo-plugin .or input[type="number"] {
+  appearance: textfield !important;
+  -moz-appearance: textfield !important;
+  -webkit-appearance: textfield !important;
+  -ms-appearance: textfield !important;
+}
+
+.enketo-plugin h3 {
+  font-size: 19.2px;
+}
+
+  .enketo-plugin h4 {
+  font-size: 15.6px;
+}
+
+.enketo-plugin label,
+.enketo-plugin legend,
+.enketo-plugin .trigger,
+.enketo-plugin .readonly {
+  font-size: 12px;
+}
+
+.enketo-plugin .question-label,
+.enketo-plugin .option-label,
+.enketo-plugin label.geo {
+  font-size: 12px;
+}
+
+.enketo-plugin .question input:not([type=radio]):not([type=checkbox]) {
+  font-size: 12px;
+}
+
+.enketo-plugin .or h2,
+.enketo-plugin .or h3,
+.enketo-plugin .or h4,
+.enketo-plugin .or .required {
+  color: black;
+}
+
+.enketo-plugin .or h3,
+.enketo-plugin .or h4 {
+  margin: 0;
+}
+
+.enketo-plugin .or .question {
+  margin-bottom: 0;
+}
+
+.enketo-plugin .or legend {
+  margin-bottom: 5px;
+}
+.enketo-plugin .or legend ~ label {
+  padding: 0;
+}
+
+.enketo-plugin .or legend span:not(.or-output) {
+  display: block;
+}
+
+.enketo-plugin .or .readonly,
+.enketo-plugin .or .trigger {
+  font-weight: normal;
+  background: none;
+  color: black;
+  padding: 5px 5px 12px 5px;
+}
+
+.enketo-plugin .or .required {
+  float: right;
+}
+
+.enketo-plugin .or .or-repeat {
+  background: none;
+}
+
+.enketo-plugin .or input[type=text],
+.enketo-plugin .or input[type=tel],
+.enketo-plugin .or input[type=password],
+.enketo-plugin .or input[type=url],
+.enketo-plugin .or input[type=email],
+.enketo-plugin .or input[type=file],
+.enketo-plugin .or input[type=date],
+.enketo-plugin .or input[type=time],
+.enketo-plugin .or input[type=datetime],
+.enketo-plugin .or input[type=number],
+.enketo-plugin .or select,
+.enketo-plugin .or textarea {
+  border-radius: 0px;
+  box-shadow: none;
+  appearance: none;
+  -moz-appearance: none;
+  -webkit-appearance: none;
+  -ms-appearance: none;
+  border: none;
+  background: none;
+  border-bottom: 1px solid black;
+}
+
+.enketo-plugin .or input[type="file"] {
+  display: none !important;
+}
+
+.enketo-plugin .or .or-hint.active,
+.enketo-plugin .or .or-hint.or-form-guidance.active {
+  color: black;
+  display: block;
+  padding-top: 5px;
+  margin-top: 0;
+  line-height: 1em;
+}
+
+.enketo-plugin .or .or-hint.or-form-guidance.active {
+  border: 1px dotted black;
+  padding: 1px;
+  margin-top: 5px;
+  font-size: 10px;
+}
+
+.enketo-plugin .invalid-constraint,
+.enketo-plugin .invalid-required {
+  background: none;
+  border: 1px solid red;
+}
+
+.enketo-plugin .geopicker.widget {
+  margin-top: 10px;
+}
+.enketo-plugin .geopicker.widget .geo-inputs {
+  width: 100%;
+}
+.enketo-plugin .geopicker.widget .geo-inputs label.geo {
+  display: inline-block;
+  width: 25%;
+  padding: 0 !important;
+  margin: 7px 0 0 0 !important;
+}
+.enketo-plugin .geopicker.widget .geo-inputs label.geo:nth-of-type(3),
+.enketo-plugin .geopicker.widget .geo-inputs label.geo:nth-of-type(4) {
+  vertical-align: top;
+  margin-top: 0;
+  padding-top: 12px;
+  font-size: inherit;
+  border-top: none;
+  font-size: auto;
+}
+.enketo-plugin .geopicker.widget .geo-inputs label.geo.kml {
+  display: none;
+}
+.enketo-plugin .geopicker.widget .geo-inputs label.geo input {
+  width: 100% !important;
+  margin-top: 8px !important;
+  padding-top: 0px !important;
+}
+.enketo-plugin .geopicker.widget .points {
+  display: none;
+}
+.enketo-plugin .geopicker.widget .search-bar {
+  display: none;
+}
+.enketo-plugin .geopicker.widget .leaflet-popup-pane,
+.enketo-plugin .geopicker.widget .leaflet-control {
+  display: none;
+}
+
+.enketo-plugin .esri-geopicker.widget .esri-ui-top-left {
+  display: none;
+}
+
+.enketo-plugin .esri-geopicker.widget .btn[name="geodetect"] {
+  display: none !important;
+}
+
+.enketo-plugin .esri-geopicker.widget .interaction-blocker {
+  display: none !important;
+}
+
+.enketo-plugin .esri-geopicker.widget .map-canvas-wrapper:not(.hide-map) {
+  display: block !important;
+}
+
+.enketo-plugin .bootstrap-select:before, .bootstrap-select:after {
+  content: " ";
+  display: table;
+}
+
+.enketo-plugin .bootstrap-select:after {
+  clear: both;
+}
+
+.enketo-plugin .bootstrap-select .dropdown-toggle {
+  display: none;
+}
+.enketo-plugin .bootstrap-select .dropdown-toggle ~ .dropdown-menu {
+  /*IE10*/
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  -ms-flex-wrap: wrap;
+  -moz-flex-wrap: wrap;
+  flex-wrap: wrap;
+  -webkit-flex-direction: row;
+  -ms-flex-direction: row;
+  -moz-flex-direction: row;
+  flex-direction: row;
+  display: block;
+  position: static;
+  border: none;
+  box-shadow: none;
+  list-style-type: circle;
+  max-height: none;
+}
+.enketo-plugin .bootstrap-select .dropdown-toggle ~ .dropdown-menu li,
+.enketo-plugin .bootstrap-select .dropdown-toggle ~ .dropdown-menu li.active {
+  flex: 1;
+  min-width: 30%;
+  display: inline-block;
+  margin-right: 20px;
+}
+.enketo-plugin .bootstrap-select .dropdown-toggle ~ .dropdown-menu a {
+  background: none;
+  color: black;
+}
+
+.enketo-plugin .datalist.widget {
+  display: none;
+}
+
+.enketo-plugin .or-appearance-likert .option-wrapper > label .option-label {
+  border-top: 1px solid black;
+}
+
+.enketo-plugin .question.or-appearance-compact input:checked ~ img,
+.enketo-plugin .question.or-appearance-quickcompact input:checked ~ img {
+  border-color: black;
+}
+
+.enketo-plugin .or-appearance-distress .slider-vertical .slider {
+  border: none;
+}
+
+.enketo-plugin .or-appearance-distress .bulb {
+  display: none;
+}
+
+.enketo-plugin .or-appearance-distress .slider-handle {
+  border: 1px solid black;
+}
+
+.enketo-plugin .or-appearance-distress .slider-vertical .slider-track {
+  border: 1px solid black;
+}
+
+.enketo-plugin .or-appearance-analog-scale:not(.or-appearance-horizontal) {
+  display: flex !important;
+  flex-wrap: wrap;
+}
+
+.enketo-plugin .or-appearance-analog-scale .scale__ticks {
+  display: none;
+}
+
+.enketo-plugin .or-appearance-analog-scale .slider-vertical .slider-track {
+  border-right: 1px solid black;
+  margin-left: -8.5px;
+}
+
+.enketo-plugin .or-appearance-analog-scale .slider-horizontal .slider-track {
+  border-bottom: 1px solid black;
+  margin-top: -10px;
+}
+
+.enketo-plugin .or-appearance-analog-scale .slider-handle {
+  border: 1px solid black;
+}
+
+.enketo-plugin .or-appearance-analog-scale .slider-vertical .slider-handle {
+  margin-left: -1px;
+}
+
+.enketo-plugin .or-appearance-analog-scale .slider-horizontal .slider-handle {
+  margin-top: -1px;
+}
+
+.enketo-plugin .or-appearance-analog-scale .slider-vertical .min-label {
+  margin-top: 10px;
+}
+
+.enketo-plugin .draw-widget__colorpicker {
+  display: none;
+}
+
+.enketo-plugin .or-appearance-comment.hide {
+  display: block !important;
+}
+
+.enketo-plugin .pages.or.print-relevant-only .disabled[role="page"] {
+  display: none;
+}
+
+.enketo-plugin .pages.or [role="page"] {
+  display: inherit;
+}
+
+.enketo-plugin .pages.or .or-group,
+.enketo-plugin .pages.or .or-group-data,
+.enketo-plugin .pages.or .or-repeat {
+  display: inherit;
+}
+
+.enketo-plugin .question {
+  page-break-inside: avoid;
+}
+
+.enketo-plugin h3,
+.enketo-plugin h4 {
+  page-break-after: avoid;
+}
+.enketo-plugin h3 + .question,
+.enketo-plugin h4 + .question {
+  page-break-before: avoid;
+}
+
+/*.enketo-plugin .page-break {
+    display: block;
+    //border: 1px dashed blue;
+    width: 100%;
+    margin: 0;
+    color: transparent;
+    border-bottom: none;
+    page-break-after: always !important;
+}*/
+.enketo-plugin [type=range]:not(.empty)::-webkit-slider-thumb {
+  border-color: black !important;
+}
+
+.enketo-plugin [type=range]:not(.empty)::-moz-range-thumb {
+  border-color: black !important;
+}
+
+.enketo-plugin [type=range]:not(.empty)::-ms-thumb {
+  border-color: black !important;
+}
+
+.enketo-plugin .question input[type=radio],
+.enketo-plugin .question input[type=checkbox] {
+  -webkit-print-color-adjust: exact;
+  color-adjust: exact;
+  border-color: black;
+  border-width: 1px;
+}
+.enketo-plugin .question input[type=radio]:checked,
+.enketo-plugin .question input[type=checkbox]:checked {
+  border-color: black;
+}
+
+.enketo-plugin .question input[type=checkbox]:checked {
+  border-color: black;
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%27%20stroke%3D%27transparent%27%20fill%3D%27black%27%20width%3D%2732%27%20height%3D%2732%27%20viewBox%3D%270%200%2032%2032%27%3E%3Cpath%20d%3D%27M25.1%2012.5l-3.4-3.3-8%208-2.9-3-3.4%203.4%206.3%206.3z%27%2F%3E%3C%2Fsvg%3E");
+  background-size: 20px 20px;
+  background-position: -3px;
+  background-position: -1px;
+}
+
+.enketo-plugin .question input[type=radio]:checked {
+  border-color: black;
+  background-image: radial-gradient(4px, black 0%, black 99%, transparent 100%);
+}
+
+.enketo-plugin .bootstrap-select .option-wrapper > label {
+  padding-left: 35px !important;
+}
+
+.enketo-plugin [dir="rtl"] .bootstrap-select .option-wrapper > label {
+  padding-right: 35px !important;
+}
