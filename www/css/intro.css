@@ -85,3 +85,11 @@
   padding-left: 8%;
   padding-right: 8%;
 }
+.qr-text {
+  padding-top: 5%;
+  padding-right: 8%;
+  padding-left: 8%;
+  font-size: 15px;
+  line-height: 1.5;
+  text-align: left;
+}
