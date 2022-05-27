@@ -14,17 +14,11 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
   }
 
   im.getUserInputForTrip = function(trip, nextTrip, userInputList) {
-    // If there is only one item in the list, return it.
-    // This make it compatible when fake list is given (for Enketo Survey).
-    // As well as optimize the performance.
     if (userInputList === undefined) {
         Logger.log("In getUserInputForTrip, no user input, returning []");
         return undefined;
     }
 
-    if (userInputList.length === 1) {
-      return userInputList[0];
-    }
     if (userInputList.length < 20) {
         console.log("Input list = "+userInputList.map(printUserInput));
     }
