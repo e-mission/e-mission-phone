@@ -12,7 +12,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
-                                        'emission.plugin.logger'])
+                                        'emission.plugin.logger',
+                                        'monospaced.qrcode'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
@@ -96,13 +97,11 @@ angular.module('emission.main.control',['emission.services',
         // }
     }
 
+    
     $scope.viewQRCode = function($event) {
-        i18nUtils.geti18nFileName("templates/", "control/qrc", ".html").then((qrcFileName) => {
-            $scope.qrcTextFile = qrcFileName;
-            $ionicPopover.fromTemplateUrl("templates/control/main-qrc.html", {scope: $scope}).then((p) => {
-                $scope.ppp = p;
-                $scope.ppp.show($event);
-            });
+        $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((p) => {
+            $scope.ppp = p;
+            $scope.ppp.show($event);
         }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
     }
 
