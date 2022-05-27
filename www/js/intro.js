@@ -153,7 +153,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
     tokenPopup.then(function(token) {
         if (token != null) {
-            $scope.login($scope.randomToken);
+            $scope.login(token);
         }
     }).catch(function(err) {
         $scope.alertError(err);
