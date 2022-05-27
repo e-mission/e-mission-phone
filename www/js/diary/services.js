@@ -407,8 +407,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                   inp_key, pendingLabelQuery).then(manualInputFactory.extractResult);
             });
             const manualConfirmResults = {};
-            return [result, Promise.all(manualPromises).then((manualResults) =>
-                manualInputFactory.processManualInputs(manualResults, manualConfirmResults))];
+            return Promise.all(manualPromises).then((manualResults) => {
+                manualInputFactory.processManualInputs(manualResults, manualConfirmResults);
+                return [result, manualConfirmResults];
+            });
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
             return [{}, {}];
