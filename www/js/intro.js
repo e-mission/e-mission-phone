@@ -70,11 +70,25 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.overallStatus = false;
 
+  // Adapted from https://stackoverflow.com/a/63363662/4040267
+  // made available under a CC BY-SA 4.0 license
+
+  $scope.generateRandomToken = function(length) {
+    var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
+    var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
+    var randomString = randomChars.join("");
+    var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
+    return validRandomString.substring(0, length);
+  }
+
   $scope.disagree = function() {
     $state.go('root.main.heatmap');
   };
 
   $scope.agree = function() {
+    $scope.randomToken = $scope.generateRandomToken(8);
+    window.Logger.log("Signing in with random token "+$scope.randomToken);
+
     StartPrefs.markConsented().then(function(response) {
       $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
