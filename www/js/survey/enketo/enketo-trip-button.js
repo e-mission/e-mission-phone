@@ -116,7 +116,10 @@ angular.module('emission.survey.enketo.trip.button',
         if (!result) {
           return;
         }
-        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {data: result});
+        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {
+            data: result,
+            write_ts: Date.now()
+        });
         // store is commented out since the enketo survey launch currently
         // stores the value as well
         // $scope.store(inputType, result, false);
@@ -212,8 +215,8 @@ angular.module('emission.survey.enketo.trip.button',
   etbs.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
     let pmInput = potentiallyModifiedTrip.userInput;
     let origInput = originalTrip.userInput;
-    if (((pmInput[etbs.SINGLE_INPUT] || {}).write_ts || 0) > ((origInput[etbs.SINGLE_INPUT] || {}).write_ts || 0)) {
-        origInput[etbs.SINGLE_INPUT] = pmInput[etbs.SINGLE_INPUT];
+    if (((pmInput[etbs.SINGLE_KEY] || {}).write_ts || 0) > ((origInput[etbs.SINGLE_KEY] || {}).write_ts || 0)) {
+        origInput[etbs.SINGLE_KEY] = pmInput[etbs.SINGLE_KEY];
     }
   }
 
