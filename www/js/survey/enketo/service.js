@@ -137,9 +137,15 @@ angular.module('emission.survey.enketo.service', [
       xmlResponse,
       jsonDocResponse,
     };
-    if (_state.opts.trip && _state.opts.trip.data.properties) {
-        data.start_ts = _state.opts.trip.data.properties.start_ts;
-        data.end_ts = _state.opts.trip.data.properties.end_ts;
+    if (_state.opts.trip) {
+        // The trip structure is different between the diary and label screens
+        // one has the timestamps in properties and the other does not
+        // let's support both so we can label from either screen
+        let tsObj = _state.opts.trip.data? _state.opts.trip.data.properties : _state.opts.trip;
+        if (tsObj) {
+            data.start_ts = tsObj.start_ts;
+            data.end_ts = tsObj.end_ts;
+        }
     } else {
         const now = Date.now();
         data.ts = now/1000; // convert to seconds to be consistent with the server
