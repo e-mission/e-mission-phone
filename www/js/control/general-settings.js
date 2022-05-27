@@ -12,6 +12,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
+                                        'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
                                         'monospaced.qrcode'])
 
