@@ -6,18 +6,19 @@ angular.module('emission.survey', [
                     "emission.survey.multilabel.buttons",
                     "emission.survey.multilabel.infscrollfilters",
                     "emission.survey.enketo.trip.button",
+                    "emission.survey.enketo.trip.infscrollfilters",
                     ])
 
 .factory("SurveyOptions", function() {
     var surveyoptions = {};
     console.log("This is currently a NOP; we load the individual components dynamically");
     surveyoptions.MULTILABEL = {
-        filter: "InfScrollFilters",
+        filter: "MultiLabelInfScrollFilters",
         service: "MultiLabelService",
         elementTag: "multilabel"
     }
     surveyoptions.ENKETO = {
-        filter: "InfScrollFilters",
+        filter: "EnketoTripInfScrollFilters",
         service: "EnketoTripButtonService",
         elementTag: "enketo-trip-button"
     }
