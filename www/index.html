@@ -21,6 +21,13 @@
     <link href="common/img/sprites/spritesmith/quests/bosses/quest.bosses.css" rel="stylesheet">
     <link rel="stylesheet" href="lib/ng-walkthrough/css/ng-walkthrough.css">
     <link href="lib/angularjs-slider/dist/rzslider.css" rel="stylesheet">
+    <!-- <link href='http://fonts.googleapis.com/css?family=Open+Sans:400,700,600&amp;subset=latin,cyrillic-ext,cyrillic,greek-ext,greek,vietnamese,latin-ext' rel='stylesheet' type='text/css'> -->
+    <link href="manual_lib/enketo/css/formhub.css" media="all" rel="stylesheet">
+    <!--<link type="text/css" href="manual_lib/enketo/css/plain.css" media="all" rel="stylesheet" />-->
+    <!--<link type="text/css" href="manual_lib/enketo/css/grid.css" media="all" rel="stylesheet" />-->
+    <link href="manual_lib/enketo/css/formhub-print.css" media="print" rel="stylesheet">
+    <!--<link type="text/css" href="manual_lib/enketo/css/plain-print.css" media="print" rel="stylesheet" />-->
+    <!--<link type="text/css" href="manual_lib/enketo/css/grid-print.css" media="print" rel="stylesheet" />-->
     <link href="manual_lib/fontawesome/css/all.min.css" rel="stylesheet">
 
     <!-- IF using Sass (run gulp sass first), then uncomment below and remove the CSS includes above
@@ -29,6 +36,7 @@
 
     <!-- ionic/angularjs js -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
+    <script src="lib/jquery-xml2json/src/xml2json.js"></script>
     <script src="lib/ionic/js/ionic.bundle.js"></script>
     <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
     <script src="lib/angular-translate/angular-translate.min.js"></script>
@@ -58,6 +66,7 @@
     <script src="lib/angular-cookies/angular-cookies.min.js"></script>
     <script src="lib/angularLocalStorage/dist/angularLocalStorage.min.js"></script>
     <script src="lib/angularjs-slider/dist/rzslider.min.js"></script>
+    <script src="manual_lib/enketo/enketo-bundle.js"></script>
     <!-- Manually installed javascript for libraries that are not published through bower -->
     <!-- cordova script (this will be a 404 in the browser) -->
     <script type="text/javascript" src="cordova.js"></script>
@@ -81,6 +90,7 @@
     <script src="js/main.js"></script>
     <script src="js/recent.js"></script>
     <script src="js/survey/survey.js"></script>
+    <script src="js/survey/input-matcher.js"></script>
     <script src="js/survey/one-click-button.js"></script>
     <script src="js/incident/post-trip-manual.js"></script>
     <script src="js/survey/multilabel/infinite_scroll_filters.js"></script>
@@ -103,6 +113,13 @@
     <script src="js/common/place-detail.js"></script>
     <script src="js/common/services.js"></script>
     <script src="js/survey/external/launch.js"></script>
+    <script src="js/survey/enketo/answer.js"></script>
+    <script src="js/survey/enketo/launch.js"></script>
+    <script src="js/survey/enketo/service.js"></script>
+    <script src="js/survey/enketo/infinite_scroll_filters.js"></script>
+    <script src="js/survey/enketo/enketo-trip-button.js"></script>
+    <script src="js/survey/enketo/enketo-demographics.js"></script>
+    <script src="js/survey/enketo/enketo-preview.js"></script>
     <script src="js/heatmap.js"></script>
     <script src="js/metrics.js"></script>
     <script src="js/goals.js"></script>

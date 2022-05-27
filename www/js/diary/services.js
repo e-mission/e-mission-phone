@@ -2,7 +2,7 @@
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual', 'emission.survey.multilabel.services'])
+    'emission.incident.posttrip.manual'])
 .factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
   var dh = {};
   // dh.expandEarlierOrLater = function(id) {
@@ -372,126 +372,19 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return getColoredStyle(baseDict, dh.getColor(feature.properties.sensed_mode));
       };
 
-  var fmtTs = function(ts_in_secs, tz) {
-    return moment(ts_in_secs * 1000).tz(tz).format();
-  }
-
-  var printUserInput = function(ui) {
-    return fmtTs(ui.data.start_ts, ui.metadata.time_zone) + "("+ui.data.start_ts + ") -> "+
-           fmtTs(ui.data.end_ts, ui.metadata.time_zone) + "("+ui.data.end_ts + ")"+
-           " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
-  }
-
-  dh.getUserInputForTrip = function(trip, nextTrip, userInputList) {
-    if (userInputList.length < 20) {
-        console.log("Input list = "+userInputList.map(printUserInput));
-    }
-    // undefined != true, so this covers the label view case as well
-    var isDraft = trip.isDraft == true;
-    var potentialCandidates = userInputList.filter(function(userInput) {
-        /*
-        console.log("startDelta "+userInput.data.label+
-            "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
-            ") - trip("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+") = "+
-            (userInput.data.start_ts - trip.start_ts)+" should be positive");
-        console.log("endDelta = "+userInput.data.label+
-            "user("+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)+
-            ") - trip("+fmtTs(trip.end_ts, userInput.metadata.time_zone)+") = "+
-            (userInput.data.end_ts - trip.end_ts)+" should be negative");
-        */
-        // logic described in
-        // https://github.com/e-mission/e-mission-docs/issues/423
-        if (isDraft) {
-            if (userInputList.length < 20) {
-                var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                    +" trip = "+fmtTs(trip.start_ts, userInput.metadata.time_zone)
-                    +" -> "+fmtTs(trip.end_ts, userInput.metadata.time_zone)
-                    +" checks are ("+(userInput.data.start_ts >= trip.start_ts)
-                    +" && "+(userInput.data.start_ts <= trip.end_ts)
-                    +" || "+(-(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
-                    +") && "+(userInput.data.end_ts <= trip.end_ts);
-                console.log(logStr);
-                // Logger.log(logStr);
-            }
-            return (userInput.data.start_ts >= trip.start_ts
-                    && userInput.data.start_ts <= trip.end_ts
-                    || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
-                && userInput.data.end_ts <= trip.end_ts;
-        } else {
-            // we know that the trip is cleaned so we can use the fmt_time
-            // but the confirm objects are not necessarily filled out
-            if (userInputList.length < 20) {
-                var logStr = "Cleaned trip: comparing user = "
-                    +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                    +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                    +" trip = "+trip.start_fmt_time
-                    +" -> "+trip.end_fmt_time
-                    +" start checks are "+(userInput.data.start_ts >= trip.start_ts)
-                    +" && "+(userInput.data.start_ts <= trip.end_ts)
-                    +" end checks are "+(userInput.data.end_ts <= trip.end_ts)
-                    +" || "+((userInput.data.end_ts - trip.end_ts) <= 15 * 60)+")";
-                Logger.log(logStr);
-            }
-            // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
-            const startChecks = userInput.data.start_ts >= trip.start_ts &&
-                userInput.data.start_ts <= trip.end_ts;
-            var endChecks = (userInput.data.end_ts <= trip.end_ts ||
-                    (userInput.data.end_ts - trip.end_ts) <= 15 * 60);
-            if (startChecks && !endChecks) {
-                if (angular.isDefined(nextTrip)) {
-                    endChecks = userInput.data.end_ts <= nextTrip.start_ts;
-                    Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextTrip.start_ts+") = "+endChecks);
-                } else {
-                    // next trip is not defined, last trip
-                    endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
-                    Logger.log("Second level of end checks for the last trip of the day");
-                    Logger.log("compare "+userInput.data.end_local_dt.day + " with " + userInput.data.start_local_dt.day + " = " + endChecks);
-                }
-                if (endChecks) {
-                    // If we have flipped the values, check to see that there
-                    // is sufficient overlap
-                    const overlapDuration = Math.min(userInput.data.end_ts, trip.end_ts) - Math.max(userInput.data.start_ts, trip.start_ts)
-                    Logger.log("Flipped endCheck, overlap("+overlapDuration+
-                        ")/trip("+trip.duration+") = "+ (overlapDuration / trip.duration));
-                    endChecks = (overlapDuration/trip.duration) > 0.5;
-                }
-            }
-            return startChecks && endChecks;
-        }
-    });
-    if (potentialCandidates.length === 0)  {
-        if (userInputList.length < 20) {
-            Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
-        }
-        return undefined;
-    }
-
-    if (potentialCandidates.length === 1)  {
-        Logger.log("In getUserInputForTripStartEnd, one potential candidate, returning  "+ printUserInput(potentialCandidates[0]));
-        return potentialCandidates[0];
-    }
-
-    Logger.log("potentialCandidates are "+potentialCandidates.map(printUserInput));
-    var sortedPC = potentialCandidates.sort(function(pc1, pc2) {
-        return pc2.metadata.write_ts - pc1.metadata.write_ts;
-    });
-    var mostRecentEntry = sortedPC[0];
-    Logger.log("Returning mostRecentEntry "+printUserInput(mostRecentEntry));
-    return mostRecentEntry;
-  }
-
-
   return dh;
 })
-.factory('Timeline', function(CommHelper, ConfirmHelper, $http, $ionicLoading, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $translate) {
+.factory('Timeline', function(CommHelper, SurveyOptions, $http, $ionicLoading, $window,
+    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
     timeline.data = {};
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
+
+    const surveyOpt = SurveyOptions.MULTILABEL;
+    const manualInputFactory = $injector.get(surveyOpt.service);
 
     // Internal function, not publicly exposed
     var getKeyForDate = function(date) {
@@ -509,15 +402,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 startTs: result.end_ts - 10,
                 endTs: moment().unix() + 10
             }
-            var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+            var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  ConfirmHelper.inputDetails[inp].key, pendingLabelQuery);
+                  inp_key, pendingLabelQuery).then(manualInputFactory.extractResult);
             });
+            const manualConfirmResults = {};
             return Promise.all(manualPromises).then((manualResults) => {
-                const manualConfirmResults = {};
-                manualResults.forEach(function(mr, index) {
-                  manualConfirmResults[ConfirmHelper.INPUTS[index]] = mr;
-                });
+                manualInputFactory.processManualInputs(manualResults, manualConfirmResults);
                 return [result, manualConfirmResults];
             });
         }).catch((err) => {
@@ -1097,18 +988,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var localCacheReadFn = timeline.updateFromDatabase;
 
-    var processManualInputs = function(manualResults) {
-        var mrString = 'unprocessed manual inputs '
-            + manualResults.map(function(item, index) {
-                return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
-            });
-        console.log(mrString);
-        timeline.data.unifiedConfirmsResults = {}
-        manualResults.forEach(function(mr, index) {
-          timeline.data.unifiedConfirmsResults[ConfirmHelper.INPUTS[index]] = mr;
-        });
-    }
-
     var addUnprocessedTrips = function(processedTripList, day, completeStatus) {
         var tripList = processedTripList;
         if (!completeStatus) {
@@ -1126,13 +1005,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var readTripsAndUnprocessedInputs = function(day, tripReadFn, completeStatus, tq) {
-      var manualPromises = ConfirmHelper.INPUTS.map(function(inp) {
+      console.log("Reading values for list ", manualInputFactory.MANUAL_KEYS);
+      var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
         return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            ConfirmHelper.inputDetails[inp].key, tq);
+            inp_key, tq).then(manualInputFactory.extractResult);
       });
       let tripsReadPromise = tripReadFn(day);
-      // var surveyAnswersPromise = EnketoSurvey.getAllSurveyAnswers("manual/confirm_survey", { populateLabels: true });
-      let allManualPromise = Promise.all(manualPromises).then(processManualInputs);
+      timeline.data.unifiedConfirmsResults = {};
+      let allManualPromise = Promise.all(manualPromises).then((manualResults) =>
+        manualInputFactory.processManualInputs(manualResults, timeline.data.unifiedConfirmsResults));
 
       let allTripsPromise = tripsReadPromise.then((processedTripList) => {
         console.log("Reading trips from server finished successfully with length "
