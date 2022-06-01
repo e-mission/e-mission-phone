@@ -53,6 +53,7 @@
     "control":{
         "profile": "Profile",
         "edit-demographics": "Edit Demographics",
+        "username": "Username {{usernamedata}}",
         "tracking": "Tracking",
         "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
@@ -155,6 +156,7 @@
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
+        "replaces": "Replaces",
         "purpose": "Purpose",
         "survey": "Details",
         "unlabeled": "All Unlabeled",
@@ -174,6 +176,7 @@
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
         "list-pick-a-date": "Pick a date"
+        "no-trips-today": "No trips recorded on this day"
     },
 
     "new_label_tour": {
@@ -405,6 +408,11 @@
         "prev-survey-found": "Found previous survey response",
         "use-prior-response": "Use prior response",
         "edit-response": "Edit response",
-        "move-on": "Move on"
+        "move-on": "Move on",
+        "survey": "Survey",
+        "save": "Save",
+        "next": "Next",
+        "powered-by": "Powered by",
+        "dismiss": "Dismiss"
     }
 }

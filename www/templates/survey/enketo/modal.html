@@ -1,11 +1,11 @@
-<ion-modal-view>
+<ion-modal-view translate-namespace="survey">
   <ion-header-bar class="bar bar-header">
-      <h1 class="title">Survey</h1>
+      <h1 class="title" translate>{{'.survey'}}</h1>
       <button
           class="button button-clear button-positive"
           ng-click="enketoSurvey.hide()"
           ng-show="!enketoSurvey.disableDismiss"
-      >Dismiss</button>
+      ><span translate>{{ '.dismiss' }}</span></button>
   </ion-header-bar>
   <ion-content class="enketo-plugin overflow-scroll">
       <ng-include src="'templates/survey/enketo/form-base.html'"></ng-include>
