@@ -6,556 +6,559 @@
       <itext>
         <translation lang="Spanish (es)">
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25:label">
-            <value>Hola</value>
+            <value>Información de nivel personal</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you:label">
-            <value>Hola</value>
+            <value>¿Cuántos años tienes?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/_16_years_old:label">
-            <value>Hola</value>
+            <value>&lt; 16 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/16___20_years_old:label">
-            <value>Hola</value>
+            <value>16 ~ 20 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/21___25_years_old:label">
-            <value>Hola</value>
+            <value>21 ~ 25 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/26___30_years_old:label">
-            <value>Hola</value>
+            <value>26 ~ 30 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/31___35_years_old:label">
-            <value>Hola</value>
+            <value>31 ~ 35 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/36___40_years_old:label">
-            <value>Hola</value>
+            <value>36 ~ 40 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/41___45_years_old:label">
-            <value>Hola</value>
+            <value>41 ~ 45 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/46___50_years_old:label">
-            <value>Hola</value>
+            <value>46 ~ 50 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/51___55_years_old:label">
-            <value>Hola</value>
+            <value>51 ~ 55 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/56___60_years_old:label">
-            <value>Hola</value>
+            <value>56 ~ 60 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/61___65_years_old:label">
-            <value>Hola</value>
+            <value>61 ~ 65 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/__65_years_old:label">
-            <value>Hola</value>
+            <value>&gt; 65 años</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/How_old_are_you/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decirlo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender:label">
-            <value>Hola</value>
+            <value>¿Cuál es su género?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender/female:label">
-            <value>Hola</value>
+            <value>Femenino</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender/male:label">
-            <value>Hola</value>
+            <value>Masculino.</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender/non_binary:label">
-            <value>Hola</value>
+            <value>No binario/ genero no binario/ genero no fluido</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_have_a_driver_license:label">
-            <value>Hola</value>
+            <value>¿Tiene una licencia de conducir válida?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_have_a_driver_license/yes:label">
-            <value>Hola</value>
+            <value>Si</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_have_a_driver_license/no:label">
-            <value>Hola</value>
+            <value>No</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_have_a_driver_license/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student:label">
-            <value>Hola</value>
+            <value>¿Es usted estudiante?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student:hint">
-            <value>Hola</value>
+            <value>Incluyendo escuela pública / privada y escuela en casa</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student/not_a_student:label">
-            <value>Hola</value>
+            <value>No es un estudiante</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student/yes___k_12th_grade_including_ged:label">
-            <value>Hola</value>
+            <value>Sí – K hasta12º grado incluyendo GED</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student/yes___vocation_technical_trade_school:label">
-            <value>Hola</value>
+            <value>Sí - Vocación/Técnica/Escuela de Comercio</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student/yes___part_time_college_university:label">
-            <value>Hola</value>
+            <value>Sí - Colegio/Universidad a tiempo parcial</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student/yes___full_time_college_university:label">
-            <value>Hola</value>
+            <value>Sí - Colegio/Universidad a tiempo completo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Are_you_a_student/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d:label">
-            <value>Hola</value>
+            <value>¿Cuál es el grado más alto o el título que ha obtenido?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d/less_than_a_high_school_graduate:label">
-            <value>Hola</value>
+            <value>Menos que un graduado de secundaria</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d/high_school_graduate_or_ged:label">
-            <value>Hola</value>
+            <value>Graduado de secundaria o GED</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d/some_college_or_associates_degree:label">
-            <value>Hola</value>
+            <value>Algún título universitario o asociado</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d/bachelor_s_degree:label">
-            <value>Hola</value>
+            <value>Licenciatura</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d/graduate_degree_or_professional_degree:label">
-            <value>Hola</value>
+            <value>Poste grado graduado o título profesional</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_the_highest_grade_or_d/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_work_for_either_pay_or_:label">
-            <value>Hola</value>
+            <value>¿Trabaja por un sueldo o por una ganancia?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_work_for_either_pay_or_/yes:label">
-            <value>Hola</value>
+            <value>Si</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_work_for_either_pay_or_/no:label">
-            <value>Hola</value>
+            <value>No</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_work_for_either_pay_or_/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Which_one_below_describe_you_b:label">
-            <value>Hola</value>
+            <value>¿Cuál de los siguientes te describe mejor?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Which_one_below_describe_you_b/i_m_temporarily_absent_from_a_job_now:label">
-            <value>Hola</value>
+            <value>Estoy temporalmente ausente de un trabajo ahora</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Which_one_below_describe_you_b/i_m_not_able_to_work__due_to_reasons_lik:label">
-            <value>Hola</value>
+            <value>No puedo trabajar (debido a razones como la edad, la capacidad física, etc.)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Which_one_below_describe_you_b/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98:label">
-            <value>Hola</value>
+            <value>Información a nivel del hogar</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home:label">
-            <value>Hola</value>
+            <value>¿Es propietario o alquila su casa?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/own:label">
-            <value>Hola</value>
+            <value>Propio</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/rent:label">
-            <value>Hola</value>
+            <value>Alquilado</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type:label">
-            <value>Hola</value>
+            <value>¿Cuál es tu tipo de casa?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/condominium_apartment:label">
-            <value>Hola</value>
+            <value>Condominio / apartamento</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/single_family_house:label">
-            <value>Hola</value>
+            <value>Casa unifamiliar</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/multi_family_house:label">
-            <value>Hola</value>
+            <value>Casa multifamiliar</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/shelter:label">
+            <value>Refugio</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category:label">
-            <value>Hola</value>
+            <value>Por favor, identifique qué categoría representa el ingreso total de su hogar, antes de impuestos, en el último año</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category:hint">
-            <value>Hola</value>
+            <value>Preguntamos esto porque los ingresos están relacionados con cómo, cuándo y por qué la gente va de un lugar a otro. Esta información se utilizará únicamente con fines estadísticos.</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/less_than__24_999:label">
-            <value>Hola</value>
+            <value>Menos de $24,999</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/_25_000_to__49_999:label">
-            <value>Hola</value>
+            <value>$25,000 a $49,999</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/_50_000_to__99_999:label">
-            <value>Hola</value>
+            <value>$50,000 a $99,999</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/_100_000_to__149_999:label">
-            <value>Hola</value>
+            <value>$100,000 a $149,999</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/_150_000_to__199_999:label">
-            <value>Hola</value>
+            <value>$150,000 a $199,999</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/_200_000_or_more:label">
-            <value>Hola</value>
+            <value>$200,000 o más</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p:label">
-            <value>Hola</value>
+            <value>Incluyéndose usted, ¿cuántas personas viven en su casa?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/1:label">
-            <value>Hola</value>
+            <value>1</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/2:label">
-            <value>Hola</value>
+            <value>2</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/3:label">
-            <value>Hola</value>
+            <value>3</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/4:label">
-            <value>Hola</value>
+            <value>4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/5:label">
-            <value>Hola</value>
+            <value>5</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/6:label">
-            <value>Hola</value>
+            <value>6</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/7:label">
-            <value>Hola</value>
+            <value>7</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/more_than_7:label">
-            <value>Hola</value>
+            <value>Más de 7</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w:label">
-            <value>Hola</value>
+            <value>Incluido usted, ¿cuántos trabajadores hay en su hogar?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/0:label">
-            <value>hhh</value>
+            <value>0</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/1:label">
-            <value>kkk</value>
+            <value>1</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/2:label">
-            <value>hhh</value>
+            <value>2</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/3:label">
-            <value>kkk</value>
+            <value>3</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/4:label">
-            <value>jjj</value>
+            <value>4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/more_than_4:label">
-            <value>ggg</value>
+            <value>Más de 4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/prefer_not_to_say:label">
-            <value>hkk</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001:label">
-            <value>Hola</value>
+            <value>Incluyéndose usted, ¿cuántas personas tienen una licencia de conducir válida en su hogar?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/0:label">
-            <value>hjk</value>
+            <value>0</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/1:label">
-            <value>hjk</value>
+            <value>1</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/2:label">
-            <value>hjk</value>
+            <value>2</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/3:label">
-            <value>hjk</value>
+            <value>3</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/4:label">
-            <value>jkl</value>
+            <value>4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/more_than_4:label">
-            <value>hjk</value>
+            <value>Más de 4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001/prefer_not_to_say:label">
-            <value>hjk</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l:label">
-            <value>Hola</value>
+            <value>¿Cuántos vehículos de motor son propiedad, están alquilados o están disponibles para uso regular por las personas que vive actualmente en su hogar?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l:hint">
-            <value>Hola</value>
+            <value>Incluya motocicletas, ciclomotores y vehículos recreativos.</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l/0:label">
-            <value>Hola</value>
+            <value>0</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l/1:label">
-            <value>Hola</value>
+            <value>1</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l/2:label">
-            <value>Hola</value>
+            <value>2</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l/3:label">
-            <value>Hola</value>
+            <value>3</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l/more_than_3:label">
-            <value>Hola</value>
+            <value>Más de 3</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l/prefer_not_to_say:label">
-            <value>kjh</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your:label">
-            <value>Hola</value>
+            <value>Si no pudiera usar los vehículos de su hogar, ¿cuál de las siguientes opciones consideraríapara que lo lleve de un lugar a otro?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/public_transportation__bus__subway__ligh:label">
-            <value>gjk</value>
+            <value>Transporte público (autobús, metro, tren ligero, etc.)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/get_a_ride_from_a_friend_or_family_membe:label">
-            <value>lkj</value>
+            <value>Obtener transporte de un amigo o familiar.</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/rental_car__including_zipcar__car2go:label">
-            <value>jhk</value>
+            <value>Coche de alquiler (incluido Zipcar / Car2Go)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/bicycle:label">
-            <value>kjh</value>
+            <value>Bicycleta.</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/walk:label">
-            <value>liju</value>
+            <value>Caminar</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/taxi__regular_taxi__uber__lyft__etc:label">
-            <value>kjh</value>
+            <value>Taxi (taxi regular, Uber, Lyft, etc.)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/none:label">
-            <value>kjh</value>
+            <value>Ninguno</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your/prefer_not_to_say:label">
-            <value>kjgh</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_have_a_condition_or_han:label">
-            <value>Hola</value>
+            <value>¿Tiene alguna condición médica que le dificulte viajar fuera de casa?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_have_a_condition_or_han/yes:label">
-            <value>kjl</value>
+            <value>Si</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_have_a_condition_or_han/no:label">
-            <value>Hola</value>
+            <value>No</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_have_a_condition_or_han/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_long_you_had_this_conditio:label">
-            <value>Hola</value>
+            <value>¿Cuánto tiempo ha tenido esta condición?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_long_you_had_this_conditio/6_months_or_less:label">
-            <value>Hola</value>
+            <value>6 meses o menos</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_long_you_had_this_conditio/more_than_6_months:label">
-            <value>Hola</value>
+            <value>Más de 6 meses</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_long_you_had_this_conditio/all_life:label">
-            <value>Hola</value>
+            <value>Toda mi vida</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_long_you_had_this_conditio/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99:label">
-            <value>Hola</value>
+            <value>Información relacionada con el trabajo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_more_than_one_job:label">
-            <value>Hola</value>
+            <value>¿Tiene más de un trabajo?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_more_than_one_job:hint">
-            <value>Hola</value>
+            <value>Nos referimos a más de un empleador, no solo a múltiples sitios de trabajo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_more_than_one_job/yes:label">
-            <value>Hola</value>
+            <value>Si</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_more_than_one_job/no:label">
-            <value>Hola</value>
+            <value>No</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_more_than_one_job/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_work_full_time_or_part_:label">
-            <value>Hola</value>
+            <value>¿Trabaja a tiempo completo o parcial en su trabajo principal?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_work_full_time_or_part_:hint">
-            <value>Hola</value>
+            <value>Para los propósitos de esta encuesta, un trabajo de tiempo completo es de al menos 35 horas por semana</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_work_full_time_or_part_/full_time:label">
-            <value>Hola</value>
+            <value>Tiempo completo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_work_full_time_or_part_/part_time:label">
-            <value>Hola</value>
+            <value>Tiempo parcial</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_work_full_time_or_part_/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim:label">
-            <value>Hola</value>
+            <value>¿Qué es lo que mejor describe su trabajo principal?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/sales_or_service:label">
-            <value>Hola</value>
+            <value>Ventas o servicio</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/clerical_or_administrative_support:label">
-            <value>kjh</value>
+            <value>Apoyo administrativo o de oficina</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/manufacturing__construction__maintenance:label">
-            <value>khk</value>
+            <value>Fabricación, construcción, mantenimiento o agricultura</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
-            <value>hkjh</value>
+            <value>Profesional, gerencial o técnico</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha:label">
-            <value>Hola</value>
+            <value>En su trabajo principal, ¿tiene la capacidad de establecer o cambiar su propia hora de entrada?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha/yes:label">
-            <value>Hola</value>
+            <value>Si</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha/no:label">
-            <value>Hola</value>
+            <value>No</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha/prefer_not_to_say:label">
-            <value>jh</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_the_option_of_work:label">
-            <value>H</value>
+            <value>¿Tiene la opción de trabajar desde casa o en un lugar alternativo en lugar de ir a su lugar de trabajo principal?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_the_option_of_work/yes:label">
-            <value>jg</value>
+            <value>Si</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_the_option_of_work/no:label">
-            <value>kjg</value>
+            <value>No</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Do_you_have_the_option_of_work/prefer_not_to_say:label">
-            <value>lkj</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001:label">
-            <value>Hola</value>
+            <value>¿Cuántos días a la semana suele trabajar desde su casa o en un lugar alternativo?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001:hint">
-            <value>Hola</value>
+            <value>Redondee al siguiente número entero (es decir, un día), si solo trabaja desde su casa o en ubicaciones alternativas, medio día</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/0:label">
-            <value>kjg</value>
+            <value>0</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/1:label">
-            <value>kl</value>
+            <value>1</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/2:label">
-            <value>Hola</value>
+            <value>2</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/3:label">
-            <value>lkh</value>
+            <value>3</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/4:label">
-            <value>kjlj</value>
+            <value>4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/5:label">
-            <value>kjh</value>
+            <value>5</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/6:label">
-            <value>lkj</value>
+            <value>6</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/7:label">
-            <value>kjh</value>
+            <value>7</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t:label">
-            <value>Hola</value>
+            <value>¿Qué días de la semana suele trabajar desde su casa o en un lugar alternativo?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t:hint">
-            <value>Hola</value>
+            <value>Lunes</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/monday:label">
-            <value>ljlj</value>
+            <value>Lunes</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/tuesday:label">
-            <value>kjh</value>
+            <value>Martes</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/wednesday:label">
-            <value>khlh</value>
+            <value>Miércoles</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/thursday:label">
-            <value>kjh</value>
+            <value>Jueves</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/friday:label">
-            <value>khg</value>
+            <value>Viernes</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/saturday:label">
-            <value>jhk</value>
+            <value>Sábado</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/sunday:label">
-            <value>gf</value>
+            <value>Domingo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t/prefer_not_to_say:label">
-            <value>Hola</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you:label">
-            <value>Hola</value>
+            <value>¿Cómo llego a su trabajo principal la semana pasada?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/walk:label">
-            <value>khklkjh</value>
+            <value>Caminar</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/bicycle:label">
-            <value>khkh</value>
+            <value>Bicicleta</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/car__driving:label">
-            <value>kihk</value>
+            <value>Coche (conductora)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/car___passenger:label">
-            <value>lkjlkj</value>
+            <value>Coche (Pasajera)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/public_transit__including_commuter_bus__:label">
-            <value>kjhk</value>
+            <value>Transporte público (autobús/tren)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/taxi_limo__including_uber_lyft___split_t:label">
-            <value>kjh</value>
+            <value>Taxi/Limusina</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/ride_hail__uber_lyft:label">
-            <value>kjh</value>
+            <value>Servicio de granizo (Uber/Lyft)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/shared_electric_scooters_or_bikes:label">
-            <value>kjh</value>
+            <value>Patinetes o bicicletas eléctricas compartidas</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/worked_from_home:label">
-            <value>gg</value>
+            <value>Trabajé desde casa</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/others:label">
-            <value>kjhk</value>
+            <value>Otra</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_did_you_usually_get_to_you/prefer_not_to_say:label">
-            <value>kjhk</value>
+            <value>Prefiero no decirlo</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg:label">
-            <value>Hola</value>
+            <value>¿Cuál es su modo típico de acceso/egreso hacia/desde la parada de tránsito?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/walk:label">
-            <value>lkjlj</value>
+            <value>Caminar</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/bike:label">
-            <value>kkjh</value>
+            <value>Bicicleta</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/car__driver:label">
-            <value>kjh</value>
+            <value>Coche (conductora)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/car__passenger:label">
-            <value>kjh</value>
+            <value>Coche (Pasajera)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/taxi_limo:label">
-            <value>ljhk</value>
+            <value>Transporte público (autobús/tren)</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/ride_hail__uber_lyft:label">
-            <value>jhk</value>
+            <value>Taxi/Limusina</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/shared_electric_scooters_or_bikes:label">
-            <value>jkh</value>
+            <value>Patinetes o bicicletas eléctricas compartidas</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/others:label">
-            <value>kjg</value>
+            <value>Otra</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_is_your_typical_access_eg/prefer_not_to_say:label">
-            <value>jbmbn</value>
+            <value>Prefiero no decirlo</value>
           </text>
         </translation>
         <translation default="true()" lang="English (en)">
@@ -614,7 +617,7 @@
             <value>Male</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender/non_binary:label">
-            <value>Non-binary</value>
+            <value>Non-binary/gender-fluid</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/What_is_your_gender/prefer_not_to_say:label">
             <value>Prefer not to say</value>
@@ -726,6 +729,9 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/multi_family_house:label">
             <value>Multi-Family House</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/shelter:label">
+            <value>Shelter</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/prefer_not_to_say:label">
             <value>Prefer not to say</value>
@@ -1396,6 +1402,10 @@
         <item>
           <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/multi_family_house:label')"/>
           <value>multi_family_house</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/shelter:label')"/>
+          <value>shelter</value>
         </item>
         <item>
           <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/What_is_your_home_type/prefer_not_to_say:label')"/>
