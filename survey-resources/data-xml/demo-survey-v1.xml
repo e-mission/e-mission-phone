@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
-    <h:title>Location History Data based Travel Pattern Prediction Survey</h:title>
+    <h:title>Demographic survey</h:title>
     <model odk:xforms-version="1.0.0">
       <itext>
         <translation lang="Spanish (es)">
@@ -259,6 +259,30 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/prefer_not_to_say:label">
             <value>Prefiero no decir</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c:label">
+            <value>¿Cuántos niños menores de 18 años viven en su hogar?</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/0:label">
+            <value>0</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/1:label">
+            <value>1</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/2:label">
+            <value>2</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/3:label">
+            <value>3</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/4:label">
+            <value>4</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/more_than_4:label">
+            <value>More than 4</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001:label">
             <value>Incluyéndose usted, ¿cuántas personas tienen una licencia de conducir válida en su hogar?</value>
@@ -817,6 +841,30 @@
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/prefer_not_to_say:label">
             <value>Prefer not to say</value>
           </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c:label">
+            <value>How many children under age 18 live in your home?</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/0:label">
+            <value>0</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/1:label">
+            <value>1</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/2:label">
+            <value>2</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/3:label">
+            <value>3</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/4:label">
+            <value>4</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/more_than_4:label">
+            <value>More than 4</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001:label">
             <value>Including yourself, how many people have valid driver licenses in your household?</value>
           </text>
@@ -1138,6 +1186,7 @@
             <Please_identify_which_category/>
             <Including_yourself_how_many_p/>
             <Including_yourself_how_many_w/>
+            <Including_yourself_how_many_c/>
             <Including_yourself_how_many_p_001/>
             <How_many_vehicles_are_owned_l/>
             <If_you_were_unable_to_use_your/>
@@ -1176,6 +1225,7 @@
       <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Please_identify_which_category" required="true()" type="string"/>
       <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p" required="true()" type="string"/>
       <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w" required="true()" type="string"/>
+      <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c" required="true()" type="string"/>
       <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001" required="true()" type="string"/>
       <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/How_many_vehicles_are_owned_l" required="true()" type="string"/>
       <bind nodeset="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/If_you_were_unable_to_use_your" required="true()" type="string"/>
@@ -1511,6 +1561,37 @@
         </item>
         <item>
           <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_w/prefer_not_to_say:label')"/>
+          <value>prefer_not_to_say</value>
+        </item>
+      </select1>
+      <select1 ref="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c">
+        <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c:label')"/>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/0:label')"/>
+          <value>0</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/1:label')"/>
+          <value>1</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/2:label')"/>
+          <value>2</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/3:label')"/>
+          <value>3</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/4:label')"/>
+          <value>4</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/more_than_4:label')"/>
+          <value>more_than_4</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/prefer_not_to_say:label')"/>
           <value>prefer_not_to_say</value>
         </item>
       </select1>
