@@ -5,7 +5,7 @@ angular.module('emission.survey.enketo.service', [
   'emission.survey.enketo.answer'
 ])
 .factory('EnketoSurvey', function(
-  $window, $http, UnifiedDataLoader,
+  $window, $http, $translate, UnifiedDataLoader,
   InputMatcher, EnketoSurveyAnswer,
 ) {
   /**
@@ -77,7 +77,9 @@ angular.module('emission.survey.enketo.service', [
       external: opts.external || [],
       session: opts.session || {}
     };
-    _state.form = new $window.FormModule(formSelector, data, {});
+    const currLang = $translate.use();
+    _state.form = new $window.FormModule(formSelector, data,
+        {language: currLang});
     return _state.form.init();
   }
 
