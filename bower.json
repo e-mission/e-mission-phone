@@ -28,6 +28,7 @@
     "angular-translate-loader-static-files": "^2.18.1",
     "angular-translate-interpolation-messageformat": "^2.18.1",
     "bottleneck": "^2.19.5",
+    "angular-qrcode": "^7.2.0"
     "jquery-xml2json": "^0.0.8"
   }
 }

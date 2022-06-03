@@ -81,7 +81,8 @@
         "collection": "Collection",
         "sync": "Sync",
         "transition-notify": "Transition Notify",
-        "button-accept": "I accept"
+        "button-accept": "I accept",
+        "view-qrc": "View QR Code"
     },
 
     "general-settings":{
