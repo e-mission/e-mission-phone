@@ -175,7 +175,7 @@
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
-        "list-pick-a-date": "Pick a date"
+        "list-pick-a-date": "Pick a date",
         "no-trips-today": "No trips recorded on this day"
     },
 
