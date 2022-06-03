@@ -2,6 +2,10 @@
   "MODE" : [
        {"text":"Walk", "value":"walk", "met_equivalent": "WALKING", "co2PerMeter": 0},
        {"text":"Bike","value":"bike", "met_equivalent": "BICYCLING", "co2PerMeter": 0},
+       {"text":"e-bike","value":"e-bike", "met": {
+            "ALL": {"range": [0, -1], "mets": 4.9}
+       }, "co2PerMeter": 0.00728},
+       {"text":"Scooter share","value":"scootershare", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.00894},
        {"text":"Drove Alone","value":"drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.22031},
        {"text":"Shared Ride","value":"shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.11015},
        {"text":"Taxi/Uber/Lyft","value":"taxi", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.30741},
@@ -18,7 +22,8 @@
        {"text":"Transit transfer", "value":"transit_transfer"},
        {"text":"Shopping","value":"shopping"},
        {"text":"Meal","value":"meal"},
-       {"text":"Pick-up/Drop off","value":"pick_drop"},
+       {"text":"Pick-up/Drop off 👤","value":"pick_drop_person"},
+       {"text":"Pick-up/Drop off 📦","value":"pick_drop_item"},
        {"text":"Personal/Medical","value":"personal_med"},
        {"text":"Access Recreation","value":"access_recreation"},
        {"text":"Recreation/Exercise","value":"exercise"},
