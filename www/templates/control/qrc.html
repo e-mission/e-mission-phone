@@ -1,0 +1,10 @@
+<ion-popover-view style="width: 85%; height: 55%" translate-namespace="general-settings">
+    <ion-content style="margin: 0; padding: 0;">
+    <center> 
+        <h3> <span translate>{{'.qrcode'}}</span> </h3> 
+        <qrcode class="col" aria-label="qrcode for user email" data="{{settings.auth.email}}" size="220" download></qrcode>
+        <div class="qrcode share title" translate>{{'.qrcode-share-title'}} </div>
+        <div ng-click="shareQR()" class="control-icon-button" >  <i class="ion-share"></i></div>
+    </center>
+    </ion-content>
+</ion-popover-view>
