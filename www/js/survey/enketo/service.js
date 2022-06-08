@@ -53,6 +53,16 @@ angular.module('emission.survey.enketo.service', [
     return $http.get(ENKETO_SURVEY_CONFIG_PATH).then(configRes => {
       _state.config = configRes.data;
       return _state.config;
+    }).catch((err) => {
+        console.log("error "+JSON.stringify(err)+" while reading survey options, reverting to defaults");
+        return $http.get(ENKETO_SURVEY_CONFIG_PATH+".sample")
+         .then(configRes => {
+              _state.config = configRes.data;
+              return _state.config;
+         }).catch(function(err) {
+            // prompt here since we don't have a fallback
+            Logger.displayError("Error while reading default survey options", err);
+        });
     });
   }
 

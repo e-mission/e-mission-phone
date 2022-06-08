@@ -28,7 +28,7 @@ angular.module('emission.survey.multilabel.buttons',
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, $ionicPopover, $window, ClientStats, MultiLabelService) {
+    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, MultiLabelService) {
   console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
 
   var findViewElement = function() {
@@ -246,7 +246,9 @@ angular.module('emission.survey.multilabel.buttons',
       $scope.currViewState = findViewState();
   }
 
-  $scope.init();
+  $ionicPlatform.ready().then(function() {
+    $scope.init();
+  });
 })
 .factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout) {
   var mls = {};
@@ -311,6 +313,7 @@ angular.module('emission.survey.multilabel.buttons',
    */
   mls.populateInput = function(tripField, inputType, userInputLabel) {
     if (angular.isDefined(userInputLabel)) {
+        console.log("populateInput: looking in map of "+inputType+" for userInputLabel"+userInputLabel);
         var userInputEntry = mls.inputParams[inputType].value2entry[userInputLabel];
         if (!angular.isDefined(userInputEntry)) {
           userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
