@@ -82,7 +82,7 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify",
         "button-accept": "I accept",
-        "view-qrc": "My Bikecode"
+        "view-qrc": "My OPcode"
     },
 
     "general-settings":{
@@ -103,9 +103,9 @@
         "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
         "share-subject": "Emission - UC Berkeley Research Project",
         "share-url": "https://bic2cal.eecs.berkeley.edu/#download",
-        "qrcode": "My Bikecode",
-        "qrcode-share-title": "You can save your Bikecode to login easily in the future!",
-        "qrcode-share-message": "Save this Bikecode or send to a new device to scan and login!",
+        "qrcode": "My OPcode",
+        "qrcode-share-title": "You can save your OPcode to login easily in the future!",
+        "qrcode-share-message": "Save this OPcode or send to a new device to scan and login!",
         "qrcode-share-subject": "Share elsewhere"
     },
 
