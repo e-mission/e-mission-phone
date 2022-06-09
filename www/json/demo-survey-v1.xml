@@ -1,10 +1,13 @@
 <?xml version="1.0"?>
 <h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
   <h:head>
-    <h:title>Demographic survey</h:title>
+    <h:title ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/title')"/>
     <model odk:xforms-version="1.0.0">
       <itext>
         <translation lang="Spanish (es)">
+          <text id="/arcEm5iPB4F9CQZR258k4r/title">
+            <value>Datos demográficos</value>
+          </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25:label">
             <value>Información de nivel personal</value>
           </text>
@@ -586,6 +589,9 @@
           </text>
         </translation>
         <translation default="true()" lang="English (en)">
+          <text id="/arcEm5iPB4F9CQZR258k4r/title">
+            <value>Demographic data</value>
+          </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25:label">
             <value>Personal Level Information</value>
           </text>

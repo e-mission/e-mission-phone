@@ -23,11 +23,11 @@ angular.module('emission.i18n.utils', [])
     if (lang != 'en') {
       var url = i18nPath + fpFirstPart + "-" + lang + fpSecondPart;
       return $http.get(url).then( function(result){
-        window.Logger.log(window.Logger.LEVEL_DEBUG,
+        Logger.log(window.Logger.LEVEL_DEBUG,
           "Successfully found the "+url+", result is " + JSON.stringify(result.data).substring(0,10));
         return url;
       }).catch(function (err) {
-        window.Logger.log(window.Logger.LEVEL_DEBUG,
+        Logger.log(window.Logger.LEVEL_DEBUG,
           url+" file not found, loading english version, error is " + JSON.stringify(err));
         return Promise.resolve(defaultVal);
       });
