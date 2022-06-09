@@ -98,10 +98,14 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.viewQRCode = function($event) {
-        $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((p) => {
-            $scope.ppp = p;
-            $scope.ppp.show($event);
-        }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
+        if ($scope.qrp) {
+            $scope.qrp.show($event);
+        } else {
+            $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
+                $scope.qrp = q;
+                $scope.qrp.show($event);
+            }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
+        }
     }
 
     $scope.fixAppStatus = function() {
@@ -631,9 +635,14 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.shareQR = function() {
-        const c = $(".qrcode"); // selects the canvas element containing the QR code
-        const cbase64 = c[0].toDataURL(); // converts the canvas element into base64 data
-        prepopulateQRMessage.files = [cbase64]; // adds the base64 data into our share message
+        //const c = $(".qrcode"); // selects the canvas element containing the QR code
+        //const cbase64 = c[0].toDataURL(); // converts the canvas element into base64 data
+        //prepopulateQRMessage.files = [cbase64]; // adds the base64 data into our share message
+
+        const c = document.getElementsByClassName('qrcode-link');
+        const cbase64 = c[0].getAttribute('href');
+        prepopulateQRMessage.files = [cbase64];
+
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
             console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
