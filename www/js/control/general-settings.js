@@ -13,7 +13,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
                                         'emission.survey.enketo.demographics',
-                                        'emission.plugin.logger'])
+                                        'emission.plugin.logger',
+                                        'monospaced.qrcode'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
                $ionicPlatform,
@@ -93,6 +94,17 @@ angular.module('emission.main.control',['emission.services',
                     $scope.ppp.show($event);
                 });
             }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
+        }
+    }
+
+    $scope.viewQRCode = function($event) {
+        if ($scope.qrp) {
+            $scope.qrp.show($event);
+        } else {
+            $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
+                $scope.qrp = q;
+                $scope.qrp.show($event);
+            }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
         }
     }
 
@@ -610,6 +622,30 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.share = function() {
         window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
+            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+        }, function(msg) {
+            console.log("Sharing failed with message: " + msg);
+        });
+    }
+
+    var prepopulateQRMessage = {
+        message: $translate.instant('general-settings.qrcode-share-message'), // not supported on some apps (Facebook, Instagram)
+        subject: $translate.instant('general-settings.qrcode-share-subject') // fi. for email
+    }
+
+    $scope.shareQR = function() {
+        //const c = $(".qrcode"); // selects the canvas element containing the QR code
+        //const cbase64 = c[0].toDataURL(); // converts the canvas element into base64 data
+        //prepopulateQRMessage.files = [cbase64]; // adds the base64 data into our share message
+
+        const c = document.getElementsByClassName('qrcode-link');
+        const cbase64 = c[0].getAttribute('href');
+        prepopulateQRMessage.files = [cbase64];
+
+        prepopulateQRMessage.url = $scope.settings.auth.email;
+
+        window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
             console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
         }, function(msg) {
