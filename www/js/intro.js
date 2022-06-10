@@ -148,6 +148,29 @@ angular.module('emission.intro', ['emission.splash.startprefs',
             onTap: function(e) {
               return null;
             }
+          },{
+            text: '<b>Scan OPcode</b>',
+            type: 'button-positive',
+            onTap: function(e) {
+              cordova.plugins.barcodeScanner.scan(
+                function (result) {
+                // the code from here is copied and pasted from https://www.sitepoint.com/scanning-qr-code-cordova/
+                // this is not how the feature is intended to be developed, this is just to test it out to see if scanning a qr code works
+                  if(!result.cancelled)
+                  {
+                    alert("Barcode type is: " + result.format);
+                    alert("Decoded text is: " + result.text);
+                  }
+                  else
+                  {
+                    alert("You have cancelled scan");
+                  }
+                },
+                function (error) {
+                    alert("Scanning failed: " + error);
+                }
+              );
+            }
           }
         ]
     });
@@ -159,6 +182,27 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError(err);
     });
   };
+
+  $scope.scanQRCode = function() {
+    cordova.plugins.barcodeScanner.scan(
+      function (result) {
+          if (result.format == "QR_CODE" &&
+              result.cancelled == false) {
+              try {
+                  const bikeLabel = getScannedLabel(result.text);
+                  resolve(bikeLabel);
+              } catch(e) {
+                  reject(e);
+              }
+          } else {
+              reject(new Error("invalid QR code"+result.text));
+          }
+      },
+      function (error) {
+          reject(error);
+      }
+    );
+  }
 
   $scope.login = function(token) {
     window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
