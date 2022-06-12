@@ -1,10 +1,13 @@
 'use strict';
 
 angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.plugin.kvstore'])
-.factory('DynamicConfig', function($http, $window, KVStore, Logger) {
+.factory('DynamicConfig', function($http, $window, $rootScope, KVStore, Logger) {
     const STUDY_LABEL="DYNAMIC_UI_STUDY";
     const CONFIG_PHONE_UI="config/phone_ui_config";
+
     var dc = {};
+    dc.UI_CONFIG_READY="UI_CONFIG_READY";
+
     var readConfigFromServer = function(label, source) {
         Logger.log("Received request to switch to "+label+" from "+source);
         if (source != "github") {
@@ -24,12 +27,36 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.p
             Logger.displayError("Unable to download study config", fetchErr);
         });
     }
+
+    var loadSavedConfig = function() {
+        const nativePlugin = $window.cordova.plugins.BEMUserCache;
+        return nativePlugin.getDocument(CONFIG_PHONE_UI, false)
+            .then((savedConfig) => {
+                if (nativePlugin.isEmptyDoc(savedConfig)) {
+                    Logger.log("Found empty saved ui config, returning null");
+                    return null;
+                } else {
+                    Logger.log("Found previously stored ui config, returning it");
+                    return savedConfig;
+                }
+            })
+            .catch((err) => Logger.displayError("Unable to read saved config", err));
+    }
+
+    dc.saveAndNotifyConfigReady = function(newConfig) {
+        dc.config = newConfig;
+        $rootScope.$broadcast(dc.UI_CONFIG_READY, newConfig);
+    }
+
     dc.initByUser = function(urlComponents) {
         const newStudyLabel = urlComponents.label;
         KVStore.get(STUDY_LABEL).then((existingStudyLabel) => {
             if(angular.equals(existingStudyLabel, urlComponents)) {
                 Logger.log("existing label " + JSON.stringify(existingStudyLabel) +
-                    " and new one " + JSON.stringify(urlComponents), " are the same, skipping");
+                    " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
+                // use $scope.$apply here to be consistent with $http so we can consistently
+                // skip it in the listeners
+                loadSavedConfig().then($rootScope.$apply(() => dc.saveAndNotifyConfigReady));
                 return; // labels are the same
             }
             // if the labels are different
@@ -37,9 +64,10 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.p
                 const storeLabelPromise = KVStore.set(STUDY_LABEL, urlComponents);
                 const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
                     CONFIG_PHONE_UI, downloadedConfig);
-                return Promise.all([storeLabelPromise, storeConfigPromise])
+                const storeAll = Promise.all([storeLabelPromise, storeConfigPromise])
                 .then((storeResults) => Logger.log("Stored dynamic config successfully, result = "+JSON.stringify(storeResults)))
                 .catch((storeError) => Logger.displayError("Error storing study configuration", storeError));
+                return storeAll.then(dc.saveAndNotifyConfigReady(downloadedConfig));
             });
         });
     };
