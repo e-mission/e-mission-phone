@@ -223,7 +223,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     console.log("app is launched, currently NOP");
   });
 
-  console.log("Registering for the "+DynamicConfig.UI_CONFIG_READY+" notification");
+  console.log("Registering for the "+DynamicConfig.UI_CONFIG_READY+" notification in intro.js");
   $rootScope.$on(DynamicConfig.UI_CONFIG_READY, function(event, newConfig) {
     Logger.log("Received UI_CONFIG_READY notification in intro.js, filling in templates");
     $scope.lang = $translate.use();

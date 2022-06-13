@@ -1,12 +1,16 @@
 'use strict';
 
-angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.plugin.kvstore'])
-.factory('DynamicConfig', function($http, $window, $rootScope, KVStore, Logger) {
+angular.module('emission.config.dynamic', ['emission.plugin.logger',
+                                           'emission.plugin.kvstore',
+                                           'emission.splash.startprefs'])
+.factory('DynamicConfig', function($http, $ionicPlatform,
+        $window, $rootScope, KVStore, Logger, StartPrefs) {
     const STUDY_LABEL="DYNAMIC_UI_STUDY";
     const CONFIG_PHONE_UI="config/phone_ui_config";
 
     var dc = {};
     dc.UI_CONFIG_READY="UI_CONFIG_READY";
+    dc.UI_CONFIG_CHANGED="UI_CONFIG_CHANGED";
 
     var readConfigFromServer = function(label, source) {
         Logger.log("Received request to switch to "+label+" from "+source);
@@ -45,7 +49,14 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.p
 
     dc.saveAndNotifyConfigReady = function(newConfig) {
         dc.config = newConfig;
+        console.log("Broadcasting event "+dc.UI_CONFIG_READY);
         $rootScope.$broadcast(dc.UI_CONFIG_READY, newConfig);
+    }
+
+    dc.saveAndNotifyConfigChanged = function(newConfig) {
+        dc.config = newConfig;
+        console.log("Broadcasting event "+dc.UI_CONFIG_CHANGED);
+        $rootScope.$broadcast(dc.UI_CONFIG_CHANGED, newConfig);
     }
 
     dc.initByUser = function(urlComponents) {
@@ -56,6 +67,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.p
                     " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
                 // use $scope.$apply here to be consistent with $http so we can consistently
                 // skip it in the listeners
+                // only loaded existing config, so it is ready, but not changed
                 loadSavedConfig().then($rootScope.$apply(() => dc.saveAndNotifyConfigReady));
                 return; // labels are the same
             }
@@ -67,9 +79,23 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger', 'emission.p
                 const storeAll = Promise.all([storeLabelPromise, storeConfigPromise])
                 .then((storeResults) => Logger.log("Stored dynamic config successfully, result = "+JSON.stringify(storeResults)))
                 .catch((storeError) => Logger.displayError("Error storing study configuration", storeError));
-                return storeAll.then(dc.saveAndNotifyConfigReady(downloadedConfig));
+                // loaded new config, so it is both ready and changed
+                return storeAll.then(dc.saveAndNotifyConfigChanged(downloadedConfig))
+                    .then(dc.saveAndNotifyConfigReady(downloadedConfig));
             });
         });
     };
+    dc.initAtLaunch = function() {
+        KVStore.get(STUDY_LABEL).then((existingStudyLabel) => {
+            if(existingStudyLabel) {
+                // the user has already configured the app, let's cache the
+                // config and notify others that we are done
+                loadSavedConfig().then($rootScope.$apply(() => dc.saveAndNotifyConfigReady));
+            }
+        });
+    };
+    $ionicPlatform.ready().then(function() {
+        dc.initAtLaunch();
+    });
     return dc;
 });

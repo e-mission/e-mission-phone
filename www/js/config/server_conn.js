@@ -22,9 +22,9 @@ angular.module('emission.config.server_conn', ['emission.plugin.logger'])
         };
     };
 
-    console.log("Registering for the UI_CONFIG_READY notification");
-    $rootScope.$on("UI_CONFIG_READY", function(event, newConfig) {
-      Logger.log("Received UI_CONFIG_READY notification in intro.js, filling in templates");
+    console.log("Registering for the UI_CONFIG_CHANGED notification in the server connection");
+    $rootScope.$on("UI_CONFIG_CHANGED", function(event, newConfig) {
+      Logger.log("Received UI_CONFIG_CHANGED notification in server_conn.js, filling in templates");
       scc.init(newConfig.server);
     });
     return scc;

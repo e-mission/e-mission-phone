@@ -37,9 +37,9 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
         ic.getDistanceSuffix = ic.useImperial? "mi" : "km";
         ic.getSpeedSuffix = ic.useImperial? "mph" : "kmph";
     }
-    console.log("Registering for the UI_CONFIG_READY notification");
+    console.log("Registering for the UI_CONFIG_READY notification in imperial.js");
     $rootScope.$on("UI_CONFIG_READY", function(event, newConfig) {
-      Logger.log("Received UI_CONFIG_READY notification in imperial.js, filling in templates");
+      Logger.log("Received UI_CONFIG_READY notification in imperial.js, setting config");
       ic.useImperial = newConfig.display_config.use_imperial;
       ic.init();
     });
