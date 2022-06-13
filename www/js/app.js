@@ -11,11 +11,12 @@ angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.splash.updatecheck', 'emission.services.email',
-  'emission.intro', 'emission.main', 'emission.config.dynamic',
-  'pascalprecht.translate'])
+    'emission.intro', 'emission.main', 'emission.config.dynamic',
+    'emission.config.server_conn',
+    'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, UpdateCheck, DynamicConfig) {
+    CustomURLScheme, ReferralHandler, UpdateCheck, DynamicConfig, ServerConnConfig) {
   console.log("Starting run");
   // ensure that plugin events are delivered after the ionicPlatform is ready
   // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
@@ -48,30 +49,6 @@ angular.module('emission', ['ionic',
       // org.apache.cordova.statusbar required
       StatusBar.styleDefault();
     }
-
-    // Configure the connection settings
-    Logger.log("about to get connection config");
-    $http.get("json/connectionConfig.json").then(function(connectionConfig) {
-        if(connectionConfig.data.length == 0) {
-            throw "blank string instead of missing file on dynamically served app";
-        }
-        Logger.log("connectionConfigString = "+JSON.stringify(connectionConfig.data));
-        $rootScope.connectUrl = connectionConfig.data.connectUrl;
-        $rootScope.aggregateAuth = connectionConfig.data.aggregate_call_auth;
-        window.cordova.plugins.BEMConnectionSettings.setSettings(connectionConfig.data);
-    }).catch(function(err) {
-        // not displaying the error here since we have a backup
-        Logger.log("error "+JSON.stringify(err)+" while reading connection config, reverting to defaults");
-        window.cordova.plugins.BEMConnectionSettings.getDefaultSettings().then(function(defaultConfig) {
-            Logger.log("defaultConfig = "+JSON.stringify(defaultConfig));
-            $rootScope.connectUrl = defaultConfig.connectUrl;
-            $rootScope.aggregateAuth = "no_auth";
-            window.cordova.plugins.BEMConnectionSettings.setSettings(defaultConfig);
-        }).catch(function(err) {
-            // displaying the error here since we don't have a backup
-            Logger.displayError("Error reading or setting connection defaults", err);
-        });
-    });
     cordova.plugin.http.setDataSerializer('json');
   });
   console.log("Ending run");
