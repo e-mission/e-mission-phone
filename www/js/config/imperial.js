@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('emission.config.imperial', ['emission.plugin.logger'])
-.factory('ImperialConfig', function() {
+.factory('ImperialConfig', function($rootScope) {
     // change to true if we want to use imperial units such as miles
     // I didn't want to do this since the US is one of the only countries that
     // still uses imperial units, but it looks like this will primarily be
@@ -33,9 +33,17 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
         return (KM_TO_MILES * Number.parseFloat(ic.getKmph(metersPerSecond))).toFixed(2);
     };
 
-    ic.getFormattedDistance = USE_IMPERIAL? ic.getFormattedDistanceInMiles : ic.getFormattedDistanceInKm;
-    ic.getFormattedSpeed = USE_IMPERIAL? ic.getMph : ic.getKmph;
-    ic.getDistanceSuffix = USE_IMPERIAL? "mi" : "km";
-    ic.getSpeedSuffix = USE_IMPERIAL? "mph" : "kmph";
+    ic.init = function() {
+        ic.getFormattedDistance = ic.useImperial? ic.getFormattedDistanceInMiles : ic.getFormattedDistanceInKm;
+        ic.getFormattedSpeed = ic.useImperial? ic.getMph : ic.getKmph;
+        ic.getDistanceSuffix = ic.useImperial? "mi" : "km";
+        ic.getSpeedSuffix = ic.useImperial? "mph" : "kmph";
+    }
+    console.log("Registering for the UI_CONFIG_READY notification");
+    $rootScope.$on("UI_CONFIG_READY", function(event, newConfig) {
+      Logger.log("Received UI_CONFIG_READY notification in intro.js, filling in templates");
+      ic.useImperial = newConfig.display_config.use_imperial;
+      ic.init();
+    });
     return ic;
 });
