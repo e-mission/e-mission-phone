@@ -7,8 +7,6 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
     // still uses imperial units, but it looks like this will primarily be
     // funded by a US source, so I guess we have to support this for now.
 
-    // TODO: Convert this to a config option when we use config stuff
-    const USE_IMPERIAL = false;
     const KM_TO_MILES = 0.621371;
 
     var ic = {}
@@ -41,7 +39,7 @@ angular.module('emission.config.imperial', ['emission.plugin.logger'])
     }
     console.log("Registering for the UI_CONFIG_READY notification");
     $rootScope.$on("UI_CONFIG_READY", function(event, newConfig) {
-      Logger.log("Received UI_CONFIG_READY notification in intro.js, filling in templates");
+      Logger.log("Received UI_CONFIG_READY notification in imperial.js, filling in templates");
       ic.useImperial = newConfig.display_config.use_imperial;
       ic.init();
     });
