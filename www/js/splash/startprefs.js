@@ -124,7 +124,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.getPendingOnboardingState = function() {
       return startprefs.readStartupState().then(function([is_intro_done, is_consented, has_config]) {
         if (!has_config) {
-            console.assert(!$rootScope.intro_done, "in getPendingOnboardingState first check, $rootScope.has_config", JSON.stringify($rootScope.has_config));
+            console.assert(!$rootScope.has_config, "in getPendingOnboardingState first check, $rootScope.has_config", JSON.stringify($rootScope.has_config));
             return 'root.join';
         } else if (!is_intro_done) {
             console.assert(!$rootScope.intro_done, "in getPendingOnboardingState second check, $rootScope.intro_done", JSON.stringify($rootScope.intro_done));
