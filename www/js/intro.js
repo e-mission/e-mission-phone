@@ -223,15 +223,17 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     console.log("app is launched, currently NOP");
   });
 
-  DynamicConfig.configReady().then((newConfig) => {
-    Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
-    $scope.lang = $translate.use();
-    $scope.ui_config = newConfig;
-    // TODO: we should be able to use $translate for this, right?
-    $scope.template_text = newConfig.intro.translated_text[$scope.lang];
-    if (!$scope.template_text) {
-        $scope.template_text = newConfig.intro.translated_text["en"]
-    }
-    $scope.init();
-  });
+  $ionicPlatform.ready().then(() => {
+      DynamicConfig.configReady().then((newConfig) => {
+        Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
+        $scope.lang = $translate.use();
+        $scope.ui_config = newConfig;
+        // TODO: we should be able to use $translate for this, right?
+        $scope.template_text = newConfig.intro.translated_text[$scope.lang];
+        if (!$scope.template_text) {
+            $scope.template_text = newConfig.intro.translated_text["en"]
+        }
+        $scope.init();
+      });
+    });
 });
