@@ -223,9 +223,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     console.log("app is launched, currently NOP");
   });
 
-  console.log("Registering for the "+DynamicConfig.UI_CONFIG_READY+" notification in intro.js");
-  $rootScope.$on(DynamicConfig.UI_CONFIG_READY, function(event, newConfig) {
-    Logger.log("Received UI_CONFIG_READY notification in intro.js, filling in templates");
+  DynamicConfig.configReady().then((newConfig) => {
+    Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
     $scope.lang = $translate.use();
     $scope.ui_config = newConfig;
     // TODO: we should be able to use $translate for this, right?
@@ -236,4 +235,3 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.init();
   });
 });
-
