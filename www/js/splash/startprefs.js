@@ -100,6 +100,21 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
           });
     }
 
+    startprefs.readConfig = function() {
+      return KVStore.get("DYNAMIC_UI_STUDY").then(function(read_val) {
+          logger.log("in readConfig, read_val = "+JSON.stringify(read_val));
+          $rootScope.app_ui_label = read_val;
+      });
+    }
+
+    startprefs.hasConfig = function() {
+      if ($rootScope.app_ui_label) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+
     /*
      * getNextState() returns a promise, since reading the startupConfig is
      * async. The promise returns an onboarding state to navigate to, or
@@ -107,9 +122,12 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
      */
 
     startprefs.getPendingOnboardingState = function() {
-      return startprefs.readStartupState().then(function([is_intro_done, is_consented]) {
-        if (!is_intro_done) {
-            console.assert(!$rootScope.intro_done, "in getPendingOnboardingState first check, $rootScope.intro_done", JSON.stringify($rootScope.intro_done));
+      return startprefs.readStartupState().then(function([is_intro_done, is_consented, has_config]) {
+        if (!has_config) {
+            console.assert(!$rootScope.intro_done, "in getPendingOnboardingState first check, $rootScope.has_config", JSON.stringify($rootScope.has_config));
+            return 'root.join';
+        } else if (!is_intro_done) {
+            console.assert(!$rootScope.intro_done, "in getPendingOnboardingState second check, $rootScope.intro_done", JSON.stringify($rootScope.intro_done));
             return 'root.intro';
         } else {
         // intro is done. Now let's check consent
@@ -129,11 +147,14 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
      * we can use them without making multiple native calls
      */
     startprefs.readStartupState = function() {
+        console.log("STARTPREFS: about to read startup state");
         var readIntroPromise = startprefs.readIntroDone()
                                     .then(startprefs.isIntroDone);
         var readConsentPromise = startprefs.readConsentState()
                                     .then(startprefs.isConsented);
-        return Promise.all([readIntroPromise, readConsentPromise]);
+        var readConfigPromise = startprefs.readConfig()
+                                    .then(startprefs.hasConfig);
+        return Promise.all([readIntroPromise, readConsentPromise, readConfigPromise]);
     };
 
     startprefs.getConsentDocument = function() {
@@ -182,6 +203,10 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         } else {
           return {state: result, params: {}};
         }
+      })
+      .catch((err) => {
+        Logger.displayError("error getting next state", err);
+        return "root.intro";
       });
     };
 

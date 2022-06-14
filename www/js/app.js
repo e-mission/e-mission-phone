@@ -74,6 +74,17 @@ angular.module('emission', ['ionic',
         controller: 'SplashCtrl'
   })
 
+  // add the join screen to the list of initially defined states
+  // we can't put it in intro since it comes before it
+  // we can't put it in main because it is also a temporary screen that only
+  // shows up when we have no config.
+  // so we put it in here
+  .state('root.join', {
+    url: '/join',
+    templateUrl: 'templates/join.html',
+    controller: 'JoinCtrl'
+  })
+
   // setup an abstract state for the root. Only children of this can be loaded
   // as preferred screens, and all children of this can assume that the device
   // is ready.

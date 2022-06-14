@@ -13,6 +13,8 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 
 .controller('DashCtrl', function($scope) {})
 
+.controller('JoinCtrl', function($scope) {})
+
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     UpdateCheck, StartPrefs, PushNotify, StoreDeviceSettings,
     LocalNotify, RemoteNotify, ClientStats, PostTripAutoPrompt)  {

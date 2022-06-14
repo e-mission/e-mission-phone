@@ -1,10 +1,11 @@
 'use strict';
 
 angular.module('emission.config.dynamic', ['emission.plugin.logger',
-                                           'emission.plugin.kvstore',
-                                           'emission.splash.startprefs'])
+                                           'emission.plugin.kvstore'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
-        $window, $rootScope, $timeout, KVStore, Logger, StartPrefs) {
+        $window, $state, $rootScope, $timeout, KVStore, Logger) {
+    // also used in the startprefs class
+    // but without importing this
     const STUDY_LABEL="DYNAMIC_UI_STUDY";
     const CONFIG_PHONE_UI="config/app_ui_config";
     const LOAD_TIMEOUT = 6000; // 6000 ms = 6 seconds
@@ -112,7 +113,8 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
                 .catch((storeError) => Logger.displayError("Error storing study configuration", storeError));
                 // loaded new config, so it is both ready and changed
                 return storeAll.then(dc.saveAndNotifyConfigChanged(downloadedConfig))
-                    .then(dc.saveAndNotifyConfigReady(downloadedConfig));
+                    .then(dc.saveAndNotifyConfigReady(downloadedConfig))
+                    .then($state.go("root.intro"));
             });
         });
     };
