@@ -1,7 +1,8 @@
 'use strict';
 
-angular.module('emission.config.server_conn', ['emission.plugin.logger'])
-.factory('ServerConnConfig', function($rootScope) {
+angular.module('emission.config.server_conn',
+    ['emission.plugin.logger', 'emission.config.dynamic'])
+.factory('ServerConnConfig', function($rootScope, DynamicConfig, $ionicPlatform) {
     var scc = {}
 
     scc.init = function(connectionConfig) {
@@ -23,9 +24,11 @@ angular.module('emission.config.server_conn', ['emission.plugin.logger'])
     };
 
     console.log("Registering for the UI_CONFIG_CHANGED notification in the server connection");
-    $rootScope.$on("UI_CONFIG_CHANGED", function(event, newConfig) {
-      Logger.log("Received UI_CONFIG_CHANGED notification in server_conn.js, filling in templates");
-      scc.init(newConfig.server);
+    $ionicPlatform.ready().then(function() {
+      DynamicConfig.configChanged().then((newConfig) => {
+        Logger.log("Resolved UI_CONFIG_CHANGED promise in server_conn.js, filling in URL");
+        scc.init(newConfig.server);
+      });
     });
     return scc;
 });

@@ -21,7 +21,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
             return Promise.resolve(dc.config);
         } else {
             return new Promise(function(resolve, reject) {
-                $rootScope.on(dc.UI_CONFIG_CHANGED, (event, newConfig) => resolve(newConfig));
+                $rootScope.$on(dc.UI_CONFIG_CHANGED, (event, newConfig) => resolve(newConfig));
             });
         }
     }
