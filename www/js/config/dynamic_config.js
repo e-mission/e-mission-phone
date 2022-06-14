@@ -1,12 +1,10 @@
 'use strict';
 
-angular.module('emission.config.dynamic', ['emission.plugin.logger',
-                                           'emission.plugin.kvstore'])
+angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
-        $window, $state, $rootScope, $timeout, KVStore, Logger) {
+        $window, $state, $rootScope, $timeout, Logger) {
     // also used in the startprefs class
     // but without importing this
-    const STUDY_LABEL="DYNAMIC_UI_STUDY";
     const CONFIG_PHONE_UI="config/app_ui_config";
     const LOAD_TIMEOUT = 6000; // 6000 ms = 6 seconds
 
@@ -68,7 +66,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
             .then((savedConfig) => {
                 if (nativePlugin.isEmptyDoc(savedConfig)) {
                     Logger.log("Found empty saved ui config, returning null");
-                    return null;
+                    return undefined;
                 } else {
                     Logger.log("Found previously stored ui config, returning it");
                     return savedConfig;
@@ -93,39 +91,43 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
 
     dc.initByUser = function(urlComponents) {
         const newStudyLabel = urlComponents.label;
-        KVStore.get(STUDY_LABEL).then((existingStudyLabel) => {
-            if(angular.equals(existingStudyLabel, urlComponents)) {
-                Logger.log("UI_CONFIG: existing label " + JSON.stringify(existingStudyLabel) +
+        loadSavedConfig().then((savedConfig) => {
+            if(savedConfig && angular.equals(savedConfig.label, urlComponents)) {
+                Logger.log("UI_CONFIG: existing label " + JSON.stringify(savedConfig.label) +
                     " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
                 // use $scope.$apply here to be consistent with $http so we can consistently
                 // skip it in the listeners
                 // only loaded existing config, so it is ready, but not changed
-                loadSavedConfig().then($rootScope.$apply(() => dc.saveAndNotifyConfigReady));
+                $rootScope.$apply(() => dc.saveAndNotifyConfigReady);
                 return; // labels are the same
             }
             // if the labels are different
             return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
-                const storeLabelPromise = KVStore.set(STUDY_LABEL, urlComponents);
+                // we can use angular.extend since urlComponents is not nested
+                // need to change this to angular.merge if that changes
+                const toSaveConfig = angular.extend(downloadedConfig, urlComponents);
                 const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
-                    CONFIG_PHONE_UI, downloadedConfig);
-                const storeAll = Promise.all([storeLabelPromise, storeConfigPromise])
-                .then((storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults)))
-                .catch((storeError) => Logger.displayError("Error storing study configuration", storeError));
+                    CONFIG_PHONE_UI, toSaveConfig);
+                const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
                 // loaded new config, so it is both ready and changed
-                return storeAll.then(dc.saveAndNotifyConfigChanged(downloadedConfig))
+                return storeConfigPromise.then(logSuccess)
+                    .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
                     .then(dc.saveAndNotifyConfigReady(downloadedConfig))
-                    .then($state.go("root.intro"));
+                    .then($state.go("root.intro"))
+                    .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
             });
         });
     };
     dc.initAtLaunch = function() {
-        KVStore.get(STUDY_LABEL).then((existingStudyLabel) => {
-            if(existingStudyLabel) {
+        loadSavedConfig().then((existingConfig) => {
+            if(existingConfig) {
                 // the user has already configured the app, let's cache the
                 // config and notify others that we are done
                 Logger.log("UI_CONFIG: finished loading config on app start");
-                loadSavedConfig().then($rootScope.$apply(() => dc.saveAndNotifyConfigReady));
+                $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
+        }).catch((err) => {
+            Logger.displayError("Error loading config on app start", err)
         });
     };
     $ionicPlatform.ready().then(function() {

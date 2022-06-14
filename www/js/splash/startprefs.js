@@ -16,6 +16,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
 
     var CONSENTED_KEY = "config/consent";
+    var CONFIGURED_KEY = "config/app_ui_config";
 
     startprefs.CONSENTED_EVENT = "data_collection_consented";
     startprefs.INTRO_DONE_EVENT = "intro_done";
@@ -101,17 +102,24 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     }
 
     startprefs.readConfig = function() {
-      return KVStore.get("DYNAMIC_UI_STUDY").then(function(read_val) {
+      const nativePlugin = $window.cordova.plugins.BEMUserCache;
+      return nativePlugin.getDocument(CONFIGURED_KEY, false).then((read_val) => {
           logger.log("in readConfig, read_val = "+JSON.stringify(read_val));
           $rootScope.app_ui_label = read_val;
       });
     }
 
     startprefs.hasConfig = function() {
-      if ($rootScope.app_ui_label) {
-        return true;
-      } else {
+      const nativePlugin = $window.cordova.plugins.BEMUserCache;
+      if ($rootScope.app_ui_label == null || $rootScope.app_ui_label == ""
+        || nativePlugin.isEmptyDoc($rootScope.app_ui_label)) {
+        logger.log("Config not downloaded, need to show join screen");
+        $rootScope.has_config = false;
         return false;
+      } else {
+        $rootScope.has_config = true;
+        logger.log("Config downloaded, skipping join screen");
+        return true;
       }
     }
 
