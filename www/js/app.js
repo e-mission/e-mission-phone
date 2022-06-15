@@ -12,7 +12,7 @@ angular.module('emission', ['ionic',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.splash.updatecheck', 'emission.services.email',
     'emission.intro', 'emission.main', 'emission.config.dynamic',
-    'emission.config.server_conn',
+    'emission.config.server_conn', 'emission.join.ctrl',
     'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
@@ -81,7 +81,7 @@ angular.module('emission', ['ionic',
   // so we put it in here
   .state('root.join', {
     url: '/join',
-    templateUrl: 'templates/join.html',
+    templateUrl: 'templates/join/request_join.html',
     controller: 'JoinCtrl'
   })
 
