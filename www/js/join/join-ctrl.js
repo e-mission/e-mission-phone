@@ -14,10 +14,7 @@ angular.module('emission.join.ctrl', ['emission.splash.updatecheck',
     console.log('JoinCtrl invoke finished');
 
     $ionicPlatform.ready(function() {
-      $scope.$apply(() => {
-          $scope.scanEnabled = true;
-          $scope.platformName = ionicPlatform.platform();
-      });
+      $scope.scanEnabled = true;
     });
 
     $ionicPopover.fromTemplateUrl('templates/join/about-app.html', {
