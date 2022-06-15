@@ -92,7 +92,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     dc.initByUser = function(urlComponents) {
         const newStudyLabel = urlComponents.label;
         loadSavedConfig().then((savedConfig) => {
-            if(savedConfig && angular.equals(savedConfig.label, urlComponents)) {
+            if(savedConfig && angular.equals(savedConfig.joined.label, urlComponents)) {
                 Logger.log("UI_CONFIG: existing label " + JSON.stringify(savedConfig.label) +
                     " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
                 // use $scope.$apply here to be consistent with $http so we can consistently
@@ -105,7 +105,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
                 // we can use angular.extend since urlComponents is not nested
                 // need to change this to angular.merge if that changes
-                const toSaveConfig = angular.extend(downloadedConfig, urlComponents);
+                const toSaveConfig = angular.extend(downloadedConfig, {joined: urlComponents});
                 const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
                     CONFIG_PHONE_UI, toSaveConfig);
                 const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
