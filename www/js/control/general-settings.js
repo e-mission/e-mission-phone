@@ -14,6 +14,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.kvstore',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
+                                        'emission.config.dynamic',
                                         'monospaced.qrcode'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
@@ -26,7 +27,7 @@ angular.module('emission.main.control',['emission.services',
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
                UpdateCheck, i18nUtils,
-               CalorieCal, ClientStats, CommHelper, Logger,
+               CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
                $translate) {
 
     console.log("controller ControlCtrl called without params");
@@ -149,7 +150,10 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $ionicPlatform.ready().then(function() {
-        $scope.refreshScreen();
+        DynamicConfig.configReady().then(function(newConfig) {
+            $scope.ui_config = newConfig;
+            $scope.refreshScreen();
+        });
     });
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.

@@ -5,6 +5,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
+                                  'emission.config.dynamic',
                                   'ionic-toast'])
 
 .config(function($stateProvider) {
@@ -24,25 +25,31 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, i18nUtils) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, DynamicConfig, i18nUtils, $translate) {
 
-  var allIntroFiles = Promise.all([
-    i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
-    i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
-    i18nUtils.geti18nFileName("templates/", "intro/sensor_explanation", ".html"),
-    i18nUtils.geti18nFileName("templates/", "intro/login", ".html"),
-    i18nUtils.geti18nFileName("templates/", "intro/survey", ".html")
-  ]);
-  allIntroFiles.then(function(allIntroFilePaths) {
-    $scope.$apply(function() {
-      console.log("intro files are "+allIntroFilePaths);
-      $scope.summaryFile = allIntroFilePaths[0];
-      $scope.consentFile = allIntroFilePaths[1];
-      $scope.explainFile = allIntroFilePaths[2];
-      $scope.loginFile = allIntroFilePaths[3];
-      $scope.surveyFile = allIntroFilePaths[4];
-    });
-  });
+  /*
+   * Move all the state that is currently in the controller body into the init
+   * function so that we can reload if we need to
+   */
+  $scope.init = function() {
+      var allIntroFiles = Promise.all([
+        i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
+        i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
+        i18nUtils.geti18nFileName("templates/", "intro/sensor_explanation", ".html"),
+        i18nUtils.geti18nFileName("templates/", "intro/login", ".html"),
+        i18nUtils.geti18nFileName("templates/", "intro/survey", ".html")
+      ]);
+      allIntroFiles.then(function(allIntroFilePaths) {
+        $scope.$apply(function() {
+          console.log("intro files are "+allIntroFilePaths);
+          $scope.summaryFile = allIntroFilePaths[0];
+          $scope.consentFile = allIntroFilePaths[1];
+          $scope.explainFile = allIntroFilePaths[2];
+          $scope.loginFile = allIntroFilePaths[3];
+          $scope.surveyFile = allIntroFilePaths[4];
+        });
+      });
+  }
 
   $scope.getIntroBox = function() {
     return $ionicSlideBoxDelegate.$getByHandle('intro-box');
@@ -215,5 +222,18 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $ionicPlatform.ready().then(function() {
     console.log("app is launched, currently NOP");
   });
-});
 
+  $ionicPlatform.ready().then(() => {
+      DynamicConfig.configReady().then((newConfig) => {
+        Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
+        $scope.lang = $translate.use();
+        $scope.ui_config = newConfig;
+        // TODO: we should be able to use $translate for this, right?
+        $scope.template_text = newConfig.intro.translated_text[$scope.lang];
+        if (!$scope.template_text) {
+            $scope.template_text = newConfig.intro.translated_text["en"]
+        }
+        $scope.init();
+      });
+    });
+});

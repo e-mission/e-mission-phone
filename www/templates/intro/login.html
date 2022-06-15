@@ -1,9 +1,9 @@
 <ion-content>
 <div class="intro-title">
 <center><h3>Login via anonymous token</h3></center>
-<center>Token {{randomToken}}</center></div>
 
-<div class="intro-text">
+<div class="intro-text" ng-if="ui_config.intro.program_or_study=='study'">
+<center>Token {{randomToken}}</center>
 This unique randomly generated token is your identifier in the system.
 <p>&nbsp;</p>
 Nobody other than you knows that you are associated with this token. If you
@@ -15,6 +15,16 @@ please be prepared to provide this token.
 If you already have a token from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a token that does not match an existing one, we will create a new account.
 <div class="intro-space"></div>
 <button class="button button-block button-energized" ng-click="loginExisting()">Login with existing token</button>
+</div>
+
+<div class="intro-text" ng-if="ui_config.intro.program_or_study=='program'">
+The unique randomly generated token provided by your admin is your identifier in the system.
+<p>&nbsp;</p>
+
+Program administrators have provided you with this token that you will use to log in to the system. If you forget or lose your token, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with token retrieval requests since we do not have access to the connection between your name/email and your token. The data that NREL automatically collects (phone sensor data, sociodemographic data, etc.) will only be associated with your token.
+
+<div class="intro-space"></div>
+<button class="button button-block button-energized" ng-click="loginExisting()">Login with program-provided token</button>
 </div>
 
 
