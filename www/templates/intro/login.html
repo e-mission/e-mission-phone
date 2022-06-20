@@ -13,9 +13,14 @@ please be prepared to provide this token.
 <button class="button button-block button-balanced" ng-click="loginNew()">Login as {{randomToken}}</button>
 
 If you already have a token from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a token that does not match an existing one, we will create a new account.
-<div class="intro-space"></div>
-<button class="button button-block button-energized" ng-click="loginExisting()">Login with existing token</button>
-</div>
+    <div class="intro-space"></div>
+    <button class="button button-block button-energized" ng-click="typeExisting()">Type existing token</button>
+
+    <center> <b> - OR - </b> </center>
+
+    <div class="intro-space"></div>
+    <button class="button button-block button-royal" ng-click="scanExisting()">Scan existing token</button>
+</div> <!-- program_or_study == 'study' -->
 
 <div class="intro-text" ng-if="ui_config.intro.program_or_study=='program'">
 The unique randomly generated token provided by your admin is your identifier in the system.
@@ -23,9 +28,14 @@ The unique randomly generated token provided by your admin is your identifier in
 
 Program administrators have provided you with this token that you will use to log in to the system. If you forget or lose your token, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with token retrieval requests since we do not have access to the connection between your name/email and your token. The data that NREL automatically collects (phone sensor data, sociodemographic data, etc.) will only be associated with your token.
 
-<div class="intro-space"></div>
-<button class="button button-block button-energized" ng-click="loginExisting()">Login with program-provided token</button>
-</div>
+    <div class="intro-space"></div>
+    <button class="button button-block button-energized" ng-click="typeExisting()">Type program token</button>
 
+    <center> <b> - OR - </b> </center>
+
+    <div class="intro-space"></div>
+    <button class="button button-block button-royal" ng-click="scanExisting()">Scan program token</button>
+</div> <!-- program_or_study == 'program' -->
+</div> <!-- overall div -->
 
 </ion-content>
