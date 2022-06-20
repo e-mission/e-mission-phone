@@ -99,6 +99,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.viewQRCode = function($event) {
+        $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.email;
         if ($scope.qrp) {
             $scope.qrp.show($event);
         } else {

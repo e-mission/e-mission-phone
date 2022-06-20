@@ -130,7 +130,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.login($scope.randomToken);
   };
 
-  $scope.loginExisting = function() {
+  $scope.typeExisting = function() {
     $scope.data = {};
     const tokenPopup = $ionicPopup.show({
         template: '<input type="String" ng-model="data.existing_token">',
@@ -165,6 +165,25 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     }).catch(function(err) {
         $scope.alertError(err);
     });
+  };
+
+  $scope.scanExisting = function() {
+    const EXPECTED_PREFIX = "emission://login_token?token=";
+    cordova.plugins.barcodeScanner.scan(
+      function (result) {
+          if (result.format == "QR_CODE" &&
+              result.cancelled == false &&
+              result.text.startsWith(EXPECTED_PREFIX)) {
+              const extractedToken = result.text.substring(EXPECTED_PREFIX.length, result.length);
+              Logger.log("From QR code, extracted token "+extractedToken);
+              $scope.login(extractedToken);
+          } else {
+              $ionicPopup.alert({template: "invalid token format"+result.text});
+          }
+      },
+      function (error) {
+          $ionicPopup.alert({template: "Scanning failed: " + error});
+      });
   };
 
   $scope.login = function(token) {
