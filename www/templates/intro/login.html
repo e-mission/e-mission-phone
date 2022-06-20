@@ -13,9 +13,14 @@ please be prepared to provide this token.
 <button class="button button-block button-balanced" ng-click="loginNew()">Login as {{randomToken}}</button>
 
 If you already have a token from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a token that does not match an existing one, we will create a new account.
-<div class="intro-space"></div>
-<button class="button button-block button-energized" ng-click="loginExisting()">Login with existing token</button>
-</div>
+    <div class="intro-space"></div>
+    <button class="button button-block button-energized" ng-click="typeExisting()">Type existing token</button>
 
+    <center> <b> - OR - </b> </center>
+
+    <div class="intro-space"></div>
+    <button class="button button-block button-royal" ng-click="scanExisting()">Scan existing token</button>
+</div> <!-- program_or_study == 'study' -->
+</div> <!-- overall div -->
 
 </ion-content>
