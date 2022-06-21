@@ -282,10 +282,10 @@
             <value>4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/more_than_4:label">
-            <value>More than 4</value>
+            <value>Más de 4</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_c/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Including_yourself_how_many_p_001:label">
             <value>Incluyéndose usted, ¿cuántas personas tienen una licencia de conducir válida en su hogar?</value>
@@ -437,6 +437,9 @@
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
             <value>Profesional, gerencial o técnico</value>
           </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/prefer_not_to_say:label">
+            <value>Prefiero no decir</value>
+          </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha:label">
             <value>En su trabajo principal, ¿tiene la capacidad de establecer o cambiar su propia hora de entrada?</value>
           </text>
@@ -490,6 +493,9 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/7:label">
             <value>7</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/prefer_not_to_say:label">
+            <value>Prefiero no decir</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t:label">
             <value>¿Qué días de la semana suele trabajar desde su casa o en un lugar alternativo?</value>
@@ -1021,6 +1027,9 @@
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
             <value>Professional, managerial, or technical</value>
           </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha:label">
             <value>At your primary job, do you have the ability to set or change your own start time?</value>
           </text>
@@ -1074,6 +1083,9 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/7:label">
             <value>7</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t:label">
             <value>What days of the week do you typically work from home or an alternate location?</value>
@@ -1782,6 +1794,10 @@
           <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label')"/>
           <value>professional__managerial__or_technical</value>
         </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/prefer_not_to_say:label')"/>
+          <value>prefer_not_to_say</value>
+        </item>
       </select1>
       <select1 ref="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha">
         <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/At_your_primary_job_do_you_ha:label')"/>
@@ -1847,6 +1863,10 @@
         <item>
           <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/7:label')"/>
           <value>7</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/How_many_days_do_you_usually_w_001/prefer_not_to_say:label')"/>
+          <value>prefer_not_to_say</value>
         </item>
       </select1>
       <select ref="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/What_days_of_the_week_do_you_t">
