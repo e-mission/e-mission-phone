@@ -43,7 +43,7 @@ angular.module('emission.join.ctrl', ['emission.splash.updatecheck',
           function (result) {
               if (result.format == "QR_CODE" && 
                   result.cancelled == false && 
-                  result.text.startsWith("emission://") {
+                  result.text.startsWith("emission://")) {
                   handleOpenURL(result.text);
               } else {
                   $ionicPopup.alert({template: "invalid study reference "+result.text});
