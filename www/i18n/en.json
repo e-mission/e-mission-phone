@@ -419,5 +419,20 @@
         "next": "Next",
         "powered-by": "Powered by",
         "dismiss": "Dismiss"
+    },
+    "join": {
+        "welcome-to-nrel-openpath": "Welcome to NREL OpenPATH",
+        "proceed-further": "To proceed further, you need to use the link 🔗 or QR code from the website for the study or program you are joining. The website should have been provided to you by the program administrator or principal researcher who asked you to install this app.",
+        "proceed-phone": "On your phone 📱, switch back to the browser 🌐, scroll down and click the link in step 2.",
+        "or": "or",
+        "proceed-laptop": "On your computer 💻, scroll down and scan ⬇️  the QR code.",
+        "scan-now": "Scan now",
+        "about-app-para-1": "The National Renewable Energy Laboratory’s Open Platform for Agile Trip Heuristics (NREL OpenPATH) enables people to track their travel modes—car, bus, bike, walking, etc.—and measure their associated energy use and carbon footprint.",
+        "about-app-para-2": "The app empowers communities to understand their travel mode choices and patterns, experiment with options to make them more sustainable, and evaluate the results. Such results can inform effective transportation policy and planning and be used to build more sustainable and accessible cities.",
+        "about-app-para-3": "It does so by building an automatic diary of all your trips, across all transportation modes. It reads multiple sensors, including location, in the background, and turns GPS tracking on and off automatically for minimal power consumption. The choice of the travel pattern information and the carbon footprint display style are study-specific.",
+        "all-green-status": "Make sure that all status checks are green",
+        "dont-force-kill": "Do not force kill the app",
+        "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
+        "close": "Close"
     }
 }
