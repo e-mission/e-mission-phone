@@ -1,4 +1,4 @@
-<ion-view>
+<ion-view translate-namespace="join">
     <ion-content class="has-footer">
         <!-- <div class="intro-space"></div> -->
         <div class="intro-title">
@@ -6,14 +6,11 @@
         </div>
         <div class="intro-text">
         <div>
-        <center><button class="button button-clear button-dark" ng-click="showDetails($event)"><b>Welcome to NREL OpenPATHℹ️ </b></button></center>
+        <center><button class="button button-clear button-dark" ng-click="showDetails($event)"><b translate>{{'.welcome-to-nrel-openpath'}}ℹ️ </b></button></center>
         </div>
         <!--  -->
 
-        To proceed further, you need to use the link 🔗 or QR code from the
-        website for the study or program you are joining. The website should
-        have been provided to you by the program administrator or principal
-        researcher who asked you to install this app.
+        <span translate>{{'.proceed-further'}} </span>
 
         <div class="intro-space"></div>
 
@@ -21,17 +18,16 @@
             <ion-item class="item-text-wrap">
             <div>
             <i class="icon ion-iphone"></i>
-            On your phone 📱, switch back to the browser 🌐, scroll down and
-            click the link in step 2.
+            <span translate>{{'.proceed-phone'}} </span>
             </div>
             </ion-item>
             <ion-item class="item-text-wrap">
-            <center> <b> - OR - </b> </center>
+            <center> <b> - <span translate>{{'.or'}}</span> - </b> </center>
             </ion-item>
             <ion-item class="item-text-wrap">
             <div>
             <i class="icon ion-laptop"></i>
-            On your computer 💻, scroll down and scan ⬇️  the QR code.
+            <span translate>{{'.proceed-laptop'}}</span>
             </div>
             </ion-item>
         </ion-list>
@@ -40,7 +36,7 @@
     </ion-content>
     <ion-footer-bar class="bar-positive">
       <button ng-enabled="scanEnabled" class="button button-block button-clear" ng-click="scanCode()">
-        Scan now
+        <span translate>{{'.scan-now'}}</span>
       </button>
     </ion-footer-bar>
 </ion-view>
