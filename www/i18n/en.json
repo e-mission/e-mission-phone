@@ -106,7 +106,7 @@
         "qrcode": "My OPcode",
         "qrcode-share-title": "You can save your OPcode to login easily in the future!",
         "qrcode-share-message": "Save this OPcode or send to a new device to scan and login! \n[OpenPath] My OPcode: ",
-        "qrcode-share-subject": "My OPcode - Emission"
+        "qrcode-share-subject": "My OPcode - OpenPATH"
     },
 
     "metrics":{
