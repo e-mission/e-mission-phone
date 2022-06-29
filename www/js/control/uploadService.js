@@ -103,26 +103,26 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                     +' placeholder="{{ \'upload-service.please-fill-in-what-is-wrong \' | translate}}">',
                 scope: newScope,
                 buttons: [
-                  { 
+                { 
                     text: 'Cancel',
                     onTap: function(e) {
                         didCancel = true;
                         detailsPopup.close();
                     }
-                  },
-                  {
+                },
+                {
                     text: '<b>Upload</b>',
                     type: 'button-positive',
                     onTap: function(e) {
                         didCancel = false;
                         if (!newScope.data.reason) {
-                        //don't allow the user to close unless he enters wifi password
+                            //don't allow the user to close unless he enters wifi password
                             e.preventDefault();
                         } else {
                             return newScope.data.reason;
                         }
                     }
-                  }
+                }
                 ]
             });
 
@@ -141,14 +141,14 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                 uploadConfig.forEach((url) => {
                     const progressPopup = $ionicPopup.show({
                         title: $translate.instant("upload-service.upload-database",
-                            { db: database }),
+                            {db: database}),
                         template: $translate.instant("upload-service.upload-progress",
                             {filesizemb: binString.byteLength / (1000 * 1000),
                             serverURL: uploadConfig}) 
                             + '<center><ion-spinner></ion-spinner></center>',
                         scope: progressScope,
                         buttons: [
-                        { text: '<b>Cancel</b>', type: 'button-cancel',  },
+                            { text: '<b>Cancel</b>', type: 'button-cancel',  },
                         ]
                     });
                     sendToServer(url, binString, params).then((response) => {
