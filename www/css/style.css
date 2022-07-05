@@ -51,6 +51,11 @@ body.platform-ios {
   height: 40px;
 
 }
+.button.ng-binding.button-cancel {
+  background-color: #d02001;
+  height: 40px;
+  color: #ffffff
+}
 .selected_date_full.ng-binding {
   color: #01D0A7;
 }
