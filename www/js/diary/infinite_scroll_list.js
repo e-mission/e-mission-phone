@@ -18,6 +18,19 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger'])
 
+.directive("infiniteScrollTripItem", function(){
+  return{
+    restrict: 'E',
+    scope: {
+      trip: '=',
+      surveyOpt: '=',
+      itemHt: '='
+    },
+    // controller: 'InfiniteDiaryListCtrl',
+    templateUrl: 'templates/diary/trip_list_item.html'
+  };
+})
+
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
                                     $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
