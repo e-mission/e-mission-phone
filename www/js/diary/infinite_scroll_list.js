@@ -16,7 +16,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
-                                      'emission.plugin.logger'])
+                                      'emission.plugin.logger',
+                                      'emission.main.diary.infscrolltripitem'
+                                    ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
                                     $ionicPlatform, $state,
@@ -186,12 +188,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.infScrollControl.callback = undefined;
     }
   });
-
-  $scope.showDetail = function($event, trip) {
-    $state.go("root.main.inf_scroll-detail", {
-        tripId: trip.id
-    });
-  }
 
   $scope.select = function(selF) {
     const prev = $scope.getActiveFilters();
