@@ -634,20 +634,11 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    var prepopulateQRMessage = {
-        message: $translate.instant('general-settings.qrcode-share-message'), // not supported on some apps (Facebook, Instagram)
-        subject: $translate.instant('general-settings.qrcode-share-subject') // fi. for email
-    }
-
     $scope.shareQR = function() {
-        //const c = $(".qrcode"); // selects the canvas element containing the QR code
-        //const cbase64 = c[0].toDataURL(); // converts the canvas element into base64 data
-        //prepopulateQRMessage.files = [cbase64]; // adds the base64 data into our share message
-
+        var prepopulateQRMessage = {};  
         const c = document.getElementsByClassName('qrcode-link');
         const cbase64 = c[0].getAttribute('href');
         prepopulateQRMessage.files = [cbase64];
-
         prepopulateQRMessage.url = $scope.settings.auth.email;
 
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {

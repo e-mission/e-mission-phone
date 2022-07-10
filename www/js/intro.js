@@ -6,7 +6,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
-                                  'ionic-toast'])
+                                  'ionic-toast',
+                                  'monospaced.qrcode'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -160,6 +161,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
     tokenPopup.then(function(token) {
         if (token != null) {
+            $scope.alreadySaved = false;
             $scope.login(token);
         }
     }).catch(function(err) {
@@ -176,6 +178,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
               result.text.startsWith(EXPECTED_PREFIX)) {
               const extractedToken = result.text.substring(EXPECTED_PREFIX.length, result.length);
               Logger.log("From QR code, extracted token "+extractedToken);
+              $scope.alreadySaved = false;
               $scope.login(extractedToken);
           } else {
               $ionicPopup.alert({template: "invalid token format"+result.text});
@@ -207,6 +210,53 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       }
     }, function(error) {
         $scope.alertError('Sign in error', error);
+    });
+
+    $scope.currentToken = token;
+    if(!$scope.alreadySaved) {
+      $scope.saveLogin($scope.currentToken);
+    }
+  };
+
+  $scope.currentToken = $scope.randomToken;
+  $scope.alreadySaved = false;
+
+  $scope.saveLogin = function(token) {
+    if(token == "") {
+      token = $scope.randomToken;
+    }
+    $scope.currentToken = token;
+    
+    const savePopup = $ionicPopup.show({
+      template: '<center><qrcode class="col" aria-label="qrcode for user email" data="{{currentToken}}" size="220" download></qrcode></center>'
+              + '<div class="col" style="height: 150%"><button class="col" style="height: 100%; background-color: #01D0A7" ng-click="shareQR()" class="control-icon-button"> <u>{{currentToken}}</u> </button></div>',
+      title: 'Make sure to save your OPcode!<br>',
+      scope: $scope,
+      buttons: [
+        {
+          text: '<b>Continue</b>',
+          type: 'button-positive',
+          onTap: function(e) {
+            $scope.alreadySaved = true;
+          }
+        }
+      ]
+    })
+
+  };
+
+  $scope.shareQR = function() {
+    var prepopulateQRMessage = {};
+    const c = document.getElementsByClassName('qrcode-link');
+    const cbase64 = c[0].getAttribute('href');
+    prepopulateQRMessage.files = [cbase64];
+    prepopulateQRMessage.url = $scope.currentToken;
+
+    window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+      console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+      console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+    }, function(msg) {
+      console.log("Sharing failed with message: " + msg);
     });
   };
 
