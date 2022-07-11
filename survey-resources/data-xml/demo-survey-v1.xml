@@ -161,6 +161,9 @@
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/rent:label">
             <value>Alquilado</value>
           </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/rent:label">
+            <value>Ninguno</value>
+          </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/prefer_not_to_say:label">
             <value>Prefiero no decir</value>
           </text>
@@ -436,6 +439,9 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
             <value>Profesional, gerencial o técnico</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
+            <value>Otro</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/prefer_not_to_say:label">
             <value>Prefiero no decir</value>
@@ -716,7 +722,7 @@
             <value>Prefer not to say</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_work_for_either_pay_or_:label">
-            <value>Do you work for either pay or profit?</value>
+            <value>Are you a paid worker?</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_hg4zz25/Do_you_work_for_either_pay_or_/yes:label">
             <value>Yes</value>
@@ -750,6 +756,9 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/rent:label">
             <value>Rent</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/rent:label">
+            <value>Neither</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_pa5ah98/Do_you_own_or_rent_your_home/prefer_not_to_say:label">
             <value>Prefer not to say</value>
@@ -1026,6 +1035,9 @@
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
             <value>Professional, managerial, or technical</value>
+          </text>
+          <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/professional__managerial__or_technical:label">
+            <value>Other</value>
           </text>
           <text id="/arcEm5iPB4F9CQZR258k4r/group_yk8eb99/Which_best_describes_your_prim/prefer_not_to_say:label">
             <value>Prefer not to say</value>
