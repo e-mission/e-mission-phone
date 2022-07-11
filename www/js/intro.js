@@ -86,7 +86,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
     var randomString = randomChars.join("");
     var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
-    return validRandomString.substring(0, length);
+    var truncatedRandomString = validRandomString.substring(0, length);
+    return "nrelop_"+$scope.ui_config.name+"_"+truncatedRandomString;
   }
 
   $scope.disagree = function() {
