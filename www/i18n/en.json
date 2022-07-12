@@ -416,8 +416,11 @@
         "move-on": "Move on",
         "survey": "Survey",
         "save": "Save",
+        "back": "Back",
         "next": "Next",
         "powered-by": "Powered by",
-        "dismiss": "Dismiss"
+        "dismiss": "Dismiss",
+        "return-to-beginning": "Return to beginning",
+        "go-to-end": "Go to End"
     }
 }
