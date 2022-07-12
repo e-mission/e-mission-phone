@@ -1,0 +1,21 @@
+<ion-content>
+
+<!-- use i18n/intro/consent-text-<lang>.html for other languages -->
+<!-- e.g. i18n/intro/consent-text-es.html for spanish -->
+<ng-include src="'i18n/intro/consent-text-es.html'"></ng-include>
+
+<div class="consent-text">
+
+<div class="row" style="margin-top: 20px;" translate-namespace="consent">
+  <div class="col" style="margin-right: 5px">
+      <button class="button button-block button-assertive button-outline" ng-click="disagree()" id="consent-button"><span translate>{{'.button-decline'}}</span></button>
+  </div>
+  <div class="col" style="margin-left: 5px">
+      <button class="button button-block button-positive button-outline" ng-click="next()" id="consent-button"><span translate>{{'.button-accept'}}</span></button>
+  </div>
+</div>
+</div>
+<div class="consent-space"></div>
+
+
+</ion-content>

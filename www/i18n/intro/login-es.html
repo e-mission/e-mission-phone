@@ -1,0 +1,29 @@
+<ion-content>
+<div class="intro-title">
+<center><h3>Iniciar sesión mediante token anónimo (OPcode)</h3></center>
+<center>OPcode {{randomToken}}</center></div>
+
+<div class="intro-text">
+Este código OP único generado aleatoriamente es su identificador en el sistema.
+<p>&nbsp;</p>
+Nadie más que usted sabe que está asociado con este OPcode. Si usted
+desea comunicarse con el equipo de investigación sobre los datos recopilados sobre usted,
+prepárese para proporcionar este OPcode.
+<div class="intro-space"></div>
+<button class="button button-block button-balanced" ng-click="loginNew()">Iniciar sesión como {{randomToken}}</button>
+
+Si ya tiene un OPcode de una instalación anterior, puede usarlo para
+conservar la misma cuenta. Tenga en cuenta que no hay tokens incorrectos. Si
+ingresa un OPcode que no coincide con uno existente, crearemos una nueva
+cuenta.
+    <div class="intro-space"></div>
+    <button class="button button-block button-energized" ng-click="typeExisting()">Tipo existente OPcode</button>
+
+    <center> <b> - OR - </b> </center>
+
+    <div class="intro-space"></div>
+    <button class="button button-block button-royal" ng-click="scanExisting()">Escanear existente OPcode</button>
+</div> <!-- program_or_study == 'study' -->
+</div> <!-- overall div -->
+
+</ion-content>

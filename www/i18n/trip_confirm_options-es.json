@@ -1,0 +1,33 @@
+{
+  "MODE" : [
+       {"text":"Caminando", "value":"walk", "met_equivalent": "WALKING", "co2PerMeter": 0},
+       {"text":"Bicicleta","value":"bike", "met_equivalent": "BICYCLING", "co2PerMeter": 0},
+       {"text":"e-bicicleta","value":"e-bike", "met": {
+            "ALL": {"range": [0, -1], "mets": 4.9}
+       }, "co2PerMeter": 0.00728},
+       {"text":"Motoneta compartida","value":"scootershare", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.00894},
+       {"text":"Condujo solo","value":"drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.22031},
+       {"text":"Condujo con otros","value":"shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.11015},
+       {"text":"Taxi/Uber/Lyft","value":"taxi", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.30741},
+       {"text":"Autobús","value":"bus", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
+       {"text":"Tren","value":"train", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.12256},
+       {"text":"Colectivo gratuito","value":"free_shuttle", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
+       {"text":"Avión","value":"air", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.09975},
+       {"text":"Otros","value":"other", "met_equivalent": "UNKNOWN", "co2PerMeter": 0}],
+    "PURPOSE" : [
+       {"text":"Inicio", "value":"home"},
+       {"text":"Trabajo","value":"work"},
+       {"text":"En el trabajo","value":"at_work"},
+       {"text":"Escuela","value":"school"},
+       {"text":"Transbordo", "value":"transit_transfer"},
+       {"text":"Compras","value":"shopping"},
+       {"text":"Comida","value":"meal"},
+       {"text":"Recoger/Entregar 👤","value":"pick_drop_person"},
+       {"text":"Recoger/Entregar 📦","value":"pick_drop_item"},
+       {"text":"Personal/Médico","value":"personal_med"},
+       {"text":"Acceder a Recreación","value":"access_recreation"},
+       {"text":"Recreación/Ejercicio","value":"exercise"},
+       {"text":"Entretenimiento/Social","value":"entertainment"},
+       {"text":"Religioso", "value":"religious"},
+       {"text":"Otros","value":"other"}]
+}
