@@ -405,6 +405,13 @@
         "download-not-now": "Not now",
         "download-apply": "Apply"
     },
+    "login":{
+        "save-your-opcode":"Make sure to save your OPcode!",
+        "continue": "Continue",
+        "enter-existing-token": "Enter the existing token that you have",
+        "button-accept": "OK",
+        "button-decline": "Cancel"
+    },
     "sensor_explanation":{
         "button-accept": "OK",
         "button-decline": "Stop"
