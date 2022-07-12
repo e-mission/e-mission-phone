@@ -28,8 +28,8 @@ angular.module('emission.survey.multilabel.buttons',
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, MultiLabelService) {
-  console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
+    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, DynamicConfig, MultiLabelService) {
+  console.log("Created multilabel directive controller, waiting for init");
 
   var findViewElement = function() {
       // console.log("$element is ", $element);
@@ -124,16 +124,6 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
-  $scope.popovers = {};
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-      let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
-      return $ionicPopover.fromTemplateUrl(popoverPath, {
-        scope: $scope
-      }).then(function (popover) {
-        $scope.popovers[item] = popover;
-      });
-  });
-
   $scope.openPopover = function ($event, trip, inputType) {
     var userInput = trip.userInput[inputType];
     if (angular.isDefined(userInput)) {
@@ -157,17 +147,6 @@ angular.module('emission.survey.multilabel.buttons',
     $scope.popovers[inputType].hide();
   };
 
-
-  /**
-   * Store selected value for options
-   * $scope.selected is for display only
-   * the value is displayed on popover selected option
-   */
-  $scope.selected = {}
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-      $scope.selected[item] = {value: ''};
-  });
-  $scope.selected.other = {text: '', value: ''};
 
   /*
    * This is a curried function that curries the `$scope` variable
@@ -235,26 +214,64 @@ angular.module('emission.survey.multilabel.buttons',
 
   $scope.init = function() {
       console.log("During initialization, trip is ", $scope.trip);
+      console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
       $scope.userInputDetails = [];
       ConfirmHelper.INPUTS.forEach(function(item, index) {
         const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
         currInput.name = item;
         $scope.userInputDetails.push(currInput);
       });
+
+      $scope.popovers = {};
+      ConfirmHelper.INPUTS.forEach(function(item, index) {
+          let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
+          return $ionicPopover.fromTemplateUrl(popoverPath, {
+            scope: $scope
+          }).then(function (popover) {
+            $scope.popovers[item] = popover;
+          });
+      });
+
+      /**
+       * Store selected value for options
+       * $scope.selected is for display only
+       * the value is displayed on popover selected option
+       */
+      $scope.selected = {}
+      ConfirmHelper.INPUTS.forEach(function(item, index) {
+          $scope.selected[item] = {value: ''};
+      });
+      $scope.selected.other = {text: '', value: ''};
+
+
       ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
       console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
       $scope.currViewState = findViewState();
   }
 
   $ionicPlatform.ready().then(function() {
-    $scope.init();
+    Logger.log("UI_CONFIG: about to call configReady function in MultiLabelCtrl");
+    DynamicConfig.configReady().then((newConfig) => {
+        $scope.init(newConfig);
+    }).catch((err) => Logger.displayError("Error while handling config in MultiLabelCtrl", err));
   });
 })
-.factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout) {
+.factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
-  ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
-  mls.MANUAL_KEYS = ConfirmHelper.INPUTS.map((inp) => ConfirmHelper.inputDetails[inp].key);
+  mls.init = function() {
+      Logger.log("About to initialize the MultiLabelService");
+      ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
+      mls.MANUAL_KEYS = ConfirmHelper.INPUTS.map((inp) => ConfirmHelper.inputDetails[inp].key);
+      Logger.log("finished initializing the MultiLabelService");
+  };
+
+  $ionicPlatform.ready().then(function() {
+    Logger.log("UI_CONFIG: about to call configReady function in MultiLabelService");
+    DynamicConfig.configReady().then((newConfig) => {
+        mls.init(newConfig);
+    }).catch((err) => Logger.displayError("Error while handling config in MultiLabelService", err));
+  });
 
   /**
    * Embed 'inputType' to the trip.
