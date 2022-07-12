@@ -47,7 +47,7 @@ angular.module('emission.splash.remotenotify', ['emission.plugin.logger',
         Logger.log("data = "+JSON.stringify(data));
         if (angular.isDefined(data.additionalData) &&
             angular.isDefined(data.additionalData.payload) &&
-            angular.isDefined(data.additionalData.payload.alert_type))
+            angular.isDefined(data.additionalData.payload.alert_type)) {
             if(data.additionalData.payload.alert_type == "website") {
                 var webpage_spec = data.additionalData.payload.spec;
                 if (angular.isDefined(webpage_spec) &&
@@ -68,7 +68,8 @@ angular.module('emission.splash.remotenotify', ['emission.plugin.logger',
                     $ionicPopup.alert("webpage was not specified correctly. spec is "+JSON.stringify(popup_spec));
                 }
             }
-        });
+        }
+      });
     }
 
     remoteNotify.init();
