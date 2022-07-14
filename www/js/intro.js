@@ -136,11 +136,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.data = {};
     const tokenPopup = $ionicPopup.show({
         template: '<input type="String" ng-model="data.existing_token">',
-        title: 'Enter the existing token that you have',
+        title: $translate.instant('login.enter-existing-token') + '<br>',
         scope: $scope,
         buttons: [
           {
-            text: '<b>OK</b>',
+            text: '<b>' + $translate.instant('login.button-accept') + '</b>',
             type: 'button-positive',
             onTap: function(e) {
               if (!$scope.data.existing_token) {
@@ -152,7 +152,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
               }
             }
           },{
-            text: '<b>Cancel</b>',
+            text: '<b>' + $translate.instant('login.button-decline') + '</b>',
             type: 'button-stable',
             onTap: function(e) {
               return null;
@@ -231,11 +231,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     const savePopup = $ionicPopup.show({
       template: '<center><qrcode class="col" aria-label="qrcode for user email" data="{{currentToken}}" size="220" download></qrcode></center>'
               + '<div class="col" style="height: 150%"><button class="col" style="height: 100%; background-color: #01D0A7" ng-click="shareQR()" class="control-icon-button"> <u>{{currentToken}}</u> </button></div>',
-      title: 'Make sure to save your OPcode!<br>',
+      title: $translate.instant('login.save-your-opcode') + '<br>',
       scope: $scope,
       buttons: [
         {
-          text: '<b>Continue</b>',
+          text: '<b>' + $translate.instant('login.continue')+ '</b>',
           type: 'button-positive',
           onTap: function(e) {
             $scope.alreadySaved = true;
