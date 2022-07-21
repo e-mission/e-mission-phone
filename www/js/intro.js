@@ -7,7 +7,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
                                   'ionic-toast',
-                                  'monospaced.qrcode'])
+                                  'monospaced.qrcode',
+                                  'emission.save-opcode-item'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -26,7 +27,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, DynamicConfig, i18nUtils, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, DynamicConfig, Opcode, i18nUtils, $translate) {
 
   /*
    * Move all the state that is currently in the controller body into the init
@@ -97,6 +98,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     $scope.randomToken = $scope.generateRandomToken(16);
     window.Logger.log("Signing in with random token "+$scope.randomToken);
 
+    Opcode.reset();
+
     StartPrefs.markConsented().then(function(response) {
       $ionicHistory.clearHistory();
       if ($state.is('root.intro')) {
@@ -128,6 +131,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $scope.loginNew = function() {
+    $scope.alwayssaveopcode = "false";
     $scope.login($scope.randomToken);
   };
 
@@ -161,7 +165,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     });
     tokenPopup.then(function(token) {
         if (token != null) {
-            $scope.alreadySaved = false;
+            $scope.alwayssaveopcode = "true";
             $scope.login(token);
         }
     }).catch(function(err) {
@@ -178,7 +182,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
               result.text.startsWith(EXPECTED_PREFIX)) {
               const extractedToken = result.text.substring(EXPECTED_PREFIX.length, result.length);
               Logger.log("From QR code, extracted token "+extractedToken);
-              $scope.alreadySaved = false;
+              $scope.alwayssaveopcode = "true";
               $scope.login(extractedToken);
           } else {
               $ionicPopup.alert({template: "invalid token format"+result.text});
@@ -212,52 +216,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError('Sign in error', error);
     });
 
-    $scope.currentToken = token;
-    if(!$scope.alreadySaved) {
-      $scope.saveLogin($scope.currentToken);
-    }
+    $scope.saveLogin(token);
   };
-
-  $scope.currentToken = $scope.randomToken;
-  $scope.alreadySaved = false;
 
   $scope.saveLogin = function(token) {
     if(token == "") {
       token = $scope.randomToken;
     }
-    $scope.currentToken = token;
-    
-    const savePopup = $ionicPopup.show({
-      template: '<center><qrcode class="col" aria-label="qrcode for user email" data="{{currentToken}}" size="220" download></qrcode></center>'
-              + '<div class="col" style="height: 150%"><button class="col" style="height: 100%; background-color: #01D0A7" ng-click="shareQR()" class="control-icon-button"> <u>{{currentToken}}</u> </button></div>',
-      title: $translate.instant('login.save-your-opcode') + '<br>',
-      scope: $scope,
-      buttons: [
-        {
-          text: '<b>' + $translate.instant('login.continue')+ '</b>',
-          type: 'button-positive',
-          onTap: function(e) {
-            $scope.alreadySaved = true;
-          }
-        }
-      ]
-    })
-
-  };
-
-  $scope.shareQR = function() {
-    var prepopulateQRMessage = {};
-    const c = document.getElementsByClassName('qrcode-link');
-    const cbase64 = c[0].getAttribute('href');
-    prepopulateQRMessage.files = [cbase64];
-    prepopulateQRMessage.url = $scope.currentToken;
-
-    window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-      console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-      console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-    }, function(msg) {
-      console.log("Sharing failed with message: " + msg);
-    });
+    Opcode.show($scope, token, $scope.alwayssaveopcode);
   };
 
   // Called each time the slide changes

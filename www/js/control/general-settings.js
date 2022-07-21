@@ -15,6 +15,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
+                                        'emission.save-opcode-item',
                                         'monospaced.qrcode'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
@@ -26,7 +27,7 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
-               UpdateCheck, i18nUtils,
+               UpdateCheck, i18nUtils, Opcode,
                CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
                $translate) {
 
@@ -98,16 +99,8 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    $scope.viewQRCode = function($event) {
-        $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.email;
-        if ($scope.qrp) {
-            $scope.qrp.show($event);
-        } else {
-            $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
-                $scope.qrp = q;
-                $scope.qrp.show($event);
-            }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
-        }
+    $scope.viewOpcode = function($event) {
+        Opcode.show($scope, $scope.settings.auth.email, "true");
     }
 
     $scope.fixAppStatus = function() {
