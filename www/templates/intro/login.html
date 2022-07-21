@@ -1,11 +1,12 @@
 <ion-content>
 <div class="intro-title">
 <center><h3>Login via anonymous token (OPcode) </h3></center>
-<center>OPcode {{randomToken}}</center></div>
+
+<div class="intro-text" ng-if="ui_config.intro.program_or_study=='study'">
+<center>OPcode {{randomToken}}</center>
 
 <div opcodeshare token="{{randomToken}}" alwayssave="true"></div>
 
-<div class="intro-text">
 This unique randomly generated token (OPcode) is your identifier in the system.
 <p>&nbsp;</p>
 Nobody other than you knows that you are associated with this OPcode. If you

@@ -51,6 +51,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(result.data).substring(0,10));
             const parsedConfig = result.data;
             const connectionURL = parsedConfig.server? parsedConfig.server.connectUrl : "dev defaults";
+            _fillStudyName(parsedConfig);
             Logger.log("Successfully downloaded config with version "+parsedConfig.version
                 +" for "+parsedConfig.intro.translated_text.en.deployment_name
                 +" and data collection URL "+connectionURL);
@@ -69,6 +70,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     return undefined;
                 } else {
                     Logger.log("Found previously stored ui config, returning it");
+                    _fillStudyName(savedConfig);
                     return savedConfig;
                 }
             })
@@ -87,6 +89,26 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         dc.isConfigChanged = true;
         console.log("Broadcasting event "+dc.UI_CONFIG_CHANGED);
         $rootScope.$broadcast(dc.UI_CONFIG_CHANGED, newConfig);
+    }
+
+    const _getStudyName = function(connectUrl) {
+      const orig_host = new URL(connectUrl).hostname;
+      const first_domain = orig_host.split(".")[0];
+      if (first_domain == "openpath-stage") { return "stage"; }
+      const openpath_index = first_domain.search("-openpath");
+      if (openpath_index == -1) { return undefined; }
+      const study_name = first_domain.substr(0,openpath_index);
+      return study_name;
+    }
+
+    const _fillStudyName = function(config) {
+        if (!config.name) {
+            if (config.server) {
+                config.name = _getStudyName(config.server.connectUrl);
+            } else {
+                config.name = "dev";
+            }
+        }
     }
 
     dc.initByUser = function(urlComponents) {

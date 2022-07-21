@@ -94,6 +94,8 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             newScope.fromDirText = $translate.instant('upload-service.upload-from-dir',  {parentDir: parentDir});
             newScope.toServerText = $translate.instant('upload-service.upload-to-server',  {serverURL: uploadConfig});
 
+            var didCancel = true;
+
             const detailsPopup = $ionicPopup.show({
                 title: $translate.instant("upload-service.upload-database", { db: database }),
                 template: newScope.toServerText
@@ -101,15 +103,23 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                     +' placeholder="{{ \'upload-service.please-fill-in-what-is-wrong \' | translate}}">',
                 scope: newScope,
                 buttons: [
-                  { text: 'Cancel' },
+                  { 
+                    text: 'Cancel',
+                    onTap: function(e) {
+                        didCancel = true;
+                        detailsPopup.close();
+                    }
+                  },
                   {
                     text: '<b>Upload</b>',
                     type: 'button-positive',
                     onTap: function(e) {
                       if (!newScope.data.reason) {
                         //don't allow the user to close unless he enters wifi password
+                        didCancel = false;
                         e.preventDefault();
                       } else {
+                        didCancel = false;
                         return newScope.data.reason;
                       }
                     }
@@ -120,6 +130,8 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
             Logger.log(Logger.LEVEL_INFO, "Going to upload " + database);
             const readFileAndInfo = [readDBFile(parentDir, database), detailsPopup];
             Promise.all(readFileAndInfo).then(([binString, reason]) => {
+              if(!didCancel)
+              {  
                 console.log("Uploading file of size "+binString.byteLength);
                 const progressScope = $rootScope.$new();
                 const params = {
@@ -127,13 +139,17 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                     tz: Intl.DateTimeFormat().resolvedOptions().timeZone
                 }
                 uploadConfig.forEach((url) => {
-                    const progressPopup = $ionicPopup.alert({
+                    const progressPopup = $ionicPopup.show({
                         title: $translate.instant("upload-service.upload-database",
                             {db: database}),
                         template: $translate.instant("upload-service.upload-progress",
                             {filesizemb: binString.byteLength / (1000 * 1000),
-                             serverURL: uploadConfig}),
+                             serverURL: uploadConfig})
+                            + '<center><ion-spinner></ion-spinner></center>',
                         scope: progressScope,
+                        buttons: [
+                            { text: '<b>Cancel</b>', type: 'button-cancel',  },
+                        ]
                     });
                     sendToServer(url, binString, params).then((response) => {
                         console.log(response);
@@ -146,6 +162,7 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                         });
                     }).catch(onUploadError);
                 });
+              }
             }).catch(onReadError);
           }).catch(onReadError);
         };

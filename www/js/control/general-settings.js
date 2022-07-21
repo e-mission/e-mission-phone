@@ -206,7 +206,17 @@ angular.module('emission.main.control',['emission.services',
                 if (response == null) {
                   $scope.settings.auth.email = "Not logged in";
                 } else {
-                  $scope.settings.auth.email = response;
+                    /*
+                     * Hack to support adding in the study as a prefix to any existing token.
+                     */
+                    if ($scope.ui_config && !response.startsWith("nrelop_")) {
+                        const newToken = "nrelop_"+$scope.ui_config.name+"_"+response;
+                        Logger.log("Found old style token, after prepending nrelop_"+$scope.ui_config.name+" new token is "+newToken);
+                        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(newToken);
+                        $scope.settings.auth.email = newToken;
+                    } else {
+                        $scope.settings.auth.email = response;
+                    }
                 }
             });
         }, function(error) {
