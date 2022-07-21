@@ -95,7 +95,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
       const orig_host = new URL(connectUrl).hostname;
       const first_domain = orig_host.split(".")[0];
       if (first_domain == "openpath-stage") { return "stage"; }
-      const openpath_index = first_domain.find("-openpath");
+      const openpath_index = first_domain.search("-openpath");
       if (openpath_index == -1) { return undefined; }
       const study_name = first_domain.substr(0,openpath_index);
       return study_name;
