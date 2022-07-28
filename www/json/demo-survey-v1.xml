@@ -697,6 +697,24 @@
           <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/How_old_are_you/prefer_not_to_say:label">
             <value>Prefiero no decirlo</value>
           </text>
+          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender:label">
+            <value>¿Cuál es su género?</value>
+          </text>
+          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/man:label">
+            <value>Hombre</value>
+          </text>
+          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/woman:label">
+            <value>Mujer</value>
+          </text>
+          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/non_binary_genderqueer_gender_non_confor:label">
+            <value>No binaria / genderqueer / género no conforme</value>
+          </text>
+          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/other:label">
+            <value>Otro</value>
+          </text>
+          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/prefer_not_to_say:label">
+            <value>Prefiero no decirlo</value>
+          </text>
           <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/do_you_consider_yourself_to_be:label">
             <value>¿Te consideras transgénero?</value>
           </text>
@@ -1278,24 +1296,6 @@
           </text>
           <text id="/aSfdnWs9LE6q8YEF7u9n85/group_yk8eb99/What_is_your_typical_access_eg/prefer_not_to_say:label">
             <value>Prefiero no decirlo</value>
-          </text>
-          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender:label">
-            <value>-</value>
-          </text>
-          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/man:label">
-            <value>-</value>
-          </text>
-          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/woman:label">
-            <value>-</value>
-          </text>
-          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/non_binary_genderqueer_gender_non_confor:label">
-            <value>-</value>
-          </text>
-          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/other:label">
-            <value>-</value>
-          </text>
-          <text id="/aSfdnWs9LE6q8YEF7u9n85/group_hg4zz25/What_is_your_gender/prefer_not_to_say:label">
-            <value>-</value>
           </text>
         </translation>
       </itext>
@@ -1931,7 +1931,7 @@
         </item>
       </select1>
     </group>
-    <group appearance="field-list" ref="/aSfdnWs9LE6q8YEF7u9n85/group_yk8eb99">
+    <group ref="/aSfdnWs9LE6q8YEF7u9n85/group_yk8eb99">
       <label ref="jr:itext('/aSfdnWs9LE6q8YEF7u9n85/group_yk8eb99:label')"/>
       <select1 ref="/aSfdnWs9LE6q8YEF7u9n85/group_yk8eb99/Do_you_have_more_than_one_job">
         <label ref="jr:itext('/aSfdnWs9LE6q8YEF7u9n85/group_yk8eb99/Do_you_have_more_than_one_job:label')"/>
