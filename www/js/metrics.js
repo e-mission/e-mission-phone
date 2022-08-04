@@ -1293,7 +1293,8 @@ angular.module('emission.main.metrics',['nvd3',
   };
   $scope.setCurDayTo = function(val) {
     if (val) {
-      $scope.selectCtrl.toDateTimestamp = moment(val).utc();
+      $scope.selectCtrl.toDateTimestamp = moment(val).endOf('day').utc();
+      console.log('ts -> ', $scope.selectCtrl.toDateTimestamp);
       $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
