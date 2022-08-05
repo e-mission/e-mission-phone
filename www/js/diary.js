@@ -3,7 +3,9 @@ angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.infscrolldetail',
                                       'emission.main.diary.detail',
                                       'emission.main.diary.services',
-                                      'emission.main.diary.current',])
+                                      'emission.main.diary.current',
+                                    //added dependency here
+                                    'emission.main.diary.infscrolltripitem'])
 
 .config(function($stateProvider) {
   $stateProvider
