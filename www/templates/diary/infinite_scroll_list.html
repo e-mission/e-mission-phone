@@ -16,6 +16,8 @@
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">
+        <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>

@@ -39,6 +39,49 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.itemHt = DEFAULT_ITEM_HT;
   // Add option
 
+  $scope.currDay = " ";
+  var readAndUpdateForDay = function(day) {
+    // This just launches the update. The update can complete in the background
+    // based on the time when the database finishes reading.
+    // TODO: Convert the usercache calls into promises so that we don't have to
+    // do this juggling
+    // $scope.itemHt = DEFAULT_ITEM_HT;
+    Timeline.updateForDay(day);
+    // This will be used to show the date of datePicker in the user language.
+    $scope.currDay = moment(day).format('LL');
+    // CommonGraph.updateCurrent();
+  };
+
+  $scope.getDatePickerObject = function() {
+    return {
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      monthsList: moment.monthsShort(),
+      weeksList: moment.weekdaysMin(),
+      titleLabel: $translate.instant('diary.list-pick-a-date'),
+      setButtonType : 'button-positive',  //Optional
+      todayButtonType : 'button-stable',  //Optional
+      closeButtonType : 'button-stable',  //Optional
+      inputDate: new Date(),  //Optional
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      mondayFirst: true,  //Optional
+      templateType: 'popup', //Optional
+      showTodayButton: 'true', //Optional
+      modalHeaderColor: 'bar-positive', //Optional
+      modalFooterColor: 'bar-positive', //Optional
+      // callback: $scope.setCurrDay, //Mandatory
+      dateFormat: 'dd MMM yyyy', //Optional
+      closeOnSelect: true //Optional
+    }
+  };
+
+  $scope.datepickerObject = $scope.getDatePickerObject();
+  $scope.pickDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObject);
+  }
+
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
