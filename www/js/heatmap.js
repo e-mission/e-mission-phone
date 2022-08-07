@@ -87,10 +87,10 @@ angular.module('emission.main.heatmap',['ui-leaflet', 'emission.services',
    */
 
   $scope.modeOptions = [
-      {text: $translate.instant('main-heatmap.all'), value:null},
+      // {text: $translate.instant('main-heatmap.all'), value:null},
       {text: $translate.instant('main-heatmap.none'), value:[]},
-      {text: $translate.instant('main-heatmap.bicycling'), value:["BICYCLING"]},
-      {text: $translate.instant('main-heatmap.walking'), value:["WALKING", "ON_FOOT"]},
+      // {text: $translate.instant('main-heatmap.bicycling'), value:["BICYCLING"]},
+      // {text: $translate.instant('main-heatmap.walking'), value:["WALKING", "ON_FOOT"]},
       {text: $translate.instant('main-heatmap.in-vehicle'), value:["IN_VEHICLE"]}
     ];
 

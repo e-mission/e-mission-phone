@@ -1,13 +1,11 @@
 {
-    "loading" : "Loading...",
+    "loading": "Loading...",
     "map-refresh": "Refresh",
     "map-fixmap": "Fix Map",
     "pull-to-refresh": "Pull to refresh",
-
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
-
-    "post-trip-prompt":{
+    "post-trip-prompt": {
         "notification-option-mute": "Mute",
         "notification-option-snooze": "Snooze",
         "notification-option-choose": "Choose",
@@ -25,13 +23,10 @@
         "unmute": "Unmute",
         "keep-muted": "Keep muted"
     },
-
     "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a ☻ or ☹ incident",
-
     "tour-next": "Next",
     "tour-previous": "Previous",
     "tour-finish": "Finish",
-
     "trip-confirm": {
         "recenttrip": "Recent trip from: {{startTime}} → to: {{endTime}}",
         "continue": "Continue",
@@ -40,58 +35,44 @@
         "services-cancel": "Cancel",
         "services-save": "Save"
     },
-
     "place-common-place": "Common place",
     "place-successor-trips": "Successor trips",
     "place-trips-to": "{{trips}} trips to",
     "place-usually-starts": "Usually starts at: {{hour}}:00",
     "place-usually-takes": "Usually takes: {{duration}}",
-
     "trip-start-hours": "Start hours",
     "trip-start-duration": "Duration",
-
-    "control":{
+    "control": {
         "profile": "Profile",
-        "edit-demographics": "Edit Demographics",
-        "username": "Username {{usernamedata}}",
+        "state": "State",
+        "wifi-activation": "Wifi",
+        "tracing-activation": "Active",
+        "signal-activation": "Active",
+        "waiting-for-trip": "Waiting For Trip",
+        "waiting-for-trip-start": "Start",
+        "current-position": "Current Position",
+        "unknown-position": "unknown",
+        "parameters": "Parameters",
+        "identifier": "Identifier",
         "tracking": "Tracking",
-        "app-status": "App Status",
-        "medium-accuracy": "Medium accuracy",
-        "dark-theme": "Dark theme",
-        "force-sync": "Force sync",
-        "share": "Share",
-        "check-ui-updates": "Check for UI updates",
-        "download-json-dump": "Download json dump",
-        "email-log": "Email log",
-        "upload-log": "Upload log",
         "view-privacy": "View Privacy Policy",
-        "user-data": "User data",
-        "erase-data": "Erase data",
-        "dev-zone": "Developer zone",
-        "refresh": "Refresh",
-        "end-trip-sync": "End trip + sync",
-        "check-consent": "Check consent",
-        "invalidate-cached-docs": "Invalidate cached docs",
-        "nuke-all": "Nuke all buffers and cache",
-        "test-notification": "Test local notification",
-        "set-ui-channel": "Set UI channel",
-        "check-log": "Check log",
-        "check-sensed-data": "Check sensed data",
-        "check-map": "Check map",
-        "collection": "Collection",
-        "sync": "Sync",
-        "transition-notify": "Transition Notify",
-        "button-accept": "I accept",
-        "view-qrc": "My OPcode"
+        "delete-my-data": "Delete my data",
+        "leave-comment": "Leave a comment",
+        "select-language": "Languages",
+        "current-language": "English",
+        "download-json-dump": "Download json dump",
+        "force-sync": "Force sync",
+        "email-log": "Email log",
+        "version": "Version",
+        "app-status": "App Status"
     },
-
-    "general-settings":{
-        "choose-date" : "Choose date to download data",
-        "choose-dataset" : "Choose a dataset for carbon footprint calculations",
-        "carbon-dataset" : "Carbon dataset",
-        "nuke-ui-state-only" : "UI state only",
-        "nuke-native-cache-only" : "Native cache only",
-        "nuke-everything" : "Everything",
+    "general-settings": {
+        "choose-date": "Choose date to download data",
+        "choose-dataset": "Choose a dataset for carbon footprint calculations",
+        "carbon-dataset": "Carbon dataset",
+        "nuke-ui-state-only": "UI state only",
+        "nuke-native-cache-only": "Native cache only",
+        "nuke-everything": "Everything",
         "clear-data": "Clear data",
         "cancel": "Cancel",
         "user-data-erased": "User data erased.",
@@ -102,14 +83,9 @@
         "consented-ok": "OK",
         "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
         "share-subject": "Emission - UC Berkeley Research Project",
-        "share-url": "https://bic2cal.eecs.berkeley.edu/#download",
-        "qrcode": "My OPcode",
-        "qrcode-share-title": "You can save your OPcode to login easily in the future!",
-        "qrcode-share-message": "Save this OPcode or send to a new device to scan and login! \n[OpenPath] My OPcode: ",
-        "qrcode-share-subject": "My OPcode - OpenPATH"
+        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
     },
-
-    "metrics":{
+    "metrics": {
         "cancel": "Cancel",
         "confirm": "Confirm",
         "get": "Get",
@@ -117,7 +93,7 @@
         "filter": "Filter",
         "from": "From:",
         "to": "To:",
-        "last-week": "last week",
+        "last-week": "Last week",
         "frequency": "Frequency:",
         "pandafreqoptions-daily": "DAILY",
         "pandafreqoptions-weekly": "WEEKLY",
@@ -133,37 +109,35 @@
         "chart-no-data": "No Data Available",
         "trips-yaxis-number": "Number",
         "calorie-data-change": " change",
+        "carbon-data-change": " change",
+        "carbon-data-calculating": "Calculating...",
+        "carbon-data-unknown": "Unknown",
         "calorie-data-unknown": "Unknown...",
-        "greater-than": " greater than ",
-        "greater": " greater ",
-        "or": "or",
-        "less-than": " less than ",
-        "less": " less ",
-        "week-before": "vs. week before",
         "calorie-data-change-increase": " increase over a week",
         "calorie-data-change-decrease": " decrease over a week",
+        "carbon-data-change-increase": " increase over a week",
+        "carbon-data-change-decrease": " decrease over a week",
         "pick-a-date": "Pick a date",
         "trips": "trips",
-        "hours": "hours",
-        "custom": "Custom"
+        "custom": "Custom",
+        "day": "day",
+        "days": "days"
     },
-
     "diary": {
+        "diary": "Diary",
         "current-trip": "Current Trip",
         "current-yesterday": "Yesterday",
         "current-weekago": "Week ago",
         "history": "History",
         "began": "Began {{startTime}}",
         "report-incident": "Report Incident",
-        "draft": "DRAFT",
-        "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
-        "date-distance-in-time": "{{date}}: {{distance}} {{distsuffix}} in {{time}}",
+        "draft": "Draft",
+        "distance-in-time": "{{distance}} km in {{time}}",
+        "date-distance-in-time": "{{date}}: {{distance}} km in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
-        "replaces": "Replaces",
         "purpose": "Purpose",
-        "survey": "Details",
         "unlabeled": "All Unlabeled",
         "invalid-ebike": "Invalid",
         "to-label": "To Label",
@@ -173,17 +147,49 @@
         "scroll-to-load-more": "Scroll to load more",
         "filter-display-status": "Displaying {{displayTripsLength}} / {{allTripsLength}} trips",
         "filter-display-range": "{{currentEnd | date}} to {{currentStart | date:'medium' }}",
-        "choose-mode": "Mode 📝 ",
+        "choose-mode": "Mode",
         "choose-replaced-mode": "Replaces 📝",
-        "choose-purpose": "Purpose 📝",
-        "choose-survey": "Add Trip Details 📝 ",
+        "choose-purpose": "Purpose",
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
-        "list-pick-a-date": "Pick a date",
-        "no-trips-today": "No trips recorded on this day"
+        "list-pick-a-date": "Pick a date"
     },
-
+    "modes": {
+        "walk": "Walk",
+        "bike": "Bike",
+        "car-drove-alone": "Car (Drove Alone)",
+        "car-shared-ride": "Car (Shared Ride)",
+        "e-car-drove-alone": "E-Car (Drove Alone)",
+        "e-car-shared-ride": "E-Car (Shared Ride)",
+        "taxi": "Taxi/Uber",
+        "bus": "Bus",
+        "subway": "Subway",
+        "train": "Train",
+        "tramway": "Tramway",
+        "free-shuttle": "Free Shuttle",
+        "car": "Car",
+        "plane": "Plane",
+        "other": "Other"
+    },
+    "purposes": {
+        "home": "Home",
+        "work": "Work",
+        "school": "School",
+        "transit-transfer": "Transit Transfer",
+        "shopping": "Shopping",
+        "groceries": "Groceries",
+        "visit": "Visit",
+        "meal": "Meal",
+        "pick-drop": "Pick-up/Drop off",
+        "personal": "Personal",
+        "personal-med": "Personal/Medical",
+        "access-recreation": "Access Recreation",
+        "exercise": "Exercice",
+        "entertainment": "Entertainment/Social",
+        "religious": "Religious",
+        "other": "Other"
+    },
     "new_label_tour": {
         "0": "This is the new Label user interface. Label trips here instead of on the Diary page. Trips take longer to appear here, but when they do they will be more accurate and you will be able to use our new features to label them faster.",
         "1": "This is the To Label tab. On this tab, only the trips you need to label will appear; when you label them, they will automatically disappear after a few seconds.",
@@ -198,124 +204,108 @@
         "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!",
         "11": "Click the ‘?’ button whenever you'd like to view this tour again."
     },
-
+    "new_label_tour": {
+        "0": "This is the new Label user interface. Label trips here instead of on the Diary page. Trips take longer to appear here, but when they do they will be more accurate and you will be able to use our new features to label them faster.",
+        "1": "This is the To Label tab. On this tab, only the trips you need to label will appear; when you label them, they will automatically disappear after a few seconds.",
+        "2": "Some of your trips do not appear in To Label because an algorithm labeled them for you. If you're  curious, you can see these in the other tabs, but you only need to label trips on the To Label tab.",
+        "3": "Trips now appear with the newest trip at the bottom.",
+        "4": "To load older trips, scroll up and press the load button.",
+        "5": "Labels are now red if we couldn't predict them, yellow if we could predict them, and green if you entered or confirmed them yourself.",
+        "6": "If you see yellow labels on the To Label tab, this means you need to confirm or correct them.",
+        "7": "If all of a trip's yellow labels are correct, you can click the checkmark button, which will turn them green (the checkmark button doesn't do anything to red or green labels.",
+        "8": "If certain yellow labels are incorrect, you can correct them just like you'd enter a label normally.",
+        "9": "When there are no more trips in To Label, you're done labeling for the day.",
+        "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!",
+        "11": "Click the ‘?’ button whenever you'd like to view this tour again."
+    },
     "user-gender": "Gender",
     "gender-male": "Male",
     "gender-female": "Female",
     "user-height": "Height",
     "user-weight": "Weight",
     "user-age": "Age",
-
-    "main-metrics":{
+    "main-metrics": {
         "dashboard": "Dashboard",
-        "summary": "My Summary",
+        "summary": "Summary",
         "chart": "Chart",
-        "mybear": "My Bear",
-        "leaderboard": "Leaderboard",
-        "carbon-usage": "Carbon Usage Past 7 Days",
-        "trip-labelling-stats": "Trip Labeling Statistics",
-        "gold-tier": "Gold tier",
-        "silver-tier": "Silver tier",
-        "bronze-tier": "Bronze tier",
-        "overallScoreMsg": "Overall Score: {{overallScore | number }}",
-        "confirmationMsg": "{{confirmedPct | number }}% labeled",
-        "validLabelsMsg": "{{validReplacePct | number }}% eBike 'replaced mode' labels valid",
-        "suggestion": "Suggestion",
-        "suggestion-savings": "You can save {{suggestionData.savings}} in a month",
-        "recent-trips": "Recent Trips",
-        "no-available-recent-trips": "No available recent trips",
-        "weekly-stats": "Weekly Stats",
-        "change-data": "Change dates:",
-        "distance": "My Distance",
-        "trips": "My Trips",
-        "duration": "My Duration",
-        "fav-mode": "My Favorite Mode",
-        "speed": "My Speed",
-        "footprint": "My Footprint",
-        "how-it-compares": "Ballpark comparisons",
-        "optimal": "Optimal (perfect mode choice for all my trips):",
-        "average": "Average for group:",
-        "avoided": "CO₂ avoided (vs. all 'taxi'):",
-        "label-to-squish": "Label trips to collapse the range into a single number",
-        "equals-phone-charges": "Saved {charges, plural, =0{at least 0 smartphone charges} one {at least 1 smartphone charge} other {at least # smartphone charges}} vs. all 'taxi'",
-        "lastweek": "My last week value:",
-        "us-2030-goal": "US 2030 Goal Estimate:",
-        "us-2050-goal": "US 2050 Goal Estimate:",
-        "calories": "My Calories",
+        "change-data": "Change data:",
+        "distance": "Distance",
+        "trips": "Trips",
+        "duration": "Duration",
+        "speed": "Speed",
+        "footprint": "Footprint",
+        "optimal": "Optimal:",
+        "average": "Average:",
+        "worst": "Worst:",
+        "lastweek": "Last Week:",
+        "calories": "Calories",
         "calibrate": "Calibrate",
         "no-summary-data": "No summary data",
-        "mean-speed": "My Average Speed",
-        "equals-cookies": "Equals {cookies, plural, =0{at least 0 homemade chocolate chip cookies} one {at least 1 homemade chocolate chip cookie} other {at least # homemade chocolate chip cookies}}",
-        "equals-icecream": "Equals {icecream, plural, =0{at least 0 half cups vanilla ice cream} one {at least 1 half cup vanilla ice cream} other {at least # half cups vanilla ice cream}}",
-        "equals-bananas": "Equals {bananas, plural, =0{at least 0 bananas} one {at least 1 banana} other {at least # bananas}}"
+        "median-speed": "Average Speed",
+        "equals-cookies": "Equals {cookies, plural, =0{0 homemade chocolate chip cookies} one {1 homemade chocolate chip cookie} other {# homemade chocolate chip cookies}}",
+        "equals-icecream": "Equals {icecream, plural, =0{0 half cups vanilla ice cream} one {1 half cup vanilla ice cream} other {# half cups vanilla ice cream}}",
+        "equals-bananas": "Equals {bananas, plural, =0{0 bananas} one {1 banana} other {# bananas}}",
+        "get": "Ok",
+        "from": "from",
+        "to": "to"
     },
-
-    "main-diary" : "Diary",
-
-    "main-inf-scroll" : {
+    "main-diary": "Diary",
+    "main-inf-scroll": {
         "tab": "Label"
     },
-
-    "main-heatmap":{
+    "main-heatmap": {
         "title": "Heatmap",
-        "counts" : "Counts",
-        "stress" : "Stress",
-        "from" : "From:",
-        "to" : "To:",
-        "get" : "Get!",
+        "counts": "Counts",
+        "stress": "Stress",
+        "from": "From:",
+        "to": "To:",
+        "get": "Get!",
         "all": "ALL",
         "none": "NONE",
         "bicycling": "BICYCLING",
         "walking": "WALKING",
         "in-vehicle": "IN_VEHICLE",
-        "select-travel-mode" : "Select travel mode",
+        "select-travel-mode": "Select travel mode",
         "cancel": "Cancel",
         "tour-datepicker": "This heatmap shows the aggregate data for all E-mission users. Select the dates you want to see, and filter by hours of the day (24h format) and days of the week. For example, if you enter 16 and 19 in the last field, and select Monday and Friday, you'll see the Heatmap filtered to show the traffic on weekdays between 4pm and 7pm.",
         "tour-mode": "Click here to filter your results by mode of transportation. The default is to show all modes.",
         "tour-get": "Click here to generate the heatmap."
     },
-
-    "details":{
+    "details": {
         "speed": "Speed",
-        "time": "Time",
+        "time": "Temps",
         "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a ☻ or ☹ incident",
         "tour-sectionList-content": "Trip sections, along with times and modes",
         "tour-sectionPct-content": "% of time spent in each mode for this trip"
     },
-
     "list-explainDraft-alert": "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong.",
     "list-datepicker-today": "Today",
     "list-datepicker-close": "Close",
     "list-datepicker-set": "Set",
-    "list-tour-datepicker-button" : "Use this to select the day you want to see.",
-    "list-tour-diary-entry" : "Click on the map to see more details about each trip.",
-    "list-tour-map-fix-button" : "Use this to fix the map tiles if they have not loaded properly.",
-
-    "service":{
+    "list-tour-datepicker-button": "Use this to select the day you want to see.",
+    "list-tour-diary-entry": "Click on the map to see more details about each trip.",
+    "list-tour-map-fix-button": "Use this to fix the map tiles if they have not loaded properly.",
+    "service": {
         "reading-server": "Reading from server...",
         "reading-cache": "Reading from cache...",
         "reading-unprocessed-data": "Reading unprocessed data..."
     },
-
-
-    "post-trip-manual-incident-time" : "Choose incident time",
-
-    "email-service":{
+    "post-trip-manual-incident-time": "Choose incident time",
+    "email-service": {
         "email-account-not-configured": "Email account is not configured, cannot send email",
         "email-account-mail-app": "You must have the mail app on your phone configured with an email address. Otherwise, this won't work",
         "going-to-email": "Going to email database from {{parentDir}}",
-        "email-log":{
+        "email-log": {
             "subject-logs": "emission logs",
             "body-please-fill-in-what-is-wrong": "please fill in what is wrong"
         },
         "no-email-address-configured": "No email address configured.",
-        "email-data":{
+        "email-data": {
             "subject-data-dump-from-to": "Data dump from {{start}} to {{end}}",
             "body-data-consists-of-list-of-entries": "Data consists of a list of entries.\nEntry formats are at https://github.com/e-mission/e-mission-server/tree/master/emission/core/wrapper \nData can be loaded locally using instructions at https://github.com/e-mission/e-mission-server#loading-test-data \n and can be manipulated using the example at https://github.com/e-mission/e-mission-server/blob/master/Timeseries_Sample.ipynb"
         }
     },
-
-    "upload-service":{
+    "upload-service": {
         "upload-database": "Uploading database {{db}}",
         "upload-from-dir": "from directory {{parentDir}}",
         "upload-to-server": "to servers {{serverURL}}",
@@ -325,7 +315,6 @@
         "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
         "upload-details": "Sent {{filesizemb | number}} MB to {{serverURL}}"
     },
-
     "intro": {
         "appstatus": {
             "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
@@ -393,11 +382,11 @@
     "allow_background": {
         "samsung": "Disable 'Medium power saving mode'"
     },
-    "consent":{
+    "consent": {
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
-    "updatecheck":{
+    "updatecheck": {
         "downloading-update": "Downloading UI-only update",
         "extracting-update": "Extracting UI-only update",
         "done": "Update done, reloading...",
@@ -405,22 +394,8 @@
         "download-not-now": "Not now",
         "download-apply": "Apply"
     },
-    "sensor_explanation":{
+    "sensor_explanation": {
         "button-accept": "OK",
         "button-decline": "Stop"
-    },
-    "survey": {
-        "prev-survey-found": "Found previous survey response",
-        "use-prior-response": "Use prior response",
-        "edit-response": "Edit response",
-        "move-on": "Move on",
-        "survey": "Survey",
-        "save": "Save",
-        "back": "Back",
-        "next": "Next",
-        "powered-by": "Powered by",
-        "dismiss": "Dismiss",
-        "return-to-beginning": "Return to beginning",
-        "go-to-end": "Go to End"
     }
 }

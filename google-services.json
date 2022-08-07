@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "463780887765",
+    "project_id": "fabmobqc",
+    "storage_bucket": "fabmobqc.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:463780887765:android:598cde1db65f1cc9bc365c",
+        "android_client_info": {
+          "package_name": "com.fabmoqc.mamobilite"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "463780887765-6mguoskq0k2v0t2eaj6mes3hrtu9vn74.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDiQ7D5zf0hW0Xyl8v2JE5w4M5HhT1RGZ8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "463780887765-6mguoskq0k2v0t2eaj6mes3hrtu9vn74.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "463780887765-d48a77jepjhssklo5754tt1gfgqn3ikb.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fabmoqc.mamobilite"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,18 +1,3 @@
-/*
- * This module deals with the interaction with the push plugin, the redirection
- * of silent push notifications and the re-parsing of iOS pushes. It then
- * re-emits a CLOUD_NOTIFICATION_EVENT that other modules can listen to.
- *
- * Other modules, such as the survey code, and the remotenotify module, listen
- * to these CLOUD_NOTIFICATION_EVENTs and handle them through launching
- * surveys, displaying popups, etc.
- *
- * This allows us to decouple the push handling logic from push notification
- * interface. Note that the local notification is not currently decoupled since
- * it only supports redirection to a specific app page. If the local
- * notification handling gets more complex, we should consider decoupling it as well.
- */
-
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services',
                                               'emission.splash.startprefs'])
@@ -32,8 +17,9 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
           "clearBadge": true
         },
         "android": {
-          "iconColor": "#54DCC1",
-          "icon": "ic_mood_question",
+          "senderID": "1096592179912",
+          "iconColor": "#1123CB",
+          "icon": "ic_question_answer",
           "clearNotifications": true
         }
       });
@@ -74,7 +60,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
 
     pushnotify.registerPush = function() {
       pushnotify.registerPromise().then(function(t) {
-         // alert("Token = "+JSON.stringify(t));
+        //  alert("Token = "+JSON.stringify(t));
          Logger.log("Token = "+JSON.stringify(t));
          return $window.cordova.plugins.BEMServerSync.getConfig().then(function(config) {
             return config.sync_interval;

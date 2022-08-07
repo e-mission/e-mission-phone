@@ -1,0 +1,16 @@
+{
+    "connectUrl": "https://e-mission.fabmobqc.ca",
+    "aggregate_call_auth": "no_auth",
+    "android": {
+        "auth": {
+            "method": "prompted-auth",
+            "clientID": "ignored"
+        }
+    },
+    "ios": {
+        "auth": {
+            "method": "prompted-auth",
+            "clientID": "ignored"
+        }
+    }
+}
