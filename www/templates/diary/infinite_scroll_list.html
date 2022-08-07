@@ -4,21 +4,23 @@
     <ion-nav-buttons side="left" id="toget" class="row buttons">
         <button class="button button-icon ion-help walkthrough-button" ng-click="startWalkthrough()" style="padding-right: 0"></button>
         <div class="row buttons labelfilterlist">
-            <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+            <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 13px;font-weight: 600; font-family: 'Lato'; border-radius: 10px;" translate>
                 {{selF.text}}
             </button>
-            <button ng-click="resetSelection()" class="col-33 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 14px;font-weight: 600;" translate>
+            <button ng-click="resetSelection()" class="col-33 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 13px;font-weight: 600; font-family: 'Lato'; border-radius: 10px;" translate>
                 {{'.show-all'}}
             </button>
         </div>
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">
+        <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
+
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
     </ion-nav-buttons>
-    <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div>
+    <!-- <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div> --> <!-- This creates an unneccesary line in the landscape version -->
 	<ion-content class="diary-entry">
         <!--
         <div ng-if="data.displayTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item" item-height="'400px'">
@@ -31,8 +33,8 @@
         -->
         <div class="control-list-item row">
             <div class="control-list-text col">
-                <div class="row" translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
-                <div ng-if="data.allTrips.length > 0" class="row" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
+                <div class="row" translate="diary.filter-display-status" style="font-family: 'Lato'" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
+                <div ng-if="data.allTrips.length > 0" class="row" style="font-family: 'Lato'" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
             </div>
             <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
             <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
@@ -49,66 +51,48 @@
         If you want to change this from collection-repeat to ng-repeat, you
         MUST test on android first to make sure that the scrolling works.
         -->
-		<div collection-repeat="trip in data.displayTrips" item-height="'160px'">
-            <div class="start-time-tag-inf-scroll">{{trip.display_start_time}}</div>
-            <div  style="padding-left: 19%;">
+		<div ng-repeat="trip in data.displayTrips">
+            <div>  <!-- style="padding-left: 5%;"-->
 
-			 <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
-                <div id="diary-card" ng-class="trip.listCardClass" ng-style="{height: '150px'}">
-                    <div class="row">
-                        <div ng-click="showDetail($event, trip)" class="col-90 center-vert" ng-class="listTextClass" style="font-size: 14px; padding-left: 30px; margin-bottom: 0; justify-self: flex-start;" translate=".date-distance-in-time" translate-value-date="{{ trip.display_date }}" translate-value-distance="{{ trip.display_distance }}" translate-value-time="{{ trip.display_time }}"></div>
-                        <div ng-click="showDetail($event, trip)" class="col-10 diary-more-container center-vert center-horiz">
-                            <i class="ion-more"></i>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-90" ng-click="showDetail($event, trip)">
-                            <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
-                            <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #1123CB;"></i>
-                                    {{trip.start_display_name}}
-                            </div>
-                            <div ng-class="listLocationClass" id="no-border" href="#" style="background-color: transparent; font-size: 0.8em; padding-top: 5px; padding-bottom: 5px; padding-left: 30px; margin-top: 0; margin-bottom: 0;">
-                            <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #ff5251;"></i>
-                                    {{trip.end_display_name}}
-                            </div>
-                        </div>
-                        <div ng-click="verifyTrip($event, trip)" class="col-10 diary-checkmark-container center-vert center-horiz">
-                            <i ng-class="trip.verifiability" class="ion-checkmark-round"></i>
-                        </div>
-                    </div>
-                    <div class="row" style="margin-top: 0px">
-                    <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;font-size: 14px;font-weight: 600;" ng-attr-id="{{ 'userinputlabel' + input.name" translate>
-                        {{input.labeltext}}
-                    </div>
-                    </div>
-                    <div class="row input-confirm-row">
-                        <div ng-repeat="input in userInputDetails" class={{input.width}} style="text-align: center;" ng-attr-id="{{ 'userinput' + input.name">
-                            <div ng-if="trip.userInput[input.name]" class="input-confirm-container">
-                                <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green" translate>
-                                    {{trip.userInput[input.name].text}}
-                                </button>
-                            </div>
-                            <div ng-if="!trip.userInput[input.name] && trip.finalInference[input.name]" class="input-confirm-container">
-                                <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-yellow" translate>
-                                    {{trip.finalInference[input.name].text}}
-                                </button>
-                            </div>
-                            <div ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container">
-                                <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red" translate>
-                                    {{input.choosetext}}
-                                </button>
-                            </div>
-                        </div>
-                    </div>   
+                <div ng-show="$index==0">
+                    <h2 class="hr-lines" style="justify-content: center; 
+                            font-family: 'Lato';
+                            font-weight: bold; 
+                            display: flex;
+                            color: #212121;
+                            font-size: 19px;
+                            margin-left: 10px; 
+                            margin-right: 10px;
+                            margin-bottom: 5px; 
+                            margin-top: 5px" translate> {{trip.display_date}}</h2>
                 </div>
-            </ion-item>
+
+                <infinite-scroll-trip-item trip="trip"></infinite-scroll-trip-item>
+                
+                <div ng-if="trip.display_date != trip.nextTrip.display_date && trip.nextTrip.display_date != undefined">
+                    <h2 class="hr-lines" style="justify-content: center; 
+                            font-family: 'Lato';
+                            font-weight: bold; 
+                            display: flex;
+                            color: #212121;
+                            font-size: 19px;
+                            margin-left: 10px; 
+                            margin-right: 10px;
+                            margin-bottom: 5px; 
+                            margin-top: 5px" translate> {{trip.nextTrip.display_date}} </h2>
+                </div>
+
             </div>
-           <div class="stop-time-tag-inf-scroll">{{trip.display_end_time}}</div>
         </div>
+
+        <!-- To Handle the last diary card not being in full view -->
+        <div style="font-size: 50px; color: transparent;">SPACE</div>
+
         <!-- <ion-infinite-scroll
             ng-if="!infScrollControl.reachedEnd"
             on-infinite="readDataFromServer()"></ion-infinite-scroll>
-        </ion-list> -->
+        -->
+        </ion-list>
 	</ion-content>
     <!--
     <ion-footer-bar>

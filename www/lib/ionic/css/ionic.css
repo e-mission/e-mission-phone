@@ -1200,6 +1200,7 @@
   content: ""; }
 
 .ion-arrow-left-b:before {
+  /* color: #0088ce; */
   content: ""; }
 
 .ion-arrow-left-c:before {
@@ -1221,6 +1222,7 @@
   content: ""; }
 
 .ion-arrow-right-b:before {
+  /* color: #0088ce; */
   content: ""; }
 
 .ion-arrow-right-c:before {
@@ -5694,14 +5696,14 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.tab-item-active, ion-tabs
  * --------------------------------------------------
  */
 .item {
-  border-color: #ddd;
+  border-color: #fff; /* #ddd */
   background-color: #fff;
   color: #444;
   position: relative;
   z-index: 2;
   display: block;
   margin: -1px;
-  padding: 16px;
+  padding: 0 10px; /* 16px */
   border-width: 1px;
   border-style: solid;
   font-size: 16px; }
@@ -8587,7 +8589,7 @@ progress {
   margin: 0;
   padding: 0 12px;
   min-width: 52px;
-  min-height: 47px;
+  min-height: 10px; /* 47px */
   border-width: 1px;
   border-style: solid;
   border-radius: 4px;
@@ -8595,7 +8597,7 @@ progress {
   text-align: center;
   text-overflow: ellipsis;
   font-size: 16px;
-  line-height: 42px;
+  /* line-height: 42px; */ /* Commented out to align the text in the Label Buttons. If Uncommented, the text won't align; by all means implement a different solution */
   cursor: pointer; }
   .button:hover {
     color: #444;

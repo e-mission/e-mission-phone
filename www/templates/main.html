@@ -7,8 +7,23 @@ navigation history that also transitions its views in and out.
 <ion-tabs ng-class="tabsCustomClass()">
 
   <!-- Diary Tab -->
-  <ion-tab title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/diary">
+  <!-- <ion-tab title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/diary">
     <ion-nav-view name="main-diary"></ion-nav-view>
+  </ion-tab> -->
+
+  <!-- Game Tab
+  <ion-tab title="Goals" icon="ion-android-checkbox" href="#/root/main/goals">
+    <ion-nav-view name="main-goals"></ion-nav-view>
+  </ion-tab> -->
+
+  <!-- Common Patterns Tab
+  <ion-tab title="Common" icon="ion-star" href="#/root/main/common/map">
+    <ion-nav-view name="main-common"></ion-nav-view>
+  </ion-tab> -->
+
+  <!-- New Unified Diary Screen -->       <!-- OLD INFINITE SCROLL::: icon="ios-checkmark-round" /// 'main-inf-scroll.tab'-->
+  <ion-tab title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/inf_scroll">
+    <ion-nav-view name="main-inf-scroll"></ion-nav-view>
   </ion-tab>
 
   <!-- Dashboard Tab -->
