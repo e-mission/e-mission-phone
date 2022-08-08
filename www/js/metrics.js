@@ -1282,7 +1282,11 @@ angular.module('emission.main.metrics',['nvd3',
 
   $scope.setCurDayFrom = function(val) {
     if (val) {
-      $scope.selectCtrl.fromDateTimestamp = moment(val).utc();
+      $scope.selectCtrl.fromDateTimestamp = moment(val).startOf('day');
+      if ($scope.selectCtrl.fromDateTimestamp > $scope.selectCtrl.toDateTimestamp) {
+        var copyToDateTimestamp = $scope.selectCtrl.toDateTimestamp.clone();
+        $scope.selectCtrl.fromDateTimestamp = copyToDateTimestamp.startOf('day');
+      }
       $scope.datepickerObjFrom.inputMoment = $scope.selectCtrl.fromDateTimestamp;
       $scope.datepickerObjFrom.inputDate = $scope.selectCtrl.fromDateTimestamp.toDate();
     } else {
@@ -1293,7 +1297,11 @@ angular.module('emission.main.metrics',['nvd3',
   };
   $scope.setCurDayTo = function(val) {
     if (val) {
-      $scope.selectCtrl.toDateTimestamp = moment(val).endOf('day').utc();
+      $scope.selectCtrl.toDateTimestamp = moment(val).endOf('day');
+      if ($scope.selectCtrl.toDateTimestamp < $scope.selectCtrl.fromDateTimestamp) {
+        var copyFromDateTimestamp = $scope.selectCtrl.fromDateTimestamp.clone();
+        $scope.selectCtrl.toDateTimestamp = copyFromDateTimestamp.endOf('day');
+      }
       console.log('ts -> ', $scope.selectCtrl.toDateTimestamp);
       $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
