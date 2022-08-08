@@ -1302,7 +1302,6 @@ angular.module('emission.main.metrics',['nvd3',
         var copyFromDateTimestamp = $scope.selectCtrl.fromDateTimestamp.clone();
         $scope.selectCtrl.toDateTimestamp = copyFromDateTimestamp.endOf('day');
       }
-      console.log('ts -> ', $scope.selectCtrl.toDateTimestamp);
       $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
       $scope.datepickerObjTo.inputDate = $scope.selectCtrl.toDateTimestamp.toDate();
     } else {
