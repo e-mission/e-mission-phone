@@ -196,7 +196,7 @@ progress.download::-webkit-progress-bar{
 }
 
 progress.download::-webkit-progress-value{
-  background: #91d4ff;
+  background: #80D0FF;
   border-radius: 0;
 }
 
@@ -355,7 +355,7 @@ img.center {
 
 #dashboard-footprint.card {
   background: #fff;
-  color: #91d4ff;
+  color: #80D0FF;
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -385,7 +385,7 @@ img.center {
 
 #dashboard-calorie.card {
   background: #fff;
-  color: #91d4ff;
+  color: #80D0FF;
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -555,7 +555,7 @@ h4.dashboard-headers{
 }
 
 #green-leaf{
-  color: #91d4ff;
+  color: #80D0FF;
   font-size: 45px;
   padding-top: 5px;
 }
@@ -925,8 +925,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag {
         width: 68px;
         height: 30px;
-        background: #91d4ff;
-        /* border: 1px solid #0088ce; */
+        background: #80D0FF;
         box-sizing: border-box;
         border-radius: 50px;
         margin: auto;
@@ -942,20 +941,8 @@ button.button.back-button.buttons.button-clear.header-item {
         position: relative;
         bottom: -15px;
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-
-        /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #91d4ff;
-        color: #0088ce;
-        width: 16%;
-        height: 16px;
-        border-radius: 8px;
-        font-size: 9px;
-        position: absolute;
-        left: 1%;
-        top: 15px;
-        line-height: 16px; */
 }
+
 .stop-time-tag {
         width: 68px;
         height: 30px;
@@ -976,23 +963,12 @@ button.button.back-button.buttons.button-clear.header-item {
         position: relative;
         top: -15px;
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #0088ce;
-        color: white;
-        width: 16%;
-        height: 16px;
-        border-radius: 8px;
-        font-size: 9px;
-        position: absolute;
-        left: 1%;
-        bottom: 15px;
-        line-height: 16px; */
 }
+
 .start-time-tag-inf-scroll {
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
-        background-color: #91d4ff;
+        background-color: #80D0FF;
         color: black;
         width: 16%;
         height: 18px;

@@ -95,7 +95,7 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #91d4ff;
+  background-color: #80D0FF;
   border-radius: 6px;
 }
 .leaflet-div-icon-stop {
@@ -238,7 +238,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 
   .hr-lines:after {
@@ -249,7 +249,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 }
 @media screen and (orientation: landscape) {
@@ -261,7 +261,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 
   .hr-lines:after {
@@ -272,7 +272,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 }
 
