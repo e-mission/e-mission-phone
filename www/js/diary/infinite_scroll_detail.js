@@ -63,8 +63,6 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
   $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
   };
-  
-console.log("Here is our trip before getting the confirmed trip: ", $scope.trip);
 
   $scope.trip = Timeline.getConfirmedTrip($stateParams.tripId);
   Timeline.confirmedTrip2Geojson($scope.trip).then((tripgj) => {
@@ -81,8 +79,6 @@ console.log("Here is our trip before getting the confirmed trip: ", $scope.trip)
         }
     });
   });
-
-console.log("And here is our trip aftering retrieving the confirmed trip: ", $scope.trip);
 
   $scope.recomputeDisplayTrips = function() {
     console.log("Called inf scroll details.recomputeDisplayTrips");
