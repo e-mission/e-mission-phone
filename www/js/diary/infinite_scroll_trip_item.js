@@ -47,43 +47,6 @@ angular.module('emission.main.diary.infscrolltripitem', [
 
     console.log("Trip before tripgj transformation ", $scope.trip);
 
-    // var getTripComponents = function(trip) {
-    //   console.log("getSections("+trip+") called");
-    //   var startPlace = null;
-    //   var endPlace = null;
-    //   var stopList = [];
-    //   var sectionList = [];
-    //   trip.data.features.forEach(function(feature, index, array) {
-    //         // console.log("Considering feature " + JSON.stringify(feature));
-    //         switch (feature.type) {
-    //           case "Feature":
-    //           switch(feature.properties.feature_type) {
-    //             case "start_place":
-    //             startPlace = feature;
-    //             break;
-    //             case "end_place":
-    //             endPlace = feature;
-    //             break;
-    //             case "stop":
-    //             stopList.push(feature);
-    //             break;
-    //           }
-    //           break;
-    //           case "FeatureCollection":
-    //           feature.features.forEach(function (item, index, array) {
-    //             if (angular.isDefined(item.properties) && angular.isDefined(item.properties.feature_type)) {
-    //                     // console.log("Considering feature with type " + item.properties.feature_type);
-    //                     if (item.properties.feature_type == "section") {
-    //                       console.log("FOUND section" + item + ", appending");
-    //                       sectionList.push(item);
-    //                     }
-    //                   }
-    //                 });
-    //         }
-    //       });
-    //   return [startPlace, endPlace, stopList, sectionList];
-    // };
-
     // Converting trip to tripgj
     Timeline.confirmedTrip2Geojson($scope.trip).then((tripgj) => {
       $scope.$apply(() => {

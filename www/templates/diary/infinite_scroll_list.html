@@ -14,23 +14,12 @@
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">
-        <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button>
-
         <button class="button button-icon" ng-click="refresh()">
             <i class="icon ion-refresh"></i>
         </button>
     </ion-nav-buttons>
-    <!-- <div style="background-color: transparent; border-left-style: solid; border-left-width: 0.5px; border-left-color: #212121; margin-left: 10%; position: absolute; float: left; height: 100%;"></div> --> <!-- This creates an unneccesary line in the landscape version -->
 	<ion-content class="diary-entry">
-        <!--
-        <div ng-if="data.displayTrips.length == 0" style="background-color: transparent;" id="no-border" class="list-item" item-height="'400px'">
-               <div ng-if="data.displayTrips.length == 0" style="position: absolute; top: 50%; left: 50%; transform: translateX(-50%);" height="'400px'">
-                 <h3>{{'diary.no-trips-found' | translate}}</h3>
-                 <h3 ng-if="filterInputs.unlabeled || filterInputs.invalid">{{'diary.for-current-filter' | translate }}</h3>
-                 <h3 ng-if="!infScrollControl.reachedEnd">{{'diary.scroll-to-load-more' | translate }}</h3>
-               </div>
-         </div>
-        -->
+
         <div class="control-list-item row">
             <div class="control-list-text col">
                 <div class="row" translate="diary.filter-display-status" style="font-family: 'Lato'" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
@@ -41,62 +30,24 @@
         </div>
 
 		<ion-list>
-        <!--
-        This needs to be collection-repeat instead of ng-repeat on android.
-        Otherwise, you can only scroll using the sidebar, scrolling on the map side does not work.
-        I have no clue why this happens, but it is not worth it to understand
-        this deeply. It is not purely a leaflet issue, but it also clearly something to
-        do with leaflet because scrolling on the details part does work.
-
-        If you want to change this from collection-repeat to ng-repeat, you
-        MUST test on android first to make sure that the scrolling works.
-        -->
 		<div ng-repeat="trip in data.displayTrips">
-            <div>  <!-- style="padding-left: 5%;"-->
+            <div>
 
                 <div ng-show="$index==0">
-                    <h2 class="hr-lines" style="justify-content: center; 
-                            font-family: 'Lato';
-                            font-weight: bold; 
-                            display: flex;
-                            color: #212121;
-                            font-size: 19px;
-                            margin-left: 10px; 
-                            margin-right: 10px;
-                            margin-bottom: 5px; 
-                            margin-top: 5px" translate> {{trip.display_date}}</h2>
+                    <h2 class="hr-lines" translate> {{trip.display_date}}</h2>
                 </div>
 
                 <infinite-scroll-trip-item trip="trip"></infinite-scroll-trip-item>
                 
                 <div ng-if="trip.display_date != trip.nextTrip.display_date && trip.nextTrip.display_date != undefined">
-                    <h2 class="hr-lines" style="justify-content: center; 
-                            font-family: 'Lato';
-                            font-weight: bold; 
-                            display: flex;
-                            color: #212121;
-                            font-size: 19px;
-                            margin-left: 10px; 
-                            margin-right: 10px;
-                            margin-bottom: 5px; 
-                            margin-top: 5px" translate> {{trip.nextTrip.display_date}} </h2>
+                    <h2 class="hr-lines" translate> {{trip.nextTrip.display_date}} </h2>
                 </div>
 
             </div>
         </div>
 
-        <!-- To Handle the last diary card not being in full view -->
+        <!-- To Handle the last diary card not being in full view-- To see end_time of the final diary card, you have to hold the scroll up. This resolves that. -->
         <div style="font-size: 50px; color: transparent;">SPACE</div>
-
-        <!-- <ion-infinite-scroll
-            ng-if="!infScrollControl.reachedEnd"
-            on-infinite="readDataFromServer()"></ion-infinite-scroll>
-        -->
         </ion-list>
 	</ion-content>
-    <!--
-    <ion-footer-bar>
-        <button class="button button-block button-outline button-positive" ng-click="readDataFromServer()" translate>{{'load-more'}}</button>
-    </ion-footer-bar>
-    -->
 </ion-view>

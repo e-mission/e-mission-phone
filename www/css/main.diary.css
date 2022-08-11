@@ -90,7 +90,7 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #91d4ff;
+  background-color: #80D0FF;
   border-radius: 6px;
 }
 .leaflet-div-icon-stop {
@@ -213,7 +213,16 @@ a.item-content {
 
 .hr-lines {
   position: relative;
-  /* max-width: 500px; */
+  justify-content: center;
+  font-family: 'Lato';
+  font-weight: bold;
+  display: flex;
+  color: #212121;
+  font-size: 19px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
   margin: 10px auto;
   text-align: center;
 }
@@ -227,7 +236,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 
   .hr-lines:after {
@@ -238,7 +247,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 }
 @media screen and (orientation: landscape) {
@@ -250,7 +259,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 
   .hr-lines:after {
@@ -261,7 +270,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #91d4ff;
+    background: #80D0FF;
   }
 }
 
