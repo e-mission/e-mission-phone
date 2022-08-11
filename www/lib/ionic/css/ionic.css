@@ -5701,7 +5701,7 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.tab-item-active, ion-tabs
   z-index: 2;
   display: block;
   margin: -1px;
-  padding: 0 10px; /* 16px */
+  padding: 0 10px; /* Changed from 16px. This change was to ensure the correct alignment of the diary card */
   border-width: 1px;
   border-style: solid;
   font-size: 16px; }
@@ -8587,7 +8587,7 @@ progress {
   margin: 0;
   padding: 0 12px;
   min-width: 52px;
-  min-height: 10px; /* 47px */
+  min-height: 10px; /* Changed from 47px. This allows for the correct height for the label buttons to fit nicely in the diary card. */
   border-width: 1px;
   border-style: solid;
   border-radius: 4px;

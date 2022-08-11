@@ -712,7 +712,7 @@ background-image: none !important; }
   /* background-color: #D6C780; */
   color: #fff;
   padding-top: 16px;
-  width: 48px;
+  width: 48px; /* Changed to fit the diary card in full view */
   font-size:20px;
 }
 
