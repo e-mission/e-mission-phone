@@ -1,0 +1,36 @@
+/*
+  Overrides datepicker's style
+  https://github.com/rajeshwarpatlolla/ionic-datepicker/blob/master/src/scss/ionic-datepicker.styles.scss
+*/
+
+.ionic_datepicker_popup .today {
+  border: 1px solid #1123CB !important;
+}
+
+.ionic_datepicker_popup .selected_date {
+  background-color: #1123CB !important;
+}
+
+.ionic_datepicker_popup .popup-head {
+  background-color: #1123CB !important;
+}
+
+.ionic_datepicker_popup .popup-body .selected_date_full {
+  background-color: #1123CB !important;
+}
+
+.ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
+  border-bottom: 1px solid #1123CB !important;
+}
+
+.ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
+  color: #1123CB !important;
+}
+
+.ionic_datepicker_popup .popup-body .button-clear {
+  color: #1123CB !important;
+}
+
+.ionic_datepicker_popup .popup-buttons button {
+  background-color: #1123CB !important;
+}

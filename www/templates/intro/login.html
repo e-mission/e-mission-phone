@@ -1,26 +1,16 @@
 <ion-content>
 <div class="intro-title">
-<center><h3>Login via anonymous token (OPcode) </h3></center>
-<center>OPcode {{randomToken}}</center></div>
+<center><h3>Login via google</h3></center></div>
 
 <div class="intro-text">
-This unique randomly generated token (OPcode) is your identifier in the system.
-<p>&nbsp;</p>
-Nobody other than you knows that you are associated with this OPcode. If you
-want to communicate with the research team about the data collected about you,
-please be prepared to provide this OPcode.
+Currently, we only support logging in via google, since they support techniques
+such as two factor authentication for greater security. Participants at UC
+Berkeley can choose to login using either their CalNet ID or a personal gmail
+account.
 <div class="intro-space"></div>
-<button class="button button-block button-balanced" ng-click="loginNew()">Login as {{randomToken}}</button>
+<button class="button button-block button-balanced" ng-click="login()">Login via Google</button>
+</div>
 
-If you already have an OPcode from a previous install, you can use it instead to retain the same account. Note that there are no incorrect tokens. If you enter a OPcode that does not match an existing one, we will create a new account.
-    <div class="intro-space"></div>
-    <button class="button button-block button-energized" ng-click="typeExisting()">Type existing OPcode</button>
-
-    <center> <b> - OR - </b> </center>
-
-    <div class="intro-space"></div>
-    <button class="button button-block button-royal" ng-click="scanExisting()">Scan existing OPcode</button>
-</div> <!-- program_or_study == 'study' -->
-</div> <!-- overall div -->
 
 </ion-content>
+ 

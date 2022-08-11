@@ -17,9 +17,6 @@ angular.module('emission', ['ionic',
 .run(function($ionicPlatform, $rootScope, $http, Logger,
     CustomURLScheme, ReferralHandler, UpdateCheck) {
   console.log("Starting run");
-  // ensure that plugin events are delivered after the ionicPlatform is ready
-  // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
-  window.skipLocalNotificationReady = true;
   // alert("Starting run");
   // BEGIN: Global listeners, no need to wait for the platform
   // TODO: Although the onLaunch call doesn't need to wait for the platform the
@@ -116,19 +113,26 @@ angular.module('emission', ['ionic',
 
   // Define where we can find the .json and the fallback language
   $translateProvider
-    .fallbackLanguage('en')
-    .registerAvailableLanguageKeys(['en', 'fr', 'it', 'es'], {
+    .fallbackLanguage('fr')
+    
+    .registerAvailableLanguageKeys(['en', 'fr'], {
       'en_*': 'en',
       'fr_*': 'fr',
-      'it_*': 'it',
-      'es_*': 'es',
       '*': 'en'
     })
     .determinePreferredLanguage()
     .useStaticFilesLoader({
       prefix: 'i18n/',
       suffix: '.json'
-    });
+    })
+    .useLocalStorage();
   
   console.log("Ending config");
+
+  
+  // Tell the module what language to use by default
+  // $translateProvider.preferredLanguage('en');
+
+  // Tell the module to store the language in the cookie
+  // $translateProvider.useCookieStorage();
 });

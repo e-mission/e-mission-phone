@@ -13,8 +13,5 @@ fi
 echo "Activating sdkman, and by default, gradle"
 source ~/.sdkman/bin/sdkman-init.sh
 
-echo "Ensuring that we use the most recent version of the command line tools"
-export PATH=$ANDROID_SDK_ROOT/sdk/cmdline-tools/bin:$ANDROID_SDK_ROOT/emulator:$PATH
-
 echo "Configuring the repo for building native code"
 ./bin/configure_xml_and_json.js cordovabuild

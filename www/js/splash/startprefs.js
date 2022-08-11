@@ -172,10 +172,8 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             return {state: 'root.main.diary'};
           } else if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
-            var redirParams = $rootScope.redirectParams;
             $rootScope.redirectTo = undefined;
-            $rootScope.redirectParams = undefined;
-            return {state: redirState, params: redirParams};
+            return {state: redirState, params: {}};
           } else {
             return {state: 'root.main.inf_scroll', params: {}};
           }

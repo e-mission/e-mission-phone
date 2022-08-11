@@ -17,18 +17,17 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
   localNotify.getRedirectState = function(notification) {
     // TODO: Think whether this should be in data or in category
     if (angular.isDefined(notification.data)) {
-      return [notification.data.redirectTo, notification.data.redirectParams];
+      return notification.data.redirectTo;
     }
     return undefined;
   }
 
-  localNotify.handleLaunch = function(targetState, targetParams) {
+  localNotify.handleLaunch = function(targetState) {
     $rootScope.redirectTo = targetState;
-    $rootScope.redirectParams = targetParams;
-    $state.go(targetState, targetParams, { reload : true });
+    $state.go(targetState);
   }
 
-  localNotify.handlePrompt = function(notification, targetState, targetParams) {
+  localNotify.handlePrompt = function(notification, targetState) {
     Logger.log("Prompting for notification "+notification.title+" and text "+notification.text);
     var promptPromise = $ionicPopup.show({title: notification.title,
         template: notification.text,
@@ -49,7 +48,7 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
     });
     promptPromise.then(function(handle) {
       if (handle == true) {
-        localNotify.handleLaunch(targetState, targetParams);
+        localNotify.handleLaunch(targetState);
       } else {
         Logger.log("Ignoring notification "+notification.title+" and text "+notification.text);
       }
@@ -57,17 +56,13 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
   }
 
   localNotify.handleNotification = function(notification,state,data) {
-    // Comment this out for ease of testing. But in the real world, we do in fact want to 
-    // cancel the notification to avoid "hey! I just fixed this, why is the notification still around!"
-    // issues
-    // $window.cordova.plugins.notification.local.cancel(notification.id);
-    var [targetState, targetParams] = localNotify.getRedirectState(notification);
+    var targetState = localNotify.getRedirectState(notification);
     Logger.log("targetState = "+targetState);
     if (angular.isDefined(targetState)) {
-      if (state.foreground == true) {
-        localNotify.handlePrompt(notification, targetState, targetParams);
+      if (state == "foreground") {
+        localNotify.handlePrompt(notification, targetState);
       } else {
-        localNotify.handleLaunch(targetState, targetParams);
+        localNotify.handleLaunch(targetState);
       }
     }
   }
@@ -84,7 +79,10 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
         // alert("notification cancelled, no report");
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
-      localNotify.handleNotification(notification, state, data);
+        Logger.log("triggered, no action");
+        if ($ionicPlatform.is('ios')) {
+          localNotify.handleNotification(notification, state, data);
+        }
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
       localNotify.handleNotification(notification, state, data);
@@ -93,8 +91,6 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
 
   $ionicPlatform.ready().then(function() {
     localNotify.registerRedirectHandler();
-    Logger.log("finished registering handlers, about to fire queued events");
-    $window.cordova.plugins.notification.local.fireQueuedEvents();
   });
 
   return localNotify;    

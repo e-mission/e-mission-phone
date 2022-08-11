@@ -46,7 +46,7 @@ angular.module('emission.main.common.trip-detail',['ui-leaflet',
     chart1.yAxis.tickFormat(d3.format('s'));
     chart1.yAxis.axisLabel('Number of trips');
     
-    chart1.barColor(["#01D0A7"]);
+    chart1.barColor(["#1123CB"]);
     chart1.width(350);
     chart1.height(valsStartHour.length * 35 + 80); // Just come up with a way to adjust bar width
     chart1.showValues(true);

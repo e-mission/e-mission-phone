@@ -1,0 +1,245 @@
+{
+    "loading": "Caricamento...",
+    "map-refresh": "Aggiorna",
+    "map-fixmap": "Centra la mappa",
+
+    "weekdays-all": "Tutto",
+    "weekdays-select": "Seleziona giorno",
+
+    "post-trip-prompt": {
+        "notification-option-mute": "Silenzia",
+        "notification-option-snooze": "Posticipa",
+        "notification-option-choose": "Scegli",
+        "notification-title": "Come e perché sei arrivato qui?",
+        "choose-mode": "Scegli modo",
+        "skip": "Ignora",
+        "snoozed-reminder": "Promemoria posticipato",
+        "snoozed-reapper-message": "Ricomparirà tra 30 minuti",
+        "platform-specific-message-ios": "Scorri a sinistra o tocca per aggiungere informazioni sul viaggio.",
+        "platform-specific-message-android": "Vedi le opzioni o tocca per aggiungere informazioni sul viaggio.",
+        "platform-specific-message-other": "Tocca per aggiungere informazioni sul viaggio.",
+        "notifications-muted": "Notifiche di fine viaggio silenziate",
+        "notifications-reenabled": "Possono essere riabilitate da Profilo -> Sviluppatori o immediatamente.",
+        "muted": "Silenziato",
+        "unmute": "Riattiva",
+        "keep-muted": "Mantieni silenziato"
+    },
+
+    "post-trip-map-display-tour-incident": "Fai zoom il più possibile sulla posizione dell'incidente e clicca sulla linea blu per segnare un <font size='+3'>&#x263B;</font> o un <font size='+3'>&#x2639;</font>",
+
+    "tour-next": "Prossimo",
+    "tour-previous": "Precedente",
+    "tour-finish": "Fine",
+
+    "trip-confirm": {
+        "recenttrip": "Spostamenti da: {{startTime}} &rarr;  a: {{endTime}}",
+        "continue": "Continua",
+        "done": "Fatto",
+        "services-please-fill-in": "Compila le {{text}} non elencate.",
+        "services-cancel": "Annulla",
+        "services-save": "Salva"
+    },
+
+    "place-common-place": "Luoghi frequenti",
+    "place-successor-trips": "Luoghi successivi",
+    "place-trips-to": "{{trips}} viaggi verso",
+    "place-usually-starts": "Parte di solito alle: {{hour}}:00",
+    "place-usually-takes": "Di solito impiega: {{duration}}",
+    "trip-start-hours": "Ora di inizio",
+    "trip-start-duration": "Durata",
+
+    "control": {
+        "profile": "Profilo",
+        "tracking": "Tracking attivo",
+        "medium-accuracy": "Precisione media",
+        "dark-theme": "Tema scuro",
+        "force-sync": "Forza la sincronizzazione",
+        "share": "Condividi",
+        "check-ui-updates": "Controlla aggiornamenti",
+        "download-json-dump": "Scarica i dati in json",
+        "email-log": "Invia i log per email",
+        "user-data": "I miei dati",
+        "erase-data": "Cancella i miei dati",
+        "dev-zone": "Sviluppatori",
+        "refresh": "Aggiorna",
+        "end-trip-sync": "Termina viaggio e sincronizza",
+        "check-consent": "Verifica i consensi",
+        "invalidate-cached-docs": "Invalida i dati in cache",
+        "nuke-all": "Cancella buffer e cache",
+        "set-ui-channel": "Imposta canale interfaccia utente",
+        "check-log": "Apri il log",
+        "check-sensed-data": "Dati raccoli",
+        "check-map": "Controlla la mappa",
+        "collection": "Raccolta",
+        "sync": "Sincronizza",
+        "transition-notify": "Notifica una transizione"
+    },
+
+    "general-settings": {
+        "choose-date": "Scegli data",
+        "nuke-ui-state-only": "Solo interfaccia utente",
+        "nuke-native-cache-only": "Solo cache nativa",
+        "nuke-everything": "Tutto",
+        "clear-data": "Cancella i dati",
+        "cancel": "Annulla",
+        "user-data-erased": "Dati cancellati.",
+        "consent-not-found": "Consenso per la raccolta dati non trovato. Acconsenti adesso?",
+        "no-consent-message": "OK! Nota che non avrai statistiche personalizzate senza consenso!",
+        "consent-found": "Consenso trovato!",
+        "consented-to": "Consenso fornito per il protocollo {{protocol_id}}, {{approval_date}}",
+        "consented-ok": "OK",
+        "share-message": "Unisciti a me per rendere i mezzi di trasporto più ecologici. \nScarica l'applicaizone emission:",
+        "share-subject": "Emission - UC Berkeley Research Project",
+        "share-url": "https://bic2cal.eecs.berkeley.edu/#download"
+    },
+
+    "metrics": {
+        "cancel": "Annulla",
+        "confirm": "Conferma",
+        "get": "Ok",
+        "range": "Range",
+        "filter": "Filtra",
+        "from": "da :",
+        "to": "a :",
+        "last-week": "Settimana precedente",
+        "frequency": "Frequenza:",
+        "pandafreqoptions-daily": "per GIORNO",
+        "pandafreqoptions-weekly": "per SETTIMANA",
+        "pandafreqoptions-biweekly": "BI-SETTIMANALE",
+        "pandafreqoptions-monthly": "MENSILE",
+        "pandafreqoptions-yearly": "ANNUALE",
+        "freqoptions-daily": "par GIORNO",
+        "freqoptions-monthly": "MENSILE",
+        "freqoptions-yearly": "ANNUALE",
+        "select-pandafrequency": "Frequenza delle statistiche",
+        "select-frequency": "Frequenza delle statistiche",
+        "chart-xaxis-date": "Data",
+        "chart-no-data": "Dati non disponibili",
+        "trips-yaxis-number": "Numero",
+        "calorie-data-change": " cambia",
+        "carbon-data-change": " cambia",
+        "carbon-data-calculating": "Calcolo...",
+        "carbon-data-unknown": "Sconosiuto",
+        "calorie-data-unknown": "Sconosciuto...",
+        "calorie-data-change-increase": " di aumento in una settimana",
+        "calorie-data-change-decrease": " di diminuzione in una settimana",
+        "carbon-data-change-increase": " di aumento in una settimana",
+        "carbon-data-change-decrease": " di diminuzione in una settimana",
+        "pick-a-date": "Scegli la data"
+    },
+
+    "diary": {
+        "current-trip": "Viaggio in corso",
+        "current-yesterday": "Ieri",
+        "current-weekago": "Settimana precedente",
+        "history": "Storico",
+        "began": "A partire da {{startTime}}",
+        "report-incident": "Riporta un Incidente",
+        "draft": "BOZZA",
+        "distance-in-time": "{{distance}} km in {{time}}",
+        "distance": "Distanza",
+        "time": "Durata",
+        "mode": "Modalità",
+        "purpose": "Motivo",
+        "choose-mode": "Modalità principale",
+        "choose-purpose": "Motivo principale",
+        "how-did-you-get-here": "Modalità principale?",
+        "why-did-you-come-here": "Motivo principale?",
+        "list-pick-a-date": "Data"
+    },
+
+    "user-gender": "Genere",
+    "gender-male": "Uomo",
+    "gender-female": "Donna",
+    "user-height": "Altezza",
+    "user-weight": "Peso",
+    "user-age": "Età",
+
+    "main-metrics": {
+        "dashboard": "Dashboard",
+        "summary": "Riassunto",
+        "chart": "Grafico",
+        "change-data": "Cambia data",
+        "distance": "Distanza",
+        "trips": "Viaggi",
+        "duration": "Durata",
+        "speed": "Velocità",
+        "footprint": "Impronta",
+        "optimal": "Ottimale :",
+        "average": "Media :",
+        "worst": "Peggiore :",
+        "lastweek": "Settimana precedente :",
+        "calories": "Calorie",
+        "calibrate": "Calibra",
+        "no-summary-data": "Dati riassuntivi non disponibili",
+        "median-speed": "Velocità media",
+        "equals-cookies": "pari a {cookies, plural, =0{0 biscotti} one {1 biscotto} other {# biscotti}}",
+        "equals-icecream": "pari a {icecream, plural, =0{0 gelati alla vaniglia} one {1 gelato alla vaniglia} other {# gelati alla vaniglia}}",
+        "equals-bananas": "pari a {bananas, plural, =0{0 banane} one {1 banana} other {# banane}}"
+    },
+
+    "main-diary": "Diario",
+    
+    "main-heatmap": {
+        "title": "Heatmap",
+        "counts": "Conteggio",
+        "stress": "Stress",
+        "from": "Da :",
+        "to": "a :",
+        "get": "Vai !",
+        "all": "TUTTO",
+        "none": "NIENTE",
+        "bicycling": "BICI",
+        "walking": "A PIEDI",
+        "in-vehicle": "VEICOLO",
+        "select-travel-mode": "Seleziona una modalità",
+        "cancel": "Annula",
+        "tour-datepicker": "Questa mappa mostra i dati di tutti gli utenti. Scegli la data e filtra per ora e giorno della settimana. ",
+        "tour-mode": "Clicca qui per filtrare per mezzo di trasporto. Di default sono mostrati tutti i mezzi di trasporto.",
+        "tour-get": "Clicca qui per generare la mappa."
+    },
+
+    "details": {
+        "speed": "Velocità",
+        "time": "Durata",
+        "tour-detail-content": "Fai zoom il più possibile sulla posizione dell'incidente e clicca sulla linea blu per segnare un <font size='+3'>&#x263B;</font> o un <font size='+3'>&#x2639;</font>",
+        "tour-sectionList-content": "Viaggi, orari e modalità",
+        "tour-sectionPct-content": "% del tempo per ogni modalità per questo viaggio"
+    },
+
+    "list-explainDraft-alert": "Questo viaggio non è stato ancora analizzato. Se questo stato permane contattare il proprio amministratore di sistema.",
+    "list-datepicker-today": "Oggi",
+    "list-datepicker-close": "Chiudi",
+    "list-datepicker-set": "Imposta",
+    "list-tour-datepicker-button": "Scegli il giorno da mostrare.",
+    "list-tour-diary-entry": "Clicca sulla mappa per vedere altri dettagli.",
+    "list-tour-map-fix-button": "Clicca qui per aggiornare la mappa.",
+
+    "service": {
+        "reading-server": "Caricamento dal server...",
+        "reading-cache": "Caricamento dalla cache...",
+        "reading-unprocessed-data": "Lettura dati non processati..."
+    },
+
+    "post-trip-manual-incident-time": "Giorno e ora dell'incidente",
+
+    "recent": {
+        "email-account-not-configured": "L'account email non è configurato.",
+        "email-account-mail-app": "Devi avere un account email configurato.",
+        "going-to-email": "Invio dei dati per email da {{parentDir}}/userCacheDB"
+    },
+    
+    "consent": {
+        "button-accept": "Accetto",
+        "button-decline": "Rifiuto"
+    },
+
+    "updatecheck": {
+        "downloading-update": "Aggiornamento interfaccia utente",
+        "extracting-update": "Estrazione aggiornamento",
+        "done": "Aggiornamento completo. Ricarico...",
+        "download-new-ui": "Scaricare l'aggiornamento?",
+        "download-not-now": "Non adesso",
+        "download-apply": "Scarica"
+    }
+}

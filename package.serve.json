@@ -1,7 +1,7 @@
 {
   "name": "edu.berkeley.eecs.emission",
   "version": "2.5.0",
-  "displayName": "emission",
+  "displayName": "TraceMe",
   "license": "BSD-3-Clause",
   "repository": {
     "type": "git",

@@ -5694,14 +5694,14 @@ ion-tabs.tabs-striped.tabs-color-active-dark .tab-item.tab-item-active, ion-tabs
  * --------------------------------------------------
  */
 .item {
-  border-color: #ddd;
+  border-color: #fff; /* #ddd */
   background-color: #fff;
   color: #444;
   position: relative;
   z-index: 2;
   display: block;
   margin: -1px;
-  padding: 16px;
+  padding: 0 10px; /* Changed from 16px. This change was to ensure the correct alignment of the diary card */
   border-width: 1px;
   border-style: solid;
   font-size: 16px; }
@@ -8587,7 +8587,7 @@ progress {
   margin: 0;
   padding: 0 12px;
   min-width: 52px;
-  min-height: 47px;
+  min-height: 10px; /* Changed from 47px. This allows for the correct height for the label buttons to fit nicely in the diary card. */
   border-width: 1px;
   border-style: solid;
   border-radius: 4px;
@@ -8595,7 +8595,7 @@ progress {
   text-align: center;
   text-overflow: ellipsis;
   font-size: 16px;
-  line-height: 42px;
+  /* line-height: 42px; */ /* Commented out to align the text in the Label Buttons. If Uncommented, the text won't align; by all means implement a different solution */
   cursor: pointer; }
   .button:hover {
     color: #444;

@@ -7,7 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
-                                 'emission.survey.multilabel.posttrip.map',
+                                 'emission.tripconfirm.posttrip.map',
                                  'emission.services',
                                  'emission.services.upload'])
 
@@ -54,9 +54,6 @@ angular.module('emission.main', ['emission.main.recent',
 
   .state('root.main.control', {
     url: '/control',
-    params: {
-        launchAppStatusModal: false
-    },
     views: {
       'main-control': {
         templateUrl: 'templates/control/main-control.html',
@@ -135,6 +132,7 @@ angular.module('emission.main', ['emission.main.recent',
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
+  $ionicConfigProvider.navBar.alignTitle('center'); 
 })
 
 .controller('appCtrl', function($scope, $ionicModal, $timeout) {
@@ -160,4 +158,6 @@ angular.module('emission.main', ['emission.main.recent',
     $scope.tabsCustomClass = function() {
         return "tabs-icon-top tabs-custom";
     }
+
+    
 });

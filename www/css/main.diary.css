@@ -3,11 +3,6 @@
   padding:0px !important;
 }
 
-/*.item {
-  border:0px !important;
-
-}*/
-
 .main {
     padding-top:50px;
     padding-bottom:50px !important;
@@ -25,11 +20,11 @@
   font-size:7px;
 }
 .bg-color{
-  background:#71bc98!important;
+  background:#1123CB!important;
   color:whitesmoke !important;
 }
 .summary-color{
-  background:#1b9e77!important;
+  background:#1123CB!important;
   color:whitesmoke !important;
 }
 .place-color{
@@ -95,11 +90,11 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #33e0bb;
+  background-color: #80D0FF;
   border-radius: 6px;
 }
 .leaflet-div-icon-stop {
-  background-color: #ff5251;
+  background-color: #0088ce;
   border-radius: 6px;
 }
 .inner-icon {
@@ -113,20 +108,26 @@ a.item-content {
 .btn-input-confirm-red,
 .btn-input-confirm-red:hover,
 .btn-input-confirm-red:active {
-  background-color: #ED2D3A;
-  color: white;
+  background-color: white;
+  color: #0088ce;
+  border-color: #0088ce;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .btn-input-confirm-yellow,
 .btn-input-confirm-yellow:hover,
 .btn-input-confirm-yellow:active {
-  background-color: #FFC108;
+  background-color: rgba(255, 165, 0, 0.8);  /* tentatively orange for now */
   color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border: 2px solid rgba(0, 136, 206, 0.2);
 }
 .btn-input-confirm-green,
 .btn-input-confirm-green:hover,
 .btn-input-confirm-green:active {
-  background-color: #30A64A;
+  background-color: #0088ce;
   color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border: 2px solid rgba(0, 136, 206, 0.2);
 }
 /* White confirm buttons are currently unused */
 /* .btn-input-confirm-white,
@@ -136,12 +137,24 @@ a.item-content {
   color: #333;
   font-size: 0.8em;
 } */
+
+
 .btn-input-confirm {
-  line-height: 30px;
+  width: 100%;
+  height: 30px;
+  margin: 2px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 12px;
+
+  /* line-height: 30px;
   min-height: 30px;
   font-size: 0.8em !important;
   width: 115px;
-  padding: 0;
+  padding: 0; */
 }
 .input-confirm-container {
   margin-top: 5px;
@@ -157,25 +170,222 @@ a.item-content {
   width: 75%;
 }
 
-#diary-item {
+.diary-item {
   padding: 0;
+  margin: 0 1rem 0 1rem;
   border-width: 0;
+  background-color: transparent;
+  height: 319px; /* (diary-card height) + 1.5*(time-tag height) */
 }
 
+.unified-diary-item {
+  padding: 0;
+  margin: 0 1rem 0 1rem;
+  border-width: 0;
+  background-color: transparent;
+  /* height: 250px; */
+}
+
+.diary-card {
+  width: 100%;
+  height: 330px;
+  margin: 0;
+  border: 2px solid rgba(0, 136, 206, 0.2);
+  box-sizing: border-box;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.diary-button {
+  width: 100%;
+  height: 30px;
+  margin: 2px;
+  border: 2px solid #0088ce;
+  box-sizing: border-box;
+  border-radius: 50px;
+  background-color: #ffffff;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.hr-lines {
+  position: relative;
+  justify-content: center;
+  font-family: 'Lato';
+  font-weight: bold;
+  display: flex;
+  color: #212121;
+  font-size: 19px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin: 10px auto;
+  text-align: center;
+}
+
+@media screen and (orientation: portrait) {
+  .hr-lines:before {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 30%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    background: #80D0FF;
+  }
+
+  .hr-lines:after {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 30%;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background: #80D0FF;
+  }
+}
+@media screen and (orientation: landscape) {
+  .hr-lines:before {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 41%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    background: #80D0FF;
+  }
+
+  .hr-lines:after {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 41%;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background: #80D0FF;
+  }
+}
+
+.diary-draft-button {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-style: 13px;
+  background-color: #ffffff;
+  border: none;
+  background-image: url("../img/icons/help_outline_black_24dp.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 25px;
+}
+
+.diary-route {
+  margin: 5px 0;
+}
+
+.diary-street {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  white-space: normal;
+}
+
+.diary-map {
+  float: left;
+  width: 50%;
+  z-index: -1; /* Can't zoom in or out of the map with this implemented */
+  overflow: hidden;
+  border-radius: 30px 0px 0px 50px;
+  /* height must be specified in the html */
+}
+
+.diary-infos {
+  float: right;
+  width: 50%;
+  padding: 10% 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.diary-distance-time {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  white-space: normal;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.diary-modes-percents {
+  margin: 5px 0;
+}
+
+.diary-modes-percents-text {
+  color: #0088ce;
+}
+
+.diary-modes-percents-icon {
+  color: #0088ce;
+}
+
+/* Date Picker Override */
+.ionic_datepicker_popup .today {
+  border: 1px solid #0088ce !important;
+}
+
+.ionic_datepicker_popup .selected_date {
+  background-color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-head {
+  background-color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .selected_date_full {
+  background-color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
+  border-bottom: 1px solid #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
+  color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .button-clear {
+  color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-buttons button {
+  background-color: #0088ce !important;
+}
 div.labelfilterlist {
   margin: 0 !important;
 }
 
 .button.labelfilter {
-  color: #01D0A7;
+  color: #0088ce;
   border-radius: 0px;
   border-width: 0;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
   padding: 0 0.1em !important;
 }
 
 .button.labelfilter.on {
-    background-color: #01D0A7;
+    background-color: #0088ce;
     color: white;
 }
 
@@ -187,4 +397,239 @@ div.labelfilterlist {
 .labelfilter:last-of-type {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+.diary-more-container i {
+  font-size: 32px;
+}
+.diary-checkmark-container i {
+  font-size: 24px;
+  padding: 3px;
+}
+
+.diary-checkmark-container i.can-verify {
+  color: #1123CB;
+  background-color: #ddd;
+  border-radius: 5px;
+}
+.diary-checkmark-container i.cannot-verify {
+  color: #E6B8B8;
+}
+.diary-checkmark-container i.already-verified {
+  color: #B8E6C2;
+}
+
+.list-card {
+  margin: 16px 0;
+  border: 2px solid #CFD3F5;
+  box-sizing: border-box;
+  border-radius: 30px;
+}
+
+.list-card-sm {
+  width: 95%;
+}
+.list-card-md {
+  width: 95%;
+}
+.list-card-lg {
+ width: 95%;
+}
+.list-card .row {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+.list-col-left-margin {
+  text-align: center; padding: 0.7em 0.8em 0.4em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-left {
+  text-align: center; padding: 1.1em 0.8em 0.6em 0.8em; border-right-width: 0.5px; border-right-color: #ccc; border-right-style: solid; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.list-col-right {
+  text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
+}
+.diary-start-time-tag {
+  width: 68px;
+  height: 30px;
+  background: #1123CB;
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+  color: #FFFFFF;
+  position: relative;
+  bottom: -15px;
+}
+
+.diary-stop-time-tag {
+  width: 68px;
+  height: 30px;
+  background: #CFD3F5;
+  border: 2px #CFD3F5;
+  box-sizing: border-box;
+  border-radius: 50px;
+  margin: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 13px;
+  text-align: center;
+  color: #1123CB;
+  position: relative;
+  top: -15px;
+}
+.start-time-tag-inf-scroll {
+  text-align: center;
+  background-color: #1123CB;
+  color: black;
+  width: 16%;
+  height: 25px;
+  border-radius: 8px;
+  font-size: 12px;
+  position: absolute;
+  left: 1%;
+  top: 15px;
+  line-height: 16px;
+}
+.stop-time-tag-inf-scroll {
+  text-align: center;
+  background-color: #ff5251;
+  color: black;
+  width: 16%;
+  height: 25px;
+  border-radius: 8px;
+  font-size: 12px;
+  position: absolute;
+  left: 1%;
+  bottom: 15px;
+  line-height: 16px;
+}
+.stop-time-tag-lower {
+  text-align: center;
+  background-color: #ff5251;
+  color: black;
+  width: 16%;
+  height: 16px;
+  border-radius: 8px;
+  font-size: 9px;
+  position: absolute;
+  left: 1%;
+  top: 310px;
+  line-height: 16px;
+}
+
+.start-end-addresses-container {
+  display: inline-block;
+  width: calc(100% - 25px);
+}
+
+.diary-map {
+  float: left;
+  width: 50%;
+  /* height is assigned direcly to the html, otherwise it does not zoom on startup. Mystery. */
+  /* height: 286px; */ /* 12px larger than diary-card to hide OpenStreetMap logo*/
+  z-index: -1;
+}
+
+.diary-infos {
+  float: right;
+  width: 50%;
+  padding: 10% 5%;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: center; */
+  justify-content: space-between;
+  height: 100%;
+}
+
+.diary-card {
+  width: 100%;
+  height: 274px;
+  margin: 0;
+  border: 2px solid #CFD3F5;
+  box-sizing: border-box;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.diary-button {
+  width: 100%;
+  height: 30px;
+  margin: 2px;
+  border: 2px solid #1123CB;
+  box-sizing: border-box;
+  border-radius: 50px;
+  background-color: #ffffff;
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.diary-draft-button {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-style: 13px;
+  background-color: #ffffff;
+  border: none;
+  background-image: url("../img/icons/help_outline_black_24dp.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 25px;
+}
+
+
+.diary-distance-time {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.diary-route {
+  margin: 5px 0;
+}
+
+.diary-street {
+  font-family: 'Lato';
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  white-space: normal;
+}
+
+.diary-detail-button {
+  float: right;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding: 0;
+  margin: 0;
+  height: 100%;
+  color: #1123CB;
+  font-size: 13px;
+}
+
+.diary-modes-percents {
+  margin: 5px 0;
+}
+
+.diary-modes-percents-text {
+  color: #1123CB;
+}
+
+.diary-modes-percents-icon {
+  color: #1123CB;
 }

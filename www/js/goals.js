@@ -2,7 +2,7 @@
 
 angular.module('emission.main.goals',['emission.services', 'emission.plugin.logger',
                 'emission.plugin.kvstore',
-                'emission.survey.external.launch',
+                'emission.survey.launch',
                 'ngSanitize', 'ngAnimate',
                 'emission.splash.referral',
                 'ng-walkthrough', 'nzTour'])

@@ -3,9 +3,9 @@ echo "Ensure that we fail on error"
 set -e
 ./bin/configure_xml_and_json.js cordovabuild
 
-echo "Copying fake FCM configurations for android and iOS"
-cp setup/GoogleService-Info.fake.for_ci.plist GoogleService-Info.plist
-cp setup/google-services.fake.for_ci.json google-services.json
+#echo "Copying fake FCM configurations for android and iOS"
+#cp setup/GoogleService-Info.fake.for_ci.plist GoogleService-Info.plist
+#cp setup/google-services.fake.for_ci.json google-services.json
 
 echo "Setting up all npm packages"
 npm install
@@ -24,9 +24,9 @@ npx bower update
 echo "hack to make the local cordova fail on error"
 sed -i -e "s|/usr/bin/env node|/usr/bin/env node --unhandled-rejections=strict|" node_modules/cordova/bin/cordova
 
-npx cordova prepare
+cordova prepare
 
-EXPECTED_COUNT=25
+EXPECTED_COUNT=27
 INSTALLED_COUNT=`npx cordova plugin list | wc -l`
 echo "Found $INSTALLED_COUNT plugins, expected $EXPECTED_COUNT"
 if [ $INSTALLED_COUNT -lt $EXPECTED_COUNT ];
