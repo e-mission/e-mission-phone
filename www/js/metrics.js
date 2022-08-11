@@ -1284,7 +1284,7 @@ angular.module('emission.main.metrics',['nvd3',
     if (val) {
       $scope.selectCtrl.fromDateTimestamp = moment(val).startOf('day');
       if ($scope.selectCtrl.fromDateTimestamp > $scope.selectCtrl.toDateTimestamp) {
-        var copyToDateTimestamp = $scope.selectCtrl.toDateTimestamp.clone();
+        const copyToDateTimestamp = $scope.selectCtrl.toDateTimestamp.clone();
         $scope.selectCtrl.fromDateTimestamp = copyToDateTimestamp.startOf('day');
       }
       $scope.datepickerObjFrom.inputMoment = $scope.selectCtrl.fromDateTimestamp;
@@ -1299,7 +1299,7 @@ angular.module('emission.main.metrics',['nvd3',
     if (val) {
       $scope.selectCtrl.toDateTimestamp = moment(val).endOf('day');
       if ($scope.selectCtrl.toDateTimestamp < $scope.selectCtrl.fromDateTimestamp) {
-        var copyFromDateTimestamp = $scope.selectCtrl.fromDateTimestamp.clone();
+        const copyFromDateTimestamp = $scope.selectCtrl.fromDateTimestamp.clone();
         $scope.selectCtrl.toDateTimestamp = copyFromDateTimestamp.endOf('day');
       }
       $scope.datepickerObjTo.inputMoment = $scope.selectCtrl.toDateTimestamp;
