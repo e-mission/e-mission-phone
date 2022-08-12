@@ -6,8 +6,10 @@
             "ALL": {"range": [0, -1], "mets": 4.9}
        }, "co2PerMeter": 0.00728},
        {"text":"Scooter share","value":"scootershare", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.00894},
-       {"text":"Drove Alone","value":"drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.22031},
-       {"text":"Shared Ride","value":"shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.11015},
+       {"text":"Gas Car Drove Alone","value":"drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.22031},
+       {"text":"Gas Car Shared Ride","value":"shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.11015},
+       {"text":"E-Car Drove Alone","value":"e_car_drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.08216},
+       {"text":"E-Car Shared Ride","value":"e_car_shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.04108},
        {"text":"Taxi/Uber/Lyft","value":"taxi", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.30741},
        {"text":"Bus","value":"bus", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
        {"text":"Train","value":"train", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.12256},
