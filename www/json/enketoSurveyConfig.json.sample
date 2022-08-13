@@ -6,7 +6,7 @@
     "dataKey": "manual/trip_user_input"
   },
   "UserProfileSurvey": {
-    "formPath": "json/demo-survey-v1.json",
+    "formPath": "json/demo-survey-v2.json",
     "version": 1,
     "compatibleWith": 1,
     "dataKey": "manual/demographic_survey"
