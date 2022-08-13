@@ -9,6 +9,7 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
         ch.INPUTS = ["MODE", "PURPOSE"];
         ch.inputDetails = {
             "MODE": {
+                name: "MODE",
                 labeltext: $translate.instant(".mode"),
                 choosetext: $translate.instant(".choose-mode"),
                 width: labelWidth["base"],
@@ -17,6 +18,7 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
                 otherVals: {},
             },
             "PURPOSE": {
+                name: "PURPOSE",
                 labeltext: $translate.instant(".purpose"),
                 choosetext: $translate.instant(".choose-purpose"),
                 width: labelWidth["base"],
@@ -26,8 +28,10 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
             }
         }
         if (ui_config.intro.program_or_study == 'program') {
+            ch.isProgram = true;
             // store a copy of the base input details
             ch.baseInputDetails = angular.copy(ch.inputDetails);
+            ch.BASE_INPUTS = angular.copy(ch.INPUTS);
 
             // then add the program specific information by adding the REPLACED_MODE
             // and resetting the widths
@@ -38,6 +42,7 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
             };
             console.log("Finished resetting label widths ",ch.inputDetails);
             ch.inputDetails["REPLACED_MODE"] = {
+                name: "REPLACED_MODE",
                 labeltext: $translate.instant(".replaces"),
                 choosetext: $translate.instant(".choose-replaced-mode"),
                 width: labelWidth["intervention"],

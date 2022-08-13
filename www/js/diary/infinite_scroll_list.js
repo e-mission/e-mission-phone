@@ -222,6 +222,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.recomputeDisplayTrips = function() {
+    console.log("recomputing display trips now");
     let alreadyFiltered = false;
     $scope.filterInputs.forEach((f) => {
         if (f.state == true) {

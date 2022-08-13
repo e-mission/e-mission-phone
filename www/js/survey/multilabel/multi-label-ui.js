@@ -165,29 +165,6 @@ angular.module('emission.survey.multilabel.buttons',
       }
   };
 
-  var expandInputsIfNecessary = function(inputType, inputValue) {
-    console.log("Experimenting with expanding inputs for type "+inputType+" and value "+inputValue);
-    if (inputType == "MODE") {
-        if (inputValue == "e-bike") {
-            if ($scope.displayInputDetails != $scope.fullInputDetails) {
-                Logger.log("Found e-bike mode in a program, displaying full details");
-                $scope.displayInputDetails = $scope.fullInputDetails;
-            } else {
-                Logger.log("Found e-bike mode in a study, already displaying full details", $scope.displayInputDetails == $scope.fullInputDetails);
-            }
-        } else {
-            if ($scope.baseInputDetails) {
-                Logger.log("Found non e-bike mode in a program, displaying base details");
-                $scope.displayInputDetails = $scope.baseInputDetails;
-            } else {
-                Logger.log("Found non e-bike mode in a study, nothing to change");
-            }
-        }
-    } else {
-        Logger.log("Non-mode change, ignoring");
-    }
-  }
-
   $scope.choose = function (inputType) {
     ClientStats.addReading(ClientStats.getStatKeys().SELECT_LABEL, {
       "userInput":  angular.toJson($scope.editingTrip.userInput),
@@ -203,9 +180,6 @@ angular.module('emission.survey.multilabel.buttons',
       isOther = true
       ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
     }
-    // special check for programs
-    // TODO: make this part of the dynamic config
-    expandInputsIfNecessary(inputType, $scope.selected[inputType].value);
     closePopover(inputType);
   };
 
@@ -241,30 +215,12 @@ angular.module('emission.survey.multilabel.buttons',
   $scope.init = function() {
       console.log("During initialization, trip is ", $scope.trip);
       console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
-      // We used to just have one set of input details here
-      // but now we need to display different sets of inputs
-      // if it is the intervention in a program (e.g. e-bike)
-      // in which case we want to display the replaced mode
-      // So we now have fullInputDetails (always present) and
-      // baseInputDetails (version without replaced mode, only for programs)
-      // and toggle between them based on program vs. study and mode
+      // We used to fill in the `name` for each input detail entry here
+      // and store the set of input details in the controller
+      // however, with the functionality of having the replaced mode
+      // only shown for certain trips, we are storing the details in the trip.
+      // which means that we really don't want to initialize it here.
       // https://github.com/e-mission/e-mission-docs/issues/764
-      $scope.fullInputDetails = angular.copy(ConfirmHelper.inputDetails);
-      for (const [key, value] of Object.entries($scope.fullInputDetails)) {
-        value.name = key;
-      };
-      $scope.displayInputDetails = $scope.fullInputDetails;
-
-      console.log("After copying input details", $scope.fullInputDetails);
-
-      if (ConfirmHelper.baseInputDetails) {
-        $scope.baseInputDetails = angular.copy(ConfirmHelper.baseInputDetails);
-        for (const [key, value] of Object.entries($scope.baseInputDetails)) {
-          value.name = key;
-        };
-        $scope.displayInputDetails = $scope.baseInputDetails;
-      }
-      console.log("After copying base input details", $scope.baseInputDetails);
 
       $scope.popovers = {};
       ConfirmHelper.INPUTS.forEach(function(item, index) {
@@ -290,12 +246,7 @@ angular.module('emission.survey.multilabel.buttons',
 
 
       ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
-      console.log("Finished initializing directive, displayInputDetails = ", $scope.displayInputDetails);
-      $scope.$watch('trip', function(newTrip, oldTrip, scope) {
-        console.log("TRIP CHANGED in directive, old trip is", oldTrip, "new trip is", newTrip,
-            ", with mode "+ newTrip.userInput["MODE"].value);
-        expandInputsIfNecessary("MODE", newTrip.userInput["MODE"].value);
-      });
+      console.log("Finished initializing directive, popovers = ", $scope.popovers);
       $scope.currViewState = findViewState();
   }
 
@@ -352,6 +303,7 @@ angular.module('emission.survey.multilabel.buttons',
         });
         trip.finalInference = {};
         mls.inferFinalLabels(trip);
+        mls.expandInputsIfNecessary(trip);
         mls.updateVerifiability(trip);
     } else {
         console.log("Trip information not yet bound, skipping fill");
@@ -409,6 +361,9 @@ angular.module('emission.survey.multilabel.buttons',
   }
 
   mls.updateTripProperties = function(trip, viewScope) {
+    // special check for programs
+    // TODO: make this part of the dynamic config
+    mls.expandInputsIfNecessary(trip);
     mls.inferFinalLabels(trip);
     mls.updateVerifiability(trip);
     mls.updateVisibilityAfterDelay(trip, viewScope);
@@ -473,6 +428,38 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
+  /*
+   * Uses either 2 or 3 labels depending on the type of install (program vs. study)
+   * and the primary mode. The current hardcoded example if the user selects
+   * "e-bike" for an e-bike study, will expand once we really support dynamic config.
+   * https://github.com/e-mission/e-mission-docs/issues/764
+   *
+   * This used to be in the controller, where it really should be, but we had
+   * to move it to the service because we need to invoke it from the list view
+   * as part of filtering "To Label" entries.
+   *
+   * TODO: Move it back later after the diary vs. label unification
+   */
+  mls.expandInputsIfNecessary = function(trip) {
+    console.log("Reading expanding inputs for ", trip);
+    const inputValue = trip.userInput["MODE"]? trip.userInput["MODE"].value : undefined;
+    console.log("Experimenting with expanding inputs for mode "+inputValue);
+    if (ConfirmHelper.isProgram) {
+        if (inputValue == "e-bike") {
+            Logger.log("Found e-bike mode in a program, displaying full details");
+            trip.inputDetails = ConfirmHelper.inputDetails;
+            trip.INPUTS = ConfirmHelper.INPUTS;
+        } else {
+            Logger.log("Found non e-bike mode in a program, displaying base details");
+            trip.inputDetails = ConfirmHelper.baseInputDetails;
+            trip.INPUTS = ConfirmHelper.BASE_INPUTS;
+        }
+    } else {
+        Logger.log("study, not program, already displaying full details", trip.inputDetails == ConfirmHelper.inputDetails);
+    }
+  }
+
+
   /**
    * MODE (becomes manual/mode_confirm) becomes mode_confirm
    */
@@ -494,7 +481,7 @@ angular.module('emission.survey.multilabel.buttons',
   mls.updateVerifiability = function(trip) {
     var allGreen = true;
     var someYellow = false;
-    for (const inputType of ConfirmHelper.INPUTS) {
+    for (const inputType of trip.INPUTS) {
         const green = trip.userInput[inputType];
         const yellow = trip.finalInference[inputType] && !green;
         if (yellow) someYellow = true;
