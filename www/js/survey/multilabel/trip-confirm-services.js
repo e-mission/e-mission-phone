@@ -4,34 +4,44 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
     var ch = {};
     ch.init = function(ui_config) {
         Logger.log("About to start initializing the confirm helper for " + ui_config.intro.program_or_study);
-        const labelWidth = ui_config.intro.program_or_study == 'program'? 'col-33' : 'col-50';
-        const btnWidth = ui_config.intro.program_or_study == 'program'? '80' : '115';
+        const labelWidth = {"base": "col-50", "intervention": "col-33"};
+        const btnWidth = {"base": "115", "intervention": "80"};
         ch.INPUTS = ["MODE", "PURPOSE"];
         ch.inputDetails = {
             "MODE": {
                 labeltext: $translate.instant(".mode"),
                 choosetext: $translate.instant(".choose-mode"),
-                width: labelWidth,
-                btnWidth: btnWidth,
+                width: labelWidth["base"],
+                btnWidth: btnWidth["base"],
                 key: "manual/mode_confirm",
                 otherVals: {},
             },
             "PURPOSE": {
                 labeltext: $translate.instant(".purpose"),
                 choosetext: $translate.instant(".choose-purpose"),
-                width: labelWidth,
-                btnWidth: btnWidth,
+                width: labelWidth["base"],
+                btnWidth: btnWidth["base"],
                 key: "manual/purpose_confirm",
                 otherVals: {},
             }
         }
         if (ui_config.intro.program_or_study == 'program') {
+            // store a copy of the base input details
+            ch.baseInputDetails = angular.copy(ch.inputDetails);
+
+            // then add the program specific information by adding the REPLACED_MODE
+            // and resetting the widths
             ch.INPUTS.push("REPLACED_MODE");
+            for (const [key, value] of Object.entries(ch.inputDetails)) {
+                value.width = labelWidth["intervention"];
+                value.btnWidth = btnWidth["intervention"];
+            };
+            console.log("Finished resetting label widths ",ch.inputDetails);
             ch.inputDetails["REPLACED_MODE"] = {
                 labeltext: $translate.instant(".replaces"),
                 choosetext: $translate.instant(".choose-replaced-mode"),
-                width: labelWidth,
-                btnWidth: btnWidth,
+                width: labelWidth["intervention"],
+                btnWidth: btnWidth["intervention"],
                 key: "manual/replaced_mode",
                 otherVals: {}
             }

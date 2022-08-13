@@ -28,7 +28,7 @@ angular.module('emission.survey.multilabel.buttons',
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, DynamicConfig, MultiLabelService) {
+    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, DynamicConfig, MultiLabelService, Logger) {
   console.log("Created multilabel directive controller, waiting for init");
 
   var findViewElement = function() {
@@ -165,6 +165,28 @@ angular.module('emission.survey.multilabel.buttons',
       }
   };
 
+  var expandInputsIfNecessary = function(inputType, inputValue) {
+    if (inputType == "MODE") {
+        if (inputValue == "e-bike") {
+            if ($scope.displayInputDetails != $scope.fullInputDetails) {
+                Logger.log("Found e-bike mode in a program, displaying full details");
+                $scope.displayInputDetails = $scope.fullInputDetails;
+            } else {
+                Logger.log("Found e-bike mode in a study, already displaying full details", $scope.displayInputDetails == $scope.fullInputDetails);
+            }
+        } else {
+            if ($scope.baseInputDetails) {
+                Logger.log("Found non e-bike mode in a program, displaying base details");
+                $scope.displayInputDetails = $scope.baseInputDetails;
+            } else {
+                Logger.log("Found non e-bike mode in a study, nothing to change");
+            }
+        }
+    } else {
+        Logger.log("Non-mode change, ignoring");
+    }
+  }
+
   $scope.choose = function (inputType) {
     ClientStats.addReading(ClientStats.getStatKeys().SELECT_LABEL, {
       "userInput":  angular.toJson($scope.editingTrip.userInput),
@@ -180,6 +202,9 @@ angular.module('emission.survey.multilabel.buttons',
       isOther = true
       ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
     }
+    // special check for programs
+    // TODO: make this part of the dynamic config
+    expandInputsIfNecessary(inputType, $scope.selected[inputType].value);
     closePopover(inputType);
   };
 
@@ -215,12 +240,30 @@ angular.module('emission.survey.multilabel.buttons',
   $scope.init = function() {
       console.log("During initialization, trip is ", $scope.trip);
       console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
-      $scope.userInputDetails = [];
-      ConfirmHelper.INPUTS.forEach(function(item, index) {
-        const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-        currInput.name = item;
-        $scope.userInputDetails.push(currInput);
-      });
+      // We used to just have one set of input details here
+      // but now we need to display different sets of inputs
+      // if it is the intervention in a program (e.g. e-bike)
+      // in which case we want to display the replaced mode
+      // So we now have fullInputDetails (always present) and
+      // baseInputDetails (version without replaced mode, only for programs)
+      // and toggle between them based on program vs. study and mode
+      // https://github.com/e-mission/e-mission-docs/issues/764
+      $scope.fullInputDetails = angular.copy(ConfirmHelper.inputDetails);
+      for (const [key, value] of Object.entries($scope.fullInputDetails)) {
+        value.name = key;
+      };
+      $scope.displayInputDetails = $scope.fullInputDetails;
+
+      console.log("After copying input details", $scope.fullInputDetails);
+
+      if (ConfirmHelper.baseInputDetails) {
+        $scope.baseInputDetails = angular.copy(ConfirmHelper.baseInputDetails);
+        for (const [key, value] of Object.entries($scope.baseInputDetails)) {
+          value.name = key;
+        };
+        $scope.displayInputDetails = $scope.baseInputDetails;
+      }
+      console.log("After copying base input details", $scope.baseInputDetails);
 
       $scope.popovers = {};
       ConfirmHelper.INPUTS.forEach(function(item, index) {
@@ -231,6 +274,7 @@ angular.module('emission.survey.multilabel.buttons',
             $scope.popovers[item] = popover;
           });
       });
+      console.log("After initializing popovers", $scope.popovers);
 
       /**
        * Store selected value for options
@@ -245,7 +289,7 @@ angular.module('emission.survey.multilabel.buttons',
 
 
       ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
-      console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
+      console.log("Finished initializing directive, displayInputDetails = ", $scope.displayInputDetails);
       $scope.currViewState = findViewState();
   }
 
