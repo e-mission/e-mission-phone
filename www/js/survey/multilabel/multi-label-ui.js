@@ -180,10 +180,6 @@ angular.module('emission.survey.multilabel.buttons',
       isOther = true
       ConfirmHelper.checkOtherOption(inputType, checkOtherOptionOnTap, $scope);
     }
-    // special check for programs
-    // TODO: make this part of the dynamic config
-    MultiLabelService.expandInputsIfNecessary($scope.trip);
-    MultiLabelService.updateVerifiability($scope.trip);
     closePopover(inputType);
   };
 
@@ -365,6 +361,9 @@ angular.module('emission.survey.multilabel.buttons',
   }
 
   mls.updateTripProperties = function(trip, viewScope) {
+    // special check for programs
+    // TODO: make this part of the dynamic config
+    mls.expandInputsIfNecessary(trip);
     mls.inferFinalLabels(trip);
     mls.updateVerifiability(trip);
     mls.updateVisibilityAfterDelay(trip, viewScope);
