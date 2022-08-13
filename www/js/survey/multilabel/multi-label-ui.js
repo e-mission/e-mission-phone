@@ -166,6 +166,7 @@ angular.module('emission.survey.multilabel.buttons',
   };
 
   var expandInputsIfNecessary = function(inputType, inputValue) {
+    console.log("Experimenting with expanding inputs for type "+inputType+" and value "+inputValue);
     if (inputType == "MODE") {
         if (inputValue == "e-bike") {
             if ($scope.displayInputDetails != $scope.fullInputDetails) {
@@ -290,8 +291,14 @@ angular.module('emission.survey.multilabel.buttons',
 
       ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
       console.log("Finished initializing directive, displayInputDetails = ", $scope.displayInputDetails);
+      $scope.$watch('trip', function(newTrip, oldTrip, scope) {
+        console.log("TRIP CHANGED in directive, old trip is", oldTrip, "new trip is", newTrip,
+            ", with mode "+ newTrip.userInput["MODE"].value);
+        expandInputsIfNecessary("MODE", newTrip.userInput["MODE"].value);
+      });
       $scope.currViewState = findViewState();
   }
+
 
   $ionicPlatform.ready().then(function() {
     Logger.log("UI_CONFIG: about to call configReady function in MultiLabelCtrl");
