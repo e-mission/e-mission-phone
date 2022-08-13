@@ -455,7 +455,9 @@ angular.module('emission.survey.multilabel.buttons',
             trip.INPUTS = ConfirmHelper.BASE_INPUTS;
         }
     } else {
-        Logger.log("study, not program, already displaying full details", trip.inputDetails == ConfirmHelper.inputDetails);
+        Logger.log("study, not program, displaying full details");
+        trip.INPUTS = ConfirmHelper.INPUTS;
+        trip.inputDetails = ConfirmHelper.inputDetails;
     }
   }
 
