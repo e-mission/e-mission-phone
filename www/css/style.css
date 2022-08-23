@@ -711,7 +711,7 @@ background-image: none !important; }
   text-align: center;
   float: right;
   height: 100%;
-  color: #000;
+  color: rgb(114, 114, 114);
   padding-top: 16px;
   width: 64px;
   font-size:20px;
