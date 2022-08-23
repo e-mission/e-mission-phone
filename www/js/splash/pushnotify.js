@@ -32,7 +32,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
           "clearBadge": true
         },
         "android": {
-          "iconColor": "#008acf",
+          "iconColor": "#54DCC1",
           "icon": "ic_mood_question",
           "clearNotifications": true
         }
