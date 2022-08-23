@@ -707,6 +707,15 @@ background-image: none !important; }
   font-size:20px;
 }
 
+.control-version-number{
+  text-align: center;
+  float: right;
+  height: 100%;
+  color: #000;
+  padding-top: 16px;
+  width: 64px;
+  font-size:20px;
+}
 
 #switch-user.control-icon-button{
   background-color: #E0A1A1 !important;
