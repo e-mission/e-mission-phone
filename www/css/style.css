@@ -708,7 +708,7 @@ background-image: none !important; }
   text-align: center;
   float: right;
   height: 48px;
-  background-color: rgba(128, 128, 128, 0.5);
+  background-color: #a0a0a0;
   /* background-color: #D6C780; */
   color: #fff;
   padding-top: 16px;
@@ -718,7 +718,7 @@ background-image: none !important; }
 
 
 #switch-user.control-icon-button{
-  background-color: #E0A1A1 !important;
+  background-color: #d76c6c !important;
 }
 
 .gray-icon.control-icon-button{

@@ -8,6 +8,7 @@
 
         <div class="diary-card">
             <!-- Leaflet Map -->
+            <div class="diary-map-shell" ng-click="showDetail($event, trip)">
             <leaflet
             class="diary-map"
             geojson="tripgj"
@@ -17,9 +18,9 @@
             height="342px">
             
             </leaflet>
-
+            </div>
             <!-- Trip Information -->
-            <div class="diary-infos" style="padding-top: 10px">
+            <div class="diary-infos" style="padding-top: 10px" ng-click="showDetail($event, trip)">
                 
                 <!-- Distance and Time -->
                 <div class="row" style="padding:4px">
@@ -76,7 +77,8 @@
                         </div>
                     </div>
                 </div>
-
+              </div>
+              <div class="diary-infos" style="padding-top: 10px">
                 <!-- Mode and Purpose Selection -->
                 <div class="row" style="margin-top: 0px; padding: 4px">
                     <!-- Assumes that the trip labels have already been
