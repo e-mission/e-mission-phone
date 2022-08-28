@@ -55,6 +55,7 @@
         "edit-demographics": "Edit Demographics",
         "username": "Username {{usernamedata}}",
         "tracking": "Tracking",
+        "enable-opgeofence": "Experimental trip start",
         "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",
@@ -82,7 +83,8 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify",
         "button-accept": "I accept",
-        "view-qrc": "My OPcode"
+        "view-qrc": "My OPcode",
+        "app-version": "App Version"
     },
 
     "general-settings":{
