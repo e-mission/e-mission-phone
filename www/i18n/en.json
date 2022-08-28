@@ -82,7 +82,8 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify",
         "button-accept": "I accept",
-        "view-qrc": "My OPcode"
+        "view-qrc": "My OPcode",
+        "app-version": "App Version"
     },
 
     "general-settings":{
