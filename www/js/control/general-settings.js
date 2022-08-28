@@ -363,6 +363,17 @@ angular.module('emission.main.control',['emission.services',
                 $scope.settings.collect.trackingOn = isTracking;
             });
         });
+        KVStore.get("OP_GEOFENCE_CFG").then(function(storedCfg) {
+            $scope.$apply(function() {
+                if (storedCfg == null) {
+                    console.log("Setting settings.collect.experimentalGeofenceOn = false");
+                    $scope.settings.collect.experimentalGeofenceOn = false;
+                } else {
+                    console.log("Setting settings.collect.experimentalGeofenceOn = true");
+                    $scope.settings.collect.experimentalGeofenceOn = true;
+                }
+            });
+        });
         $scope.getUserData();
     };
 
@@ -512,6 +523,17 @@ angular.module('emission.main.control',['emission.services',
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');
         } else {
             return ControlCollectionHelper.forceTransition('START_TRACKING');
+        }
+    }
+
+    $scope.toggleExperimentalGeofence = function() {
+        Logger.log("Toggling experimental geofence from current state of "+$scope.settings.collect.experimentalGeofenceOn);
+        if ($scope.settings.collect.experimentalGeofenceOn) {
+            KVStore.remove("OP_GEOFENCE_CFG");
+            return ControlCollectionHelper.forceTransition('INITIALIZE');
+        } else {
+            KVStore.set("OP_GEOFENCE_CFG", {"enabled": true});
+            return ControlCollectionHelper.forceTransition('INITIALIZE');
         }
     }
     $scope.getExpandButtonClass = function() {
