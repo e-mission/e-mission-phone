@@ -55,6 +55,7 @@
         "edit-demographics": "Edit Demographics",
         "username": "Username {{usernamedata}}",
         "tracking": "Tracking",
+        "enable-opgeofence": "Experimental trip start",
         "app-status": "App Status",
         "medium-accuracy": "Medium accuracy",
         "dark-theme": "Dark theme",
@@ -82,7 +83,8 @@
         "sync": "Sync",
         "transition-notify": "Transition Notify",
         "button-accept": "I accept",
-        "view-qrc": "My OPcode"
+        "view-qrc": "My OPcode",
+        "app-version": "App Version"
     },
 
     "general-settings":{
@@ -416,8 +418,11 @@
         "move-on": "Move on",
         "survey": "Survey",
         "save": "Save",
+        "back": "Back",
         "next": "Next",
         "powered-by": "Powered by",
-        "dismiss": "Dismiss"
+        "dismiss": "Dismiss",
+        "return-to-beginning": "Return to beginning",
+        "go-to-end": "Go to End"
     }
 }

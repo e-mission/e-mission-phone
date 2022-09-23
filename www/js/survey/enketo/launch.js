@@ -18,6 +18,8 @@ angular.module('emission.survey.enketo.launch', [
    *    disableDismiss: boolean;
    *    onInit: Function;
    *    onNext: Function;
+   *    showBackButton: boolean | undefined;
+   *    showFormFooterNav: boolean | undefined;
    *  };
    *  scope: object;
    * }}
@@ -57,8 +59,8 @@ angular.module('emission.survey.enketo.launch', [
   function initSurvey(name, opts) {
     return EnketoSurvey.load(name, opts).then(() => {
       $('.enketo-plugin .form-header').after(EnketoSurvey.getState().loaded.form);
-      $(".enketo-plugin .previous-page").hide();
-      $(".enketo-plugin .form-footer__jump-nav").hide();
+      if (!opts.showBackButton) { $(".enketo-plugin .previous-page").hide() };
+      if (!opts.showFormFooterJumpNav) { $(".enketo-plugin .form-footer__jump-nav").hide() };
     }).then(EnketoSurvey.showModal
     ).then(loadErrors => {
 			// Ignore 'Different root nodes' error: START
@@ -82,6 +84,8 @@ angular.module('emission.survey.enketo.launch', [
    *  disableDismiss?: boolean;
    *  onInit?: Function;
    *  onNext?: Function;
+   *  hideBackButton: boolean | undefined;
+   *  hideFormFooterNav: boolean | undefined;
    * }} [opts] survey launch options 
    * @returns 
    */

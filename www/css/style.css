@@ -716,6 +716,16 @@ background-image: none !important; }
   color: #fff;
   padding-top: 16px;
   width: 48px; /* Changed to fit the diary card in full view */
+}
+
+.control-version-number{
+  text-align: center;
+  float: right;
+  height: 100%;
+  color: rgb(114, 114, 114);
+  padding-top: 16px;
+  width: 64px;
+
   font-size:20px;
 }
 
