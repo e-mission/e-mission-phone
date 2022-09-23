@@ -6,10 +6,10 @@
             <i class="icon ion-arrow-resize"></i>
         </button>
         <div class="row buttons labelfilterlist">
-            <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 13px;font-weight: 600; font-family: 'Lato'; border-radius: 10px;" translate>
+            <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 13px;font-weight: 600; border-radius: 10px;" translate>
                 {{selF.text}}
             </button>
-            <button ng-click="resetSelection()" class="col-33 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 13px;font-weight: 600; font-family: 'Lato'; border-radius: 10px;" translate>
+            <button ng-click="resetSelection()" class="col-33 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 13px;font-weight: 600; border-radius: 10px;" translate>
                 {{'.show-all'}}
             </button>
         </div>
@@ -24,11 +24,11 @@
 
         <div class="control-list-item row">
             <div class="control-list-text col">
-                <div class="row" translate="diary.filter-display-status" style="font-family: 'Lato'" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
-                <div ng-if="data.allTrips.length > 0" class="row" style="font-family: 'Lato'" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
+                <div class="row" translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
+                <div ng-if="data.allTrips.length > 0" class="row" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
             </div>
-            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
-            <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
+            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="diary-button"><i class="ion-ios-download"></i></div>
+            <div ng-if="infScrollControl.reachedEnd" id="green" class="diary-button"><i class="ion-checkmark"></i></div>
         </div>
 
 		<ion-list>

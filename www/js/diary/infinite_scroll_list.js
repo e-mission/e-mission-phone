@@ -382,7 +382,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         content: $translate.instant('new_label_tour.3')
       },
       {
-        target: '.control-icon-button',
+        target: '.diary-button',
         content: $translate.instant('new_label_tour.4'),
         before: function() {
           return new Promise(function(resolve, reject) {

@@ -1,13 +1,5 @@
 /* Empty. Add your own CSS if you like */
 
-/* Font Family from Savoir Faire-Linux Development Community */
-@font-face {
-  font-family: 'Lato';
-  src: url('../fonts/Lato-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-}
-
 body.platform-ios {
   padding-top: calc(env(safe-area-inset-top) / 2);
   margin: 0 10px 0 0;
@@ -355,7 +347,7 @@ img.center {
 
 #dashboard-footprint.card {
   background: #fff;
-  color: #80D0FF;
+  color: #0088ce;
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -707,6 +699,17 @@ background-image: none !important; }
 .control-icon-button{
   text-align: center;
   float: right;
+  height: 100%;
+  background-color: #6c757d;
+  color: #fff;
+  padding-top: 16px;
+  width: 64px;
+  font-size:20px;
+}
+
+.diary-button{
+  text-align: center;
+  float: right;
   height: 48px;
   background-color: #a0a0a0;
   /* background-color: #D6C780; */
@@ -716,9 +719,8 @@ background-image: none !important; }
   font-size:20px;
 }
 
-
 #switch-user.control-icon-button{
-  background-color: #d76c6c !important;
+  background-color: #dc3545 !important;
 }
 
 .gray-icon.control-icon-button{
@@ -782,7 +784,6 @@ ion-header-bar {
   color: #303030;
 }
 .date-picker-button {
-  font-family: 'Lato';
   color: #0088ce !important; padding: 0 15px; border-color: transparent; margin-top: 4px; 
       /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
                  border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
@@ -852,7 +853,7 @@ a.list-text {
 }
 
 button.button.ng-binding {
-  font-size: 12px;
+  font-size: 15px;
 }
 button.button.ng-binding i.icon.ion-edit {
   font-size: 12px;
@@ -923,7 +924,7 @@ button.button.back-button.buttons.button-clear.header-item {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
 .start-time-tag {
-        width: 68px;
+        width: 16%;
         height: 30px;
         background: #80D0FF;
         box-sizing: border-box;
@@ -932,7 +933,6 @@ button.button.back-button.buttons.button-clear.header-item {
         display: flex;
         justify-content: center;
         align-items: center;
-        font-family: 'Lato';
         font-style: normal;
         font-weight: bold;
         font-size: 13px;
@@ -953,8 +953,7 @@ button.button.back-button.buttons.button-clear.header-item {
         margin: auto;
         display: flex;
         justify-content: center;
-        align-items: center;
-        font-family: 'Lato';
+        align-items: center;  
         font-style: normal;
         font-weight: bold;
         font-size: 13px;
@@ -994,7 +993,7 @@ button.button.back-button.buttons.button-clear.header-item {
         bottom: 15px;
         line-height: 16px;
 }
-.stop-time-tag-lower {
+.stop-time-tag-lower { /* this is used in both lists (infinite_scroll_list.js & list.js) around the differentCommon function */
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
         background-color: #0088ce;

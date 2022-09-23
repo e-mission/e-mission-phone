@@ -3,10 +3,11 @@
   padding:0px !important;
 }
 
-/*.item {
+.item {
   border:0px !important;
-
-}*/
+  border-color: #fff;
+  padding: 0 10px; /* Changed from 16px. This change was to ensure the correct alignment of the diary card */
+}
 
 .main {
     padding-top:50px;
@@ -110,6 +111,10 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
+.button {
+  min-height: 10px; /* Changed from 47px. This allows for the correct height for the label buttons to fit nicely in the diary card. */
+  line-height: normal;
+}
 .btn-input-confirm-red,
 .btn-input-confirm-red:hover,
 .btn-input-confirm-red:active {
@@ -121,7 +126,7 @@ a.item-content {
 .btn-input-confirm-yellow,
 .btn-input-confirm-yellow:hover,
 .btn-input-confirm-yellow:active {
-  background-color: rgba(255, 165, 0, 0.8);  /* tentatively orange for now */
+  background-color: #FFC108;  /* tentatively orange for now */
   color: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border: 2px solid rgba(0, 136, 206, 0.2);
@@ -150,14 +155,12 @@ a.item-content {
   margin: 2px;
   box-sizing: border-box;
   border-radius: 10px;
-  font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
-  font-size: 12px;
+  font-size: 0.8em !important;
 
   /* line-height: 30px;
   min-height: 30px;
-  font-size: 0.8em !important;
   width: 115px;
   padding: 0; */
 }
@@ -207,7 +210,6 @@ a.item-content {
   box-sizing: border-box;
   border-radius: 50px;
   background-color: #ffffff;
-  font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -216,7 +218,6 @@ a.item-content {
 .hr-lines {
   position: relative;
   justify-content: center;
-  font-family: 'Lato';
   font-weight: bold;
   display: flex;
   color: #212121;
@@ -277,7 +278,6 @@ a.item-content {
 }
 
 .diary-draft-button {
-  font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
   font-style: 13px;
@@ -294,7 +294,6 @@ a.item-content {
 }
 
 .diary-street {
-  font-family: 'Lato';
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
@@ -326,7 +325,6 @@ a.item-content {
 }
 
 .diary-distance-time {
-  font-family: 'Lato';
   font-style: normal;
   font-weight: bold;
   font-size: 16px;
