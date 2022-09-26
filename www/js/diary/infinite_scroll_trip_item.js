@@ -114,9 +114,4 @@ angular.module('emission.main.diary.infscrolltripitem', [
     $scope.refreshTiles = function() {
       $scope.$broadcast('invalidateSize');
     }
-
-    $scope.$on('leafletDirectiveMap.infscroll-tripitem.resize', function(event, data) {
-      console.log("detail received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-    });
 });
