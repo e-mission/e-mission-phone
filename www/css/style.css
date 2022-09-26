@@ -973,36 +973,6 @@ button.button.back-button.buttons.button-clear.header-item {
         top: -15px;
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
-
-.start-time-tag-inf-scroll {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #80D0FF;
-        color: black;
-        width: 16%;
-        height: 18px;
-        border-radius: 8px;
-        font-size: 11px;
-        position: absolute;
-        left: 1%;
-        top: 15px;
-        line-height: 16px;
-
-}
-.stop-time-tag-inf-scroll {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #0088ce;
-        color: white;
-        width: 16%;
-        height: 18px;
-        border-radius: 8px;
-        font-size: 11px;
-        position: absolute;
-        left: 1%;
-        bottom: 15px;
-        line-height: 16px;
-}
 .stop-time-tag-lower { /* this is used in both lists (infinite_scroll_list.js & list.js) around the differentCommon function */
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
