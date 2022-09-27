@@ -16,13 +16,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
-                                      'emission.plugin.logger'])
+                                      'emission.plugin.logger',
+                                      'emission.main.diary.infscrolltripitem',
+                                    ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
                                     $ionicPlatform, $state,
                                     $ionicScrollDelegate, $ionicPopup, ClientStats,
                                     $ionicLoading,
                                     $ionicActionSheet,
+                                    ionicDatePicker,
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
@@ -31,7 +34,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
-  const DEFAULT_ITEM_HT = 150;
+  const DEFAULT_ITEM_HT = 274;
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
   $scope.itemHt = DEFAULT_ITEM_HT;
   // Add option
@@ -54,6 +57,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
   $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
+  const ONE_DAY = 24 * 60 * 60; // seconds
 
   /*
    * These values are used to ensure that when the user scrolls upwards, they
@@ -166,7 +170,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.infScrollControl.pipelineRange = pipelineRange;
             $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
             $scope.infScrollControl.callback = function() {
-              $ionicScrollDelegate.scrollBottom();
+              $ionicScrollDelegate.scrollBottom(); // scrollTop()?
             };
             $scope.readDataFromServer();
         } else {
@@ -186,12 +190,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.infScrollControl.callback = undefined;
     }
   });
-
-  $scope.showDetail = function($event, trip) {
-    $state.go("root.main.inf_scroll-detail", {
-        tripId: trip.id
-    });
-  }
 
   $scope.select = function(selF) {
     const prev = $scope.getActiveFilters();
@@ -385,7 +383,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         content: $translate.instant('new_label_tour.3')
       },
       {
-        target: '.control-icon-button',
+        target: '.diary-button',
         content: $translate.instant('new_label_tour.4'),
         before: function() {
           return new Promise(function(resolve, reject) {

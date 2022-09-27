@@ -16,7 +16,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
-                                      'emission.plugin.logger'
+                                      'emission.plugin.logger',
+                                      'emission.main.diary.diarylistitem'
   ])
 
 .controller("DiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -396,12 +397,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         var nextDay = moment(Timeline.data.currDay).add(1, 'days');
         console.log("nextDay = "+nextDay);
         readAndUpdateForDay(nextDay);
-    };
-
-    $scope.toDetail = function (param) {
-      $state.go('root.main.diary-detail', {
-        tripId: param
-      });
     };
 
     $scope.showModes = DiaryHelper.showModes;
