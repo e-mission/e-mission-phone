@@ -5664,7 +5664,6 @@ html[dir="rtl"] .select2-search-choice-close {
   padding: 1.5em;
   background: #f2f5f6;
   border: 1px solid #c3d1d6;
-  font-family: 'Lato', sans-serif;
 }
 .task-column:after {
   clear: both;
@@ -6139,7 +6138,6 @@ textarea.option-content {
   outline: 1px solid rgba(0,0,0,0.2);
   outline-offset: -1px;
   margin: 0 0 0 3px;
-  font-family: 'Lato', sans-serif;
   text-align: inherit;
   opacity: 0.5;
   -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=50)";

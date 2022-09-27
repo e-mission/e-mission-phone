@@ -3,10 +3,11 @@
   padding:0px !important;
 }
 
-/*.item {
+.item {
   border:0px !important;
-
-}*/
+  border-color: #fff;
+  padding: 0 10px; /* Changed from 16px. This change was to ensure the correct alignment of the diary card */
+}
 
 .main {
     padding-top:50px;
@@ -95,11 +96,11 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #33e0bb;
+  background-color: #80D0FF;
   border-radius: 6px;
 }
 .leaflet-div-icon-stop {
-  background-color: #ff5251;
+  background-color: #0088ce;
   border-radius: 6px;
 }
 .inner-icon {
@@ -110,23 +111,33 @@ a.item-content {
   margin-left: 3px;
   margin-top: 3px;
 }
+.button {
+  min-height: 10px; /* Changed from 47px. This allows for the correct height for the label buttons to fit nicely in the diary card. */
+  line-height: normal;
+}
 .btn-input-confirm-red,
 .btn-input-confirm-red:hover,
 .btn-input-confirm-red:active {
-  background-color: #ED2D3A;
-  color: white;
+  background-color: white;
+  color: #0088ce;
+  border-color: #0088ce;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .btn-input-confirm-yellow,
 .btn-input-confirm-yellow:hover,
 .btn-input-confirm-yellow:active {
-  background-color: #FFC108;
+  background-color: #FFC108;  /* tentatively orange for now */
   color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border: 2px solid rgba(0, 136, 206, 0.2);
 }
 .btn-input-confirm-green,
 .btn-input-confirm-green:hover,
 .btn-input-confirm-green:active {
-  background-color: #30A64A;
+  background-color: #0088ce;
   color: white;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  border: 2px solid rgba(0, 136, 206, 0.2);
 }
 /* White confirm buttons are currently unused */
 /* .btn-input-confirm-white,
@@ -136,12 +147,22 @@ a.item-content {
   color: #333;
   font-size: 0.8em;
 } */
+
+
 .btn-input-confirm {
-  line-height: 30px;
-  min-height: 30px;
+  width: 100%;
+  height: 30px;
+  margin: 2px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-style: normal;
+  font-weight: normal;
   font-size: 0.8em !important;
+
+  /* line-height: 30px;
+  min-height: 30px;
   width: 115px;
-  padding: 0;
+  padding: 0; */
 }
 .input-confirm-container {
   margin-top: 5px;
@@ -162,12 +183,207 @@ a.item-content {
   border-width: 0;
 }
 
+.unified-diary-item {
+  padding: 0;
+  margin: 0 1rem 0 1rem;
+  border-width: 0;
+  background-color: transparent;
+  /* height: 250px; */
+}
+
+.diary-card {
+  width: 100%;
+  height: 330px;
+  margin: 0;
+  border: 2px solid rgba(0, 136, 206, 0.2);
+  box-sizing: border-box;
+  border-radius: 30px;
+  overflow: hidden;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.diary-button {
+  width: 100%;
+  height: 30px;
+  margin: 2px;
+  border: 2px solid #0088ce;
+  box-sizing: border-box;
+  border-radius: 50px;
+  background-color: #ffffff;
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+}
+
+.hr-lines {
+  position: relative;
+  justify-content: center;
+  font-weight: bold;
+  display: flex;
+  color: #212121;
+  font-size: 19px;
+  margin-left: 10px;
+  margin-right: 10px;
+  margin-bottom: 5px;
+  margin-top: 5px;
+  margin: 10px auto;
+  text-align: center;
+}
+
+@media screen and (orientation: portrait) {
+  .hr-lines:before {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 30%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    background: #80D0FF;
+  }
+
+  .hr-lines:after {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 30%;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background: #80D0FF;
+  }
+}
+@media screen and (orientation: landscape) {
+  .hr-lines:before {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 41%;
+    position: absolute;
+    top: 50%;
+    left: 0;
+    background: #80D0FF;
+  }
+
+  .hr-lines:after {
+    content: " ";
+    display: block;
+    height: 2px;
+    width: 41%;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    background: #80D0FF;
+  }
+}
+
+.diary-draft-button {
+  font-style: normal;
+  font-weight: normal;
+  font-style: 13px;
+  background-color: #ffffff;
+  border: none;
+  background-image: url("../img/icons/help_outline_black_24dp.svg");
+  background-repeat: no-repeat;
+  background-position: left center;
+  padding-left: 25px;
+}
+
+.diary-route {
+  margin: 5px 0;
+}
+
+.diary-street {
+  font-style: normal;
+  font-weight: normal;
+  font-size: 13px;
+  white-space: normal;
+}
+
+.diary-map {
+  float: left;
+  width: 100%;
+  z-index: -1; /* Can't zoom in or out of the map with this implemented */
+  overflow: hidden;
+  border-radius: 30px 0px 0px 50px;
+  /* height must be specified in the html */
+}
+
+.diary-map-shell {
+  float: left;
+  width: 50%;
+}
+
+.diary-infos {
+  float: right;
+  width: 50%;
+  padding: 2% 2%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 50%;
+}
+
+.diary-distance-time {
+  font-style: normal;
+  font-weight: bold;
+  font-size: 16px;
+  white-space: normal;
+  text-align: center;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.diary-modes-percents {
+  margin: 5px 0;
+}
+
+.diary-modes-percents-text {
+  color: #0088ce;
+}
+
+.diary-modes-percents-icon {
+  color: #0088ce;
+}
+
+/* Date Picker Override */
+.ionic_datepicker_popup .today {
+  border: 1px solid #0088ce !important;
+}
+
+.ionic_datepicker_popup .selected_date {
+  background-color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-head {
+  background-color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .selected_date_full {
+  background-color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
+  border-bottom: 1px solid #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
+  color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-body .button-clear {
+  color: #0088ce !important;
+}
+
+.ionic_datepicker_popup .popup-buttons button {
+  background-color: #0088ce !important;
+}
 div.labelfilterlist {
   margin: 0 !important;
 }
 
 .button.labelfilter {
-  color: #01D0A7;
+  color: #0088ce;
   border-radius: 0px;
   border-width: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
@@ -175,7 +391,7 @@ div.labelfilterlist {
 }
 
 .button.labelfilter.on {
-    background-color: #01D0A7;
+    background-color: #0088ce;
     color: white;
 }
 

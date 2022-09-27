@@ -3,7 +3,7 @@ angular.module('emission.main.diary',['emission.main.diary.list',
                                       'emission.main.diary.infscrolldetail',
                                       'emission.main.diary.detail',
                                       'emission.main.diary.services',
-                                      'emission.main.diary.current',])
+                                      'emission.main.diary.current'])
 
 .config(function($stateProvider) {
   $stateProvider

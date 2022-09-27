@@ -43,11 +43,11 @@ body.platform-ios {
 
 }
 .button.ng-binding.button-positive {
-  background-color: #01D0A7;
+  background-color: #0088ce;
   height: 40px;
 }
 .button.ng-binding.button-assertive {
-  background-color: #01D0A7;
+  background-color: #0088ce;
   height: 40px;
 
 }
@@ -57,20 +57,20 @@ body.platform-ios {
   color: #ffffff
 }
 .selected_date_full.ng-binding {
-  color: #01D0A7;
+  color: #0088ce;
 }
 .icon.ion-chevron-left {
- color: #01D0A7;
+ color: #0088ce;
 }
 .icon.ion-chevron-right {
- color: #01D0A7;
+ color: #0088ce;
 }
 .date_col.date_selected {
- background-color: #01D0A7 !important;
+ background-color: #0088ce !important;
 
 }
 .date_col:active {
- background-color: #01D0A7 !important;
+ background-color: #0088ce !important;
 }
 .customButtomIconSize:before {
     font-size: 25px !important;
@@ -133,27 +133,27 @@ body.platform-ios {
 
 .button.button-light-green {
   border-color: transparent;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: #fff; }
 .button.button-light-green:hover {
     color: #fff;
     text-decoration: none; }
 .button.button-light-green.active, .button.button-gold.activated {
-    background-color:#01D0A7; }
+    background-color:#0088ce; }
 .button.button-light-green.button-clear {
     border-color: transparent;
     background: none;
     box-shadow: none;
-    color: #01D0A7; }
+    color: #0088ce; }
 .button.button-light-green.button-icon {
     border-color: transparent;
     background: none; }
 .button.button-light-green.button-outline {
-    border-color: #01D0A7;
+    border-color: #0088ce;
     background: transparent;
-    color: #01D0A7; }
+    color: #0088ce; }
 .button.button-light-green.button-outline.active, .button.button-gold.button-outline.activated {
-    background-color: #01D0A7;
+    background-color: #0088ce;
     box-shadow: none;
     color: #fff; }
 
@@ -188,7 +188,7 @@ progress.download::-webkit-progress-bar{
 }
 
 progress.download::-webkit-progress-value{
-  background: #5eedce;
+  background: #80D0FF;
   border-radius: 0;
 }
 
@@ -323,10 +323,10 @@ img.center {
   float:left;
 }
 #challenge.active {
-  color: #01D0A7 !important;
+  color: #0088ce !important;
 }
 #party.active {
-  color: #01D0A7 !important;
+  color: #0088ce !important;
 }
 #add-goal:active {
   color: #ededed !important;
@@ -347,7 +347,7 @@ img.center {
 
 #dashboard-footprint.card {
   background: #fff;
-  color: #54DCC1;
+  color: #0088ce;
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -377,7 +377,7 @@ img.center {
 
 #dashboard-calorie.card {
   background: #fff;
-  color: #54DCC1;
+  color: #80D0FF;
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -420,7 +420,7 @@ img.center {
 
 #dashboard-bottom.card {
   background-color: #fff;
-  color: #54DCC1;
+  color: #0088ce;
   border-radius: 5px;
   display: block;
   /* height: 140px; */
@@ -441,13 +441,13 @@ img.center {
 }
 
 #arrow-color{
-  color: #54DCC1;
+  color: #0088ce;
   font-size: 25px !important;
 }
 
 h4.dashboard-headers{
   color: #fff;
-  background: #54DCC1;
+  background: #0088ce;
   padding-top: 5px;
   padding-bottom: 5px;
   margin-top: -1px;
@@ -470,7 +470,7 @@ h4.dashboard-headers{
 
 .user-carbon{
   font-weight: 700;
-  color: #54DCC1;
+  color: #0088ce;
   font-size: 16px;
 }
 
@@ -488,20 +488,20 @@ h4.dashboard-headers{
 
 .user-calorie{
   font-weight: 700;
-  color: #54DCC1;
+  color: #0088ce;
   font-size: 18px;
 }
 
 .percentage-change{
   font-weight: 700;
-  color: #54DCC1;
+  color: #0088ce;
   margin-bottom: 20px;
 }
 
 .calorie-change{
   padding-top: 5px;
   font-weight: 700;
-  color: #54DCC1;
+  color: #0088ce;
 }
 
 .dashboard-list{
@@ -513,7 +513,7 @@ h4.dashboard-headers{
   margin-bottom: 3px !important;
   margin-top: 3px !important;
   width: 90%;
-  background-color: #54DCC1 !important;
+  background-color: #0088ce !important;
   box-shadow: 0 0px 0px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -547,7 +547,7 @@ h4.dashboard-headers{
 }
 
 #green-leaf{
-  color: #01D0A7;
+  color: #80D0FF;
   font-size: 45px;
   padding-top: 5px;
 }
@@ -614,19 +614,19 @@ h4.dashboard-headers{
 
 /* score button color */
 #up_value_negative_big{
-  background-color: #A9EDE0;
+  background-color: #93daff;
 }
 #up_value_negative{
-  background-color: #73D9C5;
+  background-color: #6ccdff;
 }
 #up_value_normal{
-  background-color: #4BC3AB;
+  background-color: #45c0ff;
 }
 #up_value_positive{
-  background-color: #2CAC93;  
+  background-color: #1db2ff;  
 }
 #up_value_positive_big{
-  background-color: #0D9C80;
+  background-color: #0088ce;
 }
 #down_value_negative_big{
   background-color: #E81431;
@@ -700,11 +700,22 @@ background-image: none !important; }
   text-align: center;
   float: right;
   height: 100%;
-  background-color: #D6C780;
+  background-color: #6c757d;
   color: #fff;
   padding-top: 16px;
   width: 64px;
   font-size:20px;
+}
+
+.diary-button{
+  text-align: center;
+  float: right;
+  height: 48px;
+  background-color: #a0a0a0;
+  /* background-color: #D6C780; */
+  color: #fff;
+  padding-top: 16px;
+  width: 48px; /* Changed to fit the diary card in full view */
 }
 
 .control-version-number{
@@ -714,11 +725,12 @@ background-image: none !important; }
   color: rgb(114, 114, 114);
   padding-top: 16px;
   width: 64px;
+
   font-size:20px;
 }
 
 #switch-user.control-icon-button{
-  background-color: #E0A1A1 !important;
+  background-color: #dc3545 !important;
 }
 
 .gray-icon.control-icon-button{
@@ -726,8 +738,8 @@ background-image: none !important; }
 }
 
 .toggle-on-ourcolor-bg{
-  border-color: #01D0A7 !important;
-  background-color: #01D0A7 !important;
+  border-color: #0088ce !important;
+  background-color: #0088ce !important;
 }
 
 .toggle-color{
@@ -743,7 +755,7 @@ background-image: none !important; }
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
-    color: #01D0A7;
+    color: #0088ce;
 }
 
 ion-header-bar {
@@ -782,9 +794,15 @@ ion-header-bar {
   color: #303030;
 }
 .date-picker-button {
-  color: #303030 !important; padding: 0 15px; border-color: transparent; margin-top: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
+  color: #0088ce !important; padding: 0 15px; border-color: transparent; margin-top: 4px; 
+      /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
                  border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
 }
+
+.button.date-picker-button {
+  font-size: 15px;
+}
+
 .date-picker-arrow {
   color: #303030 !important; margin-top: 4px; background-color: transparent !important;
 }
@@ -916,66 +934,50 @@ button.button.back-button.buttons.button-clear.header-item {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
 .start-time-tag {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #33e0bb;
-        color: black;
         width: 16%;
-        height: 16px;
-        border-radius: 8px;
-        font-size: 9px;
-        position: absolute;
-        left: 1%;
-        top: 15px;
-        line-height: 16px;
+        height: 30px;
+        background: #80D0FF;
+        box-sizing: border-box;
+        border-radius: 50px;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-style: normal;
+        font-weight: bold;
+        font-size: 13px;
+        text-align: center;
+        color: black;
+        position: relative;
+        bottom: -15px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
+
 .stop-time-tag {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+        width: 68px;
+        height: 30px;
+        background: #0088ce;
+        /* border: 1px solid #0088ce; */
+        box-sizing: border-box;
+        border-radius: 50px;
+        margin: auto;
+        display: flex;
+        justify-content: center;
+        align-items: center;  
+        font-style: normal;
+        font-weight: bold;
+        font-size: 13px;
         text-align: center;
-        background-color: #ff5251;
-        color: black;
-        width: 16%;
-        height: 16px;
-        border-radius: 8px;
-        font-size: 9px;
-        position: absolute;
-        left: 1%;
-        bottom: 15px;
-        line-height: 16px;
+        color: white;
+        position: relative;
+        top: -15px;
+        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
-.start-time-tag-inf-scroll {
+.stop-time-tag-lower { /* this is used in both lists (infinite_scroll_list.js & list.js) around the differentCommon function */
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
-        background-color: #33e0bb;
-        color: black;
-        width: 16%;
-        height: 25px;
-        border-radius: 8px;
-        font-size: 12px;
-        position: absolute;
-        left: 1%;
-        top: 15px;
-        line-height: 16px;
-}
-.stop-time-tag-inf-scroll {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #ff5251;
-        color: black;
-        width: 16%;
-        height: 25px;
-        border-radius: 8px;
-        font-size: 12px;
-        position: absolute;
-        left: 1%;
-        bottom: 15px;
-        line-height: 16px;
-}
-.stop-time-tag-lower {
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: #ff5251;
-        color: black;
+        background-color: #0088ce;
+        color: white;
         width: 16%;
         height: 16px;
         border-radius: 8px;
@@ -1111,7 +1113,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .metric-title {
@@ -1133,7 +1135,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .metric-weekday-container-lower {
@@ -1143,7 +1145,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .metric-datepicker-container-lower {
@@ -1166,12 +1168,12 @@ html, #chart2, svg {
   border-radius: 20px;
   background-color: white;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
-  color: #01D0A7;
+  color: #0088ce;
   font-weight: 700;
   height: 30px;
 }
 .metric-change-data-button: active{
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   box-shadow: none;
 }
@@ -1181,7 +1183,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .heatmap-mode-button {
@@ -1190,7 +1192,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
   
 }
@@ -1351,21 +1353,21 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .metric-get-button {
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   height: 35px;
 }
 .metric-get-button-inactive {
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   opacity: 0.7;
   height: 35px;
 }
@@ -1380,7 +1382,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .metric-half {
@@ -1408,7 +1410,7 @@ span.rz-bar-wrapper {
 .metric-current-title-nofilter {
   position: absolute;
   color: white;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   text-align: center;
   width: 100%;
   height: 35px;
@@ -1436,7 +1438,7 @@ span.rz-bar-wrapper {
   width: 25%;
   left: 50%;
   height: 35px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
 }
 .metric-filter-button {
@@ -1452,7 +1454,7 @@ span.rz-bar-wrapper {
   width: 25%;
   left: 75%;
   height: 35px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1466,13 +1468,14 @@ span.rz-bar-wrapper {
   overflow: hidden;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+  color: #0088ce;
 }
 .metric-chart-button-active {
   width: 50%;
   position: absolute;
   left: 50%;
   height: 30px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -1498,7 +1501,7 @@ span.rz-bar-wrapper {
   border-right-style: solid;
   border-right-width: 1px;
   height: 30px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -1545,7 +1548,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   overflow: hidden;
   border-top-left-radius: 5px;
@@ -1558,7 +1561,7 @@ span.rz-bar-wrapper {
   font-size: 12px;
   font-weight: 700;
   overflow: hidden;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1569,7 +1572,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   overflow: hidden;
   float: left;
@@ -1579,7 +1582,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   overflow: hidden;
   float: left;
@@ -1634,11 +1637,11 @@ span.rz-bar-wrapper {
 }
 .metric-summary-title {
   padding: 2px;
-  color: #54DCC1;
+  color: #0088ce;
   font-weight: 700;
 }
 .metric-summary-content {
-  color: #54DCC1;
+  color: #0088ce;
   font-size: 12px;
   font-weight: 600;
 }
@@ -1710,7 +1713,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .heatmap-weekday-container-lower {
@@ -1720,7 +1723,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .heatmap-fixmap-button {
@@ -1730,7 +1733,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .heatmap-get-button {
@@ -1739,12 +1742,12 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #01D0A7;
+  color: #0088ce;
   height: 35px;
 }
 .metric-summary-option-button {
   float: right;
-  color: #54DCC1;
+  color: #0088ce;
   background-color: white;
   height: 20px;
   border-radius: 5px;
@@ -1767,7 +1770,7 @@ span.rz-bar-wrapper {
   border-bottom-left-radius: 5px;
 
   background-color: white;
-  color: #01D0A7;
+  color: #0088ce;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1780,7 +1783,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1795,7 +1798,7 @@ span.rz-bar-wrapper {
   border-bottom-right-radius: 5px;
 
   background-color: white;
-  color: #01D0A7;
+  color: #0088ce;
 }
 .full-toggle-right-active {
   width: 50%;
@@ -1805,7 +1808,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
 }
 .unit-toggle-container {
@@ -1818,7 +1821,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: white;
-  color: #01D0A7;
+  color: #0088ce;
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1829,7 +1832,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1842,7 +1845,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: white;
-  color: #01D0A7;
+  color: #0088ce;
 }
 .unit-toggle-right-active {
   width: 50%;
@@ -1850,7 +1853,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   color: white;
 }
 .userdata-title {
@@ -1858,7 +1861,7 @@ span.rz-bar-wrapper {
 }
 .carbon-goal-chart {
   height: 5px;
-  background-color: #01D0A7;
+  background-color: #0088ce;
   opacity: 0.6;
   border-radius: 2px;
   width: 100%;
