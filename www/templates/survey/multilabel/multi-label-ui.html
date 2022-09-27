@@ -1,7 +1,7 @@
  <!-- Vertical Alignment for the Survey Buttons (Stacked on Top of One Another) -->
 
 <div> <!-- Container to keep buttons together -->
-    <div ng-repeat="input in userInputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
+    <div ng-repeat="input in trip.inputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
         <div style="text-align: center; font-size: 14px; font-weight: bold; color: #0088ce" translate>{{input.labeltext}}</div>
         <!-- Buttons (if trip is confirmed) -->
         <span ng-if="trip.userInput[input.name]" class="input-confirm-container">
