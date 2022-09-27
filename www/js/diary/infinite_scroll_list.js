@@ -41,6 +41,57 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 
+  var readAndUpdateForDay = function(day) {
+    // This just launches the update. The update can complete in the background
+    // based on the time when the database finishes reading.
+    // TODO: Convert the usercache calls into promises so that we don't have to
+    // do this juggling
+    $scope.itemHt = DEFAULT_ITEM_HT;
+    Timeline.updateForDay(day);
+    // This will be used to show the date of datePicker in the user language.
+    $scope.currDay = moment(day).format('LL');
+    // CommonGraph.updateCurrent();
+  };
+  
+  $scope.setCurrDay = function(val) {
+    if (typeof(val) === 'undefined') {
+      window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
+    } else {
+      window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
+      readAndUpdateForDay(moment(val));
+    }
+  }
+
+  $scope.getDatePickerObject = function() {
+    return {
+      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
+      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
+      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      titleLabel: $translate.instant('metrics.pick-a-date'),
+      mondayFirst: false,
+      weeksList: moment.weekdaysMin(),
+      monthsList: moment.monthsShort(),
+      templateType: 'popup',
+      from: new Date(2015, 1, 1),
+      to: new Date(),
+      showTodayButton: true,
+      closeOnSelect: false,
+      callback: $scope.setCurrDay,
+      inputDate: new Date()
+      //inputMoment: $scope.selectCtrl.toDateTimestamp,
+    }
+  };
+
+  $scope.datepickerObject = $scope.getDatePickerObject();
+
+  $ionicPlatform.on("resume", function() {
+    $scope.datepickerObject = $scope.getDatePickerObject();
+  });
+
+  $scope.pickDay = function() {
+    ionicDatePicker.openDatePicker($scope.datepickerObject);
+  }
+
   $scope.data = {};
   $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
   $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
@@ -92,6 +143,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     Logger.log("Called readDataFromServer");
     $scope.infScrollControl.fromBottom = getFromBottom()
     $scope.infScrollControl.callback = adjustScrollAfterDownload;
+    $scope.currDay = moment().utc();
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
     const currEnd = $scope.infScrollControl.currentEnd;

@@ -35,8 +35,9 @@
 		<div ng-repeat="trip in data.displayTrips">
             <div>
 
-                <div ng-show="$index==0">
+                <div ng-show="$index==0" ng-click="pickDay()">
                     <h2 class="hr-lines" translate> {{trip.display_date}}</h2>
+                    <button id="date-picker-button" class="button date-picker-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i></button> <!-- HERE -->
                 </div>
 
                 <infinite-scroll-trip-item trip="trip"></infinite-scroll-trip-item>
