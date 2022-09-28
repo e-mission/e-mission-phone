@@ -119,6 +119,7 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                         didCancel = false;
                         e.preventDefault();
                       } else {
+                        didCancel = false;
                         return newScope.data.reason;
                       }
                     }
@@ -161,7 +162,6 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                         });
                     }).catch(onUploadError);
                 });
-
               }
             }).catch(onReadError);
           }).catch(onReadError);
