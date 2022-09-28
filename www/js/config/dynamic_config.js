@@ -109,6 +109,19 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 config.name = "dev";
             }
         }
+        /*
+         * Second hack to support adding in the study as a prefix to any existing token.
+         */
+        // now that we have the study name, let's make sure that the token starts with it
+        // using the plugin directly so that we can avoid adding more dependencies
+        window.cordova.plugins.BEMJWTAuth.getUserEmail().then(function(response) {
+            console.log("Running hack code to add the study as a prefix to an existing token if needed");
+            if (!response.startsWith("nrelop_")) {
+                const newToken = "nrelop_"+config.name+"_"+response;
+                Logger.log("Found old style token, after prepending nrelop_"+config.name+" new token is "+newToken);
+                window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(newToken);
+            }
+        });
     }
 
     dc.initByUser = function(urlComponents) {
