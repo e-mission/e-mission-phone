@@ -20,7 +20,8 @@ angular.module('emission.main.diary.infscrolltripitem', [
     return{
       restrict: 'E',
       scope: {
-        trip: '='
+        trip: '=',
+        mapLimiter: '='
       },
       controller: 'TripItemCtrl',
       templateUrl: 'templates/diary/trip_list_item.html'
@@ -48,6 +49,7 @@ angular.module('emission.main.diary.infscrolltripitem', [
     console.log("Trip before tripgj transformation ", $scope.trip);
 
     // Converting trip to tripgj
+    $scope.mapLimiter.schedule(() =>
     Timeline.confirmedTrip2Geojson($scope.trip).then((tripgj) => {
       $scope.$apply(() => {
           $scope.tripgj = $scope.trip;
@@ -67,7 +69,8 @@ angular.module('emission.main.diary.infscrolltripitem', [
           // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
           // console.log("Section Percentages are ", $scope.tripgj.percentages);
       });
-    });
+    })
+    );
     console.log("Trip's Date is ", $scope.trip.display_date);
     console.log("Trip in Trip Item Ctrl is ", $scope.trip);
 

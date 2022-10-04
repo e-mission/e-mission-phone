@@ -771,7 +771,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         ];
 
         return Promise.all(fillPromises).then(function([locationList]) {
-          Logger.log("Retrieved "+locationList.phone_data.length+" points");
+          Logger.log("Retrieved "+locationList.phone_data.length+" points at "+(new Date()));
           var features = [
             confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
             confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
