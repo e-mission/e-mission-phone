@@ -30,7 +30,7 @@
             <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="diary-button"><i class="ion-ios-download"></i></div>
             <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
         </div>
-
+    <div id="greeng" class="control-icon-button" ng-click="pickDay()"> {{currDay}} <i class="ion-ios-calendar-outline"></i></div> <!-- HERE -->
 		<ion-list>
 		<div ng-repeat="trip in data.displayTrips">
             <div>
