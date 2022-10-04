@@ -4,7 +4,8 @@
 
 angular.module('emission.main.diary.diarylistitem', [
     'ui-leaflet',
-    'emission.main.diary.list'
+    'emission.main.diary.list',
+    'emission.services',
 ])
 
 .directive("diaryListItem", function(){
@@ -21,7 +22,7 @@ angular.module('emission.main.diary.diarylistitem', [
 .controller("DiaryListItemCtrl", function(
                                         $scope,
                                         SurveyOptions,
-                                        $state
+                                        $state, Config
 ){
     $scope.surveyOpt = SurveyOptions.MULTILABEL;
     const DEFAULT_ITEM_HT = 335;
@@ -32,4 +33,17 @@ angular.module('emission.main.diary.diarylistitem', [
             tripId: param
         });
     }
+    angular.extend($scope, {
+        defaults: {
+            zoomControl: false,
+            dragging: false,
+            zoomAnimation: true,
+            touchZoom: false,
+            scrollWheelZoom: false,
+            doubleClickZoom: false,
+            boxZoom: false,
+        }
+    });
+
+    angular.extend($scope.defaults, Config.getMapTiles())
 });
