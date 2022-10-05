@@ -49,7 +49,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.itemHt = DEFAULT_ITEM_HT;
     Timeline.updateForDay(day);
     // This will be used to show the date of datePicker in the user language.
-    $scope.currDay = moment(day).unix();
+    $scope.currDayTs = moment(day).unix();
+    $scope.currDayMoment = moment(day).endOf('day');
+    $scope.currDay = moment(day).format("ddd D MMM YY");
     // CommonGraph.updateCurrent();
   };
   
@@ -78,11 +80,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       closeOnSelect: false,
       callback: $scope.setCurrDay,
       inputDate: new Date()
-      //inputMoment: $scope.selectCtrl.toDateTimestamp,
+      //inputMoment: $scope.currDayMoment
     }
   };
 
-  $scope.currDay = moment().subtract(11, 'd').unix();
+  $scope.currDayTs = moment().unix();
+  $scope.currDayMoment = moment().endOf('day');
+  $scope.currDay = moment().format("ddd D MMM YY");
   $scope.datepickerObject = $scope.getDatePickerObject();
 
   $ionicPlatform.on("resume", function() {
@@ -146,7 +150,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.infScrollControl.callback = adjustScrollAfterDownload;
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
-    const currEnd = $scope.currDay;
+    const currEnd = $scope.currDayTs;
     if (!angular.isDefined(currEnd)) {
         Logger.log("trying to read data too early, early return");
         $ionicLoading.hide();
