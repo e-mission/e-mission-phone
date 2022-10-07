@@ -1,5 +1,5 @@
 <div>
-    <div class="start-time-tag">{{tripgj.display_start_time}}</div>
+    <div class="start-time-tag-diarytoremove">{{tripgj.display_start_time}}</div>
     <div  style="padding-left: 19%;">
 
     <ion-item id="diary-item" style="background-color: transparent;" class="list-item">
@@ -31,7 +31,7 @@
         </div>
 
         <div class="row diary-arrow-container" ng-click="toDetail(tripgj.data.id)">
-            <leaflet class="col-90" geojson="tripgj" id="map_{{tripgj.data.id}}" defaults="defaults" height="150px"></leaflet>
+            <leaflet class="col-90" geojson="tripgj" id="map_{{tripgj.data.id}}" defaults="defaults" height="100px"></leaflet>
             <!-- Height needs to be specified directly in the HTML not in CSS otherwise
             zoom doesn't work. Mystery!! -->
             <button class="col-10 ion-ios-arrow-right"></button>
@@ -63,5 +63,5 @@
     </ion-item>
 
     </div>
-    <div ng-class="tripgj.common.stopTimeTagClass">{{tripgj.display_end_time}}</div>
+    <div class="stop-time-tag-diarytoremove">{{tripgj.display_end_time}}</div>
 </div>

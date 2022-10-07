@@ -27,7 +27,7 @@
                 <div class="row" translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
                 <div ng-if="data.allTrips.length > 0" class="row" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
             </div>
-            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="diary-button"><i class="ion-ios-download"></i></div>
+            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
             <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
         </div>
 
@@ -39,7 +39,7 @@
                     <h2 class="hr-lines" translate> {{trip.display_date}}</h2>
                 </div>
 
-                <infinite-scroll-trip-item trip="trip"></infinite-scroll-trip-item>
+                <infinite-scroll-trip-item trip="trip" map-limiter="mapLimiter"></infinite-scroll-trip-item>
                 
                 <div ng-if="trip.display_date != trip.nextTrip.display_date && trip.nextTrip.display_date != undefined">
                     <h2 class="hr-lines" translate> {{trip.nextTrip.display_date}} </h2>
