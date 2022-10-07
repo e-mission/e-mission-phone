@@ -40,6 +40,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
+  $scope.mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background

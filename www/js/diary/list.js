@@ -51,20 +51,6 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     // CommonGraph.updateCurrent();
   };
 
-  angular.extend($scope, {
-      defaults: {
-          zoomControl: false,
-          dragging: false,
-          zoomAnimation: true,
-          touchZoom: false,
-          scrollWheelZoom: false,
-          doubleClickZoom: false,
-          boxZoom: false,
-      }
-  });
-
-  angular.extend($scope.defaults, Config.getMapTiles())
-
 //   moment.locale('en', {
 //   relativeTime : {
 //       future: "in %s",

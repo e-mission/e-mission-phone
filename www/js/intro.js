@@ -86,7 +86,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.agree = function() {
-    $scope.randomToken = $scope.generateRandomToken(16);
+    $scope.randomToken = $scope.generateRandomToken(45);
     window.Logger.log("Signing in with random token "+$scope.randomToken);
 
     StartPrefs.markConsented().then(function(response) {
