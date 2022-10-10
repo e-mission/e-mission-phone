@@ -32,8 +32,8 @@
         </div>
 		<ion-list>
       <div ng-if="!data.displayTrips.length" ng-click="pickDay()">
-        <h2 class="hr-lines" translate> {{currDay}} 📅</h2>
-        No trips present for this day
+        <h2 class="hr-lines" translate> {{currDay.display_date}} 📅</h2>
+        <div style="color: #6c757d; text-align: center;" translate>No trips present for this day</div>
       </div>
 		<div ng-repeat="trip in data.displayTrips">
             <div>
@@ -44,8 +44,8 @@
 
                 <infinite-scroll-trip-item trip="trip" map-limiter="mapLimiter"></infinite-scroll-trip-item>
                 
-                <div ng-if="trip.display_date != trip.nextTrip.display_date && trip.nextTrip.display_date != undefined">
-                    <h2 class="hr-lines" translate> {{trip.nextTrip.display_date}} </h2>
+                <div ng-if="trip.display_date != trip.nextTrip.display_date && trip.nextTrip.display_date != undefined" ng-click="pickDay()">
+                    <h2 class="hr-lines" translate> {{trip.nextTrip.display_date}} 📅</h2>
                 </div>
 
             </div>

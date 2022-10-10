@@ -43,17 +43,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
 
   var readAndUpdateForDay = function(day) {
-    // This just launches the update. The update can complete in the background
-    // based on the time when the database finishes reading.
-    // TODO: Convert the usercache calls into promises so that we don't have to
-    // do this juggling
-    $scope.itemHt = DEFAULT_ITEM_HT;
-    Timeline.updateForDay(day);
-    // This will be used to show the date of datePicker in the user language.
-    $scope.currDayTs = moment(day).unix();
-    $scope.currDayMoment = moment(day).endOf('day');
-    $scope.currDay = moment(day).format("ddd D MMM YY");
-    // CommonGraph.updateCurrent();
+    $scope.usingDatePicker = true;
+    $scope.currDay.ts = moment(day).endOf('day').unix();
+    $scope.currDay.display_date = moment(day).format("ddd D MMM YY");
+    $scope.datePickerObjectDiary.inputDate = moment(day).toDate();
+    $scope.setupInfScroll();
   };
   
   $scope.setCurrDay = function(val) {
@@ -61,41 +55,43 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       window.Logger.log(window.Logger.LEVEL_INFO, 'No date selected');
     } else {
       window.Logger.log(window.Logger.LEVEL_INFO, 'Selected date is :' + val);
-      readAndUpdateForDay(moment(val));
+      readAndUpdateForDay(val);
     }
   }
 
   $scope.getDatePickerObject = function() {
     return {
+      inputDate: new Date(),
       todayLabel: $translate.instant('list-datepicker-today'),  //Optional
       closeLabel: $translate.instant('list-datepicker-close'),  //Optional
       setLabel: $translate.instant('list-datepicker-set'),  //Optional
       titleLabel: $translate.instant('metrics.pick-a-date'),
-      mondayFirst: false,
+      mondayFirst: true,  //Optional
       weeksList: moment.weekdaysMin(),
       monthsList: moment.monthsShort(),
-      templateType: 'popup',
+      templateType: 'popup', //Optional
       from: new Date(2015, 1, 1),
       to: new Date(),
-      showTodayButton: true,
-      closeOnSelect: false,
+      showTodayButton: 'true', //Optional
       callback: $scope.setCurrDay,
-      inputDate: new Date()
-      //inputMoment: $scope.currDayMoment
+      dateFormat: 'dd MMM yyyy', //Optional
+      closeOnSelect: true //Optional
     }
   };
 
-  $scope.currDayTs = moment().unix();
-  $scope.currDayMoment = moment().endOf('day');
-  $scope.currDay = moment().format("ddd D MMM YY");
-  $scope.datepickerObject = $scope.getDatePickerObject();
+  $scope.usingDatePicker = false;
+  $scope.currDay = {
+    ts: moment().endOf('day').unix(),
+    display_date: moment().format("ddd D MMM YY"),
+  };
+  $scope.datePickerObjectDiary = $scope.getDatePickerObject();
 
   $ionicPlatform.on("resume", function() {
-    $scope.datepickerObject = $scope.getDatePickerObject();
+    $scope.datePickerObjectDiary = $scope.getDatePickerObject();
   });
 
   $scope.pickDay = function() {
-    ionicDatePicker.openDatePicker($scope.datepickerObject);
+    ionicDatePicker.openDatePicker($scope.datePickerObjectDiary);
   }
 
   $scope.data = {};
@@ -151,7 +147,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.infScrollControl.callback = adjustScrollAfterDownload;
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
-    const currEnd = $scope.currDayTs;
+    var currEnd;
+    if($scope.usingDatePicker) {
+      currEnd = $scope.currDay.ts;
+    } else {
+      currEnd = $scope.infScrollControl.currentEnd;
+    }
     if (!angular.isDefined(currEnd)) {
         Logger.log("trying to read data too early, early return");
         $ionicLoading.hide();
@@ -249,6 +250,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   });
 
   $scope.select = function(selF) {
+    $scope.usingDatePicker = false;
     const prev = $scope.getActiveFilters();
     selF.state = true;
     $scope.filterInputs.forEach((f) => {
@@ -262,10 +264,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     // fixes the first of the fit-and-finish issues from
     // https://github.com/e-mission/e-mission-docs/issues/662
     $ionicScrollDelegate.scrollBottom();
+    $scope.setupInfScroll();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
   $scope.resetSelection = function() {
+    $scope.usingDatePicker = false;
     const prev = $scope.getActiveFilters();
     $scope.filterInputs.forEach((f) => {
       f.state = false;
@@ -273,6 +277,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.allTrips = true;
     $scope.recomputeDisplayTrips();
     $ionicScrollDelegate.scrollBottom();
+    $scope.setupInfScroll();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
