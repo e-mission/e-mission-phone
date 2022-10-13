@@ -353,6 +353,17 @@ a.item-content {
   color: #0088ce;
 }
 
+/* Purpose selection Override */
+.two-lines .item-content {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  white-space: normal;
+  max-height: 65px;
+}
+
 /* Date Picker Override */
 .ionic_datepicker_popup .today {
   border: 1px solid #0088ce !important;

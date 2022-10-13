@@ -41,12 +41,12 @@
        {"text":"Transit transfer", "value":"transit_transfer"},
        {"text":"Shopping","value":"shopping"},
        {"text":"Meal","value":"meal"},
-       {"text":"Pick-up/Drop off 👤","value":"pick_drop_person"},
-       {"text":"Pick-up/Drop off 📦","value":"pick_drop_item"},
-       {"text":"Personal/Medical","value":"personal_med"},
+       {"text":"Pick-up/ Drop off Person 👤","value":"pick_drop_person"},
+       {"text":"Pick-up/ Drop off Item 📦 and asdbvas absdva awebva","value":"pick_drop_item"},
+       {"text":"Personal/ Medical","value":"personal_med"},
        {"text":"Access Recreation","value":"access_recreation"},
-       {"text":"Recreation/Exercise","value":"exercise"},
-       {"text":"Entertainment/Social","value":"entertainment"},
+       {"text":"Recreation/ Exercise","value":"exercise"},
+       {"text":"Entertainment/ Social","value":"entertainment"},
        {"text":"Religious", "value":"religious"},
        {"text":"Other","value":"other"}]
 }
