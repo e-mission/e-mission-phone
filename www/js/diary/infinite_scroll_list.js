@@ -109,7 +109,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Received batch of size "+ctList.length);
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
-            trip.nextTrip = ctList[tIndex+1];
+            if (tIndex == 0) {
+              trip.prevTrip = {display_date: trip.display_date};
+            } else {
+              trip.prevTrip = ctList[tIndex-1];
+            }
             $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
         });
         // Fill places on a reversed copy of the list so we fill from the bottom up
@@ -319,6 +323,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
         tripgj.start_display_name = "\xa0";
         tripgj.end_display_name = "\xa0";
+        tripgj.prevTrip = undefined;
     }
 
     const fillPlacesForTripAsync = function(tripgj) {
