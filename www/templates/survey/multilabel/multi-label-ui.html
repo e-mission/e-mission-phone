@@ -5,21 +5,21 @@
         <div style="text-align: center; font-size: 14px; font-weight: bold; color: #0088ce" translate>{{input.labeltext}}</div>
         <!-- Buttons (if trip is confirmed) -->
         <span ng-if="trip.userInput[input.name]" class="input-confirm-container">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green">
+            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-green btn-input-wrap two-lines">
                 {{trip.userInput[input.name].text}}
             </button>
         </span>
 
         <!-- Buttons (if inferred, but not confirmed) -->
         <span ng-if="!trip.userInput[input.name] && trip.finalInference[input.name]" class="input-confirm-container">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-yellow" translate>
+            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-yellow btn-input-wrap two-lines" translate>
                 {{trip.finalInference[input.name].text}}
             </button>
         </span>
 
         <!-- Buttons (if not inferred or confirmed) -->
         <span ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red" translate>
+            <button ng-click ="openPopover($event, trip, input.name)" class="button btn-input-confirm btn-input-confirm-red btn-input-wrap two-lines" translate>
             {{input.choosetext}}
             </button>
         </span>
