@@ -4,7 +4,7 @@
    </ion-header-bar>
    <ion-content>
         <ion-list ng-repeat="rmode in inputParams.REPLACED_MODE.options">
-		    <ion-radio ng-click="choose('REPLACED_MODE')" ng-model="selected.REPLACED_MODE.value" ng-value="rmode.value">{{rmode.text}}</ion-radio>
+		    <ion-radio ng-class="'two-lines'" ng-click="choose('REPLACED_MODE')" ng-model="selected.REPLACED_MODE.value" ng-value="rmode.value">{{rmode.text}}</ion-radio>
 		</ion-list>
    </ion-content>
 </ion-popover-view>
