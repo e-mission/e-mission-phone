@@ -110,11 +110,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
             trip.nextTrip = ctList[tIndex+1];
-            if (tIndex == 0) {
-              trip.prevTrip = {display_date: trip.display_date};
-            } else {
-              trip.prevTrip = ctList[tIndex-1];
-            }
+            trip.prevTrip = {display_date: trip.display_date};
             $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
         });
         // Fill places on a reversed copy of the list so we fill from the bottom up
