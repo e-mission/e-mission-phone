@@ -109,6 +109,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Received batch of size "+ctList.length);
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
+            trip.nextTrip = ctList[tIndex+1];
             if (tIndex == 0) {
               trip.prevTrip = {display_date: trip.display_date};
             } else {
