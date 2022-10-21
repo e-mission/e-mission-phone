@@ -52,17 +52,15 @@ angular.module('emission.main.diary.infscrolltripitem', [
     $scope.mapLimiter.schedule(() =>
     Timeline.confirmedTrip2Geojson($scope.trip).then((tripgj) => {
       $scope.$apply(() => {
-          $scope.tripgj = $scope.trip;
-          $scope.tripgj.data = tripgj;
-          $scope.tripgj.common = {};
-          $scope.tripgj.common.earlierOrLater = '';
-          $scope.tripgj.pointToLayer = DiaryHelper.pointFormat;
+          $scope.trip.data = tripgj;
+          $scope.trip.common = {};
+          $scope.trip.common.earlierOrLater = '';
+          $scope.trip.pointToLayer = DiaryHelper.pointFormat;
 
-          console.log("Is our trip a draft? ", DiaryHelper.isDraft($scope.tripgj));
-          $scope.tripgj.isDraft = DiaryHelper.isDraft($scope.tripgj);
-          console.log("Tripgj == Draft: ", $scope.tripgj.isDraft);
-
-          console.log("Tripgj in Trip Item Ctrl is ", $scope.tripgj);
+          console.log("Is our trip a draft? ", DiaryHelper.isDraft($scope.trip));
+          $scope.trip.isDraft = DiaryHelper.isDraft($scope.trip);
+          console.log("Tripgj == Draft: ", $scope.trip.isDraft);
+          console.log("Tripgj in Trip Item Ctrl is ", $scope.trip);
 
           // var tc = getTripComponents($scope.tripgj);
           // $scope.tripgj.sections = tc[3];
