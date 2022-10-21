@@ -34,16 +34,12 @@
 		<ion-list>
 		<div ng-repeat="trip in data.displayTrips">
             <div>
-
-                <div ng-show="$index==0">
+                
+                <div ng-if='$index==0 || trip.prevTrip.display_date != trip.display_date'>
                     <h2 class="hr-lines" translate> {{trip.display_date}}</h2>
                 </div>
 
                 <infinite-scroll-trip-item trip="trip" map-limiter="mapLimiter"></infinite-scroll-trip-item>
-                
-                <div ng-if="trip.display_date != trip.nextTrip.display_date && trip.nextTrip.display_date != undefined">
-                    <h2 class="hr-lines" translate> {{trip.nextTrip.display_date}} </h2>
-                </div>
 
             </div>
         </div>
