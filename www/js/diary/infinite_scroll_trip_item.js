@@ -45,32 +45,6 @@ angular.module('emission.main.diary.infscrolltripitem', [
       });
       console.log("Testing if showDetail has the trip defined: ", $scope.trip);
     }
-
-    console.log("Trip before tripgj transformation ", $scope.trip);
-
-    // Converting trip to tripgj
-    $scope.mapLimiter.schedule(() =>
-    Timeline.confirmedTrip2Geojson($scope.trip).then((tripgj) => {
-      $scope.$apply(() => {
-          $scope.tripgj = $scope.trip;
-          $scope.tripgj.data = tripgj;
-          $scope.tripgj.common = {};
-          $scope.tripgj.common.earlierOrLater = '';
-          $scope.tripgj.pointToLayer = DiaryHelper.pointFormat;
-
-          console.log("Is our trip a draft? ", DiaryHelper.isDraft($scope.tripgj));
-          $scope.tripgj.isDraft = DiaryHelper.isDraft($scope.tripgj);
-          console.log("Tripgj == Draft: ", $scope.tripgj.isDraft);
-
-          console.log("Tripgj in Trip Item Ctrl is ", $scope.tripgj);
-
-          // var tc = getTripComponents($scope.tripgj);
-          // $scope.tripgj.sections = tc[3];
-          // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
-          // console.log("Section Percentages are ", $scope.tripgj.percentages);
-      });
-    })
-    );
     console.log("Trip's Date is ", $scope.trip.display_date);
     console.log("Trip in Trip Item Ctrl is ", $scope.trip);
 
