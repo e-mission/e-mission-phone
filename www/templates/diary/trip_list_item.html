@@ -11,7 +11,7 @@
             <div class="diary-map-shell" ng-click="showDetail($event, trip)">
             <leaflet
             class="diary-map"
-            geojson="tripgj"
+            geojson="trip"
             defaults="mapCtrl.defaults"
             id="$index"
             data-tap-disabled="true"
@@ -33,8 +33,8 @@
                     <div
                         class="diary-distance-time"
                         translate=".distance-in-time"
-                        translate-value-distance="{{ tripgj.display_distance }} {{tripgj.display_distance_suffix }}"
-                        translate-value-time="{{ tripgj.display_time }}">
+                        translate-value-distance="{{ trip.display_distance }} {{trip.display_distance_suffix }}"
+                        translate-value-time="{{ trip.display_time }}">
                     </div>
                 </div>
 
@@ -42,15 +42,15 @@
                 <div class="diary-modes-percents">
                     <span
                         class="diary-modes-percents-text"
-                        ng-if="!tripgj.isDraft"
-                        ng-repeat="sectionPct in tripgj.percentages"
+                        ng-if="!trip.isDraft"
+                        ng-repeat="sectionPct in trip.percentages"
                     >
                         <span class="diary-modes-percents-icon {{sectionPct.icon}}"></span>
                         <span>{{sectionPct.pct}}%</span>
                     </span>
                     <button
                     class="diary-draft-button"
-                    ng-if="tripgj.isDraft"
+                    ng-if="trip.isDraft"
                     ng-click="explainDraft($event)"
                   >
                     <span translate>{{'.draft'}}</span>

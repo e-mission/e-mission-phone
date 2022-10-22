@@ -110,11 +110,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.forEach($scope.populateBasicClasses);
         ctList.forEach((trip, tIndex) => {
             trip.nextTrip = ctList[tIndex+1];
+            trip.prevTrip = {display_date: trip.display_date};
             $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
         });
         // Fill places on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
+            fillTrajectoriesForTripAsync(trip);
         });
         $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
@@ -320,6 +322,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
         tripgj.start_display_name = "\xa0";
         tripgj.end_display_name = "\xa0";
+        tripgj.prevTrip = undefined;
     }
 
     const fillPlacesForTripAsync = function(tripgj) {
@@ -336,6 +339,31 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             });
         });
     }
+
+    const fillTrajectoriesForTripAsync = function(trip) {
+        $scope.mapLimiter.schedule(() =>
+        Timeline.confirmedTrip2Geojson(trip).then((tripgj) => {
+          $scope.$apply(() => {
+              trip.data = tripgj;
+              trip.common = {};
+              trip.common.earlierOrLater = '';
+              trip.pointToLayer = DiaryHelper.pointFormat;
+
+              console.log("Is our trip a draft? ", DiaryHelper.isDraft(trip));
+              trip.isDraft = DiaryHelper.isDraft(trip);
+              console.log("Tripgj == Draft: ", trip.isDraft);
+
+              console.log("Tripgj in Trip Item Ctrl is ", tripgj);
+
+              // var tc = getTripComponents($scope.tripgj);
+              // $scope.tripgj.sections = tc[3];
+              // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
+              // console.log("Section Percentages are ", $scope.tripgj.percentages);
+          });
+        })
+        );
+    }
+
 
     $scope.populateCommonInfo = function(tripgj) {
         tripgj.common = {}
