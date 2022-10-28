@@ -41,7 +41,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
   const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
-  const mapWorker = new Worker('js/diary/infinite_scroll_async.js');
   $scope.data = {};
   $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
   $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
@@ -341,25 +340,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     const fillTrajectoriesForTripAsync = function(trip) {
-        // TODO: Figure out whether we want to have the mapLimiter live here or
-        // in the worker
-        // if it lives here, our options are to create one worker per call or
-        // to listen to all callbacks and resolve only when "ours" comes through
-        // we probably want to first figure out whether how many other threads
-        // we want to have and work off that.
-        // let's first get it to work with the basic single worker, interleaved
-        // access approach and then experiment with additional fanciness
-        mapLimiter.schedule(() => new Promise(function(resolve, reject) {
-            if (trip == undefined) {
-                Promise.resolve(undefined);
-            }
-            mapWorker.onmessage = function(e) {
-                console.log("WORKER: Message ", e.data, " received from worker");
-                resolve(e.data[2]);
-            }
-            mapWorker.postMessage([trip.start_ts, trip.end_ts]);
-        })).then((locationList) => console.log("WORKER: schedule returned with ", locationList));
-        /*
         mapLimiter.schedule(() => Timeline.confirmedTrip2Geojson(trip)).then((tripgj) => {
           console.log("retrieved geojson "+tripgj);
           $scope.$apply(() => {
@@ -380,7 +360,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
               // console.log("Section Percentages are ", $scope.tripgj.percentages);
           });
         });
-        */
     }
 
 
