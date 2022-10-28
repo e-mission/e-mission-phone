@@ -144,9 +144,10 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         var maxEntry = getKeyWithMaxVal(retMap);
         return maxEntry[0];
     };
-    commonGraph.getDisplayName = function(mode, obj) {
-      var responseListener = function(data) {
-        var address = data["address"];
+    commonGraph.getDisplayName = function(loc_geojson) {
+      console.log(new Date().toTimeString()+" Getting display name for ", loc_geojson);
+      const address2Name = function(data) {
+        const address = data["address"];
         var name = "";
         if (angular.isDefined(address)) {
             if (address["road"]) {
@@ -167,89 +168,17 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
               name = name + ", " + address["county"];
             }
         }
-        console.log("got response, setting display name to "+name);
-        switch (mode) {
-          case 'place':
-            obj.properties.display_name = name;
-            break;
-          case 'cplace':
-            obj.display_name = name;
-            break;
-          case 'ctrip':
-            obj.start_display_name = name;
-            break;
-        }
+        console.log(new Date().toTimeString()+"got response, setting display name to "+name);
         return name;
-
-      };
-      var responseListener1 = function(data) {
-        var address = data["address"];
-        var name = "";
-        if (angular.isDefined(address)) {
-            if (address["road"]) {
-              name = address["road"];
-            } else if (address["neighbourhood"]) {
-              name = address["neighbourhood"];
-            }
-            if (address["city"]) {
-              name = name + ", " + address["city"];
-            } else if (address["town"]) {
-              name = name + ", " + address["town"];
-            } else if (address["county"]) {
-              name = name + ", " + address["county"];
-            }
-        }
-        console.log("got response, setting display name to "+name);
-        obj.end_display_name = name;
-        return obj;
-      };
-      switch (mode) {
-        case 'place':
-          var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.geometry.coordinates[1]
-          + "&lon=" + obj.geometry.coordinates[0];
-          $http.get(url).then(function(response) {
-            console.log("while reading data from nominatim, status = "+response.status
-              +" data = "+JSON.stringify(response.data));
-            return responseListener(response.data);
-          }, function(error) {
-            console.log("while reading data from nominatim, error = "+error);
-          });
-          break;
-        case 'cplace':
-        var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.location.coordinates[1]
-        + "&lon=" + obj.location.coordinates[0];
-
-          return $http.get(url).then(function(response) {
-            console.log("while reading data from nominatim, status = "+response.status
-              +" data = "+JSON.stringify(response.data));
-            return responseListener(response.data);
-          }, function(error) {
-            console.log("while reading data from nominatim, error = "+error);
-          });
-          break;
-        case 'ctrip':
-          var url0 = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.start_loc.coordinates[1]
-          + "&lon=" + obj.start_loc.coordinates[0];
-          console.log("About to make call "+url0);
-          $http.get(url0).then(function(response) {
-            console.log("while reading data from nominatim, status = "+response.status
-              +" data = "+JSON.stringify(response.data));
-            responseListener(response.data);
-          }, function(error) {
-            console.log("while reading data from nominatim, error = "+error);
-          });
-          var url1 = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + obj.end_loc.coordinates[1]
-          + "&lon=" + obj.end_loc.coordinates[0];
-          console.log("About to make call "+url1);
-          $http.get(url1).then(function(response) {
-            console.log("while reading data from nominatim, status = "+response.status
-              +" data = "+JSON.stringify(response.data));
-            responseListener1(response.data);
-          }, function(error) {
-            console.log("while reading data from nominatim, error = "+error);
-          });
-          break;
       }
+      var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + loc_geojson.coordinates[1] + "&lon=" + loc_geojson.coordinates[0];
+      return $http.get(url).then((response) => {
+        console.log(new Date().toTimeString()+"while reading data from nominatim, status = "+response.status
+          +" data = "+JSON.stringify(response.data));
+        return address2Name(response.data);
+      }).catch((error) => {
+        Logger.displayError("while reading address data ",error);
+      });
     };
 
     var getFormattedDuration = function(duration_in_secs) {
@@ -286,7 +215,8 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
         commonGraph.data.graph.common_trips.forEach(function(cTrip, index, array) {
             commonGraph.data.cTripCountMap[cTrip._id.$oid] = cTrip.trips.length;
             commonGraph.data.cTripId2ObjMap[cTrip._id.$oid] = cTrip;
-            commonGraph.getDisplayName('ctrip', cTrip);
+            commonGraph.getDisplayName(cTrip.start_loc).then((name) => cTrip.start_display_name = name);
+            commonGraph.getDisplayName(cTrip.end_loc).then((name) => {cTrip.end_display_name = name});
             cTrip.trips.forEach(function(tripId,index,array) {
                 commonGraph.data.trip2CommonMap[tripId.$oid] = cTrip;
             });
@@ -304,7 +234,7 @@ angular.module('emission.main.common.services', ['emission.plugin.logger'])
               console.log("For place "+cPlace.id+", already have display_name "+cPlace.display_name);
             } else {
               console.log("Don't have display name for end place, going to query nominatim");
-              commonGraph.getDisplayName('cplace', cPlace);
+              commonGraph.getDisplayName(cPlace.location).then((name) => {cPlace.display_name = name});
             }
             cPlace.places.forEach(function(placeId,index,array) {
                 commonGraph.data.place2CommonMap[placeId.$oid] = cPlace;
