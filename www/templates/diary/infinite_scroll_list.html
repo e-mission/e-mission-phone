@@ -32,7 +32,7 @@
         </div>
 
 		<ion-list>
-		<div ng-repeat="trip in data.displayTrips">
+		<div collection-repeat="trip in data.displayTrips">
             <div>
                 
                 <div ng-if='$index==0 || trip.prevTrip.display_date != trip.display_date'>
