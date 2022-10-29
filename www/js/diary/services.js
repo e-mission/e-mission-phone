@@ -1109,23 +1109,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 console.log("Already have display name "+ trip.start_place.properties.display_name +" for start_place")
             } else {
                 console.log("Got display name "+ trip.start_place.properties.display_name +" for start_place, but it is blank, trying OSM nominatim now...");
-                CommonGraph.getDisplayName('place', trip.start_place);
+                CommonGraph.getDisplayName(trip.start_place.geometry).then((name) => {trip.start_place.properties.display_name = name;});
             }
           } else {
             console.log("Don't have display name for start place, going to query nominatim")
-            CommonGraph.getDisplayName('place', trip.start_place);
-
+            CommonGraph.getDisplayName(trip.start_place.geometry).then((name) => {trip.start_place.properties.display_name = name;});
           }
           if (angular.isDefined(trip.end_place.properties.display_name)) {
             if (trip.end_place.properties.display_name != ", ") {
                 console.log("Already have display name " + trip.end_place.properties.display_name + " for end_place")
             } else {
                 console.log("Got display name "+ trip.end_place.properties.display_name +" for end_place, but it is blank, trying OSM nominatim now...");
-                CommonGraph.getDisplayName('place', trip.end_place);
+                CommonGraph.getDisplayName(trip.end_place.geometry).then((name) => {trip.end_place.properties.display_name = name;});
             }
           } else {
             console.log("Don't have display name for end place, going to query nominatim")
-            CommonGraph.getDisplayName('place', trip.end_place);
+            CommonGraph.getDisplayName(trip.end_place.geometry).then((name) => {trip.end_place.properties.display_name = name;});
           }
         });
 

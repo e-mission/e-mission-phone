@@ -40,7 +40,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
-  $scope.mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
+  const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
   $scope.data = {};
   $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
   $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
@@ -327,9 +327,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     const fillPlacesForTripAsync = function(tripgj) {
         const fillPromises = [
             placeLimiter.schedule(() =>
-                CommonGraph.getDisplayName('cplace', {location: tripgj.start_loc})),
+                CommonGraph.getDisplayName(tripgj.start_loc)),
             placeLimiter.schedule(() =>
-                CommonGraph.getDisplayName('cplace', {location: tripgj.end_loc})),
+                CommonGraph.getDisplayName(tripgj.end_loc)),
         ];
         Promise.all(fillPromises).then(function([startName, endName]) {
             $scope.$apply(() => {
@@ -340,8 +340,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     const fillTrajectoriesForTripAsync = function(trip) {
-        $scope.mapLimiter.schedule(() =>
-        Timeline.confirmedTrip2Geojson(trip).then((tripgj) => {
+        mapLimiter.schedule(() => Timeline.confirmedTrip2Geojson(trip)).then((tripgj) => {
+          console.log("retrieved geojson "+tripgj);
           $scope.$apply(() => {
               trip.data = tripgj;
               trip.common = {};
@@ -359,8 +359,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
               // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
               // console.log("Section Percentages are ", $scope.tripgj.percentages);
           });
-        })
-        );
+        });
     }
 
 

@@ -45,8 +45,8 @@ angular.module('emission.main.diary.infscrolltripitem', [
       });
       console.log("Testing if showDetail has the trip defined: ", $scope.trip);
     }
-    console.log("Trip's Date is ", $scope.trip.display_date);
     console.log("Trip in Trip Item Ctrl is ", $scope.trip);
+    console.log("Trip's Date is ", $scope.trip? $scope.trip.display_date : "unknown");
 
     // Explain Draft Function for the button to explain what a draft is
     $scope.explainDraft = function($event) {
