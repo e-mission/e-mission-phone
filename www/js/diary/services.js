@@ -352,8 +352,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   };
     var pointIcon = L.divIcon({className: 'leaflet-div-icon', iconSize: [0, 0]});
-    var startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [12, 12], html: '<div class="inner-icon">'});
-    var stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [12, 12], html: '<div class="inner-icon">'});
+    var startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-start"><i class="ion-location"></i></div>'});
+    var stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-stop"><i class="ion-flag"></i></div>'});
 
     var style_stop = function(feature) {
       return {fillColor: 'yellow', fillOpacity: 0.8};
