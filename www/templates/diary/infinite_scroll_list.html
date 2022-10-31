@@ -35,9 +35,10 @@
 		<div collection-repeat="trip in data.displayTrips">
             <div>
                 
-                <div ng-if='$index==0 || trip.prevTrip.display_date != trip.display_date'>
+                <!-- <div ng-if='$index==0 || trip.prevTrip.display_date != trip.display_date'>
                     <h2 class="hr-lines" translate> {{trip.display_date}}</h2>
-                </div>
+                </div> Commented out as we are not using prevTrip anymore. We should come back to 
+                this and implement some sort of horizontal line between trips-day-changing later on-->
 
                 <infinite-scroll-trip-item trip="trip" map-limiter="mapLimiter"></infinite-scroll-trip-item>
 
