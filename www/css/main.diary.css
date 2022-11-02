@@ -97,11 +97,26 @@ a.item-content {
 }
 .leaflet-div-icon-start {
   background-color: #80D0FF;
-  border-radius: 6px;
+  border-radius: 100%;
 }
 .leaflet-div-icon-stop {
   background-color: #0088ce;
-  border-radius: 6px;
+  border-radius: 100%;
+}
+.leaflet-div-ionicon {
+  background: transparent; 
+  color: white;
+  font-size: 100%;
+  justify-content: center; 
+  display: flex;
+}
+.leaflet-div-ionicon-start {
+  color: white;
+}
+.leaflet-div-ionicon-stop {
+  color: white;
+  margin-top: 1px;
+  margin-left: 3px;
 }
 .inner-icon {
   background-color: white;
