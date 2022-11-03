@@ -312,6 +312,14 @@ a.item-content {
   font-style: normal;
   font-weight: normal;
   font-size: 13px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.two-lines {
+  -webkit-line-clamp: 2;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
   white-space: normal;
 }
 .btn-input-wrap {
