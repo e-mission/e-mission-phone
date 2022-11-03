@@ -761,10 +761,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       Logger.log("About to pull location data for range "
         + moment.unix(trip.start_ts).toString() + " -> " 
         + moment.unix(trip.end_ts).toString());
-        // TODO: change this to recreated location
-      $ionicLoading.show({
-        template: $translate.instant('service.reading-server')
-      });
 
         const fillPromises = [
             CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
@@ -783,11 +779,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             features: features,
             properties: { }
           }
-          $ionicLoading.hide();
           return trip_gj;
         }).catch((err) => {
           Logger.displayError("while filling details", err);
-          $ionicLoading.hide();
         });
     }
 
