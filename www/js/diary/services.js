@@ -352,8 +352,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   };
     var pointIcon = L.divIcon({className: 'leaflet-div-icon', iconSize: [0, 0]});
-    var startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [12, 12], html: '<div class="inner-icon">'});
-    var stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [12, 12], html: '<div class="inner-icon">'});
+    var startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-start"><i class="ion-location"></i></div>'});
+    var stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-stop"><i class="ion-flag"></i></div>'});
 
     var style_stop = function(feature) {
       return {fillColor: 'yellow', fillOpacity: 0.8};
@@ -761,10 +761,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       Logger.log("About to pull location data for range "
         + moment.unix(trip.start_ts).toString() + " -> " 
         + moment.unix(trip.end_ts).toString());
-        // TODO: change this to recreated location
-      $ionicLoading.show({
-        template: $translate.instant('service.reading-server')
-      });
 
         const fillPromises = [
             CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
@@ -783,11 +779,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             features: features,
             properties: { }
           }
-          $ionicLoading.hide();
           return trip_gj;
         }).catch((err) => {
           Logger.displayError("while filling details", err);
-          $ionicLoading.hide();
         });
     }
 

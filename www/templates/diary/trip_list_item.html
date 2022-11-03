@@ -24,7 +24,9 @@
                 
                 <!-- Distance and Time -->
                 <div class="row" style="padding:4px">
-                    <div class="col-90" style="font-size: 12px; color: #0088ce; text-align: center;"></div> <!-- Just for Spacing of the More Icon, Considering adding text "click for more!" -->
+                    <div class="col-90" style="font-size: 12px; text-align: center;">
+                      <b><u>{{trip.display_date}}</u></b>
+                    </div>
                     <div class="col-10">
                         <i class="ion-ios-more" style="font-size: 30px; color:black" ng-click="showDetail($event, trip)"></i>
                     </div>
@@ -65,13 +67,13 @@
                         <div class="col-100" style="width: 100%;">
                             <!-- Origin for Trip -->
                             <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
-                                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
+                                <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
                                 {{trip.start_display_name}}
                                 </div>
 
                             <!-- Destination for Trip -->
                             <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
-                                <i class="icon ion-ios-location" style="font-size: 16px; left: 0; color: #0088ce;"></i>
+                                <i class="icon ion-flag" style="font-size: 16px; left: 0; color: #0088ce;"></i>
                                 {{trip.end_display_name}}
                             </div>
                         </div>
