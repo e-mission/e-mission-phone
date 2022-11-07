@@ -99,6 +99,14 @@ Pre-requisites
     ```
     $ bash setup/prereq_android_sdk_install.sh
     ```
+    - To run this script, open a terminal from your local root of the e-mission-phone repository.
+    - ***For (Y/N) confirmations**, be sure to type a **CAPTIAL Y** or else it will end the command and you will have to start over.*
+    - You may be requested to set the ANDROID_SDK_ROOT, in that case run these following commands before running the above prerequisite command **(be sure to replace the *{{your user}}* with your account username)**:
+    ```
+    $ export ANDROID_HOME=/Users/{{your user}}/Library/Android/sdk
+    $ export ANDROID_SDK_ROOT=/Users/{{your user}}/Library/Android/sdk
+    $ export ANDROID_AVD_HOME=/Users/{{your user}}/.android/avd
+    ```
 
     <details><summary>Expected output</summary>
 
@@ -120,6 +128,14 @@ Pre-requisites
     ```
 
     </details>
+    You will now need to install the emulator. Use this link to
+    
+    1. List All System Images Available for Download
+    2. Download Image
+    3. Create Emulator       
+    4. Run Emulator
+
+
 
 Important
 ---
