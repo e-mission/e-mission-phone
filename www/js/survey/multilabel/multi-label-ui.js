@@ -183,6 +183,22 @@ angular.module('emission.survey.multilabel.buttons',
     closePopover(inputType);
   };
 
+  var getScrollElement = function() {
+    if (!$scope.scrollElement) {
+        console.log("scrollElement is not cached, trying to read it ");
+        const ionItemElement = $element.closest('ion-item')
+        if (ionItemElement) {
+            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
+            $scope.scrollElement = ionItemElement.closest('ion-content');
+        } else {
+            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
+        }
+    }
+    // TODO: comment this out after testing to avoid log spew
+    console.log("Returning scrollElement ", $scope.scrollElement);
+    return $scope.scrollElement;
+  }
+
   $scope.store = function (inputType, input, isOther) {
     if(isOther) {
       // Let's make the value for user entered inputs look consistent with our
@@ -205,7 +221,12 @@ angular.module('emission.survey.multilabel.buttons',
           tripToUpdate.userInput[inputType].write_ts = Date.now();
         }
         let viewScope = findViewScope();
-       MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        // KS: this will currently always trigger for a program
+        // we might want to trigger it only if it changed to/from an e-bike
+        // you may also need to experiment with moving this up or down depending on timing
+        const scrollElement = getScrollElement();
+        scrollElement? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
       });
     });
     if (isOther == true)

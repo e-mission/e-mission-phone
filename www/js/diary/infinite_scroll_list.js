@@ -47,6 +47,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
 
+  $scope.getTripHeight = function(trip) {
+    if(trip.INPUTS[2]) {
+      return 460;
+    } else {
+      return 390;
+    }
+  }
+
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }

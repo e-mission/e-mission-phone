@@ -47,7 +47,7 @@
   and (min-device-width: 320px) 
   and (max-device-width: 568px)
   and (-webkit-min-device-pixel-ratio: 2) {
-    .angular-leaflet-map { height: 150px; width: 245px; }
+    .angular-leaflet-map { position: absolute; height: 82.8%; width: 46.8%; }
 }
 
 /* ----------- iPhone 6 ----------- */
@@ -57,7 +57,7 @@
   and (min-device-width: 375px) 
   and (max-device-width: 667px) 
   and (-webkit-min-device-pixel-ratio: 2) { 
-    .angular-leaflet-map { height: 150px; width: 295px; }
+    .angular-leaflet-map { position: absolute; height: 82.8%; width: 46.8%; }
 }
 
 /* ----------- iPhone 6+ ----------- */
@@ -67,7 +67,7 @@
   and (min-device-width: 414px) 
   and (max-device-width: 736px) 
   and (-webkit-min-device-pixel-ratio: 3) { 
-    .angular-leaflet-map { height: 150px; width: 330px; }
+    .angular-leaflet-map { position: absolute; height: 82.8%; width: 46.8%; }
 }
 
 
@@ -208,7 +208,7 @@ a.item-content {
 
 .diary-card {
   width: 100%;
-  height: 330px;
+  height: min-content;
   margin: 0;
   border: 2px solid rgba(0, 136, 206, 0.2);
   box-sizing: border-box;
@@ -330,16 +330,15 @@ a.item-content {
 
 .diary-map {
   float: left;
-  width: 100%;
   z-index: -1; /* Can't zoom in or out of the map with this implemented */
   overflow: hidden;
-  border-radius: 30px 0px 0px 50px;
+  border-radius: 30px 0px 0px 30px;
   /* height must be specified in the html */
 }
 
 .diary-map-shell {
   float: left;
-  width: 50%;
+  width: 100%;
 }
 
 .diary-infos {

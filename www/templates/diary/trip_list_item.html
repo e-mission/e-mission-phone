@@ -8,19 +8,22 @@
 
         <div class="diary-card">
             <!-- Leaflet Map -->
+            <div style="width: 50%; float: left;">
             <div class="diary-map-shell" ng-click="showDetail($event, trip)">
             <leaflet
             class="diary-map"
             geojson="trip"
             defaults="mapCtrl.defaults"
             id="$index"
-            data-tap-disabled="true"
-            height="342px">
-            
+            data-tap-disabled="true">
+
+
             </leaflet>
             </div>
+            </div>
             <!-- Trip Information -->
-            <div class="diary-infos" style="padding-top: 10px" ng-click="showDetail($event, trip)">
+            <div style="width: 50%; float: right;">
+            <div class="diary-infos" style="padding-top: 10px; width: 100%;" ng-click="showDetail($event, trip)">
                 
                 <!-- Distance and Time -->
                 <div class="row" style="padding:4px">
@@ -64,7 +67,7 @@
 
                     <!-- Row, containing Detail Screen button and Trip Origin/Destination -->
                     <div class="row" style="padding: 4px">
-                        <div class="col-100" style="width: 100%;">
+                        <div class="col-100" style="width: 100%; height: 70px">
                             <!-- Origin for Trip -->
                             <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
                                 <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
@@ -80,7 +83,8 @@
                     </div>
                 </div>
               </div>
-              <div class="diary-infos" style="padding-top: 10px">
+
+              <div class="diary-infos" style="padding-top: 10px; padding-bottom: 10px; width: 100%;">
                 <!-- Mode and Purpose Selection -->
                 <div class="row" style="margin-top: 0px; padding: 4px">
                     <!-- Assumes that the trip labels have already been
@@ -91,14 +95,13 @@
 
                         <linkedsurvey element-tag="{{surveyOpt.elementTag}}" class="col" trip="trip"></linkedsurvey>
                     </div>
-                    
+
                     <verifycheck linkedtag="{{surveyOpt.elementTag}}" style="padding: 8px" class="col-10 diarycheckmark-container center-vert center-horiz"></verifycheck>
                 </div> 
             </div>
         </div>
-
+        </div>
         <!-- End Time Tag -->
         <div class="stop-time-tag">{{trip.display_end_time}}</div>
     </ion-item>
 </div>
-
