@@ -306,6 +306,7 @@ a.item-content {
 
 .diary-route {
   margin: 5px 0;
+  height: 85px;
 }
 
 .diary-street {
@@ -359,6 +360,7 @@ a.item-content {
   text-align: center;
   margin-left: auto;
   margin-right: auto;
+  height: 40px;
 }
 
 .diary-modes-percents {
