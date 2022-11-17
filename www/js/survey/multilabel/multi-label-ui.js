@@ -208,6 +208,11 @@ angular.module('emission.survey.multilabel.buttons',
     $scope.draftInput.label = input.value;
     Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
     var tripToUpdate = $scope.editingTrip;
+    var needsResize = false;
+    if (tripToUpdate.userInput.MODE.value == "e-bike" || input.value == "e-bike") {
+      console.log("switching to/from e-bike, resizing scroll element")
+      needsResize = true;
+    }
     $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
       $scope.$apply(function() {
         if (isOther) {
@@ -226,7 +231,7 @@ angular.module('emission.survey.multilabel.buttons',
         // we might want to trigger it only if it changed to/from an e-bike
         // you may also need to experiment with moving this up or down depending on timing
         const scrollElement = getScrollElement();
-        scrollElement? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
+        scrollElement && needsResize? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
       });
     });
     if (isOther == true)
