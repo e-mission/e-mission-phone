@@ -313,7 +313,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
         tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
         tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
-        tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YY');
+        tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YYYY');
         tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.start_ts,
                                 tripgj.end_ts);
         tripgj.background = "bg-light";
