@@ -209,9 +209,11 @@ angular.module('emission.survey.multilabel.buttons',
     Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
     var tripToUpdate = $scope.editingTrip;
     var needsResize = false;
-    if (input.value == "e-bike" || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == "e-bike") {
-      console.log("switching to/from e-bike, resizing scroll element")
-      needsResize = true;
+    if (ConfirmHelper.isProgram) { // Only resize trip item if it is a program, and if changing to/from e-bike
+      if (input.value == "e-bike" || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == "e-bike") {
+        console.log("switching to/from e-bike, resizing scroll element")
+        needsResize = true;
+      }
     }
     $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
       $scope.$apply(function() {
