@@ -209,7 +209,7 @@ angular.module('emission.survey.multilabel.buttons',
     Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
     var tripToUpdate = $scope.editingTrip;
     var needsResize = false;
-    if (tripToUpdate.userInput.MODE.value == "e-bike" || input.value == "e-bike") {
+    if (input.value == "e-bike" || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == "e-bike") {
       console.log("switching to/from e-bike, resizing scroll element")
       needsResize = true;
     }
