@@ -8,21 +8,21 @@
 
         <div class="diary-card">
             <!-- Leaflet Map -->
-            <div style="width: 50%; float: left;">
-            <div class="diary-map-shell" ng-click="showDetail($event, trip)">
+            <div id="left-diary-card" class="diary-map-shell" ng-click="showDetail($event, trip)">
             <leaflet
             class="diary-map"
             geojson="trip"
             defaults="mapCtrl.defaults"
             id="$index"
-            data-tap-disabled="true">
-
+            data-tap-disabled="true",
+            height="100%"
+            >
 
             </leaflet>
             </div>
-            </div>
+            
             <!-- Trip Information -->
-            <div style="width: 50%; float: right;">
+            <div id="right-diary-card" style="width: 50%; float: right;">
             <div class="diary-infos" style="padding-top: 10px; width: 100%;" ng-click="showDetail($event, trip)">
                 
                 <!-- Distance and Time -->

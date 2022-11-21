@@ -47,7 +47,7 @@
   and (min-device-width: 320px) 
   and (max-device-width: 568px)
   and (-webkit-min-device-pixel-ratio: 2) {
-    .angular-leaflet-map { position: absolute; height: 82.8%; width: 46.8%; }
+    .angular-leaflet-map { width: 100%; }
 }
 
 /* ----------- iPhone 6 ----------- */
@@ -57,7 +57,7 @@
   and (min-device-width: 375px) 
   and (max-device-width: 667px) 
   and (-webkit-min-device-pixel-ratio: 2) { 
-    .angular-leaflet-map { position: absolute; height: 82.8%; width: 46.8%; }
+    .angular-leaflet-map { width: 100%; }
 }
 
 /* ----------- iPhone 6+ ----------- */
@@ -67,7 +67,7 @@
   and (min-device-width: 414px) 
   and (max-device-width: 736px) 
   and (-webkit-min-device-pixel-ratio: 3) { 
-    .angular-leaflet-map { position: absolute; height: 82.8%; width: 46.8%; }
+    .angular-leaflet-map { width: 100%; }
 }
 
 
@@ -215,6 +215,7 @@ a.item-content {
   border-radius: 30px;
   overflow: hidden;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  display: flex;
 }
 
 .diary-button {
@@ -330,7 +331,6 @@ a.item-content {
 }
 
 .diary-map {
-  float: left;
   z-index: -1; /* Can't zoom in or out of the map with this implemented */
   overflow: hidden;
   border-radius: 30px 0px 0px 30px;
@@ -338,8 +338,7 @@ a.item-content {
 }
 
 .diary-map-shell {
-  float: left;
-  width: 100%;
+  width: 50%;
 }
 
 .diary-infos {
