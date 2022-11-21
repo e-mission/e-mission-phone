@@ -1,0 +1,176 @@
+<ion-view
+  ng-class="ion-view-background"
+  class="time-use-view"
+  translate-namespace="time-use"
+>
+  <ion-nav-bar class="bar-stable"> </ion-nav-bar>
+  <ion-nav-buttons side="left">
+    <div class="d-flex justify-content-space-between flex-1">
+      <!-- Left -->
+      <div class="d-flex align-self-flex-end">
+        <div id="fake-startWalkthrough-space" style="width: 34.5px"></div>
+        <div
+          class="buttons dark-color"
+          style="text-align: center; background-color: transparent !important"
+          id="toget"
+        >
+          <button
+            class="button button-icon icon ion-arrow-left-b date-picker-arrow"
+            ng-click="prevDay()"
+          ></button>
+          <button
+            id="date-picker-button"
+            class="button date-picker-button"
+            ng-click="pickDay()"
+          >
+            {{currDayLabel}}
+            <i
+              class="ion-ios-calendar-outline"
+              style="font-size: 16px !important"
+            ></i>
+          </button>
+          <button
+            class="button button-icon icon ion-arrow-right-b ion-arrow-left-b date-picker-arrow"
+            ng-click="nextDay()"
+          ></button>
+        </div>
+      </div>
+      <!-- Center -->
+      <div class="d-flex"></div>
+      <!-- Right -->
+      <div class="align-self-flex-end">
+        <button
+          class="button button-icon ion-refresh align-self-flex-end"
+          ng-click="refresh()"
+        ></button>
+      </div>
+    </div>
+  </ion-nav-buttons>
+  <div class="fab-button fab-button-above-tab-bar">
+    <button
+      class="button icon ion-plus button-primary fab-button-shadow"
+      ng-click="launchSurvey()"
+    ></button>
+  </div>
+  <ion-content class="time-use-entry" style="background-color: #fff">
+    <ion-list>
+      <ion-item ng-repeat="timeLine in timeLineArray" class="time-line-item">
+        <div class="time-line-base">
+          <ion-list
+            class="time-use-list"
+            ng-if="timeLine.timeUseListBefore.length>0"
+          >
+            <ion-item
+              class="time-use-item"
+              ng-repeat="timeUse in timeLine.timeUseListBefore"
+            >
+              <div
+                class="time-use-item-container"
+                ng-click="launchSurvey(timeUse)"
+              >
+                <div class="time-use-title">
+                  <i
+                    class="icon ion-ios-circle-filled time-use-items-bullet"
+                  ></i>
+                  {{timeUse.main_label}}
+                </div>
+                <div class="time-use-time">
+                  {{timeUse.sub_label}}
+                  <i
+                    class="icon ion-ios-trash time-use-trash"
+                    ng-click="promptRemove($event, timeUse)"
+                  ></i>
+                </div>
+              </div>
+            </ion-item>
+          </ion-list>
+          <div class="time-use-location-name-countainer">
+            <div class="time-use-location-name">
+              <div ng-if="timeLine.transport" class="location-icon-container">
+                <i
+                  class="icon {{timeLine.transportIcon}} time-line-start-icon"
+                ></i>
+              </div>
+              <div ng-if="!timeLine.transport" class="location-icon-container">
+                <i class="icon ion-location time-line-start-icon"></i>
+              </div>
+              <div class="time-line-location-text">
+                {{timeLine.start_place.properties.display_name}}
+              </div>
+              <div class="time-line-time">{{timeLine.startTime}}</div>
+            </div>
+            <div ng-if="timeLine.purpuses" class="time-line-purpuses">
+              {{timeLine.purpuses}}
+            </div>
+          </div>
+          <ion-list class="time-use-list" ng-if="timeLine.timeUseList.length>0">
+            <ion-item
+              class="time-use-item"
+              ng-repeat="timeUse in timeLine.timeUseList"
+            >
+              <div
+                class="time-use-item-container"
+                ng-click="launchSurvey(timeUse)"
+              >
+                <div class="time-use-title">
+                  <i
+                    class="icon ion-ios-circle-filled time-use-items-bullet"
+                  ></i>
+                  {{timeUse.main_label}}
+                </div>
+                <div class="time-use-time">
+                  {{timeUse.sub_label}}
+                  <i
+                    class="icon ion-ios-trash time-use-trash"
+                    ng-click="promptRemove($event, timeUse)"
+                  ></i>
+                </div>
+              </div>
+            </ion-item>
+          </ion-list>
+          <div class="time-use-location-name-countainer">
+            <div class="time-use-location-name">
+              <div class="location-icon-container">
+                <i class="icon ion-location time-line-end-icon"></i>
+              </div>
+              <div class="time-line-location-text">
+                {{timeLine.end_place.properties.display_name}}
+              </div>
+              <div class="time-line-time">{{timeLine.endTime}}</div>
+            </div>
+          </div>
+          <ion-list
+            class="time-use-list"
+            ng-if="timeLine.timeUseListAfter.length>0"
+          >
+            <ion-item
+              class="time-use-item"
+              ng-repeat="timeUse in timeLine.timeUseListAfter"
+            >
+              <div
+                class="time-use-item-container"
+                ng-click="launchSurvey(timeUse)"
+              >
+                <div class="time-use-title">
+                  <i
+                    class="icon ion-ios-circle-filled time-use-items-bullet"
+                  ></i>
+                  {{timeUse.main_label}}
+                </div>
+                <div class="time-use-time">
+                  {{timeUse.sub_label}}
+                  <i
+                    class="icon ion-ios-trash time-use-trash"
+                    ng-click="promptRemove($event, timeUse)"
+                  ></i>
+                </div>
+              </div>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-item>
+    </ion-list>
+    <!-- Add button FAB spacer -->
+    <div class="fab-space-above-tab-bar"></div>
+  </ion-content>
+</ion-view>

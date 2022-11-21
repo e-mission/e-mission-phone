@@ -1,0 +1,17 @@
+{
+  "TripConfirmSurvey": {
+    "formPath": "json/trip-confirm-survey-form-v1.json",
+    "version": 1.4,
+    "compatibleWith": 1.4
+  },
+  "UserProfileSurvey": {
+    "formPath": "json/user-profile.json",
+    "version": 1,
+    "compatibleWith": 1
+  },
+  "TimeUseSurvey": {
+    "formPath": "json/time-use-survey-form-v9.json",
+    "version": 9,
+    "compatibleWith": 4
+  }
+}
