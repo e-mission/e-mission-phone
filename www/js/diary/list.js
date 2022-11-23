@@ -333,6 +333,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
+    $scope.getTripHeight = function(tripgj) {
+      let height = tripgj.common.different? $scope.itemHt + 80 : $scope.itemHt + 30;
+      if(tripgj.INPUTS[2]) {
+        height = 435;
+        $scope.itemHt = height;
+      } else {
+        height = 381;
+      }
+      return height;
+    }
+
     $scope.increaseHeight = function () {
         // let's increase by a small amount to workaround the issue with the
         // card not resizing the first time
