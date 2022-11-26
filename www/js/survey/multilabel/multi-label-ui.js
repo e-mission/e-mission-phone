@@ -183,6 +183,22 @@ angular.module('emission.survey.multilabel.buttons',
     closePopover(inputType);
   };
 
+  var getScrollElement = function() {
+    if (!$scope.scrollElement) {
+        console.log("scrollElement is not cached, trying to read it ");
+        const ionItemElement = $element.closest('ion-item')
+        if (ionItemElement) {
+            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
+            $scope.scrollElement = ionItemElement.closest('ion-content');
+        } else {
+            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
+        }
+    }
+    // TODO: comment this out after testing to avoid log spew
+    console.log("Returning scrollElement ", $scope.scrollElement);
+    return $scope.scrollElement;
+  }
+
   $scope.store = function (inputType, input, isOther) {
     if(isOther) {
       // Let's make the value for user entered inputs look consistent with our
@@ -192,6 +208,13 @@ angular.module('emission.survey.multilabel.buttons',
     $scope.draftInput.label = input.value;
     Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
     var tripToUpdate = $scope.editingTrip;
+    var needsResize = false;
+    if (ConfirmHelper.isProgram) { // Only resize trip item if it is a program, and if changing to/from e-bike
+      if (input.value == "e-bike" || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == "e-bike") {
+        console.log("switching to/from e-bike, resizing scroll element")
+        needsResize = true;
+      }
+    }
     $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
       $scope.$apply(function() {
         if (isOther) {
@@ -205,7 +228,12 @@ angular.module('emission.survey.multilabel.buttons',
           tripToUpdate.userInput[inputType].write_ts = Date.now();
         }
         let viewScope = findViewScope();
-       MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        // KS: this will currently always trigger for a program
+        // we might want to trigger it only if it changed to/from an e-bike
+        // you may also need to experiment with moving this up or down depending on timing
+        const scrollElement = getScrollElement();
+        scrollElement && needsResize? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
       });
     });
     if (isOther == true)
