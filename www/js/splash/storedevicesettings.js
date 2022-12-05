@@ -23,9 +23,6 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
       }).then(function(updateJSON) {
          // alert("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {
-        if (error == "During server call, error The operation couldn’t be completed. (com.google.HTTPStatus error 403.)") {
-          error = "Error: OPcode not found. " + err;
-        }
         Logger.displayError("Error in updating profile to store device settings", error);
       });
     }

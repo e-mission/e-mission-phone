@@ -561,9 +561,6 @@ angular.module('emission.main.metrics',['nvd3',
       })
       .catch(function(error) {
         $ionicLoading.hide();
-        if (error == "During server call, error The operation couldn’t be completed. (com.google.HTTPStatus error 403.)") {
-          error = "Error: OPcode not found. " + error;
-        }
         Logger.displayError("Error loading user data", error);
       })
 

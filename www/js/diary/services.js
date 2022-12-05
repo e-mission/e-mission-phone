@@ -412,9 +412,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 return [result, manualConfirmResults];
             });
         }).catch((err) => {
-            if (err == "During server call, error The operation couldn’t be completed. (com.google.HTTPStatus error 403.)") {
-              err = "Error: OPcode not found. " + err;
-            }
             Logger.displayError("while reading confirmed trips", err);
             return [{}, {}];
         });
