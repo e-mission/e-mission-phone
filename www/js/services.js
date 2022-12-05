@@ -3,7 +3,7 @@
 angular.module('emission.services', ['emission.plugin.logger',
                                      'emission.plugin.kvstore'])
 
-.service('CommHelper', function($rootScope) {
+.service('CommHelper', function($rootScope, Logger) {
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
@@ -15,16 +15,37 @@ angular.module('emission.services', ['emission.plugin.logger',
             window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
     };
 
+    var processErrorMessages = function(errorMsg) {
+      var titleMsg = "Error"
+      if (errorMsg.includes("403")) {
+        titleMsg = "Error: OPcode not found";
+        errorMsg = "Error: OPcode not found. " + errorMsg;
+      }
+      console.error(errorMsg);
+      Logger.displayError(titleMsg, errorMsg);
+      return errorMsg;
+    }
+
     this.updateUser = function(updateDoc) {
-        return new Promise(function(resolve, reject) {
+        var updateUserPromise = new Promise(function(resolve, reject) {
             window.cordova.plugins.BEMServerComm.postUserPersonalData("/profile/update", "update_doc", updateDoc, resolve, reject);
         });
+        updateUserPromise.catch(error => {
+          error = "While updating user, " + error;
+          error = processErrorMessages(error);
+        });
+        return updateUserPromise;
     };
 
     this.getUser = function() {
-        return new Promise(function(resolve, reject) {
+        var getUserPromise = new Promise(function(resolve, reject) {
             window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/get", resolve, reject);
         });
+        getUserPromise.catch(error => {
+          error = "While getting user, " + error;
+          error = processErrorMessages(error);
+        });
+        return getUserPromise;
     };
 
     this.putOne = function(key, data) {
@@ -41,16 +62,26 @@ angular.module('emission.services', ['emission.plugin.logger',
             "metadata": md,
             "data": data
         }
-        return new Promise(function(resolve, reject) {
+        var putOnePromise = new Promise(function(resolve, reject) {
             window.cordova.plugins.BEMServerComm.postUserPersonalData("/usercache/putone", "the_entry", entryToPut, resolve, reject);
         });
+        putOnePromise.catch(error => {
+          error = "While putting one entry, " + error;
+          error = processErrorMessages(error);
+        });
+        return putOnePromise;
     };
 
     this.getTimelineForDay = function(date) {
-        return new Promise(function(resolve, reject) {
+        var timelineForDayPromise = new Promise(function(resolve, reject) {
           var dateString = date.startOf('day').format('YYYY-MM-DD');
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, resolve, reject);
         });
+        timelineForDayPromise.catch(error => {
+          error = "While getting timeline for day, " + error;
+          error = processErrorMessages(error);
+        });
+        return timelineForDayPromise;
     };
 
     /*
@@ -58,9 +89,14 @@ angular.module('emission.services', ['emission.plugin.logger',
      * Other fields can be added easily and the server can be modified at the same time.
      */
     this.habiticaRegister = function(regConfig) {
-        return new Promise(function(resolve, reject){
+      var habiticaRegisterPromise = new Promise(function(resolve, reject){
           window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaRegister", "regConfig", regConfig, resolve, reject);
       });
+      habiticaRegisterPromise.catch(error => {
+        error = "While habitica register, " + error;
+        error = processErrorMessages(error);
+      });
+      return habiticaRegisterPromise;
     };
 
     /*
@@ -81,13 +117,18 @@ angular.module('emission.services', ['emission.plugin.logger',
      */
 
     this.habiticaProxy = function(callOpts){
-      return new Promise(function(resolve, reject){
+      var habiticaProxyPromise = new Promise(function(resolve, reject){
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, resolve, reject);
       });
+      habiticaProxyPromise.catch(error => {
+        error = "While habitica proxy, " + error;
+        error = processErrorMessages(error);
+      });
+      return habiticaProxyPromise;
     };
 
     this.getMetrics = function(timeType, metrics_query) {
-      return new Promise(function(resolve, reject) {
+      var metricsPromise = new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
             for (var key in metrics_query) {
                 message[key] = metrics_query[key]
@@ -95,10 +136,15 @@ angular.module('emission.services', ['emission.plugin.logger',
         };
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
       })
+      metricsPromise.catch(error => {
+        error = "While getting metrics, " + error;
+        error = processErrorMessages(error);
+      });
+      return metricsPromise;
     };
 
     this.getIncidents = function(start_ts, end_ts) {
-      return new Promise(function(resolve, reject) {
+      var incidentsPromise = new Promise(function(resolve, reject) {
         var msgFiller = function(message) {
            message.start_time = start_ts;
            message.end_time = end_ts;
@@ -108,6 +154,11 @@ angular.module('emission.services', ['emission.plugin.logger',
         console.log("About to call pushGetJSON for the timestamp");
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
       })
+      incidentsPromise.catch(error => {
+        error = "While getting incidents, " + error;
+        error = processErrorMessages(error);
+      });
+      return incidentsPromise;
     };
 
     /*
@@ -130,7 +181,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     // time_key is typically metadata.write_ts or data.ts
     this.getRawEntriesForLocalDate = function(key_list, start_ts, end_ts,
         time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
-      return new Promise(function(resolve, reject) {
+      var rawEntriesForLocalDatePromise = new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
             message.key_list = key_list;
             message.from_local_date = moment2Localdate(moment.unix(start_ts));
@@ -145,11 +196,16 @@ angular.module('emission.services', ['emission.plugin.logger',
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
           window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/local_date", msgFiller, resolve, reject);
       });
+      rawEntriesForLocalDatePromise.catch(error => {
+        error = "While getting raw entries for local date, " + error;
+        error = processErrorMessages(error);
+      });
+      return rawEntriesForLocalDatePromise;
     };
 
     this.getRawEntries = function(key_list, start_ts, end_ts,
         time_key = "metadata.write_ts", max_entries = undefined, trunc_method = "sample") {
-      return new Promise(function(resolve, reject) {
+      var rawEntriesPromise = new Promise(function(resolve, reject) {
           var msgFiller = function(message) {
             message.key_list = key_list;
             message.start_time = start_ts;
@@ -164,26 +220,41 @@ angular.module('emission.services', ['emission.plugin.logger',
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
           window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, resolve, reject);
       });
+      rawEntriesPromise.catch(error => {
+        error = "While getting raw entries, " + error;
+        error = processErrorMessages(error);
+      });
+      return rawEntriesPromise;
     };
 
     this.getPipelineCompleteTs = function() {
-      return new Promise(function(resolve, reject) {
+      var pipelineCompleteTsPromise = new Promise(function(resolve, reject) {
           console.log("getting pipeline complete timestamp");
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
       });
+      pipelineCompleteTsPromise.catch(error => {
+        error = "While getting pipeline complete timestamp, " + error;
+        error = processErrorMessages(error);
+      });
+      return pipelineCompleteTsPromise;
     };
 
     this.getPipelineRangeTs = function() {
-      return new Promise(function(resolve, reject) {
+      var pipelineRangeTsPromise = new Promise(function(resolve, reject) {
           console.log("getting pipeline range timestamps");
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", resolve, reject);
       });
+      pipelineRangeTsPromise.catch(error => {
+        error = "While getting pipeline range timestamps, " + error;
+        error = processErrorMessages(error);
+      });
+      return pipelineRangeTsPromise;
     };
 
 
     // host is automatically read from $rootScope.connectUrl, which is set in app.js
     this.getAggregateData = function(path, data) {
-        return new Promise(function(resolve, reject) {
+        var aggregateDataPromise = new Promise(function(resolve, reject) {
           const full_url = $rootScope.connectUrl+"/"+path;
           data["aggregate"] = true
 
@@ -210,6 +281,11 @@ angular.module('emission.services', ['emission.plugin.logger',
               window.cordova.plugins.BEMServerComm.pushGetJSON("/"+path, msgFiller, resolve, reject);
           }
         });
+        aggregateDataPromise.catch(error => {
+          error = "While getting aggregate data, " + error;
+          error = processErrorMessages(error);
+        });
+        return aggregateDataPromise;
     };
 })
 
