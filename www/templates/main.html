@@ -6,6 +6,11 @@ navigation history that also transitions its views in and out.
 <ion-view>
 <ion-tabs ng-class="tabsCustomClass()">
 
+  <!-- Time Use Tab -->
+  <ion-tab title="{{'main-time-use.tab' | translate}}" icon="ion-map" href="#/root/main/time-use">
+    <ion-nav-view name="time-use"></ion-nav-view>
+  </ion-tab>
+
   <!-- Diary Tab -->
   <ion-tab title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/diary">
     <ion-nav-view name="main-diary"></ion-nav-view>

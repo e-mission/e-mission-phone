@@ -3,8 +3,8 @@
 angular
   .module("emission.main.time-use.list", ["ui-leaflet",
     "emission.enketo-survey.answer",
-    "emission.enketo-survey.launch",
-    "emission.enketo-survey.service",
+    "emission.survey.enketo.launch",
+    "emission.survey.enketo.service",
     "emission.services",
     "ionic-datepicker",
   ])
@@ -21,7 +21,7 @@ angular
       $translate,
       $window,
       EnketoSurveyAnswer, // emission.enketo-survey.answer
-      EnketoSurveyLaunch, // emission.enketo-survey.launch
+      EnketoSurveyLaunch, // emission.survey.enketo.launch
       ionicDatePicker, // ionic-datepicker
       UnifiedDataLoader, // emission.services
       Timeline,

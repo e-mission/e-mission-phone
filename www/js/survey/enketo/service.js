@@ -2,7 +2,7 @@ angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
   'emission.survey.inputmatcher',
-  'emission.survey.enketo.answer'
+  'emission.enketo-survey.answer'
 ])
 .factory('EnketoSurvey', function(
   $window, $http, $translate, UnifiedDataLoader,

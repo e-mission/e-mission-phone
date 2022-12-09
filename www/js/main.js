@@ -2,6 +2,7 @@
 
 angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.diary',
+                                 'emission.main.time-use',
                                  'emission.main.control',
                                  'emission.main.goals',
                                  'emission.main.common',

@@ -15,7 +15,7 @@
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',
         'emission.survey.enketo.launch',
-        'emission.survey.enketo.answer',
+        'emission.enketo-survey.answer',
         'emission.survey.inputmatcher'])
 .directive('enketoTripButton', function() {
   return {

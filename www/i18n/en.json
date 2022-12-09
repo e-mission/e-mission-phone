@@ -258,6 +258,10 @@
         "tab": "Label"
     },
 
+    "main-time-use" : {
+        "tab": "Time Use"
+    },
+
     "main-heatmap":{
         "title": "Heatmap",
         "counts" : "Counts",

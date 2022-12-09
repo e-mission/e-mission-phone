@@ -16,7 +16,7 @@ angular.module('emission.survey.enketo.demographics',
     ['emission.stats.clientstats',
         'emission.services',
         'emission.survey.enketo.launch',
-        'emission.survey.enketo.answer',
+        'emission.enketo-survey.answer',
         'emission.survey.enketo.preview',
         'emission.survey.inputmatcher'])
 .directive('enketoDemographicsButton', function() {

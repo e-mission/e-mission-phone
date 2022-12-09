@@ -1,4 +1,4 @@
-angular.module('emission.survey.enketo.answer', [
+angular.module('emission.enketo-survey.answer', [
   'ionic'
 ])
 .factory('EnketoSurveyAnswer', function(
