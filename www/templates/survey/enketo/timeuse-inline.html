@@ -1,0 +1,33 @@
+<ion-content class="enketo-plugin overflow-scroll" translate-namespace="survey">
+
+  <div ng-if="existingSurvey">
+    <!-- If there is an existing survey, we want to ask the user whether they want to use it-->
+    <div ng-if="editSurveyAnswer === undefined" class="col" style="margin-top: 25%;" translate-namespace="survey">
+        <!-- if the user hasn't answered yet, we offer the options -->
+        <div class="row"><div class="col" style="font-weight: bold; font-size: 2em;" translate>{{'.prev-survey-found'}}</div></div>
+        <div class="row">
+            <div class="col" style="margin-right: 5px">
+                <button class="button button-block button-assertive button-outline" ng-click="ngDone()" style="border-style: solid !important; border-width: 1px !important;" id="consent-button"><span translate>{{'.use-prior-response'}}</span></button>
+            </div>
+            <div class="col" style="margin-left: 5px">
+                <button class="button button-block button-positive button-outline" ng-click="setEditSurveyAnswer(true)" style="border-style: solid !important; border-width: 1px !important;" id="consent-button"><span translate>{{'.edit-response'}}</span></button>
+            </div>
+        </div>
+        <!-- <enketo-survey-preview survey-result="existingSurvey"></enketo-survey-preview> -->
+    </div>
+    <div class="col" ng-if="editSurveyAnswer" style="margin-top: 20px;" translate-namespace="survey">
+        <!-- if the user wants to edit, we show the form-->
+        <ng-include src="'templates/survey/enketo/form-base.html'"></ng-include>
+    </div>
+    <div ng-if="editSurveyAnswer == false" class="col" style="margin-top: 20px;" translate-namespace="survey">
+      <!-- if the user does not want to edit, we should have already gone to the end, but let's have this as backup-->
+      <div class="col" style="margin-right: 5px">
+          <button class="button button-block button-assertive button-outline" ng-click="finish()" id="consent-button"><span translate>{{'.move-on'}}</span></button>
+      </div>
+    </div>
+  </div>
+  <div ng-if="!existingSurvey">
+    <!-- We want to show the survey if we don't have a prior response -->
+    <ng-include src="'templates/survey/enketo/form-base.html'"></ng-include>
+  </div>
+</ion-content>

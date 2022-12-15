@@ -1,5 +1,6 @@
 angular.module('emission.main.time-use',[
-  'emission.main.time-use.list'
+  'emission.main.time-use.list',
+  'emission.survey.enketo.time-use'
 ])
 
 .config(function($stateProvider) {

@@ -46,12 +46,7 @@
       </div>
     </div>
   </ion-nav-buttons>
-  <div class="fab-button fab-button-above-tab-bar">
-    <button
-      class="button icon ion-plus button-primary fab-button-shadow"
-      ng-click="launchSurvey()"
-    ></button>
-  </div>
+  <enketo-timeuse-button></enketo-timeuse-button>
   <ion-content class="time-use-entry" style="background-color: #fff">
     <ion-list>
       <ion-item ng-repeat="timeLine in timeLineArray" class="time-line-item">

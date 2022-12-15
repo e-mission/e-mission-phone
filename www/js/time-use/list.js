@@ -5,6 +5,8 @@ angular
     "emission.enketo-survey.answer",
     "emission.survey.enketo.launch",
     "emission.survey.enketo.service",
+    "emission.survey.enketo.demographics",
+    "emission.survey.enketo.time-use",
     "emission.services",
     "ionic-datepicker",
   ])
