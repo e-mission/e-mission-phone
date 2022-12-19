@@ -27,16 +27,6 @@ angular.module('emission.survey.enketo.time-use',
     templateUrl: 'templates/survey/enketo/timeuse-button.html'
   };
 })
-.directive('enketoTimeuseInline', function() {
-  return {
-    scope: {
-        ngDone: "=",
-    },
-    restrict: 'E',
-    controller: "EnketoTimeuseInlineCtrl",
-    templateUrl: 'templates/survey/enketo/timeuse-inline.html'
-  };
-})
 .controller("EnketoTimeuseButtonCtrl", function($scope, $element, $attrs,
     EnketoSurveyLaunch, $ionicPopover, ClientStats,
     EnketoTimeuseService) {
@@ -58,79 +48,6 @@ angular.module('emission.survey.enketo.time-use',
   }
 
   $scope.init();
-})
-.controller("EnketoTimeuseInlineCtrl", function($scope, $window, $element, $attrs,
-    $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats,
-    EnketoTimeuseService, $ionicPlatform, $timeout) {
-  console.log("Invoked enketo inline directive controller for time use ");
-
-  var validateAndSave = function() {
-    return EnketoSurvey.validateAndSave()
-    .then(result => {
-      if (!result) {
-        $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
-      } else {
-        $scope.ngDone();
-      }
-    });
-  }
-
-  $scope.enketoSurvey = {
-    disableDismiss: true,
-    validateAndSave
-  }
-
-  $scope.setEditSurveyAnswer = function(newVal) {
-    $scope.editSurveyAnswer = newVal;
-    $timeout(() => {
-        if (newVal) {
-            /*
-             * if we had an existing survey, we want to wait until the user chooses
-             * to edit it to display the form. But then we also have to wait to
-             * initialize the form.
-             * https://github.com/e-mission/e-mission-docs/issues/727#issuecomment-1126720935
-             */
-            return EnketoSurveyLaunch
-              .initSurvey('UserProfileSurvey', { prev_timeuse_survey: $scope.existingSurvey,
-                showBackButton: true, showFormFooterJumpNav: true  })
-              .then(result => {
-                console.log("time use survey result ", result);
-              }).catch(e => console.trace(e));
-        }
-    }, 10); // wait for 10 ms to load to ensure that the form is in place
-  }
-
-  $scope.initForm = function() {
-    return EnketoTimeuseService.loadPriorTimeuseSurvey().then((lastSurvey) => {
-        $scope.$apply(() => $scope.existingSurvey = lastSurvey);
-        console.log("ENKETO: existing survey ", $scope.existingSurvey);
-        if (!$scope.existingSurvey) {
-            /*
-             * if we don't have an existing survey, we will display the form
-             * without any prompt and want to show it immediately. However, if
-             * we have an existing response, then we want to see if the user
-             * wants to edit it, which means that we won't have a form to
-             * initialize here. We will initialize the form in
-             * setEditSurveyAnswer instead
-             */
-            return EnketoSurveyLaunch
-              .initSurvey('UserProfileSurvey', { prev_timeuse_survey: $scope.existingSurvey,
-                showBackButton: true, showFormFooterJumpNav: true  })
-              .then(result => {
-                console.log("time use survey result ", result);
-              }).catch(e => console.trace(e));
-        }
-    });
-  };
-
-  $scope.init = function() {
-      console.log("During initialization of the button control", $scope.trip);
-      $scope.initForm().then(() => {
-        console.log("finished loading form");
-      });;
-  }
-
-  $ionicPlatform.ready(() => $scope.init());
 })
 .factory("EnketoTimeuseService", function(UnifiedDataLoader, $window) {
   var eds = {};
