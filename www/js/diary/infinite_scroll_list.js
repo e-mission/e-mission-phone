@@ -54,6 +54,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     f.state = false;
   });
   $scope.filterInputs[0].state = true;
+  $scope.data.selFilter = $scope.filterInputs[0].key;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
   $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
@@ -192,30 +193,28 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
   });
 
-  $scope.select = function(selF) {
+  $scope.updateFilterSel = function(selFilterKey) {
     const prev = $scope.getActiveFilters();
-    selF.state = true;
-    $scope.filterInputs.forEach((f) => {
-      if (f !== selF) {
+    const selFilter = $scope.filterInputs.find(f => f.key == selFilterKey);
+    if (selFilter) {
+      selFilter.state = true;
+      $scope.filterInputs.forEach((f) => {
+        if (f !== selFilter) {
+          f.state = false;
+        }
+      });
+      $scope.allTrips = false;
+    } else {
+      $scope.filterInputs.forEach((f) => {
         f.state = false;
-      }
-    });
-    $scope.allTrips = false;
+      });
+      $scope.allTrips = true;
+    }
+
     $scope.recomputeDisplayTrips();
     // scroll to the bottom while changing filters so users don't have to
     // fixes the first of the fit-and-finish issues from
     // https://github.com/e-mission/e-mission-docs/issues/662
-    $ionicScrollDelegate.scrollBottom();
-    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
-  }
-
-  $scope.resetSelection = function() {
-    const prev = $scope.getActiveFilters();
-    $scope.filterInputs.forEach((f) => {
-      f.state = false;
-    });
-    $scope.allTrips = true;
-    $scope.recomputeDisplayTrips();
     $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
