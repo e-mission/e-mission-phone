@@ -54,7 +54,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     f.state = false;
   });
   $scope.filterInputs[0].state = true;
-  $scope.data.selFilter = $scope.filterInputs[0].key;
+  $scope.selFilter = $scope.filterInputs[0].key;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
   $scope.allTrips = false;
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds

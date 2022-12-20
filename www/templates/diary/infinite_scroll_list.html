@@ -5,11 +5,11 @@
         <button class="button button-icon" ng-click="increaseHeight()">
             <i class="icon ion-arrow-resize"></i>
         </button>
-        <select ng-model="data.selFilter" ng-change="updateFilterSel(data.selFilter)">
-            <option ng-repeat="filter in filterInputs" ng-value="filter.key" ng-selected="{{filter.state==true}}" translate>
+        <select ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
+            <option ng-repeat="filter in filterInputs" value="{{filter.key}}" translate>
                 {{filter.text}}
             </option>
-            <option ng-selected="{{getActiveFilters().length < 1}}" ng-value="show-all" translate>
+            <option value="show-all" translate>
                 {{'.show-all'}}
             </option>
         </select>
