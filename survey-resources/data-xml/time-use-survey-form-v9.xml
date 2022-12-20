@@ -1,0 +1,511 @@
+<?xml version="1.0"?>
+<h:html xmlns="http://www.w3.org/2002/xforms" xmlns:ev="http://www.w3.org/2001/xml-events" xmlns:h="http://www.w3.org/1999/xhtml" xmlns:jr="http://openrosa.org/javarosa" xmlns:odk="http://www.opendatakit.org/xforms" xmlns:orx="http://openrosa.org/xforms" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <h:head>
+    <h:title>Time-use survey</h:title>
+    <model odk:xforms-version="1.0.0">
+      <itext>
+        <translation default="true()" lang="English (en)">
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25:label">
+            <value>Time-use questions</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date:label">
+            <value>Date</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date:hint">
+            <value>Change the date using the date picker to change this.</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Start_time:label">
+            <value>Start time</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/End_time:label">
+            <value>End time</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type:label">
+            <value>Activity Type:</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type:hint">
+            <value>In case of multi-tasking, you can select multiple activities.</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/personal_care_activities:label">
+            <value>Personal care activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/employment_related_and_educational_activ:label">
+            <value>Employment-related and Educational activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/domestic_activities:label">
+            <value>Domestic activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/recreation_and_leisure:label">
+            <value>Recreation and leisure</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/voluntary_work_and_care_activities:label">
+            <value>Voluntary work and care activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/other:label">
+            <value>Other...</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities:label">
+            <value>Personal Care activities:</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/option_1:label">
+            <value>Sleeping</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/option_2:label">
+            <value>Resting and relaxing</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/eating_or_drinking:label">
+            <value>Eating or drinking</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/doing_sport:label">
+            <value>Doing sport</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/appointments:label">
+            <value>Appointments</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/personal_care_i_e__wash__dress__grooming:label">
+            <value>Personal care i.e. wash, dress (grooming (self))</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities:label">
+            <value>Employment-related and Education activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/working_at_main_job:label">
+            <value>Working at main job</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/working_at_other_job:label">
+            <value>Working at other job</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/studying_at_an_educational_institute_i_e:label">
+            <value>Studying at an educational institute i.e. university, online learjning platforms</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities:label">
+            <value>Domestic activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/preparing_meals_or_snacks:label">
+            <value>Preparing meals or snacks</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/cleaning_and_tidying:label">
+            <value>Cleaning and tidying</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/doing_laundry:label">
+            <value>Doing laundry</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/grocery_shopping:label">
+            <value>Grocery shopping</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/repairs_and_gardening:label">
+            <value>Repairs and gardening</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/paying_household_bills:label">
+            <value>Paying household bills</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure:label">
+            <value>Recreation and leisure</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/watching_tv__movie__news__online_like_ne:label">
+            <value>Watching TV (movie, news, online like Netflix, ...)</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/listening_to_radio__podcasts__music:label">
+            <value>Listening to radio, podcasts, music</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/playing_video_games:label">
+            <value>Playing video games</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/recreational_study:label">
+            <value>Recreational study</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/non_grocery_shopping:label">
+            <value>Non-grocery shopping</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/spending_time_with_family_friends:label">
+            <value>Spending time with family/friends</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/contact_friends_family_on_a_voice_call_o:label">
+            <value>Contact friends/family on a voice call or video call</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities:label">
+            <value>Voluntary work and care activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_own_children:label">
+            <value>Caring for own children</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_other_children:label">
+            <value>Caring for other children</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_adults:label">
+            <value>Caring for adults</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/pet_care_activities:label">
+            <value>Pet care activities</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/other_voluntary_works:label">
+            <value>Other voluntary works</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/attending_religious_services:label">
+            <value>Attending religious services</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other:label">
+            <value>Other:</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other:hint">
+            <value>If your activity type is not included within the provided options, please enter it in the box below.</value>
+          </text>
+        </translation>
+        <translation lang="Spanish (es)">
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25:label">
+            <value>Preguntas sobre el uso del tiempo</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date:label">
+            <value>Fecha</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date:hint">
+            <value>Cambie la fecha usando el selector de fecha para cambiar esto.</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Start_time:label">
+            <value>Hora de inicio</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/End_time:label">
+            <value>Hora de finalización</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type:label">
+            <value>Tipo de actividad:</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type:hint">
+            <value>En caso de multitarea, puede seleccionar varias actividades.</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/personal_care_activities:label">
+            <value>Actividades de cuidado personal</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/employment_related_and_educational_activ:label">
+            <value>Actividades relacionadas con el empleo y la educación</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/domestic_activities:label">
+            <value>Actividades domesticas</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/recreation_and_leisure:label">
+            <value>Recreación y ocio</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/voluntary_work_and_care_activities:label">
+            <value>Trabajo voluntario y actividades de cuidado</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/other:label">
+            <value>Otro...</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities:label">
+            <value>Actividades de cuidado personal:</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/option_1:label">
+            <value>Durmiendo</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/option_2:label">
+            <value>Descansando y relajándose</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/eating_or_drinking:label">
+            <value>Comer o beber</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/doing_sport:label">
+            <value>Haciendo deporte</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/appointments:label">
+            <value>Equipo</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/personal_care_i_e__wash__dress__grooming:label">
+            <value>Cuidado personal, es decir, lavarse, vestirse (asearse (uno mismo))</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities:label">
+            <value>Actividades relacionadas con el empleo y la educación</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/working_at_main_job:label">
+            <value>Trabajando en trabajo principal</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/working_at_other_job:label">
+            <value>Trabajando en otro trabajo</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/studying_at_an_educational_institute_i_e:label">
+            <value>Estudiar en un instituto educativo, es decir, universidades, plataformas de aprendizaje en línea</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities:label">
+            <value>Actividades domesticas</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/preparing_meals_or_snacks:label">
+            <value>Preparar comidas o meriendas</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/cleaning_and_tidying:label">
+            <value>Limpieza y orden</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/doing_laundry:label">
+            <value>Lavando</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/grocery_shopping:label">
+            <value>Compras de comestibles</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/repairs_and_gardening:label">
+            <value>Reparaciones y jardinería</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/paying_household_bills:label">
+            <value>Pagar las facturas del hogar</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure:label">
+            <value>Recreación y ocio</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/watching_tv__movie__news__online_like_ne:label">
+            <value>Ver televisión (películas, noticias, en línea como Netflix, ...)</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/listening_to_radio__podcasts__music:label">
+            <value>Escuchar radio, podcasts, música.</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/playing_video_games:label">
+            <value>Jugando videojuegos</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/recreational_study:label">
+            <value>Estudio recreativo</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/non_grocery_shopping:label">
+            <value>Compras no comestibles</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/spending_time_with_family_friends:label">
+            <value>Pasar tiempo con la familia/amigos</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/contact_friends_family_on_a_voice_call_o:label">
+            <value>Póngase en contacto con amigos/familiares en una llamada de voz o videollamada</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities:label">
+            <value>Trabajo voluntario y actividades de cuidado</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_own_children:label">
+            <value>Cuidar de los propios hijos</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_other_children:label">
+            <value>Cuidando a otros niños</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_adults:label">
+            <value>Cuidando a los adultos</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/pet_care_activities:label">
+            <value>Actividades de cuidado de mascotas</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/other_voluntary_works:label">
+            <value>Otras obras de voluntariado</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/attending_religious_services:label">
+            <value>Asistir a servicios religiosos</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other:label">
+            <value>Otro:</value>
+          </text>
+          <text id="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other:hint">
+            <value>Si su tipo de actividad no está incluido dentro de las opciones proporcionadas, introdúzcalo en el cuadro a continuación.</value>
+          </text>
+        </translation>
+      </itext>
+      <instance>
+        <a88RxBtE3jwSar3cwiZTdn id="a88RxBtE3jwSar3cwiZTdn">
+          <start/>
+          <end/>
+          <group_hg4zz25>
+            <Date/>
+            <Start_time/>
+            <End_time/>
+            <Activity_Type/>
+            <Personal_Care_activities/>
+            <Employment_related_a_Education_activities/>
+            <Domestic_activities/>
+            <Recreation_and_leisure/>
+            <Voluntary_work_and_care_activities/>
+            <Other/>
+          </group_hg4zz25>
+          <meta>
+            <instanceID/>
+          </meta>
+        </a88RxBtE3jwSar3cwiZTdn>
+      </instance>
+      <bind jr:preload="timestamp" jr:preloadParams="start" nodeset="/a88RxBtE3jwSar3cwiZTdn/start" type="dateTime"/>
+      <bind jr:preload="timestamp" jr:preloadParams="end" nodeset="/a88RxBtE3jwSar3cwiZTdn/end" type="dateTime"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25" required="false()"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date" required="true()" type="date"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Start_time" required="true()" type="time"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/End_time" required="true()" type="time"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type" required="true()" type="string"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities" relevant="selected( /a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type , 'personal_care_activities')" required="true()" type="string"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities" relevant="selected( /a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type , 'employment_related_and_educational_activ')" required="true()" type="string"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities" relevant="selected( /a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type , 'domestic_activities')" required="true()" type="string"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure" relevant="selected( /a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type , 'recreation_and_leisure')" required="true()" type="string"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities" relevant="selected( /a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type , 'voluntary_work_and_care_activities')" required="true()" type="string"/>
+      <bind nodeset="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other" relevant="selected( /a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type , 'other')" required="true()" type="string"/>
+      <bind jr:preload="uid" nodeset="/a88RxBtE3jwSar3cwiZTdn/meta/instanceID" readonly="true()" type="string"/>
+    </model>
+  </h:head>
+  <h:body class="pages">
+    <group appearance="field-list" ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25">
+      <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25:label')"/>
+      <input ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date:label')"/>
+        <hint ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Date:hint')"/>
+      </input>
+      <input ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Start_time">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Start_time:label')"/>
+      </input>
+      <input ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/End_time">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/End_time:label')"/>
+      </input>
+      <select ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type:label')"/>
+        <hint ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type:hint')"/>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/personal_care_activities:label')"/>
+          <value>personal_care_activities</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/employment_related_and_educational_activ:label')"/>
+          <value>employment_related_and_educational_activ</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/domestic_activities:label')"/>
+          <value>domestic_activities</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/recreation_and_leisure:label')"/>
+          <value>recreation_and_leisure</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/voluntary_work_and_care_activities:label')"/>
+          <value>voluntary_work_and_care_activities</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Activity_Type/other:label')"/>
+          <value>other</value>
+        </item>
+      </select>
+      <select ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities:label')"/>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/option_1:label')"/>
+          <value>option_1</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/option_2:label')"/>
+          <value>option_2</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/eating_or_drinking:label')"/>
+          <value>eating_or_drinking</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/doing_sport:label')"/>
+          <value>doing_sport</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/appointments:label')"/>
+          <value>appointments</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Personal_Care_activities/personal_care_i_e__wash__dress__grooming:label')"/>
+          <value>personal_care_i_e__wash__dress__grooming</value>
+        </item>
+      </select>
+      <select ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities:label')"/>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/working_at_main_job:label')"/>
+          <value>working_at_main_job</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/working_at_other_job:label')"/>
+          <value>working_at_other_job</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Employment_related_a_Education_activities/studying_at_an_educational_institute_i_e:label')"/>
+          <value>studying_at_an_educational_institute_i_e</value>
+        </item>
+      </select>
+      <select ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities:label')"/>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/preparing_meals_or_snacks:label')"/>
+          <value>preparing_meals_or_snacks</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/cleaning_and_tidying:label')"/>
+          <value>cleaning_and_tidying</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/doing_laundry:label')"/>
+          <value>doing_laundry</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/grocery_shopping:label')"/>
+          <value>grocery_shopping</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/repairs_and_gardening:label')"/>
+          <value>repairs_and_gardening</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Domestic_activities/paying_household_bills:label')"/>
+          <value>paying_household_bills</value>
+        </item>
+      </select>
+      <select ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure:label')"/>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/watching_tv__movie__news__online_like_ne:label')"/>
+          <value>watching_tv__movie__news__online_like_ne</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/listening_to_radio__podcasts__music:label')"/>
+          <value>listening_to_radio__podcasts__music</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/playing_video_games:label')"/>
+          <value>playing_video_games</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/recreational_study:label')"/>
+          <value>recreational_study</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/non_grocery_shopping:label')"/>
+          <value>non_grocery_shopping</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/spending_time_with_family_friends:label')"/>
+          <value>spending_time_with_family_friends</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Recreation_and_leisure/contact_friends_family_on_a_voice_call_o:label')"/>
+          <value>contact_friends_family_on_a_voice_call_o</value>
+        </item>
+      </select>
+      <select ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities:label')"/>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_own_children:label')"/>
+          <value>caring_for_own_children</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_other_children:label')"/>
+          <value>caring_for_other_children</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/caring_for_adults:label')"/>
+          <value>caring_for_adults</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/pet_care_activities:label')"/>
+          <value>pet_care_activities</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/other_voluntary_works:label')"/>
+          <value>other_voluntary_works</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Voluntary_work_and_care_activities/attending_religious_services:label')"/>
+          <value>attending_religious_services</value>
+        </item>
+      </select>
+      <input ref="/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other">
+        <label ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other:label')"/>
+        <hint ref="jr:itext('/a88RxBtE3jwSar3cwiZTdn/group_hg4zz25/Other:hint')"/>
+      </input>
+    </group>
+  </h:body>
+</h:html>
