@@ -13,6 +13,7 @@ angular.module('emission.main.diary.infscrolltripitem', [
                                                         'emission.config.imperial',
                                                         'emission.plugin.logger',
                                                         'emission.stats.clientstats',
+                                                        'emission.survey.enketo.time-use',
                                                         'emission.incident.posttrip.manual'
 ])
 

@@ -10,5 +10,11 @@
     "version": 1,
     "compatibleWith": 1,
     "dataKey": "manual/demographic_survey"
+  },
+  "TimeUseSurvey": {
+    "formPath": "json/time-use-survey-form-v9.json",
+    "version": 9,
+    "compatibleWith": 1,
+    "dataKey": "manual/timeuse_survey"
   }
 }

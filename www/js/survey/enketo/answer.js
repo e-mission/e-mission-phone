@@ -52,6 +52,9 @@ angular.module('emission.survey.enketo.answer', [
     UserProfileSurvey: (xmlDoc) => {
       return 'Answered';
     },
+    TimeUseSurvey: (xmlDoc) => {
+      return 'Answered';
+    }
   };
   
   /** @type {EnketoSurveyConfig} _config */
