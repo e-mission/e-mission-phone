@@ -191,7 +191,20 @@ angular.module('emission.survey.enketo.service', [
     Object.assign(_state.opts, opts);
 
     return _lazyLoadConfig()
-      .then(config => _state.formLocation = config[name].formPath)
+      .then(config => {
+        // This is specific for my (Sebastian) branch of the nrel-openpath-deploy-configs repo
+        // THIS SHOULD BE CHANGED to the main branch once my changes have been merged to the Master
+        var url = config[name].formPath;
+        var request = new XMLHttpRequest();
+        request.open('HEAD', url, false);
+        request.send();
+        if(request.status == 200) {
+          url = config[name].formPath;
+        } else {
+          url = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/dynamic-surveys/enketo_surveys/data-" + config[name].formPath;
+        }
+        _state.formLocation = url
+      })
       .then(() => $http.get(_state.formLocation))
       .then(formJson => {
         _state.loaded.form = formJson.data.form;
