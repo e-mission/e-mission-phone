@@ -18,6 +18,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger',
                                       'emission.main.diary.infscrolltripitem',
+                                      'emission.main.diary.infscrollplaceitem',
                                     ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -31,6 +32,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     SurveyOptions,
     Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
 
+  // TODO: set up config property for whether to include activity surveys
+  // if activity surveys enabled
+  $scope.showPlaces = true;
+  
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
