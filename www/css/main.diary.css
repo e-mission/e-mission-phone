@@ -200,8 +200,8 @@ a.item-content {
 }
 
 .unified-diary-item {
-  padding: 0;
-  margin: 0 1rem 0 1rem;
+  padding: 6px;
+  margin: 0 10px;
   border-width: 0;
   background-color: transparent;
   /* height: 250px; */
