@@ -443,3 +443,12 @@ div.labelfilterlist {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 }
+
+.fab-button b {
+  vertical-align: middle;
+  margin-left: .5em;
+}
+
+.fab-button, .fab-button .icon:before {
+  line-height: 100%;
+}
