@@ -154,7 +154,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.data.properties.end_local_dt);
         tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.data.properties.distance);
         tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
-        tripgj.display_date = moment(tripgj.data.properties.start_ts * 1000).format('ddd DD MMM YY');
+        tripgj.display_date = moment(tripgj.data.properties.start_ts * 1000).format('ddd DD MMM YYYY');
         tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.data.properties.start_ts,
                                 tripgj.data.properties.end_ts);
         tripgj.isDraft = DiaryHelper.isDraft(tripgj);
@@ -332,6 +332,17 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         Logger.displayError("list walkthrough start errored", err);
       });
     };
+
+    $scope.getTripHeight = function(tripgj) {
+      let height = tripgj.common.different? $scope.itemHt + 80 : $scope.itemHt + 30;
+      if(tripgj.INPUTS[2]) {
+        height = 435;
+        $scope.itemHt = height;
+      } else {
+        height = 381;
+      }
+      return height;
+    }
 
     $scope.increaseHeight = function () {
         // let's increase by a small amount to workaround the issue with the

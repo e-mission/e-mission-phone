@@ -1,10 +1,11 @@
 {
   "MODE" : [
        {"text":"Walk", "value":"walk", "met_equivalent": "WALKING", "co2PerMeter": 0},
-       {"text":"Bike","value":"bike", "met_equivalent": "BICYCLING", "co2PerMeter": 0},
-       {"text":"e-bike","value":"e-bike", "met": {
+       {"text":"E-bike","value":"e-bike", "met": {
             "ALL": {"range": [0, -1], "mets": 4.9}
        }, "co2PerMeter": 0.00728},
+       {"text":"Regular Bike","value":"bike", "met_equivalent": "BICYCLING", "co2PerMeter": 0},
+       {"text":"Bikeshare","value":"bikeshare", "met_equivalent": "BICYCLING", "co2PerMeter": 0},
        {"text":"Scooter share","value":"scootershare", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.00894},
        {"text":"Gas Car Drove Alone","value":"drove_alone", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.22031},
        {"text":"Gas Car Shared Ride","value":"shared_ride", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.11015},
@@ -15,7 +16,23 @@
        {"text":"Train","value":"train", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.12256},
        {"text":"Free Shuttle","value":"free_shuttle", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.20727},
        {"text":"Air","value":"air", "met_equivalent": "IN_VEHICLE", "co2PerMeter": 0.09975},
+       {"text":"Not a Trip","value":"not_a_trip", "met_equivalent": "UNKNOWN", "co2PerMeter": 0},
        {"text":"Other","value":"other", "met_equivalent": "UNKNOWN", "co2PerMeter": 0}],
+  "REPLACED_MODE" : [
+       {"text":"No travel", "value":"no_travel"},
+       {"text":"Walk", "value":"walk"},
+       {"text":"Regular Bike","value":"bike"},
+       {"text":"Bikeshare","value":"bikeshare"},
+       {"text":"Scooter share","value":"scootershare"},
+       {"text":"Gas Car, drove alone","value":"drove_alone"},
+       {"text":"Gas Car, with others","value":"shared_ride"},
+       {"text":"E-Car, drove alone","value":"e_car_drove_alone"},
+       {"text":"E-Car, with others","value":"e_car_shared_ride"},
+       {"text":"Taxi/Uber/Lyft","value":"taxi"},
+       {"text":"Bus","value":"bus"},
+       {"text":"Train","value":"train"},
+       {"text":"Free Shuttle","value":"free_shuttle"},
+       {"text":"Other","value":"other"}],
     "PURPOSE" : [
        {"text":"Home", "value":"home"},
        {"text":"To Work","value":"work"},

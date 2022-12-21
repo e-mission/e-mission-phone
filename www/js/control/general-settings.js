@@ -14,6 +14,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.kvstore',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
+                                        'emission.config.dynamic',
                                         'monospaced.qrcode'])
 
 .controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
@@ -26,7 +27,7 @@ angular.module('emission.main.control',['emission.services',
                ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
                UpdateCheck, i18nUtils,
-               CalorieCal, ClientStats, CommHelper, Logger,
+               CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
                $translate) {
 
     console.log("controller ControlCtrl called without params");
@@ -150,7 +151,10 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $ionicPlatform.ready().then(function() {
-        $scope.refreshScreen();
+        DynamicConfig.configReady().then(function(newConfig) {
+            $scope.ui_config = newConfig;
+            $scope.refreshScreen();
+        });
     });
     $scope.getLowAccuracy = function() {
         //  return true: toggle on; return false: toggle off.
@@ -209,7 +213,17 @@ angular.module('emission.main.control',['emission.services',
                 if (response == null) {
                   $scope.settings.auth.email = "Not logged in";
                 } else {
-                  $scope.settings.auth.email = response;
+                    /*
+                     * Hack to support adding in the study as a prefix to any existing token.
+                     */
+                    if ($scope.ui_config && !response.startsWith("nrelop_")) {
+                        const newToken = "nrelop_"+$scope.ui_config.name+"_"+response;
+                        Logger.log("Found old style token, after prepending nrelop_"+$scope.ui_config.name+" new token is "+newToken);
+                        window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(newToken);
+                        $scope.settings.auth.email = newToken;
+                    } else {
+                        $scope.settings.auth.email = response;
+                    }
                 }
             });
         }, function(error) {
@@ -653,20 +667,11 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    var prepopulateQRMessage = {
-        message: $translate.instant('general-settings.qrcode-share-message'), // not supported on some apps (Facebook, Instagram)
-        subject: $translate.instant('general-settings.qrcode-share-subject') // fi. for email
-    }
-
     $scope.shareQR = function() {
-        //const c = $(".qrcode"); // selects the canvas element containing the QR code
-        //const cbase64 = c[0].toDataURL(); // converts the canvas element into base64 data
-        //prepopulateQRMessage.files = [cbase64]; // adds the base64 data into our share message
-
+        var prepopulateQRMessage = {};  
         const c = document.getElementsByClassName('qrcode-link');
         const cbase64 = c[0].getAttribute('href');
         prepopulateQRMessage.files = [cbase64];
-
         prepopulateQRMessage.url = $scope.settings.auth.email;
 
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {

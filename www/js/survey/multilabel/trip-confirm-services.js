@@ -1,22 +1,74 @@
-angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.utils', "emission.plugin.logger"])
-.factory("ConfirmHelper", function($http, $ionicPopup, $translate, i18nUtils, Logger) {
+angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.utils',
+    "emission.plugin.logger", "emission.config.dynamic"])
+.factory("ConfirmHelper", function($http, $ionicPopup, $ionicPlatform, $translate, i18nUtils, DynamicConfig, Logger) {
     var ch = {};
-    ch.INPUTS = ["MODE", "PURPOSE"]
-    ch.inputDetails = {
-        "MODE": {
-            labeltext: $translate.instant(".mode"),
-            choosetext: $translate.instant(".choose-mode"),
-            width: "col-50",
-            key: "manual/mode_confirm",
-            otherVals: {},
-        },
-        "PURPOSE": {
-            labeltext: $translate.instant(".purpose"),
-            choosetext: $translate.instant(".choose-purpose"),
-            width: "col-50",
-            key: "manual/purpose_confirm",
-            otherVals: {},
+    ch.init = function(ui_config) {
+        Logger.log("About to start initializing the confirm helper for " + ui_config.intro.program_or_study);
+        const labelWidth = {"base": "col-50", "intervention": "col-33"};
+        const btnWidth = {"base": "115", "intervention": "80"};
+        ch.INPUTS = ["MODE", "PURPOSE"];
+        ch.inputDetails = {
+            "MODE": {
+                name: "MODE",
+                labeltext: $translate.instant(".mode"),
+                choosetext: $translate.instant(".choose-mode"),
+                width: labelWidth["base"],
+                btnWidth: btnWidth["base"],
+                key: "manual/mode_confirm",
+                otherVals: {},
+            },
+            "PURPOSE": {
+                name: "PURPOSE",
+                labeltext: $translate.instant(".purpose"),
+                choosetext: $translate.instant(".choose-purpose"),
+                width: labelWidth["base"],
+                btnWidth: btnWidth["base"],
+                key: "manual/purpose_confirm",
+                otherVals: {},
+            }
         }
+        if (ui_config.intro.program_or_study == 'program') {
+            ch.isProgram = true;
+            // store a copy of the base input details
+            ch.baseInputDetails = angular.copy(ch.inputDetails);
+            ch.BASE_INPUTS = angular.copy(ch.INPUTS);
+
+            // then add the program specific information by adding the REPLACED_MODE
+            // and resetting the widths
+            ch.INPUTS.push("REPLACED_MODE");
+            for (const [key, value] of Object.entries(ch.inputDetails)) {
+                value.width = labelWidth["intervention"];
+                value.btnWidth = btnWidth["intervention"];
+            };
+            console.log("Finished resetting label widths ",ch.inputDetails);
+            ch.inputDetails["REPLACED_MODE"] = {
+                name: "REPLACED_MODE",
+                labeltext: $translate.instant(".replaces"),
+                choosetext: $translate.instant(".choose-replaced-mode"),
+                width: labelWidth["intervention"],
+                btnWidth: btnWidth["intervention"],
+                key: "manual/replaced_mode",
+                otherVals: {}
+            }
+        }
+        Logger.log("Finished initializing ch.INPUTS and ch.inputDetails" + ch.INPUTS);
+        ch.inputParamsPromise = new Promise(function(resolve, reject) {
+          inputParams = {};
+          console.log("Starting promise execution with ", inputParams);
+          omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
+          console.log("Promise list ", omPromises);
+          Promise.all(omPromises).then((omObjList) =>
+              ch.INPUTS.forEach(function(item, index) {
+                  inputParams[item] = omObjList[index];
+              })).catch((err) => {
+                    Logger.displayError("Error while loading input params in "+ch.INPUTS, err)
+                    reject(err);
+              });
+              console.log("Read all inputParams, resolving with ", inputParams);
+              resolve(inputParams);
+        });
+        Logger.log("Finished creating inputParamsPromise" + ch.inputParamsPromise);
+
     }
 
     var fillInOptions = function(confirmConfig) {
@@ -65,6 +117,7 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
 
     ch.getOptionsAndMaps = function(inputType) {
         return ch.getOptions(inputType).then(function(inputOptions) {
+            console.log("About to map option for inputType"+inputType);
             var inputMaps = arrayToMap(inputOptions);
             return {
                 options: inputOptions,
@@ -130,17 +183,12 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
             value: otherValue};
     }
 
-    ch.inputParamsPromise = new Promise(function(resolve, reject) {
-      inputParams = {};
-      console.log("Starting promise execution with ", inputParams);
-      omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
-      console.log("Promise list ", omPromises);
-      Promise.all(omPromises).then((omObjList) =>
-          ch.INPUTS.forEach(function(item, index) {
-              inputParams[item] = omObjList[index];
-          }));
-          console.log("Read all inputParams, resolving with ", inputParams);
-          resolve(inputParams);
+    $ionicPlatform.ready().then(function() {
+        Logger.log("UI_CONFIG: about to call configReady function in trip-confirm-services.js");
+        DynamicConfig.configReady().then((newConfig) => {
+            Logger.log("UI_CONFIG: about to call ch.init() with the new config");
+            ch.init(newConfig);
+        }).catch((err) => Logger.displayError("Error while handling config in trip-confirm-services.js", err));
     });
 
 

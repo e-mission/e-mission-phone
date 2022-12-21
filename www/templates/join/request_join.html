@@ -1,0 +1,42 @@
+<ion-view translate-namespace="join">
+    <ion-content class="has-footer">
+        <!-- <div class="intro-space"></div> -->
+        <div class="intro-title">
+        <center><img alt="NREL OpenPATH icon" src="img/icon.png"/ style="width: 25%; height: auto;"></center>
+        </div>
+        <div class="intro-text">
+        <div>
+        <center><button class="button button-clear button-dark" ng-click="showDetails($event)"><b translate>{{'.welcome-to-nrel-openpath'}}ℹ️ </b></button></center>
+        </div>
+        <!--  -->
+
+        <span translate>{{'.proceed-further'}} </span>
+
+        <div class="intro-space"></div>
+
+        <ion-list>
+            <ion-item class="item-text-wrap">
+            <div>
+            <i class="icon ion-iphone"></i>
+            <span translate>{{'.proceed-phone'}} </span>
+            </div>
+            </ion-item>
+            <ion-item class="item-text-wrap">
+            <center> <b> - <span translate>{{'.or'}}</span> - </b> </center>
+            </ion-item>
+            <ion-item class="item-text-wrap">
+            <div>
+            <i class="icon ion-laptop"></i>
+            <span translate>{{'.proceed-laptop'}}</span>
+            </div>
+            </ion-item>
+        </ion-list>
+        <div class="intro-space"></div>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar-positive">
+      <button ng-enabled="scanEnabled" class="button button-block button-clear" ng-click="scanCode()">
+        <span translate>{{'.scan-now'}}</span>
+      </button>
+    </ion-footer-bar>
+</ion-view>

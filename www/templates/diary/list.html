@@ -39,7 +39,7 @@
         MUST test on android first to make sure that the scrolling works.
         -->
 
-		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="tripgj.common.different? itemHt + 80 : itemHt + 30">
+		<div collection-repeat="tripgj in data.currDayTripWrappers" item-height="getTripHeight(tripgj)">
             <diary-list-item tripgj="tripgj"></diary-list-item>
             <!-- Moved the diary trip template to trip_list_item.html  -->
           </div>

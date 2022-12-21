@@ -1,0 +1,42 @@
+<ion-popover-view translate-namespace="join">
+    <ion-content class="has-footer">
+        <div class="intro-text" translate>{{'.about-app-para-1'}} </div>
+
+        <div class="intro-text" translate>{{'.about-app-para-2'}} </div>
+
+        <div class="intro-text" translate>{{'.about-app-para-3'}}</div>
+
+        <div class="intro-text">
+            <b>Tip(s) for correct operation:</b>
+            <div ng-show="isIOS">
+            <ion-list>
+            <ion-item class="item-text-wrap">
+                <i class="icon ion-checkmark-circled"></i>
+                <span translate>{{'.all-green-status'}}</span>
+            </ion-item>
+            <ion-item class="item-text-wrap">
+                <i class="icon ion-checkmark-circled"></i>
+                <span translate>{{'.dont-force-kill'}}</span>
+            </ion-item>
+            </ion-list>
+            </div>
+            <div ng-show="isAndroid">
+            <ion-list>
+            <ion-item class="item-text-wrap"> <div>
+                <i class="icon ion-checkmark-circled"></i>
+                <span translate>{{'.all-green-status'}}</span>
+            </ion-item>
+            <ion-item class="item-text-wrap"> <div>
+                <i class="icon ion-checkmark-circled"></i>
+                <span translate>{{'.background-restrictions'}}</span>
+            </ion-item>
+            </ion-list>
+            </div>
+        </div>
+    </ion-content>
+    <ion-footer-bar class="bar-positive">
+      <button class="button button-block button-clear" ng-click="hideDetails($event)">
+        <span translate>{{'.close'}}</span>
+      </button>
+    </ion-footer-bar>
+</ion-popover-view>
