@@ -1,7 +1,9 @@
 'use strict';
 
-angular.module('emission.survey.multilabel.posttrip.prompt', ['emission.plugin.logger'])
-.factory("PostTripAutoPrompt", function($window, $ionicPlatform, $rootScope, $state,
+angular.module('emission.survey.multilabel.posttrip.prompt',
+    ['emission.plugin.logger',
+     'emission.config.dynamic'])
+.factory("PostTripAutoPrompt", function($window, $ionicPlatform, DynamicConfig, $rootScope, $state,
     $ionicPopup, Logger, $translate) {
   var ptap = {};
   var REPORT = 737678; // REPORT on the phone keypad
@@ -252,11 +254,21 @@ angular.module('emission.survey.multilabel.posttrip.prompt', ['emission.plugin.l
     });
   };
 
-  $ionicPlatform.ready().then(function() {
-    ptap.registerTripEnd();
-    ptap.registerUserResponse();
-  });
+    $ionicPlatform.ready().then(function() {
+      Logger.log("POST_TRIP_PROMPT: Checking to see if we should enable the post-trip notifications");
+      // since we store the trip end notification in the database, we don't need to
+      // change it every time we load the app, only when the config changes
+      // similar to the server connection settings
+      DynamicConfig.configChanged().then(function(newConfig) {
+        if (newConfig && newConfig.profile_controls.trip_end_notification == true) {
+          Logger.log("POST_TRIP_PROMPT: Trip end notification enabled in dynamic config, registering...");
+          ptap.registerTripEnd();
+          ptap.registerUserResponse();
+        } else {
+          Logger.log("POST_TRIP_PROMPT: Trip end notification disabled in dynamic config, skipping registration...");
+        }
+      });
+    });
 
   return ptap;
-
 });

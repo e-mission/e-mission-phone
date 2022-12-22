@@ -28,8 +28,8 @@ angular.module('emission.survey.multilabel.buttons',
   };
 })
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
-    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, MultiLabelService) {
-  console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
+    ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, DynamicConfig, MultiLabelService, Logger) {
+  console.log("Created multilabel directive controller, waiting for init");
 
   var findViewElement = function() {
       // console.log("$element is ", $element);
@@ -124,16 +124,6 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
-  $scope.popovers = {};
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-      let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
-      return $ionicPopover.fromTemplateUrl(popoverPath, {
-        scope: $scope
-      }).then(function (popover) {
-        $scope.popovers[item] = popover;
-      });
-  });
-
   $scope.openPopover = function ($event, trip, inputType) {
     var userInput = trip.userInput[inputType];
     if (angular.isDefined(userInput)) {
@@ -157,17 +147,6 @@ angular.module('emission.survey.multilabel.buttons',
     $scope.popovers[inputType].hide();
   };
 
-
-  /**
-   * Store selected value for options
-   * $scope.selected is for display only
-   * the value is displayed on popover selected option
-   */
-  $scope.selected = {}
-  ConfirmHelper.INPUTS.forEach(function(item, index) {
-      $scope.selected[item] = {value: ''};
-  });
-  $scope.selected.other = {text: '', value: ''};
 
   /*
    * This is a curried function that curries the `$scope` variable
@@ -204,6 +183,22 @@ angular.module('emission.survey.multilabel.buttons',
     closePopover(inputType);
   };
 
+  var getScrollElement = function() {
+    if (!$scope.scrollElement) {
+        console.log("scrollElement is not cached, trying to read it ");
+        const ionItemElement = $element.closest('ion-item')
+        if (ionItemElement) {
+            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
+            $scope.scrollElement = ionItemElement.closest('ion-content');
+        } else {
+            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
+        }
+    }
+    // TODO: comment this out after testing to avoid log spew
+    console.log("Returning scrollElement ", $scope.scrollElement);
+    return $scope.scrollElement;
+  }
+
   $scope.store = function (inputType, input, isOther) {
     if(isOther) {
       // Let's make the value for user entered inputs look consistent with our
@@ -213,6 +208,13 @@ angular.module('emission.survey.multilabel.buttons',
     $scope.draftInput.label = input.value;
     Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
     var tripToUpdate = $scope.editingTrip;
+    var needsResize = false;
+    if (ConfirmHelper.isProgram) { // Only resize trip item if it is a program, and if changing to/from e-bike
+      if (input.value == "e-bike" || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == "e-bike") {
+        console.log("switching to/from e-bike, resizing scroll element")
+        needsResize = true;
+      }
+    }
     $window.cordova.plugins.BEMUserCache.putMessage(ConfirmHelper.inputDetails[inputType].key, $scope.draftInput).then(function () {
       $scope.$apply(function() {
         if (isOther) {
@@ -226,7 +228,12 @@ angular.module('emission.survey.multilabel.buttons',
           tripToUpdate.userInput[inputType].write_ts = Date.now();
         }
         let viewScope = findViewScope();
-       MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        // KS: this will currently always trigger for a program
+        // we might want to trigger it only if it changed to/from an e-bike
+        // you may also need to experiment with moving this up or down depending on timing
+        const scrollElement = getScrollElement();
+        scrollElement && needsResize? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
       });
     });
     if (isOther == true)
@@ -235,26 +242,66 @@ angular.module('emission.survey.multilabel.buttons',
 
   $scope.init = function() {
       console.log("During initialization, trip is ", $scope.trip);
-      $scope.userInputDetails = [];
+      console.log("Invoked multilabel directive controller for labels "+ConfirmHelper.INPUTS);
+      // We used to fill in the `name` for each input detail entry here
+      // and store the set of input details in the controller
+      // however, with the functionality of having the replaced mode
+      // only shown for certain trips, we are storing the details in the trip.
+      // which means that we really don't want to initialize it here.
+      // https://github.com/e-mission/e-mission-docs/issues/764
+
+      $scope.popovers = {};
       ConfirmHelper.INPUTS.forEach(function(item, index) {
-        const currInput = angular.copy(ConfirmHelper.inputDetails[item]);
-        currInput.name = item;
-        $scope.userInputDetails.push(currInput);
+          let popoverPath = 'templates/diary/'+item.toLowerCase()+'-popover.html';
+          return $ionicPopover.fromTemplateUrl(popoverPath, {
+            scope: $scope
+          }).then(function (popover) {
+            $scope.popovers[item] = popover;
+          });
       });
+      console.log("After initializing popovers", $scope.popovers);
+
+      /**
+       * Store selected value for options
+       * $scope.selected is for display only
+       * the value is displayed on popover selected option
+       */
+      $scope.selected = {}
+      ConfirmHelper.INPUTS.forEach(function(item, index) {
+          $scope.selected[item] = {value: ''};
+      });
+      $scope.selected.other = {text: '', value: ''};
+
+
       ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
-      console.log("Finished initializing directive, userInputDetails = ", $scope.userInputDetails);
+      console.log("Finished initializing directive, popovers = ", $scope.popovers);
       $scope.currViewState = findViewState();
   }
 
+
   $ionicPlatform.ready().then(function() {
-    $scope.init();
+    Logger.log("UI_CONFIG: about to call configReady function in MultiLabelCtrl");
+    DynamicConfig.configReady().then((newConfig) => {
+        $scope.init(newConfig);
+    }).catch((err) => Logger.displayError("Error while handling config in MultiLabelCtrl", err));
   });
 })
-.factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout) {
+.factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
-  ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
-  mls.MANUAL_KEYS = ConfirmHelper.INPUTS.map((inp) => ConfirmHelper.inputDetails[inp].key);
+  mls.init = function() {
+      Logger.log("About to initialize the MultiLabelService");
+      ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
+      mls.MANUAL_KEYS = ConfirmHelper.INPUTS.map((inp) => ConfirmHelper.inputDetails[inp].key);
+      Logger.log("finished initializing the MultiLabelService");
+  };
+
+  $ionicPlatform.ready().then(function() {
+    Logger.log("UI_CONFIG: about to call configReady function in MultiLabelService");
+    DynamicConfig.configReady().then((newConfig) => {
+        mls.init(newConfig);
+    }).catch((err) => Logger.displayError("Error while handling config in MultiLabelService", err));
+  });
 
   /**
    * Embed 'inputType' to the trip.
@@ -284,6 +331,7 @@ angular.module('emission.survey.multilabel.buttons',
         });
         trip.finalInference = {};
         mls.inferFinalLabels(trip);
+        mls.expandInputsIfNecessary(trip);
         mls.updateVerifiability(trip);
     } else {
         console.log("Trip information not yet bound, skipping fill");
@@ -341,6 +389,9 @@ angular.module('emission.survey.multilabel.buttons',
   }
 
   mls.updateTripProperties = function(trip, viewScope) {
+    // special check for programs
+    // TODO: make this part of the dynamic config
+    mls.expandInputsIfNecessary(trip);
     mls.inferFinalLabels(trip);
     mls.updateVerifiability(trip);
     mls.updateVisibilityAfterDelay(trip, viewScope);
@@ -405,6 +456,40 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
+  /*
+   * Uses either 2 or 3 labels depending on the type of install (program vs. study)
+   * and the primary mode. The current hardcoded example if the user selects
+   * "e-bike" for an e-bike study, will expand once we really support dynamic config.
+   * https://github.com/e-mission/e-mission-docs/issues/764
+   *
+   * This used to be in the controller, where it really should be, but we had
+   * to move it to the service because we need to invoke it from the list view
+   * as part of filtering "To Label" entries.
+   *
+   * TODO: Move it back later after the diary vs. label unification
+   */
+  mls.expandInputsIfNecessary = function(trip) {
+    console.log("Reading expanding inputs for ", trip);
+    const inputValue = trip.userInput["MODE"]? trip.userInput["MODE"].value : undefined;
+    console.log("Experimenting with expanding inputs for mode "+inputValue);
+    if (ConfirmHelper.isProgram) {
+        if (inputValue == "e-bike") {
+            Logger.log("Found e-bike mode in a program, displaying full details");
+            trip.inputDetails = ConfirmHelper.inputDetails;
+            trip.INPUTS = ConfirmHelper.INPUTS;
+        } else {
+            Logger.log("Found non e-bike mode in a program, displaying base details");
+            trip.inputDetails = ConfirmHelper.baseInputDetails;
+            trip.INPUTS = ConfirmHelper.BASE_INPUTS;
+        }
+    } else {
+        Logger.log("study, not program, displaying full details");
+        trip.INPUTS = ConfirmHelper.INPUTS;
+        trip.inputDetails = ConfirmHelper.inputDetails;
+    }
+  }
+
+
   /**
    * MODE (becomes manual/mode_confirm) becomes mode_confirm
    */
@@ -426,7 +511,7 @@ angular.module('emission.survey.multilabel.buttons',
   mls.updateVerifiability = function(trip) {
     var allGreen = true;
     var someYellow = false;
-    for (const inputType of ConfirmHelper.INPUTS) {
+    for (const inputType of trip.INPUTS) {
         const green = trip.userInput[inputType];
         const yellow = trip.finalInference[inputType] && !green;
         if (yellow) someYellow = true;

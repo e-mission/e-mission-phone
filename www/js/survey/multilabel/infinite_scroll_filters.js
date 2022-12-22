@@ -15,7 +15,7 @@ angular.module('emission.survey.multilabel.infscrollfilters',[
 .factory('MultiLabelInfScrollFilters', function(Logger, ConfirmHelper, $translate){
     var sf = {};
     var unlabeledCheck = function(t) {
-       return ConfirmHelper.INPUTS
+       return t.INPUTS
            .map((inputType, index) => !angular.isDefined(t.userInput[inputType]))
            .reduce((acc, val) => acc || val, false);
     }

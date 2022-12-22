@@ -15,6 +15,7 @@
 angular.module('emission.survey.enketo.time-use',
     ['emission.stats.clientstats',
         'emission.services',
+        'emission.config.dynamic',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.enketo.preview',
@@ -28,13 +29,17 @@ angular.module('emission.survey.enketo.time-use',
   };
 })
 .controller("EnketoTimeuseButtonCtrl", function($scope, $element, $attrs,
-    EnketoSurveyLaunch, $ionicPopover, ClientStats,
+    EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
     EnketoTimeuseService) {
   console.log("Invoked enketo directive controller for time-use ");
 
   $scope.timeUse = []
 
   $scope.openPopover = function ($event) {
+    if($scope.ui_config.survey_paths.time_use_survey_path == "") {
+      console.log("No time-use survey found. Skipping...");
+      return;
+    }
     return EnketoTimeuseService.loadPriorTimeuseSurvey().then((lastSurvey) => {
         return EnketoSurveyLaunch
           .launch($scope, 'TimeUseSurvey', { prev_timeuse_survey: lastSurvey,
@@ -51,6 +56,10 @@ angular.module('emission.survey.enketo.time-use',
 
   $scope.init = function() {
       console.log("During initialization of the button control", $scope.trip);
+      DynamicConfig.configReady().then((newConfig) => {
+        Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
+        $scope.ui_config = newConfig;
+      })
   }
 
   $scope.init();

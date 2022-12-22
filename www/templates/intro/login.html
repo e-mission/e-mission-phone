@@ -1,9 +1,14 @@
 <ion-content>
 <div class="intro-title">
 <center><h3>Login via anonymous token (OPcode) </h3></center>
-<center>OPcode {{randomToken}}</center></div>
 
-<div class="intro-text">
+<div class="intro-text" ng-if="ui_config.intro.program_or_study=='study'">
+<center>OPcode {{randomToken}}</center>
+
+<div class="save-button">
+  <center><div class="col" ng-click="saveLogin('{{randomToken}}')" class="control-icon-button"> <br>Save your OPcode <i class="ion-ios-download-outline" style="font-size: 200%"></i></div></center>
+</div>
+
 This unique randomly generated token (OPcode) is your identifier in the system.
 <p>&nbsp;</p>
 Nobody other than you knows that you are associated with this OPcode. If you
@@ -21,6 +26,21 @@ If you already have an OPcode from a previous install, you can use it instead to
     <div class="intro-space"></div>
     <button class="button button-block button-royal" ng-click="scanExisting()">Scan existing OPcode</button>
 </div> <!-- program_or_study == 'study' -->
+
+<div class="intro-text" ng-if="ui_config.intro.program_or_study=='program'">
+The unique randomly generated token provided by your admin is your identifier in the system.
+<p>&nbsp;</p>
+
+Program administrators have provided you with this token (OPcode) that you will use to log in to the system. If you forget or lose your OPcode, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with OPcode retrieval requests since we do not have access to the connection between your name/email and your token. The data that NREL automatically collects (phone sensor data, sociodemographic data, etc.) will only be associated with your OPcode.
+
+    <div class="intro-space"></div>
+    <button class="button button-block button-energized" ng-click="typeExisting()">Type program OPcode</button>
+
+    <center> <b> - OR - </b> </center>
+
+    <div class="intro-space"></div>
+    <button class="button button-block button-royal" ng-click="scanExisting()">Scan program OPcode</button>
+</div> <!-- program_or_study == 'program' -->
 </div> <!-- overall div -->
 
 </ion-content>
