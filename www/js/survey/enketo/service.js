@@ -1,12 +1,13 @@
 angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
+  'emission.config.dynamic',
   'emission.survey.inputmatcher',
   'emission.survey.enketo.answer'
 ])
 .factory('EnketoSurvey', function(
   $window, $http, $translate, UnifiedDataLoader,
-  InputMatcher, EnketoSurveyAnswer,
+  InputMatcher, EnketoSurveyAnswer, DynamicConfig
 ) {
   /**
    * @typedef EnketoSurveyConfig
@@ -38,7 +39,6 @@ angular.module('emission.survey.enketo.service', [
    * }}
    */
 
-  const ENKETO_SURVEY_CONFIG_PATH = 'json/enketoSurveyConfig.json';
   /** @type {EnketoSurveyState} _state */
   let _state;
 
@@ -50,20 +50,11 @@ angular.module('emission.survey.enketo.service', [
     if (_state.config !== null) {
       return Promise.resolve(_state.config);
     }
-    return $http.get(ENKETO_SURVEY_CONFIG_PATH).then(configRes => {
-      _state.config = configRes.data;
-      return _state.config;
-    }).catch((err) => {
-        console.log("error "+JSON.stringify(err)+" while reading survey options, reverting to defaults");
-        return $http.get(ENKETO_SURVEY_CONFIG_PATH+".sample")
-         .then(configRes => {
-              _state.config = configRes.data;
-              return _state.config;
-         }).catch(function(err) {
-            // prompt here since we don't have a fallback
-            Logger.displayError("Error while reading default survey options", err);
-        });
-    });
+    return DynamicConfig.configReady().then((newConfig) => {
+      Logger.log("Resolved UI_CONFIG_READY promise in service.js, filling in templates");
+      _state.config = newConfig.surveys;
+      return newConfig.surveys;
+    })
   }
 
   /**
