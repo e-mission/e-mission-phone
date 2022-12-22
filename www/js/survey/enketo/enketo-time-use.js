@@ -36,7 +36,7 @@ angular.module('emission.survey.enketo.time-use',
   $scope.timeUse = []
 
   $scope.openPopover = function ($event) {
-    if($scope.ui_config.survey_paths.time_use_survey_path == "") {
+    if($scope.ui_config.surveys.TimeUseSurvey.formPath == "") {
       console.log("No time-use survey found. Skipping...");
       return;
     }
@@ -57,7 +57,7 @@ angular.module('emission.survey.enketo.time-use',
   $scope.init = function() {
       console.log("During initialization of the button control", $scope.trip);
       DynamicConfig.configReady().then((newConfig) => {
-        Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
+        Logger.log("Resolved UI_CONFIG_READY promise in enketo-time-use.js, filling in templates");
         $scope.ui_config = newConfig;
       })
   }

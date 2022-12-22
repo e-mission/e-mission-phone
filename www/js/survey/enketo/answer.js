@@ -1,8 +1,9 @@
 angular.module('emission.survey.enketo.answer', [
-  'ionic'
+  'ionic',
+  'emission.config.dynamic',
 ])
 .factory('EnketoSurveyAnswer', function(
-  $http, 
+  $http, DynamicConfig,
 ) {
   /**
    * @typedef EnketoAnswerData
@@ -35,7 +36,6 @@ angular.module('emission.survey.enketo.answer', [
    * }}
    */
 
-  const ENKETO_SURVEY_CONFIG_PATH = 'json/enketoSurveyConfig.json';
   const LABEL_FUNCTIONS = {
     TripConfirmSurvey: (xmlDoc) => {
       const modeStr = _getAnswerByTagName(xmlDoc, 'travel_mode');
@@ -81,10 +81,10 @@ angular.module('emission.survey.enketo.answer', [
     if (_config !== undefined) {
       return Promise.resolve(_config);
     }
-    return $http.get(ENKETO_SURVEY_CONFIG_PATH).then(configRes => {
-      _config = configRes.data;
-      return _config;
-    });
+    return DynamicConfig.configReady().then((newConfig) => {
+      Logger.log("Resolved UI_CONFIG_READY promise in answer.js, filling in templates");
+      return newConfig.surveys;
+    })
   }
 
   /**
