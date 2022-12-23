@@ -13,8 +13,7 @@ angular.module('emission.main.diary.infscrollplaceitem', [
                                                         'emission.config.imperial',
                                                         'emission.plugin.logger',
                                                         'emission.stats.clientstats',
-                                                        'emission.survey.enketo.time-use',
-])
+        'emission.survey.enketo.add-note-button',])
 
 .directive("infiniteScrollPlaceItem", function(){
     return{

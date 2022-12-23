@@ -19,6 +19,9 @@
             >
 
             </leaflet>
+                <div ng-if="showNotes" class="row" style="height: 20%; padding: 10px">
+                    <enketo-add-note-button survey="trip-notes" style="margin: auto"></enketo-add-note-button>
+                </div>
             </div>
             
             <!-- Trip Information -->
@@ -98,7 +101,6 @@
 
                     <verifycheck linkedtag="{{surveyOpt.elementTag}}" style="padding: 8px" class="col-10 diarycheckmark-container center-vert center-horiz"></verifycheck>
                 </div> 
-                <enketo-timeuse-button></enketo-timeuse-button>
             </div>
         </div>
         </div>
