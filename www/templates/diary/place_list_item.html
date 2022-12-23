@@ -1,20 +1,21 @@
 <div>
     <!-- Place Item Template  -->
-        <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
-            <!-- Start Time Tag -->
-            <!-- <div class="start-time-tag">{{trip.display_start_time}}</div> -->
-            <div class="diary-card short" style="padding-top: 15px; padding-bottom: 15px">
-                <div class="place-title" style="padding: 4px">
+    <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
+        <!-- Start Time Tag -->
+        <!-- <div class="start-time-tag">{{trip.display_end_time}}</div> -->
+        <div class="diary-card short" style="padding-top: 15px; padding-bottom: 15px">
+            <div style="margin: auto">
+                <div class="row place-title" style="padding: 4px">
                     <!-- Place (Destination of Prev. Trip) -->
                     <i class="icon ion-location"></i>
                     <b>{{trip.end_display_name}}</b>
                 </div>
+                <div class="row" style="padding-top: 10px">
                     <enketo-add-note-button survey="place-notes" style="margin: auto"></enketo-add-note-button>
                 </div>
             </div>
-            <!-- End Time Tag -->
-            <!-- <div class="stop-time-tag">{{trip.display_end_time}}</div> -->
-        </ion-item>
-    </div>
-    
-    
+        </div>
+        <!-- End Time Tag -->
+        <!-- <div ng-if="trip.nextTrip" class="stop-time-tag">{{trip.nextTrip.display_start_time}}</div> -->
+    </ion-item>
+</div>

@@ -13,6 +13,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.services',
                                       'emission.config.imperial',
+                                      'emission.config.dynamic',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
@@ -30,15 +31,23 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
-
-  // TODO: set up config property for whether to include activity surveys
-  // if activity surveys enabled
-  $scope.showPlaces = true;
+    Config, ImperialConfig, DynamicConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
   
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
+
+  DynamicConfig.configReady().then((configObj) => {
+    // Logger.log("Resolved UI_CONFIG_READY promise in infinite_scroll_list.js, filling in templates");
+    Logger.log("configObj = ", configObj);
+    if (configObj.surveys['place-notes']) {
+      $scope.placeItemsShown = true;
+    }
+    if (configObj.surveys['trip-notes']) {
+      $scope.tripItemsEnhanced = true;
+    }
+  })
+  
   const DEFAULT_ITEM_HT = 274;
   $scope.surveyOpt = SurveyOptions.MULTILABEL;
   $scope.itemHt = DEFAULT_ITEM_HT;
@@ -53,11 +62,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
 
   $scope.getTripHeight = function(trip) {
-    if(trip.INPUTS[2]) {
-      return 438;
-    } else {
-      return 384;
+    let height = trip.INPUTS[2] ? 438 : 384;
+    if ($scope.placeItemsShown) {
+      height += 120;
     }
+    return height;
   }
 
   $scope.getActiveFilters = function() {
