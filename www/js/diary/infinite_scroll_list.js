@@ -39,13 +39,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   DynamicConfig.configReady().then((configObj) => {
     // Logger.log("Resolved UI_CONFIG_READY promise in infinite_scroll_list.js, filling in templates");
-    Logger.log("configObj = ", configObj);
-    if (configObj.surveys['place-notes']) {
-      $scope.placeItemsShown = true;
-    }
-    if (configObj.surveys['trip-notes']) {
-      $scope.tripItemsEnhanced = true;
-    }
+    $scope.$apply(() => {
+      $scope.ui_config = configObj;
+      $scope.placeNotesConfig = configObj.survey_info.buttons['place-notes'];
+      $scope.tripNotesConfig = configObj.survey_info.buttons['trip-notes'];
+      // if we decide to load dynamic surveys by surveys.json instead of config, this will need to be updated
+      $scope.surveys = configObj.survey_info.surveys;
+    });
   })
   
   const DEFAULT_ITEM_HT = 274;
@@ -63,7 +63,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.getTripHeight = function(trip) {
     let height = trip.INPUTS[2] ? 438 : 384;
-    if ($scope.placeItemsShown) {
+    if ($scope.placeNotesConfig) {
       height += 120;
     }
     return height;

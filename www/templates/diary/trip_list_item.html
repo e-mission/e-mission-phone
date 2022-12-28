@@ -12,8 +12,8 @@
                 <leaflet class="diary-map" geojson="trip" defaults="mapCtrl.defaults"
                     id="$index" data-tap-disabled="true", height="{{getMapHeight()}}">
                 </leaflet>
-                <div ng-if="showNotes" class="row" style="height: 20%; padding: 10px">
-                    <enketo-add-note-button survey="trip-notes" style="margin: auto"></enketo-add-note-button>
+                <div ng-if="notesConfig" class="row" style="height: 20%; padding: 10px">
+                    <enketo-add-note-button notes-config="notesConfig" surveys="surveys" style="margin: auto"></enketo-add-note-button>
                 </div>
             </div>
             

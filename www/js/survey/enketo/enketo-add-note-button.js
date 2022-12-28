@@ -1,5 +1,6 @@
 /*
- * Directive to display a survey for each trip
+ * Directive to display a survey to add notes to a trip or place
+ * 
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
@@ -12,7 +13,7 @@
  *      other components.
  */
 
-angular.module('emission.survey.enketo.time-use',
+angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',
         'emission.services',
         'emission.config.dynamic',
@@ -20,73 +21,38 @@ angular.module('emission.survey.enketo.time-use',
         'emission.survey.enketo.answer',
         'emission.survey.enketo.preview',
         'emission.survey.inputmatcher'])
-.directive('enketoTimeuseButton', function() {
+.directive('enketoAddNoteButton', function() {
   return {
     scope: {
+      notesConfig: '=',
+      surveys: '='
     },
-    controller: "EnketoTimeuseButtonCtrl",
-    templateUrl: 'templates/survey/enketo/timeuse-button.html'
+    controller: "EnketoAddNoteButtonCtrl",
+    templateUrl: 'templates/survey/enketo/add-note-button.html'
   };
 })
-.controller("EnketoTimeuseButtonCtrl", function($scope, $element, $attrs,
+.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs, $translate,
     EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
-    EnketoTimeuseService) {
-  console.log("Invoked enketo directive controller for time-use ");
+    EnketoNotesService) {
+  console.log("Invoked enketo directive controller for add-note-button");
+  $scope.notes = []
 
-  $scope.timeUse = []
+  $scope.label = () => {
+    const localeCode = $translate.use();
+    // if already filled in
+    //   return $scope.notesConfig?.['filled-in-label']?.[localeCode];
+    return $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
+  }
 
   $scope.openPopover = function ($event) {
-    if($scope.ui_config.surveys.TimeUseSurvey.formPath == "") {
-      console.log("No time-use survey found. Skipping...");
-      return;
-    }
-    return EnketoTimeuseService.loadPriorTimeuseSurvey().then((lastSurvey) => {
-        return EnketoSurveyLaunch
-          .launch($scope, 'TimeUseSurvey', { prev_timeuse_survey: lastSurvey,
-                showBackButton: true, showFormFooterJumpNav: true })
-          .then(result => {
-            console.log("timeuse survey result ", result);
-            $scope.timeUse.push(result);
-            $scope.timeUse.forEach(e => {
-              console.log("Timeuse array ", e);
-            });
-          });
-    });
+    const surveyName = $scope.notesConfig.surveyName;
+    console.log('About to launch survey ', surveyName);
+    const survey = $scope.surveys[surveyName];
+    console.log('survey formpath ', survey.formPath);
+    // TODO launch the survey
   };
-
-  $scope.init = function() {
-      console.log("During initialization of the button control", $scope.trip);
-      DynamicConfig.configReady().then((newConfig) => {
-        Logger.log("Resolved UI_CONFIG_READY promise in enketo-time-use.js, filling in templates");
-        $scope.ui_config = newConfig;
-      })
-  }
-
-  $scope.init();
 })
-.factory("EnketoTimeuseService", function(UnifiedDataLoader, $window) {
-  var eds = {};
-  console.log("Creating EnketoTimeuseService");
-  eds.key = "manual/timeuse_survey";
-
-  var _getMostRecent = function(answers) {
-    answers.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
-    console.log("first answer is ", answers[0], " last answer is ", answers[answers.length-1]);
-    return answers[0];
-  }
-
-  /*
-   * We retrieve all the records every time instead of caching because of the
-   * usage pattern. We assume that the demographic survey is edited fairly
-   * rarely, so loading it every time will likely do a bunch of unnecessary work.
-   * Loading it on demand seems like the way to go. If we choose to experiment
-   * with incremental updates, we may want to revisit this.
-   */
-  eds.loadPriorTimeuseSurvey = function() {
-    const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-    return UnifiedDataLoader.getUnifiedMessagesForInterval(eds.key, tq)
-        .then(answers => _getMostRecent(answers));
-  }
-
-  return eds;
+.factory("EnketoNotesService", function(UnifiedDataLoader, $window) {
+  // TODO
+  return {}
 });
