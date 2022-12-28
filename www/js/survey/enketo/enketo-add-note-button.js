@@ -12,7 +12,7 @@
  *      other components.
  */
 
-angular.module('emission.survey.enketo.add-note-button',
+angular.module('emission.survey.enketo.time-use',
     ['emission.stats.clientstats',
         'emission.services',
         'emission.config.dynamic',
@@ -20,58 +20,49 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.survey.enketo.answer',
         'emission.survey.enketo.preview',
         'emission.survey.inputmatcher'])
-.directive('enketoAddNoteButton', function() {
+.directive('enketoTimeuseButton', function() {
   return {
     scope: {
-      survey: '@',
     },
-    controller: "EnketoAddNoteButtonCtrl",
-    templateUrl: 'templates/survey/enketo/add-note-button.html'
+    controller: "EnketoTimeuseButtonCtrl",
+    templateUrl: 'templates/survey/enketo/timeuse-button.html'
   };
 })
-.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs, $translate,
+.controller("EnketoTimeuseButtonCtrl", function($scope, $element, $attrs,
     EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
     EnketoTimeuseService) {
-  console.log("Invoked enketo directive controller for add-note-button");
-  $scope.notes = []
+  console.log("Invoked enketo directive controller for time-use ");
 
-  DynamicConfig.configReady().then((newConfig) => {
-    Logger.log("Resolved UI_CONFIG_READY promise in enketo-time-use.js, filling in templates");
-    $scope.ui_config = newConfig;
-
-    const surveyKey = $scope.ui_config.surveys[$scope.survey];
-    if (!surveyKey) {
-      console.log(`No survey found for target ${$scope.survey}. Skipping...`);
-      return;
-    }
-    const survey = $scope.ui_config.surveys?.[surveyKey];
-    const localeCode = $translate.use();
-    $scope.label = survey['not-filled-in-label']?.[localeCode];
-    console.log('localecode is ', localeCode);
-
-    console.log('label is ', $scope.label);
-    console.log('survey is ', survey);
-  })
+  $scope.timeUse = []
 
   $scope.openPopover = function ($event) {
-
-    
-    // TODO launch the survey
-
-    // return EnketoTimeuseService.loadPriorTimeuseSurvey().then((lastSurvey) => {
-    //     return EnketoSurveyLaunch
-    //       .launch($scope, 'TimeUseSurvey', { prev_timeuse_survey: lastSurvey,
-    //             showBackButton: true, showFormFooterJumpNav: true })
-    //       .then(result => {
-    //         console.log("timeuse survey result ", result);
-    //         $scope.timeUse.push(result);
-    //         $scope.timeUse.forEach(e => {
-    //           console.log("Timeuse array ", e);
-    //         });
-    //       });
-    // });
+    if($scope.ui_config.surveys.TimeUseSurvey.formPath == "") {
+      console.log("No time-use survey found. Skipping...");
+      return;
+    }
+    return EnketoTimeuseService.loadPriorTimeuseSurvey().then((lastSurvey) => {
+        return EnketoSurveyLaunch
+          .launch($scope, 'TimeUseSurvey', { prev_timeuse_survey: lastSurvey,
+                showBackButton: true, showFormFooterJumpNav: true })
+          .then(result => {
+            console.log("timeuse survey result ", result);
+            $scope.timeUse.push(result);
+            $scope.timeUse.forEach(e => {
+              console.log("Timeuse array ", e);
+            });
+          });
+    });
   };
 
+  $scope.init = function() {
+      console.log("During initialization of the button control", $scope.trip);
+      DynamicConfig.configReady().then((newConfig) => {
+        Logger.log("Resolved UI_CONFIG_READY promise in enketo-time-use.js, filling in templates");
+        $scope.ui_config = newConfig;
+      })
+  }
+
+  $scope.init();
 })
 .factory("EnketoTimeuseService", function(UnifiedDataLoader, $window) {
   var eds = {};

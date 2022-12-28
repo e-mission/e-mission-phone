@@ -52,8 +52,8 @@ angular.module('emission.survey.enketo.service', [
     }
     return DynamicConfig.configReady().then((newConfig) => {
       Logger.log("Resolved UI_CONFIG_READY promise in service.js, filling in templates");
-      _state.config = newConfig.surveys;
-      return newConfig.surveys;
+      _state.config = newConfig.survey_info.surveys;
+      return newConfig;
     })
   }
 
@@ -185,15 +185,8 @@ angular.module('emission.survey.enketo.service', [
       .then(config => {
         // This is specific for my (Sebastian) branch of the nrel-openpath-deploy-configs repo
         // THIS SHOULD BE CHANGED to the main branch once my changes have been merged to the Master
-        var url = config[name].formPath;
-        var request = new XMLHttpRequest();
-        request.open('HEAD', url, false);
-        request.send();
-        if(request.status == 200) {
-          url = config[name].formPath;
-        } else {
-          url = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/dynamic-surveys/enketo_surveys/data-" + config[name].formPath;
-        }
+        var shortenedConfig = config.survey_info.surveys;
+        var url = shortenedConfig[name].formPath;
         _state.formLocation = url
       })
       .then(() => $http.get(_state.formLocation))
