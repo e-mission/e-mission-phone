@@ -36,10 +36,6 @@ angular.module('emission.survey.enketo.time-use',
   $scope.timeUse = []
 
   $scope.openPopover = function ($event) {
-    if($scope.ui_config.surveys.TimeUseSurvey.formPath == "") {
-      console.log("No time-use survey found. Skipping...");
-      return;
-    }
     return EnketoTimeuseService.loadPriorTimeuseSurvey().then((lastSurvey) => {
         return EnketoSurveyLaunch
           .launch($scope, 'TimeUseSurvey', { prev_timeuse_survey: lastSurvey,
@@ -50,6 +46,7 @@ angular.module('emission.survey.enketo.time-use',
             $scope.timeUse.forEach(e => {
               console.log("Timeuse array ", e);
             });
+            // Must be something like "cordova.push(result.data)"
           });
     });
   };

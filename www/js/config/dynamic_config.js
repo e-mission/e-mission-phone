@@ -47,7 +47,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         };
         // This is specific for my (Sebastian) branch of the nrel-openpath-deploy-configs repo
         // THIS SHOULD BE CHANGED to the main branch once my changes have been merged to the Master
-        const downloadURL = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/dynamic-surveys/configs/"+label+".nrel-op.json"
+        const downloadURL = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/configs/"+label+".nrel-op.json"
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
             Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(result.data).substring(0,10));
