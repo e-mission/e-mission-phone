@@ -43,6 +43,13 @@ angular.module('emission.main.diary.infscrolltripitem',
     $scope.surveyOpt = SurveyOptions[surveyOptKey];
     console.log('surveyOpt in infinite_scroll_trip_item.js is', $scope.surveyOpt);
     
+    $scope.timeBounds = () => {
+      return {
+        isPlace: false,
+        start: $scope.trip?.start_ts,
+        end: $scope.trip?.end_ts
+      };
+    };
      // if trip-notes is not present, then we won't show 'add note button'
     $scope.configTripNotes = () => $scope.config?.survey_info?.buttons?.['trip-notes'];
 

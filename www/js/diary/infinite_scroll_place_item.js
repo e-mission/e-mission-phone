@@ -32,8 +32,14 @@ angular.module('emission.main.diary.infscrollplaceitem',
 
   .controller("PlaceItemCtrl", function ($scope, $state, DynamicConfig) {
     console.log("Place Item Controller called");
-
     console.log('config is ', $scope.config);
 
+    $scope.timeBounds = () => {
+      return {
+        isPlace: true,
+        start: $scope.trip?.end_ts,
+        end: $scope.trip?.nextTrip?.start_ts
+      };
+    };
     $scope.configPlaceNotes = () => $scope.config?.survey_info?.buttons?.['place-notes'];
   });

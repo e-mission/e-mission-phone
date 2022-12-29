@@ -24,8 +24,10 @@ angular.module('emission.survey.enketo.add-note-button',
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {
+      trip: '=',
       notesConfig: '=',
-      surveys: '='
+      surveys: '=',
+      timeBounds: '=',
     },
     controller: "EnketoAddNoteButtonCtrl",
     templateUrl: 'templates/survey/enketo/add-note-button.html'
@@ -47,8 +49,10 @@ angular.module('emission.survey.enketo.add-note-button',
   $scope.openPopover = function ($event, trip, inputType) {
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
+    console.log('Timebounds are ', $scope.timeBounds());
     // const survey = $scope.surveys[surveyName];
     // console.log('survey formpath ', survey.formPath);
+    if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
       .launch($scope, surveyName, { trip: trip })
       .then(result => {

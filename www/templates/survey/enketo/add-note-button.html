@@ -1,5 +1,7 @@
 <div class="enketo-button">
-  <button class="button icon ion-plus button-primary" ng-click="openPopover($event)">
+  <button class="button icon ion-plus button-primary" ng-click="openPopover($event, trip, 'NOTES')">
     <b>{{displayLabel()}}</b>
   </button>
+  <!-- label from answer.js -->
+  <!-- <p>{{trip.userInput['NOTES'].data.label}}</p> -->
 </div> 
