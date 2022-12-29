@@ -13,11 +13,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.services',
                                       'emission.config.imperial',
+                                      'emission.config.dynamic',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger',
                                       'emission.main.diary.infscrolltripitem',
+                                      'emission.main.diary.infscrollplaceitem',
                                     ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -29,41 +31,58 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
-
+    Config, ImperialConfig, DynamicConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
+  
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
+  
   const DEFAULT_ITEM_HT = 274;
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
   $scope.itemHt = DEFAULT_ITEM_HT;
-  // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
   const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
   $scope.data = {};
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
-  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+  DynamicConfig.configReady().then((configObj) => {
+    // Logger.log("Resolved UI_CONFIG_READY promise in infinite_scroll_list.js, filling in templates");
+    $scope.$apply(() => {
+      $scope.ui_config = configObj;
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in infinite_scroll_list.js is', $scope.surveyOpt);
+      $scope.showPlaces = configObj.survey_info?.buttons?.['place-notes'];
+
+      // if we decide to load dynamic surveys by surveys.json instead of config, this will need to be updated
+      $scope.surveys = configObj.survey_info.surveys;
+    });
+    $scope.initFilters();
+  })
+
+  $scope.initFilters = function() {
+    $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+    $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+    $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+    $scope.filterInputs.forEach((f) => {
+      f.state = false;
+    });
+    $scope.filterInputs[0].state = true;
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
+    $scope.allTrips = false;
+  }
 
   $scope.getTripHeight = function(trip) {
-    if(trip.INPUTS[2]) {
-      return 438;
-    } else {
-      return 384;
+    let height = trip.INPUTS?.[2] ? 438 : 384;
+    if ($scope.showPlaces) {
+      height += 120;
     }
+    return height;
   }
 
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }
-  $scope.filterInputs.forEach((f) => {
-    f.state = false;
-  });
-  $scope.filterInputs[0].state = true;
-  ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
-  $scope.allTrips = false;
+  
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
   const ONE_DAY = 24 * 60 * 60; // seconds
 

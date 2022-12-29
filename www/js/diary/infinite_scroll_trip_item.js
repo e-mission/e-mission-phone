@@ -3,25 +3,27 @@
  * A directive to display each trip within the diary view.
  */
 
-angular.module('emission.main.diary.infscrolltripitem', [
-                                                        'emission.main.diary.infscrolllist',
-                                                        'emission.survey.multilabel.services',
-                                                        'emission.main.diary.infscrolldetail',
-                                                        'ui-leaflet', 'ng-walkthrough',
-                                                        'nvd3', 'emission.plugin.kvstore',
-                                                        'emission.services',
-                                                        'emission.config.imperial',
-                                                        'emission.plugin.logger',
-                                                        'emission.stats.clientstats',
-                                                        'emission.survey.enketo.time-use',
-                                                        'emission.incident.posttrip.manual'
-])
+angular.module('emission.main.diary.infscrolltripitem',
+    ['emission.main.diary.infscrolllist',
+        'emission.survey.multilabel.services',
+        'emission.main.diary.infscrolldetail',
+        'ui-leaflet', 'ng-walkthrough',
+        'nvd3', 'emission.plugin.kvstore',
+        'emission.services',
+        'emission.config.imperial',
+        'emission.config.dynamic',
+        'emission.plugin.logger',
+        'emission.stats.clientstats',
+        'emission.survey.enketo.add-note-button',
+        'emission.incident.posttrip.manual'])
 
 .directive("infiniteScrollTripItem", function(){
     return{
       restrict: 'E',
       scope: {
         trip: '=',
+        config: '=',
+        surveys: '=',
         mapLimiter: '='
       },
       controller: 'TripItemCtrl',
@@ -32,14 +34,19 @@ angular.module('emission.main.diary.infscrolltripitem', [
   .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform,
                                         $state, leafletMapEvents, 
                                         nzTour, Timeline, DiaryHelper, SurveyOptions,
-                                        Config, $ionicScrollDelegate
+                                        Config, DynamicConfig, $ionicScrollDelegate
                                         ){
     console.log("Trip Item Controller called");
-    const DEFAULT_ITEM_HT = 274;
-    $scope.surveyOpt = SurveyOptions.MULTILABEL;
-    $scope.itemHt = DEFAULT_ITEM_HT;
 
-    // Added function from infiniteDiaryListCtrl
+    const DEFAULT_ITEM_HT = 274;
+    const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
+    $scope.surveyOpt = SurveyOptions[surveyOptKey];
+    console.log('surveyOpt in infinite_scroll_trip_item.js is', $scope.surveyOpt);
+    
+     // if trip-notes is not present, then we won't show 'add note button'
+    $scope.configTripNotes = () => $scope.config?.survey_info?.buttons?.['trip-notes'];
+
+    // Added function from infiniteScrollListCtrl
     $scope.showDetail = function($event) {
       $state.go("root.main.inf_scroll-detail", {
           tripId: $scope.trip.id
@@ -56,6 +63,10 @@ angular.module('emission.main.diary.infscrolltripitem', [
         template: $translate.instant('list-explainDraft-alert')
       });
       // don't want to go to the detail screen
+    }
+
+    $scope.getMapHeight = function() {
+      return $scope.configTripNotes() ? '80%' : '100%';
     }
 
     // In-Line Map, functionality pulled from Infinite Scroll Detail

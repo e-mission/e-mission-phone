@@ -11,10 +11,15 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
-                                        CommHelper, PostTripManualMarker, $translate) {
-  console.log("controller DiaryDetailCtrl called with params = "+
-    JSON.stringify($stateParams));
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
+                                        DynamicConfig, CommHelper, PostTripManualMarker, $translate) {
+  console.log("controller DiaryDetailCtrl called with params = "+JSON.stringify($stateParams));
+
+  DynamicConfig.configReady().then((configObj) => {
+    const surveyOptKey = configObj.survey_info['trip-labels'];
+    $scope.surveyOpt = SurveyOptions[surveyOptKey];
+    console.log('surveyOpt in details.js is', $scope.surveyOpt);
+  });
+
   $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
   $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 

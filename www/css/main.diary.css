@@ -199,8 +199,8 @@ a.item-content {
 }
 
 .unified-diary-item {
-  padding: 0;
-  margin: 0 1rem 0 1rem;
+  padding: 6px;
+  margin: 0 10px;
   border-width: 0;
   background-color: transparent;
   /* height: 250px; */
@@ -216,6 +216,21 @@ a.item-content {
   overflow: hidden;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   display: flex;
+}
+
+.diary-card.short {
+  height: 100px;
+  background-color: rgba(128, 208, 255, 0.8);
+  margin: auto;
+  text-align: center;
+}
+
+.place-title {
+  color: #222;
+}
+
+.place-title b {
+  margin-left: 10px;
 }
 
 .diary-button {
@@ -337,6 +352,10 @@ a.item-content {
   /* height must be specified in the html */
 }
 
+.enhanced-trip-item .diary-map {
+  border-radius: 30px 0px 30px 0px;
+}
+
 .diary-map-shell {
   width: 50%;
 }
@@ -442,4 +461,18 @@ div.labelfilterlist {
 .labelfilter:last-of-type {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
+}
+
+.enketo-button button {
+  border-color: rgba(0,0,0, .2);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.enketo-button b {
+  vertical-align: middle;
+  margin-left: .5em;
+}
+
+.enketo-button, .enketo-button .icon:before {
+  line-height: 100%;
 }
