@@ -463,11 +463,16 @@ div.labelfilterlist {
   border-bottom-right-radius: 5px;
 }
 
-.fab-button b {
+.enketo-button button {
+  border-color: rgba(0,0,0, .2);
+  box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.1);
+}
+
+.enketo-button b {
   vertical-align: middle;
   margin-left: .5em;
 }
 
-.fab-button, .fab-button .icon:before {
+.enketo-button, .enketo-button .icon:before {
   line-height: 100%;
 }
