@@ -83,7 +83,7 @@ angular.module('emission.survey.enketo.answer', [
     }
     return DynamicConfig.configReady().then((newConfig) => {
       Logger.log("Resolved UI_CONFIG_READY promise in answer.js, filling in templates");
-      return newConfig.surveys;
+      return newConfig.survey_info.surveys;
     })
   }
 

@@ -37,19 +37,32 @@ angular.module('emission.survey.enketo.add-note-button',
   console.log("Invoked enketo directive controller for add-note-button");
   $scope.notes = []
 
-  $scope.label = () => {
+  $scope.displayLabel = () => {
     const localeCode = $translate.use();
     // if already filled in
     //   return $scope.notesConfig?.['filled-in-label']?.[localeCode];
     return $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
   }
 
-  $scope.openPopover = function ($event) {
+  $scope.openPopover = function ($event, trip, inputType) {
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
-    const survey = $scope.surveys[surveyName];
-    console.log('survey formpath ', survey.formPath);
-    // TODO launch the survey
+    // const survey = $scope.surveys[surveyName];
+    // console.log('survey formpath ', survey.formPath);
+    return EnketoSurveyLaunch
+      .launch($scope, surveyName, { trip: trip })
+      .then(result => {
+        if (!result) {
+          return;
+        }
+        $scope.$apply(() => trip.userInput['NOTES'] = {
+            data: result,
+            write_ts: Date.now()
+        });
+        // store is commented out since the enketo survey launch currently
+        // stores the value as well
+        // $scope.store(inputType, result, false);
+      });
   };
 })
 .factory("EnketoNotesService", function(UnifiedDataLoader, $window) {

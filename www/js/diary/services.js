@@ -374,7 +374,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, SurveyOptions, $http, $ionicLoading, $window,
+.factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -383,8 +383,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
-    const surveyOpt = SurveyOptions.MULTILABEL;
-    const manualInputFactory = $injector.get(surveyOpt.service);
+    let surveyOpt, manualInputFactory;
+    DynamicConfig.configReady().then((configObj) => {
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in services.js is', surveyOpt);
+      manualInputFactory = $injector.get(surveyOpt.service);
+    });
 
     // Internal function, not publicly exposed
     var getKeyForDate = function(date) {

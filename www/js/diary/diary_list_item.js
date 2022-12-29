@@ -12,19 +12,18 @@ angular.module('emission.main.diary.diarylistitem', [
     return{
         restrict: 'E',
         scope: {
-            tripgj: '='
+            tripgj: '=',
+            config: '=',
         },
         controller: 'DiaryListItemCtrl',
         templateUrl: 'templates/diary/diary_list_item.html'
     };
 })
 
-.controller("DiaryListItemCtrl", function(
-                                        $scope,
-                                        SurveyOptions,
-                                        $state, Config
-){
-    $scope.surveyOpt = SurveyOptions.MULTILABEL;
+.controller("DiaryListItemCtrl", function($scope, SurveyOptions, $state, Config) {
+    const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
+    $scope.surveyOpt = SurveyOptions[surveyOptKey];
+    console.log('surveyOpt in diary_list_item.js is', $scope.surveyOpt);
     const DEFAULT_ITEM_HT = 335;
     $scope.itemHt = DEFAULT_ITEM_HT;
 

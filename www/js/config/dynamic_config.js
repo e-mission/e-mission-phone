@@ -25,14 +25,14 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     }
     dc.configReady = function() {
         if (dc.isConfigReady) {
-            Logger.log("UI_CONFIG in configReady function, resolving immediately");
+            // Logger.log("UI_CONFIG in configReady function, resolving immediately");
             return Promise.resolve(dc.config);
         } else {
-            Logger.log("UI_CONFIG in configReady function, about to create promise");
+            // Logger.log("UI_CONFIG in configReady function, about to create promise");
             return new Promise(function(resolve, reject) {
-                Logger.log("Registering for UI_CONFIG_READY notification in dynamic_config inside the promise");
+                // Logger.log("Registering for UI_CONFIG_READY notification in dynamic_config inside the promise");
                 $rootScope.$on(dc.UI_CONFIG_READY, (event, newConfig) => {
-                    Logger.log("Received UI_CONFIG_READY notification in dynamic_config, resolving promise");
+                    // Logger.log("Received UI_CONFIG_READY notification in dynamic_config, resolving promise");
                     resolve(newConfig)
                 });
             });

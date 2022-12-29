@@ -1,4 +1,4 @@
-<div>
+<div ng-class="{'enhanced-trip-item': configTripNotes()}">
 <!-- New Trip Template format  -->
 
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
@@ -12,8 +12,8 @@
                 <leaflet class="diary-map" geojson="trip" defaults="mapCtrl.defaults"
                     id="$index" data-tap-disabled="true", height="{{getMapHeight()}}">
                 </leaflet>
-                <div ng-if="notesConfig" class="row" style="height: 20%; padding: 10px">
-                    <enketo-add-note-button notes-config="notesConfig" surveys="surveys" style="margin: auto"></enketo-add-note-button>
+                <div ng-if="configTripNotes" class="row" style="height: 20%; padding: 10px">
+                    <enketo-add-note-button notes-config="configTripNotes()" surveys="surveys" style="margin: auto"></enketo-add-note-button>
                 </div>
             </div>
             

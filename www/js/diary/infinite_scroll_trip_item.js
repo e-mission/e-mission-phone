@@ -22,7 +22,7 @@ angular.module('emission.main.diary.infscrolltripitem',
       restrict: 'E',
       scope: {
         trip: '=',
-        notesConfig: '=', // if notesConfig is not defined, then we don't show 'add note button'
+        config: '=',
         surveys: '=',
         mapLimiter: '='
       },
@@ -39,8 +39,12 @@ angular.module('emission.main.diary.infscrolltripitem',
     console.log("Trip Item Controller called");
 
     const DEFAULT_ITEM_HT = 274;
-    $scope.surveyOpt = SurveyOptions.MULTILABEL;
-    $scope.itemHt = DEFAULT_ITEM_HT;
+    const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
+    $scope.surveyOpt = SurveyOptions[surveyOptKey];
+    console.log('surveyOpt in infinite_scroll_trip_item.js is', $scope.surveyOpt);
+    
+     // if trip-notes is not present, then we won't show 'add note button'
+    $scope.configTripNotes = () => $scope.config?.survey_info?.buttons?.['trip-notes'];
 
     // Added function from infiniteScrollListCtrl
     $scope.showDetail = function($event) {
@@ -62,7 +66,7 @@ angular.module('emission.main.diary.infscrolltripitem',
     }
 
     $scope.getMapHeight = function() {
-      return $scope.notesConfig ? '80%' : '100%';
+      return $scope.configTripNotes() ? '80%' : '100%';
     }
 
     // In-Line Map, functionality pulled from Infinite Scroll Detail

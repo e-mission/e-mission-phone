@@ -17,21 +17,23 @@ angular.module('emission.main.diary.infscrollplaceitem',
         'emission.stats.clientstats',
         'emission.survey.enketo.add-note-button',])
 
-.directive("infiniteScrollPlaceItem", function(){
-    return{
+  .directive("infiniteScrollPlaceItem", function () {
+    return {
       restrict: 'E',
       scope: {
         trip: '=',
-        notesConfig: '=',
-        surveys:  '=',
+        config: '=',
+        surveys: '=',
       },
-      // controller: 'PlaceItemCtrl',
+      controller: 'PlaceItemCtrl',
       templateUrl: 'templates/diary/place_list_item.html'
     };
   })
 
-// controller is not needed for now
+  .controller("PlaceItemCtrl", function ($scope, $state, DynamicConfig) {
+    console.log("Place Item Controller called");
 
-//   .controller("PlaceItemCtrl", function($scope, $state, DynamicConfig) {
-//     console.log("Place Item Controller called");
-// });
+    console.log('config is ', $scope.config);
+
+    $scope.configPlaceNotes = () => $scope.config?.survey_info?.buttons?.['place-notes'];
+  });
