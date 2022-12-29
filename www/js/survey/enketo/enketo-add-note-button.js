@@ -24,6 +24,7 @@ angular.module('emission.survey.enketo.add-note-button',
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {
+      trip: '=',
       notesConfig: '=',
       surveys: '='
     },
@@ -49,6 +50,7 @@ angular.module('emission.survey.enketo.add-note-button',
     console.log('About to launch survey ', surveyName);
     // const survey = $scope.surveys[surveyName];
     // console.log('survey formpath ', survey.formPath);
+    if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
       .launch($scope, surveyName, { trip: trip })
       .then(result => {
