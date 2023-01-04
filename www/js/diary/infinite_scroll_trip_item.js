@@ -39,9 +39,10 @@ angular.module('emission.main.diary.infscrolltripitem',
     console.log("Trip Item Controller called");
 
     const DEFAULT_ITEM_HT = 274;
-    const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
-    $scope.surveyOpt = SurveyOptions[surveyOptKey];
-    console.log('surveyOpt in infinite_scroll_trip_item.js is', $scope.surveyOpt);
+    $scope.surveyOpt = () => {
+      const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
+      return SurveyOptions[surveyOptKey];
+    }
     
     $scope.timeBounds = () => {
       return {

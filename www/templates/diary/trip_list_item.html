@@ -39,7 +39,7 @@
                     </div>
 
                     <!-- Modes / Percentages -->
-                    <div class="diary-modes-percents">
+                    <div class="diary-modes-percents" ng-if="trip.percentages">
                         <span
                             class="diary-modes-percents-text"
                             ng-if="!trip.isDraft"
@@ -83,7 +83,7 @@
                         -->
                         <div class="col-90">
 
-                            <linkedsurvey element-tag="{{surveyOpt.elementTag}}" class="col" trip="trip"></linkedsurvey>
+                            <linkedsurvey element-tag="{{surveyOpt().elementTag}}" class="col" trip="trip"></linkedsurvey>
                         </div>
 
                         <verifycheck linkedtag="{{surveyOpt.elementTag}}" style="padding: 8px" class="col-10 diarycheckmark-container center-vert center-horiz"></verifycheck>

@@ -370,6 +370,10 @@ a.item-content {
   height: 50%;
 }
 
+.diary-infos:nth-child(2) {
+  justify-content: center;
+}
+
 .diary-distance-time {
   font-style: normal;
   font-weight: bold;
