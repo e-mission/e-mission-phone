@@ -782,7 +782,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             id: "confirmed"+trip.start_ts,
             type: "FeatureCollection",
             features: features,
-            properties: { }
+            properties: { 
+              start_ts: trip.start_ts,
+              end_ts: trip.end_ts
+            }
           }
           return trip_gj;
         }).catch((err) => {
