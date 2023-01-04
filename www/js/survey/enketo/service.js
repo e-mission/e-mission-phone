@@ -146,6 +146,8 @@ angular.module('emission.survey.enketo.service', [
         // let's support both so we can label from either screen
         let tsObj = _state.opts.trip.data? _state.opts.trip.data.properties : _state.opts.trip;
         if (tsObj) {
+            if(!tsObj.start_ts) tsObj.start_ts = _state.opts.trip.start_ts; // For trip confirm survey, _state.opts.trip.data.properties does not automatically have start_ts
+            if(!tsObj.end_ts) tsObj.end_ts = _state.opts.trip.end_ts; // For trip confirm survey, _state.opts.trip.data.properties does not automatically have  end_ts
             data.start_ts = tsObj.start_ts;
             data.end_ts = tsObj.end_ts;
         }
