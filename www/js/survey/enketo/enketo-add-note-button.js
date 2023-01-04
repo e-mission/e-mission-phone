@@ -56,7 +56,7 @@ angular.module('emission.survey.enketo.add-note-button',
 
     // TODO: Hardcoding a partial TimeUseSurvey response for now
     // Can we come up with a more generic and more elegant way to do this ?
-    const partialTimeUseXml = {
+    const partialTimeUseResponse = {
       data: {
         name: "TimeUseSurvey",
         xmlResponse:
@@ -71,7 +71,7 @@ angular.module('emission.survey.enketo.add-note-button',
     };
     if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
-      .launch($scope, surveyName, { trip: trip, prev_demographic_survey: partialTimeUseXml })
+      .launch($scope, surveyName, { trip: trip, prefilledSurveyResponse: partialTimeUseResponse })
       .then(result => {
         if (!result) {
           return;

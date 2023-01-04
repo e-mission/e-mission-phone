@@ -34,7 +34,7 @@ angular.module('emission.survey.enketo.service', [
    *  };
    *  opts: {
    *    trip: object;
-   *    prev_demographic_survey: object;
+   *    prefilledSurveyResponse: object;
    *  };
    * }}
    */
@@ -99,7 +99,7 @@ angular.module('emission.survey.enketo.service', [
       },
       opts: {
         trip: null,
-        prev_demographic_survey: null,
+        prefilledSurveyResponse: null,
       },
     };
   }
@@ -110,7 +110,7 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string} answer string
    */
   function _restoreAnswer() {
-    const answer = _state.opts.prev_demographic_survey || _state.opts.trip?.userInput["SURVEY"];
+    const answer = _state.opts.prefilledSurveyResponse || _state.opts.trip?.userInput["SURVEY"];
     return answer ? answer.data.xmlResponse : null;
   }
 

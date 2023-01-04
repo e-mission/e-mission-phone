@@ -44,7 +44,7 @@ angular.module('emission.survey.enketo.demographics',
   $scope.openPopover = function ($event) {
     return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
         return EnketoSurveyLaunch
-          .launch($scope, 'UserProfileSurvey', { prev_demographic_survey: lastSurvey,
+          .launch($scope, 'UserProfileSurvey', { prefilledSurveyResponse: lastSurvey,
                 showBackButton: true, showFormFooterJumpNav: true  })
           .then(result => {
             console.log("demographic survey result ", result);
@@ -90,7 +90,7 @@ angular.module('emission.survey.enketo.demographics',
              * https://github.com/e-mission/e-mission-docs/issues/727#issuecomment-1126720935
              */
             return EnketoSurveyLaunch
-              .initSurvey('UserProfileSurvey', { prev_demographic_survey: $scope.existingSurvey,
+              .initSurvey('UserProfileSurvey', { prefilledSurveyResponse: $scope.existingSurvey,
                 showBackButton: true, showFormFooterJumpNav: true  })
               .then(result => {
                 console.log("demographic survey result ", result);
@@ -113,7 +113,7 @@ angular.module('emission.survey.enketo.demographics',
              * setEditSurveyAnswer instead
              */
             return EnketoSurveyLaunch
-              .initSurvey('UserProfileSurvey', { prev_demographic_survey: $scope.existingSurvey,
+              .initSurvey('UserProfileSurvey', { prefilledSurveyResponse: $scope.existingSurvey,
                 showBackButton: true, showFormFooterJumpNav: true  })
               .then(result => {
                 console.log("demographic survey result ", result);
