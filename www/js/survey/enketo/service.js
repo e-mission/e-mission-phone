@@ -110,16 +110,8 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string} answer string
    */
   function _restoreAnswer() {
-    if (_state.opts.trip) {
-      const answer = _state.opts.trip.userInput["SURVEY"];
-      return answer ? answer.data.xmlResponse : null;
-    } else if (_state.opts.prev_demographic_survey) {
-        const answer = _state.opts.prev_demographic_survey;
-        // TODO: Figure out how to retrieve and match the profile survey
-        return answer? answer.data.xmlResponse : null;
-    } else {
-        return null;
-    }
+    const answer = _state.opts.prev_demographic_survey || _state.opts.trip?.userInput["SURVEY"];
+    return answer ? answer.data.xmlResponse : null;
   }
 
   /**
