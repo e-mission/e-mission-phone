@@ -47,8 +47,8 @@ angular.module('emission.main.diary.infscrolltripitem',
     $scope.timeBounds = () => {
       return {
         isPlace: false,
-        start: $scope.trip?.start_ts,
-        end: $scope.trip?.end_ts
+        start_fmt_time: $scope.trip?.start_fmt_time,
+        end_fmt_time: $scope.trip?.end_fmt_time
       };
     };
      // if trip-notes is not present, then we won't show 'add note button'
