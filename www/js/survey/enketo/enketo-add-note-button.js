@@ -52,7 +52,13 @@ angular.module('emission.survey.enketo.add-note-button',
 
     // Prefill the time bounds of the trip into the survey
     const startDayAndTime = trip.start_fmt_time.split('T');
+    const startHMS = startDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
+    const startTimezoneCode = startDayAndTime[1].split('-')[1];
+    const startTime = `${startHMS}.000-${startTimezoneCode}`
     const endDayAndTime = trip.end_fmt_time.split('T');
+    const endHMS = endDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
+    const endTimezoneCode = endDayAndTime[1].split('-')[1];
+    const endTime = `${endHMS}.000-${endTimezoneCode}`
 
     // TODO: Hardcoding a partial TimeUseSurvey response for now
     // Can we come up with a more generic and more elegant way to do this ?
@@ -61,10 +67,12 @@ angular.module('emission.survey.enketo.add-note-button',
         name: "TimeUseSurvey",
         xmlResponse:
         `<a88RxBtE3jwSar3cwiZTdn xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"a88RxBtE3jwSar3cwiZTdn\">
+          <start>${trip.start_fmt_time}</start>
+          <end>${trip.end_fmt_time}</end>
           <group_hg4zz25>
-            <Date>${startDayAndTime[0]}</Date>
-            <Start_time>${startDayAndTime[1].substring(0, 8)}</Start_time> ${/* truncate to 8 chars for HH:MM:SS */''}
-            <End_time>${endDayAndTime[1].substring(0, 8)}</End_time>
+            <Date>${startDayAndTime[0]}</Date>    ${/* YY:MM:DD */''}
+            <Start_time>${startTime}</Start_time> ${/* HH:MM:SS.mmm-HH:MM */''}
+            <End_time>${endTime}</End_time>
           </group_hg4zz25>
         </a88RxBtE3jwSar3cwiZTdn>`
       }
