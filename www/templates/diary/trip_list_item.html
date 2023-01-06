@@ -13,7 +13,9 @@
                     id="$index" data-tap-disabled="true", height="{{getMapHeight()}}">
                 </leaflet>
                 <div ng-if="configTripNotes" class="row" style="height: 20%; padding: 10px">
-                    <enketo-add-note-button notes-config="configTripNotes()" surveys="surveys" trip="trip" time-bounds="timeBounds" style="margin: auto"></enketo-add-note-button>
+                    <enketo-add-note-button notes-config="configTripNotes()" surveys="surveys" trip="trip"
+                        time-bounds="timeBounds" datakey="manual/trip_addition_input" style="margin: auto">
+                    </enketo-add-note-button>
                 </div>
             </div>
             
@@ -90,6 +92,7 @@
                     </div> 
                 </div>
             </div>
+            <enketo-notes-list entries="trip.trip_addition"></enketo-notes-list>
         </div>
         <!-- End Time Tag -->
         <div class="stop-time-tag">{{trip.display_end_time}}</div>

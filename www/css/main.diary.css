@@ -216,6 +216,7 @@ a.item-content {
   overflow: hidden;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   display: flex;
+  flex-wrap: wrap;
 }
 
 .diary-card.short {
@@ -479,4 +480,27 @@ div.labelfilterlist {
 
 .enketo-button, .enketo-button .icon:before {
   line-height: 100%;
+}
+
+enketo-notes-list, .notes-list {
+  width: 100%;
+  margin-bottom: 10px;
+  padding: 0 10px;
+}
+
+.notes-list-entry {
+  display: flex;
+}
+
+.notes-list-entry b {
+  width: 50%;
+}
+
+.notes-list-entry i {
+  line-height: 24px;
+}
+
+.notes-list-entry .icon {
+  font-size: 24px;
+  margin-left: auto;
 }

@@ -143,8 +143,10 @@ angular.module('emission.survey.enketo.service', [
         data.ts = now/1000; // convert to seconds to be consistent with the server
         data.fmt_time = new Date(now);
     }
+    // use dataKey passed into opts if available, otherwise get it from the config
+    const dataKey = _state.opts.dataKey || _state.config[_state.name].dataKey;
     return $window.cordova.plugins.BEMUserCache
-      .putMessage(_state.config[_state.name].dataKey, data)
+      .putMessage(dataKey, data)
       .then(() => data);
   }
 

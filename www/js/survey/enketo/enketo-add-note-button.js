@@ -28,6 +28,7 @@ angular.module('emission.survey.enketo.add-note-button',
       notesConfig: '=',
       surveys: '=',
       timeBounds: '=',
+      datakey: '@',
     },
     controller: "EnketoAddNoteButtonCtrl",
     templateUrl: 'templates/survey/enketo/add-note-button.html'
@@ -90,7 +91,7 @@ angular.module('emission.survey.enketo.add-note-button',
 
     if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
-      .launch($scope, surveyName, { trip: trip, prefilledSurveyResponse: partialTimeUseResponse })
+      .launch($scope, surveyName, { trip: trip, prefilledSurveyResponse: partialTimeUseResponse, dataKey: $scope.datakey })
       .then(result => {
         if (!result) {
           return;
