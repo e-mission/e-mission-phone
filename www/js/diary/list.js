@@ -340,15 +340,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
-    $scope.getTripHeight = function(tripgj) {
-      let height = tripgj.common.different? $scope.itemHt + 80 : $scope.itemHt + 30;
-      if(tripgj.INPUTS[2]) {
-        height = 435;
-        $scope.itemHt = height;
-      } else {
-        height = 381;
-      }
-      return height;
+    $scope.getTripHeight = function(trip) {
+      return trip.INPUTS?.[2] ? 435 : 381;
     }
 
     $scope.increaseHeight = function () {
