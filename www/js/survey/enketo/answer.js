@@ -3,7 +3,7 @@ angular.module('emission.survey.enketo.answer', [
   'emission.config.dynamic',
 ])
 .factory('EnketoSurveyAnswer', function(
-  $http, DynamicConfig,
+  $http, DynamicConfig, $translate, $translateMessageFormatInterpolation
 ) {
   /**
    * @typedef EnketoAnswerData
@@ -37,23 +37,30 @@ angular.module('emission.survey.enketo.answer', [
    */
 
   const LABEL_FUNCTIONS = {
-    TripConfirmSurvey: (xmlDoc) => {
-      const modeStr = _getAnswerByTagName(xmlDoc, 'travel_mode');
-      const purposeStr = _getAnswerByTagName(xmlDoc, 'destination_purpose');
+    UseLabelTemplate: (xmlDoc) => {
 
-      if (modeStr.includes('trip_not_valid') || purposeStr.includes('trip_not_valid')) {
-        return 'Trip not valid';
+      const lang = $translate.use();
+      const labelTemplate = _config.labelTemplate?.[lang];
+
+      if (!labelTemplate) return false;
+      if (!_config.labelVars) return labelTemplate; // if no vars given, no need to interpolate
+
+      // gather vars that will be interpolated into the template according to the survey config
+      const labelVars = {}
+      for (lblVar in _config.labelVars) {
+        const fieldName = _config.labelVars[lblVar].key;
+        let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
+        if (fieldStr == '<null>') fieldStr = null;
+        if (_config.labelVars[lblVar].type == 'length') {
+          const fieldMatches = fieldStr?.split(' ');
+          labelVars[lblVar] = fieldMatches?.length || 0;
+        } else {
+          labelVars[lblVar] = fieldStr || '';
+        }
       }
 
-      const purposes = purposeStr.split(' ').length;
-      const modes = modeStr.split(' ').length;
-      return `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
-    },
-    UserProfileSurvey: (xmlDoc) => {
-      return 'Answered';
-    },
-    TimeUseSurvey: (xmlDoc) => {
-      return 'Answered';
+      const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
+      return label;
     }
   };
   
@@ -112,7 +119,10 @@ angular.module('emission.survey.enketo.answer', [
    * @returns {string} label string
    */
   function resolveLabel(name, xmlDoc) {
-    return LABEL_FUNCTIONS[name](xmlDoc);
+    if (LABEL_FUNCTIONS[name])
+      return LABEL_FUNCTIONS[name](xmlDoc);
+    const labelTemplateResult = LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc);
+    return labelTemplateResult || 'Answered';
   }
 
   return {
