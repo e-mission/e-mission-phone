@@ -116,5 +116,18 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     Logger.log("Returning mostRecentEntry "+printUserInput(mostRecentEntry));
     return mostRecentEntry;
   }
+
+  im.getTripAdditionForTrip = function(trip, tripAdditionList) {
+    if (tripAdditionList === undefined) {
+      Logger.log("In getTripAdditionForTrip, no trip addition input, returning []");
+      return undefined;
+    }
+
+    if (tripAdditionList.length < 20) {
+      console.log("Trip Addition list = "+tripAdditionList.map(printUserInput));
+    }
+
+    return tripAdditionList;
+  }
   return im;
 });

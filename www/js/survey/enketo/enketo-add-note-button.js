@@ -160,7 +160,7 @@ angular.module('emission.survey.enketo.add-note-button',
    */
   enbs.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getUserInputForTrip(trip, nextTrip,
+      const unprocessedLabelEntry = InputMatcher.getTripAdditionForTrip(trip,
           inputList);
       var userInputEntry = unprocessedLabelEntry;
       if (!angular.isDefined(userInputEntry)) {
@@ -176,7 +176,9 @@ angular.module('emission.survey.enketo.add-note-button',
    */
   enbs.populateInput = function(tripField, inputType, userInputEntry) {
     if (angular.isDefined(userInputEntry)) {
-        tripField.push(userInputEntry);
+          userInputEntry.forEach(ta => {
+            tripField.push(ta);
+          });
     }
   }
 
