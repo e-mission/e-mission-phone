@@ -383,12 +383,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
-    let surveyOpt, manualInputFactory;
+    let surveyOpt, manualInputFactory, enbs;
     DynamicConfig.configReady().then((configObj) => {
       const surveyOptKey = configObj.survey_info['trip-labels'];
       surveyOpt = SurveyOptions[surveyOptKey];
       console.log('surveyOpt in services.js is', surveyOpt);
       manualInputFactory = $injector.get(surveyOpt.service);
+      // enbs = $injector.get("EnketoNotesButtonService");
     });
 
     // Internal function, not publicly exposed
@@ -397,7 +398,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
-    timeline.getUnprocessedLabels = function() {
+    timeline.getUnprocessedLabels = function(manualFactory) {
         /*
          Because with the confirmed trips, all prior labels have been
          incorporated into the trip.
@@ -407,13 +408,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 startTs: result.end_ts - 10,
                 endTs: moment().unix() + 10
             }
-            var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
+            var manualPromises = manualFactory.MANUAL_KEYS.map(function(inp_key) {
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(manualInputFactory.extractResult);
+                  inp_key, pendingLabelQuery).then(manualFactory.extractResult);
             });
             const manualConfirmResults = {};
             return Promise.all(manualPromises).then((manualResults) => {
-                manualInputFactory.processManualInputs(manualResults, manualConfirmResults);
+                manualFactory.processManualInputs(manualResults, manualConfirmResults);
                 return [result, manualConfirmResults];
             });
         }).catch((err) => {

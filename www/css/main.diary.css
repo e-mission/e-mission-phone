@@ -493,7 +493,8 @@ enketo-notes-list, .notes-list {
 }
 
 .notes-list-entry b {
-  width: 50%;
+  font-size: 14px;
+  width: 60%;
 }
 
 .notes-list-entry i {

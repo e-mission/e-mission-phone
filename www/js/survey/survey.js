@@ -6,6 +6,7 @@ angular.module('emission.survey', [
                     "emission.survey.multilabel.buttons",
                     "emission.survey.multilabel.infscrollfilters",
                     "emission.survey.enketo.trip.button",
+                    "emission.survey.enketo.add-note-button",
                     "emission.survey.enketo.trip.infscrollfilters",
                     ])
 
