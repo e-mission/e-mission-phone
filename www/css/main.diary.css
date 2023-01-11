@@ -490,6 +490,7 @@ enketo-notes-list, .notes-list {
 
 .notes-list-entry {
   display: flex;
+  height: 40px;
 }
 
 .notes-list-entry b {

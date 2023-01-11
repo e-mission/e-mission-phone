@@ -76,6 +76,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.getTripHeight = function(trip) {
     let height = trip.INPUTS?.[2] ? 438 : 384;
+    if (trip.tripAddition) {
+      height += 40 * trip.tripAddition.length;
+    }
     if ($scope.showPlaces) {
       height += 120;
     }

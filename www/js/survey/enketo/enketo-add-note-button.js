@@ -82,6 +82,22 @@ angular.module('emission.survey.enketo.add-note-button',
     };
   }
 
+  const getScrollElement = function() {
+    if (!$scope.scrollElement) {
+        console.log("scrollElement is not cached, trying to read it ");
+        const ionItemElement = $element.closest('ion-item')
+        if (ionItemElement) {
+            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
+            $scope.scrollElement = ionItemElement.closest('ion-content');
+        } else {
+            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
+        }
+    }
+    // TODO: comment this out after testing to avoid log spew
+    console.log("Returning scrollElement ", $scope.scrollElement);
+    return $scope.scrollElement;
+  }
+
   $scope.openPopover = function ($event, trip, inputType) {
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
@@ -105,6 +121,8 @@ angular.module('emission.survey.enketo.add-note-button',
             data: result,
             write_ts: Date.now()
           });
+          const scrollElement = getScrollElement();
+          if (scrollElement) scrollElement.trigger('scroll-resize');
         });
         // store is commented out since the enketo survey launch currently
         // stores the value as well
