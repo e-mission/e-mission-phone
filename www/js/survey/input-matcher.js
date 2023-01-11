@@ -117,17 +117,23 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     return mostRecentEntry;
   }
 
-  im.getTripAdditionForTrip = function(trip, tripAdditionList) {
+  // return array of matching trip additions
+  im.getTripAdditionsForTrip = function(trip, tripAdditionList) {
     if (tripAdditionList === undefined) {
-      Logger.log("In getTripAdditionForTrip, no trip addition input, returning []");
+      Logger.log("In getTripAdditionsForTrip, no trip addition input, returning []");
       return undefined;
     }
 
-    if (tripAdditionList.length < 20) {
-      console.log("Trip Addition list = "+tripAdditionList.map(printUserInput));
-    }
+    // filter out trip additions that do not start withing the bounds of the trip
+    const matchingAdditions = tripAdditionList.filter((additionCandidate) =>
+        additionCandidate.data.start_ts >= trip.start_ts &&
+        additionCandidate.data.start_ts <= trip.end_ts);
 
-    return tripAdditionList;
+    if (matchingAdditions.length < 20) {
+      console.log("Matching Trip Addition list = "+matchingAdditions.map(printUserInput));
+    }
+    return matchingAdditions;
   }
+
   return im;
 });
