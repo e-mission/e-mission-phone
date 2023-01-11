@@ -125,29 +125,31 @@ angular.module('emission.survey.enketo.service', [
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
     const jsonDocResponse = $.xml2json(xmlResponse, {attrkey: 'attr'});
 
-    const data = {
-      label: EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc),
-      name: _state.name,
-      version: _state.config[_state.name].version,
-      xmlResponse,
-      jsonDocResponse,
-    };
-    if (_state.opts.trip) {
+    return EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc).then(rsLabel => {
+      const data = {
+        label: rsLabel,
+        name: _state.name,
+        version: _state.config[_state.name].version,
+        xmlResponse,
+        jsonDocResponse,
+      };
+      if (_state.opts.trip) {
         // The trip structure is different between the diary and label screens
         // one has the timestamps in properties and the other does not
         // let's support both so we can label from either screen
         data.start_ts = _state.opts.trip.data.properties.start_ts;
         data.end_ts = _state.opts.trip.data.properties.end_ts;
-    } else {
+      } else {
         const now = Date.now();
         data.ts = now/1000; // convert to seconds to be consistent with the server
         data.fmt_time = new Date(now);
-    }
-    // use dataKey passed into opts if available, otherwise get it from the config
-    const dataKey = _state.opts.dataKey || _state.config[_state.name].dataKey;
-    return $window.cordova.plugins.BEMUserCache
-      .putMessage(dataKey, data)
-      .then(() => data);
+      }
+      // use dataKey passed into opts if available, otherwise get it from the config
+      const dataKey = _state.opts.dataKey || _state.config[_state.name].dataKey;
+      return $window.cordova.plugins.BEMUserCache
+        .putMessage(dataKey, data)
+        .then(() => data);
+    }).then(data => data);
   }
 
   /**

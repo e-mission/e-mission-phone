@@ -39,28 +39,33 @@ angular.module('emission.survey.enketo.answer', [
   const LABEL_FUNCTIONS = {
     UseLabelTemplate: (xmlDoc, name) => {
 
-      const lang = $translate.use();
-      const labelTemplate = _config[name].labelTemplate?.[lang];
+      return _lazyLoadConfig().then(configSurveys => {
 
-      if (!labelTemplate) return false;
-      if (!_config[name].labelVars) return labelTemplate; // if no vars given, no need to interpolate
+        const config = configSurveys[name]; // config for this survey
+        const lang = $translate.use();
+        const labelTemplate = config.labelTemplate?.[lang];
 
-      // gather vars that will be interpolated into the template according to the survey config
-      const labelVars = {}
-      for (lblVar in _config[name].labelVars) {
-        const fieldName = _config[name].labelVars[lblVar].key;
-        let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
-        if (fieldStr == '<null>') fieldStr = null;
-        if (_config[name].labelVars[lblVar].type == 'length') {
-          const fieldMatches = fieldStr?.split(' ');
-          labelVars[lblVar] = fieldMatches?.length || 0;
-        } else {
-          labelVars[lblVar] = fieldStr || '';
+        if (!labelTemplate) return "Answered"; // no template given in config
+        if (!config.labelVars) return labelTemplate; // if no vars given, nothing to interpolate,
+        // so we return the unaltered template
+
+        // gather vars that will be interpolated into the template according to the survey config
+        const labelVars = {}
+        for (lblVar in config.labelVars) {
+          const fieldName = config.labelVars[lblVar].key;
+          let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
+          if (fieldStr == '<null>') fieldStr = null;
+          if (config.labelVars[lblVar].type == 'length') {
+            const fieldMatches = fieldStr?.split(' ');
+            labelVars[lblVar] = fieldMatches?.length || 0;
+          } else {
+            labelVars[lblVar] = fieldStr || '';
+          }
         }
-      }
 
-      const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
-      return label;
+        const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
+        return label;
+      })
     }
   };
   
@@ -91,7 +96,7 @@ angular.module('emission.survey.enketo.answer', [
     return DynamicConfig.configReady().then((newConfig) => {
       Logger.log("Resolved UI_CONFIG_READY promise in answer.js, filling in templates");
       _config = newConfig.survey_info.surveys;
-      return newConfig.survey_info.surveys;
+      return _config;
     })
   }
 
@@ -117,13 +122,12 @@ angular.module('emission.survey.enketo.answer', [
    * resolve answer label for the survey
    * @param {string} name survey name
    * @param {XMLDocument} xmlDoc survey answer object
-   * @returns {string} label string
+   * @returns {Promise<string>} label string Promise
    */
   function resolveLabel(name, xmlDoc) {
     if (LABEL_FUNCTIONS[name])
       return LABEL_FUNCTIONS[name](xmlDoc);
-    const labelTemplateResult = LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
-    return labelTemplateResult || 'Answered';
+    return LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
   }
 
   return {
