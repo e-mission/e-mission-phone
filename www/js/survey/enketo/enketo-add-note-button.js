@@ -114,6 +114,8 @@ angular.module('emission.survey.enketo.add-note-button',
         if (!result) {
           return;
         }
+        result.start_fmt_time = moment.unix(result.start_ts).format();
+        result.end_fmt_time = moment.unix(result.end_ts).format();
         $scope.$apply(() => {
           if (!trip.tripAddition)
             trip.tripAddition = [];
