@@ -35,11 +35,13 @@ angular.module('emission.main.diary.infscrollplaceitem',
     console.log('config is ', $scope.config);
 
     $scope.timeBounds = () => {
-      return {
+      let obj = {
         isPlace: true,
         start_fmt_time: $scope.trip?.end_fmt_time,
         end_fmt_time: $scope.trip?.nextTrip?.start_fmt_time
-      };
+      }
+      if(!obj.end_fmt_time) obj.end_fmt_time = obj.start_fmt_time;
+      return obj;
     };
     $scope.configPlaceNotes = () => $scope.config?.survey_info?.buttons?.['place-notes'];
   });
