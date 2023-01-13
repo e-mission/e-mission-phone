@@ -16,11 +16,34 @@ angular.module('emission.survey.enketo.notes-list', [])
     };
   })
 
-  .controller("NotesListCtrl", function ($scope, $state) {
+  .controller("NotesListCtrl", function ($scope, $state, $window) {
     console.log("Notes List Controller called");
 
-    $scope.deleteEntry = (entry) => {
+    const getScrollElement = function() {
+      if (!$scope.scrollElement) {
+          const ionItemElement = $element.closest('ion-item')
+          if (ionItemElement) {
+              $scope.scrollElement = ionItemElement.closest('ion-content');
+          }
+      }
+      return $scope.scrollElement;
+    }
+
+    $scope.deleteEntry = (index, entry) => {
       console.log("Deleting entry", entry);
-      // TODO
+
+      const dataKey = entry.metadata.key;
+      const data = entry.data;
+      data.status = 'DELETED';
+
+      return $window.cordova.plugins.BEMUserCache
+        .putMessage(dataKey, data)
+        .then(() => 
+          $scope.$apply(() => {
+            $scope.entries.splice(index, 1);
+            const scrollElement = getScrollElement();
+            if (scrollElement) scrollElement.trigger('scroll-resize');
+          })
+        );
     }
   });

@@ -124,6 +124,19 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
       return undefined;
     }
 
+    // remove deleted additions
+    tripAdditionList.forEach(addition => {
+        if (addition.data.status == "DELETED") {
+            // find and remove the original addition
+            const i = tripAdditionList.findIndex(a =>
+                a.data.end_ts == addition.data.end_ts
+                && a.data.start_ts == addition.data.start_ts);
+            tripAdditionList.splice(i, 1)
+            // also remove this deletion signifier
+            tripAdditionList.splice(tripAdditionList.indexOf(addition), 1);
+        }
+    });
+
     // filter out trip additions that do not start withing the bounds of the trip
     const matchingAdditions = tripAdditionList.filter((additionCandidate) =>
         additionCandidate.data.start_ts >= trip.start_ts &&
