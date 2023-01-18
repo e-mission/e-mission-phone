@@ -32,7 +32,7 @@ angular.module('emission.survey.enketo.notes-list', [])
     $scope.deleteEntry = (index, entry) => {
       console.log("Deleting entry", entry);
 
-      const dataKey = entry.metadata.key;
+      const dataKey = entry.key || entry.metadata.key;
       const data = entry.data;
       data.status = 'DELETED';
 

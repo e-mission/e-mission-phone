@@ -121,7 +121,8 @@ angular.module('emission.survey.enketo.add-note-button',
             trip.tripAddition = [];
           trip.tripAddition.push({
             data: result,
-            write_ts: Date.now()
+            write_ts: Date.now(),
+            key: $scope.datakey
           });
           const scrollElement = getScrollElement();
           if (scrollElement) scrollElement.trigger('scroll-resize');
