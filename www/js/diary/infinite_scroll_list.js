@@ -144,7 +144,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.forEach((trip, tIndex) => {
             trip.nextTrip = ctList[tIndex+1];
             $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
-            $scope.enbs.populateInputsAndInferences(trip, $scope.data.manualResultMap);
+            $scope.enbs.populateInputsAndInferences(trip, $scope.data.enbsResultMap);
         });
         // Fill places on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
@@ -196,10 +196,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
-    Timeline.getUnprocessedLabels($scope.labelPopulateFactory).then(([pipelineRange, manualResultMap]) => {
+    Timeline.getUnprocessedLabels($scope.labelPopulateFactory, $scope.enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
         if (pipelineRange.end_ts) {
             $scope.$apply(() => {
               $scope.data.manualResultMap = manualResultMap;
+              $scope.data.enbsResultMap = enbsResultMap;
             });
             console.log("After reading in the label controller, manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.data.manualResultMap);
             $scope.infScrollControl.pipelineRange = pipelineRange;
@@ -216,26 +217,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.$broadcast('scroll.infiniteScrollComplete')
         }
     });
-    Timeline.getUnprocessedLabels($scope.enbs).then(([pipelineRange, manualResultMap]) => {
-      if (pipelineRange.end_ts) {
-          $scope.$apply(() => {
-            $scope.data.manualResultMap = manualResultMap;
-          });
-          console.log("After reading in the label controller, manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.data.manualResultMap);
-          $scope.infScrollControl.pipelineRange = pipelineRange;
-          $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
-          $scope.infScrollControl.callback = function() {
-            $ionicScrollDelegate.scrollBottom(); // scrollTop()?
-          };
-          $scope.readDataFromServer();
-      } else {
-          $scope.$apply(() => {
-              $scope.infScrollControl.reachedEnd = true;
-          });
-          $ionicLoading.hide();
-          $scope.$broadcast('scroll.infiniteScrollComplete')
-      }
-  });
   }
 
   $scope.$on("scroll.infiniteScrollComplete", function() {
