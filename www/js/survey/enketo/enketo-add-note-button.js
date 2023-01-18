@@ -103,8 +103,12 @@ angular.module('emission.survey.enketo.add-note-button',
     console.log('About to launch survey ', surveyName);
 
     let partialTimeUseResponse;
+    let isPlace = false;
     if (surveyName == 'TimeUseSurvey') {
       partialTimeUseResponse = $scope.getPartialTimeUseResponse();
+      // The way isPlace is generated is very rudamentary, only checking to see if the datakey includes the word "place". We will want to change
+      // this before pushing the final changes to a more permanent solution, but for now this at the very least works
+      isPlace = $scope.datakey.includes("place");
     }
 
     if ($event.stopPropagation) $event.stopPropagation();
@@ -117,12 +121,21 @@ angular.module('emission.survey.enketo.add-note-button',
         result.start_fmt_time = moment.unix(result.start_ts).format();
         result.end_fmt_time = moment.unix(result.end_ts).format();
         $scope.$apply(() => {
-          if (!trip.tripAddition)
-            trip.tripAddition = [];
-          trip.tripAddition.push({
-            data: result,
-            write_ts: Date.now()
-          });
+          if(isPlace) {
+            if(!trip.placeAddition)
+              trip.placeAddition = [];
+            trip.placeAddition.push({
+              data: result,
+              write_ts: Date.now()
+            })
+          } else {
+            if (!trip.tripAddition)
+              trip.tripAddition = [];
+            trip.tripAddition.push({
+              data: result,
+              write_ts: Date.now()
+            });
+          }
           const scrollElement = getScrollElement();
           if (scrollElement) scrollElement.trigger('scroll-resize');
         });
@@ -162,6 +175,10 @@ angular.module('emission.survey.enketo.add-note-button',
         if (!trip.trip_addition) {
             trip.trip_addition = [];
         }
+        if(!trip.place_addition) {
+          trip.place_addition = [];
+        }
+        trip.placeAddition = [];
         trip.tripAddition = [];
         enbs.populateManualInputs(trip, trip.nextTrip, enbs.SINGLE_KEY,
             manualResultMap[enbs.SINGLE_KEY]);

@@ -79,6 +79,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     if (trip.tripAddition) {
       height += 40 * trip.tripAddition.length;
     }
+    if (trip.placeAddition) {
+      height += 40 * trip.placeAddition.length;
+    }
     if ($scope.showPlaces) {
       height += 120;
     }

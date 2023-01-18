@@ -10,11 +10,12 @@
                     <i class="icon ion-location"></i>
                     <b>{{trip.end_display_name}}</b>
                 </div>
-                <div class="row" style="padding-top: 10px">
+                <div class="row" style="padding-top: 10px; padding-bottom: 10px">
                     <enketo-add-note-button notes-config="configPlaceNotes()" surveys="surveys" trip="trip"
                         time-bounds="timeBounds" dataKey="manual/place_addition_input" style="margin: auto">
                     </enketo-add-note-button>
                 </div>
+                <enketo-notes-list entries="trip.placeAddition"></enketo-notes-list>
             </div>
         </div>
         <!-- End Time Tag -->
