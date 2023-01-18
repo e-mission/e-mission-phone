@@ -126,14 +126,16 @@ angular.module('emission.survey.enketo.add-note-button',
               trip.placeAddition = [];
             trip.placeAddition.push({
               data: result,
-              write_ts: Date.now()
+              write_ts: Date.now(),
+              key: $scope.datakey
             })
           } else {
             if (!trip.tripAddition)
               trip.tripAddition = [];
             trip.tripAddition.push({
               data: result,
-              write_ts: Date.now()
+              write_ts: Date.now(),
+              key: $scope.datakey
             });
           }
           const scrollElement = getScrollElement();

@@ -129,8 +129,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
         if (addition.data.status == "DELETED") {
             // find and remove the original addition
             const i = tripAdditionList.findIndex(a =>
-                a.data.end_ts == addition.data.end_ts
-                && a.data.start_ts == addition.data.start_ts);
+                a.data.match_id == addition.data.match_id);
             tripAdditionList.splice(i, 1)
             // also remove this deletion signifier
             tripAdditionList.splice(tripAdditionList.indexOf(addition), 1);

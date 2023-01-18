@@ -398,7 +398,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
-    timeline.getUnprocessedLabels = function(manualFactory) {
+    timeline.getUnprocessedLabels = function(manualFactory, enbs) {
         /*
          Because with the confirmed trips, all prior labels have been
          incorporated into the trip.
@@ -412,10 +412,20 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
                   inp_key, pendingLabelQuery).then(manualFactory.extractResult);
             });
+            var enbsPromises = enbs.MANUAL_KEYS.map(function(inp_key) {
+              return UnifiedDataLoader.getUnifiedMessagesForInterval(
+                  inp_key, pendingLabelQuery).then(enbs.extractResult);
+            });
             const manualConfirmResults = {};
-            return Promise.all(manualPromises).then((manualResults) => {
-                manualFactory.processManualInputs(manualResults, manualConfirmResults);
-                return [result, manualConfirmResults];
+            const enbsConfirmResults = {};
+            return new Promise((rs, rj) => {
+                Promise.all(manualPromises).then(function(results) {
+                  manualFactory.processManualInputs(results, manualConfirmResults);
+                });
+                Promise.all(enbsPromises).then(function(results) {
+                  enbs.processManualInputs(results, enbsConfirmResults);
+                });
+                rs([result, manualConfirmResults, enbsConfirmResults]);
             });
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
