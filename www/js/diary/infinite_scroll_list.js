@@ -36,7 +36,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
-  
   const DEFAULT_ITEM_HT = 274;
   $scope.itemHt = DEFAULT_ITEM_HT;
 
