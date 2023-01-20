@@ -418,14 +418,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             });
             const manualConfirmResults = {};
             const enbsConfirmResults = {};
-            return new Promise((rs, rj) => {
-                Promise.all(manualPromises).then(function(results) {
-                  manualFactory.processManualInputs(results, manualConfirmResults);
-                });
-                Promise.all(enbsPromises).then(function(results) {
-                  enbs.processManualInputs(results, enbsConfirmResults);
-                });
-                rs([result, manualConfirmResults, enbsConfirmResults]);
+            return Promise.all([...manualPromises, ...enbsPromises]).then((comboResults) => {
+                const manualResults = comboResults.slice(0, manualPromises.length);
+                const enbsResults = comboResults.slice(manualPromises.length);
+                manualFactory.processManualInputs(manualResults, manualConfirmResults);
+                enbs.processManualInputs(enbsResults, enbsConfirmResults);
+                return [result, manualConfirmResults, enbsConfirmResults];
             });
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
