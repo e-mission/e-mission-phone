@@ -38,13 +38,13 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
   $scope.itemHt = DEFAULT_ITEM_HT;
 
-  DynamicConfig.configReady().then((configObj) => {
+  $scope.init = (configObj) => {
     $scope.$apply(() => $scope.ui_config = configObj);
     const surveyOptKey = configObj.survey_info['trip-labels'];
     $scope.surveyOpt = SurveyOptions[surveyOptKey];
     console.log('surveyOpt in list.js is', $scope.surveyOpt);
     $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
-  })
+  };
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -433,6 +433,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $ionicPlatform.ready().then(function() {
+      DynamicConfig.configReady().then((configObj) => {
+        $scope.init(configObj);
+      });
       readAndUpdateForDay(moment().startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {

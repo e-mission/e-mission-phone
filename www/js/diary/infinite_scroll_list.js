@@ -44,8 +44,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
   $scope.data = {};
 
-  DynamicConfig.configReady().then((configObj) => {
-    // Logger.log("Resolved UI_CONFIG_READY promise in infinite_scroll_list.js, filling in templates");
+  $scope.init = (configObj) => {
     $scope.$apply(() => {
       $scope.ui_config = configObj;
       const surveyOptKey = configObj.survey_info['trip-labels'];
@@ -58,7 +57,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     $scope.initFilters();
     $scope.setupInfScroll();
-  })
+  };
 
   $scope.initFilters = function() {
     $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
@@ -567,6 +566,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     })
 
     $ionicPlatform.ready().then(function() {
+      DynamicConfig.configReady().then((configObj) => {
+        // Logger.log("Resolved UI_CONFIG_READY promise in infinite_scroll_list.js, filling in templates");
+        $scope.init(configObj);
+      });
       $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
 
       $scope.$on('$ionicView.enter', function(ev) {
