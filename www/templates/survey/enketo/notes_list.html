@@ -3,7 +3,7 @@
         <ul>
             <li class="notes-list-entry" ng-repeat="entry in entries">
                 <b class="two-lines">{{entry.data.label}}</b>
-                <i>{{entry.data.start_fmt_time.substring(11,16) + ' - ' + entry.data.end_fmt_time.substring(11,16)}}</i>
+                <i>{{entry.data.start_fmt_time + ' - ' + entry.data.end_fmt_time}}</i>
                 <i class="icon ion-trash-a" ng-click="deleteEntry($index, entry)"></i>
             </li>
         </ul>
