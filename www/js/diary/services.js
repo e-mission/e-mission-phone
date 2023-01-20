@@ -383,14 +383,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
-    let surveyOpt, manualInputFactory, enbs;
+    let manualInputFactory;
     $ionicPlatform.ready(function () {
       DynamicConfig.configReady().then((configObj) => {
         const surveyOptKey = configObj.survey_info['trip-labels'];
-        surveyOpt = SurveyOptions[surveyOptKey];
+        const surveyOpt = SurveyOptions[surveyOptKey];
         console.log('surveyOpt in services.js is', surveyOpt);
         manualInputFactory = $injector.get(surveyOpt.service);
-        // enbs = $injector.get("EnketoNotesButtonService");
       });
     });
 
