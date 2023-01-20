@@ -374,7 +374,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $window,
+.factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -384,12 +384,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
     let surveyOpt, manualInputFactory, enbs;
-    DynamicConfig.configReady().then((configObj) => {
-      const surveyOptKey = configObj.survey_info['trip-labels'];
-      surveyOpt = SurveyOptions[surveyOptKey];
-      console.log('surveyOpt in services.js is', surveyOpt);
-      manualInputFactory = $injector.get(surveyOpt.service);
-      // enbs = $injector.get("EnketoNotesButtonService");
+    $ionicPlatform.ready(function () {
+      DynamicConfig.configReady().then((configObj) => {
+        const surveyOptKey = configObj.survey_info['trip-labels'];
+        surveyOpt = SurveyOptions[surveyOptKey];
+        console.log('surveyOpt in services.js is', surveyOpt);
+        manualInputFactory = $injector.get(surveyOpt.service);
+        // enbs = $injector.get("EnketoNotesButtonService");
+      });
     });
 
     // Internal function, not publicly exposed

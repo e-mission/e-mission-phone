@@ -14,10 +14,12 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                         DynamicConfig, CommHelper, PostTripManualMarker, $translate) {
   console.log("controller DiaryDetailCtrl called with params = "+JSON.stringify($stateParams));
 
-  DynamicConfig.configReady().then((configObj) => {
-    const surveyOptKey = configObj.survey_info['trip-labels'];
-    $scope.surveyOpt = SurveyOptions[surveyOptKey];
-    console.log('surveyOpt in details.js is', $scope.surveyOpt);
+  $ionicPlatform.ready().then(function () {
+    DynamicConfig.configReady().then((configObj) => {
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in details.js is', $scope.surveyOpt);
+    });
   });
 
   $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
