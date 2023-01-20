@@ -10,6 +10,7 @@ angular.module('emission.survey.enketo.notes-list', [])
       restrict: 'E',
       scope: {
         entries: '=', // an array of trip- or place- additions to display
+        isplace: '='
       },
       controller: 'NotesListCtrl',
       templateUrl: 'templates/survey/enketo/notes_list.html'

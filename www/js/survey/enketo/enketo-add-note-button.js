@@ -53,33 +53,63 @@ angular.module('emission.survey.enketo.add-note-button',
     const timebounds = $scope.timeBounds(); // for trips, these times are start and end of trip
                                             // for places, it is enter and exit time (end of one trip and start of next)
 
-    // Prefill the time bounds of the trip into the survey
-    const startDayAndTime = timebounds.start_fmt_time.split('T');
-    const startHMS = startDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
-    const startTimezoneCode = startDayAndTime[1].split('-')[1];
-    const startTime = `${startHMS}.000-${startTimezoneCode}`
-    const endDayAndTime = timebounds.end_fmt_time.split('T');
-    const endHMS = endDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
-    const endTimezoneCode = endDayAndTime[1].split('-')[1];
-    const endTime = `${endHMS}.000-${endTimezoneCode}`
+    if(timebounds.isPlace) {
+      // Prefill the time bounds of the trip into the survey
+      const enterDayAndTime = timebounds.enter_fmt_time?.split('T');
+      const enterHMS = enterDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
+      const enterTimezoneCode = enterDayAndTime[1].split('-')[1];
+      const enterTime = `${enterHMS}.000-${enterTimezoneCode}`
+      const exitDayAndTime = timebounds.exit_fmt_time.split('T');
+      const exitHMS = exitDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
+      const exitTimezoneCode = exitDayAndTime[1].split('-')[1];
+      const exitTime = `${exitHMS}.000-${exitTimezoneCode}`
 
-    // TODO: Hardcoding a partial TimeUseSurvey response for now
-    // Can we come up with a more generic and more elegant way to do this ?
-    return {
-      data: {
-        name: "TimeUseSurvey",
-        xmlResponse:
-        `<a88RxBtE3jwSar3cwiZTdn xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"a88RxBtE3jwSar3cwiZTdn\">
-          <start>${timebounds.start_fmt_time}</start>
-          <end>${timebounds.end_fmt_time}</end>
-          <group_hg4zz25>
-            <Date>${startDayAndTime[0]}</Date>    ${/* YY:MM:DD */''}
-            <Start_time>${startTime}</Start_time> ${/* HH:MM:SS.mmm-HH:MM */''}
-            <End_time>${endTime}</End_time>
-          </group_hg4zz25>
-        </a88RxBtE3jwSar3cwiZTdn>`
-      }
-    };
+      // TODO: Hardcoding a partial TimeUseSurvey response for now
+      // Can we come up with a more generic and more elegant way to do this ?
+      return {
+        data: {
+          name: "TimeUseSurvey",
+          xmlResponse:
+          `<a88RxBtE3jwSar3cwiZTdn xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"a88RxBtE3jwSar3cwiZTdn\">
+            <start>${timebounds.enter_fmt_time}</start>
+            <end>${timebounds.exit_fmt_time}</end>
+            <group_hg4zz25>
+              <Date>${enterDayAndTime[0]}</Date>    ${/* YY:MM:DD */''}
+              <Start_time>${enterTime}</Start_time> ${/* HH:MM:SS.mmm-HH:MM */''}
+              <End_time>${exitTime}</End_time>
+            </group_hg4zz25>
+          </a88RxBtE3jwSar3cwiZTdn>`
+        }
+      };
+    } else {
+      // Prefill the time bounds of the trip into the survey
+      const startDayAndTime = timebounds.start_fmt_time?.split('T');
+      const startHMS = startDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
+      const startTimezoneCode = startDayAndTime[1].split('-')[1];
+      const startTime = `${startHMS}.000-${startTimezoneCode}`
+      const endDayAndTime = timebounds.end_fmt_time.split('T');
+      const endHMS = endDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
+      const endTimezoneCode = endDayAndTime[1].split('-')[1];
+      const endTime = `${endHMS}.000-${endTimezoneCode}`
+
+      // TODO: Hardcoding a partial TimeUseSurvey response for now
+      // Can we come up with a more generic and more elegant way to do this ?
+      return {
+        data: {
+          name: "TimeUseSurvey",
+          xmlResponse:
+          `<a88RxBtE3jwSar3cwiZTdn xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"a88RxBtE3jwSar3cwiZTdn\">
+            <start>${timebounds.start_fmt_time}</start>
+            <end>${timebounds.end_fmt_time}</end>
+            <group_hg4zz25>
+              <Date>${startDayAndTime[0]}</Date>    ${/* YY:MM:DD */''}
+              <Start_time>${startTime}</Start_time> ${/* HH:MM:SS.mmm-HH:MM */''}
+              <End_time>${endTime}</End_time>
+            </group_hg4zz25>
+          </a88RxBtE3jwSar3cwiZTdn>`
+        }
+      };
+    }
   }
 
   const getScrollElement = function() {
@@ -119,10 +149,16 @@ angular.module('emission.survey.enketo.add-note-button',
           return;
         }
 
-        let start_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Start_time.substr(0, 12);
-        let end_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.End_time.substr(0, 12)
-        result.start_fmt_time = moment(start_time).format("LT")
-        result.end_fmt_time = moment(end_time).format("LT")
+        let start_enter_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Start_time.substr(0, 12);
+        let end_exit_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.End_time.substr(0, 12);
+        if (isPlace) {
+          result.enter_fmt_time = moment(start_enter_time).format("LT")
+          result.exit_fmt_time = moment(end_exit_time).format("LT")
+        } else {
+          result.start_fmt_time = moment(start_enter_time).format("LT")
+          result.end_fmt_time = moment(end_exit_time).format("LT")
+        }
+        
         $scope.$apply(() => {
           if(isPlace) {
             if(!trip.placeAddition)

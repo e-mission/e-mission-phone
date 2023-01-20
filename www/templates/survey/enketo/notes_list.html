@@ -3,7 +3,8 @@
         <ul>
             <li class="notes-list-entry" ng-repeat="entry in entries">
                 <b class="two-lines">{{entry.data.label}}</b>
-                <i>{{entry.data.start_fmt_time + ' - ' + entry.data.end_fmt_time}}</i>
+                <i ng-if="isplace">{{entry.data.enter_fmt_time + ' - ' + entry.data.exit_fmt_time}}</i>
+                <i ng-if="!isplace">{{entry.data.start_fmt_time + ' - ' + entry.data.end_fmt_time}}</i>
                 <i class="icon ion-trash-a" ng-click="deleteEntry($index, entry)"></i>
             </li>
         </ul>
