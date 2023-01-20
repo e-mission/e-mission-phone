@@ -30,6 +30,8 @@ angular.module('emission.main.diary.infscrollplaceitem',
     console.log("Place Item Controller called");
     console.log('config is ', $scope.config);
 
+    // This timebounds funciton is used in js/survey/enketo/enketo-add-note-button.js getPartialTimeUseResponse() function
+    // This function is used to pre-fill the enketo TimeUse survey for programs/studies using the timeuse survey
     $scope.timeBounds = () => {
       let obj = {
         isPlace: true,

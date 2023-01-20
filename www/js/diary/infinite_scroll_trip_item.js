@@ -45,6 +45,8 @@ angular.module('emission.main.diary.infscrolltripitem',
       return SurveyOptions[surveyOptKey];
     }
     
+    // This timebounds funciton is used in js/survey/enketo/enketo-add-note-button.js getPartialTimeUseResponse() function
+    // This function is used to pre-fill the enketo TimeUse survey for programs/studies using the timeuse survey
     $scope.timeBounds = () => {
       return {
         isPlace: false,
