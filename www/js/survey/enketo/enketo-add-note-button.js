@@ -122,7 +122,6 @@ angular.module('emission.survey.enketo.add-note-button',
         let start_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Start_time.substr(0, 12);
         let end_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.End_time.substr(0, 12)
         result.start_fmt_time = moment(start_time).format("LT")
-//        moment.unix(result.start_ts).format();
         result.end_fmt_time = moment(end_time).format("LT")
 //        moment.unix(result.end_ts).format();
         $scope.$apply(() => {
