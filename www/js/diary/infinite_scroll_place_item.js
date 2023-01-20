@@ -36,7 +36,7 @@ angular.module('emission.main.diary.infscrollplaceitem',
         enter_fmt_time: $scope.trip?.end_fmt_time,
         exit_fmt_time: $scope.trip?.nextTrip?.start_fmt_time
       }
-      if(!obj.exit_fmt_time) obj.exit_fmt_time = obj.enter_fmt_time;
+      if(!obj.exit_fmt_time) obj.exit_fmt_time = moment().format();
       return obj;
     };
     $scope.configPlaceNotes = () => $scope.config?.survey_info?.buttons?.['place-notes'];
