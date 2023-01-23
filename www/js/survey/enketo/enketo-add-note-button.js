@@ -107,25 +107,21 @@ angular.module('emission.survey.enketo.add-note-button',
           result.start_fmt_time = begin;
           result.end_fmt_time = stop;
         }
-        
+        const addition = {
+          data: result,
+          write_ts: Date.now(),
+          key: $scope.datakey
+        };
         $scope.$apply(() => {
+          // cache the new addition to tripAddition or placeAddition
           if(isPlace) {
-            if(!trip.placeAddition)
-              trip.placeAddition = [];
-            trip.placeAddition.push({
-              data: result,
-              write_ts: Date.now(),
-              key: $scope.datakey
-            })
+            trip.placeAddition ||= [];
+            trip.placeAddition.push(addition);
           } else {
-            if (!trip.tripAddition)
-              trip.tripAddition = [];
-            trip.tripAddition.push({
-              data: result,
-              write_ts: Date.now(),
-              key: $scope.datakey
-            });
+            trip.tripAddition ||= [];
+            trip.tripAddition.push(addition);
           }
+          // trigger resize of scroll list
           const scrollElement = getScrollElement();
           if (scrollElement) scrollElement.trigger('scroll-resize');
         });
