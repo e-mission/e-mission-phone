@@ -87,9 +87,10 @@ angular.module('emission.survey.enketo.add-note-button',
       isPlace = $scope.datakey.includes("place");
     }
 
+    // prevents the click event from bubbling through to the card and opening the details page
     if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
-      .launch($scope, surveyName, { trip: trip, prefillFields: getPrefillTimes(), dataKey: $scope.datakey })
+      .launch($scope, surveyName, { trip: trip, prefillFields: $scope.getPrefillTimes(), dataKey: $scope.datakey })
       .then(result => {
         if (!result) {
           return;
@@ -157,21 +158,12 @@ angular.module('emission.survey.enketo.add-note-button',
   enbs.populateInputsAndInferences = function(trip, manualResultMap) {
     console.log("ENKETO: populating trip,", trip, " with result map", manualResultMap);
     if (angular.isDefined(trip)) {
-        // console.log("Expectation: "+JSON.stringify(trip.expectation));
-        // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
-        if (!trip.trip_addition) {
-            trip.trip_addition = [];
-        }
-        if(!trip.place_addition) {
-          trip.place_addition = [];
-        }
-        trip.placeAddition = [];
-        trip.tripAddition = [];
+        // initialize addition arrays as empty if they don't already exist
+        trip.trip_addition ||= [], trip.place_addition ||= [];
+        trip.tripAddition ||= [], trip.placeAddition ||= [];
         enbs.populateManualInputs(trip, trip.nextTrip, enbs.SINGLE_KEY,
             manualResultMap[enbs.SINGLE_KEY]);
         trip.finalInference = {};
-        enbs.inferFinalLabels(trip);
-        enbs.updateVerifiability(trip);
     } else {
         console.log("Trip information not yet bound, skipping fill");
     }
@@ -206,36 +198,6 @@ angular.module('emission.survey.enketo.add-note-button',
     }
   }
 
-  /*
-   * This is a HACK to work around the issue that the label screen and diary
-   * screen are not unified. We should remove this, and the timestamp in the
-   * userInput field when we do.
-   */
-  enbs.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
-    let pmInput = potentiallyModifiedTrip.tripAddition;
-    let origInput = originalTrip.tripAddition;
-    if (((pmInput[enbs.SINGLE_KEY] || {}).write_ts || 0) > ((origInput[enbs.SINGLE_KEY] || {}).write_ts || 0)) {
-        origInput[enbs.SINGLE_KEY] = pmInput[enbs.SINGLE_KEY];
-    }
-  }
-
-  enbs.updateTripProperties = function(trip, viewScope) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-  }
-  /**
-   * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
-   * The algorithm below operationalizes these principles:
-   *   - Never consider label tuples that contradict a green label
-   *   - Obey "conservation of uncertainty": the sum of probabilities after filtering by green labels must equal the sum of probabilities before
-   *   - After filtering, predict the most likely choices at the level of individual labels, not label tuples
-   *   - Never show user yellow labels that have a lower probability of being correct than confidenceThreshold
-   */
-  enbs.inferFinalLabels = function(trip) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-  }
-
   /**
    * MODE (manual/trip_addition_input becomes trip_addition_input)
    */
@@ -243,49 +205,5 @@ angular.module('emission.survey.enketo.add-note-button',
     return enbs.key.split("/")[1];
   }
 
-  /**
-   * For a given trip, compute how the "verify" button should behave.
-   * If the trip has at least one yellow label, the button should be clickable.
-   * If the trip has all green labels, the button should be disabled because everything has already been verified.
-   * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
-   */
-
-  enbs.setRecomputeDelay = function(rd) {
-    enbs.recomputedelay = rd;
-  }
-
-  enbs.updateVerifiability = function(trip) {
-    // currently a NOP since we don't have any other trip properties
-    trip.verifiability = "cannot-verify";
-    return;
-  }
-
-  /*
-   * Embody the logic for delayed update:
-   * the recompute logic already keeps trips that are waitingForModification
-   * even if they would be filtered otherwise.
-   * so here:
-   * - set the trip as waiting for potential modifications
-   * - create a one minute timeout that will remove the wait and recompute
-   * - clear the existing timeout (if any)
-   */
-  enbs.updateVisibilityAfterDelay = function(trip, viewScope) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-    // We have just edited this trip, and are now waiting to see if the user
-    // is going to modify it further
-    trip.waitingForMod = true;
-    let currTimeoutPromise = trip.timeoutPromise;
-    Logger.log("trip starting at "+trip.start_fmt_time+": creating new timeout of "+enbs.recomputedelay);
-    trip.timeoutPromise = $timeout(function() {
-      Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
-      trip.waitingForMod = false;
-      trip.timeoutPromise = undefined;
-      console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTrips();
-    }, enbs.recomputedelay);
-    Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
-    $timeout.cancel(currTimeoutPromise);
-  }
   return enbs;
 });
