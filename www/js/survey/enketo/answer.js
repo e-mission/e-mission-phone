@@ -130,8 +130,32 @@ angular.module('emission.survey.enketo.answer', [
     return LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
   }
 
+  /**
+   * resolve timestamps label from the survey response
+   * @param {XMLDocument} xmlDoc survey answer object
+   * @returns {object} object with `start_ts` and `end_ts`
+   */
+  function resolveTimestamps(xmlDoc) {
+    // check for Date and Time fields
+    const date = xmlDoc.getElementsByTagName('Date')?.[0].innerHTML;
+    const start = xmlDoc.getElementsByTagName('Start_time')?.[0].innerHTML;
+    const end = xmlDoc.getElementsByTagName('End_time')?.[0].innerHTML;
+
+    if (!date || !start || !end) return null; // if any of the fields are missing, return null
+
+    const momentStart = moment(date + 'T' + start);
+    const momentEnd = moment(date + 'T' + end);
+
+    // return unix timestamps in milliseconds
+    return {
+      start_ts: momentStart.unix(),
+      end_ts: +momentEnd.unix()
+    }; 
+  }
+
   return {
     filterByNameAndVersion,
     resolveLabel,
+    resolveTimestamps,
   };
 });

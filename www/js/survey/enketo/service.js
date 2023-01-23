@@ -144,6 +144,7 @@ angular.module('emission.survey.enketo.service', [
     const xmlResponse = _state.form.getDataStr();
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
     const jsonDocResponse = $.xml2json(xmlResponse, {attrkey: 'attr'});
+    let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc);
 
     return EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc).then(rsLabel => {
       const data = {
@@ -154,11 +155,10 @@ angular.module('emission.survey.enketo.service', [
         jsonDocResponse,
       };
       if (_state.opts.trip) {
-        // The trip structure is different between the diary and label screens
-        // one has the timestamps in properties and the other does not
-        // let's support both so we can label from either screen
-        data.start_ts = _state.opts.trip.data.properties.start_ts;
-        data.end_ts = _state.opts.trip.data.properties.end_ts;
+        // if timestamps were not resolved from the survey, we will use the trip's timestamps
+        timestamps ||= _state.opts.trip.data.properties;
+        data.start_ts = timestamps.start_ts;
+        data.end_ts = timestamps.end_ts;
         // generate a UUID v4 for the survey response
         // using method from https://stackoverflow.com/a/2117523
         // crypto.generateUUID() is preferable, but not availble to us in the app

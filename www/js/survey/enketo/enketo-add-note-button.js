@@ -54,9 +54,9 @@ angular.module('emission.survey.enketo.add-note-button',
     const begin = timeBounds.start_fmt_time || timeBounds.enter_fmt_time;
     const stop = timeBounds.end_fmt_time || timeBounds.exit_fmt_time;
     return {
-      "Date": moment(begin).format('YYYY-MM-DD'),
-      "Start_time": moment(begin).format('HH:mm:ss.mmm'),
-      "End_time": moment(stop).format('HH:mm:ss.mmm')
+      "Date": moment.parseZone(begin).format('YYYY-MM-DD'),
+      "Start_time": moment.parseZone(begin).format('HH:mm:ss.SSSZ'),
+      "End_time": moment.parseZone(stop).format('HH:mm:ss.SSSZ')
     }
   }
 
@@ -96,14 +96,16 @@ angular.module('emission.survey.enketo.add-note-button',
           return;
         }
 
-        let start_enter_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Start_time.substr(0, 12);
-        let end_exit_time = result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.Date + " " + result.jsonDocResponse.a88RxBtE3jwSar3cwiZTdn.group_hg4zz25.End_time.substr(0, 12);
+        const timezone = trip.start_local_dt.timezone;
+        const begin = moment.parseZone(result.start_ts*1000).tz(timezone).format("h:mm A");
+        const stop = moment.parseZone(result.end_ts*1000).tz(timezone).format("h:mm A");
+
         if (isPlace) {
-          result.enter_fmt_time = moment(start_enter_time).format("LT")
-          result.exit_fmt_time = moment(end_exit_time).format("LT")
+          result.enter_fmt_time = begin;
+          result.exit_fmt_time = stop;
         } else {
-          result.start_fmt_time = moment(start_enter_time).format("LT")
-          result.end_fmt_time = moment(end_exit_time).format("LT")
+          result.start_fmt_time = begin;
+          result.end_fmt_time = stop;
         }
         
         $scope.$apply(() => {
