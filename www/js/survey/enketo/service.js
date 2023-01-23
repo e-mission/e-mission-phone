@@ -100,8 +100,28 @@ angular.module('emission.survey.enketo.service', [
       opts: {
         trip: null,
         prefilledSurveyResponse: null,
+        prefillFields: null,
       },
     };
+  }
+
+  /**
+   * _getPrefilleModel retrieve and prefill the model XML response
+   * @param {} key/value pairs of fields to prefill in the model response
+   * @returns {string} serialized XML of the prefilled model response
+   */
+  function _getPrefilledModel(prefillFields) {
+    if (!prefillFields) return null;
+    const xmlParser = new $window.DOMParser();
+    const xmlModel = _state.loaded.model;
+    const xmlDoc = xmlParser.parseFromString(xmlModel, 'text/xml');
+
+    for (const [tagName, value] of Object.entries(prefillFields)) {
+      const vals = xmlDoc.getElementsByTagName(tagName);
+      vals[0].innerHTML = value;
+    }
+    const instance = xmlDoc.getElementsByTagName('instance')[0].children[0];
+    return new XMLSerializer().serializeToString(instance);
   }
 
   /**
@@ -110,8 +130,8 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string} answer string
    */
   function _restoreAnswer() {
-    const answer = _state.opts.prefilledSurveyResponse || _state.opts.trip?.userInput["SURVEY"];
-    return answer ? answer.data.xmlResponse : null;
+    const answer = _state.opts.trip?.userInput["SURVEY"] || _state.opts.prefilledSurveyResponse;
+    return answer?.data?.xmlResponse || _getPrefilledModel(_state.opts.prefillFields) || null;
   }
 
   /**

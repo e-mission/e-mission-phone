@@ -49,66 +49,14 @@ angular.module('emission.survey.enketo.add-note-button',
     return $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
   }
 
-  $scope.getPartialTimeUseResponse = () => {
-    const timebounds = $scope.timeBounds(); // for trips, these times are start and end of trip
-                                            // for places, it is enter and exit time (end of one trip and start of next)
-
-    if(timebounds.isPlace) {
-      // Prefill the time bounds of the trip into the survey
-      const enterDayAndTime = timebounds.enter_fmt_time?.split('T');
-      const enterHMS = enterDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
-      const enterTimezoneCode = enterDayAndTime[1].split('-')[1];
-      const enterTime = `${enterHMS}.000-${enterTimezoneCode}`
-      const exitDayAndTime = timebounds.exit_fmt_time.split('T');
-      const exitHMS = exitDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
-      const exitTimezoneCode = exitDayAndTime[1].split('-')[1];
-      const exitTime = `${exitHMS}.000-${exitTimezoneCode}`
-
-      // TODO: Hardcoding a partial TimeUseSurvey response for now
-      // Can we come up with a more generic and more elegant way to do this ?
-      return {
-        data: {
-          name: "TimeUseSurvey",
-          xmlResponse:
-          `<a88RxBtE3jwSar3cwiZTdn xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"a88RxBtE3jwSar3cwiZTdn\">
-            <start>${timebounds.enter_fmt_time}</start>
-            <end>${timebounds.exit_fmt_time}</end>
-            <group_hg4zz25>
-              <Date>${enterDayAndTime[0]}</Date>    ${/* YY:MM:DD */''}
-              <Start_time>${enterTime}</Start_time> ${/* HH:MM:SS.mmm-HH:MM */''}
-              <End_time>${exitTime}</End_time>
-            </group_hg4zz25>
-          </a88RxBtE3jwSar3cwiZTdn>`
-        }
-      };
-    } else {
-      // Prefill the time bounds of the trip into the survey
-      const startDayAndTime = timebounds.start_fmt_time?.split('T');
-      const startHMS = startDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
-      const startTimezoneCode = startDayAndTime[1].split('-')[1];
-      const startTime = `${startHMS}.000-${startTimezoneCode}`
-      const endDayAndTime = timebounds.end_fmt_time.split('T');
-      const endHMS = endDayAndTime[1].substring(0, 8); // truncated to 8 chars for HH:MM:SS
-      const endTimezoneCode = endDayAndTime[1].split('-')[1];
-      const endTime = `${endHMS}.000-${endTimezoneCode}`
-
-      // TODO: Hardcoding a partial TimeUseSurvey response for now
-      // Can we come up with a more generic and more elegant way to do this ?
-      return {
-        data: {
-          name: "TimeUseSurvey",
-          xmlResponse:
-          `<a88RxBtE3jwSar3cwiZTdn xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" id=\"a88RxBtE3jwSar3cwiZTdn\">
-            <start>${timebounds.start_fmt_time}</start>
-            <end>${timebounds.end_fmt_time}</end>
-            <group_hg4zz25>
-              <Date>${startDayAndTime[0]}</Date>    ${/* YY:MM:DD */''}
-              <Start_time>${startTime}</Start_time> ${/* HH:MM:SS.mmm-HH:MM */''}
-              <End_time>${endTime}</End_time>
-            </group_hg4zz25>
-          </a88RxBtE3jwSar3cwiZTdn>`
-        }
-      };
+  $scope.getPrefillTimes = () => {
+    const timeBounds = $scope.timeBounds();
+    const begin = timeBounds.start_fmt_time || timeBounds.enter_fmt_time;
+    const stop = timeBounds.end_fmt_time || timeBounds.exit_fmt_time;
+    return {
+      "Date": moment(begin).format('YYYY-MM-DD'),
+      "Start_time": moment(begin).format('HH:mm:ss.mmm'),
+      "End_time": moment(stop).format('HH:mm:ss.mmm')
     }
   }
 
@@ -132,10 +80,8 @@ angular.module('emission.survey.enketo.add-note-button',
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
 
-    let partialTimeUseResponse;
     let isPlace = false;
     if (surveyName == 'TimeUseSurvey') {
-      partialTimeUseResponse = $scope.getPartialTimeUseResponse();
       // The way isPlace is generated is very rudamentary, only checking to see if the datakey includes the word "place". We will want to change
       // this before pushing the final changes to a more permanent solution, but for now this at the very least works
       isPlace = $scope.datakey.includes("place");
@@ -143,7 +89,7 @@ angular.module('emission.survey.enketo.add-note-button',
 
     if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
-      .launch($scope, surveyName, { trip: trip, prefilledSurveyResponse: partialTimeUseResponse, dataKey: $scope.datakey })
+      .launch($scope, surveyName, { trip: trip, prefillFields: getPrefillTimes(), dataKey: $scope.datakey })
       .then(result => {
         if (!result) {
           return;
