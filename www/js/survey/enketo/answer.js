@@ -137,9 +137,9 @@ angular.module('emission.survey.enketo.answer', [
    */
   function resolveTimestamps(xmlDoc) {
     // check for Date and Time fields
-    const date = xmlDoc.getElementsByTagName('Date')?.[0].innerHTML;
-    const start = xmlDoc.getElementsByTagName('Start_time')?.[0].innerHTML;
-    const end = xmlDoc.getElementsByTagName('End_time')?.[0].innerHTML;
+    const date = xmlDoc.getElementsByTagName('Date')?.[0]?.innerHTML;
+    const start = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
+    const end = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
 
     if (!date || !start || !end) return null; // if any of the fields are missing, return null
 
