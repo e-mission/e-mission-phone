@@ -95,18 +95,6 @@ angular.module('emission.survey.enketo.add-note-button',
         if (!result) {
           return;
         }
-
-        const timezone = trip.start_local_dt.timezone;
-        const begin = moment.parseZone(result.start_ts*1000).tz(timezone).format("h:mm A");
-        const stop = moment.parseZone(result.end_ts*1000).tz(timezone).format("h:mm A");
-
-        if (isPlace) {
-          result.enter_fmt_time = begin;
-          result.exit_fmt_time = stop;
-        } else {
-          result.start_fmt_time = begin;
-          result.end_fmt_time = stop;
-        }
         const addition = {
           data: result,
           write_ts: Date.now(),

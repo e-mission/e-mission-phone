@@ -10,7 +10,7 @@ angular.module('emission.survey.enketo.notes-list', [])
       restrict: 'E',
       scope: {
         entries: '=', // an array of trip- or place- additions to display
-        isplace: '='
+        timezone: '=',
       },
       controller: 'NotesListCtrl',
       templateUrl: 'templates/survey/enketo/notes_list.html'
@@ -28,6 +28,15 @@ angular.module('emission.survey.enketo.notes-list', [])
           }
       }
       return $scope.scrollElement;
+    }
+
+    $scope.setDisplayTime = function(entry) {
+      const timezone = $scope.timezone;
+      const beginTs = entry.data.start_ts || entry.data.enter_ts;
+      const stopTs = entry.data.end_ts || entry.data.exit_ts;
+      const begin = moment.parseZone(beginTs*1000).tz(timezone).format("h:mm A");
+      const stop = moment.parseZone(stopTs*1000).tz(timezone).format("h:mm A");
+      return entry.displayTime = begin + " - " + stop;
     }
 
     $scope.deleteEntry = (index, entry) => {
