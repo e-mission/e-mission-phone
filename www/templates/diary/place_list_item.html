@@ -4,7 +4,7 @@
         <!-- Start Time Tag -->
         <!-- <div class="start-time-tag">{{trip.display_end_time}}</div> -->
         <div class="diary-card short" style="padding-top: 15px; padding-bottom: 15px">
-            <div style="margin: auto">
+            <div style="width: 100%; margin: auto">
                 <div class="row place-title" style="padding: 4px">
                     <!-- Place (Destination of Prev. Trip) -->
                     <i class="icon ion-location"></i>
@@ -15,7 +15,7 @@
                         time-bounds="timeBounds" dataKey="manual/place_addition_input" style="margin: auto">
                     </enketo-add-note-button>
                 </div>
-                <enketo-notes-list entries="trip.placeAddition" isplace="true"></enketo-notes-list>
+                <enketo-notes-list entries="trip.placeAddition" timezone="trip.start_local_dt.timezone"></enketo-notes-list>
             </div>
         </div>
         <!-- End Time Tag -->

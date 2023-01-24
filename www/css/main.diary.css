@@ -230,6 +230,8 @@ a.item-content {
 
 .place-title {
   color: #222;
+  display: flex;
+  justify-content: center;
 }
 
 .place-title b {
@@ -489,24 +491,18 @@ div.labelfilterlist {
 enketo-notes-list, .notes-list {
   width: 100%;
   margin-bottom: 0px;
-  padding: 0 10px;
+  padding: 0 5px 5px 5px;
+  text-align: center;
 }
 
 .notes-list-entry {
-  display: flex;
+  display: grid;
+  grid-template-columns: 10fr 9fr 1fr;
+  place-items: center;
+  font-size: 13px;
   height: 40px;
-}
-
-.notes-list-entry b {
-  font-size: 14px;
-  width: 60%;
-}
-
-.notes-list-entry i {
-  line-height: 24px;
 }
 
 .notes-list-entry .icon {
   font-size: 24px;
-  margin-left: auto;
 }
