@@ -117,6 +117,19 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     return mostRecentEntry;
   }
 
+  // parallels get_not_deleted_candidates() in trip_queries.py
+  im.getNotDeletedCandidates = function(candidates) {
+    console.log('getNotDeletedCandidates called with ' + candidates.length + ' candidates');
+    // We want to retain all ACTIVE entries that have not been DELETED
+    const allActiveList = candidates.filter(c => !c.data.status || c.data.status == 'ACTIVE');
+    const allDeletedIds = candidates.filter(c => c.data.status && c.data.status == 'DELETED').map(c => c.data['match_id']);
+    const notDeletedActive = allActiveList.filter(c => !allDeletedIds.includes(c.data['match_id']));
+    console.log(`Found ${allActiveList.length} active entries,
+                    ${allDeletedIds.length} deleted entries ->
+                    ${notDeletedActive.length} non deleted active entries`);
+    return notDeletedActive;
+  }
+
   // return array of matching trip additions
   im.getTripAdditionsForTrip = function(trip, tripAdditionList) {
     if (tripAdditionList === undefined) {
@@ -124,22 +137,11 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
       return undefined;
     }
 
-    // remove deleted additions
-    tripAdditionList.forEach(addition => {
-        if (addition.data.status == "DELETED") {
-            // find and remove the original addition
-            const i = tripAdditionList.findIndex(a =>
-                a.data.match_id == addition.data.match_id);
-            tripAdditionList.splice(i, 1)
-            // also remove this deletion signifier
-            tripAdditionList.splice(tripAdditionList.indexOf(addition), 1);
-        }
-    });
-
-    // filter out trip additions that do not start withing the bounds of the trip
-    const matchingAdditions = tripAdditionList.filter((additionCandidate) =>
-        additionCandidate.data.start_ts >= trip.start_ts &&
-        additionCandidate.data.start_ts <= trip.end_ts);
+    // get additions that have not been deleted
+    // and filter out additions that do not start within the bounds of the trip
+    const matchingAdditions = im.getNotDeletedCandidates(tripAdditionList).filter((additionCandidate) =>
+        additionCandidate.data.start_ts >= ~~trip.start_ts &&
+        additionCandidate.data.start_ts <= ~~trip.end_ts);
 
     if (matchingAdditions.length < 20) {
       console.log("Matching Trip Addition list = "+matchingAdditions.map(printUserInput));
