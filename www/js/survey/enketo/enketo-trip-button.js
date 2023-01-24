@@ -111,7 +111,7 @@ angular.module('emission.survey.enketo.trip.button',
 
   $scope.openPopover = function ($event, trip, inputType) {
     return EnketoSurveyLaunch
-      .launch($scope, 'TripConfirmSurvey', { trip: trip })
+      .launch($scope, 'TripConfirmSurvey', { trip: trip, prefilledSurveyResponse: trip.userInput[EnketoTripButtonService.SINGLE_KEY] })
       .then(result => {
         if (!result) {
           return;

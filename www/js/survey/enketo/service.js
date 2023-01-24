@@ -130,7 +130,7 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string} answer string
    */
   function _restoreAnswer() {
-    const answer = _state.opts.trip?.userInput["SURVEY"] || _state.opts.prefilledSurveyResponse;
+    const answer = _state.opts.prefilledSurveyResponse;
     return answer?.data?.xmlResponse || _getPrefilledModel(_state.opts.prefillFields) || null;
   }
 
