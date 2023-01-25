@@ -45,8 +45,8 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             Logger.displayError("Invalid source", "Configurations from "+source+" not supported, please contact the app developer");
             return;
         };
-        // This is specific for my (Sebastian) branch of the nrel-openpath-deploy-configs repo
-        // THIS SHOULD BE CHANGED to the main branch once my changes have been merged to the Master
+        // The URL prefix from which config files will be downloaded and read.
+        // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
         const downloadURL = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/configs/"+label+".nrel-op.json"
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
