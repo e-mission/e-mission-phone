@@ -17,7 +17,7 @@ angular.module('emission.survey.enketo.notes-list', [])
     };
   })
 
-  .controller("NotesListCtrl", function ($scope, $state, $window) {
+  .controller("NotesListCtrl", function ($scope, $state, $element, $window) {
     console.log("Notes List Controller called");
 
     const getScrollElement = function() {
