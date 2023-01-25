@@ -117,7 +117,7 @@ angular.module('emission.survey.enketo.add-note-button',
       });
   };
 })
-.factory("EnketoNotesButtonService", function(InputMatcher, EnketoSurveyAnswer, $timeout) {
+.factory("EnketoNotesButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
   var enbs = {};
   console.log("Creating EnketoNotesButtonService");
   enbs.SINGLE_KEY="NOTES";
