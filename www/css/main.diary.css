@@ -491,6 +491,9 @@ div.labelfilterlist {
 enketo-notes-list, .notes-list {
   width: 100%;
   margin-bottom: 0px;
+}
+
+.notes-list {
   padding: 0 5px 5px 5px;
   text-align: center;
 }
