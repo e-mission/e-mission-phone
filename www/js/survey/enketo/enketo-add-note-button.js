@@ -40,8 +40,6 @@ angular.module('emission.survey.enketo.add-note-button',
   console.log("Invoked enketo directive controller for add-note-button");
   $scope.notes = [];
 
-  EnketoNotesButtonService.key = $scope.datakey;
-
   $scope.displayLabel = () => {
     const localeCode = $translate.use();
     // if already filled in
@@ -123,22 +121,38 @@ angular.module('emission.survey.enketo.add-note-button',
   var enbs = {};
   console.log("Creating EnketoNotesButtonService");
   enbs.SINGLE_KEY="NOTES";
-  enbs.key = "manual/trip_addition_input";
-  enbs.MANUAL_KEYS = [enbs.key];
+  enbs.MANUAL_KEYS = [];
+
+  /**
+   * Set the keys for trip and/or place additions whichever will be enabled,
+   * and sets the name of the surveys they will use.
+   */
+  enbs.initConfig = function(tripSurveyName, placeSurveyName) {
+    enbs.tripSurveyName = tripSurveyName;
+    if (tripSurveyName) {
+       enbs.MANUAL_KEYS.push("manual/trip_addition_input")
+    }
+    enbs.placeSurveyName = placeSurveyName;
+    if (placeSurveyName) {
+       enbs.MANUAL_KEYS.push("manual/place_addition_input")
+    }
+  }
 
   /**
    * Embed 'inputType' to the trip.
    */
-   enbs.extractResult = (results) => EnketoSurveyAnswer.filterByNameAndVersion('TimeUseSurvey', results);
-
-   enbs.processManualInputs = function(manualResults, resultMap) {
-    if (manualResults.length > 1) {
-        Logger.displayError("Found "+manualResults.length+" results expected 1", manualResults);
-    } else {
-        console.log("ENKETO: processManualInputs with ", manualResults, " and ", resultMap);
-        const surveyResult = manualResults[0];
-        resultMap[enbs.SINGLE_KEY] = surveyResult;
+  enbs.extractResult = function(results) {
+    const resultsPromises = [EnketoSurveyAnswer.filterByNameAndVersion(enbs.tripSurveyName, results)];
+    if (enbs.tripSurveyName != enbs.placeSurveyName) {
+      resultsPromises.push(EnketoSurveyAnswer.filterByNameAndVersion(enbs.placeSurveyName, results));
     }
+    return Promise.all(resultsPromises);
+  };
+
+  enbs.processManualInputs = function(manualResults, resultMap) {
+    console.log("ENKETO: processManualInputs with ", manualResults, " and ", resultMap);
+    const surveyResults = manualResults.flat(2);
+    resultMap[enbs.SINGLE_KEY] = surveyResults;
   }
 
   enbs.populateInputsAndInferences = function(trip, manualResultMap) {

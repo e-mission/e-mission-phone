@@ -50,9 +50,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.surveyOpt = SurveyOptions[surveyOptKey];
       console.log('surveyOpt in infinite_scroll_list.js is', $scope.surveyOpt);
       $scope.showPlaces = configObj.survey_info?.buttons?.['place-notes'];
-
       // if we decide to load dynamic surveys by surveys.json instead of config, this will need to be updated
       $scope.surveys = configObj.survey_info.surveys;
+      $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+      $scope.enbs = $injector.get("EnketoNotesButtonService");
+      const tripSurveyName = configObj.survey_info?.buttons?.['trip-notes']?.surveyName;
+      const placeSurveyName = configObj.survey_info?.buttons?.['place-notes']?.surveyName;
+      $scope.enbs.initConfig(tripSurveyName, placeSurveyName);
     });
     $scope.initFilters();
     $scope.setupInfScroll();
@@ -61,9 +65,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.initFilters = function() {
     $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
     $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
-    $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
-    $scope.enbs = $injector.get("EnketoNotesButtonService");
-    console.log('enbs is', $scope.enbs);
     $scope.filterInputs.forEach((f) => {
       f.state = false;
     });
