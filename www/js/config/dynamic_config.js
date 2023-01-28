@@ -79,6 +79,37 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             .catch((err) => Logger.displayError("Unable to read saved config", err));
     }
 
+    /**
+     * loadNewConfig download and load a new config from the server if it is a differ
+     * @param {[]} urlComponents specify the label and source of the config to load
+     * @param {} thenGoToIntro whether to go to the intro screen after loading the config
+     * @param {} [existingVersion=null] if the new config's version is the same, we won't update
+     * @returns {boolean} boolean representing whether the config was updated or not
+     */
+    var loadNewConfig = function (urlComponents, thenGoToIntro, existingVersion=null) {
+        return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
+            if (downloadedConfig.version == existingVersion) {
+                Logger.log("UI_CONFIG: Not updating config because version is the same");
+                return Promise.resolve(false);
+            }
+            // we can use angular.extend since urlComponents is not nested
+            // need to change this to angular.merge if that changes
+            const toSaveConfig = angular.extend(downloadedConfig, {joined: urlComponents});
+            const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
+                CONFIG_PHONE_UI, toSaveConfig);
+            const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
+            // loaded new config, so it is both ready and changed
+            return storeConfigPromise.then(logSuccess)
+                .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
+                .then(dc.saveAndNotifyConfigReady(downloadedConfig))
+                .then(() => {
+                    if (thenGoToIntro) $state.go("root.intro")
+                })
+                .then(() => true)
+                .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
+        });
+    }
+
     dc.saveAndNotifyConfigReady = function(newConfig) {
         dc.config = newConfig;
         dc.isConfigReady = true;
@@ -138,29 +169,25 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady);
                 return; // labels are the same
             }
-            // if the labels are different
-            return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
-                // we can use angular.extend since urlComponents is not nested
-                // need to change this to angular.merge if that changes
-                const toSaveConfig = angular.extend(downloadedConfig, {joined: urlComponents});
-                const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
-                    CONFIG_PHONE_UI, toSaveConfig);
-                const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
-                // loaded new config, so it is both ready and changed
-                return storeConfigPromise.then(logSuccess)
-                    .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
-                    .then(dc.saveAndNotifyConfigReady(downloadedConfig))
-                    .then($state.go("root.intro"))
-                    .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
-            });
+            // if the labels are different, we need to download the new config
+            return loadNewConfig(urlComponents, true);
         });
     };
-    dc.initAtLaunch = function() {
+    dc.initAtLaunch = function () {
         loadSavedConfig().then((existingConfig) => {
-            if(existingConfig) {
-                // the user has already configured the app, let's cache the
-                // config and notify others that we are done
-                Logger.log("UI_CONFIG: finished loading config on app start");
+            if (!existingConfig) {
+                return Logger.log("UI_CONFIG: No existing config, skipping");
+            }
+            // if 'autoRefresh' is set, we will check for updates
+            if (existingConfig.autoRefresh) {
+                loadNewConfig(existingConfig.joined, false, existingConfig.version).then((wasUpdated) => {
+                    if (!wasUpdated) {
+                        // config was not updated so we will proceed with existing config
+                        $rootScope.$evalAsync(() => dc.saveAndNotifyConfigReady(existingConfig));
+                    }
+                });
+            } else {
+                Logger.log("UI_CONFIG: autoRefresh is false, not checking for updates. Using existing config")
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
         }).catch((err) => {
