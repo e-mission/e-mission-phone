@@ -21208,6 +21208,8 @@ var enketocore = (function () {
 	    let secondaryInstanceChildren;
 	    const that = this;
 
+		tz = false;
+
 	    /**
 	     * Default namespaces (on a primary instance, instance child, model) would create a problem using the **native** XPath evaluator.
 	     * It wouldn't find any regular /path/to/nodes. The solution is to ignore these by renaming these attributes to data-xmlns.
