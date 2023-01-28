@@ -95,19 +95,10 @@ angular.module('emission.survey.enketo.add-note-button',
           write_ts: Date.now(),
           key: $scope.datakey
         };
-        $scope.$apply(() => {
-          // cache the new addition to tripAddition or placeAddition
-          if(isPlace) {
-            trip.placeAddition ||= [];
-            trip.placeAddition.push(addition);
-          } else {
-            trip.tripAddition ||= [];
-            trip.tripAddition.push(addition);
-          }
-          // trigger resize of scroll list
-          const scrollElement = getScrollElement();
-          if (scrollElement) scrollElement.trigger('scroll-resize');
-        });
+
+        // adding the addition for display is handled in infinite_scroll_list.js
+        $scope.$emit('enketo.noteAddition', addition, getScrollElement());
+        
         // store is commented out since the enketo survey launch currently
         // stores the value as well
         // $scope.store(inputType, result, false);

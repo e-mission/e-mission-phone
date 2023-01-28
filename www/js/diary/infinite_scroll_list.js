@@ -229,6 +229,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
   });
 
+  $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
+    $scope.$apply(() => {
+      // TODO support places
+      const matchingTimelineEntry = $scope.data.displayTrips.find((trip) => {
+        return addition.data.start_ts >= ~~trip.start_ts && addition.data.start_ts <= trip.end_ts
+      });
+      matchingTimelineEntry.tripAddition ||= [];
+      matchingTimelineEntry.tripAddition.push(addition);
+      scrollElement.trigger('scroll-resize');
+    })
+  });
+
   $scope.select = function(selF) {
     const prev = $scope.getActiveFilters();
     selF.state = true;
