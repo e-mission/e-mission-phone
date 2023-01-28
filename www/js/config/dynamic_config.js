@@ -58,8 +58,6 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 +" for "+parsedConfig.intro.translated_text.en.deployment_name
                 +" and data collection URL "+connectionURL);
             return parsedConfig;
-        }).catch((fetchErr) => {
-            Logger.displayError("Unable to download study config", fetchErr);
         });
     }
 
@@ -170,7 +168,10 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 return; // labels are the same
             }
             // if the labels are different, we need to download the new config
-            return loadNewConfig(urlComponents, true);
+            return loadNewConfig(urlComponents, true)
+                .catch((fetchErr) => {
+                    Logger.displayError("Unable to download study config", fetchErr);
+                });
         });
     };
     dc.initAtLaunch = function () {
@@ -180,12 +181,17 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             }
             // if 'autoRefresh' is set, we will check for updates
             if (existingConfig.autoRefresh) {
-                loadNewConfig(existingConfig.joined, false, existingConfig.version).then((wasUpdated) => {
-                    if (!wasUpdated) {
-                        // config was not updated so we will proceed with existing config
+                loadNewConfig(existingConfig.joined, false, existingConfig.version)
+                    .then((wasUpdated) => {
+                        if (!wasUpdated) {
+                            // config was not updated so we will proceed with existing config
+                            $rootScope.$evalAsync(() => dc.saveAndNotifyConfigReady(existingConfig));
+                        }
+                    }).catch((fetchErr) => {
+                        // if we can't check for an updated config, we will proceed with the existing config
+                        Logger.log("UI_CONFIG: Unable to check for update, skipping", fetchErr);
                         $rootScope.$evalAsync(() => dc.saveAndNotifyConfigReady(existingConfig));
-                    }
-                });
+                    });
             } else {
                 Logger.log("UI_CONFIG: autoRefresh is false, not checking for updates. Using existing config")
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
