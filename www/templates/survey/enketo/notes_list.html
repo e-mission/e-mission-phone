@@ -1,7 +1,7 @@
 <div>
     <ion-item class="notes-list" style="background-color: transparent">
         <ul>
-            <li class="notes-list-entry" ng-repeat="entry in entries">
+            <li class="notes-list-entry" ng-repeat="entry in entries | orderBy: 'data.start_ts'">
                 <b class="two-lines">{{entry.data.label}}</b>
                 <i>{{entry.displayTime || setDisplayTime(entry)}}</i>
                 <i class="icon ion-trash-a" ng-click="deleteEntry($index, entry)"></i>
