@@ -44,7 +44,7 @@ angular.module('emission.survey.enketo.demographics',
   $scope.openPopover = function ($event) {
     return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
         return EnketoSurveyLaunch
-          .launch($scope, 'UserProfileSurvey', { prefilledSurveyResponse: lastSurvey,
+          .launch($scope, 'UserProfileSurvey', { prefilledSurveyResponse: lastSurvey?.data?.xmlResponse,
                 showBackButton: true, showFormFooterJumpNav: true  })
           .then(result => {
             console.log("demographic survey result ", result);
