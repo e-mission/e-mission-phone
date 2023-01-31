@@ -3,7 +3,7 @@
         <ul>
             <li class="notes-list-entry" ng-repeat="entry in entries | orderBy: 'data.start_ts'">
                 <b class="two-lines" ng-click="editEntry(entry)">{{entry.data.label}}</b>
-                <i ng-click="editEntry($index, entry)">{{entry.displayTime || setDisplayTime(entry)}}</i>
+                <i ng-click="editEntry(entry)">{{entry.displayTime || setDisplayTime(entry)}}</i>
                 <i class="icon ion-trash-a" ng-click="deleteEntry(entry)"></i>
             </li>
         </ul>
