@@ -3,7 +3,8 @@
  * A directive to display the list of notes for a trip or place
  */
 
-angular.module('emission.survey.enketo.notes-list', [])
+angular.module('emission.survey.enketo.notes-list',
+    ['emission.survey.enketo.launch'])
 
   .directive("enketoNotesList", function () {
     return {
@@ -17,7 +18,7 @@ angular.module('emission.survey.enketo.notes-list', [])
     };
   })
 
-  .controller("NotesListCtrl", function ($scope, $state, $element, $window) {
+  .controller("NotesListCtrl", function ($scope, $state, $element, $window, EnketoSurveyLaunch) {
     console.log("Notes List Controller called");
 
     const getScrollElement = function() {
@@ -56,5 +57,32 @@ angular.module('emission.survey.enketo.notes-list', [])
             if (scrollElement) scrollElement.trigger('scroll-resize');
           })
         );
+    }
+
+    $scope.editEntry = (entry) => {
+      const prevResponse = entry.data.xmlResponse;
+      const dataKey = entry.key || entry.metadata.key;
+      const surveyName = entry.data.name;
+      return EnketoSurveyLaunch
+        .launch($scope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey: dataKey, trip: true })
+        .then(result => {
+          if (!result) {
+            return;
+          }
+          const addition = {
+            data: result,
+            write_ts: Date.now(),
+            key: dataKey
+          };
+
+          // adding the addition for display is handled in infinite_scroll_list.js
+          $scope.$emit('enketo.noteAddition', addition, getScrollElement());
+          
+          $scope.deleteEntry(entry);
+
+          // store is commented out since the enketo survey launch currently
+          // stores the value as well
+          // $scope.store(inputType, result, false);
+        });
     }
   });
