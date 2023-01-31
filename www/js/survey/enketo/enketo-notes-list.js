@@ -39,11 +39,12 @@ angular.module('emission.survey.enketo.notes-list', [])
       return entry.displayTime = begin + " - " + stop;
     }
 
-    $scope.deleteEntry = (index, entry) => {
+    $scope.deleteEntry = (entry) => {
       console.log("Deleting entry", entry);
 
       const dataKey = entry.key || entry.metadata.key;
       const data = entry.data;
+      const index = $scope.entries.indexOf(entry);
       data.status = 'DELETED';
 
       return $window.cordova.plugins.BEMUserCache
