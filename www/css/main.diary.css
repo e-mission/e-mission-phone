@@ -502,6 +502,7 @@ enketo-notes-list, .notes-list {
   display: grid;
   grid-template-columns: 10fr 9fr 1fr;
   place-items: center;
+  overflow: hidden;
   font-size: 13px;
   height: 40px;
 }
