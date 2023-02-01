@@ -159,12 +159,8 @@ angular.module('emission.survey.enketo.service', [
         timestamps ||= _state.opts.trip.data.properties;
         data.start_ts = timestamps.start_ts;
         data.end_ts = timestamps.end_ts;
-        // generate a UUID v4 for the survey response
-        // using method from https://stackoverflow.com/a/2117523
-        // crypto.generateUUID() is preferable, but not availble to us in the app
-        data.match_id = ([1e7]+-1e3+-4e3+-8e3+-1e11).replace(/[018]/g, c =>
-          (c ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> c / 4).toString(16)
-        );
+        // UUID generated using this method https://stackoverflow.com/a/66332305
+        data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {
         const now = Date.now();
         data.ts = now/1000; // convert to seconds to be consistent with the server
