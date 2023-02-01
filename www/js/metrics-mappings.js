@@ -374,16 +374,12 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     }
 
     this.init = function() {
-      try {  
-        ConfirmHelper.inputParamsPromise.then((inputParams) => {
-            console.log("Input params = ", inputParams);
-            this.inputParams = inputParams;
-            this.populateCustomMETs();
-            this.populateCustomFootprints();
-        });
-      } catch (err) {
-        console.error("Error in Metrics Mappings init, " + err);
-      }
+      ConfirmHelper.inputParamsPromise.then((inputParams) => {
+        console.log("Input params = ", inputParams);
+        this.inputParams = inputParams;
+        this.populateCustomMETs();
+        this.populateCustomFootprints();
+      });
     }
     this.init();
 });
