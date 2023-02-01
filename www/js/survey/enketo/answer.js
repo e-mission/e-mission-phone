@@ -59,7 +59,7 @@ angular.module('emission.survey.enketo.answer', [
             const fieldMatches = fieldStr?.split(' ');
             labelVars[lblVar] = fieldMatches?.length || 0;
           } else {
-            labelVars[lblVar] = fieldStr || '';
+            throw new Error(`labelVar type ${config.labelVars[lblVar].type } is not supported!`)
           }
         }
 
