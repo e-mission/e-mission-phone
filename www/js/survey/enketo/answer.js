@@ -149,7 +149,7 @@ angular.module('emission.survey.enketo.answer', [
     // return unix timestamps in milliseconds
     return {
       start_ts: momentStart.unix(),
-      end_ts: +momentEnd.unix()
+      end_ts: momentEnd.unix()
     }; 
   }
 
