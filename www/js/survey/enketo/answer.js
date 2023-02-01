@@ -146,7 +146,7 @@ angular.module('emission.survey.enketo.answer', [
     const momentStart = moment(date + 'T' + start);
     const momentEnd = moment(date + 'T' + end);
 
-    // return unix timestamps in milliseconds
+    // return unix timestamps in seconds
     return {
       start_ts: momentStart.unix(),
       end_ts: momentEnd.unix()
