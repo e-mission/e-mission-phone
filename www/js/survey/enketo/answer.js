@@ -133,9 +133,10 @@ angular.module('emission.survey.enketo.answer', [
   /**
    * resolve timestamps label from the survey response
    * @param {XMLDocument} xmlDoc survey answer object
+   * @param {object} trip trip object
    * @returns {object} object with `start_ts` and `end_ts`
    */
-  function resolveTimestamps(xmlDoc) {
+  function resolveTimestamps(xmlDoc, trip) {
     // check for Date and Time fields
     const date = xmlDoc.getElementsByTagName('Date')?.[0]?.innerHTML;
     const start = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
@@ -143,13 +144,19 @@ angular.module('emission.survey.enketo.answer', [
 
     if (!date || !start || !end) return null; // if any of the fields are missing, return null
 
-    const momentStart = moment(date + 'T' + start);
-    const momentEnd = moment(date + 'T' + end);
+    let additionStartTs = moment(date + 'T' + start).unix();
+    let additionEndTs = moment(date + 'T' + end).unix();
+
+    // if the start and end timestamps are within the same minute, use the trip start and end timestamps
+    if (additionStartTs - (additionStartTs % 60) == trip.start_ts - (trip.start_ts % 60))
+      additionStartTs = trip.start_ts;
+    if (additionEndTs - (additionEndTs % 60) == trip.end_ts - (trip.end_ts % 60))
+      additionEndTs = trip.end_ts;
 
     // return unix timestamps in seconds
     return {
-      start_ts: momentStart.unix(),
-      end_ts: momentEnd.unix()
+      start_ts: additionStartTs,
+      end_ts: additionEndTs
     }; 
   }
 

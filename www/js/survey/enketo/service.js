@@ -144,7 +144,6 @@ angular.module('emission.survey.enketo.service', [
     const xmlResponse = _state.form.getDataStr();
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
     const jsonDocResponse = $.xml2json(xmlResponse, {attrkey: 'attr'});
-    let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc);
 
     return EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc).then(rsLabel => {
       const data = {
@@ -155,6 +154,7 @@ angular.module('emission.survey.enketo.service', [
         jsonDocResponse,
       };
       if (_state.opts.trip) {
+        let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, _state.opts.trip);
         // if timestamps were not resolved from the survey, we will use the trip's timestamps
         timestamps ||= _state.opts.trip.data.properties;
         data.start_ts = timestamps.start_ts;
