@@ -13,7 +13,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  const validUserInputForTrip = function(trip, userInput, logsEnabled) {
+  im.validUserInputForTrip = function(trip, userInput, logsEnabled) {
     /*
     console.log("startDelta "+userInput.data.label+
         "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
@@ -111,7 +111,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
         console.log("Input list = "+userInputList.map(printUserInput));
     }
     // undefined != true, so this covers the label view case as well
-    var potentialCandidates = userInputList.filter((ui) => validUserInputForTrip(trip, ui, logsEnabled));
+    var potentialCandidates = userInputList.filter((ui) => im.validUserInputForTrip(trip, ui, logsEnabled));
     if (potentialCandidates.length === 0) {
         if (logsEnabled) {
             Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
@@ -145,7 +145,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     // get additions that have not been deleted
     // and filter out additions that do not start within the bounds of the trip
     const notDeleted = getNotDeletedCandidates(tripAdditionList);
-    const matchingAdditions = notDeleted.filter((ui) => validUserInputForTrip(trip, ui, logsEnabled));
+    const matchingAdditions = notDeleted.filter((ui) => im.validUserInputForTrip(trip, ui, logsEnabled));
 
     if (logsEnabled) {
       console.log("Matching Trip Addition list = "+matchingAdditions.map(printUserInput));

@@ -31,7 +31,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, ImperialConfig, DynamicConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
+                                    Config, ImperialConfig, DynamicConfig,
+                                    PostTripManualMarker, nzTour, KVStore,
+                                    Logger, UnifiedDataLoader, InputMatcher,
+                                    $ionicModal, $translate) {
   
   // TODO: load only a subset of entries instead of everything
 
@@ -232,9 +235,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
     $scope.$apply(() => {
       // TODO support places
-      const matchingTimelineEntry = $scope.data.displayTrips.find((trip) => {
-        return addition.data.start_ts >= ~~trip.start_ts && addition.data.start_ts <= trip.end_ts
-      });
+      const matchingTimelineEntry = $scope.data.displayTrips.find((trip) => 
+        InputMatcher.validUserInputForTrip(trip, addition, false)
+      );
       matchingTimelineEntry.tripAddition ||= [];
       matchingTimelineEntry.tripAddition.push(addition);
       scrollElement.trigger('scroll-resize');
