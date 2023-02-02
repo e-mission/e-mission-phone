@@ -147,7 +147,10 @@ angular.module('emission.survey.enketo.answer', [
     let additionStartTs = moment(date + 'T' + start).unix();
     let additionEndTs = moment(date + 'T' + end).unix();
 
-    // if the start and end timestamps are within the same minute, use the trip start and end timestamps
+    /* Enketo survey time inputs are only precise to the minute, while trips are precise to milliseconds
+      To avoid precision issues, we will check if the start/end timestamps from the survey response
+      are within the same minute as the trip start/end timestamps.
+      If so, we will use the exact trip start/end timestamps */
     if (additionStartTs - (additionStartTs % 60) == trip.start_ts - (trip.start_ts % 60))
       additionStartTs = trip.start_ts;
     if (additionEndTs - (additionEndTs % 60) == trip.end_ts - (trip.end_ts % 60))
