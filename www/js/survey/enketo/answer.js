@@ -125,6 +125,9 @@ angular.module('emission.survey.enketo.answer', [
    * @returns {Promise<string>} label string Promise
    */
   function resolveLabel(name, xmlDoc) {
+    // Some studies may want a custom label function for their survey.
+    // Those can be added in LABEL_FUNCTIONS with the survey name as the key.
+    // Otherwise, UseLabelTemplate will create a label using the template in the config
     if (LABEL_FUNCTIONS[name])
       return LABEL_FUNCTIONS[name](xmlDoc);
     return LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
