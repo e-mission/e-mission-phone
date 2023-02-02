@@ -164,8 +164,7 @@ angular.module('emission.survey.enketo.add-note-button',
    */
   enbs.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getTripAdditionsForTrip(trip,
-          inputList);
+      const unprocessedLabelEntry = InputMatcher.getAdditionsForTrip(trip, inputList);
       var userInputEntry = unprocessedLabelEntry;
       if (!angular.isDefined(userInputEntry)) {
           userInputEntry = trip.trip_addition[enbs.inputType2retKey(inputType)];

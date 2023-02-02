@@ -134,11 +134,11 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
   }
 
   // return array of matching trip additions
-  im.getTripAdditionsForTrip = function(trip, tripAdditionList) {
+  im.getAdditionsForTrip = function(trip, tripAdditionList) {
     const logsEnabled = tripAdditionList.length < 20;
 
     if (tripAdditionList === undefined) {
-      Logger.log("In getTripAdditionsForTrip, no trip addition input, returning []");
+      Logger.log("In getAdditionsForTrip, no trip addition input, returning []");
       return undefined;
     }
 
