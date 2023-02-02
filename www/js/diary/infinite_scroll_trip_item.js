@@ -40,10 +40,6 @@ angular.module('emission.main.diary.infscrolltripitem',
     console.log("Trip Item Controller called");
 
     const DEFAULT_ITEM_HT = 274;
-    $scope.surveyOpt = () => {
-      const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
-      return SurveyOptions[surveyOptKey];
-    }
     
     // timebounds is used in js/survey/enketo/enketo-add-note-button.js getPrefillTimes() function
     // this allows us to pre-fill time and date in surveys that have 'Date', 'Start_time', and 'End_time' fields
@@ -54,8 +50,16 @@ angular.module('emission.main.diary.infscrolltripitem',
         end_fmt_time: $scope.trip?.end_fmt_time
       };
     };
-     // if trip-notes is not present, then we won't show 'add note button'
-    $scope.configTripNotes = () => $scope.config?.survey_info?.buttons?.['trip-notes'];
+
+    // config will initially be undefined, so we will watch
+    $scope.$watch('config', function (loadedConfig) {
+      const surveyOptKey = $scope.config?.survey_info?.['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      // if trip-notes button config is present, then the map is shortened
+      // and the 'add note button' will show up
+      $scope.configTripNotes = loadedConfig?.survey_info?.buttons?.['trip-notes'];
+      $scope.mapHeight = $scope.configTripNotes ? '80%' : '100%';
+    });
 
     // Added function from infiniteScrollListCtrl
     $scope.showDetail = function($event) {
@@ -74,10 +78,6 @@ angular.module('emission.main.diary.infscrolltripitem',
         template: $translate.instant('list-explainDraft-alert')
       });
       // don't want to go to the detail screen
-    }
-
-    $scope.getMapHeight = function() {
-      return $scope.configTripNotes() ? '80%' : '100%';
     }
 
     // In-Line Map, functionality pulled from Infinite Scroll Detail

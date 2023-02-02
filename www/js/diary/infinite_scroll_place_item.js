@@ -41,5 +41,10 @@ angular.module('emission.main.diary.infscrollplaceitem',
       if(!obj.exit_fmt_time) obj.exit_fmt_time = moment().format();
       return obj;
     };
-    $scope.configPlaceNotes = () => $scope.config?.survey_info?.buttons?.['place-notes'];
+
+    // config will initially be undefined, so we will watch
+    $scope.$watch('config', function (loadedConfig) {
+      // if place-notes button config is not present, then we won't even show the 'add note button'
+      $scope.configPlaceNotes = loadedConfig?.survey_info?.buttons?.['place-notes'];
+    });
   });

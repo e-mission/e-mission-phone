@@ -40,12 +40,16 @@ angular.module('emission.survey.enketo.add-note-button',
   console.log("Invoked enketo directive controller for add-note-button");
   $scope.notes = [];
 
-  $scope.displayLabel = () => {
+  const updateLabel = () => {
     const localeCode = $translate.use();
-    // if already filled in
-    //   return $scope.notesConfig?.['filled-in-label']?.[localeCode];
-    return $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
+    if ($scope.notesConfig?.['filled-in-label'] && trip.tripAddition?.length > 0) {
+      $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
+    } else {
+      $scope.displayLabel = $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
+    }
   }
+  $scope.$watch('notesConfig', updateLabel);
+  $scope.$watch('trip.tripAddition', updateLabel);
 
   $scope.getPrefillTimes = () => {
     const timeBounds = $scope.timeBounds();
