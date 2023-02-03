@@ -13,11 +13,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.main.common.services',
                                       'emission.services',
                                       'emission.config.imperial',
+                                      'emission.config.dynamic',
                                       'emission.survey',
                                       'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger',
                                       'emission.main.diary.infscrolltripitem',
+                                      'emission.main.diary.infscrollplaceitem',
                                     ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -29,41 +31,69 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $timeout,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
                                     SurveyOptions,
-    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicModal, $translate) {
-
+                                    Config, ImperialConfig, DynamicConfig,
+                                    PostTripManualMarker, nzTour, KVStore,
+                                    Logger, UnifiedDataLoader, InputMatcher,
+                                    $ionicModal, $translate) {
+  
   // TODO: load only a subset of entries instead of everything
 
   console.log("controller InfiniteDiaryListCtrl called");
   const DEFAULT_ITEM_HT = 274;
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
   $scope.itemHt = DEFAULT_ITEM_HT;
-  // Add option
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
   const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
   $scope.data = {};
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
-  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+  $scope.init = (configObj) => {
+    $scope.$apply(() => {
+      $scope.ui_config = configObj;
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in infinite_scroll_list.js is', $scope.surveyOpt);
+      $scope.showPlaces = configObj.survey_info?.buttons?.['place-notes'];
+      // if we decide to load dynamic surveys by surveys.json instead of config, this will need to be updated
+      $scope.surveys = configObj.survey_info.surveys;
+      $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+      $scope.enbs = $injector.get("EnketoNotesButtonService");
+      const tripSurveyName = configObj.survey_info?.buttons?.['trip-notes']?.surveyName;
+      const placeSurveyName = configObj.survey_info?.buttons?.['place-notes']?.surveyName;
+      $scope.enbs.initConfig(tripSurveyName, placeSurveyName);
+    });
+    $scope.initFilters();
+    $scope.setupInfScroll();
+  };
+
+  $scope.initFilters = function() {
+    $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+    $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+    $scope.filterInputs.forEach((f) => {
+      f.state = false;
+    });
+    $scope.filterInputs[0].state = true;
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
+    $scope.allTrips = false;
+  }
 
   $scope.getTripHeight = function(trip) {
-    if(trip.INPUTS[2]) {
-      return 438;
-    } else {
-      return 384;
+    let height = trip.INPUTS?.[2] ? 438 : 384;
+    if (trip.tripAddition) {
+      height += 40 * trip.tripAddition.length;
     }
+    if (trip.placeAddition) {
+      height += 40 * trip.placeAddition.length;
+    }
+    if ($scope.showPlaces) {
+      height += 80;
+    }
+    return height;
   }
 
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }
-  $scope.filterInputs.forEach((f) => {
-    f.state = false;
-  });
-  $scope.filterInputs[0].state = true;
-  ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
-  $scope.allTrips = false;
+  
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
   const ONE_DAY = 24 * 60 * 60; // seconds
 
@@ -119,6 +149,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ctList.forEach((trip, tIndex) => {
             trip.nextTrip = ctList[tIndex+1];
             $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
+            $scope.enbs.populateInputsAndInferences(trip, $scope.data.enbsResultMap);
         });
         // Fill places on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
@@ -170,10 +201,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
-    Timeline.getUnprocessedLabels().then(([pipelineRange, manualResultMap]) => {
+    Timeline.getUnprocessedLabels($scope.labelPopulateFactory, $scope.enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
         if (pipelineRange.end_ts) {
             $scope.$apply(() => {
               $scope.data.manualResultMap = manualResultMap;
+              $scope.data.enbsResultMap = enbsResultMap;
             });
             console.log("After reading in the label controller, manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.data.manualResultMap);
             $scope.infScrollControl.pipelineRange = pipelineRange;
@@ -198,6 +230,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.infScrollControl.callback();
       $scope.infScrollControl.callback = undefined;
     }
+  });
+
+  $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
+    $scope.$apply(() => {
+      // TODO support places
+      const matchingTimelineEntry = $scope.data.displayTrips.find((trip) => 
+        InputMatcher.validUserInputForTrip(trip, addition, false)
+      );
+      matchingTimelineEntry.tripAddition ||= [];
+      matchingTimelineEntry.tripAddition.push(addition);
+      scrollElement.trigger('scroll-resize');
+    })
   });
 
   $scope.select = function(selF) {
@@ -537,7 +581,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     })
 
     $ionicPlatform.ready().then(function() {
-      $scope.setupInfScroll();
+      DynamicConfig.configReady().then((configObj) => {
+        // Logger.log("Resolved UI_CONFIG_READY promise in infinite_scroll_list.js, filling in templates");
+        $scope.init(configObj);
+      });
       $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
 
       $scope.$on('$ionicView.enter', function(ev) {

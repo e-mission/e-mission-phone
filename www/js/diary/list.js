@@ -28,16 +28,23 @@ angular.module('emission.main.diary.list',['ui-leaflet',
                                     $timeout,
                                     ionicDatePicker,
                                     leafletData, Timeline, CommonGraph, DiaryHelper,
-                                    SurveyOptions,
-    Config, ImperialConfig, PostTripManualMarker, nzTour, KVStore, Logger, UnifiedDataLoader, $ionicPopover, $translate) {
+                                    SurveyOptions, Config, ImperialConfig, DynamicConfig,
+                                    PostTripManualMarker, nzTour, KVStore, Logger,
+                                    UnifiedDataLoader, $ionicPopover, $translate) {
   console.log("controller DiaryListCtrl called");
+
   const DEFAULT_ITEM_HT = 335;
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
   ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH,
     {"source": null, "dest": $scope.data? $scope.data.currDay : undefined});
-  // Add option
-  $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
   $scope.itemHt = DEFAULT_ITEM_HT;
+
+  $scope.init = (configObj) => {
+    $scope.$apply(() => $scope.ui_config = configObj);
+    const surveyOptKey = configObj.survey_info['trip-labels'];
+    $scope.surveyOpt = SurveyOptions[surveyOptKey];
+    console.log('surveyOpt in list.js is', $scope.surveyOpt);
+    $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+  };
 
   var readAndUpdateForDay = function(day) {
     // This just launches the update. The update can complete in the background
@@ -333,15 +340,8 @@ angular.module('emission.main.diary.list',['ui-leaflet',
       });
     };
 
-    $scope.getTripHeight = function(tripgj) {
-      let height = tripgj.common.different? $scope.itemHt + 80 : $scope.itemHt + 30;
-      if(tripgj.INPUTS[2]) {
-        height = 435;
-        $scope.itemHt = height;
-      } else {
-        height = 381;
-      }
-      return height;
+    $scope.getTripHeight = function(trip) {
+      return trip.INPUTS?.[2] ? 435 : 381;
     }
 
     $scope.increaseHeight = function () {
@@ -433,6 +433,9 @@ angular.module('emission.main.diary.list',['ui-leaflet',
     };
 
     $ionicPlatform.ready().then(function() {
+      DynamicConfig.configReady().then((configObj) => {
+        $scope.init(configObj);
+      });
       readAndUpdateForDay(moment().startOf('day'));
 
       $scope.$on('$ionicView.enter', function(ev) {

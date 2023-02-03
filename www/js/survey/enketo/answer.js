@@ -1,8 +1,9 @@
 angular.module('emission.survey.enketo.answer', [
-  'ionic'
+  'ionic',
+  'emission.config.dynamic',
 ])
 .factory('EnketoSurveyAnswer', function(
-  $http, 
+  $http, DynamicConfig, $translate, $translateMessageFormatInterpolation
 ) {
   /**
    * @typedef EnketoAnswerData
@@ -35,23 +36,37 @@ angular.module('emission.survey.enketo.answer', [
    * }}
    */
 
-  const ENKETO_SURVEY_CONFIG_PATH = 'json/enketoSurveyConfig.json';
   const LABEL_FUNCTIONS = {
-    TripConfirmSurvey: (xmlDoc) => {
-      const modeStr = _getAnswerByTagName(xmlDoc, 'travel_mode');
-      const purposeStr = _getAnswerByTagName(xmlDoc, 'destination_purpose');
+    UseLabelTemplate: (xmlDoc, name) => {
 
-      if (modeStr.includes('trip_not_valid') || purposeStr.includes('trip_not_valid')) {
-        return 'Trip not valid';
-      }
+      return _lazyLoadConfig().then(configSurveys => {
 
-      const purposes = purposeStr.split(' ').length;
-      const modes = modeStr.split(' ').length;
-      return `${purposes} purpose${purposes > 1 ? 's': ''}, ${modes} mode${modes > 1 ? 's': ''}`;
-    },
-    UserProfileSurvey: (xmlDoc) => {
-      return 'Answered';
-    },
+        const config = configSurveys[name]; // config for this survey
+        const lang = $translate.use();
+        const labelTemplate = config.labelTemplate?.[lang];
+
+        if (!labelTemplate) return "Answered"; // no template given in config
+        if (!config.labelVars) return labelTemplate; // if no vars given, nothing to interpolate,
+        // so we return the unaltered template
+
+        // gather vars that will be interpolated into the template according to the survey config
+        const labelVars = {}
+        for (lblVar in config.labelVars) {
+          const fieldName = config.labelVars[lblVar].key;
+          let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
+          if (fieldStr == '<null>') fieldStr = null;
+          if (config.labelVars[lblVar].type == 'length') {
+            const fieldMatches = fieldStr?.split(' ');
+            labelVars[lblVar] = fieldMatches?.length || 0;
+          } else {
+            throw new Error(`labelVar type ${config.labelVars[lblVar].type } is not supported!`)
+          }
+        }
+
+        const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
+        return label;
+      })
+    }
   };
   
   /** @type {EnketoSurveyConfig} _config */
@@ -78,10 +93,11 @@ angular.module('emission.survey.enketo.answer', [
     if (_config !== undefined) {
       return Promise.resolve(_config);
     }
-    return $http.get(ENKETO_SURVEY_CONFIG_PATH).then(configRes => {
-      _config = configRes.data;
+    return DynamicConfig.configReady().then((newConfig) => {
+      Logger.log("Resolved UI_CONFIG_READY promise in answer.js, filling in templates");
+      _config = newConfig.survey_info.surveys;
       return _config;
-    });
+    })
   }
 
   /**
@@ -106,14 +122,53 @@ angular.module('emission.survey.enketo.answer', [
    * resolve answer label for the survey
    * @param {string} name survey name
    * @param {XMLDocument} xmlDoc survey answer object
-   * @returns {string} label string
+   * @returns {Promise<string>} label string Promise
    */
   function resolveLabel(name, xmlDoc) {
-    return LABEL_FUNCTIONS[name](xmlDoc);
+    // Some studies may want a custom label function for their survey.
+    // Those can be added in LABEL_FUNCTIONS with the survey name as the key.
+    // Otherwise, UseLabelTemplate will create a label using the template in the config
+    if (LABEL_FUNCTIONS[name])
+      return LABEL_FUNCTIONS[name](xmlDoc);
+    return LABEL_FUNCTIONS.UseLabelTemplate(xmlDoc, name);
+  }
+
+  /**
+   * resolve timestamps label from the survey response
+   * @param {XMLDocument} xmlDoc survey answer object
+   * @param {object} trip trip object
+   * @returns {object} object with `start_ts` and `end_ts`
+   */
+  function resolveTimestamps(xmlDoc, trip) {
+    // check for Date and Time fields
+    const date = xmlDoc.getElementsByTagName('Date')?.[0]?.innerHTML;
+    const start = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
+    const end = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
+
+    if (!date || !start || !end) return null; // if any of the fields are missing, return null
+
+    let additionStartTs = moment(date + 'T' + start).unix();
+    let additionEndTs = moment(date + 'T' + end).unix();
+
+    /* Enketo survey time inputs are only precise to the minute, while trips are precise to milliseconds
+      To avoid precision issues, we will check if the start/end timestamps from the survey response
+      are within the same minute as the trip start/end timestamps.
+      If so, we will use the exact trip start/end timestamps */
+    if (additionStartTs - (additionStartTs % 60) == trip.start_ts - (trip.start_ts % 60))
+      additionStartTs = trip.start_ts;
+    if (additionEndTs - (additionEndTs % 60) == trip.end_ts - (trip.end_ts % 60))
+      additionEndTs = trip.end_ts;
+
+    // return unix timestamps in seconds
+    return {
+      start_ts: additionStartTs,
+      end_ts: additionEndTs
+    }; 
   }
 
   return {
     filterByNameAndVersion,
     resolveLabel,
+    resolveTimestamps,
   };
 });

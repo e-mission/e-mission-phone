@@ -374,7 +374,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, SurveyOptions, $http, $ionicLoading, $window,
+.factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -383,8 +383,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     timeline.data.unifiedConfirmsResults = null;
     timeline.UPDATE_DONE = "TIMELINE_UPDATE_DONE";
 
-    const surveyOpt = SurveyOptions.MULTILABEL;
-    const manualInputFactory = $injector.get(surveyOpt.service);
+    let manualInputFactory;
+    $ionicPlatform.ready(function () {
+      DynamicConfig.configReady().then((configObj) => {
+        const surveyOptKey = configObj.survey_info['trip-labels'];
+        const surveyOpt = SurveyOptions[surveyOptKey];
+        console.log('surveyOpt in services.js is', surveyOpt);
+        manualInputFactory = $injector.get(surveyOpt.service);
+      });
+    });
 
     // Internal function, not publicly exposed
     var getKeyForDate = function(date) {
@@ -392,7 +399,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return "diary/trips-"+dateString;
     };
 
-    timeline.getUnprocessedLabels = function() {
+    timeline.getUnprocessedLabels = function(manualFactory, enbs) {
         /*
          Because with the confirmed trips, all prior labels have been
          incorporated into the trip.
@@ -402,14 +409,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 startTs: result.end_ts - 10,
                 endTs: moment().unix() + 10
             }
-            var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
+            var manualPromises = manualFactory.MANUAL_KEYS.map(function(inp_key) {
               return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(manualInputFactory.extractResult);
+                  inp_key, pendingLabelQuery).then(manualFactory.extractResult);
+            });
+            var enbsPromises = enbs.MANUAL_KEYS.map(function(inp_key) {
+              return UnifiedDataLoader.getUnifiedMessagesForInterval(
+                  inp_key, pendingLabelQuery).then(enbs.extractResult);
             });
             const manualConfirmResults = {};
-            return Promise.all(manualPromises).then((manualResults) => {
-                manualInputFactory.processManualInputs(manualResults, manualConfirmResults);
-                return [result, manualConfirmResults];
+            const enbsConfirmResults = {};
+            return Promise.all([...manualPromises, ...enbsPromises]).then((comboResults) => {
+                const manualResults = comboResults.slice(0, manualPromises.length);
+                const enbsResults = comboResults.slice(manualPromises.length);
+                manualFactory.processManualInputs(manualResults, manualConfirmResults);
+                enbs.processManualInputs(enbsResults, enbsConfirmResults);
+                return [result, manualConfirmResults, enbsConfirmResults];
             });
         }).catch((err) => {
             Logger.displayError("while reading confirmed trips", err);
@@ -777,7 +792,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             id: "confirmed"+trip.start_ts,
             type: "FeatureCollection",
             features: features,
-            properties: { }
+            properties: { 
+              start_ts: trip.start_ts,
+              end_ts: trip.end_ts
+            }
           }
           return trip_gj;
         }).catch((err) => {

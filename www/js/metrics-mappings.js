@@ -374,12 +374,12 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     }
 
     this.init = function() {
-        ConfirmHelper.inputParamsPromise.then((inputParams) => {
-            console.log("Input params = ", inputParams);
-            this.inputParams = inputParams;
-            this.populateCustomMETs();
-            this.populateCustomFootprints();
-        });
+      ConfirmHelper.inputParamsPromise.then((inputParams) => {
+        console.log("Input params = ", inputParams);
+        this.inputParams = inputParams;
+        this.populateCustomMETs();
+        this.populateCustomFootprints();
+      });
     }
     this.init();
 });

@@ -11,12 +11,19 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
-                                        CommHelper, PostTripManualMarker, $translate) {
+                                        DynamicConfig, CommHelper, PostTripManualMarker, $translate) {
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+
+  $ionicPlatform.ready().then(function () {
+    DynamicConfig.configReady().then((configObj) => {
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in infinite_scroll_details.js is', $scope.surveyOpt);
+      $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+      $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+    });
+  });
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
