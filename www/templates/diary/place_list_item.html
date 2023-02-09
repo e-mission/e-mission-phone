@@ -15,7 +15,7 @@
                         time-bounds="timeBounds" dataKey="manual/place_addition_input" style="margin: auto">
                     </enketo-add-note-button>
                 </div>
-                <enketo-notes-list ng-if="trip.placeAddition.length" entries="trip.placeAddition" timezone="trip.start_local_dt.timezone"></enketo-notes-list>
+                <enketo-notes-list ng-if="trip.placeAddition.length" timeline-entry="trip" addition-entries="trip.placeAddition" timezone="trip.start_local_dt.timezone"></enketo-notes-list>
             </div>
         </div>
         <!-- End Time Tag -->
