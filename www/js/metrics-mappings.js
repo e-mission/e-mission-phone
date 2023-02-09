@@ -311,7 +311,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     return standardMETs;
   }
 })
-.service('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper) {
+.service('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper, Logger) {
     this.getCustomMETs = function() {
         console.log("Getting custom METs", this.customMETs);
         return this.customMETs;
@@ -374,12 +374,18 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     }
 
     this.init = function() {
-      ConfirmHelper.inputParamsPromise.then((inputParams) => {
-        console.log("Input params = ", inputParams);
-        this.inputParams = inputParams;
-        this.populateCustomMETs();
-        this.populateCustomFootprints();
-      });
+      try {
+        ConfirmHelper.inputParamsPromise.then((inputParams) => {
+          console.log("Input params = ", inputParams);
+          this.inputParams = inputParams;
+          this.populateCustomMETs();
+          this.populateCustomFootprints();
+        });
+      } catch (e) {
+        setTimeout(() => {
+          Logger.displayError("Error in metrics-mappings while initializing custom dataset helper", e);
+        }, 1000);
+      }
     }
     this.init();
 });
