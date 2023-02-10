@@ -72,6 +72,14 @@ jobs:
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         $ANDROID_SDK_ROOT/emulator/emulator -list-avds
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager list avds
+
+    - name: Setup the cordova environment
+      shell: bash -l {0}
+      run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+        bash setup/setup_android_native.sh
 
     - name: Ensure that the path is correct and the project can be activated
       shell: bash -l {0}
@@ -80,3 +88,4 @@ jobs:
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         source setup/activate_native.sh
+        avdmanager list avd
