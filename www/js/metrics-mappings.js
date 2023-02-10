@@ -1,6 +1,7 @@
 angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
                                      'emission.survey.multilabel.services',
-                                     'emission.plugin.kvstore'])
+                                     'emission.plugin.kvstore',
+                                     "emission.config.dynamic"])
 
 .service('CarbonDatasetHelper', function(KVStore) {
   var CARBON_DATASET_KEY = 'carbon_dataset_locale';
@@ -311,7 +312,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     return standardMETs;
   }
 })
-.service('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper, Logger) {
+.service('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper, Logger, $ionicPlatform, DynamicConfig) {
     this.getCustomMETs = function() {
         console.log("Getting custom METs", this.customMETs);
         return this.customMETs;
@@ -387,5 +388,10 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
         }, 1000);
       }
     }
-    this.init();
+
+    $ionicPlatform.ready().then(function() {
+      DynamicConfig.configReady().then((newConfig) =>
+        this.init()
+      );
+    });
 });
