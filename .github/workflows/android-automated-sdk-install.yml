@@ -6,9 +6,11 @@ on:
   push:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
+      - '.github/workflows/android-automated-sdk-install.yml'
   pull_request:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
+      - '.github/workflows/android-automated-sdk-install.yml'
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
