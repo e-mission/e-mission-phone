@@ -4,26 +4,34 @@ set -e
 # Setup the development environment
 source setup/setup_shared.sh
 
-# Importing rvm keys
-curl -sSL https://rvm.io/mpapis.asc | gpg2 --import -
-curl -sSL https://rvm.io/pkuczynski.asc | gpg2 --import -
+OSX_MAJOR_VERSION=`sw_vers | grep ProductVersion | cut -d ':' -f 2 | cut -d '.' -f 1`
+echo "Found OSX major version" $OSX_MAJOR_VERSION
 
-# Download and install rvm
-echo "Installing stable rvm"
-curl -sSL https://get.rvm.io | bash -s stable
+CURR_RUBY_VERSION=`ruby --version | cut -d ' ' -f 2 | cut -d '.' -f 1-2`
+echo "Found ruby version "$CURR_RUBY_VERSION
 
-# Enable rvm
-source /Users/kshankar/.rvm/scripts/rvm
+if [ $CURR_RUBY_VERSION == $RUBY_VERSION ]; then
+    echo "Found ruby version "$CURR_RUBY_VERSION" expected "$RUBY_VERSION" no need to upgrade"
+else
+    if [ -x /usr/local/bin/brew ]; then
+        echo "Found brew installation with version" `/usr/local/bin/brew --version`
+        echo "Installing ruby version to brew" $RUBY_VERSION
+        brew install ruby@$RUBY_VERSION
+    else
+        if [ $OSX_MAJOR_VERSION -ge $OSX_EXP_VERSION ]; then
+            echo "No brew installation found, but OSX major version "$OSX_MAJOR_VERSION" and expected version "$OSX_EXP_VERSION" so CocoaPods should work"
+        else
+            echo "No brew installation found, but OSX major version "$OSX_MAJOR_VERSION" != expected version "$OSX_EXP_VERSION" CocoaPods install will likely fail"
+            echo "Found ruby version "`ruby --version`
+            exit 1
+        fi
+    fi
+fi
 
-# Download and install ruby
-echo "Installing ruby $RUBY_VERSION"
-rvm install ruby-$RUBY_VERSION
-
-echo "Switching to ruby version $RUBY_VERSION"
-rvm use $RUBY_VERSION
-
+echo "Adding $RUBY_PATH to the path before the install"
 export PATH=$RUBY_PATH:$PATH
+
 echo "Installing cocoapods"
-gem install --no-document --user-install cocoapods -v $COCOAPODS_VERSION
+/usr/local/opt/ruby@$RUBY_VERSION/bin/gem install --no-document --user-install cocoapods -v $COCOAPODS_VERSION
 
 source setup/setup_shared_native.sh
