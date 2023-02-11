@@ -8,7 +8,6 @@ echo "Verifying $ANDROID_HOME or $ANDROID_SDK_ROOT is set"
 if [ -z $ANDROID_HOME ] && [ -z $ANDROID_SDK_ROOT ];
 then
     echo "ANDROID_HOME and ANDROID_SDK_ROOT not set, android SDK not found"
-    exit 1
 fi
 
 echo "Activating sdkman, and by default, gradle"

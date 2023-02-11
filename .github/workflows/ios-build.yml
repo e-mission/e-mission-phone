@@ -32,6 +32,11 @@ jobs:
     - name: Print the xcode setup
       run: xcodebuild -version -sdk
 
+    - name: Print the brew and ruby versions
+      run: |
+        echo "brew version is "`brew --version`
+        echo "ruby version is" `ruby --version`
+
     - name: Print applications through dmg
       run: ls /Applications
 
