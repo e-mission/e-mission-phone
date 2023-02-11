@@ -6,9 +6,13 @@ name: osx-serve-install
 # events but only for the master branch
 on:
   push:
-    branches: [ master ]
+    branches:
+        - master
+        - maint_upgrade_**
   pull_request:
-    branches: [ master ]
+    branches:
+        - master
+        - maint_upgrade_**
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
