@@ -20,7 +20,7 @@ angular.module('emission.survey.enketo.trip.button',
 .directive('enketoTripButton', function() {
   return {
     scope: {
-        trip: "=",
+        timelineEntry: "=",
         recomputedelay: "@",
     },
     controller: "EnketoTripButtonCtrl",
@@ -69,12 +69,12 @@ angular.module('emission.survey.enketo.trip.button',
      * verifyTrip turns all of a given trip's yellow labels green
      */
     $scope.verifyTrip = function() {
-      console.log("About to verify trip "+$scope.trip.start_ts
-        +" -> "+$scope.trip.end_ts+" with current visibility"
-        + $scope.trip.verifiability);
+      console.log("About to verify trip "+$scope.timelineEntry.start_ts
+        +" -> "+$scope.timelineEntry.end_ts+" with current visibility"
+        + $scope.timelineEntry.verifiability);
       // Return early since we don't want to support trip verification yet
       return;
-      if ($scope.trip.verifiability != "can-verify") {
+      if ($scope.timelineEntry.verifiability != "can-verify") {
         ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
             {"verifiable": false, "currView": $scope.currentViewState});
         return;
@@ -82,18 +82,18 @@ angular.module('emission.survey.enketo.trip.button',
       ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
             {"verifiable": true,
              "currView": $scope.currentViewState,
-             "userInput": angular.toJson($scope.trip.userInput),
-             "finalInference": angular.toJson($scope.trip.finalInference)});
+             "userInput": angular.toJson($scope.timelineEntry.userInput),
+             "finalInference": angular.toJson($scope.timelineEntry.finalInference)});
 
       $scope.draftInput = {
-        "start_ts": $scope.trip.start_ts,
-        "end_ts": $scope.trip.end_ts
+        "start_ts": $scope.timelineEntry.start_ts,
+        "end_ts": $scope.timelineEntry.end_ts
       };
-      $scope.editingTrip = $scope.trip;
+      $scope.editingTrip = $scope.timelineEntry;
 
-      const inferred = $scope.trip.finalInference[EnketoTripButtonService.SINGLE_KEY];
+      const inferred = $scope.timelineEntry.finalInference[EnketoTripButtonService.SINGLE_KEY];
       // TODO: figure out what to do with "other". For now, do not verify.
-      if (inferred && !$scope.trip.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
+      if (inferred && !$scope.timelineEntry.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
     }
 
   /*
@@ -137,7 +137,7 @@ angular.module('emission.survey.enketo.trip.button',
   };
 
   $scope.init = function() {
-      console.log("During initialization, trip is ", $scope.trip);
+      console.log("During initialization, trip is ", $scope.timelineEntry);
       $scope.currViewState = findViewState();
   }
 

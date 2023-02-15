@@ -78,8 +78,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.getTripHeight = function(trip) {
     let height = trip.INPUTS?.[2] ? 438 : 384;
-    if (trip.tripAddition) {
-      height += 40 * trip.tripAddition.length;
+    if (trip.additions) {
+      height += 40 * trip.additions.length;
     }
     if (trip.placeAddition) {
       height += 40 * trip.placeAddition.length;
@@ -238,8 +238,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const matchingTimelineEntry = $scope.data.displayTrips.find((trip) => 
         InputMatcher.validUserInputForTrip(trip, addition, false)
       );
-      matchingTimelineEntry.tripAddition ||= [];
-      matchingTimelineEntry.tripAddition.push(addition);
+      matchingTimelineEntry.additions ||= [];
+      matchingTimelineEntry.additions.push(addition);
       scrollElement.trigger('scroll-resize');
     })
   });

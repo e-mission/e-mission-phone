@@ -134,17 +134,17 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
   }
 
   // return array of matching trip additions
-  im.getAdditionsForTrip = function(trip, tripAdditionList) {
-    const logsEnabled = tripAdditionList.length < 20;
+  im.getAdditionsForTimelineEntry = function(trip, additionsList) {
+    const logsEnabled = additionsList.length < 20;
 
-    if (tripAdditionList === undefined) {
-      Logger.log("In getAdditionsForTrip, no trip addition input, returning []");
+    if (additionsList === undefined) {
+      Logger.log("In getAdditionsForTimelineEntry, no addition input, returning []");
       return undefined;
     }
 
     // get additions that have not been deleted
     // and filter out additions that do not start within the bounds of the trip
-    const notDeleted = getNotDeletedCandidates(tripAdditionList);
+    const notDeleted = getNotDeletedCandidates(additionsList);
     const matchingAdditions = notDeleted.filter((ui) => im.validUserInputForTrip(trip, ui, logsEnabled));
 
     if (logsEnabled) {
