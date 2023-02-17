@@ -8,14 +8,14 @@
                 <div class="row place-title">
                     <!-- Place (Destination of Prev. Trip) -->
                     <i class="icon ion-location"></i>
-                    <b>{{trip.end_display_name}}</b>
+                    <b>{{place.display_name}}</b>
                 </div>
                 <div style="margin: 10px">
-                    <enketo-add-note-button notes-config="configPlaceNotes" surveys="surveys" timeline-entry="trip.end_place"
+                    <enketo-add-note-button notes-config="configPlaceNotes" surveys="surveys" timeline-entry="place"
                         time-bounds="timeBounds" dataKey="manual/place_addition_input" style="margin: auto">
                     </enketo-add-note-button>
                 </div>
-                <enketo-notes-list ng-if="trip.end_place.additions.length" timeline-entry="trip.end_place" addition-entries="trip.end_place.additions" timezone="trip.start_local_dt.timezone"></enketo-notes-list>
+                <enketo-notes-list ng-if="place.additions.length" timeline-entry="place" addition-entries="place.additions" timezone="place.start_local_dt.timezone"></enketo-notes-list>
             </div>
         </div>
         <!-- End Time Tag -->

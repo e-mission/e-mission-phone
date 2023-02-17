@@ -41,9 +41,9 @@ angular.module('emission.survey.enketo.add-note-button',
   $scope.$watch('timelineEntry.additions', updateLabel);
 
   $scope.getPrefillTimes = () => {
-    const timeBounds = $scope.timeBounds();
-    const begin = timeBounds.start_fmt_time || timeBounds.enter_fmt_time;
-    const stop = timeBounds.end_fmt_time || timeBounds.exit_fmt_time;
+    // const timeBounds = $scope.timeBounds();
+    const begin = $scope.timelineEntry.start_fmt_time || $scope.timelineEntry.enter_fmt_time;
+    const stop = $scope.timelineEntry.end_fmt_time || $scope.timelineEntry.exit_fmt_time;
     return {
       "Date": moment.parseZone(begin).format('YYYY-MM-DD'),
       "Start_time": moment.parseZone(begin).format('HH:mm:ss.SSSZ'),

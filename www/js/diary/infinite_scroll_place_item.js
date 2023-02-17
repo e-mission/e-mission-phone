@@ -17,7 +17,7 @@ angular.module('emission.main.diary.infscrollplaceitem',
     return {
       restrict: 'E',
       scope: {
-        trip: '=',
+        place: '=',
         config: '=',
         surveys: '=',
       },
@@ -35,8 +35,8 @@ angular.module('emission.main.diary.infscrollplaceitem',
     $scope.timeBounds = () => {
       let obj = {
         isPlace: true,
-        enter_fmt_time: $scope.trip?.end_fmt_time,
-        exit_fmt_time: $scope.trip?.nextTrip?.start_fmt_time
+        enter_fmt_time: $scope.place?.start_fmt_time,
+        exit_fmt_time: $scope.place?.end_fmt_time
       }
       if(!obj.exit_fmt_time) obj.exit_fmt_time = moment().format();
       return obj;

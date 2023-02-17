@@ -437,16 +437,21 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         template: $translate.instant('service.reading-server')
       });
       const readPromises = [
-        CommHelper.getRawEntries(["analysis/confirmed_trip"],
+        CommHelper.getRawEntries(["analysis/composite_trip"],
             endTs - deltaTs, endTs, "data.end_ts"),
       ];
       return Promise.all(readPromises)
         .then(([ctList]) => {
             $ionicLoading.hide();
             return ctList.phone_data.map((ct) => {
-                const retVal = ct.data;
-                retVal.id = ct._id["$oid"];
-                return retVal;
+              ct.data._id = ct._id["$oid"];
+              const cp = ct.data.confirmed_place;
+              if (cp) {
+                cp.data._id = cp._id["$oid"];
+                delete ct.data.confirmed_place;
+                ct.data.confirmed_place = cp.data;
+              }
+              return ct.data;
             });
         })
         .catch((err) => {

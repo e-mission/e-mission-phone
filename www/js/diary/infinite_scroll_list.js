@@ -145,13 +145,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
-        ctList.forEach($scope.populateBasicClasses);
+        ctList.forEach(ct => {
+          $scope.populateBasicClasses(ct);
+          if (ct.confirmed_place) {
+            $scope.populateBasicClasses(ct.confirmed_place);
+          }
+        });
         ctList.forEach((trip, tIndex) => {
             trip.nextTrip = ctList[tIndex+1];
             $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
             $scope.enbs.populateInputsAndInferences(trip, $scope.data.enbsResultMap);
         });
-        // Fill places on a reversed copy of the list so we fill from the bottom up
+        // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
             fillTrajectoriesForTripAsync(trip);
@@ -361,13 +366,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
-        tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
-        tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
-        tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
-        tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YYYY');
-        tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.start_ts,
-                                tripgj.end_ts);
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
+        tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts) * 1000).format('ddd DD MMM YYYY');
+        if (tripgj.end_ts || tripgj.exit_ts) {
+          tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt || tripgj.exit_local_dt);
+          tripgj.display_time = DiaryHelper.getFormattedTimeRange(
+                                  (tripgj.start_ts || tripgj.enter_ts),
+                                  (tripgj.end_ts || tripgj.exit_ts));
+        }
+        if (tripgj.distance) {
+          tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
+          tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
+        }
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
@@ -386,6 +396,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.$apply(() => {
                 tripgj.start_display_name = startName;
                 tripgj.end_display_name = endName;
+                if (tripgj.confirmed_place) {
+                  tripgj.confirmed_place.display_name = endName;
+                }
             });
         });
     }
