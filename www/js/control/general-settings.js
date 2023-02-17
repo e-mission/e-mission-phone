@@ -4,7 +4,6 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
-                                        'emission.main.control.tnotify',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -23,7 +22,6 @@ angular.module('emission.main.control',['emission.services',
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
-               ControlTransitionNotifyHelper,
                CarbonDatasetHelper,
                UpdateCheck, i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger,
@@ -194,14 +192,6 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getTNotifySettings = function() {
-        ControlTransitionNotifyHelper.getTNotifySettings().then(function(showConfig) {
-            $scope.$apply(function() {
-                $scope.settings.tnotify.show_config = showConfig;
-            })
-        });
-    };
-
     $scope.getEmail = function() {
         ControlHelper.getUserEmail().then(function(response) {
            console.log("user email = "+response);
@@ -273,36 +263,6 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    $scope.testTripEndNotify = function() {
-        $ionicPopup.alert({template: 'test for local notification 0.9.0-beta.3+ only'});
-        /*
-        var testCfg = {
-            id: 737678,
-            title: $translate.instant('post-trip-prompt.notification-title'),
-            text: "Testing if this works",
-            icon: 'file://img/icon.png',
-            actions: "TRIP_CONFIRM"
-        };
-        $window.cordova.plugins.notification.local.addActions('TRIP_CONFIRM', [{
-            id: 'MUTE',
-            type: 'button',
-            title: 'Mute',
-            ui: 'decline'
-        },{
-            id: 'SNOOZE',
-            type: 'button',
-            title: 'Snooze',
-            launch: true
-        },{
-            id: 'CHOOSE',
-            type: 'button',
-            title: "Choose",
-            launch: true
-        }]);
-        $window.cordova.plugins.notification.local.schedule(testCfg);
-        */
-    }
-
     $scope.invalidateCache = function() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
             $scope.$apply(function() {
@@ -340,7 +300,6 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
-        $scope.settings.tnotify = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
@@ -355,7 +314,6 @@ angular.module('emission.main.control',['emission.services',
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
-        $scope.getTNotifySettings();
         $scope.getEmail();
         $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
             $scope.$apply(function() {
@@ -493,8 +451,6 @@ angular.module('emission.main.control',['emission.services',
     $scope.forceState = ControlCollectionHelper.forceState;
     $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
     $scope.editSyncConfig = ControlSyncHelper.editConfig;
-    $scope.editTNotifyConfig = ControlTransitionNotifyHelper.editConfig;
-
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();

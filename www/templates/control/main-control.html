@@ -136,10 +136,6 @@
         <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text" translate> {{'.test-notification'}}</div>
-        <div ng-click="testTripEndNotify()" class="control-icon-button"><i class="ion-android-note"></i></div>
-      </div>
-      <div class="control-list-item">
         <div class="control-list-text" translate>{{'.set-ui-channel'}}</div>
         <input type="text" name="userName"
           ng-model="settings.channel"
@@ -187,17 +183,6 @@
               <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
         </ion-item>
       </ion-list>
-
-      <div class="control-list-item">
-        <div class="control-list-text" translate>{{'.transition-notify'}}</div>
-        <div ng-click="editTNotifyConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
-      </div>
-      <ion-list>
-        <ion-item ng-repeat="entry in settings.tnotify.show_config">
-            <div class="row" ng-include="'templates/control/transition-notify-display-detail.html'"></div>
-        </ion-item>
-      </ion-list>
-    </div>
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.app-version'}}</div>
       <div class="control-version-number">{{settings.clientAppVer}}</div>
