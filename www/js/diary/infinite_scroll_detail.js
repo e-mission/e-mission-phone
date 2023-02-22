@@ -87,8 +87,8 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
     });
   });
 
-  $scope.recomputeDisplayTrips = function() {
-    console.log("Called inf scroll details.recomputeDisplayTrips");
+  $scope.recomputeDisplayTimelineEntries = function() {
+    console.log("Called inf scroll details.recomputeDisplayTimelineEntries");
     const filterMap = $scope.filterInputs.map((f) => f.filter($scope.trip));
     const filterValue = filterMap.reduce((a, b) => a || b, false);
     console.log("filterMap = "+filterMap+" value = "+filterValue);

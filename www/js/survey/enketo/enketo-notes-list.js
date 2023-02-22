@@ -33,7 +33,8 @@ angular.module('emission.survey.enketo.notes-list',
     }
 
     $scope.setDisplayTime = function(entry) {
-      const timezone = $scope.timezone;
+      const timezone = $scope.timelineEntry.start_local_dt?.timezone
+                      || $scope.timelineEntry.enter_local_dt?.timezone;
       const beginTs = entry.data.start_ts || entry.data.enter_ts;
       const stopTs = entry.data.end_ts || entry.data.exit_ts;
       const begin = moment.parseZone(beginTs*1000).tz(timezone).format("h:mm A");
@@ -65,7 +66,7 @@ angular.module('emission.survey.enketo.notes-list',
       const dataKey = entry.key || entry.metadata.key;
       const surveyName = entry.data.name;
       return EnketoSurveyLaunch
-        .launch($scope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey: dataKey, trip: $scope.timelineEntry })
+        .launch($scope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey: dataKey, timelineEntry: $scope.timelineEntry })
         .then(result => {
           if (!result) {
             return;

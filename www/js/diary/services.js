@@ -776,36 +776,25 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     timeline.confirmedTrip2Geojson = function(trip) {
       if (trip == undefined) {
-        return Promise.resolve(undefined);
+        return undefined;
       }
-      Logger.log("About to pull location data for range "
-        + moment.unix(trip.start_ts).toString() + " -> " 
-        + moment.unix(trip.end_ts).toString());
 
-        const fillPromises = [
-            CommHelper.getRawEntries(["analysis/recreated_location"], trip.start_ts, trip.end_ts, "data.ts", 100)
-        ];
-
-        return Promise.all(fillPromises).then(function([locationList]) {
-          Logger.log("Retrieved "+locationList.phone_data.length+" points at "+(new Date()));
-          var features = [
-            confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
-            confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
-            confirmedPoints2Geojson(trip, locationList.phone_data)
-          ];
-          var trip_gj = {
-            id: "confirmed"+trip.start_ts,
-            type: "FeatureCollection",
-            features: features,
-            properties: { 
-              start_ts: trip.start_ts,
-              end_ts: trip.end_ts
-            }
-          }
-          return trip_gj;
-        }).catch((err) => {
-          Logger.displayError("while filling details", err);
-        });
+      Logger.log("Reading trip's " + trip.locations.length + " location points at " + (new Date()));
+      var features = [
+        confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
+        confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
+        confirmedPoints2Geojson(trip, trip.locations)
+      ];
+      var trip_gj = {
+        id: "confirmed" + trip.start_ts,
+        type: "FeatureCollection",
+        features: features,
+        properties: {
+          start_ts: trip.start_ts,
+          end_ts: trip.end_ts
+        }
+      }
+      return trip_gj;
     }
 
     var trip2Geojson = function(trip) {
