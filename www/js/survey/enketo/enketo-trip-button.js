@@ -170,7 +170,7 @@ angular.module('emission.survey.enketo.trip.button',
         // console.log("Expectation: "+JSON.stringify(trip.expectation));
         // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
         trip.userInput = {};
-        etbs.populateManualInputs(trip, trip.nextTrip, etbs.SINGLE_KEY,
+        etbs.populateManualInputs(trip, trip.nextEntry, etbs.SINGLE_KEY,
             manualResultMap[etbs.SINGLE_KEY]);
         trip.finalInference = {};
         etbs.inferFinalLabels(trip);

@@ -432,7 +432,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
     };
 
-    timeline.readAllConfirmedTrips = function(endTs, deltaTs) {
+    timeline.readAllCompositeTrips = function(endTs, deltaTs) {
       $ionicLoading.show({
         template: $translate.instant('service.reading-server')
       });
@@ -774,7 +774,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }
     }
 
-    timeline.confirmedTrip2Geojson = function(trip) {
+    timeline.compositeTrip2Geojson = function(trip) {
       if (trip == undefined) {
         return undefined;
       }
@@ -1075,8 +1075,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return angular.isDefined(timeline.data.tripWrapperMap)? timeline.data.tripWrapperMap[tripId] : undefined;
       };
 
-      timeline.getConfirmedTrip = function(tripId) {
-        return angular.isDefined(timeline.data.infScrollConfirmedTripMap)? timeline.data.infScrollConfirmedTripMap[tripId] : undefined;
+      timeline.getCompositeTrip = function(tripId) {
+        return angular.isDefined(timeline.data.infScrollCompositeTripMap)? timeline.data.infScrollCompositeTripMap[tripId] : undefined;
       };
 
       /*
@@ -1159,13 +1159,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
     }
 
-    timeline.setInfScrollConfirmedTripList = function(confirmedTripList) {
-        timeline.data.infScrollConfirmedTripList = confirmedTripList;
+    timeline.setInfScrollCompositeTripList = function(compositeTripList) {
+        timeline.data.infScrollCompositeTripList = compositeTripList;
 
-        timeline.data.infScrollConfirmedTripMap = {};
+        timeline.data.infScrollCompositeTripMap = {};
 
-        timeline.data.infScrollConfirmedTripList.forEach(function(trip, index, array) {
-          timeline.data.infScrollConfirmedTripMap[trip.id] = trip;
+        timeline.data.infScrollCompositeTripList.forEach(function(trip, index, array) {
+          timeline.data.infScrollCompositeTripMap[trip._id] = trip;
         });
     }
 

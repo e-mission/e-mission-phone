@@ -35,14 +35,14 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
                 +" trip = "+fmtTs(entryStart, userInput.metadata.time_zone)
                 +" -> "+fmtTs(entryEnd, userInput.metadata.time_zone)
                 +" checks are ("+(userInput.data.start_ts >= entryStart)
-                +" && "+(userInput.data.start_ts <= entryEnd)
+                +" && "+(userInput.data.start_ts < entryEnd)
                 +" || "+(-(userInput.data.start_ts - entryStart) <= 15 * 60)
                 +") && "+(userInput.data.end_ts <= entryEnd);
             console.log(logStr);
             // Logger.log(logStr);
         }
         return (userInput.data.start_ts >= entryStart
-            && userInput.data.start_ts <= entryEnd
+            && userInput.data.start_ts < entryEnd
             || -(userInput.data.start_ts - entryStart) <= 15 * 60)
             && userInput.data.end_ts <= entryEnd;
     } else {
@@ -55,20 +55,20 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
                 +" trip = "+fmtTs(entryStart, userInput.metadata.time_zone)
                 +" -> "+fmtTs(entryStart, userInput.metadata.time_zone)
                 +" start checks are "+(userInput.data.start_ts >= entryStart)
-                +" && "+(userInput.data.start_ts <= entryEnd)
+                +" && "+(userInput.data.start_ts < entryEnd)
                 +" end checks are "+(userInput.data.end_ts <= entryEnd)
                 +" || "+((userInput.data.end_ts - entryEnd) <= 15 * 60)+")";
             Logger.log(logStr);
         }
         // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
         const startChecks = userInput.data.start_ts >= entryStart &&
-            userInput.data.start_ts <= entryEnd;
+            userInput.data.start_ts < entryEnd;
         var endChecks = (userInput.data.end_ts <= entryEnd ||
             (userInput.data.end_ts - entryEnd) <= 15 * 60);
         if (startChecks && !endChecks) {
-            if (tlEntry.nextTrip) {
-                endChecks = userInput.data.end_ts <= tlEntry.nextTrip.start_ts;
-                Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ tlEntry.nextTrip.start_ts+") = "+endChecks);
+            if (tlEntry.nextEntry) {
+                endChecks = userInput.data.end_ts <= tlEntry.nextEntry.start_ts;
+                Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ tlEntry.nextEntry.start_ts+") = "+endChecks);
             } else {
                 // next trip is not defined, last trip
                 endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)

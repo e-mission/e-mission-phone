@@ -64,7 +64,7 @@ angular.module('emission.main.diary.infscrolltripitem',
     // Added function from infiniteScrollListCtrl
     $scope.showDetail = function($event) {
       $state.go("root.main.inf_scroll-detail", {
-          tripId: $scope.trip.id
+          tripId: $scope.trip._id
       });
       console.log("Testing if showDetail has the trip defined: ", $scope.trip);
     }

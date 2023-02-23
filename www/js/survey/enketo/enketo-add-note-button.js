@@ -141,7 +141,7 @@ angular.module('emission.survey.enketo.add-note-button',
     if (angular.isDefined(timelineEntry)) {
         // initialize additions array as empty if it doesn't already exist
         timelineEntry.additions ||= [];
-        enbs.populateManualInputs(timelineEntry, timelineEntry.nextTrip, enbs.SINGLE_KEY,
+        enbs.populateManualInputs(timelineEntry, timelineEntry.nextEntry, enbs.SINGLE_KEY,
             manualResultMap[enbs.SINGLE_KEY]);
         timelineEntry.finalInference = {};
     } else {

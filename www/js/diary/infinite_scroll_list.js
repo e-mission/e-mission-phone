@@ -142,18 +142,23 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
-    Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
+    Timeline.readAllCompositeTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
-        ctList.forEach(ct => {
-          $scope.populateBasicClasses(ct);
+        ctList.forEach((ct, i) => {
+          
           if (ct.confirmed_place) {
-            $scope.populateBasicClasses(ct.confirmed_place);
+            const cp = ct.confirmed_place;
+            cp.nextEntry = ctList[i + 1];
+            $scope.populateBasicClasses(cp);
+            $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
+            $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
+            ct.nextEntry = cp;
+          } else {
+            ct.nextEntry = ctList[i + 1];
           }
-        });
-        ctList.forEach((trip, tIndex) => {
-            trip.nextTrip = ctList[tIndex+1];
-            $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
-            $scope.enbs.populateInputsAndInferences(trip, $scope.data.enbsResultMap);
+          $scope.populateBasicClasses(ct);
+          $scope.labelPopulateFactory.populateInputsAndInferences(ct, $scope.data.manualResultMap);
+          $scope.enbs.populateInputsAndInferences(ct, $scope.data.enbsResultMap);
         });
         console.time("fillTrajectories")
         // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
@@ -164,7 +169,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         console.timeEnd("fillTrajectories")
         $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
-        Timeline.setInfScrollConfirmedTripList($scope.data.allTrips);
+        Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
         const oldestTrip = ctList[0];
         if (oldestTrip) {
             if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
@@ -281,14 +286,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.recomputeDisplayTimelineEntries = function() {
     console.log("recomputing display trips now");
     let alreadyFiltered = false;
-    let displayTrips;
     $scope.filterInputs.forEach((f) => {
         if (f.state == true) {
             if (alreadyFiltered) {
                 Logger.displayError("multiple filters not supported!", undefined);
             } else {
                 // console.log("Trip n before: "+$scope.data.displayTimelineEntries.length);
-                displayTrips = $scope.data.allTrips.filter(
+                $scope.data.displayTrips = $scope.data.allTrips.filter(
                     t => (t.waitingForMod == true) || f.filter(t));
                 // console.log("Trip n after:  "+$scope.data.displayTimelineEntries.length);
                 alreadyFiltered = true;
@@ -296,11 +300,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
     });
     if (!alreadyFiltered) {
-        displayTrips = $scope.data.allTrips;
+        $scope.data.displayTrips = $scope.data.allTrips;
     };
     
     $scope.data.displayTimelineEntries = []
-    displayTrips.forEach((t) => {
+    $scope.data.displayTrips.forEach((t) => {
       const place = t.confirmed_place;
       const {confirmed_place, ...trip} = t;
       $scope.data.displayTimelineEntries.push(trip);
@@ -416,7 +420,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     const fillTrajectoriesForTrip = function (trip) {
-      const tripgj = Timeline.confirmedTrip2Geojson(trip);
+      const tripgj = Timeline.compositeTrip2Geojson(trip);
 
       $scope.$apply(() => {
         trip.data = tripgj;
