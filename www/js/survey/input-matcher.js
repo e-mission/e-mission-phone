@@ -13,7 +13,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
-  im.validUserInputForTrip = function(trip, userInput, logsEnabled) {
+  im.validUserInputForTimelineEntry = function(tlEntry, userInput, logsEnabled) {
     /*
     console.log("startDelta "+userInput.data.label+
         "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
@@ -26,23 +26,25 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     */
     // logic described in
     // https://github.com/e-mission/e-mission-docs/issues/423
-    if (trip.isDraft == true) {
+    const entryStart = tlEntry.start_ts || tlEntry.enter_ts;
+    const entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
+    if (tlEntry.isDraft == true) {
         if (logsEnabled) {
             var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
                 +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+fmtTs(trip.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(trip.end_ts, userInput.metadata.time_zone)
-                +" checks are ("+(userInput.data.start_ts >= trip.start_ts)
-                +" && "+(userInput.data.start_ts <= trip.end_ts)
-                +" || "+(-(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
-                +") && "+(userInput.data.end_ts <= trip.end_ts);
+                +" trip = "+fmtTs(entryStart, userInput.metadata.time_zone)
+                +" -> "+fmtTs(entryEnd, userInput.metadata.time_zone)
+                +" checks are ("+(userInput.data.start_ts >= entryStart)
+                +" && "+(userInput.data.start_ts < entryEnd)
+                +" || "+(-(userInput.data.start_ts - entryStart) <= 15 * 60)
+                +") && "+(userInput.data.end_ts <= entryEnd);
             console.log(logStr);
             // Logger.log(logStr);
         }
-        return (userInput.data.start_ts >= trip.start_ts
-            && userInput.data.start_ts <= trip.end_ts
-            || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
-            && userInput.data.end_ts <= trip.end_ts;
+        return (userInput.data.start_ts >= entryStart
+            && userInput.data.start_ts < entryEnd
+            || -(userInput.data.start_ts - entryStart) <= 15 * 60)
+            && userInput.data.end_ts <= entryEnd;
     } else {
         // we know that the trip is cleaned so we can use the fmt_time
         // but the confirm objects are not necessarily filled out
@@ -50,23 +52,23 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
             var logStr = "Cleaned trip: comparing user = "
                 +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
                 +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+trip.start_fmt_time
-                +" -> "+trip.end_fmt_time
-                +" start checks are "+(userInput.data.start_ts >= trip.start_ts)
-                +" && "+(userInput.data.start_ts <= trip.end_ts)
-                +" end checks are "+(userInput.data.end_ts <= trip.end_ts)
-                +" || "+((userInput.data.end_ts - trip.end_ts) <= 15 * 60)+")";
+                +" trip = "+fmtTs(entryStart, userInput.metadata.time_zone)
+                +" -> "+fmtTs(entryStart, userInput.metadata.time_zone)
+                +" start checks are "+(userInput.data.start_ts >= entryStart)
+                +" && "+(userInput.data.start_ts < entryEnd)
+                +" end checks are "+(userInput.data.end_ts <= entryEnd)
+                +" || "+((userInput.data.end_ts - entryEnd) <= 15 * 60)+")";
             Logger.log(logStr);
         }
         // https://github.com/e-mission/e-mission-docs/issues/476#issuecomment-747222181
-        const startChecks = userInput.data.start_ts >= trip.start_ts &&
-            userInput.data.start_ts <= trip.end_ts;
-        var endChecks = (userInput.data.end_ts <= trip.end_ts ||
-            (userInput.data.end_ts - trip.end_ts) <= 15 * 60);
+        const startChecks = userInput.data.start_ts >= entryStart &&
+            userInput.data.start_ts < entryEnd;
+        var endChecks = (userInput.data.end_ts <= entryEnd ||
+            (userInput.data.end_ts - entryEnd) <= 15 * 60);
         if (startChecks && !endChecks) {
-            if (trip.nextTrip) {
-                endChecks = userInput.data.end_ts <= trip.nextTrip.start_ts;
-                Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ trip.nextTrip.start_ts+") = "+endChecks);
+            if (tlEntry.nextEntry) {
+                endChecks = userInput.data.end_ts <= tlEntry.nextEntry.start_ts;
+                Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ tlEntry.nextEntry.start_ts+") = "+endChecks);
             } else {
                 // next trip is not defined, last trip
                 endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
@@ -76,10 +78,10 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
             if (endChecks) {
                 // If we have flipped the values, check to see that there
                 // is sufficient overlap
-                const overlapDuration = Math.min(userInput.data.end_ts, trip.end_ts) - Math.max(userInput.data.start_ts, trip.start_ts)
+                const overlapDuration = Math.min(userInput.data.end_ts, entryEnd) - Math.max(userInput.data.start_ts, entryStart)
                 Logger.log("Flipped endCheck, overlap("+overlapDuration+
-                    ")/trip("+trip.duration+") = "+ (overlapDuration / trip.duration));
-                endChecks = (overlapDuration/trip.duration) > 0.5;
+                    ")/trip("+tlEntry.duration+") = "+ (overlapDuration / tlEntry.duration));
+                endChecks = (overlapDuration/tlEntry.duration) > 0.5;
             }
         }
         return startChecks && endChecks;
@@ -111,7 +113,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
         console.log("Input list = "+userInputList.map(printUserInput));
     }
     // undefined != true, so this covers the label view case as well
-    var potentialCandidates = userInputList.filter((ui) => im.validUserInputForTrip(trip, ui, logsEnabled));
+    var potentialCandidates = userInputList.filter((ui) => im.validUserInputForTimelineEntry(trip, ui, logsEnabled));
     if (potentialCandidates.length === 0) {
         if (logsEnabled) {
             Logger.log("In getUserInputForTripStartEnd, no potential candidates, returning []");
@@ -133,22 +135,22 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     return mostRecentEntry;
   }
 
-  // return array of matching trip additions
-  im.getAdditionsForTrip = function(trip, tripAdditionList) {
-    const logsEnabled = tripAdditionList.length < 20;
+  // return array of matching additions for a trip or place
+  im.getAdditionsForTimelineEntry = function(entry, additionsList) {
+    const logsEnabled = additionsList.length < 20;
 
-    if (tripAdditionList === undefined) {
-      Logger.log("In getAdditionsForTrip, no trip addition input, returning []");
+    if (additionsList === undefined) {
+      Logger.log("In getAdditionsForTimelineEntry, no addition input, returning []");
       return undefined;
     }
 
     // get additions that have not been deleted
-    // and filter out additions that do not start within the bounds of the trip
-    const notDeleted = getNotDeletedCandidates(tripAdditionList);
-    const matchingAdditions = notDeleted.filter((ui) => im.validUserInputForTrip(trip, ui, logsEnabled));
+    // and filter out additions that do not start within the bounds of the timeline entry
+    const notDeleted = getNotDeletedCandidates(additionsList);
+    const matchingAdditions = notDeleted.filter((ui) => im.validUserInputForTimelineEntry(entry, ui, logsEnabled));
 
     if (logsEnabled) {
-      console.log("Matching Trip Addition list = "+matchingAdditions.map(printUserInput));
+      console.log("Matching Addition list = "+matchingAdditions.map(printUserInput));
     }
     return matchingAdditions;
   }

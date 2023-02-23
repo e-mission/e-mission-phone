@@ -33,8 +33,9 @@ angular.module('emission.survey.enketo.service', [
    *    model: string;
    *  };
    *  opts: {
-   *    trip: object;
+   *    timelineEntry: object;
    *    prefilledSurveyResponse: string;
+   *    prefillFields: object;
    *  };
    * }}
    */
@@ -98,7 +99,7 @@ angular.module('emission.survey.enketo.service', [
         model: null,
       },
       opts: {
-        trip: null,
+        timelineEntry: null,
         prefilledSurveyResponse: null,
         prefillFields: null,
       },
@@ -153,10 +154,10 @@ angular.module('emission.survey.enketo.service', [
         xmlResponse,
         jsonDocResponse,
       };
-      if (_state.opts.trip) {
-        let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, _state.opts.trip);
-        // if timestamps were not resolved from the survey, we will use the trip's timestamps
-        timestamps ||= _state.opts.trip.data.properties;
+      if (_state.opts.timelineEntry) {
+        let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, _state.opts.timelineEntry);
+        // if timestamps were not resolved from the survey, we will use the trip or place timestamps
+        timestamps ||= _state.opts.timelineEntry.data.properties;
         data.start_ts = timestamps.start_ts;
         data.end_ts = timestamps.end_ts;
         // UUID generated using this method https://stackoverflow.com/a/66332305

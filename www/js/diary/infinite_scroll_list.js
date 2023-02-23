@@ -76,16 +76,15 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.allTrips = false;
   }
 
-  $scope.getTripHeight = function(trip) {
-    let height = trip.INPUTS?.[2] ? 438 : 384;
-    if (trip.tripAddition) {
-      height += 40 * trip.tripAddition.length;
+  $scope.getCardHeight = function(entry) {
+    let height;
+    if (entry.start_ts) { // entry is a trip
+      height = entry.INPUTS?.[2] ? 438 : 340;
+    } else { // entry is a place
+      height = 100;
     }
-    if (trip.placeAddition) {
-      height += 40 * trip.placeAddition.length;
-    }
-    if ($scope.showPlaces) {
-      height += 80;
+    if (entry.additions) {
+      height += 40 * entry.additions.length;
     }
     return height;
   }
@@ -143,22 +142,34 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
-    Timeline.readAllConfirmedTrips(currEnd, ONE_WEEK).then((ctList) => {
+    Timeline.readAllCompositeTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
-        ctList.forEach($scope.populateBasicClasses);
-        ctList.forEach((trip, tIndex) => {
-            trip.nextTrip = ctList[tIndex+1];
-            $scope.labelPopulateFactory.populateInputsAndInferences(trip, $scope.data.manualResultMap);
-            $scope.enbs.populateInputsAndInferences(trip, $scope.data.enbsResultMap);
+        ctList.forEach((ct, i) => {
+          
+          if (ct.confirmed_place) {
+            const cp = ct.confirmed_place;
+            cp.nextEntry = ctList[i + 1];
+            $scope.populateBasicClasses(cp);
+            $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
+            $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
+            ct.nextEntry = cp;
+          } else {
+            ct.nextEntry = ctList[i + 1];
+          }
+          $scope.populateBasicClasses(ct);
+          $scope.labelPopulateFactory.populateInputsAndInferences(ct, $scope.data.manualResultMap);
+          $scope.enbs.populateInputsAndInferences(ct, $scope.data.enbsResultMap);
         });
-        // Fill places on a reversed copy of the list so we fill from the bottom up
+        console.time("fillTrajectories")
+        // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
-            fillTrajectoriesForTripAsync(trip);
+            fillTrajectoriesForTrip(trip);
         });
+        console.timeEnd("fillTrajectories")
         $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
-        Timeline.setInfScrollConfirmedTripList($scope.data.allTrips);
+        Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
         const oldestTrip = ctList[0];
         if (oldestTrip) {
             if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
@@ -176,7 +187,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             Logger.log("current batch of size 0 but haven't reached pipeline start, going on");
             $scope.infScrollControl.currentEnd = $scope.infScrollControl.currentEnd - ONE_WEEK;
         }
-        $scope.recomputeDisplayTrips();
+        $scope.recomputeDisplayTimelineEntries();
         Logger.log("Broadcasting infinite scroll complete");
         $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -196,7 +207,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.itemHt = DEFAULT_ITEM_HT;
     $scope.infScrollControl.reachedEnd = false;
     $scope.data.allTrips = [];
-    $scope.data.displayTrips = [];
+    $scope.data.displayTimelineEntries = [];
     Logger.log("Turning on the ionic loading overlay in setupInfScroll");
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
@@ -235,11 +246,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
     $scope.$apply(() => {
       // TODO support places
-      const matchingTimelineEntry = $scope.data.displayTrips.find((trip) => 
-        InputMatcher.validUserInputForTrip(trip, addition, false)
+      const matchingTimelineEntry = $scope.data.displayTimelineEntries.find((entry) => 
+        InputMatcher.validUserInputForTimelineEntry(entry, addition, false)
       );
-      matchingTimelineEntry.tripAddition ||= [];
-      matchingTimelineEntry.tripAddition.push(addition);
+      matchingTimelineEntry.additions ||= [];
+      matchingTimelineEntry.additions.push(addition);
       scrollElement.trigger('scroll-resize');
     })
   });
@@ -253,7 +264,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       }
     });
     $scope.allTrips = false;
-    $scope.recomputeDisplayTrips();
+    $scope.recomputeDisplayTimelineEntries();
     // scroll to the bottom while changing filters so users don't have to
     // fixes the first of the fit-and-finish issues from
     // https://github.com/e-mission/e-mission-docs/issues/662
@@ -267,12 +278,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       f.state = false;
     });
     $scope.allTrips = true;
-    $scope.recomputeDisplayTrips();
+    $scope.recomputeDisplayTimelineEntries();
     $ionicScrollDelegate.scrollBottom();
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
-  $scope.recomputeDisplayTrips = function() {
+  $scope.recomputeDisplayTimelineEntries = function() {
     console.log("recomputing display trips now");
     let alreadyFiltered = false;
     $scope.filterInputs.forEach((f) => {
@@ -280,10 +291,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             if (alreadyFiltered) {
                 Logger.displayError("multiple filters not supported!", undefined);
             } else {
-                // console.log("Trip n before: "+$scope.data.displayTrips.length);
+                // console.log("Trip n before: "+$scope.data.displayTimelineEntries.length);
                 $scope.data.displayTrips = $scope.data.allTrips.filter(
                     t => (t.waitingForMod == true) || f.filter(t));
-                // console.log("Trip n after:  "+$scope.data.displayTrips.length);
+                // console.log("Trip n after:  "+$scope.data.displayTimelineEntries.length);
                 alreadyFiltered = true;
             }
         }
@@ -291,6 +302,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     if (!alreadyFiltered) {
         $scope.data.displayTrips = $scope.data.allTrips;
     };
+    
+    $scope.data.displayTimelineEntries = []
+    $scope.data.displayTrips.forEach((t) => {
+      const place = t.confirmed_place;
+      const {confirmed_place, ...trip} = t;
+      $scope.data.displayTimelineEntries.push(trip);
+      if (place) {
+        $scope.data.displayTimelineEntries.push(place);
+      }
+    });
   }
 
   angular.extend($scope, {
@@ -361,13 +382,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt);
-        tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt);
-        tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
-        tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
-        tripgj.display_date = moment(tripgj.start_ts * 1000).format('ddd DD MMM YYYY');
-        tripgj.display_time = DiaryHelper.getFormattedTimeRange(tripgj.start_ts,
-                                tripgj.end_ts);
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
+        tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts) * 1000).format('ddd DD MMM YYYY');
+        if (tripgj.end_ts || tripgj.exit_ts) {
+          tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt || tripgj.exit_local_dt);
+          tripgj.display_time = DiaryHelper.getFormattedTimeRange(
+                                  (tripgj.start_ts || tripgj.enter_ts),
+                                  (tripgj.end_ts || tripgj.exit_ts));
+        }
+        if (tripgj.distance) {
+          tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
+          tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
+        }
         tripgj.background = "bg-light";
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
@@ -386,31 +412,33 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.$apply(() => {
                 tripgj.start_display_name = startName;
                 tripgj.end_display_name = endName;
+                if (tripgj.confirmed_place) {
+                  tripgj.confirmed_place.display_name = endName;
+                }
             });
         });
     }
 
-    const fillTrajectoriesForTripAsync = function(trip) {
-        mapLimiter.schedule(() => Timeline.confirmedTrip2Geojson(trip)).then((tripgj) => {
-          console.log("retrieved geojson "+tripgj);
-          $scope.$apply(() => {
-              trip.data = tripgj;
-              trip.common = {};
-              trip.common.earlierOrLater = '';
-              trip.pointToLayer = DiaryHelper.pointFormat;
+    const fillTrajectoriesForTrip = function (trip) {
+      const tripgj = Timeline.compositeTrip2Geojson(trip);
 
-              console.log("Is our trip a draft? ", DiaryHelper.isDraft(trip));
-              trip.isDraft = DiaryHelper.isDraft(trip);
-              console.log("Tripgj == Draft: ", trip.isDraft);
+      $scope.$apply(() => {
+        trip.data = tripgj;
+        trip.common = {};
+        trip.common.earlierOrLater = '';
+        trip.pointToLayer = DiaryHelper.pointFormat;
 
-              console.log("Tripgj in Trip Item Ctrl is ", tripgj);
+        console.log("Is our trip a draft? ", DiaryHelper.isDraft(trip));
+        trip.isDraft = DiaryHelper.isDraft(trip);
+        console.log("Tripgj == Draft: ", trip.isDraft);
 
-              // var tc = getTripComponents($scope.tripgj);
-              // $scope.tripgj.sections = tc[3];
-              // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
-              // console.log("Section Percentages are ", $scope.tripgj.percentages);
-          });
-        });
+        console.log("Tripgj in Trip Item Ctrl is ", tripgj);
+
+        // var tc = getTripComponents($scope.tripgj);
+        // $scope.tripgj.sections = tc[3];
+        // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
+        // console.log("Section Percentages are ", $scope.tripgj.percentages);
+      });
     }
 
 
@@ -518,14 +546,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // let's increase by a small amount to workaround the issue with the
         // card not resizing the first time
         $scope.itemHt = $scope.itemHt + 20;
-        const oldDisplayTrips = $scope.data.displayTrips;
+        const oldDisplayEntries = $scope.data.displayTimelineEntries;
         const TEN_MS = 10;
-        $scope.data.displayTrips = [];
+        $scope.data.displayTimelineEntries = [];
         $timeout(() => {
             $scope.$apply(() => {
                 // make sure that the new item-height is calculated by resetting the list
                 // that we iterate over
-                $scope.data.displayTrips = oldDisplayTrips;
+                $scope.data.displayTimelineEntries = oldDisplayEntries;
                 // make sure that the cards within the items are set to the new
                 // size. Apparently, `ng-style` is not recalulated although the
                 // variable has changed and the items have changed.
@@ -611,7 +639,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                         $scope.labelPopulateFactory.copyInputIfNewer(tripFromDiary, tripgj);
                     }
                 });
-                $scope.recomputeDisplayTrips();
+                $scope.recomputeDisplayTimelineEntries();
             } else {
                 console.log("No trips loaded yet, no inputs to copy over");
             }

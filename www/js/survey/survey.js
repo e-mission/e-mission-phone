@@ -30,7 +30,7 @@ angular.module('emission.survey', [
     return {
         scope: {
             elementTag:"@",
-            trip: "=",
+            timelineEntry: "=",
             recomputedelay: "@",
         },
         templateUrl: "templates/survey/wrapper.html",

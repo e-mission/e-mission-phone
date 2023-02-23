@@ -480,7 +480,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
         $scope.$apply(() => {
             if ($scope.data && $scope.data.currDayTripWrappers) {
                 $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
-                    let tripFromLabel = Timeline.getConfirmedTrip(tripgj.data.id);
+                    let tripFromLabel = Timeline.getCompositeTrip(tripgj.data.id);
                     // Should we just copy over the entry from the label screen
                     // NO, what if the user changed the labels here, then went to
                     // the profile and came back. Don't want to lose the upgraded entries
