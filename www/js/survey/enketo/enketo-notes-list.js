@@ -10,7 +10,8 @@ angular.module('emission.survey.enketo.notes-list',
     return {
       restrict: 'E',
       scope: {
-        entries: '=', // an array of trip- or place- additions to display
+        timelineEntry: '=', // the trip or place for which we are displaying notes
+        additionEntries: '=', // an array of trip- or place- additionEntries to display
         timezone: '=',
       },
       controller: 'NotesListCtrl',
@@ -45,14 +46,14 @@ angular.module('emission.survey.enketo.notes-list',
 
       const dataKey = entry.key || entry.metadata.key;
       const data = entry.data;
-      const index = $scope.entries.indexOf(entry);
+      const index = $scope.additionEntries.indexOf(entry);
       data.status = 'DELETED';
 
       return $window.cordova.plugins.BEMUserCache
         .putMessage(dataKey, data)
         .then(() => 
           $scope.$apply(() => {
-            $scope.entries.splice(index, 1);
+            $scope.additionEntries.splice(index, 1);
             const scrollElement = getScrollElement();
             if (scrollElement) scrollElement.trigger('scroll-resize');
           })
@@ -64,7 +65,7 @@ angular.module('emission.survey.enketo.notes-list',
       const dataKey = entry.key || entry.metadata.key;
       const surveyName = entry.data.name;
       return EnketoSurveyLaunch
-        .launch($scope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey: dataKey, trip: true })
+        .launch($scope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey: dataKey, trip: $scope.timelineEntry })
         .then(result => {
           if (!result) {
             return;
