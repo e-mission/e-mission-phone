@@ -92,7 +92,7 @@
                     </div> 
                 </div>
             </div>
-            <enketo-notes-list timeline-entry="trip" addition-entries="trip.additions" timezone="trip.start_local_dt.timezone"></enketo-notes-list>
+            <enketo-notes-list ng-if="trip.additions.length" timeline-entry="trip" addition-entries="trip.additions"></enketo-notes-list>
         </div>
         <!-- End Time Tag -->
         <div class="stop-time-tag">{{trip.display_end_time}}</div>
