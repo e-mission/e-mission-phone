@@ -199,7 +199,7 @@ a.item-content {
 }
 
 .unified-diary-item {
-  padding: 6px;
+  padding: 0 6px;
   margin: 0 10px;
   border-width: 0;
   background-color: transparent;
@@ -224,7 +224,7 @@ a.item-content {
 .diary-card.short {
   /*height: 100px;*/
   background-color: rgba(128, 208, 255, 0.8);
-  margin: auto;
+  margin: 6px auto;
   text-align: center;
 }
 

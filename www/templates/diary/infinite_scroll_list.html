@@ -34,10 +34,8 @@
 		<ion-list>
             <div collection-repeat="entry in data.displayTimelineEntries" item-height="getCardHeight(entry)">
                 <infinite-scroll-trip-item ng-if="entry.start_ts" trip="entry" config="ui_config" surveys="surveys" map-limiter="mapLimiter"></infinite-scroll-trip-item>
-                <infinite-scroll-place-item ng-if="entry.enter_ts" place="entry" config="ui_config" surveys="surveys"></infinite-scroll-place-item>
+                <infinite-scroll-place-item ng-if="showPlaces && entry.enter_ts" place="entry" config="ui_config" surveys="surveys"></infinite-scroll-place-item>
             </div>
-            <!-- To Handle the last diary card not being in full view-- To see end_time of the final diary card, you have to hold the scroll up. This resolves that. -->
-            <div style="font-size: 50px; color: transparent;">SPACE</div>
         </ion-list>
 	</ion-content>
 </ion-view>

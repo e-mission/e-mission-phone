@@ -77,11 +77,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.getCardHeight = function(entry) {
-    let height;
+    let height = 0;
     if (entry.start_ts) { // entry is a trip
-      height = entry.INPUTS?.[2] ? 438 : 340;
-    } else { // entry is a place
-      height = 100;
+      height = entry.INPUTS?.[1] ? 380 : 326;
+    } else if (entry.enter_ts) { // entry is a place
+      height = 106;
     }
     if (entry.additions) {
       height += 40 * entry.additions.length;
@@ -115,10 +115,22 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   var adjustScrollAfterDownload = function() {
     // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
-    $ionicScrollDelegate.scrollBottom();
-    const clientHeight = $ionicScrollDelegate.getScrollView().__clientHeight;
-    $ionicScrollDelegate.scrollBy(0, -$scope.infScrollControl.fromBottom+clientHeight);
+    $ionicScrollDelegate.resize().then(() => {
+      $ionicScrollDelegate.scrollBottom(true);
+      const contentHt = scrollContentHeight();
+      const clientHt = $ionicScrollDelegate.getScrollView().__clientHeight;
+      $ionicScrollDelegate.scrollTo(0, contentHt - clientHt, true);
+    });
   };
+
+  var scrollContentHeight = function() {
+    let ht = 50;
+    const scroll = $ionicScrollDelegate.getScrollView().__content;
+    scroll.querySelectorAll('div[collection-repeat]').forEach((el) => {
+      ht += el.clientHeight;
+    });
+    return ht;
+  }
 
   var getFromBottom = function() {
     return $ionicScrollDelegate.getScrollView().__contentHeight
@@ -308,7 +320,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const place = t.confirmed_place;
       const {confirmed_place, ...trip} = t;
       $scope.data.displayTimelineEntries.push(trip);
-      if (place) {
+      if ($scope.showPlaces && place) {
         $scope.data.displayTimelineEntries.push(place);
       }
     });
