@@ -180,12 +180,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.login = function(token) {
-    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
+    window.cordova.plugins.OPCodeAuth.setOPCode(token).then(function(opcode) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
-      ionicToast.show(userEmail, 'middle', false, 2500);
-      if (userEmail == "null" || userEmail == "") {
-        $scope.alertError("Invalid login "+userEmail);
+      ionicToast.show(opcode, 'middle', false, 2500);
+      if (opcode == "null" || opcode == "") {
+        $scope.alertError("Invalid login "+opcode);
       } else {
         CommHelper.registerUser(function(successResult) {
           UpdateCheck.getChannel().then(function(retVal) {
