@@ -172,7 +172,7 @@ angular.module('emission.main.control',['emission.services',
                 console.log(response);
             });
         }, function(error) {
-            console.log("While getting connect Url :" + error);
+            Logger.displayError("While getting connect url", error);
         });
     };
 
@@ -203,7 +203,7 @@ angular.module('emission.main.control',['emission.services',
                 }
             });
         }, function(error) {
-            $ionicPopup.alert("while getting opcode, "+error);
+            Logger.displayError("while getting opcode, ",error);
         });
     };
     $scope.showLog = function() {
@@ -222,7 +222,7 @@ angular.module('emission.main.control',['emission.services',
             });
             return response;
         }, function(error) {
-            $ionicPopup.alert("while getting current state, "+error);
+            Logger.displayError("while getting current state", error);
         });
     };
 
@@ -236,9 +236,7 @@ angular.module('emission.main.control',['emission.services',
                         $ionicPopup.alert({template: 'success -> '+result});
                     });
                 }, function(error) {
-                    $scope.$apply(function() {
-                        $ionicPopup.alert({template: 'error -> '+error});
-                    });
+                    Logger.displayError("while clearing user cache, error ->", error);
                });
             }
         });
@@ -269,9 +267,7 @@ angular.module('emission.main.control',['emission.services',
                 $ionicPopup.alert({template: 'success -> '+result});
             });
         }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
+            Logger.displayError("while invalidating cache, error->", error);
         });
     }
 
