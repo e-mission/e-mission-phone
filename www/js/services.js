@@ -365,44 +365,41 @@ angular.module('emission.services', ['emission.plugin.logger',
 
           var emailData = function(result) {
             return new Promise(function(resolve, reject) {
-              window.cordova.plugins.BEMJWTAuth.getUserEmail().then(function(userEmail) {
-                window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
-                  console.log("During email, file system open: "+fs.name);
-                  fs.root.getFile(dumpFile, null, function(fileEntry) {
-                    console.log("fileEntry "+fileEntry.nativeURL+" is file?"+fileEntry.isFile.toString());
-                    fileEntry.file(function (file) {
-                      var reader = new FileReader();
+              window.requestFileSystem(window.LocalFileSystem.TEMPORARY, 0, function(fs) {
+                console.log("During email, file system open: "+fs.name);
+                fs.root.getFile(dumpFile, null, function(fileEntry) {
+                  console.log("fileEntry "+fileEntry.nativeURL+" is file?"+fileEntry.isFile.toString());
+                  fileEntry.file(function (file) {
+                    var reader = new FileReader();
 
-                      reader.onloadend = function() {
-                        console.log("Successful file read with " + this.result.length +" characters");
-                        var dataArray = JSON.parse(this.result);
-                        console.log("Successfully read resultList of size "+dataArray.length);
-                        // displayFileData(fileEntry.fullPath + ": " + this.result);
-                        var attachFile = fileEntry.nativeURL;
-                        if (ionic.Platform.isAndroid()) {
-                          // At least on nexus, getting a temporary file puts it into
-                          // the cache, so I can hardcode that for now
-                          attachFile = "app://cache/"+dumpFile;
-                        }
-                        if (ionic.Platform.isIOS()) {
-                          alert($translate.instant('email-service.email-account-mail-app'));
-                        }
-                        var email = {
-                          to: [userEmail],
-                          attachments: [
-                            attachFile
-                          ],
-                          subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
-                          body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
-                        }
-                        $window.cordova.plugins.email.open(email).then(resolve());
+                    reader.onloadend = function() {
+                      console.log("Successful file read with " + this.result.length +" characters");
+                      var dataArray = JSON.parse(this.result);
+                      console.log("Successfully read resultList of size "+dataArray.length);
+                      // displayFileData(fileEntry.fullPath + ": " + this.result);
+                      var attachFile = fileEntry.nativeURL;
+                      if (ionic.Platform.isAndroid()) {
+                        // At least on nexus, getting a temporary file puts it into
+                        // the cache, so I can hardcode that for now
+                        attachFile = "app://cache/"+dumpFile;
                       }
-                      reader.readAsText(file);
-                    }, function(error) {
-                      $ionicPopup.alert({title: "Error while downloading JSON dump",
-                        template: error});
-                      reject(error);
-                    });
+                      if (ionic.Platform.isIOS()) {
+                        alert($translate.instant('email-service.email-account-mail-app'));
+                      }
+                      var email = {
+                        attachments: [
+                          attachFile
+                        ],
+                        subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
+                        body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
+                      }
+                      $window.cordova.plugins.email.open(email).then(resolve());
+                    }
+                    reader.readAsText(file);
+                  }, function(error) {
+                    $ionicPopup.alert({title: "Error while downloading JSON dump",
+                      template: error});
+                    reject(error);
                   });
                 });
               });
@@ -420,8 +417,8 @@ angular.module('emission.services', ['emission.plugin.logger',
           })
     };
 
-    this.getUserEmail = function() {
-      return window.cordova.plugins.BEMJWTAuth.getUserEmail();
+    this.getOPCode = function() {
+      return window.cordova.plugins.OPCodeAuth.getOPCode();
     };
 
     this.getSettings = function() {

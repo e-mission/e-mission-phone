@@ -96,7 +96,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.viewQRCode = function($event) {
-        $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.email;
+        $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.opcode;
         if ($scope.qrp) {
             $scope.qrp.show($event);
         } else {
@@ -172,7 +172,7 @@ angular.module('emission.main.control',['emission.services',
                 console.log(response);
             });
         }, function(error) {
-            console.log("While getting connect Url :" + error);
+            Logger.displayError("While getting connect url", error);
         });
     };
 
@@ -192,18 +192,18 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getEmail = function() {
-        ControlHelper.getUserEmail().then(function(response) {
-           console.log("user email = "+response);
+    $scope.getOPCode = function() {
+        ControlHelper.getOPCode().then(function(opcode) {
+           console.log("opcode = "+opcode);
             $scope.$apply(function() {
-                if (response == null) {
-                  $scope.settings.auth.email = "Not logged in";
+                if (opcode == null) {
+                  $scope.settings.auth.opcode = "Not logged in";
                 } else {
-                  $scope.settings.auth.email = response;
+                  $scope.settings.auth.opcode = opcode;
                 }
             });
         }, function(error) {
-            $ionicPopup.alert("while getting email, "+error);
+            Logger.displayError("while getting opcode, ",error);
         });
     };
     $scope.showLog = function() {
@@ -222,7 +222,7 @@ angular.module('emission.main.control',['emission.services',
             });
             return response;
         }, function(error) {
-            $ionicPopup.alert("while getting current state, "+error);
+            Logger.displayError("while getting current state", error);
         });
     };
 
@@ -236,9 +236,7 @@ angular.module('emission.main.control',['emission.services',
                         $ionicPopup.alert({template: 'success -> '+result});
                     });
                 }, function(error) {
-                    $scope.$apply(function() {
-                        $ionicPopup.alert({template: 'error -> '+error});
-                    });
+                    Logger.displayError("while clearing user cache, error ->", error);
                });
             }
         });
@@ -269,9 +267,7 @@ angular.module('emission.main.control',['emission.services',
                 $ionicPopup.alert({template: 'success -> '+result});
             });
         }, function(error) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'error -> '+error});
-            });
+            Logger.displayError("while invalidating cache, error->", error);
         });
     }
 
@@ -314,7 +310,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
-        $scope.getEmail();
+        $scope.getOPCode();
         $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
             $scope.$apply(function() {
                 console.log("Setting settings.collect.trackingOn = "+isTracking);
@@ -623,7 +619,7 @@ angular.module('emission.main.control',['emission.services',
         const cbase64 = c[0].getAttribute('href');
         prepopulateQRMessage.files = [cbase64];
 
-        prepopulateQRMessage.url = $scope.settings.auth.email;
+        prepopulateQRMessage.url = $scope.settings.auth.opcode;
 
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
