@@ -1,7 +1,6 @@
 'use strict';
 
-angular.module('emission.controllers', ['emission.splash.updatecheck',
-                                        'emission.splash.startprefs',
+angular.module('emission.controllers', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
@@ -13,7 +12,7 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
 .controller('DashCtrl', function($scope) {})
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
-    UpdateCheck, StartPrefs, PushNotify, StoreDeviceSettings,
+    StartPrefs, PushNotify, StoreDeviceSettings,
     LocalNotify, RemoteNotify, ClientStats)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
@@ -22,13 +21,6 @@ angular.module('emission.controllers', ['emission.splash.updatecheck',
   $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams){
     console.log("Finished changing state from "+JSON.stringify(fromState)
         + " to "+JSON.stringify(toState));
-    /*
-    if ($rootScope.checkedForUpdates) {
-      window.Logger.log(window.Logger.log("Already checked for update, skipping"));
-    } else {
-      UpdateCheck.checkForUpdates();
-      $rootScope.checkedForUpdates = true;
-    } */
     ClientStats.addReading(ClientStats.getStatKeys().STATE_CHANGED,
       fromState.name + '-2-' + toState.name).then(function() {}, function() {});
   });

@@ -7,7 +7,6 @@ angular.module('emission.main.control',['emission.services',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
-                                        'emission.splash.updatecheck',
                                         'emission.main.metrics.factory',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
@@ -23,7 +22,7 @@ angular.module('emission.main.control',['emission.services',
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                CarbonDatasetHelper,
-               UpdateCheck, i18nUtils,
+               i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger,
                $translate) {
 
@@ -299,14 +298,6 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
-        $scope.settings.channel = function(newName) {
-          return arguments.length ? (UpdateCheck.setChannel(newName)) : $scope.settings.storedChannel;
-        };
-        UpdateCheck.getChannel().then(function(retVal) {
-            $scope.$apply(function() {
-                $scope.settings.storedChannel = retVal;
-            });
-        });
         $scope.getConnectURL();
         $scope.getCollectionSettings();
         $scope.getSyncSettings();
@@ -545,9 +536,6 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.userDataExpanded = function() {
         return $scope.dataExpanded && $scope.userDataSaved();
-    }
-    $scope.checkUpdates = function() {
-      UpdateCheck.checkForUpdates();
     }
 
     var handleNoConsent = function(resultDoc) {

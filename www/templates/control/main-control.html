@@ -65,10 +65,6 @@
       <div class="control-list-text" translate>{{'.share'}}</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
     </div>
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.check-ui-updates'}}</div>
-      <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
-    </div>
 
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.download-json-dump'}}</div>
@@ -134,12 +130,6 @@
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.nuke-all'}}</div>
         <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
-      </div>
-      <div class="control-list-item">
-        <div class="control-list-text" translate>{{'.set-ui-channel'}}</div>
-        <input type="text" name="userName"
-          ng-model="settings.channel"
-          ng-model-options="{ getterSetter: true }" />
       </div>
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
