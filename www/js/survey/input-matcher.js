@@ -14,6 +14,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
   }
 
   im.validUserInputForTimelineEntry = function(tlEntry, userInput, logsEnabled) {
+    const EPOCH_MAXIMUM = 2**31 - 1
     /*
     console.log("startDelta "+userInput.data.label+
         "= user("+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)+
@@ -27,7 +28,12 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     // logic described in
     // https://github.com/e-mission/e-mission-docs/issues/423
     const entryStart = tlEntry.start_ts || tlEntry.enter_ts;
-    const entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
+    let entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
+    if (!entryEnd) {
+        // if a place has no exit time, the user hasn't left there yet
+        // so we will set the end time as high as possible for the purpose of comparison
+        entryEnd = EPOCH_MAXIMUM;
+    }
     if (tlEntry.isDraft == true) {
         if (logsEnabled) {
             var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
@@ -45,7 +51,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
             && userInput.data.start_ts < entryEnd
             || -(userInput.data.start_ts - entryStart) <= 15 * 60)
             && userInput.data.end_ts <= entryEnd;
-    } else {
+    }
         // we know that the trip is cleaned so we can use the fmt_time
         // but the confirm objects are not necessarily filled out
         if (logsEnabled) {
@@ -67,8 +73,13 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
             (userInput.data.end_ts - entryEnd) <= 15 * 60);
         if (startChecks && !endChecks) {
             if (tlEntry.nextEntry) {
-                endChecks = userInput.data.end_ts <= tlEntry.nextEntry.start_ts;
-                Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ tlEntry.nextEntry.start_ts+") = "+endChecks);
+            nextEntryEnd = tlEntry.nextEntry.end_ts || tlEntry.nextEntry.exit_ts;
+            if (!nextEntryEnd) { // the last place will not have an exit_ts
+                endChecks = true; // so we will just skip the end check
+            } else {
+                endChecks = userInput.data.end_ts <= nextEntryEnd;
+                Logger.log("Second level of end checks when the next trip is defined("+userInput.data.end_ts+" <= "+ nextEntryEnd+") = "+endChecks);
+            }
             } else {
                 // next trip is not defined, last trip
                 endChecks = (userInput.data.end_local_dt.day == userInput.data.start_local_dt.day)
@@ -85,7 +96,6 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
             }
         }
         return startChecks && endChecks;
-    }
   }
 
   // parallels get_not_deleted_candidates() in trip_queries.py
