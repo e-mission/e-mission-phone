@@ -40,16 +40,6 @@ angular.module('emission.main.diary.infscrolltripitem',
     console.log("Trip Item Controller called");
 
     const DEFAULT_ITEM_HT = 274;
-    
-    // timebounds is used in js/survey/enketo/enketo-add-note-button.js getPrefillTimes() function
-    // this allows us to pre-fill time and date in surveys that have 'Date', 'Start_time', and 'End_time' fields
-    $scope.timeBounds = () => {
-      return {
-        isPlace: false,
-        start_fmt_time: $scope.trip?.start_fmt_time,
-        end_fmt_time: $scope.trip?.end_fmt_time
-      };
-    };
 
     // config will initially be undefined, so we will watch
     $scope.$watch('config', function (loadedConfig) {
