@@ -171,13 +171,15 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         if (version < 9) {
             androidSettingsDescTag = "intro.appstatus.locsettings.description.android-lt-9";
         }
-        var androidPermDescTag = "intro.appstatus.locperms.description.android-gte-11";
+        var androidPermDescTag = "intro.appstatus.locperms.description.android-gte-12";
         if($scope.osver < 6) {
             androidPermDescTag = 'intro.appstatus.locperms.description.android-lt-6';
         } else if ($scope.osver < 10) {
             androidPermDescTag = "intro.appstatus.locperms.description.android-6-9";
         } else if ($scope.osver < 11) {
             androidPermDescTag= "intro.appstatus.locperms.description.android-10";
+        } else if ($scope.osver < 12) {
+            androidPermDescTag= "intro.appstatus.locperms.description.android-11";
         }
         console.log("description tags are "+androidSettingsDescTag+" "+androidPermDescTag);
         // location settings

@@ -347,7 +347,8 @@
                     "android-lt-6": "Enabled during app installation.",
                     "android-6-9": "Please select 'allow'",
                     "android-10": "Please select 'Allow all the time'",
-                    "android-gte-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "android-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "android-gte-12": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time' and 'Precise'",
                     "ios-lt-13": "Please select 'Always allow'",
                     "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
                 }
