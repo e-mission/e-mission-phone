@@ -170,8 +170,8 @@ angular.module('emission.survey.enketo.add-note-button',
       // Check unprocessed labels first since they are more recent
       const unprocessedLabelEntry = InputMatcher.getAdditionsForTrip(trip, inputList);
       var userInputEntry = unprocessedLabelEntry;
-      if (!angular.isDefined(userInputEntry)) {
-          userInputEntry = trip.trip_addition[enbs.inputType2retKey(inputType)];
+      if (userInputEntry.length == 0) {
+          userInputEntry = trip.trip_addition;
       }
       enbs.populateInput(trip.tripAddition, inputType, userInputEntry);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
@@ -187,13 +187,6 @@ angular.module('emission.survey.enketo.add-note-button',
             tripField.push(ta);
           });
     }
-  }
-
-  /**
-   * MODE (manual/trip_addition_input becomes trip_addition_input)
-   */
-  enbs.inputType2retKey = function(inputType) {
-    return enbs.key.split("/")[1];
   }
 
   return enbs;

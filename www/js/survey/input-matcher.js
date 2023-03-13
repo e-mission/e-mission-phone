@@ -103,7 +103,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     const logsEnabled = userInputList.length < 20;
 
     if (userInputList === undefined) {
-        Logger.log("In getUserInputForTrip, no user input, returning []");
+        Logger.log("In getUserInputForTrip, no user input, returning undefined");
         return undefined;
     }
 
@@ -139,7 +139,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
 
     if (tripAdditionList === undefined) {
       Logger.log("In getAdditionsForTrip, no trip addition input, returning []");
-      return undefined;
+      return [];
     }
 
     // get additions that have not been deleted
