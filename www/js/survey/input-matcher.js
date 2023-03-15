@@ -115,7 +115,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     const logsEnabled = userInputList.length < 20;
 
     if (userInputList === undefined) {
-        Logger.log("In getUserInputForTrip, no user input, returning []");
+        Logger.log("In getUserInputForTrip, no user input, returning undefined");
         return undefined;
     }
 

@@ -190,12 +190,5 @@ angular.module('emission.survey.enketo.add-note-button',
     }
   }
 
-  /**
-   * MODE (manual/trip_addition_input becomes trip_addition_input)
-   */
-  enbs.inputType2retKey = function(inputType) {
-    return enbs.key.split("/")[1];
-  }
-
   return enbs;
 });
