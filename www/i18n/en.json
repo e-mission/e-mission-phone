@@ -347,7 +347,8 @@
                     "android-lt-6": "Enabled during app installation.",
                     "android-6-9": "Please select 'allow'",
                     "android-10": "Please select 'Allow all the time'",
-                    "android-gte-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "android-11": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time'",
+                    "android-gte-12": "On the app settings page, choose the 'Location' permission and set it to 'Allow all the time' and 'Precise'",
                     "ios-lt-13": "Please select 'Always allow'",
                     "ios-gte-13": "On the app settings page, please select 'Always' and 'Precise' and return here to continue"
                 }
@@ -378,7 +379,15 @@
             "unusedapprestrict": {
                 "name": "Unused apps disabled",
                 "description": {
-                    "android-disable": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "android-disable-lt-12": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "android-disable-gte-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+                    "ios": "Please allow."
+                }
+            },
+            "ignorebatteryopt": {
+                "name": "Ignore battery optimizations",
+                "description": {
+                    "android-disable": "On the optimization page, go to all apps, search for this app and turn off optimizations.",
                     "ios": "Please allow."
                 }
             }
