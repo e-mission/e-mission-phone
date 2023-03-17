@@ -379,7 +379,15 @@
             "unusedapprestrict": {
                 "name": "Unused apps disabled",
                 "description": {
-                    "android-disable": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "android-disable-lt-12": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
+                    "android-disable-gte-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+                    "ios": "Please allow."
+                }
+            },
+            "ignorebatteryopt": {
+                "name": "Ignore battery optimizations",
+                "description": {
+                    "android-disable": "On the optimization page, go to all apps, search for this app and turn off optimizations.",
                     "ios": "Please allow."
                 }
             }
