@@ -19,7 +19,7 @@ angular.module('emission.survey.enketo.notes-list',
     };
   })
 
-  .controller("NotesListCtrl", function ($scope, $state, $element, $window, EnketoSurveyLaunch) {
+  .controller("NotesListCtrl", function ($scope, $state, $element, $window, EnketoSurveyLaunch, $ionicPopup) {
     console.log("Notes List Controller called");
 
     const getScrollElement = function() {
@@ -39,6 +39,26 @@ angular.module('emission.survey.enketo.notes-list',
       const begin = moment.parseZone(beginTs*1000).tz(timezone).format("h:mm A");
       const stop = moment.parseZone(stopTs*1000).tz(timezone).format("h:mm A");
       return entry.displayTime = begin + " - " + stop;
+    }
+
+    $scope.confirmDeleteEntry = (entry) => {
+      $scope.currEntry = entry;
+      $ionicPopup.show({title: 'Delete entry',
+      templateUrl: `templates/survey/enketo/delete-entry.html`, 
+      scope: $scope,
+        buttons: [{
+          text: 'Delete',
+          type: 'button-cancel',
+          onTap: function(e) {
+            return $scope.deleteEntry(entry);
+          }
+          },{
+          text: 'Cancel',
+          type: 'button-stable',
+        }]
+      });
+
+      return;
     }
 
     $scope.deleteEntry = (entry) => {
