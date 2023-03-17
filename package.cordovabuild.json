@@ -1,6 +1,6 @@
 {
   "name": "edu.berkeley.eecs.emission",
-  "version": "3.2.7",
+  "version": "3.2.8",
   "displayName": "emission",
   "license": "BSD-3-Clause",
   "repository": {
@@ -60,7 +60,9 @@
       "cordova-plugin-em-unifiedlogger": {},
       "cordova-plugin-em-usercache": {},
       "cordova-plugin-androidx-adapter": {},
-      "cordova-plugin-barcode-qrscanner": {}
+      "phonegap-plugin-barcodescanner": {
+        "ANDROID_SUPPORT_V4_VERSION": "27.+"
+      }
     }
   },
   "dependencies": {
@@ -87,7 +89,7 @@
     "cordova-plugin-x-socialsharing": "6.0.4",
     "fs-extra": "^9.0.1",
     "klaw-sync": "^6.0.0",
-    "cordova-plugin-barcode-qrscanner": "^3.0.12",
+    "phonegap-plugin-barcodescanner": "git+https://github.com/phonegap/phonegap-plugin-barcodescanner#v8.1.0",
     "@havesource/cordova-plugin-push": "git+https://github.com/havesource/cordova-plugin-push.git#4.0.0-dev.0"
   }
 }
