@@ -2,7 +2,7 @@
     <ion-item class="notes-list" style="background-color: transparent">
         <ul>
             <li class="notes-list-entry" ng-repeat="entry in additionEntries | orderBy: 'data.start_ts'">
-                <b class="two-lines" ng-click="editEntry(entry)">{{entry.data.label}}</b>
+                <b class="two-lines notes-list-label" ng-click="editEntry(entry)">{{entry.data.label}}</b>
                 <i ng-click="editEntry(entry)">{{entry.displayTime || setDisplayTime(entry)}}</i>
                 <i class="icon ion-trash-a" ng-click="deleteEntry(entry)"></i>
             </li>

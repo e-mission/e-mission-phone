@@ -494,14 +494,13 @@ enketo-notes-list, .notes-list {
 }
 
 .notes-list {
-  padding: 0 5px 5px 5px;
+  padding: 0 15px 5px 15px;
   text-align: center;
 }
 
 .notes-list-entry {
   display: grid;
   grid-template-columns: 10fr 9fr 1fr;
-  place-items: center;
   overflow: hidden;
   font-size: 13px;
   height: 40px;
@@ -509,4 +508,8 @@ enketo-notes-list, .notes-list {
 
 .notes-list-entry .icon {
   font-size: 24px;
+}
+
+.notes-list-label {
+  text-align: left;
 }
