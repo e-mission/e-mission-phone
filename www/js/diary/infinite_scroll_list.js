@@ -83,8 +83,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     } else if (entry.enter_ts) { // entry is a place
       height = 106;
     }
-    if (entry.additions) {
-      height += 40 * entry.additions.length; // for each trip/place addition object, we need to increase the card height
+    if (entry.additionsList) {
+      height += 40 * entry.additionsList.length; // for each trip/place addition object, we need to increase the card height
     }
     return height;
   }
@@ -261,8 +261,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const matchingTimelineEntry = $scope.data.displayTimelineEntries.find((entry) => 
         InputMatcher.validUserInputForTimelineEntry(entry, addition, false)
       );
-      matchingTimelineEntry.additions ||= [];
-      matchingTimelineEntry.additions.push(addition);
+      matchingTimelineEntry.additionsList ||= [];
+      matchingTimelineEntry.additionsList.push(addition);
       scrollElement.trigger('scroll-resize');
     })
   });

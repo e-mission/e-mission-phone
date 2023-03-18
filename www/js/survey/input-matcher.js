@@ -151,7 +151,7 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
 
     if (additionsList === undefined) {
       Logger.log("In getAdditionsForTimelineEntry, no addition input, returning []");
-      return undefined;
+      return [];
     }
 
     // get additions that have not been deleted

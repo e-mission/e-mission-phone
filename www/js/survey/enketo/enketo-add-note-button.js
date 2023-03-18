@@ -30,14 +30,14 @@ angular.module('emission.survey.enketo.add-note-button',
 
   const updateLabel = () => {
     const localeCode = $translate.use();
-    if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additions?.length > 0) {
+    if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
       $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
     } else {
       $scope.displayLabel = $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
     }
   }
   $scope.$watch('notesConfig', updateLabel);
-  $scope.$watch('timelineEntry.additions', updateLabel);
+  $scope.$watch('timelineEntry.additionsList', updateLabel);
 
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   $scope.getPrefillTimes = () => {
@@ -153,7 +153,7 @@ angular.module('emission.survey.enketo.add-note-button',
     console.log("ENKETO: populating timelineEntry,", timelineEntry, " with result map", manualResultMap);
     if (angular.isDefined(timelineEntry)) {
         // initialize additions array as empty if it doesn't already exist
-        timelineEntry.additions ||= [];
+        timelineEntry.additionsList ||= [];
         enbs.populateManualInputs(timelineEntry, timelineEntry.nextEntry, enbs.SINGLE_KEY,
             manualResultMap[enbs.SINGLE_KEY]);
         timelineEntry.finalInference = {};
@@ -171,10 +171,10 @@ angular.module('emission.survey.enketo.add-note-button',
       // Check unprocessed labels first since they are more recent
       const unprocessedLabelEntry = InputMatcher.getAdditionsForTimelineEntry(timelineEntry, inputList);
       var userInputEntry = unprocessedLabelEntry;
-      if (!angular.isDefined(userInputEntry)) {
-          userInputEntry = timelineEntry.timelineEntry_addition[enbs.inputType2retKey(inputType)];
+      if (userInputEntry.length == 0) {
+          userInputEntry = timelineEntry.additions;
       }
-      enbs.populateInput(timelineEntry.additions, inputType, userInputEntry);
+      enbs.populateInput(timelineEntry.additionsList, inputType, userInputEntry);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
       enbs.editingTrip = angular.undefined;
   }
