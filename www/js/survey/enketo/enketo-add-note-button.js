@@ -45,7 +45,7 @@ angular.module('emission.survey.enketo.add-note-button',
     const stop = $scope.timelineEntry.end_fmt_time || $scope.timelineEntry.exit_fmt_time;
 
     const momentBegin = moment.parseZone(begin);
-    let momentStop;
+    let momentStop = moment.parseZone(stop);
     // stop could be undefined because the last place will not have an exit time
     if (!stop) {
       // if begin is the same day as today, we will use the current time for stop
