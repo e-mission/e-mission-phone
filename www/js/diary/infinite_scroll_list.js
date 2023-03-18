@@ -113,18 +113,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   var adjustScrollAfterDownload = function() {
     // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
     $ionicScrollDelegate.resize().then(() => {
-      $ionicScrollDelegate.scrollBottom(true);
       const contentHt = scrollContentHeight();
       const clientHt = $ionicScrollDelegate.getScrollView().__clientHeight;
-      $ionicScrollDelegate.scrollTo(0, contentHt - clientHt, true);
+      $ionicScrollDelegate.scrollTo(0, contentHt - clientHt);
     });
   };
 
   var scrollContentHeight = function() {
-    let ht = 50;
-    const scroll = $ionicScrollDelegate.getScrollView().__content;
-    scroll.querySelectorAll('div[collection-repeat]').forEach((el) => {
-      ht += el.clientHeight;
+    let ht = 50; // start at 50 for the header
+    $scope.data.displayTimelineEntries.forEach((entry) => {
+      ht += $scope.getCardHeight(entry);
     });
     return ht;
   }
@@ -155,7 +153,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Received batch of size "+ctList.length);
         ctList.forEach((ct, i) => {
           
-          if (ct.confirmed_place) {
+          if ($scope.showPlaces && ct.confirmed_place) {
             const cp = ct.confirmed_place;
             cp.nextEntry = ctList[i + 1];
             $scope.populateBasicClasses(cp);
