@@ -169,13 +169,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           $scope.labelPopulateFactory.populateInputsAndInferences(ct, $scope.data.manualResultMap);
           $scope.enbs.populateInputsAndInferences(ct, $scope.data.enbsResultMap);
         });
-        console.time("fillTrajectories")
         // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
             fillTrajectoriesForTrip(trip);
         });
-        console.timeEnd("fillTrajectories")
         $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
