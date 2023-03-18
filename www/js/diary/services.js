@@ -445,11 +445,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             $ionicLoading.hide();
             return ctList.phone_data.map((ct) => {
               ct.data._id = ct._id["$oid"];
-              const cp = ct.data.confirmed_place;
-              if (cp) {
-                cp.data._id = cp._id["$oid"];
-                delete ct.data.confirmed_place;
-                ct.data.confirmed_place = cp.data;
+              if (cp.data.confirmed_place) {
+                cp.data.confirmed_place._id = cp.data.confirmed_place._id["$oid"];
               }
               return ct.data;
             });
