@@ -501,6 +501,7 @@ enketo-notes-list, .notes-list {
 .notes-list-entry {
   display: grid;
   grid-template-columns: 10fr 9fr 1fr;
+  align-items: center;
   overflow: hidden;
   font-size: 13px;
   height: 40px;
@@ -510,6 +511,7 @@ enketo-notes-list, .notes-list {
   font-size: 24px;
 }
 
-.notes-list-label {
+/* the note's label will be left-aligned */
+.notes-list-entry b {
   text-align: left;
 }
