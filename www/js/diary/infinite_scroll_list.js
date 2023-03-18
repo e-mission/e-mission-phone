@@ -79,12 +79,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.getCardHeight = function(entry) {
     let height = 0;
     if (entry.start_ts) { // entry is a trip
-      height = entry.INPUTS?.[1] ? 380 : 326;
+      height = entry.INPUTS?.[1] ? 380 : 326; // Trip cards using multilabel will need more height than trip cards using ENKETO survey for trip details
     } else if (entry.enter_ts) { // entry is a place
       height = 106;
     }
     if (entry.additions) {
-      height += 40 * entry.additions.length;
+      height += 40 * entry.additions.length; // for each trip/place addition object, we need to increase the card height
     }
     return height;
   }
