@@ -19,7 +19,6 @@ angular.module('emission.main.diary.infscrollplaceitem',
       scope: {
         place: '=',
         config: '=',
-        surveys: '=',
       },
       controller: 'PlaceItemCtrl',
       templateUrl: 'templates/diary/place_list_item.html'

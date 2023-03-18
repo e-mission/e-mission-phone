@@ -15,7 +15,6 @@ angular.module('emission.survey.enketo.add-note-button',
     scope: {
       timelineEntry: '=',
       notesConfig: '=',
-      surveys: '=',
       datakey: '@',
     },
     controller: "EnketoAddNoteButtonCtrl",

@@ -24,8 +24,6 @@ angular.module('emission.main.diary.infscrolltripitem',
       scope: {
         trip: '=',
         config: '=',
-        surveys: '=',
-        mapLimiter: '='
       },
       controller: 'TripItemCtrl',
       templateUrl: 'templates/diary/trip_list_item.html'

@@ -43,7 +43,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.itemHt = DEFAULT_ITEM_HT;
 
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
-  const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
   $scope.data = {};
 
   $scope.init = (configObj) => {
@@ -53,8 +52,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.surveyOpt = SurveyOptions[surveyOptKey];
       console.log('surveyOpt in infinite_scroll_list.js is', $scope.surveyOpt);
       $scope.showPlaces = configObj.survey_info?.buttons?.['place-notes'];
-      // if we decide to load dynamic surveys by surveys.json instead of config, this will need to be updated
-      $scope.surveys = configObj.survey_info.surveys;
       $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
       $scope.enbs = $injector.get("EnketoNotesButtonService");
       const tripSurveyName = configObj.survey_info?.buttons?.['trip-notes']?.surveyName;
