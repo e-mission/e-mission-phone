@@ -1,14 +1,5 @@
 /*
- * Directive to display a survey for each trip
- * Assumptions:
- * - The directive is embedded within an ion-view
- * - The controller for the ion-view has a function called
- *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
- *      as necessary. An example with the label view is removing the labeled trips from
- *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
- * - The view is associated with a state which we can record in the client stats.
- * - The directive implements a `verifyTrip` function that can be invoked by
- *      other components.
+ * Directive to display the initial demographic survey
  */
 
 angular.module('emission.survey.enketo.demographics',
