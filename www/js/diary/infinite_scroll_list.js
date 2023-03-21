@@ -79,7 +79,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
       // we may have 1, 2, or 3 buttons at any given time
       // 272 is the height without any buttons, and each button adds 54 pixels
-      height = 272 + (54 * entry.INPUTS?.length)
+      const numButtons = entry.INPUTS?.length || 1;
+      height = 272 + (54 * numButtons)
     } else if (entry.enter_ts) { // entry is a place
       height = 106;
     }
