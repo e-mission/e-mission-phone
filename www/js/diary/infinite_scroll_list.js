@@ -76,7 +76,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.getCardHeight = function(entry) {
     let height = 0;
     if (entry.start_ts) { // entry is a trip
-      height = entry.INPUTS?.[1] ? 380 : 326; // Trip cards using multilabel will need more height than trip cards using ENKETO survey for trip details
+      // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
+      // we may have 1, 2, or 3 buttons at any given time
+      // 272 is the height without any buttons, and each button adds 54 pixels
+      height = 272 + (54 * entry.INPUTS?.length)
     } else if (entry.enter_ts) { // entry is a place
       height = 106;
     }
