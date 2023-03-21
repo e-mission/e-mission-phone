@@ -153,8 +153,7 @@ angular.module('emission.survey.enketo.add-note-button',
     if (angular.isDefined(timelineEntry)) {
         // initialize additions array as empty if it doesn't already exist
         timelineEntry.additionsList ||= [];
-        enbs.populateManualInputs(timelineEntry, timelineEntry.nextEntry, enbs.SINGLE_KEY,
-            manualResultMap[enbs.SINGLE_KEY]);
+        enbs.populateManualInputs(timelineEntry, enbs.SINGLE_KEY, manualResultMap[enbs.SINGLE_KEY]);
         timelineEntry.finalInference = {};
     } else {
         console.log("timelineEntry information not yet bound, skipping fill");
@@ -166,7 +165,7 @@ angular.module('emission.survey.enketo.add-note-button',
    * This is the version that is called from the list, which focuses only on
    * manual inputs. It also sets some additional values 
    */
-  enbs.populateManualInputs = function (timelineEntry, nextTimelineEntry, inputType, inputList) {
+  enbs.populateManualInputs = function (timelineEntry, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
       const unprocessedLabelEntry = InputMatcher.getAdditionsForTimelineEntry(timelineEntry, inputList);
       var userInputEntry = unprocessedLabelEntry;

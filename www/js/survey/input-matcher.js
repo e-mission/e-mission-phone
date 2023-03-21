@@ -72,8 +72,9 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
         var endChecks = (userInput.data.end_ts <= entryEnd ||
             (userInput.data.end_ts - entryEnd) <= 15 * 60);
         if (startChecks && !endChecks) {
-            if (tlEntry.nextEntry) {
-            nextEntryEnd = tlEntry.nextEntry.end_ts || tlEntry.nextEntry.exit_ts;
+            const nextEntryObj = tlEntry.getNextEntry();
+            if (nextEntryObj) {
+            nextEntryEnd = nextEntryObj.end_ts || nextEntryObj.exit_ts;
             if (!nextEntryEnd) { // the last place will not have an exit_ts
                 endChecks = true; // so we will just skip the end check
             } else {

@@ -155,13 +155,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           
           if ($scope.showPlaces && ct.confirmed_place) {
             const cp = ct.confirmed_place;
-            cp.nextEntry = ctList[i + 1];
+            cp.getNextEntry = () => ctList[i + 1];
             $scope.populateBasicClasses(cp);
             $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
             $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
-            ct.nextEntry = cp;
+            ct.getNextEntry = () => cp;
           } else {
-            ct.nextEntry = ctList[i + 1];
+            ct.getNextEntry = () => ctList[i + 1];
           }
           $scope.populateBasicClasses(ct);
           $scope.labelPopulateFactory.populateInputsAndInferences(ct, $scope.data.manualResultMap);

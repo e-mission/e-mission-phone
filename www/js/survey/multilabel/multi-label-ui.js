@@ -325,7 +325,7 @@ angular.module('emission.survey.multilabel.buttons',
         // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
         trip.userInput = {};
         ConfirmHelper.INPUTS.forEach(function(item, index) {
-            mls.populateManualInputs(trip, trip.nextEntry, item,
+            mls.populateManualInputs(trip, trip.getNextEntry(), item,
                 manualResultMap[item]);
         });
         trip.finalInference = {};
