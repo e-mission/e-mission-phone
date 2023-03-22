@@ -3,10 +3,9 @@
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
- *      'recomputeDisplayTrips` which modifies the trip *list* as necessary. An
- *      example with the label view is removing the labeled trips from the
- *      "toLabel" filter. Function can be a no-op (for example, in
- *      the diary view)
+ *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
+ *      as necessary. An example with the label view is removing the labeled trips from
+ *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
  * - The view is associated with a state which we can record in the client stats.
  * - The directive implements a `verifyTrip` function that can be invoked by
  *      other components.
@@ -20,7 +19,7 @@ angular.module('emission.survey.enketo.trip.button',
 .directive('enketoTripButton', function() {
   return {
     scope: {
-        trip: "=",
+        timelineEntry: "=",
         recomputedelay: "@",
     },
     controller: "EnketoTripButtonCtrl",
@@ -69,12 +68,12 @@ angular.module('emission.survey.enketo.trip.button',
      * verifyTrip turns all of a given trip's yellow labels green
      */
     $scope.verifyTrip = function() {
-      console.log("About to verify trip "+$scope.trip.start_ts
-        +" -> "+$scope.trip.end_ts+" with current visibility"
-        + $scope.trip.verifiability);
+      console.log("About to verify trip "+$scope.timelineEntry.start_ts
+        +" -> "+$scope.timelineEntry.end_ts+" with current visibility"
+        + $scope.timelineEntry.verifiability);
       // Return early since we don't want to support trip verification yet
       return;
-      if ($scope.trip.verifiability != "can-verify") {
+      if ($scope.timelineEntry.verifiability != "can-verify") {
         ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
             {"verifiable": false, "currView": $scope.currentViewState});
         return;
@@ -82,18 +81,18 @@ angular.module('emission.survey.enketo.trip.button',
       ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
             {"verifiable": true,
              "currView": $scope.currentViewState,
-             "userInput": angular.toJson($scope.trip.userInput),
-             "finalInference": angular.toJson($scope.trip.finalInference)});
+             "userInput": angular.toJson($scope.timelineEntry.userInput),
+             "finalInference": angular.toJson($scope.timelineEntry.finalInference)});
 
       $scope.draftInput = {
-        "start_ts": $scope.trip.start_ts,
-        "end_ts": $scope.trip.end_ts
+        "start_ts": $scope.timelineEntry.start_ts,
+        "end_ts": $scope.timelineEntry.end_ts
       };
-      $scope.editingTrip = $scope.trip;
+      $scope.editingTrip = $scope.timelineEntry;
 
-      const inferred = $scope.trip.finalInference[EnketoTripButtonService.SINGLE_KEY];
+      const inferred = $scope.timelineEntry.finalInference[EnketoTripButtonService.SINGLE_KEY];
       // TODO: figure out what to do with "other". For now, do not verify.
-      if (inferred && !$scope.trip.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
+      if (inferred && !$scope.timelineEntry.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
     }
 
   /*
@@ -112,7 +111,7 @@ angular.module('emission.survey.enketo.trip.button',
   $scope.openPopover = function ($event, trip, inputType) {
     const prevResponse = trip.userInput?.[EnketoTripButtonService.SINGLE_KEY];
     return EnketoSurveyLaunch
-      .launch($scope, 'TripConfirmSurvey', { trip: trip, prefilledSurveyResponse: prevResponse?.data?.xmlResponse })
+      .launch($scope, 'TripConfirmSurvey', { timelineEntry: trip, prefilledSurveyResponse: prevResponse?.data?.xmlResponse })
       .then(result => {
         if (!result) {
           return;
@@ -137,7 +136,7 @@ angular.module('emission.survey.enketo.trip.button',
   };
 
   $scope.init = function() {
-      console.log("During initialization, trip is ", $scope.trip);
+      console.log("During initialization, trip is ", $scope.timelineEntry);
       $scope.currViewState = findViewState();
   }
 
@@ -171,7 +170,7 @@ angular.module('emission.survey.enketo.trip.button',
         // console.log("Expectation: "+JSON.stringify(trip.expectation));
         // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
         trip.userInput = {};
-        etbs.populateManualInputs(trip, trip.nextTrip, etbs.SINGLE_KEY,
+        etbs.populateManualInputs(trip, trip.getNextEntry(), etbs.SINGLE_KEY,
             manualResultMap[etbs.SINGLE_KEY]);
         trip.finalInference = {};
         etbs.inferFinalLabels(trip);
@@ -284,7 +283,7 @@ angular.module('emission.survey.enketo.trip.button',
       trip.waitingForMod = false;
       trip.timeoutPromise = undefined;
       console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTrips();
+      viewScope.recomputeDisplayTimelineEntries();
     }, etbs.recomputedelay);
     Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
     $timeout.cancel(currTimeoutPromise);

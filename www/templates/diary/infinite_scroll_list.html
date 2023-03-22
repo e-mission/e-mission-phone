@@ -32,22 +32,10 @@
         </div>
 
 		<ion-list>
-		<div collection-repeat="trip in data.displayTrips" item-height="getTripHeight(trip)">
-            <div>
-
-                <!-- <div ng-if='$index==0 || trip.prevTrip.display_date != trip.display_date'>
-                    <h2 class="hr-lines" translate> {{trip.display_date}}</h2>
-                </div> Commented out as we are not using prevTrip anymore. We should come back to 
-                this and implement some sort of horizontal line between trips-day-changing later on-->
-
-                <infinite-scroll-trip-item trip="trip" config="ui_config" surveys="surveys" map-limiter="mapLimiter"></infinite-scroll-trip-item>
-                <infinite-scroll-place-item ng-if="showPlaces" trip="trip" config="ui_config" surveys="surveys"></infinite-scroll-place-item>
-
+            <div collection-repeat="entry in data.displayTimelineEntries" item-height="getCardHeight(entry)">
+                <infinite-scroll-trip-item ng-if="entry.start_ts" trip="entry" config="ui_config"></infinite-scroll-trip-item>
+                <infinite-scroll-place-item ng-if="showPlaces && entry.enter_ts" place="entry" config="ui_config"></infinite-scroll-place-item>
             </div>
-        </div>
-
-        <!-- To Handle the last diary card not being in full view-- To see end_time of the final diary card, you have to hold the scroll up. This resolves that. -->
-        <div style="font-size: 50px; color: transparent;">SPACE</div>
         </ion-list>
 	</ion-content>
 </ion-view>

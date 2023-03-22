@@ -1,16 +1,5 @@
 /*
- * Directive to display a survey to add notes to a trip or place
- * 
- * Assumptions:
- * - The directive is embedded within an ion-view
- * - The controller for the ion-view has a function called
- *      'recomputeDisplayTrips` which modifies the trip *list* as necessary. An
- *      example with the label view is removing the labeled trips from the
- *      "toLabel" filter. Function can be a no-op (for example, in
- *      the diary view)
- * - The view is associated with a state which we can record in the client stats.
- * - The directive implements a `verifyTrip` function that can be invoked by
- *      other components.
+ * Directive to display a survey to add notes to a timeline entry (trip or place)
  */
 
 angular.module('emission.survey.enketo.add-note-button',
@@ -24,10 +13,8 @@ angular.module('emission.survey.enketo.add-note-button',
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {
-      trip: '=',
+      timelineEntry: '=',
       notesConfig: '=',
-      surveys: '=',
-      timeBounds: '=',
       datakey: '@',
     },
     controller: "EnketoAddNoteButtonCtrl",
@@ -42,23 +29,37 @@ angular.module('emission.survey.enketo.add-note-button',
 
   const updateLabel = () => {
     const localeCode = $translate.use();
-    if ($scope.notesConfig?.['filled-in-label'] && trip.tripAddition?.length > 0) {
+    if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
       $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
     } else {
       $scope.displayLabel = $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
     }
   }
   $scope.$watch('notesConfig', updateLabel);
-  $scope.$watch('trip.tripAddition', updateLabel);
+  $scope.$watch('timelineEntry.additionsList', updateLabel);
 
+  // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   $scope.getPrefillTimes = () => {
-    const timeBounds = $scope.timeBounds();
-    const begin = timeBounds.start_fmt_time || timeBounds.enter_fmt_time;
-    const stop = timeBounds.end_fmt_time || timeBounds.exit_fmt_time;
+    const begin = $scope.timelineEntry.start_fmt_time || $scope.timelineEntry.enter_fmt_time;
+    const stop = $scope.timelineEntry.end_fmt_time || $scope.timelineEntry.exit_fmt_time;
+
+    const momentBegin = moment.parseZone(begin);
+    let momentStop = moment.parseZone(stop);
+    // stop could be undefined because the last place will not have an exit time
+    if (!stop) {
+      // if begin is the same day as today, we will use the current time for stop
+      // else, stop will be begin + 1 hour
+      if (moment(begin).isSame(moment(), 'day')) {
+        momentStop = moment.parseZone();
+      } else {
+        momentStop = moment(momentBegin).add(1, 'hour');
+      }
+    }
+
     return {
-      "Date": moment.parseZone(begin).format('YYYY-MM-DD'),
-      "Start_time": moment.parseZone(begin).format('HH:mm:ss.SSSZ'),
-      "End_time": moment.parseZone(stop).format('HH:mm:ss.SSSZ')
+      "Date": momentBegin.format('YYYY-MM-DD'),
+      "Start_time": momentBegin.format('HH:mm:ss.SSSZ'),
+      "End_time": momentStop.format('HH:mm:ss.SSSZ')
     }
   }
 
@@ -78,7 +79,7 @@ angular.module('emission.survey.enketo.add-note-button',
     return $scope.scrollElement;
   }
 
-  $scope.openPopover = function ($event, trip, inputType) {
+  $scope.openPopover = function ($event, timelineEntry, inputType) {
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
 
@@ -89,7 +90,7 @@ angular.module('emission.survey.enketo.add-note-button',
     // prevents the click event from bubbling through to the card and opening the details page
     if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch
-      .launch($scope, surveyName, { trip: trip, prefillFields: $scope.getPrefillTimes(), dataKey: $scope.datakey })
+      .launch($scope, surveyName, { timelineEntry: timelineEntry, prefillFields: $scope.getPrefillTimes(), dataKey: $scope.datakey })
       .then(result => {
         if (!result) {
           return;
@@ -131,11 +132,11 @@ angular.module('emission.survey.enketo.add-note-button',
   }
 
   /**
-   * Embed 'inputType' to the trip.
+   * Embed 'inputType' to the timelineEntry.
    */
   enbs.extractResult = function(results) {
-    const resultsPromises = [EnketoSurveyAnswer.filterByNameAndVersion(enbs.tripSurveyName, results)];
-    if (enbs.tripSurveyName != enbs.placeSurveyName) {
+    const resultsPromises = [EnketoSurveyAnswer.filterByNameAndVersion(enbs.timelineEntrySurveyName, results)];
+    if (enbs.timelineEntrySurveyName != enbs.placeSurveyName) {
       resultsPromises.push(EnketoSurveyAnswer.filterByNameAndVersion(enbs.placeSurveyName, results));
     }
     return Promise.all(resultsPromises);
@@ -147,33 +148,31 @@ angular.module('emission.survey.enketo.add-note-button',
     resultMap[enbs.SINGLE_KEY] = surveyResults;
   }
 
-  enbs.populateInputsAndInferences = function(trip, manualResultMap) {
-    console.log("ENKETO: populating trip,", trip, " with result map", manualResultMap);
-    if (angular.isDefined(trip)) {
-        // initialize addition arrays as empty if they don't already exist
-        trip.trip_addition ||= [], trip.place_addition ||= [];
-        trip.tripAddition ||= [], trip.placeAddition ||= [];
-        enbs.populateManualInputs(trip, trip.nextTrip, enbs.SINGLE_KEY,
-            manualResultMap[enbs.SINGLE_KEY]);
-        trip.finalInference = {};
+  enbs.populateInputsAndInferences = function(timelineEntry, manualResultMap) {
+    console.log("ENKETO: populating timelineEntry,", timelineEntry, " with result map", manualResultMap);
+    if (angular.isDefined(timelineEntry)) {
+        // initialize additions array as empty if it doesn't already exist
+        timelineEntry.additionsList ||= [];
+        enbs.populateManualInputs(timelineEntry, enbs.SINGLE_KEY, manualResultMap[enbs.SINGLE_KEY]);
+        timelineEntry.finalInference = {};
     } else {
-        console.log("Trip information not yet bound, skipping fill");
+        console.log("timelineEntry information not yet bound, skipping fill");
     }
   }
 
   /**
-   * Embed 'inputType' to the trip
+   * Embed 'inputType' to the timelineEntry
    * This is the version that is called from the list, which focuses only on
    * manual inputs. It also sets some additional values 
    */
-  enbs.populateManualInputs = function (trip, nextTrip, inputType, inputList) {
+  enbs.populateManualInputs = function (timelineEntry, inputType, inputList) {
       // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getAdditionsForTrip(trip, inputList);
+      const unprocessedLabelEntry = InputMatcher.getAdditionsForTimelineEntry(timelineEntry, inputList);
       var userInputEntry = unprocessedLabelEntry;
       if (userInputEntry.length == 0) {
-          userInputEntry = trip.trip_addition;
+          userInputEntry = timelineEntry.additions;
       }
-      enbs.populateInput(trip.tripAddition, inputType, userInputEntry);
+      enbs.populateInput(timelineEntry.additionsList, inputType, userInputEntry);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
       enbs.editingTrip = angular.undefined;
   }
@@ -181,10 +180,10 @@ angular.module('emission.survey.enketo.add-note-button',
   /**
    * Insert the given userInputLabel into the given inputType's slot in inputField
    */
-  enbs.populateInput = function(tripField, inputType, userInputEntry) {
+  enbs.populateInput = function(timelineEntryField, inputType, userInputEntry) {
     if (angular.isDefined(userInputEntry)) {
           userInputEntry.forEach(ta => {
-            tripField.push(ta);
+            timelineEntryField.push(ta);
           });
     }
   }

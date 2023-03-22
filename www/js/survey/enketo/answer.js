@@ -139,7 +139,7 @@ angular.module('emission.survey.enketo.answer', [
    * @param {object} trip trip object
    * @returns {object} object with `start_ts` and `end_ts`
    */
-  function resolveTimestamps(xmlDoc, trip) {
+  function resolveTimestamps(xmlDoc, timelineEntry) {
     // check for Date and Time fields
     const date = xmlDoc.getElementsByTagName('Date')?.[0]?.innerHTML;
     const start = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
@@ -150,14 +150,16 @@ angular.module('emission.survey.enketo.answer', [
     let additionStartTs = moment(date + 'T' + start).unix();
     let additionEndTs = moment(date + 'T' + end).unix();
 
-    /* Enketo survey time inputs are only precise to the minute, while trips are precise to milliseconds
-      To avoid precision issues, we will check if the start/end timestamps from the survey response
-      are within the same minute as the trip start/end timestamps.
-      If so, we will use the exact trip start/end timestamps */
-    if (additionStartTs - (additionStartTs % 60) == trip.start_ts - (trip.start_ts % 60))
-      additionStartTs = trip.start_ts;
-    if (additionEndTs - (additionEndTs % 60) == trip.end_ts - (trip.end_ts % 60))
-      additionEndTs = trip.end_ts;
+    /* Enketo survey time inputs are only precise to the minute, while trips/places are precise to
+      the millisecond. To avoid precision issues, we will check if the start/end timestamps from
+      the survey response are within the same minute as the start/end or enter/exit timestamps.
+      If so, we will use the exact trip/place timestamps */
+    const entryStartTs = timelineEntry.start_ts || timelineEntry.enter_ts;
+    const entryEndTs = timelineEntry.end_ts || timelineEntry.exit_ts;
+    if (additionStartTs - (additionStartTs % 60) == entryStartTs - (entryStartTs % 60))
+      additionStartTs = entryStartTs;
+    if (additionEndTs - (additionEndTs % 60) == entryEndTs - (entryEndTs % 60))
+      additionEndTs = entryEndTs;
 
     // return unix timestamps in seconds
     return {
