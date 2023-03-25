@@ -3,7 +3,9 @@
 angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
 .factory('InputMatcher', function($translate){
   var im = {};
-  var fmtTs = function(ts_in_secs, tz) {
+
+  const EPOCH_MAXIMUM = 2**31 - 1;
+  const fmtTs = function(ts_in_secs, tz) {
     return moment(ts_in_secs * 1000).tz(tz).format();
   }
 
@@ -13,8 +15,36 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
            " " + ui.data.label + " logged at "+ ui.metadata.write_ts;
   }
 
+  im.validUserInputForDraftTrip = function(trip, userInput, logsEnabled) {
+    if (logsEnabled) {
+        Logger.log(`Draft trip:
+            comparing user = ${fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)}
+            -> ${fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)}
+            trip = ${fmtTs(trip.start_ts, userInput.metadata.time_zone)}
+            -> ${fmtTs(trip.end_ts, userInput.metadata.time_zone)}
+            checks are (${userInput.data.start_ts >= trip.start_ts}
+            && ${userInput.data.start_ts < trip.end_ts}
+            || ${-(userInput.data.start_ts - trip.start_ts) <= 15 * 60})
+            && ${userInput.data.end_ts <= trip.end_ts}
+        `);
+    }
+    return (userInput.data.start_ts >= trip.start_ts
+        && userInput.data.start_ts < trip.end_ts
+        || -(userInput.data.start_ts - trip.start_ts) <= 15 * 60)
+        && userInput.data.end_ts <= trip.end_ts;
+  }
+
   im.validUserInputForTimelineEntry = function(tlEntry, userInput, logsEnabled) {
-    const EPOCH_MAXIMUM = 2**31 - 1
+    if (tlEntry.isDraft == true)
+        return im.validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
+
+    /* Place-level inputs always have a key starting with 'manual/place', and
+        trip-level inputs never have a key starting with 'manual/place'
+       So if these don't match, we can immediately return false */
+    const entryIsPlace = !!tlEntry.enter_ts; // if enter_ts exists, it's a place
+    const isPlaceInput = (userInput.key || userInput.metadata.key).startsWith('manual/place');
+    if (entryIsPlace != isPlaceInput)
+        return false;
 
     const entryStart = tlEntry.start_ts || tlEntry.enter_ts;
     let entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
@@ -24,38 +54,19 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
         entryEnd = EPOCH_MAXIMUM;
     }
     
-    if (tlEntry.isDraft == true) {
-        if (logsEnabled) {
-            var logStr = "Draft trip: comparing user = "+fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-                +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-                +" trip = "+fmtTs(entryStart, userInput.metadata.time_zone)
-                +" -> "+fmtTs(entryEnd, userInput.metadata.time_zone)
-                +" checks are ("+(userInput.data.start_ts >= entryStart)
-                +" && "+(userInput.data.start_ts < entryEnd)
-                +" || "+(-(userInput.data.start_ts - entryStart) <= 15 * 60)
-                +") && "+(userInput.data.end_ts <= entryEnd);
-            console.log(logStr);
-            // Logger.log(logStr);
-        }
-        return (userInput.data.start_ts >= entryStart
-            && userInput.data.start_ts < entryEnd
-            || -(userInput.data.start_ts - entryStart) <= 15 * 60)
-            && userInput.data.end_ts <= entryEnd;
+    if (logsEnabled) { 
+        Logger.log(`Cleaned trip:
+          comparing user = ${fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)}
+          -> ${fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)}
+          trip = ${fmtTs(entryStart, userInput.metadata.time_zone)}
+          -> ${fmtTs(entryStart, userInput.metadata.time_zone)}
+          start checks are ${userInput.data.start_ts >= entryStart}
+          && ${userInput.data.start_ts < entryEnd}
+          end checks are ${userInput.data.end_ts <= entryEnd}
+          || ${userInput.data.end_ts - entryEnd <= 15 * 60})
+        `);
     }
-    
-    // The trip is not a draft. We will check if the user input is within the trip
-    if (logsEnabled) {
-        var logStr = "Cleaned trip: comparing user = "
-            +fmtTs(userInput.data.start_ts, userInput.metadata.time_zone)
-            +" -> "+fmtTs(userInput.data.end_ts, userInput.metadata.time_zone)
-            +" trip = "+fmtTs(entryStart, userInput.metadata.time_zone)
-            +" -> "+fmtTs(entryStart, userInput.metadata.time_zone)
-            +" start checks are "+(userInput.data.start_ts >= entryStart)
-            +" && "+(userInput.data.start_ts < entryEnd)
-            +" end checks are "+(userInput.data.end_ts <= entryEnd)
-            +" || "+((userInput.data.end_ts - entryEnd) <= 15 * 60)+")";
-        Logger.log(logStr);
-    }
+
     /* For this input to match, it must begin after the start of the timelineEntry (inclusive)
         but before the end of the timelineEntry (exclusive) */
     const startChecks = userInput.data.start_ts >= entryStart &&
