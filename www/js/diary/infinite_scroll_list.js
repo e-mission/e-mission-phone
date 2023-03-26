@@ -313,10 +313,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     };
     
     $scope.data.displayTimelineEntries = []
-    $scope.data.displayTrips.forEach((t) => {
-      const place = t.confirmed_place;
-      const {confirmed_place, ...trip} = t;
-      $scope.data.displayTimelineEntries.push(trip);
+    $scope.data.displayTrips.forEach((cTrip) => {
+      const place = cTrip.confirmed_place;
+      $scope.data.displayTimelineEntries.push(cTrip);
       if ($scope.showPlaces && place) {
         $scope.data.displayTimelineEntries.push(place);
       }
