@@ -228,6 +228,18 @@ a.item-content {
   text-align: center;
 }
 
+/* used for untracked time list items */
+.diary-card.greyed {
+  background-color:hsla(348, 0%, 90%, 0.8);
+  border: 2px solid hsla(200, 0%, 40%, 0.2);
+}
+
+.diary-card.greyed .place-title b {
+  padding: 5px 10px;
+  background-color: #ffbbbb;
+  border-radius: 5px;
+}
+
 .place-title {
   color: #222;
   display: flex;

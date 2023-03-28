@@ -166,6 +166,7 @@
         "replaces": "Replaces",
         "purpose": "Purpose",
         "survey": "Details",
+        "untracked-time-range": "Untracked: {{start}} - {{end}}",
         "unlabeled": "All Unlabeled",
         "invalid-ebike": "Invalid",
         "to-label": "To Label",

@@ -348,7 +348,7 @@ angular.module('emission.survey.multilabel.buttons',
           inputList);
       var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
       if (!angular.isDefined(userInputLabel)) {
-          userInputLabel = trip.user_input[mls.inputType2retKey(inputType)];
+          userInputLabel = trip.user_input?.[mls.inputType2retKey(inputType)];
       }
       mls.populateInput(trip.userInput, inputType, userInputLabel);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));

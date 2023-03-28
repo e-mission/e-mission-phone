@@ -33,8 +33,9 @@
 
 		<ion-list>
             <div collection-repeat="entry in data.displayTimelineEntries" item-height="getCardHeight(entry)">
-                <infinite-scroll-trip-item ng-if="entry.start_ts" trip="entry" config="ui_config"></infinite-scroll-trip-item>
+                <infinite-scroll-trip-item ng-if="entry.start_ts && entry.locations" trip="entry" config="ui_config"></infinite-scroll-trip-item>
                 <infinite-scroll-place-item ng-if="showPlaces && entry.enter_ts" place="entry" config="ui_config"></infinite-scroll-place-item>
+                <infinite-scroll-untracked-time-item ng-if="entry.start_ts && !entry.locations" triplike="entry"></infinite-scroll-untracked-time-item>
             </div>
         </ion-list>
 	</ion-content>

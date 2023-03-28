@@ -20,6 +20,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.plugin.logger',
                                       'emission.main.diary.infscrolltripitem',
                                       'emission.main.diary.infscrollplaceitem',
+                                      'emission.main.diary.infscrolluntrackedtimeitem',
                                     ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -75,14 +76,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.getCardHeight = function(entry) {
     let height = 0;
-    if (entry.start_ts) { // entry is a trip
+    if (entry.enter_ts) { // entry is a place
+      height = 106;
+    } else if (!entry.locations) { // entry is untracked time
+      height = 130;
+    } else if (entry.start_ts) { // entry is a trip
       // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
       // we may have 1, 2, or 3 buttons at any given time
       // 272 is the height without any buttons, and each button adds 54 pixels
       const numButtons = entry.INPUTS?.length || 1;
       height = 272 + (54 * numButtons)
-    } else if (entry.enter_ts) { // entry is a place
-      height = 106;
     }
     if (entry.additionsList) {
       height += 40 * entry.additionsList.length; // for each trip/place addition object, we need to increase the card height
@@ -316,7 +319,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.data.displayTrips.forEach((cTrip) => {
       const place = cTrip.confirmed_place;
       $scope.data.displayTimelineEntries.push(cTrip);
-      if ($scope.showPlaces && place) {
+      if ($scope.showPlaces && place?.duration >= 60) {
         $scope.data.displayTimelineEntries.push(place);
       }
     });
