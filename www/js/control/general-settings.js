@@ -469,16 +469,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    $scope.toggleExperimentalGeofence = function() {
-        Logger.log("Toggling experimental geofence from current state of "+$scope.settings.collect.experimentalGeofenceOn);
-        if ($scope.settings.collect.experimentalGeofenceOn) {
-            KVStore.remove("OP_GEOFENCE_CFG");
-            return ControlCollectionHelper.forceTransition('INITIALIZE');
-        } else {
-            KVStore.set("OP_GEOFENCE_CFG", {"enabled": true});
-            return ControlCollectionHelper.forceTransition('INITIALIZE');
-        }
-    }
     $scope.getExpandButtonClass = function() {
         return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     }
