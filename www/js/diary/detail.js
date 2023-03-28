@@ -19,11 +19,10 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
       const surveyOptKey = configObj.survey_info['trip-labels'];
       $scope.surveyOpt = SurveyOptions[surveyOptKey];
       console.log('surveyOpt in details.js is', $scope.surveyOpt);
+      $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+      $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
     });
   });
-
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
