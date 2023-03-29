@@ -117,6 +117,9 @@ angular.module('emission.survey.enketo.launch', [
     .then(result => {
       if (!result) {
         $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
+      } else if (result instanceof Error) {
+        $ionicPopup.alert({template: result.message});
+        console.error(result);
       } else {
         _state.scope.enketoSurvey.hide(result);
         return;

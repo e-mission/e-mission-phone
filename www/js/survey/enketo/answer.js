@@ -150,6 +150,10 @@ angular.module('emission.survey.enketo.answer', [
     let additionStartTs = moment(date + 'T' + start).unix();
     let additionEndTs = moment(date + 'T' + end).unix();
 
+    if (additionStartTs > additionEndTs) {
+      return undefined; // if the start time is after the end time, this is an invalid response
+    }
+
     /* Enketo survey time inputs are only precise to the minute, while trips/places are precise to
       the millisecond. To avoid precision issues, we will check if the start/end timestamps from
       the survey response are within the same minute as the start/end or enter/exit timestamps.
