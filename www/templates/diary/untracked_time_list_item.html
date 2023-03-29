@@ -1,8 +1,9 @@
 <div>
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
-        <div class="diary-card short greyed" style="padding-top: 10px;">
+        <div class="diary-card short greyed" style="padding-top: 15px;">
+            <div class="start-time-tag">{{triplike.display_start_time}}</div>
             <div style="width: 100%; margin: auto; padding-block: 5px">
-                <div class="row place-title">
+                <div class="card-title">
                     <b translate=".untracked-time-range"
                         translate-value-start="{{ triplike.display_start_time }}"
                         translate-value-end=" {{ triplike.display_end_time }}">
@@ -19,6 +20,7 @@
                     </div>
                 </div>
             </div>
+            <div class="stop-time-tag">{{triplike.display_end_time}}</div>
         </div>
     </ion-item>
 </div>

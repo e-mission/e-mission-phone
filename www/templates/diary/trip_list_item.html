@@ -2,11 +2,8 @@
 <!-- New Trip Template format  -->
 
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
-
-        <!-- Start Time Tag -->
-        <div class="start-time-tag">{{trip.display_start_time}}</div>
-
         <div class="diary-card">
+            <div class="start-time-tag">{{trip.display_start_time}}</div>
             <!-- Leaflet Map -->
             <div id="left-diary-card" class="diary-map-shell" ng-click="showDetail($event, trip)">
                 <leaflet class="diary-map" geojson="trip" defaults="mapCtrl.defaults"
@@ -93,8 +90,7 @@
                 </div>
             </div>
             <enketo-notes-list ng-if="trip.additionsList.length" timeline-entry="trip" addition-entries="trip.additionsList"></enketo-notes-list>
+            <div class="stop-time-tag">{{trip.display_end_time}}</div>
         </div>
-        <!-- End Time Tag -->
-        <div class="stop-time-tag">{{trip.display_end_time}}</div>
     </ion-item>
 </div>

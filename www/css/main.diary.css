@@ -199,7 +199,8 @@ a.item-content {
 }
 
 .unified-diary-item {
-  padding: 0 6px;
+  overflow: visible;
+  padding: 15px 6px;
   margin: 0 10px;
   border-width: 0;
   background-color: transparent;
@@ -214,7 +215,7 @@ a.item-content {
   border: 2px solid rgba(0, 136, 206, 0.2);
   box-sizing: border-box;
   border-radius: 30px;
-  overflow: hidden;
+  position: relative;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   display: flex;
   flex-wrap: wrap;
@@ -222,7 +223,7 @@ a.item-content {
 
 /* used for place list items */
 .diary-card.short {
-  /*height: 100px;*/
+  color: #222;
   background-color: rgba(128, 208, 255, 0.8);
   margin: 6px auto;
   text-align: center;
@@ -234,19 +235,18 @@ a.item-content {
   border: 2px solid hsla(200, 0%, 40%, 0.2);
 }
 
-.diary-card.greyed .place-title b {
+.diary-card.greyed .card-title b {
   padding: 5px 10px;
   background-color: #ffbbbb;
   border-radius: 5px;
 }
 
-.place-title {
-  color: #222;
+.card-title {
   display: flex;
   justify-content: center;
 }
 
-.place-title b {
+.card-title b {
   margin-left: 10px;
 }
 
