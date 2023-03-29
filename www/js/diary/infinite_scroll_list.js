@@ -82,7 +82,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const numButtons = entry.INPUTS?.length || 1;
       height = 272 + (54 * numButtons)
     } else if (entry.enter_ts) { // entry is a place
-      height = 106;
+      height = 188;
     }
     if (entry.additionsList) {
       height += 40 * entry.additionsList.length; // for each trip/place addition object, we need to increase the card height
@@ -317,6 +317,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const place = cTrip.confirmed_place;
       $scope.data.displayTimelineEntries.push(cTrip);
       if ($scope.showPlaces && place) {
+        // if a place (such as the last place) does not have a display_end_time, make the display_end_time be the end of the day
+        !place.display_end_time ? place.display_end_time = moment(place.enter_fmt_time).parseZone().endOf('day').format("h:mm A") : place.display_end_time = place.display_end_time;
         $scope.data.displayTimelineEntries.push(place);
       }
     });
