@@ -130,55 +130,38 @@ a.item-content {
   min-height: 10px; /* Changed from 47px. This allows for the correct height for the label buttons to fit nicely in the diary card. */
   line-height: normal;
 }
-.btn-input-confirm-red,
-.btn-input-confirm-red:hover,
-.btn-input-confirm-red:active {
+
+.diary-btn {
+  width: 100%;
+  padding: 5px 10px;
+  max-height: 40px;
+  margin: 2px;
+  box-sizing: border-box;
+  border-radius: 10px;
+  font-size: 0.8em !important;
+  box-shadow: 0 3px 6px rgb(0 0 0 / .1), 0 3px 6px rgb(0 0 0 / .2);
   background-color: white;
-  color: #0088ce;
-  border-color: #0088ce;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  color: hsl(200 100% 35%);
+  border: .1em solid hsl(200 100% 40%);
 }
-.btn-input-confirm-yellow,
-.btn-input-confirm-yellow:hover,
-.btn-input-confirm-yellow:active {
+
+.diary-btn-yellow,
+.diary-btn-yellow:hover,
+.diary-btn-yellow:active {
   background-color: #FFC108;  /* tentatively orange for now */
   color: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border: 2px solid rgba(0, 136, 206, 0.2);
 }
-.btn-input-confirm-green,
-.btn-input-confirm-green:hover,
-.btn-input-confirm-green:active {
+.diary-btn-blue,
+.diary-btn-blue:hover,
+.diary-btn-blue:active {
   background-color: #0088ce;
   color: white;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border: 2px solid rgba(0, 136, 206, 0.2);
 }
-/* White confirm buttons are currently unused */
-/* .btn-input-confirm-white,
-.btn-input-confirm-white:hover,
-.btn-input-confirm-white:active {
-  background-color: #ddd;
-  color: #333;
-  font-size: 0.8em;
-} */
 
-
-.btn-input-confirm {
-  width: 100%;
-  min-height: 30px;
-  max-height: 40px;
-  margin: 2px;
-  box-sizing: border-box;
-  border-radius: 10px;
-  font-style: normal;
-  font-weight: normal;
-  font-size: 0.8em !important;
-  /* line-height: 30px;
-  min-height: 30px;
-  width: 115px;
-  padding: 0; */
-}
 .input-confirm-container {
   margin-top: 5px;
 }
@@ -231,11 +214,13 @@ a.item-content {
 
 /* used for untracked time list items */
 .diary-card.greyed {
+  color: #333;
   background-color:hsla(348, 0%, 90%, 0.8);
   border: 2px solid hsla(200, 0%, 40%, 0.2);
 }
 
 .diary-card.greyed .card-title b {
+  color: #222;
   padding: 5px 10px;
   background-color: #ffbbbb;
   border-radius: 5px;
@@ -486,17 +471,10 @@ div.labelfilterlist {
   border-bottom-right-radius: 5px;
 }
 
-.enketo-button button {
-  border-color: rgba(0,0,0, .2);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.1);
-}
-
-.enketo-button b {
-  vertical-align: middle;
-  margin-left: .5em;
-}
-
-.enketo-button, .enketo-button .icon:before {
+.diary-btn:before {
+  font-weight: bold;
+  scale: 1.7;
+  margin-right: .5em;
   line-height: 100%;
 }
 

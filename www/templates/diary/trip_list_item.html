@@ -9,9 +9,9 @@
                 <leaflet class="diary-map" geojson="trip" defaults="mapCtrl.defaults"
                     id="$index" data-tap-disabled="true" height="{{mapHeight}}">
                 </leaflet>
-                <div ng-if="configTripNotes" class="row" style="height: 20%; padding: 10px">
+                <div ng-if="configTripNotes" class="row" style="height: 20%; padding: 10px 20px">
                     <enketo-add-note-button notes-config="configTripNotes" timeline-entry="trip"
-                        datakey="manual/trip_addition_input" style="margin: auto">
+                        datakey="manual/trip_addition_input" style="margin: auto; width: 100%">
                     </enketo-add-note-button>
                 </div>
             </div>
