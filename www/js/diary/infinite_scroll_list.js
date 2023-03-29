@@ -176,7 +176,36 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             fillPlacesForTripAsync(trip);
             fillTrajectoriesForTrip(trip);
         });
-        $scope.data.allTrips = ctList.concat($scope.data.allTrips);
+        // for first place object
+        let startTimestamp = moment().startOf("day");
+        let endTimestamp = moment().endOf("day");
+        let locat = "Current location";
+        if (ctList.length > 0) {
+          startTimestamp = moment.parseZone(ctList[0].start_ts).startOf("day")
+          endTimestamp = moment.parseZone(ctList[0].start_ts)
+          locat = ctList[0].start_display_name
+        }
+        
+        $scope.data.allTrips.push({
+          additions: [],
+          additionsList: [],
+          background: "bg-light",
+          display_date: moment(endTimestamp).format(),
+          display_start_time: startTimestamp.format("h:mm A"),
+          display_exit_time: endTimestamp.format("h:mm A"),
+          end_display_name: " ",
+          ending_trip: {$oid: "6423b9fdd9ac0bff48c04bf8"},
+          enter_fmt_time: moment(startTimestamp).format(),
+          enter_local_dt: { day: 25, hour: 17, minute: 24, month: 7, second: 32, timezone: "America/Los_Angeles", weekday: 0, year: 2016},
+          enter_ts: moment(startTimestamp).unix(),
+          exit_fmt_time: moment(endTimestamp).format(),
+          exit_local_dt: { day: 25, hour: 17, minute: 24, month: 7, second: 32, timezone: "America/Los_Angeles", weekday: 0, year: 2016},
+          exit_ts: moment(endTimestamp).unix(),
+          listCardClass: "list card list-card bg-light list-card-lg",
+          location: {type: "Point", coordinates: [-122.09519, 37.3915317]},
+          start_display_name: locat
+        });
+        $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
         const oldestTrip = ctList[0];
