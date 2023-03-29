@@ -192,14 +192,15 @@ a.item-content {
 }
 
 .diary-card {
+  background: white;
   width: 100%;
   height: min-content;
   margin: 0;
-  border: 2px solid rgba(0, 136, 206, 0.2);
+  border: 1px solid rgb(0 0 0 / .2);
   box-sizing: border-box;
   border-radius: 30px;
   position: relative;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
 }
@@ -207,7 +208,8 @@ a.item-content {
 /* used for place list items */
 .diary-card.short {
   color: #222;
-  background-color: rgba(128, 208, 255, 0.8);
+  background: hsl(200 100% 85%);
+  border: 1px solid hsl(200 100% 10% / 0.2);
   margin: 6px auto;
   text-align: center;
 }
@@ -215,8 +217,7 @@ a.item-content {
 /* used for untracked time list items */
 .diary-card.greyed {
   color: #333;
-  background-color:hsla(348, 0%, 90%, 0.8);
-  border: 2px solid hsla(200, 0%, 40%, 0.2);
+  background: hsl(0 30% 97%);
 }
 
 .diary-card.greyed .card-title b {
@@ -348,7 +349,8 @@ a.item-content {
 }
 
 .diary-map {
-  z-index: -1; /* Can't zoom in or out of the map with this implemented */
+  isolation: isolate;
+  pointer-events: none;
   overflow: hidden;
   border-radius: 30px 0px 0px 30px;
   /* height must be specified in the html */

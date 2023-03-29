@@ -875,10 +875,10 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Profile tab */
 .control-list-item {
-  background-color: white! important; height: 50px; margin-top: 0.5px;
+  height: 50px; margin-top: 0.5px;
 }
 .control-list-text {
-  background-color: white! important; padding: 15px; float: left;
+  padding: 15px; float: left;
 }
 .control-list-toggle {
   float: right; margin-top: 5px; margin-right: 2px;
@@ -941,6 +941,7 @@ button.button.back-button.buttons.button-clear.header-item {
   font-weight: bold;
   font-size: 13px;
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  z-index: 999;
 }
 .start-time-tag {
   background: #80D0FF;
