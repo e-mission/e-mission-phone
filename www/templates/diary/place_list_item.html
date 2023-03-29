@@ -2,9 +2,13 @@
     <!-- Place Item Template  -->
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
         <!-- Start Time Tag -->
+        <div class="start-time-tag">{{place.display_start_time}}</div>
         <!-- <div class="start-time-tag">{{place.display_enter_time}}</div> -->
         <div class="diary-card short" style="padding-top: 10px;">
             <div style="width: 100%; margin: auto; padding-block: 5px">
+                <div class="row" style="font-size: 12px; place-content: center; padding: 8px">
+                    <b><u>{{place.display_date}}</u></b>
+                </div>
                 <div class="row place-title">
                     <!-- Place (Destination of Prev. Trip) -->
                     <i class="icon ion-location"></i>
@@ -19,6 +23,7 @@
             </div>
         </div>
         <!-- End Time Tag -->
+        <div class="stop-time-tag">{{place.display_end_time}}</div>
         <!-- <div class="stop-time-tag">{{place.display_exit_time}}</div> -->
     </ion-item>
 </div>
