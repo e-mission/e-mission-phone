@@ -1182,7 +1182,7 @@ html, #chart2, svg {
   font-weight: 700;
   height: 30px;
 }
-.metric-change-data-button: active{
+.metric-change-data-button:active{
   background-color: #0088ce;
   color: white;
   box-shadow: none;
