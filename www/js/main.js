@@ -7,6 +7,7 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.common',
                                  'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.config.dynamic',
                                  'emission.survey.multilabel.posttrip.map',
                                  'emission.services',
                                  'emission.services.upload'])
@@ -150,7 +151,7 @@ angular.module('emission.main', ['emission.main.recent',
     }
 })
 
-.controller('MainCtrl', function($scope, $state, $rootScope, $translate) {
+.controller('MainCtrl', function($scope, $state, $rootScope, $translate, $ionicPlatform, DynamicConfig) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
@@ -160,4 +161,11 @@ angular.module('emission.main', ['emission.main.recent',
     $scope.tabsCustomClass = function() {
         return "tabs-icon-top tabs-custom";
     }
+
+    $ionicPlatform.ready().then(function() {
+      DynamicConfig.configReady().then((newConfig) => {
+        $scope.dCfg = newConfig
+        $scope.showDiary = !(newConfig.survey_info.buttons);
+      });
+    });
 });

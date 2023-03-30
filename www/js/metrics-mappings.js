@@ -312,20 +312,22 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     return standardMETs;
   }
 })
-.service('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper, Logger, $ionicPlatform, DynamicConfig) {
-    this.getCustomMETs = function() {
-        console.log("Getting custom METs", this.customMETs);
-        return this.customMETs;
+.factory('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper, Logger, $ionicPlatform, DynamicConfig) {
+    var cdh = {};
+
+    cdh.getCustomMETs = function() {
+        console.log("Getting custom METs", cdh.customMETs);
+        return cdh.customMETs;
     };
 
-    this.getCustomFootprint = function() {
-        console.log("Getting custom footprint", this.customPerMeterFootprint);
-        return this.customPerMeterFootprint;
+    cdh.getCustomFootprint = function() {
+        console.log("Getting custom footprint", cdh.customPerMeterFootprint);
+        return cdh.customPerMeterFootprint;
     };
 
-    this.populateCustomMETs = function() {
+    cdh.populateCustomMETs = function() {
         let standardMETs = METDatasetHelper.getStandardMETs();
-        let modeOptions = this.inputParams["MODE"].options;
+        let modeOptions = cdh.inputParams["MODE"].options;
         let modeMETEntries = modeOptions.map((opt) => {
             if (opt.met_equivalent) {
                 let currMET = standardMETs[opt.met_equivalent];
@@ -349,20 +351,20 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
                 }
             }
         });
-        this.customMETs = Object.fromEntries(modeMETEntries.filter((e) => angular.isDefined(e)));
-        console.log("After populating, custom METs = ", this.customMETs);
+        cdh.customMETs = Object.fromEntries(modeMETEntries.filter((e) => angular.isDefined(e)));
+        console.log("After populating, custom METs = ", cdh.customMETs);
     };
 
-    this.populateCustomFootprints = function() {
-        let modeOptions = this.inputParams["MODE"].options;
+    cdh.populateCustomFootprints = function() {
+        let modeOptions = cdh.inputParams["MODE"].options;
         let modeCO2PerMeter = modeOptions.map((opt) => {
             if (opt.range_limit_km) {
-                if (this.range_limited_motorized) {
+                if (cdh.range_limited_motorized) {
                     Logger.displayError("Found two range limited motorized options", {
-                        first: this.range_limited_motorized, second: opt});
+                        first: cdh.range_limited_motorized, second: opt});
                 }
-                this.range_limited_motorized = opt;
-                console.log("Found range limited motorized mode", this.range_limited_motorized);
+                cdh.range_limited_motorized = opt;
+                console.log("Found range limited motorized mode", cdh.range_limited_motorized);
             }
             if (angular.isDefined(opt.co2PerMeter)) {
                 return [opt.value, opt.co2PerMeter];
@@ -370,17 +372,17 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
                 return undefined;
             }
         }).filter((modeCO2) => angular.isDefined(modeCO2));;
-        this.customPerMeterFootprint = Object.fromEntries(modeCO2PerMeter);
-        console.log("After populating, custom perMeterFootprint", this.customPerMeterFootprint);
+        cdh.customPerMeterFootprint = Object.fromEntries(modeCO2PerMeter);
+        console.log("After populating, custom perMeterFootprint", cdh.customPerMeterFootprint);
     }
 
-    this.init = function() {
+    cdh.init = function(newConfig) {
       try {
         ConfirmHelper.inputParamsPromise.then((inputParams) => {
           console.log("Input params = ", inputParams);
-          this.inputParams = inputParams;
-          this.populateCustomMETs();
-          this.populateCustomFootprints();
+          cdh.inputParams = inputParams;
+          cdh.populateCustomMETs();
+          cdh.populateCustomFootprints();
         });
       } catch (e) {
         setTimeout(() => {
@@ -391,7 +393,9 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
     $ionicPlatform.ready().then(() => {
       DynamicConfig.configReady().then((newConfig) =>
-        this.init()
+        cdh.init(newConfig)
       );
     });
+
+    return cdh;
 });

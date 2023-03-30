@@ -204,6 +204,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
              client: retVal
             });
           });
+          $scope.currentToken = token;
           $scope.next();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);
@@ -212,37 +213,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
     }, function(error) {
         $scope.alertError('Sign in error', error);
     });
-
-    $scope.currentToken = token;
-    if(!$scope.alreadySaved) {
-      $scope.saveLogin($scope.currentToken);
-    }
-  };
-
-  $scope.currentToken = $scope.randomToken;
-  $scope.alreadySaved = false;
-
-  $scope.saveLogin = function(token) {
-    if(token == "") {
-      token = $scope.randomToken;
-    }
-    $scope.currentToken = token;
-    
-    const savePopup = $ionicPopup.show({
-      template: '<center><qrcode class="col" aria-label="qrcode for user email" data="{{currentToken}}" size="220" download></qrcode></center>'
-              + '<div class="col" style="height: 150%"><button class="col" style="height: 100%; background-color: #01D0A7" ng-click="shareQR()" class="control-icon-button"> <u>{{currentToken}}</u> </button></div>',
-      title: $translate.instant('login.save-your-opcode') + '<br>',
-      scope: $scope,
-      buttons: [
-        {
-          text: '<b>' + $translate.instant('login.continue')+ '</b>',
-          type: 'button-positive',
-          onTap: function(e) {
-            $scope.alreadySaved = true;
-          }
-        }
-      ]
-    })
 
   };
 

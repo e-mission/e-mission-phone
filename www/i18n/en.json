@@ -409,7 +409,9 @@
         "download-apply": "Apply"
     },
     "login":{
-        "save-your-opcode":"Make sure to save your OPcode!",
+        "make-sure-save-your-opcode":"Make sure to save your OPcode!",
+        "cannot-retrieve":"NREL cannot retrieve it for you later!",
+        "save":"Save",
         "continue": "Continue",
         "enter-existing-token": "Enter the existing token that you have",
         "button-accept": "OK",
