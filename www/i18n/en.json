@@ -433,7 +433,9 @@
         "powered-by": "Powered by",
         "dismiss": "Dismiss",
         "return-to-beginning": "Return to beginning",
-        "go-to-end": "Go to End"
+        "go-to-end": "Go to End",
+        "enketo-form-errors": "Form contains errors. Please see fields marked in red.",
+        "enketo-timestamps-invalid": "The times you entered are invalid. Please ensure that the start time is before the end time."
     },
     "join": {
         "welcome-to-nrel-openpath": "Welcome to NREL OpenPATH",

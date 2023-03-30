@@ -6,7 +6,7 @@ angular.module('emission.survey.enketo.launch', [
   'emission.plugin.logger',
 ])
 .factory('EnketoSurveyLaunch', function(
-  $ionicPopup, EnketoSurvey, $ionicModal,
+  $ionicPopup, EnketoSurvey, $ionicModal, $translate
 ) {
   /**
    * @typedef EnketoSurveyLaunchState
@@ -116,7 +116,7 @@ angular.module('emission.survey.enketo.launch', [
     return EnketoSurvey.validateAndSave()
     .then(result => {
       if (!result) {
-        $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
+        $ionicPopup.alert({template: $translate.instant('survey.enketo-form-errors')});
       } else if (result instanceof Error) {
         $ionicPopup.alert({template: result.message});
         console.error(result);
