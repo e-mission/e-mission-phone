@@ -764,7 +764,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var confirmedPoints2Geojson = function(trip, locationList) {
-      var sectionCoordinates = locationList?.map(function(point) {
+      var sectionCoordinates = locationList.map(function(point) {
         return point.data.loc.coordinates;
       });
       return {
@@ -781,7 +781,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return undefined;
       }
 
-      Logger.log("Reading trip's " + trip.locations?.length + " location points at " + (new Date()));
+      Logger.log("Reading trip's " + trip.locations.length + " location points at " + (new Date()));
       var features = [
         confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
         confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
