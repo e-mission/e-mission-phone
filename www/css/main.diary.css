@@ -133,16 +133,17 @@ a.item-content {
 
 .diary-btn {
   width: 100%;
-  padding: 5px 10px;
+  padding: 5px 14px;
   max-height: 40px;
   margin: 2px;
   box-sizing: border-box;
-  border-radius: 10px;
+  border-radius: 50px;
   font-size: 0.8em !important;
-  box-shadow: 0 3px 6px rgb(0 0 0 / .1), 0 3px 6px rgb(0 0 0 / .2);
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
   background-color: white;
   color: hsl(200 100% 35%);
-  border: .1em solid hsl(200 100% 40%);
+  border: .12em solid hsl(200 100% 40%);
 }
 
 .diary-btn-yellow,
@@ -150,7 +151,6 @@ a.item-content {
 .diary-btn-yellow:active {
   background-color: #FFC108;  /* tentatively orange for now */
   color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border: 2px solid rgba(0, 136, 206, 0.2);
 }
 .diary-btn-blue,
@@ -158,8 +158,15 @@ a.item-content {
 .diary-btn-blue:active {
   background-color: #0088ce;
   color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   border: 2px solid rgba(0, 136, 206, 0.2);
+}
+
+/* icon */
+.diary-btn:before {
+  font-weight: bold;
+  scale: 1.7;
+  margin-right: .6em;
+  line-height: 100%;
 }
 
 .input-confirm-container {
@@ -349,11 +356,13 @@ a.item-content {
 }
 
 .diary-map {
-  isolation: isolate;
-  pointer-events: none;
   overflow: hidden;
   border-radius: 30px 0px 0px 30px;
   /* height must be specified in the html */
+}
+
+.diary-map, .diary-map .leaflet-interactive {
+  pointer-events: none !important;
 }
 
 /* when trip notes are enabled, the map has rounded right corners */
@@ -471,13 +480,6 @@ div.labelfilterlist {
 .labelfilter:last-of-type {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-}
-
-.diary-btn:before {
-  font-weight: bold;
-  scale: 1.7;
-  margin-right: .5em;
-  line-height: 100%;
 }
 
 enketo-notes-list, .notes-list {
