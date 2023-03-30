@@ -136,6 +136,22 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         - $ionicScrollDelegate.getScrollPosition().top;
   }
 
+  var moment2localdate = function(currMoment, tz) {
+    return {
+        timezone: tz,
+        year: currMoment.year(),
+        //the months of the draft trips match the one format needed for
+        //moment function however now that is modified we need to also
+        //modify the months value here
+        month: currMoment.month() + 1,
+        day: currMoment.date(),
+        weekday: currMoment.weekday(),
+        hour: currMoment.hour(),
+        minute: currMoment.minute(),
+        second: currMoment.second()
+    };
+  }
+
   $scope.readDataFromServer = function() {
     Logger.log("Called readDataFromServer");
     $scope.infScrollControl.fromBottom = getFromBottom()
@@ -178,15 +194,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         });
         // for first place object
         let startTimestamp = moment().startOf("day");
+        let loc = {coordinates: [0,0], type: "Point"}
         let endTimestamp = moment().endOf("day");
-        let locat = "Current location";
+        let tz = moment.tz.guess();
         if (ctList.length > 0) {
-          startTimestamp = moment.parseZone(ctList[0].start_ts).startOf("day")
-          endTimestamp = moment.parseZone(ctList[0].start_ts)
-          locat = ctList[0].start_display_name
+          startTimestamp = moment(ctList[0].start_fmt_time).parseZone().startOf("day");
+          endTimestamp = moment(ctList[0].start_fmt_time).parseZone();
+          loc = ctList[0].start_loc;
+          tz = ctList[0].locations[0].metadata.time_zone;
         }
-        
-        $scope.data.allTrips.push({
+        let firstPlaceObj = {
           additions: [],
           additionsList: [],
           background: "bg-light",
@@ -194,17 +211,21 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           display_start_time: startTimestamp.format("h:mm A"),
           display_exit_time: endTimestamp.format("h:mm A"),
           end_display_name: " ",
+          end_loc: loc,
           ending_trip: {$oid: "6423b9fdd9ac0bff48c04bf8"},
           enter_fmt_time: moment(startTimestamp).format(),
-          enter_local_dt: { day: 25, hour: 17, minute: 24, month: 7, second: 32, timezone: "America/Los_Angeles", weekday: 0, year: 2016},
+          enter_local_dt: moment2localdate(startTimestamp, tz),
           enter_ts: moment(startTimestamp).unix(),
           exit_fmt_time: moment(endTimestamp).format(),
-          exit_local_dt: { day: 25, hour: 17, minute: 24, month: 7, second: 32, timezone: "America/Los_Angeles", weekday: 0, year: 2016},
+          exit_local_dt: moment2localdate(endTimestamp, tz),
           exit_ts: moment(endTimestamp).unix(),
           listCardClass: "list card list-card bg-light list-card-lg",
           location: {type: "Point", coordinates: [-122.09519, 37.3915317]},
-          start_display_name: locat
-        });
+          start_display_name: " ",
+          start_loc: loc
+        };
+        fillPlacesForTripAsync(firstPlaceObj);
+        $scope.data.allTrips.push(firstPlaceObj);
         $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
