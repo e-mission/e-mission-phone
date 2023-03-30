@@ -206,7 +206,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectParams = undefined;
             return {state: redirState, params: redirParams};
           } else {
-            return {state: 'root.main.inf_scroll', params: {}};
+            return {state: 'root.main.control', params: {}};
           }
         } else {
           return {state: result, params: {}};
