@@ -389,7 +389,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
       }
     }
 
-    $ionicPlatform.ready().then(function() {
+    $ionicPlatform.ready().then(() => {
       DynamicConfig.configReady().then((newConfig) =>
         this.init()
       );

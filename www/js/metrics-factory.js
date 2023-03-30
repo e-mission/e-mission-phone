@@ -192,7 +192,7 @@ angular.module('emission.main.metrics.factory',
       mode = 'WALKING';
     }
     let currentMETs = cc.getMETs();
-    if (!currentMETs[mode]) {
+    if (!currentMETs?.[mode]) {
       console.warn("CalorieCal.getMet() Illegal mode: " + mode);
       return defaultIfMissing; //So the calorie sum does not break with wrong return type
     }
