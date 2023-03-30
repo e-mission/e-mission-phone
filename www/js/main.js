@@ -165,7 +165,7 @@ angular.module('emission.main', ['emission.main.recent',
     $ionicPlatform.ready().then(function() {
       DynamicConfig.configReady().then((newConfig) => {
         $scope.dCfg = newConfig
-        $scope.showDiary = !(dCfg.survey_info.buttons);
+        $scope.showDiary = !(newConfig.survey_info.buttons);
       });
     });
 });
