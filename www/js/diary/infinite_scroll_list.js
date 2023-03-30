@@ -221,6 +221,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           exit_ts: moment(endTimestamp).unix(),
           listCardClass: "list card list-card bg-light list-card-lg",
           location: {type: "Point", coordinates: [-122.09519, 37.3915317]},
+          scratchPlace: true,
           start_display_name: " ",
           start_loc: loc
         };
@@ -472,6 +473,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                 tripgj.end_display_name = endName;
                 if (tripgj.confirmed_place) {
                   tripgj.confirmed_place.display_name = endName;
+                } else if (tripgj.scratchPlace) {
+                  tripgj.display_name = startName;
                 }
             });
         });
