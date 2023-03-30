@@ -230,12 +230,7 @@ angular.module('emission.survey.enketo.service', [
    * @returns {EnketoAnswerData|false} answer data or false if error
    */
   function validateAndSave() {
-    return _state.form.validate().then((valid) => {
-      if (valid) {
-        return _saveData();
-      }
-      return false;
-    });
+    return _state.form.validate().then(valid => valid ? _saveData() : false);
   }
 
   return {
