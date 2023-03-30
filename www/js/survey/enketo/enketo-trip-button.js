@@ -191,7 +191,7 @@ angular.module('emission.survey.enketo.trip.button',
           inputList);
       var userInputEntry = unprocessedLabelEntry;
       if (!angular.isDefined(userInputEntry)) {
-          userInputEntry = trip.user_input[etbs.inputType2retKey(inputType)];
+          userInputEntry = trip.user_input?.[etbs.inputType2retKey(inputType)];
       }
       etbs.populateInput(trip.userInput, inputType, userInputEntry);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
