@@ -7,7 +7,7 @@ navigation history that also transitions its views in and out.
 <ion-tabs ng-class="tabsCustomClass()">
 
   <!-- Diary Tab -->
-  <ion-tab title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/diary">
+  <ion-tab ng-if="showDiary" title="{{'main-diary' | translate}}" icon="ion-map" href="#/root/main/diary">
     <ion-nav-view name="main-diary"></ion-nav-view>
   </ion-tab>
 
@@ -27,7 +27,7 @@ navigation history that also transitions its views in and out.
   </ion-tab>
 
   <!-- Dashboard Tab -->
-  <ion-tab title="{{'main-metrics.dashboard' | translate}}" icon="ion-ios-analytics" href="#/root/main/metrics">
+  <ion-tab ng-if="showMetrics" title="{{'main-metrics.dashboard' | translate}}" icon="ion-ios-analytics" href="#/root/main/metrics">
     <ion-nav-view name="main-metrics"></ion-nav-view>
   </ion-tab>
 

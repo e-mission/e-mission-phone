@@ -164,8 +164,10 @@ angular.module('emission.main', ['emission.main.recent',
 
     $ionicPlatform.ready().then(function() {
       DynamicConfig.configReady().then((newConfig) => {
-        $scope.dCfg = newConfig
+        $scope.dCfg = newConfig;
         $scope.showDiary = !(newConfig.survey_info.buttons);
+        $scope.showMetrics = newConfig.survey_info['trip-labels'] == 'MULTILABEL';
+        console.log("MAIN-SCREENS: showDiary = "+$scope.showDiary+" metrics = "+$scope.showMetrics);
       });
     });
 });
