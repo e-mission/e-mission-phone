@@ -16,7 +16,9 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.stats.clientstats',
         'emission.survey.enketo.add-note-button',
         'emission.survey.enketo.notes-list',
-        'emission.incident.posttrip.manual'])
+        'emission.incident.posttrip.manual',
+        'emission.main.diary.button'
+      ])
 
 .directive("infiniteScrollTripItem", function(){
     return{

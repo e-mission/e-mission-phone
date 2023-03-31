@@ -8,7 +8,8 @@ angular.module('emission.main.metrics',['nvd3',
                                         'emission.main.metrics.mappings',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
-                                        'emission.plugin.logger'])
+                                        'emission.plugin.logger',
+                                        'emission.main.reacthello'])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     ClientStats, CommHelper, $window, $ionicPopup,

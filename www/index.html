@@ -37,7 +37,12 @@
     <!-- ionic/angularjs js -->
     <script src="lib/jquery/dist/jquery.min.js"></script>
     <script src="lib/jquery-xml2json/src/xml2json.js"></script>
-    <script src="lib/ionic/js/ionic.bundle.js"></script>
+    <script src="lib/angular/angular.js"></script>
+    <script src="lib/angular-sanitize/angular-sanitize.js"></script>
+    <script src="lib/angular-ui-router/release/angular-ui-router.js"></script>
+    <script src="lib/ionic/js/ionic.js"></script>
+    <script src="lib/ionic/js/ionic-angular.js"></script>
+    <!-- <script src="lib/ionic/js/ionic.bundle.js"></script> -->
     <script src="lib/ionic-toast/dist/ionic-toast.bundle.min.js"></script>
     <script src="lib/angular-translate/angular-translate.min.js"></script>
     <script src="lib/angular-translate-loader-static-files/angular-translate-loader-static-files.min.js"></script>
@@ -159,6 +164,7 @@
   </head>
 
   <body ng-app="emission">
+    <div id="root"></div>
     <!--
       The nav bar that will be updated as we navigate between views.
     -->
@@ -173,4 +179,5 @@
     -->
     <ion-nav-view></ion-nav-view>
   </body>
+  <script src="dist/bundle.js"></script>
 </html>

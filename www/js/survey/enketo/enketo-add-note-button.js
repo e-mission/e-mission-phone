@@ -9,7 +9,8 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.enketo.preview',
-        'emission.survey.inputmatcher'])
+        'emission.survey.inputmatcher',
+        'emission.main.diary.button'])
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {

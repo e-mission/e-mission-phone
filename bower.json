@@ -2,7 +2,7 @@
   "name": "emission",
   "private": "true",
   "devDependencies": {
-    "ionic": "driftyco/ionic-bower#1.3.1",
+    "ionic": "driftyco/ionic-bower#1.3.3",
     "ionic-toast": "^0.2.0",
     "moment": "^2.11.2",
     "moment-timezone": "^0.5.0",
@@ -11,11 +11,14 @@
     "Leaflet.awesome-markers": "^2.0.2"
   },
   "resolutions": {
-    "angular": "1.5.3",
-    "angular-animate": "1.5.3",
-    "angular-sanitize": "1.5.3"
+    "angular": "1.6.7",
+    "angular-animate": "1.6.7",
+    "angular-sanitize": "1.6.7"
   },
   "dependencies": {
+    "angular": "1.6.7",
+    "angular-animate": "1.6.7",
+    "angular-sanitize": "1.6.7",
     "angular-nvd3": "^1.0.7",
     "angularLocalStorage": "^0.3.2",
     "ng-walkthrough": "^1.0.0",
