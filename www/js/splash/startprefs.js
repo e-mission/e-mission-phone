@@ -205,7 +205,12 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectTo = undefined;
             $rootScope.redirectParams = undefined;
             return {state: redirState, params: redirParams};
+          } else if (['/splash', '/intro'].some(e => $state.current.url.includes(e))) {
+            // if coming from splash or intro, go to the main screen (label screen)
+            // this would be after successful login and on each startup
+            return {state: 'root.main.inf_scroll', params: {}};
           } else {
+            // fallback to the control screen ("Profile" screen)
             return {state: 'root.main.control', params: {}};
           }
         } else {
