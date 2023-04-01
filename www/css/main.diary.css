@@ -237,10 +237,14 @@ a.item-content {
 .card-title {
   display: flex;
   justify-content: center;
+  font-size: 15px;
+  padding-inline: 10px;
 }
 
 .card-title b {
   margin-left: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .diary-button {
