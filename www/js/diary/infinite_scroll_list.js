@@ -171,7 +171,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     Timeline.readAllCompositeTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
-        if (!$scope.showPlaces) {
+        if (!$scope.showPlaces || $scope.data.allTrips.length > 0 && ctList.length > 0 && $scope.data.allTrips[0].scratchPlace && ctList[0].scratchPlace) {
           ctList.splice(0, 1); // Remove the scratch first place if we are not using places
         }
         ctList.forEach((ct, i) => {
