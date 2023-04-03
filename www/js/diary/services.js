@@ -443,7 +443,46 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return Promise.all(readPromises)
         .then(([ctList]) => {
             $ionicLoading.hide();
+
+            // This adds the scratch first place
+            let startTimestamp = moment().startOf("day");
+            let loc = {coordinates: [0,0], type: "Point"}
+            let endTimestamp = moment().endOf("day");
+            let tz = moment.tz.guess();
+            if (ctList.phone_data.length > 0) {
+              startTimestamp = moment(ctList.phone_data[0].data.start_fmt_time).parseZone().startOf("day");
+              endTimestamp = moment(ctList.phone_data[0].data.start_fmt_time).parseZone();
+              loc = ctList.phone_data[0].data.start_loc;
+              tz = ctList.phone_data[0].data.locations[0].metadata.time_zone;
+            }
+            let firstPlaceObj = {
+              data: {
+                additions: [],
+                additionsList: [],
+                background: "bg-light",
+                display_date: moment(endTimestamp).format(),
+                display_start_time: startTimestamp.format("h:mm A"),
+                display_exit_time: endTimestamp.format("h:mm A"),
+                end_display_name: " ",
+                end_loc: loc,
+                ending_trip: {$oid: "6423b9fdd9ac0bff48c04bf8"},
+                enter_fmt_time: moment(startTimestamp).format(),
+                enter_local_dt: moment2localdate(startTimestamp, tz),
+                enter_ts: moment(startTimestamp).unix(),
+                exit_fmt_time: moment(endTimestamp).format(),
+                exit_local_dt: moment2localdate(endTimestamp, tz),
+                exit_ts: moment(endTimestamp).unix(),
+                listCardClass: "list card list-card bg-light list-card-lg",
+                location: {type: "Point", coordinates: [-122.09519, 37.3915317]},
+                scratchPlace: true,
+                start_display_name: " ",
+                start_loc: loc
+              }
+            };
+            ctList.phone_data.splice(0, 0, firstPlaceObj);
+
             return ctList.phone_data.map((ct) => {
+              if (ct.data.scratchPlace) {return ct.data;} // skip scratch first place object
               ct.data._id = ct._id["$oid"];
               if (ct.data.confirmed_place) {
                 const cp_id = ct.data.confirmed_place._id;

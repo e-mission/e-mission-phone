@@ -171,8 +171,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
     Timeline.readAllCompositeTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
+        if (!$scope.showPlaces) {
+          ctList.splice(0, 1); // Remove the scratch first place if we are not using places
+        }
         ctList.forEach((ct, i) => {
-          
+          if (ct.scratchPlace) {return;} // Skip the scratch first place
           if ($scope.showPlaces && ct.confirmed_place) {
             const cp = ct.confirmed_place;
             cp.getNextEntry = () => ctList[i + 1];
@@ -192,42 +195,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             fillPlacesForTripAsync(trip);
             fillTrajectoriesForTrip(trip);
         });
-        // for first place object
-        let startTimestamp = moment().startOf("day");
-        let loc = {coordinates: [0,0], type: "Point"}
-        let endTimestamp = moment().endOf("day");
-        let tz = moment.tz.guess();
-        if (ctList.length > 0) {
-          startTimestamp = moment(ctList[0].start_fmt_time).parseZone().startOf("day");
-          endTimestamp = moment(ctList[0].start_fmt_time).parseZone();
-          loc = ctList[0].start_loc;
-          tz = ctList[0].locations[0].metadata.time_zone;
-        }
-        let firstPlaceObj = {
-          additions: [],
-          additionsList: [],
-          background: "bg-light",
-          display_date: moment(endTimestamp).format(),
-          display_start_time: startTimestamp.format("h:mm A"),
-          display_exit_time: endTimestamp.format("h:mm A"),
-          end_display_name: " ",
-          end_loc: loc,
-          ending_trip: {$oid: "6423b9fdd9ac0bff48c04bf8"},
-          enter_fmt_time: moment(startTimestamp).format(),
-          enter_local_dt: moment2localdate(startTimestamp, tz),
-          enter_ts: moment(startTimestamp).unix(),
-          exit_fmt_time: moment(endTimestamp).format(),
-          exit_local_dt: moment2localdate(endTimestamp, tz),
-          exit_ts: moment(endTimestamp).unix(),
-          listCardClass: "list card list-card bg-light list-card-lg",
-          location: {type: "Point", coordinates: [-122.09519, 37.3915317]},
-          scratchPlace: true,
-          start_display_name: " ",
-          start_loc: loc
-        };
-        fillPlacesForTripAsync(firstPlaceObj);
-        $scope.data.allTrips.push(firstPlaceObj);
-        $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+        $scope.data.allTrips = ctList.concat($scope.data.allTrips);
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
         const oldestTrip = ctList[0];
@@ -481,6 +449,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     const fillTrajectoriesForTrip = function (trip) {
+      if(trip.scratchPlace) {return;} // Skip the scratch first place
       const tripgj = Timeline.compositeTrip2Geojson(trip);
 
       $scope.$apply(() => {
