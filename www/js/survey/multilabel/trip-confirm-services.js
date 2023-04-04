@@ -57,16 +57,15 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
           console.log("Starting promise execution with ", inputParams);
           omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
           console.log("Promise list ", omPromises);
-          Promise.all(omPromises).then((omObjList) => {
-            ch.INPUTS.forEach(function(item, index) {
-              inputParams[item] = omObjList[index];
-            });
-            console.log("Read all inputParams, resolving with ", inputParams);
-            resolve(inputParams);
-          }).catch((err) => {
-            Logger.displayError("Error while loading input params in "+ch.INPUTS, err)
-            reject(err);
-          });
+          Promise.all(omPromises).then((omObjList) =>
+              ch.INPUTS.forEach(function(item, index) {
+                  inputParams[item] = omObjList[index];
+              })).catch((err) => {
+                    Logger.displayError("Error while loading input params in "+ch.INPUTS, err)
+                    reject(err);
+              });
+              console.log("Read all inputParams, resolving with ", inputParams);
+              resolve(inputParams);
         });
         Logger.log("Finished creating inputParamsPromise" + ch.inputParamsPromise);
 
