@@ -391,7 +391,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
       }
     }
 
-    $ionicPlatform.ready().then(() => {
+    $ionicPlatform.ready().then(function() {
       DynamicConfig.configReady().then((newConfig) =>
         cdh.init(newConfig)
       );
