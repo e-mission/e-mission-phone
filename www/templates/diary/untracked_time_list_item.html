@@ -1,0 +1,26 @@
+<div>
+    <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
+        <div class="diary-card short greyed" style="padding-top: 15px;">
+            <div class="start-time-tag">{{triplike.display_start_time}}</div>
+            <div style="width: 100%; margin: auto; padding-block: 5px">
+                <div class="card-title">
+                    <b translate=".untracked-time-range"
+                        translate-value-start="{{ triplike.display_start_time }}"
+                        translate-value-end=" {{ triplike.display_end_time }}">
+                    </b>
+                </div>
+                <div style="margin: 10px">
+                    <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
+                        <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
+                        {{triplike.start_display_name}}
+                    </div>
+                    <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
+                        <i class="icon ion-flag" style="font-size: 16px; left: 0; color: #0088ce;"></i>
+                        {{triplike.end_display_name}}
+                    </div>
+                </div>
+            </div>
+            <div class="stop-time-tag">{{triplike.display_end_time}}</div>
+        </div>
+    </ion-item>
+</div>

@@ -1,11 +1,11 @@
-<ion-view ng-class="ion-view-background" translate-namespace="diary">
+<ion-view class="ion-view-background" translate-namespace="diary">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="left" id="toget" class="row buttons">
         <button class="button button-icon" ng-click="increaseHeight()">
             <i class="icon ion-arrow-resize"></i>
         </button>
-        <div class="row buttons labelfilterlist">
+        <div class="buttons labelfilterlist">
             <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 13px;font-weight: 600; border-radius: 10px;" translate>
                 {{selF.text}}
             </button>
@@ -33,8 +33,9 @@
 
 		<ion-list>
             <div collection-repeat="entry in data.displayTimelineEntries" item-height="getCardHeight(entry)">
-                <infinite-scroll-trip-item ng-if="entry.start_ts" trip="entry" config="ui_config"></infinite-scroll-trip-item>
-                <infinite-scroll-place-item ng-if="showPlaces && entry.enter_ts" place="entry" config="ui_config"></infinite-scroll-place-item>
+                <infinite-scroll-trip-item ng-if="entry.key.includes('trip')" trip="entry" config="ui_config"></infinite-scroll-trip-item>
+                <infinite-scroll-place-item ng-if="entry.key.includes('place')" place="entry" config="ui_config"></infinite-scroll-place-item>
+                <infinite-scroll-untracked-time-item ng-if="entry.key.includes('untracked')" triplike="entry"></infinite-scroll-untracked-time-item>
             </div>
         </ion-list>
 	</ion-content>

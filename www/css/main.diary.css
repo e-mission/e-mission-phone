@@ -130,55 +130,45 @@ a.item-content {
   min-height: 10px; /* Changed from 47px. This allows for the correct height for the label buttons to fit nicely in the diary card. */
   line-height: normal;
 }
-.btn-input-confirm-red,
-.btn-input-confirm-red:hover,
-.btn-input-confirm-red:active {
-  background-color: white;
-  color: #0088ce;
-  border-color: #0088ce;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-}
-.btn-input-confirm-yellow,
-.btn-input-confirm-yellow:hover,
-.btn-input-confirm-yellow:active {
-  background-color: #FFC108;  /* tentatively orange for now */
-  color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  border: 2px solid rgba(0, 136, 206, 0.2);
-}
-.btn-input-confirm-green,
-.btn-input-confirm-green:hover,
-.btn-input-confirm-green:active {
-  background-color: #0088ce;
-  color: white;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  border: 2px solid rgba(0, 136, 206, 0.2);
-}
-/* White confirm buttons are currently unused */
-/* .btn-input-confirm-white,
-.btn-input-confirm-white:hover,
-.btn-input-confirm-white:active {
-  background-color: #ddd;
-  color: #333;
-  font-size: 0.8em;
-} */
 
-
-.btn-input-confirm {
+.diary-btn {
   width: 100%;
-  min-height: 30px;
+  padding: 5px 14px;
   max-height: 40px;
   margin: 2px;
   box-sizing: border-box;
-  border-radius: 10px;
-  font-style: normal;
-  font-weight: normal;
+  border-radius: 50px;
   font-size: 0.8em !important;
-  /* line-height: 30px;
-  min-height: 30px;
-  width: 115px;
-  padding: 0; */
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
+  background-color: white;
+  color: hsl(200 100% 35%);
+  border: .12em solid hsl(200 100% 40%);
 }
+
+.diary-btn-yellow,
+.diary-btn-yellow:hover,
+.diary-btn-yellow:active {
+  background-color: #FFC108;  /* tentatively orange for now */
+  color: white;
+  border: 2px solid rgba(0, 136, 206, 0.2);
+}
+.diary-btn-blue,
+.diary-btn-blue:hover,
+.diary-btn-blue:active {
+  background-color: #0088ce;
+  color: white;
+  border: 2px solid rgba(0, 136, 206, 0.2);
+}
+
+/* icon */
+.diary-btn:before {
+  font-weight: bold;
+  scale: 1.7;
+  margin-right: .6em;
+  line-height: 100%;
+}
+
 .input-confirm-container {
   margin-top: 5px;
 }
@@ -199,7 +189,8 @@ a.item-content {
 }
 
 .unified-diary-item {
-  padding: 0 6px;
+  overflow: visible;
+  padding: 15px 6px;
   margin: 0 10px;
   border-width: 0;
   background-color: transparent;
@@ -208,34 +199,52 @@ a.item-content {
 }
 
 .diary-card {
+  background: white;
   width: 100%;
   height: min-content;
   margin: 0;
-  border: 2px solid rgba(0, 136, 206, 0.2);
+  border: 1px solid rgb(0 0 0 / .2);
   box-sizing: border-box;
   border-radius: 30px;
-  overflow: hidden;
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  position: relative;
+  box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
 }
 
 /* used for place list items */
 .diary-card.short {
-  /*height: 100px;*/
-  background-color: rgba(128, 208, 255, 0.8);
+  color: #222;
+  background: hsl(200 100% 85%);
+  border: 1px solid hsl(200 100% 10% / 0.2);
   margin: 6px auto;
   text-align: center;
 }
 
-.place-title {
-  color: #222;
-  display: flex;
-  justify-content: center;
+/* used for untracked time list items */
+.diary-card.greyed {
+  color: #333;
+  background: hsl(0 30% 97%);
 }
 
-.place-title b {
+.diary-card.greyed .card-title b {
+  color: #222;
+  padding: 5px 10px;
+  background-color: #ffbbbb;
+  border-radius: 5px;
+}
+
+.card-title {
+  display: flex;
+  justify-content: center;
+  font-size: 15px;
+  padding-inline: 10px;
+}
+
+.card-title b {
   margin-left: 10px;
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .diary-button {
@@ -351,10 +360,14 @@ a.item-content {
 }
 
 .diary-map {
-  z-index: -1; /* Can't zoom in or out of the map with this implemented */
   overflow: hidden;
   border-radius: 30px 0px 0px 30px;
+  z-index: 0;
   /* height must be specified in the html */
+}
+
+.diary-map, .diary-map .leaflet-interactive {
+  pointer-events: none !important;
 }
 
 /* when trip notes are enabled, the map has rounded right corners */
@@ -472,20 +485,6 @@ div.labelfilterlist {
 .labelfilter:last-of-type {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-}
-
-.enketo-button button {
-  border-color: rgba(0,0,0, .2);
-  box-shadow: 0 3px 6px rgba(0,0,0,0.1), 0 3px 6px rgba(0,0,0,0.1);
-}
-
-.enketo-button b {
-  vertical-align: middle;
-  margin-left: .5em;
-}
-
-.enketo-button, .enketo-button .icon:before {
-  line-height: 100%;
 }
 
 enketo-notes-list, .notes-list {

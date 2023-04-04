@@ -83,10 +83,6 @@ angular.module('emission.survey.enketo.add-note-button',
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
 
-    // The way isPlace is generated is very rudamentary, only checking to see if the datakey includes the word "place". We will want to change
-    // this before pushing the final changes to a more permanent solution, but for now this at the very least works
-    const isPlace = $scope.datakey?.includes("place");
-
     // prevents the click event from bubbling through to the card and opening the details page
     if ($event.stopPropagation) $event.stopPropagation();
     return EnketoSurveyLaunch

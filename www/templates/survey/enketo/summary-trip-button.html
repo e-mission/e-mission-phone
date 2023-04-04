@@ -7,20 +7,20 @@
 <!-- Buttons (if confirmed) -->
 <div class="row input-confirm-row">
         <div ng-if="timelineEntry.userInput['SURVEY']" class="input-confirm-container col" style="text-align: center;" >
-            <button ng-click ="openPopover($event, timelineEntry, 'SURVEY')" class="button btn-input-confirm btn-input-confirm-green" style="width: 100%;">
+            <button ng-click ="openPopover($event, timelineEntry, 'SURVEY')" class="button diary-btn diary-btn-blue" style="width: 100%;">
                 {{timelineEntry.userInput['SURVEY'].data.label}}
             </button>
         </div>
 <!-- Buttons (if inferred but not confirmed)
         Commented out until we deal with inferences in the survey case
         <div ng-if="!timelineEntry.userInput[input.name] && timelineEntry.finalInference[input.name]" class="input-confirm-container">
-            <button ng-click ="openPopover($event, timelineEntry, input.name)" class="button btn-input-confirm btn-input-confirm-yellow" translate>
+            <button ng-click ="openPopover($event, timelineEntry, input.name)" class="button diary-btn diary-btn-yellow" translate>
                 {{timelineEntry.finalInference[input.name].text}}
             </button>
         </div> -->
 <!-- Buttons (if not inferred or confirmed) -->
         <div ng-if="!timelineEntry.userInput['SURVEY'] && !timelineEntry.finalInference['SURVEY']" class="input-confirm-container col" style="text-align: center;">
-            <button ng-click ="openPopover($event, timelineEntry, 'SURVEY')" class="button btn-input-confirm btn-input-confirm-red" style="width: 100%;" translate>
+            <button ng-click ="openPopover($event, timelineEntry, 'SURVEY')" class="button diary-btn" style="width: 100%;" translate>
             {{'.choose-survey'}}
             </button>
     </div>

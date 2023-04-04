@@ -207,7 +207,7 @@ angular.module('emission.main.diary.list',['ui-leaflet',
           // Add "next" pointers to make it easier to use trip linkages for display
           $scope.data.currDayTripWrappers.forEach(function(tripgj, tripIndex, array) {
             tripgj.nextTripgj = array[tripIndex+1];
-
+            tripgj.getNextEntry = () => tripgj.data.properties.confirmed_place;
             // First populate basic classes so that we can use `isDraft` during
             // the matching code
             $scope.populateBasicClasses(tripgj);

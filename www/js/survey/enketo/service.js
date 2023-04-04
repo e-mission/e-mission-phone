@@ -7,7 +7,7 @@ angular.module('emission.survey.enketo.service', [
 ])
 .factory('EnketoSurvey', function(
   $window, $http, $translate, UnifiedDataLoader,
-  InputMatcher, EnketoSurveyAnswer, DynamicConfig
+  InputMatcher, EnketoSurveyAnswer, DynamicConfig, $translate
 ) {
   /**
    * @typedef EnketoSurveyConfig
@@ -156,6 +156,10 @@ angular.module('emission.survey.enketo.service', [
       };
       if (_state.opts.timelineEntry) {
         let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, _state.opts.timelineEntry);
+        if (timestamps == undefined) {
+          // timestamps were resolved, but they are invalid
+          return new Error($translate.instant('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
+        }
         // if timestamps were not resolved from the survey, we will use the trip or place timestamps
         timestamps ||= _state.opts.timelineEntry.data.properties;
         data.start_ts = timestamps.start_ts;

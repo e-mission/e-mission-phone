@@ -20,6 +20,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'emission.plugin.logger',
                                       'emission.main.diary.infscrolltripitem',
                                       'emission.main.diary.infscrollplaceitem',
+                                      'emission.main.diary.infscrolluntrackedtimeitem',
                                     ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -75,15 +76,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   $scope.getCardHeight = function(entry) {
     let height = 0;
-    if (entry.start_ts) { // entry is a trip
+    if (entry.key == 'analysis/confirmed_place') {
+      height = 178;
+    } else if (entry.key == 'analysis/cleaned_untracked') {
+      height = 164;
+    } else if (entry.key == 'analysis/confirmed_trip') {
       // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
       // we may have 1, 2, or 3 buttons at any given time
-      // 272 is the height without any buttons, and each button adds 54 pixels
+      // 242 is the height without any buttons, and each button adds 54 pixels
       const numButtons = entry.INPUTS?.length || 1;
-      height = 272 + (54 * numButtons)
-    } else if (entry.enter_ts) { // entry is a place
-      height = 188;
+      height = 242 + (54 * numButtons)
     }
+
     if (entry.additionsList) {
       height += 40 * entry.additionsList.length; // for each trip/place addition object, we need to increase the card height
     }
@@ -317,8 +321,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const place = cTrip.confirmed_place;
       $scope.data.displayTimelineEntries.push(cTrip);
       if ($scope.showPlaces && place) {
-        // if a place (such as the last place) does not have a display_end_time, make the display_end_time be the end of the day
-        !place.display_end_time ? place.display_end_time = moment(place.enter_fmt_time).parseZone().endOf('day').format("h:mm A") : place.display_end_time = place.display_end_time;
+        // Places with duration less than 60 seconds will not be displayed
+        if (place.duration && place.duration < 60) return; 
+
+        if (!place.display_end_time) {
+          // If a place does not have a display_end_time, it is the last place
+          // We will set display_end_time to the end of the day
+          place.display_end_time = moment(place.enter_fmt_time).parseZone().endOf('day').format("h:mm A");
+        }
         $scope.data.displayTimelineEntries.push(place);
       }
     });
