@@ -164,8 +164,24 @@ angular.module('emission.main', ['emission.main.recent',
 
     $ionicPlatform.ready().then(function() {
       DynamicConfig.configReady().then((newConfig) => {
-        $scope.dCfg = newConfig
+        $scope.dCfg = newConfig;
         $scope.showDiary = !(newConfig.survey_info.buttons);
+        $scope.showMetrics = newConfig.survey_info['trip-labels'] == 'MULTILABEL';
+        console.log("screen-select: showDiary = "+$scope.showDiary+" metrics = "+$scope.showMetrics
+            +" setting tabSel to done");
+        console.log("screen-select: in dynamic config load, tabs list is ", $('.tab-item'));
       });
+    });
+
+    $scope.$on('$ionicView.enter', function(ev) {
+        console.log("screen-select: after view enter, tabs list is ", $('.tab-item'));
+        const labelEl = $('.tab-item[icon="ion-checkmark-round"]')
+        const diaryEl = $('.tab-item[icon="ion-map"]')
+        const dashboardEl = $('.tab-item[icon="ion-ios-analytics"]')
+        console.log("screen-select: label ",labelEl," diary ",diaryEl," dashboardEl" ,dashboardEl);
+        // If either these don't exist, we will get an empty array.
+        // preceding or succeeding with an empty array is a NOP
+        labelEl.before(diaryEl);
+        labelEl.after(dashboardEl);
     });
 });
