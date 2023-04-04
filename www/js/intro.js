@@ -170,7 +170,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
               Logger.log("From QR code, extracted token "+extractedToken);
               $scope.login(extractedToken);
           } else {
-              $ionicPopup.alert({template: "invalid token format"+result.text});
+              $ionicPopup.alert({template: "invalid token format "+result.text});
           }
       },
       function (error) {
