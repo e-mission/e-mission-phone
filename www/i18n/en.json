@@ -421,6 +421,7 @@
         "button-decline": "Stop"
     },
     "survey": {
+        "loading-prior-survey": "Loading prior survey responses...",
         "prev-survey-found": "Found previous survey response",
         "use-prior-response": "Use prior response",
         "edit-response": "Edit response",

@@ -86,6 +86,7 @@ angular.module('emission.survey.enketo.demographics',
   }
 
   $scope.initForm = function() {
+    $scope.loading = true;
     return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
         $scope.$apply(() => $scope.existingSurvey = lastSurvey);
         console.log("ENKETO: existing survey ", $scope.existingSurvey);
@@ -105,6 +106,8 @@ angular.module('emission.survey.enketo.demographics',
                 console.log("demographic survey result ", result);
               }).catch(e => console.trace(e));
         }
+    }).finally(() => {
+        $scope.$apply(() => {$scope.loading = false;});
     });
   };
 
@@ -117,7 +120,7 @@ angular.module('emission.survey.enketo.demographics',
 
   $ionicPlatform.ready(() => $scope.init());
 })
-.factory("EnketoDemographicsService", function(UnifiedDataLoader, $window) {
+.factory("EnketoDemographicsService", function(UnifiedDataLoader, $window, $ionicLoading, $translate) {
   var eds = {};
   console.log("Creating EnketoDemographicsService");
   eds.key = "manual/demographic_survey";
@@ -138,7 +141,7 @@ angular.module('emission.survey.enketo.demographics',
   eds.loadPriorDemographicSurvey = function() {
     const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
     return UnifiedDataLoader.getUnifiedMessagesForInterval(eds.key, tq)
-        .then(answers => _getMostRecent(answers));
+        .then(answers => _getMostRecent(answers))
   }
 
   return eds;
