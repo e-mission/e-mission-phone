@@ -322,7 +322,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.data.displayTimelineEntries.push(cTrip);
       if ($scope.showPlaces && place) {
         // Places with duration less than 60 seconds will not be displayed
-        if (place.duration && place.duration < 60) return; 
+        if (!isNaN(place.duration) && place.duration < 60) return; 
 
         if (!place.display_end_time) {
           // If a place does not have a display_end_time, it is the last place
