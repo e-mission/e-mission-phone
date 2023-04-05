@@ -161,8 +161,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Received batch of size "+ctList.length);
         ctList.forEach((ct, i) => {
           
-          if ($scope.showPlaces && ct.confirmed_place) {
-            const cp = ct.confirmed_place;
+          if ($scope.showPlaces && ct.end_confirmed_place) {
+            const cp = ct.end_confirmed_place;
             cp.getNextEntry = () => ctList[i + 1];
             $scope.populateBasicClasses(cp);
             $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
@@ -318,7 +318,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     
     $scope.data.displayTimelineEntries = []
     $scope.data.displayTrips.forEach((cTrip) => {
-      const place = cTrip.confirmed_place;
+      const place = cTrip.end_confirmed_place;
       $scope.data.displayTimelineEntries.push(cTrip);
       if ($scope.showPlaces && place) {
         // Places with duration less than 60 seconds will not be displayed
@@ -432,8 +432,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.$apply(() => {
                 tripgj.start_display_name = startName;
                 tripgj.end_display_name = endName;
-                if (tripgj.confirmed_place) {
-                  tripgj.confirmed_place.display_name = endName;
+                if (tripgj.end_confirmed_place) {
+                  tripgj.end_confirmed_place.display_name = endName;
                 }
             });
         });
