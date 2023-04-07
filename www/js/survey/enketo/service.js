@@ -156,7 +156,7 @@ angular.module('emission.survey.enketo.service', [
       };
       if (_state.opts.timelineEntry) {
         let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, _state.opts.timelineEntry);
-        if (timestamps == undefined) {
+        if (timestamps === undefined) {
           // timestamps were resolved, but they are invalid
           return new Error($translate.instant('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
         }

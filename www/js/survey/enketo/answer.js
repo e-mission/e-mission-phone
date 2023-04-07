@@ -138,6 +138,8 @@ angular.module('emission.survey.enketo.answer', [
    * @param {XMLDocument} xmlDoc survey answer object
    * @param {object} trip trip object
    * @returns {object} object with `start_ts` and `end_ts`
+   *    - null if no timestamps are resolved
+   *    - undefined if the timestamps are invalid
    */
   function resolveTimestamps(xmlDoc, timelineEntry) {
     // check for Date and Time fields
