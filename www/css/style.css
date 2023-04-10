@@ -947,13 +947,13 @@ button.button.back-button.buttons.button-clear.header-item {
   background: #80D0FF;
   color: black;
   top: 0;
-  translate: -50% -50%;
+  transform: translate(-50%, -50%);
 }
 .stop-time-tag {
   background: #0088ce;
   color: white;
   bottom: 0;
-  translate: -50% 50%;
+  transform: translate(-50%, 50%);
 }
 
 .start-time-tag-diarytoremove {
