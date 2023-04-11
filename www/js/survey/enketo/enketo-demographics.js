@@ -88,7 +88,7 @@ angular.module('emission.survey.enketo.demographics',
   $scope.initForm = function() {
     $scope.loading = true;
     return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
-        $scope.$apply(() => $scope.existingSurvey = lastSurvey);
+        $scope.$apply(() => { $scope.loading = false; $scope.existingSurvey = lastSurvey});
         console.log("ENKETO: existing survey ", $scope.existingSurvey);
         if (!$scope.existingSurvey) {
             /*
@@ -106,7 +106,7 @@ angular.module('emission.survey.enketo.demographics',
                 console.log("demographic survey result ", result);
               }).catch(e => console.trace(e));
         }
-    }).finally(() => {
+    }).catch(() => {
         $scope.$apply(() => {$scope.loading = false;});
     });
   };
