@@ -78,7 +78,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     let height = 15; // 15 pixels of padding to account for iOS/Android rendering differences
     if (entry.key == 'analysis/confirmed_place') {
       height += 178;
-    } else if (entry.key == 'analysis/cleaned_untracked') {
+    } else if (entry.key == 'analysis/confirmed_untracked') {
       height += 164;
     } else if (entry.key == 'analysis/confirmed_trip') {
       // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
