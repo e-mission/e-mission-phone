@@ -446,12 +446,29 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return ctList.phone_data.map((ct) => {
               ct.data._id = ct._id["$oid"];
               ct.data.key = ct.metadata.origin_key;
+              if (ct.data.start_confirmed_place) {
+                const cp_id = ct.data.start_confirmed_place._id;
+                const cpKey = ct.data.start_confirmed_place.metadata.key;
+                ct.data.start_confirmed_place = ct.data.start_confirmed_place.data;
+                ct.data.start_confirmed_place._id = cp_id;
+                ct.data.start_confirmed_place.key = cpKey;
+                if (!ct.data.start_confirmed_place.enter_ts) {
+                  ct.data.start_confirmed_place.enter_ts = moment(ct.data.start_confirmed_place.exit_fmt_time).parseZone().startOf('day').unix()
+                  ct.data.start_confirmed_place.enter_fmt_time = moment(ct.data.start_confirmed_place.exit_fmt_time).parseZone().startOf('day').format()
+                  ct.data.start_confirmed_place.enter_local_dt = moment2localdate(moment.unix(ct.data.start_confirmed_place.enter_ts).tz(ct.metadata.time_zone), ct.metadata.time_zone)
+                }
+              }
               if (ct.data.end_confirmed_place) {
                 const cp_id = ct.data.end_confirmed_place._id;
                 const cpKey = ct.data.end_confirmed_place.metadata.key;
                 ct.data.end_confirmed_place = ct.data.end_confirmed_place.data;
                 ct.data.end_confirmed_place._id = cp_id;
                 ct.data.end_confirmed_place.key = cpKey;
+                if (!ct.data.end_confirmed_place.exit_ts) {
+                  ct.data.end_confirmed_place.exit_ts = moment(ct.data.end_confirmed_place.enter_fmt_time).parseZone().endOf('day').unix()
+                  ct.data.end_confirmed_place.exit_fmt_time = moment(ct.data.end_confirmed_place.enter_fmt_time).parseZone().endOf('day').format()
+                  ct.data.end_confirmed_place.exit_local_dt = moment2localdate(moment.unix(ct.data.end_confirmed_place.exit_ts).tz(ct.metadata.time_zone), ct.metadata.time_zone)
+                }
               }
               return ct.data;
             });
