@@ -47,7 +47,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         };
         // The URL prefix from which config files will be downloaded and read.
         // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
-        const downloadURL = "https://raw.githubusercontent.com/sebastianbarry/nrel-openpath-deploy-configs/surveys-info-and-surveys-data/configs/"+label+".nrel-op.json"
+        const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
             Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(result.data).substring(0,10));
@@ -140,19 +140,6 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 config.name = "dev";
             }
         }
-        /*
-         * Second hack to support adding in the study as a prefix to any existing token.
-         */
-        // now that we have the study name, let's make sure that the token starts with it
-        // using the plugin directly so that we can avoid adding more dependencies
-        window.cordova.plugins.BEMJWTAuth.getUserEmail().then(function(response) {
-            console.log("Running hack code to add the study as a prefix to an existing token if needed");
-            if (!response.startsWith("nrelop_")) {
-                const newToken = "nrelop_"+config.name+"_"+response;
-                Logger.log("Found old style token, after prepending nrelop_"+config.name+" new token is "+newToken);
-                window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(newToken);
-            }
-        });
     }
 
     dc.initByUser = function(urlComponents) {
