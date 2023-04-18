@@ -70,6 +70,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       f.state = false;
     });
     $scope.filterInputs[0].state = true;
+    $scope.selFilter = $scope.filterInputs[0].key;
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
     $scope.allTrips = false;
   }
@@ -97,7 +98,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.getActiveFilters = function() {
     return $scope.filterInputs.filter(sf => sf.state).map(sf => sf.key);
   }
-  
   const ONE_WEEK = 7 * 24 * 60 * 60; // seconds
   const ONE_DAY = 24 * 60 * 60; // seconds
 
@@ -268,16 +268,25 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     })
   });
 
-  $scope.select = function(selF) {
+  $scope.updateFilterSel = function(selFilterKey) {
     const prev = $scope.getActiveFilters();
-    selF.state = true;
-    $scope.filterInputs.forEach((f) => {
-      if (f !== selF) {
+    const selFilter = $scope.filterInputs.find(f => f.key == selFilterKey);
+    if (selFilter) {
+      selFilter.state = true;
+      $scope.filterInputs.forEach((f) => {
+        if (f !== selFilter) {
+          f.state = false;
+        }
+      });
+      $scope.allTrips = false;
+    } else {
+      $scope.filterInputs.forEach((f) => {
         f.state = false;
-      }
-    });
-    $scope.allTrips = false;
-    $scope.recomputeDisplayTimelineEntries();
+      });
+      $scope.allTrips = true;
+    }
+
+    $scope.recomputeDisplayTrips();
     // scroll to the bottom while changing filters so users don't have to
     // fixes the first of the fit-and-finish issues from
     // https://github.com/e-mission/e-mission-docs/issues/662
@@ -285,19 +294,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
-  $scope.resetSelection = function() {
-    const prev = $scope.getActiveFilters();
-    $scope.filterInputs.forEach((f) => {
-      f.state = false;
-    });
-    $scope.allTrips = true;
-    $scope.recomputeDisplayTimelineEntries();
-    $ionicScrollDelegate.scrollBottom();
-    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
-  }
-
-  $scope.recomputeDisplayTimelineEntries = function() {
-    console.log("recomputing display trips now");
+  $scope.recomputeDisplayTrips = function() {
     let alreadyFiltered = false;
     $scope.filterInputs.forEach((f) => {
         if (f.state == true) {

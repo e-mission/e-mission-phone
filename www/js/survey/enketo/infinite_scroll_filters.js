@@ -21,15 +21,13 @@ angular.module('emission.survey.enketo.trip.infscrollfilters',[
     sf.UNLABELED = {
         key: "unlabeled",
         text: $translate.instant(".unlabeled"),
-        filter: unlabeledCheck,
-        width: "col-50"
+        filter: unlabeledCheck
     }
 
     sf.TO_LABEL = {
         key: "to_label",
         text: $translate.instant(".to-label"),
-        filter: unlabeledCheck,
-        width: "col-50"
+        filter: unlabeledCheck
     }
 
     sf.configuredFilters = [

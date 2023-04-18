@@ -10,13 +10,13 @@
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
-    'emission.splash.updatecheck', 'emission.services.email',
+    'emission.services.email',
     'emission.intro', 'emission.main', 'emission.config.dynamic',
     'emission.config.server_conn', 'emission.join.ctrl',
     'pascalprecht.translate'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, UpdateCheck, DynamicConfig, ServerConnConfig) {
+    CustomURLScheme, ReferralHandler, DynamicConfig, ServerConnConfig) {
   console.log("Starting run");
   // ensure that plugin events are delivered after the ionicPlatform is ready
   // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
@@ -33,8 +33,6 @@ angular.module('emission', ['ionic',
     if (urlComponents.route == 'join') {
       ReferralHandler.setupGroupReferral(urlComponents);
       StartPrefs.loadWithPrefs();
-    } else if (urlComponents.route == 'change_client') {
-      UpdateCheck.handleClientChangeURL(urlComponents);
     } else if (urlComponents.route == 'join_study') {
       DynamicConfig.initByUser(urlComponents);
     }

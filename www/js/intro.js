@@ -1,7 +1,6 @@
 'use strict';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
-                                  'emission.splash.updatecheck',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
@@ -26,7 +25,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, UpdateCheck, DynamicConfig, i18nUtils, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, DynamicConfig, i18nUtils, $translate) {
 
   /*
    * Move all the state that is currently in the controller body into the init
@@ -182,7 +181,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
               $scope.alreadySaved = false;
               $scope.login(extractedToken);
           } else {
-              $ionicPopup.alert({template: "invalid token format"+result.text});
+              $ionicPopup.alert({template: "invalid token format "+result.text});
           }
       },
       function (error) {
@@ -191,20 +190,14 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.login = function(token) {
-    window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(token).then(function(userEmail) {
+    window.cordova.plugins.OPCodeAuth.setOPCode(token).then(function(opcode) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
-      ionicToast.show(userEmail, 'middle', false, 2500);
-      if (userEmail == "null" || userEmail == "") {
-        $scope.alertError("Invalid login "+userEmail);
+      ionicToast.show(opcode, 'middle', false, 2500);
+      if (opcode == "null" || opcode == "") {
+        $scope.alertError("Invalid login "+opcode);
       } else {
         CommHelper.registerUser(function(successResult) {
-          UpdateCheck.getChannel().then(function(retVal) {
-            CommHelper.updateUser({
-             client: retVal
-            });
-          });
-          $scope.currentToken = token;
           $scope.next();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);

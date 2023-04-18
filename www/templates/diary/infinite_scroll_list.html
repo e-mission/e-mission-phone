@@ -5,14 +5,14 @@
         <button class="button button-icon" ng-click="increaseHeight()">
             <i class="icon ion-arrow-resize"></i>
         </button>
-        <div class="buttons labelfilterlist">
-            <button ng-repeat="selF in filterInputs" ng-click="select(selF)" class="{{selF.width}} button labelfilter" ng-class="{on:selF.state}" style="text-align: center;font-size: 13px;font-weight: 600; border-radius: 10px;" translate>
-                {{selF.text}}
-            </button>
-            <button ng-click="resetSelection()" class="col-33 button labelfilter last" ng-class="{on:allTrips}" style="text-align: center;font-size: 13px;font-weight: 600; border-radius: 10px;" translate>
+        <select ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
+            <option ng-repeat="filter in filterInputs" value="{{filter.key}}" translate>
+                {{filter.text}}
+            </option>
+            <option value="show-all" translate>
                 {{'.show-all'}}
-            </button>
-        </div>
+            </option>
+        </select>
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">

@@ -120,6 +120,10 @@ Pre-requisites
     ```
 
     </details>
+- if you are not on the most recent version of OSX, `homebrew`
+    - this allows us to install the current version of cocoapods without
+      running into ruby incompatibilities - e.g.
+      https://github.com/CocoaPods/CocoaPods/issues/11763
 
 Important
 ---
