@@ -11,12 +11,18 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
-                                        CommHelper, PostTripManualMarker, $translate) {
-  console.log("controller DiaryDetailCtrl called with params = "+
-    JSON.stringify($stateParams));
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+                                        DynamicConfig, CommHelper, PostTripManualMarker, $translate) {
+  console.log("controller DiaryDetailCtrl called with params = "+JSON.stringify($stateParams));
+
+  $ionicPlatform.ready().then(function () {
+    DynamicConfig.configReady().then((configObj) => {
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in details.js is', $scope.surveyOpt);
+      $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+      $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+    });
+  });
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
@@ -77,8 +83,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
             };
   });
 
-  $scope.recomputeDisplayTrips = function() {
-    console.log("Called diary details.recomputeDisplayTrips");
+  $scope.recomputeDisplayTimelineEntries = function() {
+    console.log("Called diary details.recomputeDisplayTimelineEntries");
     // Let's copy over the userInput to the field expected by the checks (user_input)
     // We definitely need to unify this ASAP
     $scope.tripgj.user_input = $scope.tripgj.userInput;

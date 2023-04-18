@@ -11300,6 +11300,8 @@ var enketocore = (function () {
 	    }
 	};
 
+	let tz;
+
 	const types = {
 	    'string': {
 	        convert( x ) {
@@ -11441,7 +11443,6 @@ var enketocore = (function () {
 	            let parts;
 	            let time;
 	            let secs;
-	            let tz;
 	            let offset;
 	            const timeAppearsCorrect = /^[0-9]{1,2}:[0-9]{1,2}(:[0-9.]*)?/;
 
@@ -11465,7 +11466,6 @@ var enketocore = (function () {
 	            }
 
 	            time = parts[ 0 ].split( ':' );
-	            tz = parts[ 2 ] ? [ parts[ 1 ] ].concat( parts[ 2 ].split( ':' ) ) : ( parts[ 1 ] === 'Z' ? [ '+', '00', '00' ] : [] );
 
 	            o.hours = time[ 0 ].pad( 2 );
 	            o.minutes = time[ 1 ].pad( 2 );
@@ -11475,7 +11475,7 @@ var enketocore = (function () {
 	            o.seconds = secs[ 0 ];
 	            o.milliseconds = secs[ 1 ] || ( requireMillis ? '000' : undefined );
 
-	            if ( tz.length === 0 ) {
+	            if ( !tz || tz.length === 0 ) {
 	                offset = new Date().getTimezoneOffsetAsTime();
 	            } else {
 	                offset = `${tz[0] + tz[1].pad(2)}:${tz[2] ? tz[2].pad(2) : '00'}`;
@@ -21208,6 +21208,8 @@ var enketocore = (function () {
 	    let secondaryInstanceChildren;
 	    const that = this;
 
+		tz = false;
+
 	    /**
 	     * Default namespaces (on a primary instance, instance child, model) would create a problem using the **native** XPath evaluator.
 	     * It wouldn't find any regular /path/to/nodes. The solution is to ignore these by renaming these attributes to data-xmlns.
@@ -23006,21 +23008,16 @@ var enketocore = (function () {
 	            if ( type === 'time' ) {
 	                // convert to a local time value that HTML time inputs and the JS widget understand (01:02)
 	                if ( /(\+|-)/.test( value ) ) {
-	                    // Use today's date to incorporate daylight savings changes,
-	                    // Strip the thousands of a second, because most browsers fail to parse such a time.
-	                    // Add a space before the timezone offset to satisfy some browsers.
-	                    // For IE11, we also need to strip the Left-to-Right marks \u200E...
-	                    const ds = `${new Date().toLocaleDateString( 'en', {
-    month: 'short',
-    day: 'numeric',
-    year: 'numeric'
-} ).replace( /\u200E/g, '' )} ${value.replace( /(\d\d:\d\d:\d\d)(\.\d{1,3})(\s?((\+|-)\d\d))(:)?(\d\d)?/, '$1 GMT$3$7' )}`;
-	                    const d = new Date( ds );
-	                    if ( d.toString() !== 'Invalid Date' ) {
-	                        value = `${d.getHours().toString().pad( 2 )}:${d.getMinutes().toString().pad( 2 )}`;
-	                    } else {
-	                        console.error( 'could not parse time:', value );
-	                    }
+						// if tz has not been set yet, let's parse from this value and set tz
+						if (!tz) {
+							const parts = value.toString().split(/(\+|-|Z)/);
+							// We're using a 'capturing group' here, so the + or - is included!.
+							if (parts.length < 1) {
+								return '';
+							}
+							tz = parts[2] ? [parts[1]].concat(parts[2].split(':')) : (parts[1] === 'Z' ? ['+', '00', '00'] : []);
+						}						
+						value = moment.parseZone(value, 'HH:mm:ss.SSSZ').format('HH:mm');
 	                }
 	            }
 	        }

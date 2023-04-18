@@ -166,6 +166,7 @@
         "replaces": "Replaces",
         "purpose": "Purpose",
         "survey": "Details",
+        "untracked-time-range": "Untracked: {{start}} - {{end}}",
         "unlabeled": "All Unlabeled",
         "invalid-ebike": "Invalid",
         "to-label": "To Label",
@@ -408,7 +409,9 @@
         "download-apply": "Apply"
     },
     "login":{
-        "save-your-opcode":"Make sure to save your OPcode!",
+        "make-sure-save-your-opcode":"Make sure to save your OPcode!",
+        "cannot-retrieve":"NREL cannot retrieve it for you later!",
+        "save":"Save",
         "continue": "Continue",
         "enter-existing-token": "Enter the existing token that you have",
         "button-accept": "OK",
@@ -419,6 +422,7 @@
         "button-decline": "Stop"
     },
     "survey": {
+        "loading-prior-survey": "Loading prior survey responses...",
         "prev-survey-found": "Found previous survey response",
         "use-prior-response": "Use prior response",
         "edit-response": "Edit response",
@@ -430,7 +434,9 @@
         "powered-by": "Powered by",
         "dismiss": "Dismiss",
         "return-to-beginning": "Return to beginning",
-        "go-to-end": "Go to End"
+        "go-to-end": "Go to End",
+        "enketo-form-errors": "Form contains errors. Please see fields marked in red.",
+        "enketo-timestamps-invalid": "The times you entered are invalid. Please ensure that the start time is before the end time."
     },
     "join": {
         "welcome-to-nrel-openpath": "Welcome to NREL OpenPATH",

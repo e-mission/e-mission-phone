@@ -10,7 +10,7 @@ body.platform-ios {
 }
 
 .platform-ios .scroll-content {
-    height: calc(100% - 50px);
+    height: calc(100% - 90px);
 }
 
 [ng\:cloak], [ng-cloak], .ng-cloak {
@@ -759,7 +759,7 @@ background-image: none !important; }
 
 ion-header-bar {
   background-color: #f5f5f5 !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 12%);
 }
 .ion-view-background{
   background-color: #ededed !important;
@@ -875,10 +875,10 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Profile tab */
 .control-list-item {
-  background-color: white! important; height: 50px; margin-top: 0.5px;
+  height: 50px; margin-top: 0.5px;
 }
 .control-list-text {
-  background-color: white! important; padding: 15px; float: left;
+  padding: 15px; float: left;
 }
 .control-list-toggle {
   float: right; margin-top: 5px; margin-right: 2px;
@@ -932,25 +932,30 @@ button.button.back-button.buttons.button-clear.header-item {
 .list-col-right {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
-.start-time-tag {
-        width: 16%;
-        height: 30px;
-        background: #80D0FF;
-        box-sizing: border-box;
-        border-radius: 50px;
-        margin: auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        font-style: normal;
-        font-weight: bold;
-        font-size: 13px;
-        text-align: center;
-        color: black;
-        position: relative;
-        bottom: -15px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+
+.start-time-tag, .stop-time-tag {
+  position: absolute;
+  padding: .2em .5em;
+  left: 50%;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 13px;
+  box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 4px rgb(0 0 0 / .2);
+  z-index: 999;
 }
+.start-time-tag {
+  background: #80D0FF;
+  color: black;
+  top: 0;
+  transform: translate(-50%, -50%);
+}
+.stop-time-tag {
+  background: #0088ce;
+  color: white;
+  bottom: 0;
+  transform: translate(-50%, 50%);
+}
+
 .start-time-tag-diarytoremove {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   text-align: center;
@@ -964,28 +969,6 @@ button.button.back-button.buttons.button-clear.header-item {
   left: 1%;
   top: 15px;
   line-height: 16px;
-}
-
-
-.stop-time-tag {
-        width: 68px;
-        height: 30px;
-        background: #0088ce;
-        /* border: 1px solid #0088ce; */
-        box-sizing: border-box;
-        border-radius: 50px;
-        margin: auto;
-        display: flex;
-        justify-content: center;
-        align-items: center;  
-        font-style: normal;
-        font-weight: bold;
-        font-size: 13px;
-        text-align: center;
-        color: white;
-        position: relative;
-        top: -15px;
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .stop-time-tag-diarytoremove {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
@@ -1200,7 +1183,7 @@ html, #chart2, svg {
   font-weight: 700;
   height: 30px;
 }
-.metric-change-data-button: active{
+.metric-change-data-button:active{
   background-color: #0088ce;
   color: white;
   box-shadow: none;

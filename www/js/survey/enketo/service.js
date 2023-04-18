@@ -1,12 +1,13 @@
 angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
+  'emission.config.dynamic',
   'emission.survey.inputmatcher',
   'emission.survey.enketo.answer'
 ])
 .factory('EnketoSurvey', function(
   $window, $http, $translate, UnifiedDataLoader,
-  InputMatcher, EnketoSurveyAnswer,
+  InputMatcher, EnketoSurveyAnswer, DynamicConfig, $translate
 ) {
   /**
    * @typedef EnketoSurveyConfig
@@ -32,13 +33,13 @@ angular.module('emission.survey.enketo.service', [
    *    model: string;
    *  };
    *  opts: {
-   *    trip: object;
-   *    prev_demographic_survey: object;
+   *    timelineEntry: object;
+   *    prefilledSurveyResponse: string;
+   *    prefillFields: object;
    *  };
    * }}
    */
 
-  const ENKETO_SURVEY_CONFIG_PATH = 'json/enketoSurveyConfig.json';
   /** @type {EnketoSurveyState} _state */
   let _state;
 
@@ -50,20 +51,11 @@ angular.module('emission.survey.enketo.service', [
     if (_state.config !== null) {
       return Promise.resolve(_state.config);
     }
-    return $http.get(ENKETO_SURVEY_CONFIG_PATH).then(configRes => {
-      _state.config = configRes.data;
-      return _state.config;
-    }).catch((err) => {
-        console.log("error "+JSON.stringify(err)+" while reading survey options, reverting to defaults");
-        return $http.get(ENKETO_SURVEY_CONFIG_PATH+".sample")
-         .then(configRes => {
-              _state.config = configRes.data;
-              return _state.config;
-         }).catch(function(err) {
-            // prompt here since we don't have a fallback
-            Logger.displayError("Error while reading default survey options", err);
-        });
-    });
+    return DynamicConfig.configReady().then((newConfig) => {
+      Logger.log("Resolved UI_CONFIG_READY promise in service.js, filling in templates");
+      _state.config = newConfig.survey_info.surveys;
+      return newConfig;
+    })
   }
 
   /**
@@ -107,10 +99,30 @@ angular.module('emission.survey.enketo.service', [
         model: null,
       },
       opts: {
-        trip: null,
-        prev_demographic_survey: null,
+        timelineEntry: null,
+        prefilledSurveyResponse: null,
+        prefillFields: null,
       },
     };
+  }
+
+  /**
+   * _getPrefilleModel retrieve and prefill the model XML response
+   * @param {} key/value pairs of fields to prefill in the model response
+   * @returns {string} serialized XML of the prefilled model response
+   */
+  function _getPrefilledModel(prefillFields) {
+    if (!prefillFields) return null;
+    const xmlParser = new $window.DOMParser();
+    const xmlModel = _state.loaded.model;
+    const xmlDoc = xmlParser.parseFromString(xmlModel, 'text/xml');
+
+    for (const [tagName, value] of Object.entries(prefillFields)) {
+      const vals = xmlDoc.getElementsByTagName(tagName);
+      vals[0].innerHTML = value;
+    }
+    const instance = xmlDoc.getElementsByTagName('instance')[0].children[0];
+    return new XMLSerializer().serializeToString(instance);
   }
 
   /**
@@ -119,16 +131,8 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string} answer string
    */
   function _restoreAnswer() {
-    if (_state.opts.trip) {
-      const answer = _state.opts.trip.userInput["SURVEY"];
-      return answer ? answer.data.xmlResponse : null;
-    } else if (_state.opts.prev_demographic_survey) {
-        const answer = _state.opts.prev_demographic_survey;
-        // TODO: Figure out how to retrieve and match the profile survey
-        return answer? answer.data.xmlResponse : null;
-    } else {
-        return null;
-    }
+    const answer = _state.opts.prefilledSurveyResponse;
+    return answer || _getPrefilledModel(_state.opts.prefillFields) || null;
   }
 
   /**
@@ -142,30 +146,37 @@ angular.module('emission.survey.enketo.service', [
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
     const jsonDocResponse = $.xml2json(xmlResponse, {attrkey: 'attr'});
 
-    const data = {
-      label: EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc),
-      name: _state.name,
-      version: _state.config[_state.name].version,
-      xmlResponse,
-      jsonDocResponse,
-    };
-    if (_state.opts.trip) {
-        // The trip structure is different between the diary and label screens
-        // one has the timestamps in properties and the other does not
-        // let's support both so we can label from either screen
-        let tsObj = _state.opts.trip.data? _state.opts.trip.data.properties : _state.opts.trip;
-        if (tsObj) {
-            data.start_ts = tsObj.start_ts;
-            data.end_ts = tsObj.end_ts;
+    return EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc).then(rsLabel => {
+      const data = {
+        label: rsLabel,
+        name: _state.name,
+        version: _state.config[_state.name].version,
+        xmlResponse,
+        jsonDocResponse,
+      };
+      if (_state.opts.timelineEntry) {
+        let timestamps = EnketoSurveyAnswer.resolveTimestamps(xmlDoc, _state.opts.timelineEntry);
+        if (timestamps === undefined) {
+          // timestamps were resolved, but they are invalid
+          return new Error($translate.instant('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
         }
-    } else {
+        // if timestamps were not resolved from the survey, we will use the trip or place timestamps
+        timestamps ||= _state.opts.timelineEntry.data.properties;
+        data.start_ts = timestamps.start_ts;
+        data.end_ts = timestamps.end_ts;
+        // UUID generated using this method https://stackoverflow.com/a/66332305
+        data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
+      } else {
         const now = Date.now();
         data.ts = now/1000; // convert to seconds to be consistent with the server
         data.fmt_time = new Date(now);
-    }
-    return $window.cordova.plugins.BEMUserCache
-      .putMessage(_state.config[_state.name].dataKey, data)
-      .then(() => data);
+      }
+      // use dataKey passed into opts if available, otherwise get it from the config
+      const dataKey = _state.opts.dataKey || _state.config[_state.name].dataKey;
+      return $window.cordova.plugins.BEMUserCache
+        .putMessage(dataKey, data)
+        .then(() => data);
+    }).then(data => data);
   }
 
   /**
@@ -191,7 +202,13 @@ angular.module('emission.survey.enketo.service', [
     Object.assign(_state.opts, opts);
 
     return _lazyLoadConfig()
-      .then(config => _state.formLocation = config[name].formPath)
+      .then(config => {
+        // This is specific for my (Sebastian) branch of the nrel-openpath-deploy-configs repo
+        // THIS SHOULD BE CHANGED to the main branch once my changes have been merged to the Master
+        var shortenedConfig = config.survey_info.surveys;
+        var url = shortenedConfig[name].formPath;
+        _state.formLocation = url
+      })
       .then(() => $http.get(_state.formLocation))
       .then(formJson => {
         _state.loaded.form = formJson.data.form;
