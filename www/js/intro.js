@@ -198,6 +198,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         $scope.alertError("Invalid login "+opcode);
       } else {
         CommHelper.registerUser(function(successResult) {
+          $scope.currentToken = token;
           $scope.next();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);

@@ -286,7 +286,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.allTrips = true;
     }
 
-    $scope.recomputeDisplayTrips();
+    $scope.recomputeDisplayTimelineEntries();
     // scroll to the bottom while changing filters so users don't have to
     // fixes the first of the fit-and-finish issues from
     // https://github.com/e-mission/e-mission-docs/issues/662
@@ -294,7 +294,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
-  $scope.recomputeDisplayTrips = function() {
+  $scope.recomputeDisplayTimelineEntries = function() {
+    console.log("recomputing display timeline now");
     let alreadyFiltered = false;
     $scope.filterInputs.forEach((f) => {
         if (f.state == true) {
