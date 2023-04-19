@@ -1,11 +1,9 @@
-angular.module('emission.join.ctrl', ['emission.splash.updatecheck',
-                                        'emission.splash.startprefs',
+angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
                                         'emission.splash.remotenotify',
-                                        'emission.stats.clientstats',
-                                        'emission.survey.multilabel.posttrip.prompt'])
+                                        'emission.stats.clientstats'])
 .controller('JoinCtrl', function($scope, $state, $interval, $rootScope, 
     $ionicPlatform, $ionicPopup, $ionicPopover) {
     console.log('JoinCtrl invoked');
