@@ -162,13 +162,28 @@ angular.module('emission.survey.enketo.add-note-button',
    * manual inputs. It also sets some additional values 
    */
   enbs.populateManualInputs = function (timelineEntry, inputType, inputList) {
-      // Check unprocessed labels first since they are more recent
-      const unprocessedLabelEntry = InputMatcher.getAdditionsForTimelineEntry(timelineEntry, inputList);
-      var userInputEntry = unprocessedLabelEntry;
-      if (userInputEntry.length == 0) {
-          userInputEntry = timelineEntry.additions;
-      }
-      enbs.populateInput(timelineEntry.additionsList, inputType, userInputEntry);
+      // there is not necessarily just one addition per timeline entry,
+      // so unlike user inputs, we don't want to replace the server entry with
+      // the unprocessed entry
+      // but we also don't want to blindly append the unprocessed entry; what
+      // if it was a deletion.
+      // what we really want to do is to merge the unprocessed and processed entries
+      // taking deletion into account
+      // one option for that is to just combine the processed and unprocessed entries
+      // into a single list
+      // note that this is not necessarily the most performant approach, since we will
+      // be re-matching entries that have already been matched on the server
+      // but the number of matched entries is likely to be small, so we can live
+      // with the performance for now
+      const unprocessedAdditions = InputMatcher.getAdditionsForTimelineEntry(timelineEntry, inputList);
+      const combinedPotentialAdditionList = timelineEntry.additions.concat(unprocessedAdditions);
+      const dedupedList = InputMatcher.getUniqueEntries(combinedPotentialAdditionList);
+      Logger.log("After combining unprocessed ("+unprocessedAdditions.length+
+        ") with server ("+timelineEntry.additions.length+
+        ") for a combined ("+combinedPotentialAdditionList.length+
+        "), deduped entries are ("+dedupedList.length+")");
+
+      enbs.populateInput(timelineEntry.additionsList, inputType, dedupedList);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
       enbs.editingTrip = angular.undefined;
   }

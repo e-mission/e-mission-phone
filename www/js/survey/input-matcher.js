@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
-.factory('InputMatcher', function($translate){
+.factory('InputMatcher', function($translate, Logger){
   var im = {};
 
   const EPOCH_MAXIMUM = 2**31 - 1;
@@ -168,6 +168,37 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
       console.log("Matching Addition list = "+matchingAdditions.map(printUserInput));
     }
     return matchingAdditions;
+  }
+
+  im.getUniqueEntries = function(combinedList) {
+    // we should not get any non-ACTIVE entries here
+    // since we have run filtering algorithms on both the phone and the server
+    const allDeleted = combinedList.filter(c => c.data.status && c.data.status == 'DELETED');
+    if (allDeleted.length > 0) {
+        Logger.displayError("Found "+allDeletedEntries.length
+            +" non-ACTIVE addition entries while trying to dedup entries",
+            allDeletedEntries);
+    }
+    const uniqueMap = new Map();
+    combinedList.forEach((e) => {
+        const existingVal = uniqueMap.get(e.data.match_id);
+        // if the existing entry and the input entry don't match
+        // and they are both active, we have an error
+        // let's notify the user for now
+        if (existingVal) {
+            if ((existingVal.data.start_ts != e.data.start_ts) ||
+                (existingVal.data.end_ts != e.data.end_ts) ||
+                (existingVal.data.write_ts != e.data.write_ts)) {
+                Logger.displayError("Found two ACTIVE entries with the same match ID but different timestamps "+existingVal.data.match_id,
+                JSON.stringify(existingVal) + " vs. "+ JSON.stringify(e));
+            } else {
+                console.log("Found two entries with match_id "+existingVal.data.match_id+" but they are identical");
+            }
+        } else {
+            uniqueMap.set(e.data.match_id, e);
+        }
+    });
+    return Array.from(uniqueMap.values());
   }
 
   return im;
