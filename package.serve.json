@@ -13,12 +13,18 @@
   },
   "devDependencies": {
     "phonegap": "9.0.0+cordova.9.0.0",
-    "cordova": "9.0.0",
-    "@ionic/cli": "6.10.1",
-    "bower": "1.8.8"
+    "cordova": "^11.1.0",
+    "@ionic/cli": "6.20.8",
+    "bower": "1.8.14"
   },
   "dependencies": {
     "fs-extra": "^9.0.1",
-    "klaw-sync": "^6.0.0"
+    "klaw-sync": "^6.0.0",
+    "shelljs": "^0.8.5"
+  },
+  "cordova": {
+    "platforms": [
+      "browser"
+    ]
   }
 }
