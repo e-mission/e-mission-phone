@@ -54,6 +54,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             const parsedConfig = result.data;
             const connectionURL = parsedConfig.server? parsedConfig.server.connectUrl : "dev defaults";
             _fillStudyName(parsedConfig);
+            _backwardsCompatSurveyFill(parsedConfig);
             Logger.log("Successfully downloaded config with version "+parsedConfig.version
                 +" for "+parsedConfig.intro.translated_text.en.deployment_name
                 +" and data collection URL "+connectionURL);
@@ -71,6 +72,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 } else {
                     Logger.log("Found previously stored ui config, returning it");
                     _fillStudyName(savedConfig);
+                    _backwardsCompatSurveyFill(savedConfig);
                     return savedConfig;
                 }
             })
@@ -138,6 +140,26 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 config.name = _getStudyName(config.server.connectUrl);
             } else {
                 config.name = "dev";
+            }
+        }
+    }
+
+    const _backwardsCompatSurveyFill = function(config) {
+        if (!config.survey_info) {
+            config.survey_info = {
+              "surveys": {
+                "UserProfileSurvey": {
+                  "formPath": "json/demo-survey-v2.json",
+                  "version": 1,
+                  "compatibleWith": 1,
+                  "dataKey": "manual/demographic_survey",
+                  "labelTemplate": {
+                    "en": "Answered",
+                    "es": "Contestada"
+                  }
+                }
+              },
+              "trip-labels": "MULTILABEL"
             }
         }
     }
