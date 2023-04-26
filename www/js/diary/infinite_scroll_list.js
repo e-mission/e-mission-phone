@@ -160,7 +160,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     Timeline.readAllCompositeTrips(currEnd, ONE_WEEK).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
         ctList.forEach((ct, i) => {
-          
+          if ($scope.showPlaces && ct.start_confirmed_place) {
+            const cp = ct.start_confirmed_place;
+            cp.getNextEntry = () => ctList[i];
+            $scope.populateBasicClasses(cp);
+            $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
+            $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
+          }
           if ($scope.showPlaces && ct.end_confirmed_place) {
             const cp = ct.end_confirmed_place;
             cp.getNextEntry = () => ctList[i + 1];
@@ -316,18 +322,36 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     
     $scope.data.displayTimelineEntries = []
     $scope.data.displayTrips.forEach((cTrip) => {
-      const place = cTrip.end_confirmed_place;
-      $scope.data.displayTimelineEntries.push(cTrip);
-      if ($scope.showPlaces && place) {
-        // Places with duration less than 60 seconds will not be displayed
-        if (!isNaN(place.duration) && place.duration < 60) return; 
+      const start_place = cTrip.start_confirmed_place;
+      const end_place = cTrip.end_confirmed_place;
 
-        if (!place.display_end_time) {
-          // If a place does not have a display_end_time, it is the last place
-          // We will set display_end_time to the end of the day
-          place.display_end_time = moment(place.enter_fmt_time).parseZone().endOf('day').format("h:mm A");
+      // Add start place to the list
+      if ($scope.showPlaces && start_place && ($scope.data.displayTimelineEntries.length == 0 || $scope.data.displayTimelineEntries[$scope.data.displayTimelineEntries.length - 1]._id.$oid != start_place._id.$oid)) {
+        // Places with duration less than 60 seconds will not be displayed
+        if (!isNaN(start_place.duration) && start_place.duration < 60) return; 
+
+        if (!start_place.display_start_time) {
+          // If a start place does not have a display_start_time, it is the first place
+          // We will set display_start_time to the beginning of the day
+          start_place.display_start_time = moment(start_place.exit_fmt_time).parseZone().startOf('day').format("h:mm A");
         }
-        $scope.data.displayTimelineEntries.push(place);
+        $scope.data.displayTimelineEntries.push(start_place);
+      }
+
+      // Add trip to the list
+      $scope.data.displayTimelineEntries.push(cTrip);
+
+      // Add end place to the list
+      if ($scope.showPlaces && end_place) {
+        // Places with duration less than 60 seconds will not be displayed
+        if (!isNaN(end_place.duration) && end_place.duration < 60) return;
+
+        if (!end_place.display_end_time) {
+          // If an end place does not have a display_end_time, it is the last place
+          // We will set display_end_time to the end of the day
+          end_place.display_end_time = moment(end_place.enter_fmt_time).parseZone().endOf('day').format("h:mm A");
+        }
+        $scope.data.displayTimelineEntries.push(end_place);
       }
     });
   }
@@ -400,7 +424,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
+        if (tripgj.start_ts || tripgj.enter_ts) 
+          tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
         tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts) * 1000).format('ddd DD MMM YYYY');
         if (tripgj.end_ts || tripgj.exit_ts) {
           tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt || tripgj.exit_local_dt);
@@ -428,6 +453,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         ];
         Promise.all(fillPromises).then(function([startName, endName]) {
             $scope.$apply(() => {
+                if (tripgj.start_confirmed_place) {
+                  tripgj.start_confirmed_place.display_name = startName;
+                }
                 tripgj.start_display_name = startName;
                 tripgj.end_display_name = endName;
                 if (tripgj.end_confirmed_place) {
