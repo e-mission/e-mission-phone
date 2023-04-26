@@ -325,7 +325,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         if (!place.display_end_time) {
           // If a place does not have a display_end_time, it is the last place
           // We will set display_end_time to the end of the day
-          place.display_end_time = moment(place.enter_fmt_time).parseZone().endOf('day').format("h:mm A");
+          place.display_end_time = "...";
+          place.display_end_date = "...";
         }
         $scope.data.displayTimelineEntries.push(place);
       }
@@ -401,9 +402,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     $scope.populateBasicClasses = function(tripgj) {
         tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
-        tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts) * 1000).format('ddd DD MMM YYYY');
+        tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts) * 1000).format('LL');
         if (tripgj.end_ts || tripgj.exit_ts) {
           tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt || tripgj.exit_local_dt);
+          tripgj.display_end_date = moment((tripgj.end_ts || tripgj.exit_ts) * 1000).format('LL');
           tripgj.display_time = DiaryHelper.getFormattedTimeRange(
                                   (tripgj.start_ts || tripgj.enter_ts),
                                   (tripgj.end_ts || tripgj.exit_ts));
