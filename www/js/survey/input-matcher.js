@@ -150,6 +150,13 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     return mostRecentEntry;
   }
 
+  let compareTimestamps = (a, b) => {
+    if (a.data.start_ts == b.data.start_ts) {
+      return a.data.end_ts - b.data.end_ts;
+    }
+    return a.data.start_ts - b.data.start_ts;
+  }
+
   // return array of matching additions for a trip or place
   im.getAdditionsForTimelineEntry = function(entry, additionsList) {
     const logsEnabled = additionsList.length < 20;
@@ -167,7 +174,10 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     if (logsEnabled) {
       console.log("Matching Addition list = "+matchingAdditions.map(printUserInput));
     }
-    return matchingAdditions;
+    let sortedMatchingAdditions = [];
+    sortedMatchingAdditions = matchingAdditions.sort(compareTimestamps);
+
+    return sortedMatchingAdditions;
   }
 
   im.getUniqueEntries = function(combinedList) {
