@@ -16,9 +16,7 @@ angular.module('emission.services', ['emission.plugin.logger',
     };
 
     var processErrorMessages = function(errorMsg) {
-      var titleMsg = "Error"
       if (errorMsg.includes("403")) {
-        titleMsg = "Error: OPcode not found";
         errorMsg = "Error: OPcode not found. " + errorMsg;
         console.error("Error 403 found. " + errorMsg);
       }
