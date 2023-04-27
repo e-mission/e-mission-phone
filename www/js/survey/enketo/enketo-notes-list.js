@@ -22,15 +22,6 @@ angular.module('emission.survey.enketo.notes-list',
   .controller("NotesListCtrl", function ($scope, $state, $element, $window, EnketoSurveyLaunch, $ionicPopup) {
     console.log("Notes List Controller called");
 
-    $scope.compareTimestamps = (a, b) => {
-      if (!a || !b) 
-        return;
-      if (a.data.start_ts == b.data.start_ts) {
-        return a.data.end_ts - b.data.end_ts;
-      }
-      return a.data.start_ts - b.data.start_ts;
-    }
-
     const getScrollElement = function() {
       if (!$scope.scrollElement) {
           const ionItemElement = $element.closest('ion-item')
