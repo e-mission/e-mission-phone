@@ -3,7 +3,7 @@
 angular.module('emission.services', ['emission.plugin.logger',
                                      'emission.plugin.kvstore'])
 
-.service('CommHelper', function($rootScope, Logger) {
+.service('CommHelper', function($rootScope) {
     var getConnectURL = function(successCallback, errorCallback) {
         window.cordova.plugins.BEMConnectionSettings.getSettings(
             function(settings) {
