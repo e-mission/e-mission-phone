@@ -424,8 +424,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        if (tripgj.start_ts || tripgj.enter_ts) 
+        if (tripgj.start_ts || tripgj.enter_ts) {
           tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
+        }
         tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts || tripgj.end_ts || tripgj.exit_ts) * 1000).format('ddd DD MMM YYYY');
         if (tripgj.end_ts || tripgj.exit_ts) {
           tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt || tripgj.exit_local_dt);
