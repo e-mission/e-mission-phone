@@ -205,8 +205,14 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             $rootScope.redirectTo = undefined;
             $rootScope.redirectParams = undefined;
             return {state: redirState, params: redirParams};
-          } else {
+          } else if ($rootScope.app_ui_label.survey_info["trip-labels"] == "ENKETO") {
+            // If the survey is ENKETO, we will take the user directly to inf_scroll
             return {state: 'root.main.inf_scroll', params: {}};
+          } else {
+            // Otherwise, check the config for the startup page location and take them there
+            // Defaulty, we will go to inf_scroll
+            var statelocation = $rootScope.app_ui_label.display_config["startup_page"] ? $rootScope.app_ui_label.display_config["startup_page"] : 'inf_scroll';
+            return {state: `root.main.${statelocation}`, params: {}};
           }
         } else {
           return {state: result, params: {}};
