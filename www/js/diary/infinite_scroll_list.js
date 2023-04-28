@@ -212,7 +212,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.$broadcast('scroll.infiniteScrollComplete');
 
     }).catch((err) => {
-        Logger.displayError("while reading confirmed trips", err);
+        if (err.includes("403")) {
+          Logger.displayError("Invalid OPcode: while reading confirmed trips", err)
+        } else {
+          Logger.displayError("while reading confirmed trips", err);
+        }  
         Logger.log("Reached the end of the scrolling");
         $scope.infScrollControl.reachedEnd = true;
         Logger.log("Broadcasting infinite scroll complete");

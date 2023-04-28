@@ -23,7 +23,11 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
       }).then(function(updateJSON) {
          // alert("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {
-        Logger.displayError("Error in updating profile to store device settings", error);
+        if (error.includes("403")) {
+          Logger.displayError("Invalid OPcode: while updating profile to store device settings", error)
+        } else {
+          Logger.displayError("Error in updating profile to store device settings", error);
+        }
       });
     }
 

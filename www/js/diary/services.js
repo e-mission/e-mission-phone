@@ -427,7 +427,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 return [result, manualConfirmResults, enbsConfirmResults];
             });
         }).catch((err) => {
-            Logger.displayError("while reading confirmed trips", err);
+            if (err.includes("403")) {
+              Logger.displayError("Invalid OPcode: while reading confirmed trips", err)
+            } else {
+              Logger.displayError("while reading confirmed trips", err);
+            }
             return [{}, {}];
         });
     };
@@ -464,7 +468,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             });
         })
         .catch((err) => {
-            Logger.displayError("while reading confirmed trips", err);
+            if (err.includes("403")) {
+              Logger.displayError("Invalid OPcode: while reading confirmed trips", err)
+            } else {
+              Logger.displayError("while reading confirmed trips", err);
+            }
             $ionicLoading.hide();
             return [];
         });

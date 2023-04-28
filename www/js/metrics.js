@@ -561,7 +561,11 @@ angular.module('emission.main.metrics',['nvd3',
       })
       .catch(function(error) {
         $ionicLoading.hide();
-        Logger.displayError("Error loading user data", error);
+        if (error.includes("403")) {
+          Logger.displayError("Invalid OPcode: while oading user data", error)
+        } else {
+          Logger.displayError("Error loading user data", error);
+        }
       })
 
       getAggMetricsFromServer().then(function(results) {
