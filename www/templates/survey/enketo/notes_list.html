@@ -1,7 +1,7 @@
 <div>
     <ion-item class="notes-list" style="background-color: transparent">
-        <ul>
-            <li class="notes-list-entry" ng-repeat="entry in additionEntries | orderBy: ['data.start_ts', 'data.end_ts']">
+        <ul class="notes-list-grid">
+            <li ng-repeat="entry in additionEntries | orderBy: ['data.start_ts', 'data.end_ts']">
                 <b class="two-lines" ng-click="editEntry(entry)">{{entry.data.label}}</b>
                 <i ng-click="editEntry(entry)">
                     <p>{{ entry.displayDt.date }}</p>

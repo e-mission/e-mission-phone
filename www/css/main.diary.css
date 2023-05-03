@@ -360,6 +360,7 @@ a.item-content {
   display: -webkit-box;
   -webkit-box-orient: vertical;
   white-space: normal;
+  overflow: hidden;
 }
 .btn-input-wrap {
   white-space: normal;
@@ -505,28 +506,31 @@ enketo-notes-list, .notes-list {
   text-align: center;
 }
 
-.notes-list-entry {
+.notes-list-grid {
   display: grid;
   grid-template-columns: auto auto min-content;
-  gap: 8px;
+  grid-auto-rows: 40px;
   align-items: center;
-  overflow: hidden;
+  gap: 0 8px;
   font-size: 12px;
-  height: 40px;
+}
+
+.notes-list-grid > li {
+  display: contents;
 }
 
 /* the trash can should appear a bit larger */
-.notes-list-entry .icon {
+.notes-list-grid .icon {
   font-size: 22px;
 }
 
 /* the note's label will be left-aligned */
-.notes-list-entry b {
+.notes-list-grid b {
   text-align: left;
   margin-left: 5px;
 }
 
-.notes-list-entry p {
+.notes-list-grid p {
   font-size: inherit;
   color: inherit;
   margin: 0;
