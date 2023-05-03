@@ -224,12 +224,13 @@ a.item-content {
 /* used for untracked time list items */
 .diary-card.greyed {
   color: #333;
-  background: hsl(0 30% 97%);
+  background: hsl(0 30% 96%);
 }
 
 .diary-card.greyed .card-title b {
+  font-size: 13px;
   color: #222;
-  padding: 5px 10px;
+  padding: 0 4px;
   background-color: #ffbbbb;
   border-radius: 5px;
 }
@@ -245,6 +246,13 @@ a.item-content {
   margin-left: 10px;
   text-overflow: ellipsis;
   overflow: hidden;
+}
+
+.card-date {
+  display: block;
+  white-space: break-spaces;
+  line-height: 1.25;
+  text-decoration: underline;
 }
 
 .diary-button {
@@ -493,24 +501,34 @@ enketo-notes-list, .notes-list {
 }
 
 .notes-list {
-  padding: 0 10px 5px 15px;
+  padding: 0 12px 5px 12px;
   text-align: center;
 }
 
 .notes-list-entry {
   display: grid;
-  grid-template-columns: 10fr 9fr 1fr;
+  grid-template-columns: 9fr 5fr 1fr;
+  gap: 5px;
   align-items: center;
   overflow: hidden;
-  font-size: 13px;
+  font-size: 12px;
   height: 40px;
 }
 
+/* the trash can should appear a bit larger */
 .notes-list-entry .icon {
-  font-size: 24px;
+  font-size: 22px;
 }
 
 /* the note's label will be left-aligned */
 .notes-list-entry b {
   text-align: left;
+  margin-left: 5px;
+}
+
+.notes-list-entry p {
+  font-size: inherit;
+  color: inherit;
+  margin: 0;
+  line-height: 1.2;
 }
