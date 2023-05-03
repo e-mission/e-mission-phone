@@ -1,11 +1,11 @@
 <div ng-if="configPlaceNotes">
     <!-- Place Item Template  -->
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
-        <div class="diary-card short" style="padding-block: 5px;">
+        <div class="diary-card short" style="padding-block: 12px">
             <div class="start-time-tag">{{place.display_start_time}}</div>
-            <div style="width: 100%; margin: auto; padding-block: 5px">
+            <div style="width: 100%; margin: auto">
                 <div class="row" style="font-size: 12px; place-content: center; padding: 8px">
-                    <b><u>{{place.display_date}}</u></b>
+                    <b class="card-date">{{place.display_date}}</b>
                 </div>
                 <div class="card-title">
                     <!-- Place (Destination of Prev. Trip) -->

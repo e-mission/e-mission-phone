@@ -427,16 +427,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }
 
     $scope.populateBasicClasses = function(tripgj) {
-        if (tripgj.start_ts || tripgj.enter_ts) {
-          tripgj.display_start_time = DiaryHelper.getLocalTimeString(tripgj.start_local_dt || tripgj.enter_local_dt);
-        }
-        tripgj.display_date = moment((tripgj.start_ts || tripgj.enter_ts || tripgj.end_ts || tripgj.exit_ts) * 1000).format('ddd DD MMM YYYY');
-        if (tripgj.end_ts || tripgj.exit_ts) {
-          tripgj.display_end_time = DiaryHelper.getLocalTimeString(tripgj.end_local_dt || tripgj.exit_local_dt);
-          tripgj.display_time = DiaryHelper.getFormattedTimeRange(
-                                  (tripgj.start_ts || tripgj.enter_ts),
-                                  (tripgj.end_ts || tripgj.exit_ts));
-        }
+        const beginTs = tripgj.start_ts || tripgj.enter_ts;
+        const endTs = tripgj.end_ts || tripgj.exit_ts;
+        const beginDt = tripgj.start_local_dt || tripgj.enter_local_dt;
+        const endDt = tripgj.end_local_dt || tripgj.exit_local_dt;
+        const isMultiDay = DiaryHelper.isMultiDay(beginTs, endTs);
+        tripgj.display_date = DiaryHelper.getFormattedDate(beginTs, endTs, isMultiDay);
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(beginDt, isMultiDay);
+        tripgj.display_end_time = DiaryHelper.getLocalTimeString(endDt, isMultiDay);
+        tripgj.display_duration = DiaryHelper.getFormattedDuration(beginTs, endTs);
+        tripgj.display_time = DiaryHelper.getFormattedTimeRange(beginTs, endTs);
         if (tripgj.distance) {
           tripgj.display_distance = ImperialConfig.getFormattedDistance(tripgj.distance);
           tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;

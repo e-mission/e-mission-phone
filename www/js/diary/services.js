@@ -25,9 +25,17 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
   //   .setAttribute('style', 'width: '+oldVal2);
   // }
-  dh.getFormattedDate = function(ts) {
-    var d = moment(ts * 1000).format("DD MMMM YYYY");
-    return d;
+
+  dh.isMultiDay = function(beginTs, endTs) {
+    if (!beginTs || !endTs) return false;
+    return moment(beginTs * 1000).format('YYYYMMDD') != moment(endTs * 1000).format('YYYYMMDD');
+  }
+
+  dh.getFormattedDate = function(beginTs, endTs) {
+    if (dh.isMultiDay(beginTs, endTs)) {
+      return `${moment(beginTs * 1000).format('ddd LL')} - ${moment(endTs * 1000).format('ddd LL')}`;
+    }
+    return moment((beginTs || endTs) * 1000).format('ddd LL');
   }
   dh.isCommon = function(id) {
     var ctrip = CommonGraph.trip2Common(id);
@@ -144,14 +152,22 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return background;
   }
 
-  dh.getLocalTimeString = function (dt) {
+  dh.getLocalTimeString = function (dt, includeDay=false) {
+    if (!dt) return;
     //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
     let mdt = angular.copy(dt)
     mdt.month = mdt.month - 1
+    if (includeDay) {
+      const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+      const date = Intl.DateTimeFormat($translate.use(), opts)
+        .format(moment(mdt).toDate());
+      return `${moment(mdt).format("LT")} (${date})`;
+    }
     return moment(mdt).format("LT");
   };
 
   dh.getFormattedTime = function(ts_in_secs) {
+    if (isNaN(ts_in_secs)) return;
     if (angular.isDefined(ts_in_secs)) {
       return moment(ts_in_secs * 1000).format('LT');
     } else {
@@ -159,11 +175,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   };
   dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
+    if (isNaN(end_ts_in_secs) || isNaN(start_ts_in_secs)) return;
     var startMoment = moment(start_ts_in_secs * 1000);
     var endMoment = moment(end_ts_in_secs * 1000);
     return endMoment.to(startMoment, true);
   };
   dh.getFormattedDuration = function(duration_in_secs) {
+    if (isNaN(duration_in_secs)) return;
     return moment.duration(duration_in_secs * 1000).humanize()
   };
   dh.getTripDetails = function(trip) {

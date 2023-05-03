@@ -3,7 +3,10 @@
         <ul>
             <li class="notes-list-entry" ng-repeat="entry in additionEntries | orderBy: ['data.start_ts', 'data.end_ts']">
                 <b class="two-lines" ng-click="editEntry(entry)">{{entry.data.label}}</b>
-                <i ng-click="editEntry(entry)">{{entry.displayTime || setDisplayTime(entry)}}</i>
+                <i ng-click="editEntry(entry)">
+                    <p>{{ entry.displayDt.date }}</p>
+                    <p>{{ entry.displayDt.time || setDisplayDt(entry).time }}</p>
+                </i>
                 <i class="icon ion-trash-a" ng-click="confirmDeleteEntry(entry)"></i>
             </li>
         </ul>

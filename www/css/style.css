@@ -942,6 +942,10 @@ button.button.back-button.buttons.button-clear.header-item {
   font-size: 13px;
   box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 4px rgb(0 0 0 / .2);
   z-index: 999;
+  white-space: pre-line;
+}
+.start-time-tag:empty, .stop-time-tag:empty {
+  display: none;
 }
 .start-time-tag {
   background: #80D0FF;
@@ -1903,4 +1907,15 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+.enketo-plugin input[name*="_date"],
+.enketo-plugin input[name*="_time"] {
+  display: flex !important;
+  max-width: 85%;
+}
+
+.enketo-plugin .question.inline-datetime {
+  display: inline-grid;
+  width: 50%;
 }
