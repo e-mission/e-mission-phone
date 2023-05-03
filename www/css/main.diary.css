@@ -507,8 +507,8 @@ enketo-notes-list, .notes-list {
 
 .notes-list-entry {
   display: grid;
-  grid-template-columns: 9fr 5fr 1fr;
-  gap: 5px;
+  grid-template-columns: auto auto min-content;
+  gap: 8px;
   align-items: center;
   overflow: hidden;
   font-size: 12px;
