@@ -325,17 +325,19 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const start_place = cTrip.start_confirmed_place;
       const end_place = cTrip.end_confirmed_place;
 
-      // Add start place to the list
-      if ($scope.showPlaces && start_place && ($scope.data.displayTimelineEntries.length == 0 || $scope.data.displayTimelineEntries[$scope.data.displayTimelineEntries.length - 1]._id.$oid != start_place._id.$oid)) {
-        // Places with duration less than 60 seconds will not be displayed
-        if (!isNaN(start_place.duration) && start_place.duration < 60) return; 
+      // Add start place to the list, if not already present
+      let isInList = $scope.data.displayTimelineEntries.find(e => e._id.$oid == start_place._id.$oid);
+      if ($scope.showPlaces && start_place && !isInList) {
+        // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
+        if (isNaN(start_place.duration) || start_place.duration >= 60) {
+          $scope.data.displayTimelineEntries.push(start_place);
+        }
 
-        if (!start_place.display_start_time) {
+        // if (!start_place.display_start_time) {
           // If a start place does not have a display_start_time, it is the first place
           // We will set display_start_time to the beginning of the day
-          start_place.display_start_time = moment(start_place.exit_fmt_time).parseZone().startOf('day').format("h:mm A");
-        }
-        $scope.data.displayTimelineEntries.push(start_place);
+          // start_place.display_start_time = moment(start_place.exit_fmt_time).parseZone().startOf('day').format("h:mm A");
+        // }
       }
 
       // Add trip to the list
@@ -343,15 +345,16 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
       // Add end place to the list
       if ($scope.showPlaces && end_place) {
-        // Places with duration less than 60 seconds will not be displayed
-        if (!isNaN(end_place.duration) && end_place.duration < 60) return;
+        // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
+        if (isNaN(end_place.duration) && end_place.duration >= 60) {
+            $scope.data.displayTimelineEntries.push(end_place);
+        }
 
-        if (!end_place.display_end_time) {
+        // if (!end_place.display_end_time) {
           // If an end place does not have a display_end_time, it is the last place
           // We will set display_end_time to the end of the day
-          end_place.display_end_time = moment(end_place.enter_fmt_time).parseZone().endOf('day').format("h:mm A");
-        }
-        $scope.data.displayTimelineEntries.push(end_place);
+          // end_place.display_end_time = moment(end_place.enter_fmt_time).parseZone().endOf('day').format("h:mm A");
+        // }
       }
     });
   }
