@@ -935,16 +935,19 @@ button.button.back-button.buttons.button-clear.header-item {
 
 .start-time-tag, .stop-time-tag {
   position: absolute;
-  padding: .2em .5em;
+  display: flex;
+  padding: 0 .5em;
   left: 50%;
   border-radius: 50px;
-  font-weight: bold;
   font-size: 13px;
   box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 4px rgb(0 0 0 / .2);
   z-index: 999;
   white-space: pre-line;
 }
-.start-time-tag:empty, .stop-time-tag:empty {
+.start-time-tag > *, .stop-time-tag > * {
+  padding: .2em 0;
+}
+.start-time-tag > *:empty, .stop-time-tag > *:empty {
   display: none;
 }
 .start-time-tag {
