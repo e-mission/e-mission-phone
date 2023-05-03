@@ -346,7 +346,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       // Add end place to the list
       if ($scope.showPlaces && end_place) {
         // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
-        if (isNaN(end_place.duration) && end_place.duration >= 60) {
+        if (isNaN(end_place.duration) || end_place.duration >= 60) {
             $scope.data.displayTimelineEntries.push(end_place);
         }
 
