@@ -433,8 +433,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         const endDt = tripgj.end_local_dt || tripgj.exit_local_dt;
         const isMultiDay = DiaryHelper.isMultiDay(beginTs, endTs);
         tripgj.display_date = DiaryHelper.getFormattedDate(beginTs, endTs, isMultiDay);
-        tripgj.display_start_time = DiaryHelper.getLocalTimeString(beginDt, isMultiDay);
-        tripgj.display_end_time = DiaryHelper.getLocalTimeString(endDt, isMultiDay);
+        tripgj.display_start_time = DiaryHelper.getLocalTimeString(beginDt);
+        tripgj.display_end_time = DiaryHelper.getLocalTimeString(endDt);
+        if (isMultiDay) {
+          tripgj.display_start_date_abbr = DiaryHelper.getFormattedDateAbbr(beginTs);
+          tripgj.display_end_date_abbr = DiaryHelper.getFormattedDateAbbr(endTs);
+        }
         tripgj.display_duration = DiaryHelper.getFormattedDuration(beginTs, endTs);
         tripgj.display_time = DiaryHelper.getFormattedTimeRange(beginTs, endTs);
         if (tripgj.distance) {

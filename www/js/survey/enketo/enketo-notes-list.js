@@ -42,7 +42,9 @@ angular.module('emission.survey.enketo.notes-list',
       const stopTs = entry.data.end_ts || entry.data.exit_ts;
       let d;
       if (DiaryHelper.isMultiDay(beginTs, stopTs)) {
-        d = `${moment.parseZone(beginTs*1000).tz(timezone).format('MMM D')} - ${moment.parseZone(stopTs*1000).tz(timezone).format('MMM D')}`
+        const beginTsZoned = moment.parseZone(beginTs*1000).tz(timezone);
+        const stopTsZoned = moment.parseZone(stopTs*1000).tz(timezone);
+        d = DiaryHelper.getFormattedDateAbbr(beginTsZoned, stopTsZoned, false);
       }
       const begin = moment.parseZone(beginTs*1000).tz(timezone).format('LT');
       const stop = moment.parseZone(stopTs*1000).tz(timezone).format('LT');

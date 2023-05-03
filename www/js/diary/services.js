@@ -31,12 +31,34 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     return moment(beginTs * 1000).format('YYYYMMDD') != moment(endTs * 1000).format('YYYYMMDD');
   }
 
-  dh.getFormattedDate = function(beginTs, endTs) {
+  /* returns a formatted range if both params are defined, 
+    one formatted date if only one is defined */
+  dh.getFormattedDate = function(beginTs, endTs=null) {
+    if (!beginTs && !endTs) return;
     if (dh.isMultiDay(beginTs, endTs)) {
-      return `${moment(beginTs * 1000).format('ddd LL')} - ${moment(endTs * 1000).format('ddd LL')}`;
+      return `${dh.getFormattedDate(beginTs)} - ${dh.getFormattedDate(endTs)}`;
     }
-    return moment((beginTs || endTs) * 1000).format('ddd LL');
+    let t = beginTs || endTs;    // whichever is defined. may be timestamp or dt object
+    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
+    if (!t._isAMomentObject) t = moment(t);
+    return t.format('ddd LL');
   }
+
+  /* returns a formatted range if both params are defined, 
+    one formatted date if only one is defined */
+  dh.getFormattedDateAbbr = function(beginTs, endTs=null, dayOfWeek=true) {
+    if (!beginTs && !endTs) return;
+    if (dh.isMultiDay(beginTs, endTs)) {
+      return `${dh.getFormattedDateAbbr(beginTs)} - ${dh.getFormattedDateAbbr(endTs)}`;
+    }
+    let t = beginTs || endTs;    // whichever is defined. may be timestamp or object
+    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
+    if (!t._isAMomentObject) t = moment(t);
+    const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+    return Intl.DateTimeFormat($translate.use(), opts)
+      .format(new Date(t.format('LLL')));
+  }
+
   dh.isCommon = function(id) {
     var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
@@ -158,10 +180,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     let mdt = angular.copy(dt)
     mdt.month = mdt.month - 1
     if (includeDay) {
-      const opts = { weekday: 'short', month: 'short', day: 'numeric' };
-      const date = Intl.DateTimeFormat($translate.use(), opts)
-        .format(moment(mdt).toDate());
-      return `${moment(mdt).format("LT")} (${date})`;
+      return `${moment(mdt).format("LT")} (${dh.getFormattedDateAbbr(mdt)})`;
     }
     return moment(mdt).format("LT");
   };

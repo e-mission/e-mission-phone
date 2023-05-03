@@ -1,7 +1,10 @@
 <div>
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
         <div class="diary-card short greyed" style="padding-block: 12px">
-            <div class="start-time-tag">{{triplike.display_start_time}}</div>
+            <div class="start-time-tag">
+                <b>{{triplike.display_start_time}}</b>
+                <i ng-if="triplike.display_start_date_abbr">&nbsp;({{triplike.display_start_date_abbr}})</i>
+            </div>
             <div style="width: 100%; margin: auto">
                 <div class="row" style="font-size: 12px; place-content: center; padding: 8px">
                     <b class="card-date">{{triplike.display_date}}</b>
@@ -24,7 +27,10 @@
                 </div>
             </div>
             <enketo-notes-list ng-if="triplike.additionsList.length" timeline-entry="triplike" addition-entries="triplike.additionsList"></enketo-notes-list>
-            <div class="stop-time-tag">{{triplike.display_end_time}}</div>
+            <div class="stop-time-tag">
+                <b>{{triplike.display_end_time}}</b>
+                <i ng-if="triplike.display_end_date_abbr">&nbsp;({{triplike.display_end_date_abbr}})</i>
+            </div>
         </div>
     </ion-item>
 </div>
