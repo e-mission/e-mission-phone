@@ -48,6 +48,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         } else if (platform.toLowerCase() == "ios") {
             $scope.backgroundUnrestrictionsNeeded = false;
             $scope.overallBackgroundRestrictionStatus = true;
+            $scope.backgroundRestrictionChecks = [];
             return true;
         } else {
             alert("Unknown platform, no tracking");
@@ -140,6 +141,14 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     let refreshChecks = function(checksList, recomputeFn) {
+        // without this, even if the checksList is []
+        // the reduce in the recomputeFn fails because it is called on a zero
+        // length array without a default value
+        // we should be able to also specify a default value of True
+        // but I don't want to mess with that at this last minute
+        if (!checksList || checksList.length == 0) {
+            return Promise.resolve(true);
+        }
         let checkPromises = checksList?.map((lc) => lc.refresh());
         console.log(checkPromises);
         return Promise.all(checkPromises)
