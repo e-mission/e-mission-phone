@@ -81,10 +81,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.$broadcast("recomputeAppStatus", (status) => {
       if (!status) {
         $ionicPopup.show({
-          template: "Incorrect app settings. Click to view and fix app status.",
+          title: $translate.instant('control.incorrect-app-status'),
+          template: $translate.instant('control.fix-app-status'),
           scope: $scope,
           buttons: [{
-            text: "Fix",
+            text: $translate.instant('control.fix'),
             type: 'button-assertive',
             onTap: function(e) {
               const redirectTo = "root.main.control";
