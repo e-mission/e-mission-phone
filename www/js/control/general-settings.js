@@ -281,6 +281,7 @@ angular.module('emission.main.control',['emission.services',
             if ($stateParams.launchAppStatusModal == true) {
                 $scope.$broadcast("recomputeAppStatus");
                 $scope.appStatusModal.show();
+                $stateParams.launchAppStatusModal = false;
             }
         });
     })
