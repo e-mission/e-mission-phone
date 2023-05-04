@@ -333,6 +333,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           $scope.data.displayTimelineEntries.push(start_place);
         }
 
+       // TODO: Remove me in June 2023
         // if (!start_place.display_start_time) {
           // If a start place does not have a display_start_time, it is the first place
           // We will set display_start_time to the beginning of the day
@@ -350,6 +351,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             $scope.data.displayTimelineEntries.push(end_place);
         }
 
+        // TODO: Remove me in July 2023
         // if (!end_place.display_end_time) {
           // If an end place does not have a display_end_time, it is the last place
           // We will set display_end_time to the end of the day
