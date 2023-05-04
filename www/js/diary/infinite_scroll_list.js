@@ -646,6 +646,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       if ($state.$current == "root.main.diary.list") {
         $scope.startTime = moment().utc()
       }
+      $scope.checkPermissionsStatus();
     })
 
     $ionicPlatform.ready().then(function() {
