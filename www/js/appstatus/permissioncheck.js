@@ -101,6 +101,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     $scope.recomputeBackgroundRestrictionStatus = function() {
+        if (!$scope.backgroundRestrictionChecks) return;
         $scope.backgroundRestrictionChecks.forEach((brc) => {
             brc.statusIcon = iconMap(brc.statusState);
             brc.statusClass = classMap(brc.statusState)
@@ -139,9 +140,9 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     let refreshChecks = function(checksList, recomputeFn) {
-        let checkPromises = checksList.map((lc) => lc.refresh());
+        let checkPromises = checksList?.map((lc) => lc.refresh());
         console.log(checkPromises);
-        Promise.all(checkPromises)
+        return Promise.all(checkPromises)
             .then((result) => recomputeFn())
             .catch((error) => recomputeFn())
     }
@@ -377,11 +378,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
     });
 
-    $scope.$on("recomputeAppStatus", function() {
+    $scope.$on("recomputeAppStatus", function(e, callback) {
         console.log("PERMISSION CHECK: recomputing state");
-        refreshChecks($scope.locChecks, $scope.recomputeLocStatus);
-        refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
-        refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus);
-        refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
+        Promise.all([
+            refreshChecks($scope.locChecks, $scope.recomputeLocStatus),
+            refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus),
+            refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus),
+            refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus)
+        ]).then( () => {
+            callback($scope.overallstatus)
+        }
+        );
     });
 });

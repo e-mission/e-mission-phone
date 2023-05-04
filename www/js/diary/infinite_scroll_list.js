@@ -10,6 +10,7 @@
 
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
+                                      'emission.appstatus.permissioncheck',
                                       'emission.main.common.services',
                                       'emission.services',
                                       'emission.config.imperial',
@@ -42,8 +43,57 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
   const mapLimiter = new Bottleneck({ maxConcurrent: 3, minTime: 100 });
   $scope.data = {};
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+
+  $scope.init = (configObj) => {
+    $scope.$apply(() => {
+      $scope.ui_config = configObj;
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in infinite_scroll_list.js is', $scope.surveyOpt);
+      $scope.showPlaces = configObj.survey_info?.buttons?.['place-notes'];
+      $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
+      $scope.enbs = $injector.get("EnketoNotesButtonService");
+      const tripSurveyName = configObj.survey_info?.buttons?.['trip-notes']?.surveyName;
+      const placeSurveyName = configObj.survey_info?.buttons?.['place-notes']?.surveyName;
+      $scope.enbs.initConfig(tripSurveyName, placeSurveyName);
+    });
+    $scope.checkPermissionsStatus();
+    $scope.initFilters();
+    $scope.setupInfScroll();
+  };
+
+  $scope.initFilters = function() {
+    $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+    $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+    $scope.filterInputs.forEach((f) => {
+      f.state = false;
+    });
+    $scope.filterInputs[0].state = true;
+    $scope.selFilter = $scope.filterInputs[0].key;
+    ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
+    $scope.allTrips = false;
+  }
+
+  $scope.checkPermissionsStatus = () => {
+    $scope.$broadcast("recomputeAppStatus", (status) => {
+      if (!status) {
+        $ionicPopup.show({
+          template: "Incorrect app settings. Click to view and fix app status.",
+          scope: $scope,
+          buttons: [{
+            text: "Fix",
+            type: 'button-assertive',
+            onTap: function(e) {
+              const redirectTo = "root.main.control";
+              const redirectParams = {launchAppStatusModal: 1};
+              $state.go(redirectTo, redirectParams, { reload : true });
+              return false;
+            }
+          }]
+        });
+      }
+    });
+  }
 
   $scope.labelPopulateFactory = $injector.get($scope.surveyOpt.service);
 
