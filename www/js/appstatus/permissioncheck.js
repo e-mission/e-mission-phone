@@ -172,13 +172,15 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         if (version < 9) {
             androidSettingsDescTag = "intro.appstatus.locsettings.description.android-lt-9";
         }
-        var androidPermDescTag = "intro.appstatus.locperms.description.android-gte-11";
+        var androidPermDescTag = "intro.appstatus.locperms.description.android-gte-12";
         if($scope.osver < 6) {
             androidPermDescTag = 'intro.appstatus.locperms.description.android-lt-6';
         } else if ($scope.osver < 10) {
             androidPermDescTag = "intro.appstatus.locperms.description.android-6-9";
         } else if ($scope.osver < 11) {
             androidPermDescTag= "intro.appstatus.locperms.description.android-10";
+        } else if ($scope.osver < 12) {
+            androidPermDescTag= "intro.appstatus.locperms.description.android-11";
         }
         console.log("description tags are "+androidSettingsDescTag+" "+androidPermDescTag);
         // location settings
@@ -328,13 +330,33 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             return checkOrFix(unusedAppsUnrestrictedCheck, $window.cordova.plugins.BEMDataCollection.isUnusedAppUnrestricted,
                 $scope.recomputeBackgroundRestrictionStatus, showError=false);
         };
+        let fixBatteryOpt = function() {
+            console.log("fix and refresh battery optimization permissions");
+            return checkOrFix(ignoreBatteryOptCheck, $window.cordova.plugins.BEMDataCollection.fixIgnoreBatteryOptimizations,
+                $scope.recomputeBackgroundRestrictionStatus, showError=true);
+        };
+        let checkBatteryOpt = function() {
+            console.log("fix and refresh battery optimization permissions");
+            return checkOrFix(ignoreBatteryOptCheck, $window.cordova.plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
+                $scope.recomputeBackgroundRestrictionStatus, showError=false);
+        };
+        var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-12";
+        if ($scope.osver < 12) {
+            androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
+        }
         let unusedAppsUnrestrictedCheck = {
             name: $translate.instant("intro.appstatus.unusedapprestrict.name"),
-            desc: $translate.instant("intro.appstatus.unusedapprestrict.description.android-disable"),
+            desc: $translate.instant(androidUnusedDescTag),
             fix: fixPerms,
             refresh: checkPerms
         }
-        $scope.backgroundRestrictionChecks = [unusedAppsUnrestrictedCheck];
+        let ignoreBatteryOptCheck = {
+            name: $translate.instant("intro.appstatus.ignorebatteryopt.name"),
+            desc: $translate.instant("intro.appstatus.ignorebatteryopt.description.android-disable"),
+            fix: fixBatteryOpt,
+            refresh: checkBatteryOpt
+        }
+        $scope.backgroundRestrictionChecks = [unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck];
         refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
     }
 

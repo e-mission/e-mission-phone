@@ -45,6 +45,8 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             Logger.displayError("Invalid source", "Configurations from "+source+" not supported, please contact the app developer");
             return;
         };
+        // The URL prefix from which config files will be downloaded and read.
+        // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
         const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
@@ -52,12 +54,11 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             const parsedConfig = result.data;
             const connectionURL = parsedConfig.server? parsedConfig.server.connectUrl : "dev defaults";
             _fillStudyName(parsedConfig);
+            _backwardsCompatSurveyFill(parsedConfig);
             Logger.log("Successfully downloaded config with version "+parsedConfig.version
                 +" for "+parsedConfig.intro.translated_text.en.deployment_name
                 +" and data collection URL "+connectionURL);
             return parsedConfig;
-        }).catch((fetchErr) => {
-            Logger.displayError("Unable to download study config", fetchErr);
         });
     }
 
@@ -71,10 +72,42 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 } else {
                     Logger.log("Found previously stored ui config, returning it");
                     _fillStudyName(savedConfig);
+                    _backwardsCompatSurveyFill(savedConfig);
                     return savedConfig;
                 }
             })
             .catch((err) => Logger.displayError("Unable to read saved config", err));
+    }
+
+    /**
+     * loadNewConfig download and load a new config from the server if it is a differ
+     * @param {[]} urlComponents specify the label and source of the config to load
+     * @param {} thenGoToIntro whether to go to the intro screen after loading the config
+     * @param {} [existingVersion=null] if the new config's version is the same, we won't update
+     * @returns {boolean} boolean representing whether the config was updated or not
+     */
+    var loadNewConfig = function (urlComponents, thenGoToIntro, existingVersion=null) {
+        return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
+            if (downloadedConfig.version == existingVersion) {
+                Logger.log("UI_CONFIG: Not updating config because version is the same");
+                return Promise.resolve(false);
+            }
+            // we can use angular.extend since urlComponents is not nested
+            // need to change this to angular.merge if that changes
+            const toSaveConfig = angular.extend(downloadedConfig, {joined: urlComponents});
+            const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
+                CONFIG_PHONE_UI, toSaveConfig);
+            const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
+            // loaded new config, so it is both ready and changed
+            return storeConfigPromise.then(logSuccess)
+                .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
+                .then(dc.saveAndNotifyConfigReady(downloadedConfig))
+                .then(() => {
+                    if (thenGoToIntro) $state.go("root.intro")
+                })
+                .then(() => true)
+                .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
+        });
     }
 
     dc.saveAndNotifyConfigReady = function(newConfig) {
@@ -109,19 +142,26 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 config.name = "dev";
             }
         }
-        /*
-         * Second hack to support adding in the study as a prefix to any existing token.
-         */
-        // now that we have the study name, let's make sure that the token starts with it
-        // using the plugin directly so that we can avoid adding more dependencies
-        window.cordova.plugins.BEMJWTAuth.getUserEmail().then(function(response) {
-            console.log("Running hack code to add the study as a prefix to an existing token if needed");
-            if (!response.startsWith("nrelop_")) {
-                const newToken = "nrelop_"+config.name+"_"+response;
-                Logger.log("Found old style token, after prepending nrelop_"+config.name+" new token is "+newToken);
-                window.cordova.plugins.BEMJWTAuth.setPromptedAuthToken(newToken);
+    }
+
+    const _backwardsCompatSurveyFill = function(config) {
+        if (!config.survey_info) {
+            config.survey_info = {
+              "surveys": {
+                "UserProfileSurvey": {
+                  "formPath": "json/demo-survey-v2.json",
+                  "version": 1,
+                  "compatibleWith": 1,
+                  "dataKey": "manual/demographic_survey",
+                  "labelTemplate": {
+                    "en": "Answered",
+                    "es": "Contestada"
+                  }
+                }
+              },
+              "trip-labels": "MULTILABEL"
             }
-        });
+        }
     }
 
     dc.initByUser = function(urlComponents) {
@@ -136,29 +176,33 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady);
                 return; // labels are the same
             }
-            // if the labels are different
-            return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
-                // we can use angular.extend since urlComponents is not nested
-                // need to change this to angular.merge if that changes
-                const toSaveConfig = angular.extend(downloadedConfig, {joined: urlComponents});
-                const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
-                    CONFIG_PHONE_UI, toSaveConfig);
-                const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
-                // loaded new config, so it is both ready and changed
-                return storeConfigPromise.then(logSuccess)
-                    .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
-                    .then(dc.saveAndNotifyConfigReady(downloadedConfig))
-                    .then($state.go("root.intro"))
-                    .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
-            });
+            // if the labels are different, we need to download the new config
+            return loadNewConfig(urlComponents, true)
+                .catch((fetchErr) => {
+                    Logger.displayError("Unable to download study config", fetchErr);
+                });
         });
     };
-    dc.initAtLaunch = function() {
+    dc.initAtLaunch = function () {
         loadSavedConfig().then((existingConfig) => {
-            if(existingConfig) {
-                // the user has already configured the app, let's cache the
-                // config and notify others that we are done
-                Logger.log("UI_CONFIG: finished loading config on app start");
+            if (!existingConfig) {
+                return Logger.log("UI_CONFIG: No existing config, skipping");
+            }
+            // if 'autoRefresh' is set, we will check for updates
+            if (existingConfig.autoRefresh) {
+                loadNewConfig(existingConfig.joined, false, existingConfig.version)
+                    .then((wasUpdated) => {
+                        if (!wasUpdated) {
+                            // config was not updated so we will proceed with existing config
+                            $rootScope.$evalAsync(() => dc.saveAndNotifyConfigReady(existingConfig));
+                        }
+                    }).catch((fetchErr) => {
+                        // if we can't check for an updated config, we will proceed with the existing config
+                        Logger.log("UI_CONFIG: Unable to check for update, skipping", fetchErr);
+                        $rootScope.$evalAsync(() => dc.saveAndNotifyConfigReady(existingConfig));
+                    });
+            } else {
+                Logger.log("UI_CONFIG: autoRefresh is false, not checking for updates. Using existing config")
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
         }).catch((err) => {

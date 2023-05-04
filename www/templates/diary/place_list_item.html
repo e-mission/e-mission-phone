@@ -1,0 +1,25 @@
+<div ng-if="configPlaceNotes">
+    <!-- Place Item Template  -->
+    <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
+        <div class="diary-card short" style="padding-block: 5px;">
+            <div class="start-time-tag">{{place.display_start_time}}</div>
+            <div style="width: 100%; margin: auto; padding-block: 5px">
+                <div class="row" style="font-size: 12px; place-content: center; padding: 8px">
+                    <b><u>{{place.display_date}}</u></b>
+                </div>
+                <div class="card-title">
+                    <!-- Place (Destination of Prev. Trip) -->
+                    <i class="icon ion-location"></i>
+                    <b>{{place.display_name}}</b>
+                </div>
+                <div style="margin: 10px auto; max-width: 150px;">
+                    <enketo-add-note-button notes-config="configPlaceNotes" timeline-entry="place"
+                        dataKey="manual/place_addition_input" style="margin: auto">
+                    </enketo-add-note-button>
+                </div>
+                <enketo-notes-list ng-if="place.additionsList.length" timeline-entry="place" addition-entries="place.additionsList"></enketo-notes-list>
+            </div>
+            <div class="stop-time-tag">{{place.display_end_time}}</div>
+        </div>
+    </ion-item>
+</div>

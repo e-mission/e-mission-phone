@@ -1,5 +1,7 @@
 <ion-content class="enketo-plugin overflow-scroll" translate-namespace="survey">
 
+  <div ng-if="loading" style="font-weight: bold; font-size: 2em;" translate>{{'.loading-prior-survey'}}</div>
+  <div ng-if="!loading">
   <div ng-if="existingSurvey">
     <!-- If there is an existing survey, we want to ask the user whether they want to use it-->
     <div ng-if="editSurveyAnswer === undefined" class="col" style="margin-top: 25%;" translate-namespace="survey">
@@ -29,5 +31,6 @@
   <div ng-if="!existingSurvey">
     <!-- We want to show the survey if we don't have a prior response -->
     <ng-include src="'templates/survey/enketo/form-base.html'"></ng-include>
+  </div>
   </div>
 </ion-content>

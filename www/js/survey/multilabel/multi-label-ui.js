@@ -3,10 +3,9 @@
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
- *      'recomputeDisplayTrips` which modifies the trip *list* as necessary. An
- *      example with the label view is removing the labeled trips from the
- *      "toLabel" filter. Function can be a no-op (for example, in
- *      the diary view)
+ *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
+ *      as necessary. An example with the label view is removing the labeled trips from
+ *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
  * - The view is associated with a state which we can record in the client stats.
  * - The directive implements a `verifyTrip` function that can be invoked by
  *      other components.
@@ -349,7 +348,7 @@ angular.module('emission.survey.multilabel.buttons',
           inputList);
       var userInputLabel = unprocessedLabelEntry? unprocessedLabelEntry.data.label : undefined;
       if (!angular.isDefined(userInputLabel)) {
-          userInputLabel = trip.user_input[mls.inputType2retKey(inputType)];
+          userInputLabel = trip.user_input?.[mls.inputType2retKey(inputType)];
       }
       mls.populateInput(trip.userInput, inputType, userInputLabel);
       // Logger.log("Set "+ inputType + " " + JSON.stringify(userInputEntry) + " for trip starting at " + JSON.stringify(trip.start_fmt_time));
@@ -540,7 +539,7 @@ angular.module('emission.survey.multilabel.buttons',
       trip.waitingForMod = false;
       trip.timeoutPromise = undefined;
       console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTrips();
+      viewScope.recomputeDisplayTimelineEntries();
     }, mls.recomputedelay);
     Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
     $timeout.cancel(currTimeoutPromise);

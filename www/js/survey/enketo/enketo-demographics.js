@@ -1,17 +1,3 @@
-/*
- * Directive to display a survey for each trip
- * Assumptions:
- * - The directive is embedded within an ion-view
- * - The controller for the ion-view has a function called
- *      'recomputeDisplayTrips` which modifies the trip *list* as necessary. An
- *      example with the label view is removing the labeled trips from the
- *      "toLabel" filter. Function can be a no-op (for example, in
- *      the diary view)
- * - The view is associated with a state which we can record in the client stats.
- * - The directive implements a `verifyTrip` function that can be invoked by
- *      other components.
- */
-
 angular.module('emission.survey.enketo.demographics',
     ['emission.stats.clientstats',
         'emission.services',
@@ -44,7 +30,7 @@ angular.module('emission.survey.enketo.demographics',
   $scope.openPopover = function ($event) {
     return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
         return EnketoSurveyLaunch
-          .launch($scope, 'UserProfileSurvey', { prev_demographic_survey: lastSurvey,
+          .launch($scope, 'UserProfileSurvey', { prefilledSurveyResponse: lastSurvey?.data?.xmlResponse,
                 showBackButton: true, showFormFooterJumpNav: true  })
           .then(result => {
             console.log("demographic survey result ", result);
@@ -59,7 +45,7 @@ angular.module('emission.survey.enketo.demographics',
   $scope.init();
 })
 .controller("EnketoDemographicsInlineCtrl", function($scope, $window, $element, $attrs,
-    $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats,
+    $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats, $translate,
     EnketoDemographicsService, $ionicPlatform, $timeout) {
   console.log("Invoked enketo inline directive controller for demographics ");
 
@@ -67,7 +53,7 @@ angular.module('emission.survey.enketo.demographics',
     return EnketoSurvey.validateAndSave()
     .then(result => {
       if (!result) {
-        $ionicPopup.alert({template: 'Form contains errors. Please see fields marked in red.'});
+        $ionicPopup.alert({template: $translate.instant('survey.enketo-form-errors')});
       } else {
         $scope.ngDone();
       }
@@ -90,7 +76,7 @@ angular.module('emission.survey.enketo.demographics',
              * https://github.com/e-mission/e-mission-docs/issues/727#issuecomment-1126720935
              */
             return EnketoSurveyLaunch
-              .initSurvey('UserProfileSurvey', { prev_demographic_survey: $scope.existingSurvey,
+              .initSurvey('UserProfileSurvey', { prefilledSurveyResponse: $scope.existingSurvey?.data?.xmlResponse,
                 showBackButton: true, showFormFooterJumpNav: true  })
               .then(result => {
                 console.log("demographic survey result ", result);
@@ -100,8 +86,9 @@ angular.module('emission.survey.enketo.demographics',
   }
 
   $scope.initForm = function() {
+    $scope.loading = true;
     return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
-        $scope.$apply(() => $scope.existingSurvey = lastSurvey);
+        $scope.$apply(() => { $scope.loading = false; $scope.existingSurvey = lastSurvey});
         console.log("ENKETO: existing survey ", $scope.existingSurvey);
         if (!$scope.existingSurvey) {
             /*
@@ -113,12 +100,14 @@ angular.module('emission.survey.enketo.demographics',
              * setEditSurveyAnswer instead
              */
             return EnketoSurveyLaunch
-              .initSurvey('UserProfileSurvey', { prev_demographic_survey: $scope.existingSurvey,
+              .initSurvey('UserProfileSurvey', { prefilledSurveyResponse: $scope.existingSurvey?.data?.xmlResponse,
                 showBackButton: true, showFormFooterJumpNav: true  })
               .then(result => {
                 console.log("demographic survey result ", result);
               }).catch(e => console.trace(e));
         }
+    }).catch(() => {
+        $scope.$apply(() => {$scope.loading = false;});
     });
   };
 
@@ -131,7 +120,7 @@ angular.module('emission.survey.enketo.demographics',
 
   $ionicPlatform.ready(() => $scope.init());
 })
-.factory("EnketoDemographicsService", function(UnifiedDataLoader, $window) {
+.factory("EnketoDemographicsService", function(UnifiedDataLoader, $window, $ionicLoading, $translate) {
   var eds = {};
   console.log("Creating EnketoDemographicsService");
   eds.key = "manual/demographic_survey";
@@ -152,7 +141,7 @@ angular.module('emission.survey.enketo.demographics',
   eds.loadPriorDemographicSurvey = function() {
     const tq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
     return UnifiedDataLoader.getUnifiedMessagesForInterval(eds.key, tq)
-        .then(answers => _getMostRecent(answers));
+        .then(answers => _getMostRecent(answers))
   }
 
   return eds;

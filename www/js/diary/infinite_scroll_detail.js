@@ -11,12 +11,19 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
                                         leafletData, leafletMapEvents, nzTour, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
-                                        CommHelper, PostTripManualMarker, $translate) {
+                                        DynamicConfig, CommHelper, PostTripManualMarker, $translate) {
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
-  $scope.surveyOpt = SurveyOptions.MULTILABEL;
-  $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
-  $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+
+  $ionicPlatform.ready().then(function () {
+    DynamicConfig.configReady().then((configObj) => {
+      const surveyOptKey = configObj.survey_info['trip-labels'];
+      $scope.surveyOpt = SurveyOptions[surveyOptKey];
+      console.log('surveyOpt in infinite_scroll_details.js is', $scope.surveyOpt);
+      $scope.tripFilterFactory = $injector.get($scope.surveyOpt.filter);
+      $scope.filterInputs = $scope.tripFilterFactory.configuredFilters;
+    });
+  });
 
   $scope.mapCtrl = {};
   angular.extend($scope.mapCtrl, {
@@ -64,24 +71,21 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
       $scope.$broadcast('invalidateSize');
   };
 
-  $scope.trip = Timeline.getConfirmedTrip($stateParams.tripId);
-  Timeline.confirmedTrip2Geojson($scope.trip).then((tripgj) => {
-    $scope.$apply(() => {
-        $scope.tripgj = $scope.trip;
-        $scope.tripgj.data = tripgj;
-        $scope.tripgj.common = {};
-        $scope.tripgj.common.earlierOrLater = '';
-        $scope.tripgj.pointToLayer = DiaryHelper.pointFormat;
-        
-        if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {
-          console.log("Detail trip = "+$scope.trip+" tripgj = "+$scope.tripgj+" not defined, going back to the list view")
-          $state.go("root.main.inf_scroll");
-        }
-    });
-  });
+  $scope.trip = Timeline.getCompositeTrip($stateParams.tripId);
+  const tripgj = Timeline.compositeTrip2Geojson($scope.trip);
+  $scope.tripgj = $scope.trip;
+  $scope.tripgj.data = tripgj;
+  $scope.tripgj.common = {};
+  $scope.tripgj.common.earlierOrLater = '';
+  $scope.tripgj.pointToLayer = DiaryHelper.pointFormat;
 
-  $scope.recomputeDisplayTrips = function() {
-    console.log("Called inf scroll details.recomputeDisplayTrips");
+  if (!angular.isDefined($scope.trip) || !angular.isDefined($scope.tripgj)) {
+    console.log("Detail trip = " + $scope.trip + " tripgj = " + $scope.tripgj + " not defined, going back to the list view")
+    $state.go("root.main.inf_scroll");
+  }
+
+  $scope.recomputeDisplayTimelineEntries = function() {
+    console.log("Called inf scroll details.recomputeDisplayTimelineEntries");
     const filterMap = $scope.filterInputs.map((f) => f.filter($scope.trip));
     const filterValue = filterMap.reduce((a, b) => a || b, false);
     console.log("filterMap = "+filterMap+" value = "+filterValue);

@@ -6,9 +6,11 @@ on:
   push:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
+      - '.github/workflows/android-automated-sdk-install.yml'
   pull_request:
     paths:
       - 'setup/prereq_android_sdk_install.sh'
+      - '.github/workflows/android-automated-sdk-install.yml'
   schedule:
     # * is a special character in YAML so you have to quote this string
     - cron:  '5 4 * * 0'
@@ -38,6 +40,7 @@ jobs:
 
     - name: Install to a new SDK root
       run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         printf "Y\nY\nY\nY\nY\n" | bash setup/prereq_android_sdk_install.sh
@@ -45,6 +48,7 @@ jobs:
     - name: Verify that all packages are as expected
       shell: bash -l {0}
       run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
         echo "Comparing $ANDROID_SDK_ROOT and $NEW_ANDROID_SDK_ROOT"
         $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/existing_packages
         $NEW_ANDROID_SDK_ROOT/cmdline-tools/latest/bin/sdkmanager --list_installed > /tmp/new_packages
@@ -54,6 +58,7 @@ jobs:
     - name: Verify that directory structure is consistent
       shell: bash -l -x {0}
       run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         ls -al $ANDROID_SDK_ROOT
@@ -71,7 +76,17 @@ jobs:
         export JAVA_HOME=$JAVA_HOME_11_X64
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
+        echo "About to run the emulator at $ANDROID_SDK_ROOT/emulator/emulator"
         $ANDROID_SDK_ROOT/emulator/emulator -list-avds
+        echo "About to run the avdmanager at $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager"
+        $ANDROID_SDK_ROOT/cmdline-tools/latest/bin/avdmanager list avds
+
+    - name: Setup the cordova environment
+      shell: bash -l {0}
+      run: |
+        export JAVA_HOME=$JAVA_HOME_11_X64
+        export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
+        bash setup/setup_android_native.sh
 
     - name: Ensure that the path is correct and the project can be activated
       shell: bash -l {0}
@@ -80,3 +95,5 @@ jobs:
         export ANDROID_SDK_ROOT=$NEW_ANDROID_SDK_ROOT
         echo "New SDK root $ANDROID_SDK_ROOT"
         source setup/activate_native.sh
+        echo "About to run the avdmanager from the path" `which avdmanager`
+        avdmanager list avd

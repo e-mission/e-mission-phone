@@ -1,7 +1,7 @@
 <ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
     <div class="control-list-item">
-      <div class="control-list-text">{{settings.auth.email}}</div>
+      <div class="control-list-text">{{settings.auth.opcode}}</div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <enketo-demographics-button></enketo-demographics-button>
@@ -17,15 +17,6 @@
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
-        <div class="track">
-          <div class="handle"></div>
-        </div>
-      </label>
-    </div>
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.enable-opgeofence'}}</div>
-      <label ng-click="toggleExperimentalGeofence()" class="toggle control-list-toggle toggle-color">
-        <input type="checkbox" ng-checked="settings.collect.experimentalGeofenceOn">
         <div class="track">
           <div class="handle"></div>
         </div>
@@ -64,10 +55,6 @@
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.share'}}</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
-    </div>
-    <div class="control-list-item">
-      <div class="control-list-text" translate>{{'.check-ui-updates'}}</div>
-      <div ng-click="checkUpdates()" class="control-icon-button"><i class="ion-android-download"></i></div>
     </div>
 
     <div class="control-list-item">
@@ -136,16 +123,6 @@
         <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text" translate> {{'.test-notification'}}</div>
-        <div ng-click="testTripEndNotify()" class="control-icon-button"><i class="ion-android-note"></i></div>
-      </div>
-      <div class="control-list-item">
-        <div class="control-list-text" translate>{{'.set-ui-channel'}}</div>
-        <input type="text" name="userName"
-          ng-model="settings.channel"
-          ng-model-options="{ getterSetter: true }" />
-      </div>
-      <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
         <div ng-click="forceState()" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
@@ -187,17 +164,6 @@
               <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
         </ion-item>
       </ion-list>
-
-      <div class="control-list-item">
-        <div class="control-list-text" translate>{{'.transition-notify'}}</div>
-        <div ng-click="editTNotifyConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
-      </div>
-      <ion-list>
-        <ion-item ng-repeat="entry in settings.tnotify.show_config">
-            <div class="row" ng-include="'templates/control/transition-notify-display-detail.html'"></div>
-        </ion-item>
-      </ion-list>
-    </div>
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.app-version'}}</div>
       <div class="control-version-number">{{settings.clientAppVer}}</div>
