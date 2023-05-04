@@ -41,6 +41,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     let t = beginTs || endTs;    // whichever is defined. may be timestamp or dt object
     if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
     if (!t._isAMomentObject) t = moment(t);
+   // We use ddd LL to get Wed, May 3, 2023 or equivalent
+   // LL only has the date, month and year
+   // LLLL has the day of the week, but also the time
     return t.format('ddd LL');
   }
 
