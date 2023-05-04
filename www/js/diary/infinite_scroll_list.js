@@ -88,9 +88,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             text: $translate.instant('control.fix'),
             type: 'button-assertive',
             onTap: function(e) {
-              const redirectTo = "root.main.control";
-              const redirectParams = {launchAppStatusModal: 1};
-              $state.go(redirectTo, redirectParams, { reload : true });
+              $state.go('root.main.control', {launchAppStatusModal: 1});
               return false;
             }
           }]
