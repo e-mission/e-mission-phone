@@ -174,14 +174,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return background;
   }
 
-  dh.getLocalTimeString = function (dt, includeDay=false) {
+  dh.getLocalTimeString = function (dt) {
     if (!dt) return;
     //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
     let mdt = angular.copy(dt)
     mdt.month = mdt.month - 1
-    if (includeDay) {
-      return `${moment(mdt).format("LT")} (${dh.getFormattedDateAbbr(mdt)})`;
-    }
     return moment(mdt).format("LT");
   };
 
