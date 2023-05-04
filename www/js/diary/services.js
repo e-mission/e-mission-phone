@@ -49,7 +49,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   /* returns a formatted range if both params are defined, 
     one formatted date if only one is defined */
-  dh.getFormattedDateAbbr = function(beginTs, endTs=null, dayOfWeek=true) {
+  dh.getFormattedDateAbbr = function(beginTs, endTs=null) {
     if (!beginTs && !endTs) return;
     if (dh.isMultiDay(beginTs, endTs)) {
       return `${dh.getFormattedDateAbbr(beginTs)} - ${dh.getFormattedDateAbbr(endTs)}`;
