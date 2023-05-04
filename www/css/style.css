@@ -945,7 +945,7 @@ button.button.back-button.buttons.button-clear.header-item {
   white-space: pre-line;
 }
 .start-time-tag > *, .stop-time-tag > * {
-  padding: .2em 0;
+  padding: .25em 0;
 }
 .start-time-tag > *:empty, .stop-time-tag > *:empty {
   display: none;

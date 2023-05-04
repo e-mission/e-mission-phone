@@ -202,6 +202,7 @@ a.item-content {
   background: white;
   width: 100%;
   height: min-content;
+  line-height: 1.2;
   margin: 0;
   border: 1px solid rgb(0 0 0 / .2);
   box-sizing: border-box;
@@ -251,7 +252,6 @@ a.item-content {
 .card-date {
   display: block;
   white-space: break-spaces;
-  line-height: 1.25;
   text-decoration: underline;
 }
 
@@ -509,7 +509,7 @@ enketo-notes-list, .notes-list {
 .notes-list-grid {
   display: grid;
   grid-template-columns: auto auto min-content;
-  grid-auto-rows: 40px;
+  grid-auto-rows: 30px;
   align-items: center;
   gap: 0 8px;
   font-size: 12px;
@@ -534,5 +534,4 @@ enketo-notes-list, .notes-list {
   font-size: inherit;
   color: inherit;
   margin: 0;
-  line-height: 1.2;
 }

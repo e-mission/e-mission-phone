@@ -78,19 +78,19 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.getCardHeight = function(entry) {
     let height = 15; // 15 pixels of padding to account for iOS/Android rendering differences
     if (entry.key == 'analysis/confirmed_place') {
-      height += 174;
+      height += 164;
     } else if (entry.key == 'analysis/confirmed_untracked') {
-      height += 174;
+      height += 155;
     } else if (entry.key == 'analysis/confirmed_trip') {
       // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
       // we may have 1, 2, or 3 buttons at any given time
       // 242 is the height without any buttons, and each button adds 54 pixels
       const numButtons = entry.INPUTS?.length || 1;
-      height += 242 + (54 * numButtons)
+      height += 236 + (54 * numButtons)
     }
 
     if (entry.additionsList) {
-      height += 40 * entry.additionsList.length; // for each trip/place addition object, we need to increase the card height
+      height += 5 + 30 * entry.additionsList.length; // for each trip/place addition object, we need to increase the card height
     }
     return height;
   }
