@@ -11,7 +11,7 @@ angular.module('emission.plugin.logger', [])
         display_msg = JSON.stringify(error);
       }
       // Check for OPcode DNE errors and prepend the title with "Invalid OPcode"
-      if (error.includes("403")) {
+      if (error.includes?.("403") || error.message?.includes?.("403")) {
         title = "Invalid OPcode: " + title;
       }
       $ionicPopup.alert({"title": title, "template": display_msg});

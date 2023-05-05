@@ -19,7 +19,8 @@ angular.module('emission.survey.enketo.notes-list',
     };
   })
 
-  .controller("NotesListCtrl", function ($scope, $state, $element, $window, EnketoSurveyLaunch, $ionicPopup) {
+  .controller("NotesListCtrl", function ($scope, $state, $element, $window, $ionicPopup,
+                                EnketoSurveyLaunch, DiaryHelper) {
     console.log("Notes List Controller called");
 
     const getScrollElement = function() {
@@ -32,16 +33,25 @@ angular.module('emission.survey.enketo.notes-list',
       return $scope.scrollElement;
     }
 
-    $scope.setDisplayTime = function(entry) {
+    $scope.setDisplayDt = function(entry) {
       const timezone = $scope.timelineEntry.start_local_dt?.timezone
                       || $scope.timelineEntry.enter_local_dt?.timezone
                       || $scope.timelineEntry.end_local_dt?.timezone
                       || $scope.timelineEntry.exit_local_dt?.timezone;
       const beginTs = entry.data.start_ts || entry.data.enter_ts;
       const stopTs = entry.data.end_ts || entry.data.exit_ts;
-      const begin = moment.parseZone(beginTs*1000).tz(timezone).format("h:mm A");
-      const stop = moment.parseZone(stopTs*1000).tz(timezone).format("h:mm A");
-      return entry.displayTime = begin + " - " + stop;
+      let d;
+      if (DiaryHelper.isMultiDay(beginTs, stopTs)) {
+        const beginTsZoned = moment.parseZone(beginTs*1000).tz(timezone);
+        const stopTsZoned = moment.parseZone(stopTs*1000).tz(timezone);
+        d = DiaryHelper.getFormattedDateAbbr(beginTsZoned, stopTsZoned);
+      }
+      const begin = moment.parseZone(beginTs*1000).tz(timezone).format('LT');
+      const stop = moment.parseZone(stopTs*1000).tz(timezone).format('LT');
+      return entry.displayDt = {
+        date: d,
+        time: begin + " - " + stop
+      }
     }
 
     $scope.confirmDeleteEntry = (entry) => {

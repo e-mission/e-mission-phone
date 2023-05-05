@@ -64,7 +64,7 @@ angular.module('emission.survey.enketo.answer', [
         }
 
         const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
-        return label;
+        return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
       })
     }
   };
@@ -143,14 +143,16 @@ angular.module('emission.survey.enketo.answer', [
    */
   function resolveTimestamps(xmlDoc, timelineEntry) {
     // check for Date and Time fields
-    const date = xmlDoc.getElementsByTagName('Date')?.[0]?.innerHTML;
-    const start = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
-    const end = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
+    const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
+    const startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
+    const endDate = xmlDoc.getElementsByTagName('End_date')?.[0]?.innerHTML;
+    const endTime = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
 
-    if (!date || !start || !end) return null; // if any of the fields are missing, return null
+    // if any of the fields are missing, return null
+    if (!startDate || !startTime || !endDate || !endTime) return null; 
 
-    let additionStartTs = moment(date + 'T' + start).unix();
-    let additionEndTs = moment(date + 'T' + end).unix();
+    let additionStartTs = moment(startDate + 'T' + startTime).unix();
+    let additionEndTs = moment(endDate + 'T' + endTime).unix();
 
     if (additionStartTs > additionEndTs) {
       return undefined; // if the start time is after the end time, this is an invalid response

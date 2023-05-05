@@ -72,6 +72,22 @@ angular.module('emission.survey.enketo.launch', [
       if (loadErrors.length > 0) {
         $ionicPopup.alert({template: "loadErrors: " + loadErrors.join(",")});
       }
+
+      // if the survey has any date or time questions, we will show them side-by-side
+      let firstDate;
+      $(".question").each((i, e) => {    
+        const date = $(e).find('input[name*="_date"]')?.get(0);
+        const time = $(e).find('input[name*="_time"]')?.get(0);
+        if (date || time) {
+          $(e).addClass('inline-datetime')
+        }
+        if (!firstDate && date) {
+          firstDate = [date, $(e)];
+        } else if (firstDate && firstDate[0].value == date?.value) {
+          $(e).hide();
+          firstDate[1].hide();
+        }
+      });
     });
   }
 

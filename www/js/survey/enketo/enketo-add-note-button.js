@@ -57,8 +57,10 @@ angular.module('emission.survey.enketo.add-note-button',
     }
 
     return {
-      "Date": momentBegin.format('YYYY-MM-DD'),
+      // Enketo requires these specific date/time formats
+      "Start_date": momentBegin.format('YYYY-MM-DD'),
       "Start_time": momentBegin.format('HH:mm:ss.SSSZ'),
+      "End_date": momentStop.format('YYYY-MM-DD'),
       "End_time": momentStop.format('HH:mm:ss.SSSZ')
     }
   }
