@@ -48,6 +48,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         } else if (platform.toLowerCase() == "ios") {
             $scope.backgroundUnrestrictionsNeeded = false;
             $scope.overallBackgroundRestrictionStatus = true;
+            $scope.backgroundRestrictionChecks = [];
             return true;
         } else {
             alert("Unknown platform, no tracking");
@@ -101,6 +102,7 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     $scope.recomputeBackgroundRestrictionStatus = function() {
+        if (!$scope.backgroundRestrictionChecks) return;
         $scope.backgroundRestrictionChecks.forEach((brc) => {
             brc.statusIcon = iconMap(brc.statusState);
             brc.statusClass = classMap(brc.statusState)
@@ -139,9 +141,17 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     let refreshChecks = function(checksList, recomputeFn) {
-        let checkPromises = checksList.map((lc) => lc.refresh());
+        // without this, even if the checksList is []
+        // the reduce in the recomputeFn fails because it is called on a zero
+        // length array without a default value
+        // we should be able to also specify a default value of True
+        // but I don't want to mess with that at this last minute
+        if (!checksList || checksList.length == 0) {
+            return Promise.resolve(true);
+        }
+        let checkPromises = checksList?.map((lc) => lc.refresh());
         console.log(checkPromises);
-        Promise.all(checkPromises)
+        return Promise.all(checkPromises)
             .then((result) => recomputeFn())
             .catch((error) => recomputeFn())
     }
@@ -399,11 +409,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
     });
 
-    $scope.$on("recomputeAppStatus", function() {
+    $scope.$on("recomputeAppStatus", function(e, callback) {
         console.log("PERMISSION CHECK: recomputing state");
-        refreshChecks($scope.locChecks, $scope.recomputeLocStatus);
-        refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
-        refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus);
-        refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus);
+        Promise.all([
+            refreshChecks($scope.locChecks, $scope.recomputeLocStatus),
+            refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus),
+            refreshChecks($scope.notificationChecks, $scope.recomputeNotificationStatus),
+            refreshChecks($scope.backgroundRestrictionChecks, $scope.recomputeBackgroundRestrictionStatus)
+        ]).then( () => {
+            callback($scope.overallstatus)
+        }
+        );
     });
 });

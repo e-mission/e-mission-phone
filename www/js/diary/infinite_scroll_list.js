@@ -10,6 +10,7 @@
 
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
+                                      'emission.appstatus.permissioncheck',
                                       'emission.main.common.services',
                                       'emission.services',
                                       'emission.config.imperial',
@@ -59,6 +60,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const placeSurveyName = configObj.survey_info?.buttons?.['place-notes']?.surveyName;
       $scope.enbs.initConfig(tripSurveyName, placeSurveyName);
     });
+    $scope.checkPermissionsStatus();
     $scope.initFilters();
     $scope.setupInfScroll();
   };
@@ -73,6 +75,26 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.selFilter = $scope.filterInputs[0].key;
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
     $scope.allTrips = false;
+  }
+
+  $scope.checkPermissionsStatus = () => {
+    $scope.$broadcast("recomputeAppStatus", (status) => {
+      if (!status) {
+        $ionicPopup.show({
+          title: $translate.instant('control.incorrect-app-status'),
+          template: $translate.instant('control.fix-app-status'),
+          scope: $scope,
+          buttons: [{
+            text: $translate.instant('control.fix'),
+            type: 'button-assertive',
+            onTap: function(e) {
+              $state.go('root.main.control', {launchAppStatusModal: 1});
+              return false;
+            }
+          }]
+        });
+      }
+    });
   }
 
   $scope.getCardHeight = function(entry) {
@@ -662,6 +684,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       if ($state.$current == "root.main.diary.list") {
         $scope.startTime = moment().utc()
       }
+      $scope.checkPermissionsStatus();
     })
 
     $ionicPlatform.ready().then(function() {
