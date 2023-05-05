@@ -208,9 +208,9 @@ angular.module('emission.survey.multilabel.buttons',
     Logger.log("in storeInput, after setting input.value = " + input.value + ", draftInput = " + JSON.stringify($scope.draftInput));
     var tripToUpdate = $scope.editingTrip;
     var needsResize = false;
-    if (ConfirmHelper.isProgram) { // Only resize trip item if it is a program, and if changing to/from e-bike
-      if (input.value == "e-bike" || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == "e-bike") {
-        console.log("switching to/from e-bike, resizing scroll element")
+    if (ConfirmHelper.isProgram) { // Only resize trip item if it is a program, and if changing to/from the mode studied
+      if (input.value == ConfirmHelper.mode_studied || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == ConfirmHelper.mode_studied) {
+        console.log("switching to/from "+ConfirmHelper.mode_studied+", resizing scroll element")
         needsResize = true;
       }
     }
@@ -229,7 +229,7 @@ angular.module('emission.survey.multilabel.buttons',
         let viewScope = findViewScope();
         MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
         // KS: this will currently always trigger for a program
-        // we might want to trigger it only if it changed to/from an e-bike
+        // we might want to trigger it only if it changed to/from the mode studied
         // you may also need to experiment with moving this up or down depending on timing
         const scrollElement = getScrollElement();
         scrollElement && needsResize? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
@@ -457,10 +457,7 @@ angular.module('emission.survey.multilabel.buttons',
 
   /*
    * Uses either 2 or 3 labels depending on the type of install (program vs. study)
-   * and the primary mode. The current hardcoded example if the user selects
-   * "e-bike" for an e-bike study, will expand once we really support dynamic config.
-   * https://github.com/e-mission/e-mission-docs/issues/764
-   *
+   * and the primary mode.
    * This used to be in the controller, where it really should be, but we had
    * to move it to the service because we need to invoke it from the list view
    * as part of filtering "To Label" entries.
@@ -472,12 +469,12 @@ angular.module('emission.survey.multilabel.buttons',
     const inputValue = trip.userInput["MODE"]? trip.userInput["MODE"].value : undefined;
     console.log("Experimenting with expanding inputs for mode "+inputValue);
     if (ConfirmHelper.isProgram) {
-        if (inputValue == "e-bike") {
-            Logger.log("Found e-bike mode in a program, displaying full details");
+        if (inputValue == ConfirmHelper.mode_studied) {
+            Logger.log("Found "+ConfirmHelper.mode_studied+" mode in a program, displaying full details");
             trip.inputDetails = ConfirmHelper.inputDetails;
             trip.INPUTS = ConfirmHelper.INPUTS;
         } else {
-            Logger.log("Found non e-bike mode in a program, displaying base details");
+            Logger.log("Found non "+ConfirmHelper.mode_studied+" mode in a program, displaying base details");
             trip.inputDetails = ConfirmHelper.baseInputDetails;
             trip.INPUTS = ConfirmHelper.BASE_INPUTS;
         }

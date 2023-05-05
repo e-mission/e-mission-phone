@@ -46,8 +46,13 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
     if (entryIsPlace != isPlaceInput)
         return false;
 
-    const entryStart = tlEntry.start_ts || tlEntry.enter_ts;
+    let entryStart = tlEntry.start_ts || tlEntry.enter_ts;
     let entryEnd = tlEntry.end_ts || tlEntry.exit_ts;
+    if (!entryStart && entryEnd) {
+      // if a place has no enter time, this is the first start_place of the first composite trip object
+      // so we will set the start time to the start of the day of the end time for the purpose of comparison
+      entryStart = moment.unix(entryEnd).startOf('day').unix();
+    }
     if (!entryEnd) {
         // if a place has no exit time, the user hasn't left there yet
         // so we will set the end time as high as possible for the purpose of comparison

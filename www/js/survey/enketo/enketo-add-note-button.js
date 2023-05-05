@@ -40,9 +40,9 @@ angular.module('emission.survey.enketo.add-note-button',
 
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   $scope.getPrefillTimes = () => {
-    const begin = $scope.timelineEntry.start_fmt_time || $scope.timelineEntry.enter_fmt_time;
-    const stop = $scope.timelineEntry.end_fmt_time || $scope.timelineEntry.exit_fmt_time;
-
+    
+    const begin = $scope.timelineEntry.start_fmt_time || $scope.timelineEntry.enter_fmt_time || moment.parseZone($scope.timelineEntry.exit_fmt_time).startOf('day').format() || moment.parseZone($scope.timelineEntry.end_fmt_time).startOf('day').format();
+    const stop = $scope.timelineEntry.end_fmt_time || $scope.timelineEntry.exit_fmt_time || moment.parseZone($scope.timelineEntry.enter_fmt_time).endOf('day').format() || moment.parseZone($scope.timelineEntry.start_fmt_time).endOf('day').format();
     const momentBegin = moment.parseZone(begin);
     let momentStop = moment.parseZone(stop);
     // stop could be undefined because the last place will not have an exit time
@@ -57,8 +57,10 @@ angular.module('emission.survey.enketo.add-note-button',
     }
 
     return {
-      "Date": momentBegin.format('YYYY-MM-DD'),
+      // Enketo requires these specific date/time formats
+      "Start_date": momentBegin.format('YYYY-MM-DD'),
       "Start_time": momentBegin.format('HH:mm:ss.SSSZ'),
+      "End_date": momentStop.format('YYYY-MM-DD'),
       "End_time": momentStop.format('HH:mm:ss.SSSZ')
     }
   }

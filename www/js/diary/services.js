@@ -25,10 +25,43 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
   //   .setAttribute('style', 'width: '+oldVal2);
   // }
-  dh.getFormattedDate = function(ts) {
-    var d = moment(ts * 1000).format("DD MMMM YYYY");
-    return d;
+
+  dh.isMultiDay = function(beginTs, endTs) {
+    if (!beginTs || !endTs) return false;
+    return moment(beginTs * 1000).format('YYYYMMDD') != moment(endTs * 1000).format('YYYYMMDD');
   }
+
+  /* returns a formatted range if both params are defined, 
+    one formatted date if only one is defined */
+  dh.getFormattedDate = function(beginTs, endTs=null) {
+    if (!beginTs && !endTs) return;
+    if (dh.isMultiDay(beginTs, endTs)) {
+      return `${dh.getFormattedDate(beginTs)} - ${dh.getFormattedDate(endTs)}`;
+    }
+    let t = beginTs || endTs;    // whichever is defined. may be timestamp or dt object
+    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
+    if (!t._isAMomentObject) t = moment(t);
+   // We use ddd LL to get Wed, May 3, 2023 or equivalent
+   // LL only has the date, month and year
+   // LLLL has the day of the week, but also the time
+    return t.format('ddd LL');
+  }
+
+  /* returns a formatted range if both params are defined, 
+    one formatted date if only one is defined */
+  dh.getFormattedDateAbbr = function(beginTs, endTs=null) {
+    if (!beginTs && !endTs) return;
+    if (dh.isMultiDay(beginTs, endTs)) {
+      return `${dh.getFormattedDateAbbr(beginTs)} - ${dh.getFormattedDateAbbr(endTs)}`;
+    }
+    let t = beginTs || endTs;    // whichever is defined. may be timestamp or object
+    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
+    if (!t._isAMomentObject) t = moment(t);
+    const opts = { weekday: 'short', month: 'short', day: 'numeric' };
+    return Intl.DateTimeFormat($translate.use(), opts)
+      .format(new Date(t.format('LLL')));
+  }
+
   dh.isCommon = function(id) {
     var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
@@ -145,6 +178,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
 
   dh.getLocalTimeString = function (dt) {
+    if (!dt) return;
     //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
     let mdt = angular.copy(dt)
     mdt.month = mdt.month - 1
@@ -152,6 +186,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   };
 
   dh.getFormattedTime = function(ts_in_secs) {
+    if (isNaN(ts_in_secs)) return;
     if (angular.isDefined(ts_in_secs)) {
       return moment(ts_in_secs * 1000).format('LT');
     } else {
@@ -159,11 +194,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   };
   dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
+    if (isNaN(end_ts_in_secs) || isNaN(start_ts_in_secs)) return;
     var startMoment = moment(start_ts_in_secs * 1000);
     var endMoment = moment(end_ts_in_secs * 1000);
     return endMoment.to(startMoment, true);
   };
   dh.getFormattedDuration = function(duration_in_secs) {
+    if (isNaN(duration_in_secs)) return;
     return moment.duration(duration_in_secs * 1000).humanize()
   };
   dh.getTripDetails = function(trip) {
@@ -446,6 +483,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return ctList.phone_data.map((ct) => {
               ct.data._id = ct._id["$oid"];
               ct.data.key = ct.metadata.origin_key;
+              if (ct.data.start_confirmed_place) {
+                const cp_id = ct.data.start_confirmed_place._id;
+                const cpKey = ct.data.start_confirmed_place.metadata.key;
+                ct.data.start_confirmed_place = ct.data.start_confirmed_place.data;
+                ct.data.start_confirmed_place._id = cp_id;
+                ct.data.start_confirmed_place.key = cpKey;
+              }
               if (ct.data.end_confirmed_place) {
                 const cp_id = ct.data.end_confirmed_place._id;
                 const cpKey = ct.data.end_confirmed_place.metadata.key;
