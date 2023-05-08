@@ -61,7 +61,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.enbs.initConfig(tripSurveyName, placeSurveyName);
     });
     $scope.checkPermissionsStatus();
-    $scope.initFilters();
+    // we will show filters if 'additions' are not configured
+    // https://github.com/e-mission/e-mission-docs/issues/894
+    if (configObj.survey_info?.buttons == undefined) {
+      $scope.initFilters();
+    }
     $scope.setupInfScroll();
   };
 
@@ -325,7 +329,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.recomputeDisplayTimelineEntries = function() {
     console.log("recomputing display timeline now");
     let alreadyFiltered = false;
-    $scope.filterInputs.forEach((f) => {
+    $scope.filterInputs?.forEach((f) => {
         if (f.state == true) {
             if (alreadyFiltered) {
                 Logger.displayError("multiple filters not supported!", undefined);
