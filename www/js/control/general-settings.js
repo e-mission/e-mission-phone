@@ -4,6 +4,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
+                                        'emission.splash.localnotify',
                                         'emission.splash.notifscheduler',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
@@ -106,6 +107,20 @@ angular.module('emission.main.control',['emission.services',
                 $scope.qrp.show($event);
             }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
         }
+    }
+
+    $scope.dummyNotification = () => {
+        cordova.plugins.notification.local.addActions('dummy-actions', [
+            { id: 'action', title: 'Yes' },
+            { id: 'cancel', title: 'No' }
+        ]);
+        cordova.plugins.notification.local.schedule({
+            id: new Date().getTime(),
+            title: 'Dummy Title',
+            text: 'Dummy text',
+            actions: 'dummy-actions',
+            trigger: {at: new Date(new Date().getTime() + 5000)},
+        });
     }
 
     $scope.updatePrefReminderTime = () => {

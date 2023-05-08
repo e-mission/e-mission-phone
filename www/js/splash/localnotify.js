@@ -6,9 +6,10 @@
  */
 
 angular.module('emission.splash.localnotify', ['emission.plugin.logger',
-                                              'emission.splash.startprefs'])
+                                              'emission.splash.startprefs',
+                                              'ionic-toast'])
 .factory('LocalNotify', function($window, $ionicPlatform, $ionicPopup,
-    $state, $rootScope, Logger) {
+    $state, $rootScope, ionicToast, Logger) {
   var localNotify = {};
 
   /*
@@ -84,6 +85,7 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
         // alert("notification cancelled, no report");
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
+      ionicToast.show(`Notification: ${notification.title}\n${notification.text}`, 'bottom', false, 250000);
       localNotify.handleNotification(notification, state, data);
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {
