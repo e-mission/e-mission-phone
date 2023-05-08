@@ -4,6 +4,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
+                                        'emission.splash.notifscheduler',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -22,7 +23,7 @@ angular.module('emission.main.control',['emission.services',
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
-               CarbonDatasetHelper,
+               CarbonDatasetHelper, NotificationScheduler,
                i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
                $translate) {
@@ -105,6 +106,13 @@ angular.module('emission.main.control',['emission.services',
                 $scope.qrp.show($event);
             }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
         }
+    }
+
+    $scope.updatePrefReminderTime = () => {
+        const m = moment($scope.settings.notification.prefReminderTimeVal);
+        $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
+        KVStore.set('userPrefReminderTime', m.format('HH:mm')); // but store in HH:mm
+        NotificationScheduler.update();
     }
 
     $scope.fixAppStatus = function() {
@@ -300,6 +308,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
+        $scope.settings.notification = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
@@ -322,6 +331,13 @@ angular.module('emission.main.control',['emission.services',
                     console.log("Setting settings.collect.experimentalGeofenceOn = true");
                     $scope.settings.collect.experimentalGeofenceOn = true;
                 }
+            });
+        });
+        NotificationScheduler.getUserPrefReminderTime().then((reminderTime) => {
+            $scope.$apply(() => {
+                const m = moment(reminderTime, 'HH:mm');
+                $scope.settings.notification.prefReminderTimeVal = m.toDate();
+                $scope.updatePrefReminderTime();
             });
         });
         $scope.getUserData();
