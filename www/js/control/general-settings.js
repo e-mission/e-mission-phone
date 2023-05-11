@@ -17,8 +17,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.config.dynamic',
                                         'monospaced.qrcode'])
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
-               $ionicPlatform,
+.controller('ControlCtrl', function($scope, $window,
+               $ionicScrollDelegate, $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $ionicModal, $stateParams,
                $rootScope, KVStore, ionicDatePicker,
@@ -123,11 +123,11 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    $scope.updatePrefReminderTime = () => {
+    $scope.updatePrefReminderTime = (storeNewVal=true) => {
         const m = moment($scope.settings.notification.prefReminderTimeVal);
         $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
-        KVStore.set('userPrefReminderTime', m.format('HH:mm')); // but store in HH:mm
-        NotificationScheduler.update();
+        if (storeNewVal)
+            NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
     }
 
     $scope.fixAppStatus = function() {
@@ -348,11 +348,12 @@ angular.module('emission.main.control',['emission.services',
                 }
             });
         });
-        NotificationScheduler.getUserPrefReminderTime().then((reminderTime) => {
+        NotificationScheduler.getReminderPrefs().then((prefs) => {
             $scope.$apply(() => {
-                const m = moment(reminderTime, 'HH:mm');
+                const m = moment(prefs.reminder_time_of_day, 'HH:mm');
                 $scope.settings.notification.prefReminderTimeVal = m.toDate();
-                $scope.updatePrefReminderTime();
+                $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
+                $scope.updatePrefReminderTime(false); // update the displayed time
             });
         });
         $scope.getUserData();
