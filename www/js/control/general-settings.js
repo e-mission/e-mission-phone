@@ -24,7 +24,7 @@ angular.module('emission.main.control',['emission.services',
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
-               CarbonDatasetHelper, NotificationScheduler,
+               CarbonDatasetHelper, NotificationScheduler, LocalNotify,
                i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
                $translate) {
@@ -305,6 +305,9 @@ angular.module('emission.main.control',['emission.services',
                 $scope.$broadcast("recomputeAppStatus");
                 $scope.appStatusModal.show();
                 $stateParams.launchAppStatusModal = false;
+            }
+            if ($stateParams.openTimeOfDayPicker) {
+                $('input[name=timeOfDay]').focus();
             }
         });
     })
