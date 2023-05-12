@@ -48,11 +48,13 @@ angular.module('emission.splash.notifscheduler',
     }
 
     const setUpActions = () => {
-        const actions = [
-            { id: 'action', title: 'Change Time' }
-        ];
+        const action = {
+            id: 'action',
+            title: 'Change Time',
+            launch: true
+        };
         return new Promise((rs) => {
-            cordova.plugins.notification.local.addActions('reminder-actions', actions, rs);
+            cordova.plugins.notification.local.addActions('reminder-actions', [action], rs);
         });
     }
 
@@ -77,7 +79,15 @@ angular.module('emission.splash.notifscheduler',
                     title: scheme.title,
                     text: scheme.text,
                     trigger: {at: nDate},
-                    actions: 'reminder-actions'
+                    actions: 'reminder-actions',
+                    data: {
+                        action: {
+                            redirectTo: 'root.main.control',
+                            redirectParams: {
+                                openTimeOfDayPicker: true
+                            }
+                        }
+                    }
                 }
             });
             cordova.plugins.notification.local.cancelAll(() => {

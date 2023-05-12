@@ -15,10 +15,10 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
   /*
    * Return the state to redirect to, undefined otherwise
    */
-  localNotify.getRedirectState = function(notification) {
+  localNotify.getRedirectState = function(data) {
     // TODO: Think whether this should be in data or in category
-    if (angular.isDefined(notification.data)) {
-      return [notification.data.redirectTo, notification.data.redirectParams];
+    if (angular.isDefined(data)) {
+      return [data.redirectTo, data.redirectParams];
     }
     return undefined;
   }
@@ -62,7 +62,11 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
     // cancel the notification to avoid "hey! I just fixed this, why is the notification still around!"
     // issues
     // $window.cordova.plugins.notification.local.cancel(notification.id);
-    var [targetState, targetParams] = localNotify.getRedirectState(notification);
+    let redirectData = notification;
+    if (state.event == 'action') {
+      redirectData = notification.data.action;
+    }
+    var [targetState, targetParams] = localNotify.getRedirectState(redirectData);
     Logger.log("targetState = "+targetState);
     if (angular.isDefined(targetState)) {
       if (state.foreground == true) {

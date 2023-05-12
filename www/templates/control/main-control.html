@@ -17,7 +17,7 @@
       <div class="control-list-text">Time of Day for Reminders ({{settings.notification.prefReminderTime}})</div>
       <div class="control-icon-button" style="position: relative">
         <i class="ion-clock"></i>
-        <input ng-init="showTimeOfDayPicker()" type="time" name="timeOfDay" value="{{settings.notification.prefReminderTimeOnLoad}}"
+        <input type="time" name="timeOfDay" value="{{settings.notification.prefReminderTimeOnLoad}}"
           ng-model="settings.notification.prefReminderTimeVal" ng-change="updatePrefReminderTime()" ng-blur="updatePrefReminderTime()"
           style="position: absolute; height: 100%; inset: 0; display: flex; opacity: 0;">
       </div>
