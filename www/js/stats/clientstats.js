@@ -22,7 +22,8 @@ angular.module('emission.stats.clientstats', [])
       LABEL_TAB_SWITCH: "label_tab_switch",
       SELECT_LABEL: "select_label",
       EXPANDED_TRIP: "expanded_trip",
-      NOTIFICATION_OPEN: "notification_open"
+      NOTIFICATION_OPEN: "notification_open",
+      REMINDER_PREFS: "reminder_time_prefs"
     };
   }
 

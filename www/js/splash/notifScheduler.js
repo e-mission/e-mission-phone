@@ -164,6 +164,20 @@ angular.module('emission.splash.notifscheduler',
     scheduler.setReminderPrefs = async (newPrefs) => {
         await CommHelper.updateUser(newPrefs);
         update();
+        
+        // record the new prefs in client stats
+        scheduler.getReminderPrefs().then((prefs) => {
+            // extract only the relevant fields from the prefs,
+            // and add as a reading to client stats
+            const { reminder_assignment,
+                reminder_join_date,
+                reminder_time_of_day} = prefs;
+            ClientStats.addReading(ClientStats.getStatKeys().REMINDER_PREFS, {
+                reminder_assignment,
+                reminder_join_date,
+                reminder_time_of_day
+            }).then(Logger.log("Added reminder prefs to client stats"));
+        });
     }
 
     $ionicPlatform.ready().then(async () => {
