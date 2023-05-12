@@ -11,6 +11,8 @@ angular.module('emission.splash.notifscheduler',
 
     const scheduler = {};
     let _config;
+    let scheduledPromise = new Promise((rs) => rs());
+    let isScheduling = false;
 
     // like python range()
     function range(start, stop, step) {
@@ -53,22 +55,40 @@ angular.module('emission.splash.notifscheduler',
             cordova.plugins.notification.local.addActions('reminder-actions', actions, rs);
         });
     }
-    
+
+    function debugGetScheduled(prefix) {
+        cordova.plugins.notification.local.getScheduled((notifs) => {
+            if (!notifs?.length)
+                return Logger.log(`${prefix}, there are no scheduled notifications`);
+            const time = moment(notifs?.[0].trigger.at).format('HH:mm');
+            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time}`);
+        });
+    }
+
     // schedules the notifications using the cordova plugin
     const scheduleNotifs = (scheme, notifTimes) => {
-        const nots = notifTimes.map((n) => {
-            const nDate = n.toDate();
-            const seconds = nDate.getTime() / 1000;
-            return {
-                id: seconds,
-                title: scheme.title,
-                text: scheme.text,
-                trigger: {at: nDate},
-                actions: 'reminder-actions'
-            }
+        return new Promise((rs) => {
+            isScheduling = true;
+            const nots = notifTimes.map((n) => {
+                const nDate = n.toDate();
+                const seconds = nDate.getTime() / 1000;
+                return {
+                    id: seconds,
+                    title: scheme.title,
+                    text: scheme.text,
+                    trigger: {at: nDate},
+                    actions: 'reminder-actions'
+                }
+            });
+            cordova.plugins.notification.local.cancelAll(() => {
+                debugGetScheduled("After cancelling");
+                cordova.plugins.notification.local.schedule(nots, () => {
+                    debugGetScheduled("After scheduling");
+                    isScheduling = false;
+                    rs();
+                });
+            });
         });
-        cordova.plugins.notification.local.cancelAll();
-        cordova.plugins.notification.local.schedule(nots);
     }
 
     // determines when notifications are needed, and schedules them if not already scheduled
@@ -79,11 +99,18 @@ angular.module('emission.splash.notifscheduler',
         const scheme = _config.reminderSchemes[reminder_assignment];
         const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day);
         cordova.plugins.notification.local.getScheduled((notifs) => {
-            Logger.log(`There are ${notifs.length} scheduled notifications`);
             if (areAlreadyScheduled(notifs, notifTimes)) {
                 Logger.log("Already scheduled, not scheduling again");
             } else {
-                scheduleNotifs(scheme, notifTimes);
+                // to ensure we don't overlap with the last scheduling() request,
+                // we'll wait for the previous one to finish before scheduling again
+                scheduledPromise.then(() => {
+                    if (isScheduling) {
+                        console.log("ERROR: Already scheduling notifications, not scheduling again")
+                    } else {
+                        scheduledPromise = scheduleNotifs(scheme, notifTimes);
+                    }
+                });
             }
         });
     }
