@@ -86,7 +86,8 @@
         "transition-notify": "Transition Notify",
         "button-accept": "I accept",
         "view-qrc": "My OPcode",
-        "app-version": "App Version"
+        "app-version": "App Version",
+        "reminders-time-of-day": "Time of Day for Reminders ({{time}})"
     },
 
     "general-settings":{
