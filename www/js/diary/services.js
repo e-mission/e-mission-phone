@@ -469,6 +469,15 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
     };
 
+    // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
+    // This function returns a shallow copy of the obj, which flattens the
+    // 'data' field into the top level, while also including '_id' and 'metadata.key'
+    const unpack = (obj) => ({
+      ...obj.data,
+      _id: obj._id,
+      key: obj.metadata.key
+    });
+
     timeline.readAllCompositeTrips = function(endTs, deltaTs) {
       $ionicLoading.show({
         template: $translate.instant('service.reading-server')
@@ -481,23 +490,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         .then(([ctList]) => {
             $ionicLoading.hide();
             return ctList.phone_data.map((ct) => {
-              ct.data._id = ct._id["$oid"];
-              ct.data.key = ct.metadata.origin_key;
-              if (ct.data.start_confirmed_place) {
-                const cp_id = ct.data.start_confirmed_place._id;
-                const cpKey = ct.data.start_confirmed_place.metadata.key;
-                ct.data.start_confirmed_place = ct.data.start_confirmed_place.data;
-                ct.data.start_confirmed_place._id = cp_id;
-                ct.data.start_confirmed_place.key = cpKey;
+              const unpackedCt = unpack(ct);
+              return {
+                ...unpackedCt,
+                origin_key: ct.metadata.origin_key,
+                start_confirmed_place: unpack(unpackedCt.start_confirmed_place),
+                end_confirmed_place: unpack(unpackedCt.end_confirmed_place),
               }
-              if (ct.data.end_confirmed_place) {
-                const cp_id = ct.data.end_confirmed_place._id;
-                const cpKey = ct.data.end_confirmed_place.metadata.key;
-                ct.data.end_confirmed_place = ct.data.end_confirmed_place.data;
-                ct.data.end_confirmed_place._id = cp_id;
-                ct.data.end_confirmed_place.key = cpKey;
-              }
-              return ct.data;
             });
         })
         .catch((err) => {
