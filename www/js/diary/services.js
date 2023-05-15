@@ -496,6 +496,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 origin_key: ct.metadata.origin_key,
                 start_confirmed_place: unpack(unpackedCt.start_confirmed_place),
                 end_confirmed_place: unpack(unpackedCt.end_confirmed_place),
+                sections: unpackedCt.sections.map(unpack),
+                stops: unpackedCt.stops.map(unpack),
               }
             });
         })
