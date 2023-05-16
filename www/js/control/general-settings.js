@@ -4,6 +4,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
                                         'emission.main.control.collection',
                                         'emission.main.control.sync',
+                                        'emission.splash.localnotify',
+                                        'emission.splash.notifscheduler',
                                         'ionic-datepicker',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
@@ -15,14 +17,14 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.config.dynamic',
                                         'monospaced.qrcode'])
 
-.controller('ControlCtrl', function($scope, $window, $ionicScrollDelegate,
-               $ionicPlatform,
+.controller('ControlCtrl', function($scope, $window,
+               $ionicScrollDelegate, $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $ionicModal, $stateParams,
                $rootScope, KVStore, ionicDatePicker,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
-               CarbonDatasetHelper,
+               CarbonDatasetHelper, NotificationScheduler, LocalNotify,
                i18nUtils,
                CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
                $translate) {
@@ -105,6 +107,27 @@ angular.module('emission.main.control',['emission.services',
                 $scope.qrp.show($event);
             }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
         }
+    }
+
+    $scope.dummyNotification = () => {
+        cordova.plugins.notification.local.addActions('dummy-actions', [
+            { id: 'action', title: 'Yes' },
+            { id: 'cancel', title: 'No' }
+        ]);
+        cordova.plugins.notification.local.schedule({
+            id: new Date().getTime(),
+            title: 'Dummy Title',
+            text: 'Dummy text',
+            actions: 'dummy-actions',
+            trigger: {at: new Date(new Date().getTime() + 5000)},
+        });
+    }
+
+    $scope.updatePrefReminderTime = (storeNewVal=true) => {
+        const m = moment($scope.settings.notification.prefReminderTimeVal);
+        $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
+        if (storeNewVal)
+            NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
     }
 
     $scope.fixAppStatus = function() {
@@ -283,6 +306,9 @@ angular.module('emission.main.control',['emission.services',
                 $scope.appStatusModal.show();
                 $stateParams.launchAppStatusModal = false;
             }
+            if ($stateParams.openTimeOfDayPicker) {
+                $('input[name=timeOfDay]').focus();
+            }
         });
     })
 
@@ -300,6 +326,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings = {};
         $scope.settings.collect = {};
         $scope.settings.sync = {};
+        $scope.settings.notification = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
@@ -322,6 +349,14 @@ angular.module('emission.main.control',['emission.services',
                     console.log("Setting settings.collect.experimentalGeofenceOn = true");
                     $scope.settings.collect.experimentalGeofenceOn = true;
                 }
+            });
+        });
+        NotificationScheduler.getReminderPrefs().then((prefs) => {
+            $scope.$apply(() => {
+                const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+                $scope.settings.notification.prefReminderTimeVal = m.toDate();
+                $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
+                $scope.updatePrefReminderTime(false); // update the displayed time
             });
         });
         $scope.getUserData();
