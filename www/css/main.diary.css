@@ -385,6 +385,7 @@ a.item-content {
 }
 
 .diary-map-shell {
+  position: relative;
   width: 50%;
 }
 
@@ -415,14 +416,20 @@ a.item-content {
 }
 
 .diary-modes-percents {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  translate: -50%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
   margin: 5px 0;
+  padding: 1px 5px;
 }
 
 .diary-modes-percents-text {
-  color: #0088ce;
-}
-
-.diary-modes-percents-icon {
   color: #0088ce;
 }
 

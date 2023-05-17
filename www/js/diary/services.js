@@ -1,5 +1,19 @@
 'use strict';
 
+const MotionTypes = {
+  0: {name: "IN_VEHICLE", icon: "ion-speedometer", color: "purple"},
+  1: {name: "BICYCLING", icon: "ion-android-bicycle", color: "green"},
+  2: {name: "ON_FOOT", icon: "ion-android-walk", color: "brown"},
+  3: {name: "STILL", icon: "ion-android-walk", color: "brown"},
+  4: {name: "UNKNOWN", icon: "ion-ios-help", color: "orange"},
+  5: {name: "TILTING", icon: "ion-ios-help", color: "orange"},
+  7: {name: "WALKING", icon: "ion-android-walk", color: "brown"},
+  8: {name: "RUNNING", icon: "ion-android-walk", color: "brown"},
+  9: {name: "NONE", icon: "ion-ios-help", color: "orange"},
+  10: {name: "STOPPED_WHILE_IN_VEHICLE", icon: "ion-speedometer", color: "purple"},
+  11: {name: "AIR_OR_HSR", icon: "ion-plane", color: "red"}
+}
+
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
     'emission.services', 'emission.main.common.services',
     'emission.incident.posttrip.manual'])
@@ -66,23 +80,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var ctrip = CommonGraph.trip2Common(id);
     return !angular.isUndefined(ctrip);
   }
-  dh.getIcon = function(sensed_mode) {
-    var mode_string = dh.getHumanReadable(sensed_mode);
-    var icons = {"BICYCLING":"ion-android-bicycle",
-    "WALKING":" ion-android-walk",
-    "RUNNING":" ion-android-walk",
-    "IN_VEHICLE":"ion-speedometer",
-    "BUS": "ion-android-bus",
-    "LIGHT_RAIL": "lightrail fas fa-subway",
-    "TRAIN": "ion-android-train",
-    "TRAM": "fas fa-tram",
-    "SUBWAY": "fas fa-subway",
-    "CAR": "ion-android-car",
-    "UNKNOWN": "ion-ios-help",
-    "UNPROCESSED": "ion-ios-help",
-    "AIR_OR_HSR": "ion-plane"}
-    return icons[mode_string];
-  }
+
   dh.getHumanReadable = function(sensed_mode) {
     var ret_string = sensed_mode.split('.')[1];
     if (ret_string == 'ON_FOOT') {
@@ -105,50 +103,28 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var totalDist = 0;
     for (var i=0; i<trip.sections.length; i++) {
-      let filteredMode = filterRunning(trip.sections[i].properties.sensed_mode);
+      let filteredMode = filterRunning(trip.sections[i].sensed_mode);
       if (filteredMode in dists) {
-        dists[filteredMode] += trip.sections[i].properties.distance;
-        totalDist += trip.sections[i].properties.distance;
+        dists[filteredMode] += trip.sections[i].distance;
+        totalDist += trip.sections[i].distance;
       } else {
-        dists[filteredMode] = trip.sections[i].properties.distance;
-        totalDist += trip.sections[i].properties.distance;
+        dists[filteredMode] = trip.sections[i].distance;
+        totalDist += trip.sections[i].distance;
       }
     }
-
-    let sectionPcts = Object.keys(dists).map(function(mode) {
+    // sort modes by the distance traveled (descending)
+    const sortedKeys = Object.entries(dists).sort((a, b) => b[1] - a[1]).map(e => e[0]);
+    let sectionPcts = sortedKeys.map(function(mode) {
+        const fract = dists[mode] / totalDist;
         return {
             mode: mode,
-            icon: "icon " + dh.getIcon(mode),
-            color: {color: dh.getColor(mode)},
-            pct: Math.floor((dists[mode] / totalDist) * 100)
+            icon: "icon " + MotionTypes[mode]?.icon,
+            color: MotionTypes[mode]?.color || 'black',
+            pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
         };
     });
 
     return sectionPcts;
-  }
-
-  dh.getColor = function(sensed_mode) {
-    var mode_string = dh.getHumanReadable(sensed_mode);
-    var colors = {
-      "WALKING": 'brown',
-      "RUNNING": 'brown',
-      "BICYCLING": 'green',
-      "IN_VEHICLE": 'purple',
-      "LIGHT_RAIL": 'blue',
-      "BUS": 'navy',
-      "TRAIN": 'skyblue',
-      "TRAM": 'slateblue',
-      "SUBWAY": 'darkcyan',
-      "CAR": 'salmon',
-      "UNKNOWN": 'orange',
-      "UNPROCESSED": 'orange',
-      "AIR_OR_HSR": "red"
-    };
-    if (mode_string in colors) {
-        return colors[mode_string];
-    } else {
-        return "black";
-    }
   }
 
   dh.starColor = function(num) {
@@ -159,6 +135,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
   dh.isDraft = function(tripgj) {
+    return false; // TODO: reinstate once trip structure is unified
     if (// tripgj.data.features.length == 3 && // reinstate after the local and remote paths are unified
       angular.isDefined(tripgj.data.features[2].features) &&
       tripgj.data.features[2].features[0].properties.feature_type == "section" &&
@@ -809,16 +786,26 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var confirmedPoints2Geojson = function(trip, locationList) {
-      var sectionCoordinates = locationList.map(function(point) {
-        return point.data.loc.coordinates;
-      });
+
+      const sectionsPoints = trip.sections.map((s) =>
+          trip.locations.filter((l) =>
+            l.ts >= s.start_ts && l.ts <= s.end_ts
+          )
+      );
+
+      return sectionsPoints.map((sectionPoints, i) => {
+        const section = trip.sections[i];
       return {
         type: "Feature",
         geometry: {
             type: "LineString",
-            coordinates: sectionCoordinates
+            coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
+          },
+          style: {
+            color: MotionTypes[section.sensed_mode].color
         }
       }
+      });
     }
 
     timeline.compositeTrip2Geojson = function(trip) {
@@ -830,9 +817,11 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var features = [
         confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
         confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
-        confirmedPoints2Geojson(trip, trip.locations)
+        ...confirmedPoints2Geojson(trip, trip.locations)
       ];
-      var trip_gj = {
+
+      return {
+        data: {
         id: "confirmed" + trip.start_ts,
         type: "FeatureCollection",
         features: features,
@@ -840,8 +829,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           start_ts: trip.start_ts,
           end_ts: trip.end_ts
         }
+        },
+        style: (feature) => feature.style
       }
-      return trip_gj;
     }
 
     var trip2Geojson = function(trip) {

@@ -474,6 +474,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
           tripgj.display_distance_suffix = ImperialConfig.getDistanceSuffix;
         }
         tripgj.background = "bg-light";
+        tripgj.percentages = DiaryHelper.getPercentages(tripgj);
         tripgj.listCardClass = $scope.listCardClass(tripgj);
         // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
         tripgj.start_display_name = "\xa0";
@@ -505,21 +506,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const tripgj = Timeline.compositeTrip2Geojson(trip);
 
       $scope.$apply(() => {
-        trip.data = tripgj;
-        trip.common = {};
-        trip.common.earlierOrLater = '';
-        trip.pointToLayer = DiaryHelper.pointFormat;
+        trip.geojson = tripgj;
+        trip.geojson.pointToLayer = DiaryHelper.pointFormat;
 
         console.log("Is our trip a draft? ", DiaryHelper.isDraft(trip));
         trip.isDraft = DiaryHelper.isDraft(trip);
         console.log("Tripgj == Draft: ", trip.isDraft);
-
-        console.log("Tripgj in Trip Item Ctrl is ", tripgj);
-
-        // var tc = getTripComponents($scope.tripgj);
-        // $scope.tripgj.sections = tc[3];
-        // $scope.tripgj.percentages = DiaryHelper.getPercentages($scope.trip);
-        // console.log("Section Percentages are ", $scope.tripgj.percentages);
       });
     }
 

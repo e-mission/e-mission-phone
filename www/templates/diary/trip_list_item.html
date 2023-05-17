@@ -9,7 +9,20 @@
             </div>
             <!-- Leaflet Map -->
             <div id="left-diary-card" class="diary-map-shell" ng-click="showDetail($event, trip)">
-                <leaflet class="diary-map" geojson="trip" defaults="mapCtrl.defaults"
+                <!-- Modes / Percentages -->
+                <div class="diary-modes-percents" ng-if="trip.percentages">
+                    <span
+                        class="diary-modes-percents-text"
+                        ng-if="!trip.isDraft"
+                        ng-repeat="sectionPct in trip.percentages" style="color: {{ sectionPct.color }}">
+                        <span class="diary-modes-percents-icon {{sectionPct.icon}}"></span>
+                        <span>{{sectionPct.pct}}%</span>
+                    </span>
+                    <button class="diary-draft-button" ng-if="trip.isDraft" ng-click="explainDraft($event)">
+                        <span translate>{{'.draft'}}</span>
+                    </button>
+                </div>
+                <leaflet class="diary-map" geojson="trip.geojson" defaults="mapCtrl.defaults"
                     id="$index" data-tap-disabled="true" height="{{mapHeight}}">
                 </leaflet>
                 <div ng-if="configTripNotes" class="row" style="height: 20%; padding: 10px 20px">
@@ -38,20 +51,6 @@
                             translate-value-distance="{{ trip.display_distance }} {{trip.display_distance_suffix }}"
                             translate-value-time="{{ trip.display_time }}">
                         </div>
-                    </div>
-
-                    <!-- Modes / Percentages -->
-                    <div class="diary-modes-percents" ng-if="trip.percentages">
-                        <span
-                            class="diary-modes-percents-text"
-                            ng-if="!trip.isDraft"
-                            ng-repeat="sectionPct in trip.percentages">
-                            <span class="diary-modes-percents-icon {{sectionPct.icon}}"></span>
-                            <span>{{sectionPct.pct}}%</span>
-                        </span>
-                        <button class="diary-draft-button" ng-if="trip.isDraft" ng-click="explainDraft($event)">
-                            <span translate>{{'.draft'}}</span>
-                        </button>
                     </div>
 
                     <!-- Locations -->
