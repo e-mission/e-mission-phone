@@ -5,7 +5,7 @@
         <button class="button button-icon" ng-click="increaseHeight()">
             <i class="icon ion-arrow-resize"></i>
         </button>
-        <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
+        <select id="filter-select" ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
             <option ng-repeat="filter in filterInputs" value="{{filter.key}}" translate>
                 {{filter.text}}
             </option>
@@ -19,6 +19,9 @@
                 {{'.show-all'}}
             </option>
         </select>
+        <input type="date" ng-model="infScrollControl.selectedDay" ng-change="loadWeekOfSelectedDay()"
+                min="{{infScrollControl.pipelineRange.start_date}}" max="{{infScrollControl.pipelineRange.end_date}}"
+                placeholder="{{infScrollControl.selRangeText}}">
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">
@@ -29,20 +32,21 @@
     </ion-nav-buttons>
 	<ion-content class="diary-entry">
 
-        <div class="control-list-item row">
-            <div class="control-list-text col">
-                <div class="row" translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
-                <div ng-if="data.allTrips.length > 0" class="row" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
-            </div>
-            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
-            <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
+        <div style="padding: 5px; font-size: 13px;">
+            <!-- TODO: remove this if we're sure we don't need it -->
+            <!-- <div class="control-list-text">
+                <span translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></span>
+                <span ng-if="data.allTrips.length > 0" translate="diary.filter-display-range" translate-values="{currentEnd: infScrollControl.oldestLoadedTs * 1000, currentStart: infScrollControl.latestLoadedTs * 1000}"></span>
+            </div> -->
         </div>
 
 		<ion-list>
-            <div collection-repeat="entry in data.displayTimelineEntries" item-height="getCardHeight(entry)">
+            <div collection-repeat="entry in data.listEntries" item-height="getCardHeight(entry)">
+                <button ng-if="entry=='header'" ng-click="loadMoreTrips('past')" class="load-more-btn">{{infScrollControl.reachedPipelineStart ? '{No Previous Trips}' : '{Load Previous Week}'}}</button>
                 <infinite-scroll-trip-item ng-if="entry.origin_key.includes('trip')" trip="entry" config="ui_config"></infinite-scroll-trip-item>
                 <infinite-scroll-place-item ng-if="entry.origin_key.includes('place')" place="entry" config="ui_config"></infinite-scroll-place-item>
                 <infinite-scroll-untracked-time-item ng-if="entry.origin_key.includes('untracked')" triplike="entry"></infinite-scroll-untracked-time-item>
+                <button ng-if="entry=='footer'" ng-click="loadMoreTrips('future')" class="load-more-btn">{{infScrollControl.reachedPipelineEnd ? '{No New Trips}' : '{Load Next Week}'}}</button>
             </div>
         </ion-list>
 	</ion-content>

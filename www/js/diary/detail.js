@@ -83,8 +83,8 @@ angular.module('emission.main.diary.detail',['ui-leaflet', 'ng-walkthrough',
             };
   });
 
-  $scope.recomputeDisplayTimelineEntries = function() {
-    console.log("Called diary details.recomputeDisplayTimelineEntries");
+  $scope.recomputeListEntries = function() {
+    console.log("Called diary details.recomputeListEntries");
     // Let's copy over the userInput to the field expected by the checks (user_input)
     // We definitely need to unify this ASAP
     $scope.tripgj.user_input = $scope.tripgj.userInput;

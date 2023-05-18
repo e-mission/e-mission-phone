@@ -98,6 +98,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
   }
   dh.getPercentages = function(trip) {
+    if (!trip.sections?.length) return {};
     // we use a Map here to make it easier to work with the for loop below
     let dists = {};
 
@@ -455,13 +456,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       key: obj.metadata.key
     });
 
-    timeline.readAllCompositeTrips = function(endTs, deltaTs) {
+    timeline.readAllCompositeTrips = function(startTs, endTs) {
       $ionicLoading.show({
         template: $translate.instant('service.reading-server')
       });
       const readPromises = [
         CommHelper.getRawEntries(["analysis/composite_trip"],
-            endTs - deltaTs, endTs, "data.end_ts"),
+            startTs, endTs, "data.end_ts"),
       ];
       return Promise.all(readPromises)
         .then(([ctList]) => {
@@ -473,8 +474,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 origin_key: ct.metadata.origin_key,
                 start_confirmed_place: unpack(unpackedCt.start_confirmed_place),
                 end_confirmed_place: unpack(unpackedCt.end_confirmed_place),
-                sections: unpackedCt.sections.map(unpack),
-                stops: unpackedCt.stops.map(unpack),
+                locations: unpackedCt.locations?.map(unpack),
+                sections: unpackedCt.sections?.map(unpack),
               }
             });
         })
@@ -786,25 +787,29 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }
 
     var confirmedPoints2Geojson = function(trip, locationList) {
-
-      const sectionsPoints = trip.sections.map((s) =>
-          trip.locations.filter((l) =>
-            l.ts >= s.start_ts && l.ts <= s.end_ts
-          )
-      );
+      let sectionsPoints;
+      if (!trip.sections) {
+        sectionsPoints = [locationList];
+      } else {
+        sectionsPoints = trip.sections.map((s) =>
+            trip.locations.filter((l) =>
+              l.ts >= s.start_ts && l.ts <= s.end_ts
+            )
+        );
+      }
 
       return sectionsPoints.map((sectionPoints, i) => {
-        const section = trip.sections[i];
-      return {
-        type: "Feature",
-        geometry: {
+        const section = trip.sections?.[i];
+        return {
+          type: "Feature",
+          geometry: {
             type: "LineString",
             coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
           },
           style: {
-            color: MotionTypes[section.sensed_mode].color
+            color: MotionTypes[section?.sensed_mode]?.color || "#000000",
+          }
         }
-      }
       });
     }
 
@@ -822,13 +827,13 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
       return {
         data: {
-        id: "confirmed" + trip.start_ts,
-        type: "FeatureCollection",
-        features: features,
-        properties: {
-          start_ts: trip.start_ts,
-          end_ts: trip.end_ts
-        }
+          id: "confirmed" + trip.start_ts,
+          type: "FeatureCollection",
+          features: features,
+          properties: {
+            start_ts: trip.start_ts,
+            end_ts: trip.end_ts
+          }
         },
         style: (feature) => feature.style
       }
@@ -1202,7 +1207,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         timeline.data.infScrollCompositeTripMap = {};
 
         timeline.data.infScrollCompositeTripList.forEach(function(trip, index, array) {
-          timeline.data.infScrollCompositeTripMap[trip._id] = trip;
+          timeline.data.infScrollCompositeTripMap[trip._id.$oid] = trip;
         });
     }
 

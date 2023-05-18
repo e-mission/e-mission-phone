@@ -102,6 +102,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   }
 
   $scope.getCardHeight = function(entry) {
+    if (entry=='header' || entry=='footer') return 40;
     let height = 15; // 15 pixels of padding to account for iOS/Android rendering differences
     if (entry.origin_key == 'analysis/confirmed_place') {
       height += 164;
@@ -144,7 +145,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
    */
   $scope.infScrollControl = {fromBottom: -1, callback: undefined};
 
-  var adjustScrollAfterDownload = function() {
+  var adjustScrollAfterDownload = function(stayAtTop) {
+    if (stayAtTop) return;
     // This whole "infinite scroll upwards" implementation is quite hacky, but after hours of work on it, it's the only way I could approximate the desired behavior.
     $ionicScrollDelegate.resize().then(() => {
       const contentHt = scrollContentHeight();
@@ -155,7 +157,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
   var scrollContentHeight = function() {
     let ht = 50; // start at 50 for the header
-    $scope.data.displayTimelineEntries.forEach((entry) => {
+    $scope.data.listEntries.forEach((entry) => {
       ht += $scope.getCardHeight(entry);
     });
     return ht;
@@ -166,14 +168,75 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         - $ionicScrollDelegate.getScrollPosition().top;
   }
 
-  $scope.readDataFromServer = function() {
+  $scope.populateCompositeTrips = (ctList) => {
+    ctList.forEach((ct, i) => {
+      if ($scope.showPlaces && ct.start_confirmed_place) {
+        const cp = ct.start_confirmed_place;
+        cp.getNextEntry = () => ctList[i];
+        $scope.populateBasicClasses(cp);
+        $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
+        $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
+      }
+      if ($scope.showPlaces && ct.end_confirmed_place) {
+        const cp = ct.end_confirmed_place;
+        cp.getNextEntry = () => ctList[i + 1];
+        $scope.populateBasicClasses(cp);
+        $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
+        $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
+        ct.getNextEntry = () => cp;
+      } else {
+        ct.getNextEntry = () => ctList[i + 1];
+      }
+      $scope.populateBasicClasses(ct);
+      $scope.labelPopulateFactory.populateInputsAndInferences(ct, $scope.data.manualResultMap);
+      $scope.enbs.populateInputsAndInferences(ct, $scope.data.enbsResultMap);
+    });
+  }
+
+  $scope.loadWeekOfSelectedDay = () => {
+    const selDay = $scope.infScrollControl.selectedDay;
+    Logger.log("Called loadWeekOfSelectedDay with selectedDay = " + selDay);
+    if (!selDay) return Logger.log("No selected day, early return");
+    const seconds = selDay.getTime() / 1000;
+    const startTs = seconds - (ONE_WEEK / 2);
+    const endTs = seconds + (ONE_WEEK / 2);
+    $scope.infScrollControl.reachedPipelineStart = false;
+    $scope.infScrollControl.reachedPipelineEnd = false;
+    $scope.data.allTrips = [];
+    $scope.data.listEntries = [];
+    $scope.readDataFromServer(startTs, endTs);
+  }
+
+  $scope.loadMoreTrips = (when) => {
+    const oldestTs = $scope.infScrollControl.oldestLoadedTs;
+    const latestTs = $scope.infScrollControl.latestLoadedTs;
+    if (!angular.isDefined(oldestTs)) {
+      Logger.log("trying to read data too early, early return");
+      $ionicLoading.hide();
+      $scope.$broadcast('scroll.infiniteScrollComplete')
+      return;
+    }
+    if (when=='past' && !$scope.infScrollControl.reachedPipelineStart) {
+      const startTs = oldestTs - ONE_WEEK;
+      const endTs   = oldestTs;
+      $scope.readDataFromServer(startTs, endTs, when);
+    } else if (when=='future' && !$scope.infScrollControl.reachedPipelineEnd) {
+      const startTs = latestTs;
+      const endTs   = latestTs + ONE_WEEK;
+      $scope.readDataFromServer(startTs, endTs, when);
+    }
+  }
+
+  $scope.readDataFromServer = function(startTs, endTs, direction) {
     Logger.log("Called readDataFromServer");
-    $scope.infScrollControl.fromBottom = getFromBottom()
-    $scope.infScrollControl.callback = adjustScrollAfterDownload;
+    $scope.infScrollControl.fromBottom = getFromBottom();
+    // after download, reset scroll position. if 'past', go to top, if 'future', go to bottom
+    $scope.infScrollControl.callback = () => adjustScrollAfterDownload(direction=='past');
     console.log("calling readDataFromServer with "+
         JSON.stringify($scope.infScrollControl));
-    const currEnd = $scope.infScrollControl.currentEnd;
-    if (!angular.isDefined(currEnd)) {
+    const oldestTs = $scope.infScrollControl.oldestLoadedTs;
+    const latestTs = $scope.infScrollControl.latestLoadedTs;
+    if (!angular.isDefined(oldestTs)) {
         Logger.log("trying to read data too early, early return");
         $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete')
@@ -183,56 +246,64 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
     });
-    Timeline.readAllCompositeTrips(currEnd, ONE_WEEK).then((ctList) => {
+
+    Logger.log("Requesting trips from server from "+moment(startTs*1000).format("YYYY-MM-DD HH:mm:ss")+" to "+moment(endTs*1000).format("YYYY-MM-DD HH:mm:ss"));
+    Timeline.readAllCompositeTrips(startTs, endTs).then((ctList) => {
         Logger.log("Received batch of size "+ctList.length);
-        ctList.forEach((ct, i) => {
-          if ($scope.showPlaces && ct.start_confirmed_place) {
-            const cp = ct.start_confirmed_place;
-            cp.getNextEntry = () => ctList[i];
-            $scope.populateBasicClasses(cp);
-            $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
-            $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
-          }
-          if ($scope.showPlaces && ct.end_confirmed_place) {
-            const cp = ct.end_confirmed_place;
-            cp.getNextEntry = () => ctList[i + 1];
-            $scope.populateBasicClasses(cp);
-            $scope.labelPopulateFactory.populateInputsAndInferences(cp, $scope.data.manualResultMap);
-            $scope.enbs.populateInputsAndInferences(cp, $scope.data.enbsResultMap);
-            ct.getNextEntry = () => cp;
-          } else {
-            ct.getNextEntry = () => ctList[i + 1];
-          }
-          $scope.populateBasicClasses(ct);
-          $scope.labelPopulateFactory.populateInputsAndInferences(ct, $scope.data.manualResultMap);
-          $scope.enbs.populateInputsAndInferences(ct, $scope.data.enbsResultMap);
-        });
+        $scope.populateCompositeTrips(ctList);
         // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
         ctList.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
             fillTrajectoriesForTrip(trip);
         });
-        $scope.data.allTrips = ctList.concat($scope.data.allTrips);
+        if (direction == 'future') {
+          $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+        } else {
+          $scope.data.allTrips = ctList.concat($scope.data.allTrips);
+        }
         Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
         Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
-        const oldestTrip = ctList[0];
-        if (oldestTrip) {
-            if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
-                Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
-                    +" pipeline starts at "+moment($scope.infScrollControl.pipelineRange.start_ts)
-                    +" reached end");
-                $scope.infScrollControl.reachedEnd = true;
-            } else {
-                // Since this was reversed, the first entry is the most recent
-                $scope.infScrollControl.currentEnd =
-                    oldestTrip.end_ts - 1;
-                Logger.log("new end time = "+$scope.infScrollControl.currentEnd);
-            }
-        } else {
-            Logger.log("current batch of size 0 but haven't reached pipeline start, going on");
-            $scope.infScrollControl.currentEnd = $scope.infScrollControl.currentEnd - ONE_WEEK;
+        if (!direction || direction == 'past') {
+          const oldestTrip = ctList[0];
+          if (oldestTrip) {
+              if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
+                  Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
+                      +" pipeline starts at "+moment($scope.infScrollControl.pipelineRange.start_ts)
+                      +". Reached the start of pipeline, nothing earlier to load");
+                  $scope.infScrollControl.oldestLoadedTs = oldestTrip.start_ts;
+                  $scope.infScrollControl.reachedPipelineStart = true;
+              } else {
+                  // Since this was reversed, the first entry is the most recent
+                  $scope.infScrollControl.oldestLoadedTs =
+                      oldestTrip.end_ts - 1;
+                  Logger.log("new oldest loaded time = "+$scope.infScrollControl.oldestLoadedTs);
+              }
+          } else {
+              Logger.log("current batch of size 0 but haven't reached pipeline start, going on");
+              $scope.infScrollControl.oldestLoadedTs = $scope.infScrollControl.oldestLoadedTs - ONE_WEEK;
+          }
         }
-        $scope.recomputeDisplayTimelineEntries();
+        if (!direction || direction == 'future') {
+          const [latestTrip] = ctList.slice(-1);
+          if (latestTrip) {
+            if (latestTrip.end_ts >= $scope.infScrollControl.pipelineRange.end_ts) {
+                Logger.log("Latest trip in batch ends at "+ moment(latestTrip.end_ts)
+                    +" pipeline ends at "+moment($scope.infScrollControl.pipelineRange.end_ts)
+                    +". Reached the end of pipeline, nothing later to load");
+                $scope.infScrollControl.reachedPipelineEnd = true;
+                $scope.infScrollControl.latestLoadedTs = latestTrip.end_ts;
+            } else {
+                $scope.infScrollControl.latestLoadedTs =
+                    latestTrip.end_ts + 1;
+                Logger.log("new latest loaded time = "+$scope.infScrollControl.latestLoadedTs);
+            }
+          } else {
+              Logger.log("current batch of size 0 but haven't reached pipeline end, going on");
+              $scope.infScrollControl.latestLoadedTs = $scope.infScrollControl.latestLoadedTs + ONE_WEEK;
+          }
+        }
+        $scope.infScrollControl.selRangeText = moment($scope.infScrollControl.oldestLoadedTs*1000).format("L") + "—" + moment($scope.infScrollControl.latestLoadedTs*1000).format("L");
+        $scope.recomputeListEntries();
         Logger.log("Broadcasting infinite scroll complete");
         $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -240,7 +311,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     }).catch((err) => {
         Logger.displayError("while reading confirmed trips", err);
         Logger.log("Reached the end of the scrolling");
-        $scope.infScrollControl.reachedEnd = true;
+        $scope.infScrollControl.reachedPipelineStart = true;
         Logger.log("Broadcasting infinite scroll complete");
         $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete');
@@ -250,9 +321,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.setupInfScroll = function() {
     Logger.log("Setting up the scrolling");
     $scope.itemHt = DEFAULT_ITEM_HT;
-    $scope.infScrollControl.reachedEnd = false;
+    $scope.infScrollControl.reachedPipelineStart = false;
+    $scope.infScrollControl.reachedPipelineEnd = true;
     $scope.data.allTrips = [];
-    $scope.data.displayTimelineEntries = [];
+    $scope.data.listEntries = [];
     Logger.log("Turning on the ionic loading overlay in setupInfScroll");
     $ionicLoading.show({
         template: $translate.instant('service.reading-server')
@@ -265,14 +337,17 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             });
             console.log("After reading in the label controller, manualResultMap "+JSON.stringify($scope.manualResultMap), $scope.data.manualResultMap);
             $scope.infScrollControl.pipelineRange = pipelineRange;
-            $scope.infScrollControl.currentEnd = pipelineRange.end_ts;
+            $scope.infScrollControl.pipelineRange.start_date = moment(pipelineRange.start_ts*1000).format("YYYY-MM-DD");
+            $scope.infScrollControl.pipelineRange.end_date = moment(pipelineRange.end_ts*1000).format("YYYY-MM-DD");
+            $scope.infScrollControl.oldestLoadedTs = pipelineRange.end_ts;
+            $scope.infScrollControl.latestLoadedTs = pipelineRange.end_ts;
             $scope.infScrollControl.callback = function() {
               $ionicScrollDelegate.scrollBottom(); // scrollTop()?
             };
-            $scope.readDataFromServer();
+            $scope.loadMoreTrips('past');
         } else {
             $scope.$apply(() => {
-                $scope.infScrollControl.reachedEnd = true;
+                $scope.infScrollControl.reachedPipelineStart = true;
             });
             $ionicLoading.hide();
             $scope.$broadcast('scroll.infiniteScrollComplete')
@@ -291,7 +366,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
     $scope.$apply(() => {
       // TODO support places
-      const matchingTimelineEntry = $scope.data.displayTimelineEntries.find((entry) => 
+      const matchingTimelineEntry = $scope.data.listEntries.find((entry) => 
         InputMatcher.validUserInputForTimelineEntry(entry, addition, false)
       );
       matchingTimelineEntry.additionsList ||= [];
@@ -318,7 +393,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.allTrips = true;
     }
 
-    $scope.recomputeDisplayTimelineEntries();
+    $scope.recomputeListEntries();
     // scroll to the bottom while changing filters so users don't have to
     // fixes the first of the fit-and-finish issues from
     // https://github.com/e-mission/e-mission-docs/issues/662
@@ -326,7 +401,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
-  $scope.recomputeDisplayTimelineEntries = function() {
+  $scope.recomputeListEntries = function() {
     console.log("recomputing display timeline now");
     let alreadyFiltered = false;
     $scope.filterInputs?.forEach((f) => {
@@ -334,10 +409,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
             if (alreadyFiltered) {
                 Logger.displayError("multiple filters not supported!", undefined);
             } else {
-                // console.log("Trip n before: "+$scope.data.displayTimelineEntries.length);
+                // console.log("Trip n before: "+$scope.data.listEntries.length);
                 $scope.data.displayTrips = $scope.data.allTrips.filter(
                     t => (t.waitingForMod == true) || f.filter(t));
-                // console.log("Trip n after:  "+$scope.data.displayTimelineEntries.length);
+                // console.log("Trip n after:  "+$scope.data.listEntries.length);
                 alreadyFiltered = true;
             }
         }
@@ -345,18 +420,29 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     if (!alreadyFiltered) {
         $scope.data.displayTrips = $scope.data.allTrips;
     };
+
+    const select = $('#filter-select');
+    const sp = '\u2005'
+
+    const selectedFilter = select.find(":selected");
+    const text = selectedFilter.text().split(sp)[0];
+    selectedFilter.text(`${text + sp}(${$scope.data.displayTrips.length}/${$scope.data.allTrips.length})`);
+
+    const showAllFilter = select.find('[value="show-all"]');
+    const showAllText = showAllFilter.text().split(sp)[0];
+    showAllFilter.text(`${showAllText + sp}(${$scope.data.allTrips.length})`);
     
-    $scope.data.displayTimelineEntries = []
+    $scope.data.listEntries = ['header'];
     $scope.data.displayTrips.forEach((cTrip) => {
       const start_place = cTrip.start_confirmed_place;
       const end_place = cTrip.end_confirmed_place;
 
       // Add start place to the list, if not already present
-      let isInList = $scope.data.displayTimelineEntries.find(e => e._id.$oid == start_place._id.$oid);
+      let isInList = $scope.data.listEntries.find(e => e._id?.$oid == start_place._id.$oid);
       if ($scope.showPlaces && start_place && !isInList) {
         // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
         if (isNaN(start_place.duration) || start_place.duration >= 60) {
-          $scope.data.displayTimelineEntries.push(start_place);
+          $scope.data.listEntries.push(start_place);
         }
 
        // TODO: Remove me in June 2023
@@ -368,13 +454,13 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       }
 
       // Add trip to the list
-      $scope.data.displayTimelineEntries.push(cTrip);
+      $scope.data.listEntries.push(cTrip);
 
       // Add end place to the list
       if ($scope.showPlaces && end_place) {
         // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
         if (isNaN(end_place.duration) || end_place.duration >= 60) {
-            $scope.data.displayTimelineEntries.push(end_place);
+            $scope.data.listEntries.push(end_place);
         }
 
         // TODO: Remove me in July 2023
@@ -385,6 +471,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // }
       }
     });
+    $scope.data.listEntries.push('footer');
   }
 
   angular.extend($scope, {
@@ -620,14 +707,14 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // let's increase by a small amount to workaround the issue with the
         // card not resizing the first time
         $scope.itemHt = $scope.itemHt + 20;
-        const oldDisplayEntries = $scope.data.displayTimelineEntries;
+        const oldDisplayEntries = $scope.data.listEntries;
         const TEN_MS = 10;
-        $scope.data.displayTimelineEntries = [];
+        $scope.data.listEntries = [];
         $timeout(() => {
             $scope.$apply(() => {
                 // make sure that the new item-height is calculated by resetting the list
                 // that we iterate over
-                $scope.data.displayTimelineEntries = oldDisplayEntries;
+                $scope.data.listEntries = oldDisplayEntries;
                 // make sure that the cards within the items are set to the new
                 // size. Apparently, `ng-style` is not recalulated although the
                 // variable has changed and the items have changed.
@@ -714,7 +801,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                         $scope.labelPopulateFactory.copyInputIfNewer(tripFromDiary, tripgj);
                     }
                 });
-                $scope.recomputeDisplayTimelineEntries();
+                $scope.recomputeListEntries();
             } else {
                 console.log("No trips loaded yet, no inputs to copy over");
             }

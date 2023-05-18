@@ -3,7 +3,7 @@
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
- *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
+ *      'recomputeListEntries` which modifies the *list* of trips and places
  *      as necessary. An example with the label view is removing the labeled trips from
  *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
  * - The view is associated with a state which we can record in the client stats.
@@ -283,7 +283,7 @@ angular.module('emission.survey.enketo.trip.button',
       trip.waitingForMod = false;
       trip.timeoutPromise = undefined;
       console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTimelineEntries();
+      viewScope.recomputeListEntries();
     }, etbs.recomputedelay);
     Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
     $timeout.cancel(currTimeoutPromise);

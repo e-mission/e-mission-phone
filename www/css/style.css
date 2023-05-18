@@ -694,6 +694,16 @@ background-image: none !important; }
   position: relative;
 }
 
+.load-more-btn {
+  background: white;
+  border-radius: 50px;
+  color: hsl(200 100% 35%);
+  border: 1px solid;
+  padding: 3px 20px;
+  margin: auto;
+  display: block;
+}
+
 /* Light theme */
 .control-icon-button{
   text-align: center;
@@ -1910,6 +1920,35 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+.buttons input,
+.buttons select {
+  display: flex;
+  text-align: center;
+  margin: 0 2px;
+  border: 1px solid rgb(20 20 20 / .2);
+  border-radius: 10px;
+  font-size: 13px;
+  line-height: .8;
+  color: #222;
+}
+
+.buttons input[type="date"] {
+  font-size: 0;
+  width: min-content;
+}
+
+.buttons input[type="date"]:before {
+  content: attr(placeholder) !important;
+  font-size: 12px;
+  margin: 5px;
+}
+.buttons input[type="date"]:after {
+  content: "";
+  font-size: 14px;
+  margin: 5px;
+  font-family: "Ionicons";
 }
 
 .enketo-plugin input[name*="_date"],
