@@ -89,14 +89,12 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 return Promise.resolve(false);
             }
             // we want to validate before saving because we don't want to save
-            // a downloaded configuration
-            if (!dc.validateToken(dc.scannedToken, downloadedConfig)) {
-                Logger.log("UI_CONFIG: unable to validate token "+dc.scannedToken+" against config ", downloadedConfig.opcode);
-                return Promise.resolve(false);
-            }
+            // an invalid configuration
+            const subgroup = dc.extractSubgroup(dc.scannedToken, downloadedConfig);
             // we can use angular.extend since urlComponents is not nested
             // need to change this to angular.merge if that changes
-            const toSaveConfig = angular.extend(downloadedConfig, {joined: dc.scannedToken});
+            const toSaveConfig = angular.extend(downloadedConfig,
+                {joined: {opcode: dc.scannedToken, study_name: newStudyLabel, subgroup: subgroup}});
             const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
                 CONFIG_PHONE_UI, toSaveConfig);
             const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
@@ -176,7 +174,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
      * - then we need to re-validate the token against the study config,
      * and the subgroups in the study config, in particular.
      *
-     * So let's support two separate functions here - extractStudyName and validateToken
+     * So let's support two separate functions here - extractStudyName and extractSubgroup
      */
     dc.extractStudyName = function(token) {
         const tokenParts = token.split("_");
@@ -190,7 +188,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         return tokenParts[1];
     }
 
-    dc.validateToken = function(token, config) {
+    dc.extractSubgroup = function(token, config) {
         if (config.opcode) {
             // new style study, expects token with sub-group
             const tokenParts = token.split("_");
@@ -203,7 +201,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     throw new Error("Invalid opcode, subgroup '"+tokenParts[2]+"' not found in list '"+config.opcode.subgroups+"'");
                 } else {
                     console.log("subgroup "+tokenParts[2]+" found in list");
-                    return true;
+                    return tokenParts[2];
                 }
             } else {
                 if (tokenParts[2] != "default") {
@@ -211,7 +209,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     throw new Error("Invalid opcode, no subgroups, expected 'default' subgroup");
                 } else {
                     console.log("no subgroups in config, 'default' subgroup found in token ");
-                    return true;
+                    return tokenParts[2];
                 }
             }
         } else {
@@ -222,7 +220,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
              * by default since download will fail if it is invalid
             */
             console.log("Old-style study, expecting token without a subgroup...");
-            return true;
+            return undefined;
         }
     }
 
@@ -231,7 +229,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     dc.initByUser = function(urlComponents) {
         dc.scannedToken = urlComponents.token;
         loadSavedConfig().then((savedConfig) => {
-            if(savedConfig && angular.equals(savedConfig.joined, urlComponents)) {
+            if(savedConfig && angular.equals(savedConfig.joined.opcode, dc.scannedToken)) {
                 Logger.log("UI_CONFIG: existing label " + JSON.stringify(savedConfig.label) +
                     " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
                 // use dc.$apply here to be consistent with $http so we can consistently
@@ -262,7 +260,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             }
             // if 'autoRefresh' is set, we will check for updates
             if (existingConfig.autoRefresh) {
-                loadNewConfig(existingConfig.joined, false, existingConfig.version)
+                loadNewConfig(existingConfig.joined.study_name, false, existingConfig.version)
                     .then((wasUpdated) => {
                         if (!wasUpdated) {
                             // config was not updated so we will proceed with existing config
