@@ -39,12 +39,8 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         }
     }
 
-    var readConfigFromServer = function(label, source) {
-        Logger.log("Received request to switch to "+label+" from "+source);
-        if (source != "github") {
-            Logger.displayError("Invalid source", "Configurations from "+source+" not supported, please contact the app developer");
-            return;
-        };
+    var readConfigFromServer = function(label) {
+        Logger.log("Received request to join "+label);
         // The URL prefix from which config files will be downloaded and read.
         // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
         const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
@@ -81,20 +77,26 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 
     /**
      * loadNewConfig download and load a new config from the server if it is a differ
-     * @param {[]} urlComponents specify the label and source of the config to load
+     * @param {[]} urlComponents specify the label of the config to load
      * @param {} thenGoToIntro whether to go to the intro screen after loading the config
      * @param {} [existingVersion=null] if the new config's version is the same, we won't update
      * @returns {boolean} boolean representing whether the config was updated or not
      */
-    var loadNewConfig = function (urlComponents, thenGoToIntro, existingVersion=null) {
-        return readConfigFromServer(urlComponents.label, urlComponents.source).then((downloadedConfig) => {
+    var loadNewConfig = function (newStudyLabel, thenGoToIntro, existingVersion=null) {
+        return readConfigFromServer(newStudyLabel).then((downloadedConfig) => {
             if (downloadedConfig.version == existingVersion) {
                 Logger.log("UI_CONFIG: Not updating config because version is the same");
                 return Promise.resolve(false);
             }
+            // we want to validate before saving because we don't want to save
+            // a downloaded configuration
+            if (!dc.validateToken(dc.scannedToken, downloadedConfig)) {
+                Logger.log("UI_CONFIG: unable to validate token "+dc.scannedToken+" against config ", downloadedConfig.opcode);
+                return Promise.resolve(false);
+            }
             // we can use angular.extend since urlComponents is not nested
             // need to change this to angular.merge if that changes
-            const toSaveConfig = angular.extend(downloadedConfig, {joined: urlComponents});
+            const toSaveConfig = angular.extend(downloadedConfig, {joined: dc.scannedToken});
             const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
                 CONFIG_PHONE_UI, toSaveConfig);
             const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
@@ -164,23 +166,93 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         }
     }
 
+    /*
+     * We want to support both old style and new style tokens.
+     * Theoretically, we don't need anything from this except the study
+     * name, but we should re-validate the token for extra robustness.
+     * The control flow here is a bit tricky, though.
+     * - we need to first get the study name
+     * - then we need to retrieve the study config
+     * - then we need to re-validate the token against the study config,
+     * and the subgroups in the study config, in particular.
+     *
+     * So let's support two separate functions here - extractStudyName and validateToken
+     */
+    dc.extractStudyName = function(token) {
+        const tokenParts = token.split("_");
+        if (tokenParts.length < 3) {
+          // all tokens must have at least nrelop_[study name]_...
+          throw new Error("token "+token+" does not have at least two '_' characters");
+        }
+        if (tokenParts[0] != "nrelop") {
+          throw new Error("token "+token+" does not start with 'nrelop', please re-check");
+        }
+        return tokenParts[1];
+    }
+
+    dc.validateToken = function(token, config) {
+        if (config.opcode) {
+            // new style study, expects token with sub-group
+            const tokenParts = token.split("_");
+            if (tokenParts.length <= 3) { // no subpart defined
+                throw new Error("Invalid opcode format, expected 'nrelop_study_subgroup_[random string]");
+            }
+            if (config.opcode.subgroups) {
+                if (config.opcode.subgroups.indexOf(tokenParts[2]) == -1) {
+                // subpart not in config list
+                    throw new Error("Invalid opcode, subgroup '"+tokenParts[2]+"' not found in list '"+config.opcode.subgroups+"'");
+                } else {
+                    console.log("subgroup "+tokenParts[2]+" found in list");
+                    return true;
+                }
+            } else {
+                if (tokenParts[2] != "default") {
+                    // subpart not in config list
+                    throw new Error("Invalid opcode, no subgroups, expected 'default' subgroup");
+                } else {
+                    console.log("no subgroups in config, 'default' subgroup found in token ");
+                    return true;
+                }
+            }
+        } else {
+            /* old style study, expect token without subgroup
+             * nothing further to validate at this point
+             * only validation required is `nrelop_` and valid study name
+             * first is already handled in extractStudyName, second is handled
+             * by default since download will fail if it is invalid
+            */
+            console.log("Old-style study, expecting token without a subgroup...");
+            return true;
+        }
+    }
+
+
+
     dc.initByUser = function(urlComponents) {
-        const newStudyLabel = urlComponents.label;
+        dc.scannedToken = urlComponents.token;
         loadSavedConfig().then((savedConfig) => {
-            if(savedConfig && angular.equals(savedConfig.joined.label, urlComponents)) {
+            if(savedConfig && angular.equals(savedConfig.joined, urlComponents)) {
                 Logger.log("UI_CONFIG: existing label " + JSON.stringify(savedConfig.label) +
                     " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
-                // use $scope.$apply here to be consistent with $http so we can consistently
+                // use dc.$apply here to be consistent with $http so we can consistently
                 // skip it in the listeners
                 // only loaded existing config, so it is ready, but not changed
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady);
                 return; // labels are the same
             }
             // if the labels are different, we need to download the new config
-            return loadNewConfig(urlComponents, true)
-                .catch((fetchErr) => {
-                    Logger.displayError("Unable to download study config", fetchErr);
-                });
+            try {
+                const newStudyLabel = dc.extractStudyName(dc.scannedToken);
+                return loadNewConfig(newStudyLabel, true)
+                    // on successful download, cache the token in the rootScope
+                    .then((wasUpdated) => {$rootScope.scannedToken = dc.scannedToken})
+                    .catch((fetchErr) => {
+                        Logger.displayError("Unable to download study config", fetchErr);
+                    });
+            } catch (error) {
+                Logger.displayError("Invalid token format", error);
+                return Promise.reject(error);
+            }
         });
     };
     dc.initAtLaunch = function () {
