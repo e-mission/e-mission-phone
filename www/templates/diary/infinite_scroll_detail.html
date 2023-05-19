@@ -1,40 +1,43 @@
-<ion-view ng-class="tripgj.background" translate-namespace="diary">
-    <ion-nav-title>{{ tripgj.display_date }}</ion-nav-title>
+<ion-view translate-namespace="diary">
+    <ion-nav-title>{{ trip.display_date }}</ion-nav-title>
     <ion-nav-buttons side="right">
          <button class="button button-icon ion-help" ng-click="startWalkthrough()"></button>
     </ion-nav-buttons>
-    <ion-content class="has-header" ng-class="tripgj.background" overflow-scroll="true" padding="true">
+    <ion-content class="has-header" overflow-scroll="true" padding="true">
         <div class="row" style="">
 
             <div class="col-30">
-                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{tripgj.display_start_time}}</div>
-                <div style="font-size: 15px;white-space: nowrap; width: 0px; color: #999; display: {{ tripgj.common.earlierOrLater == ''? 'none':'block';  }}"><img src="{{ tripgj.common.earlierOrLater[0] == '-'? 'img/minus.gif':'img/plus.gif';  }}" style="width: 15px; margin-right: 8px;">{{tripgj.common.displayEarlierLater}}</div>
-                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{tripgj.display_end_time}}
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{trip.display_start_time}}</div>
+                <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{trip.display_end_time}}
                 </div>
             </div>
 
             <div class="col-70">
 
                 <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: '0'}};">
-                <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
-            {{tripgj.start_display_name}}
-
+                    <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
+                    {{trip.start_display_name}}
                 </div>
                 <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-                <i class="icon ion-flag" style="font-size: 16px; left: 0; color: #0088ce;"></i>
-            {{tripgj.end_display_name}}
+                    <i class="icon ion-flag" style="font-size: 16px; left: 0; color: #0088ce;"></i>
+                    {{trip.end_display_name}}
                 </div>
             </div>
         </div>
         <div style="height: 10px;"></div>
-        <leaflet geojson="tripgj.geojson" id="infscroll-detail" defaults="mapCtrl.defaults" 
+        <leaflet geojson="trip.geojson" id="infscroll-detail" defaults="mapCtrl.defaults" 
             height="50%" width="100%" data-tap-disabled="true">
         </leaflet>
         <div style="height: 15px;"></div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
-          <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
-          <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.distance'}}</p>{{tripgj.display_distance}} {{tripgj.display_distance_suffix}}</div>
-          <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.time'}}</p>{{tripgj.display_time}}</div>
+            <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
+            <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.distance'}}</p>{{trip.display_distance}} {{trip.display_distance_suffix}}</div>
+            <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.time'}}</p>{{trip.display_time}}</div>
+            <div id="sectionPct" class="col">
+              <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in trip.percentages" style="margin-left: 10px; margin-right: 10px; font-size: 15px;" ng-style="{{sectionPct.color}}"></i>
+              <br>
+              <a ng-repeat="sectionPct in trip.percentages" style="font-size: 10px; margin-left: 10px; margin-right: 10px;">{{sectionPct.pct}}%</a>
+            </div>
         </div>
         <div style="height: 20px;"></div>
         <div class="row" style="margin-top: 0px">
@@ -46,8 +49,23 @@
                 recomputedelay=2 class="col-90" timeline-entry="trip"></linkedsurvey>
             <verifycheck linkedtag="{{surveyOpt.elementTag}}" linkedid="infscroll-detail-labels"
                 class="col-10 diarycheckmark-container center-vert center-horiz" style="padding-left: 10px"></verifycheck>
-        </div>   
+        </div>
         <div style="height: 20px;"></div>
+         <div ng-if="trip.sections.length > 1" id="sectionList" class="col">
+              <div class="row" ng-repeat="sectionFmt in formattedSectionProperties" style="padding: 2px; border-bottom-width: 1px; border-bottom-style: solid; border-bottom-color: #eeeeee; margin-top: 15px;">
+                    <div class="col" style="font-size: 15px;line-height: 15px; margin-left:20px;">
+                        <p style="margin-bottom: 0; font-weight: 500;">{{sectionFmt.fmt_time}}</p>
+                        <p>{{sectionFmt.fmt_time_range}}</p>
+                    </div>
+                    <div class="col" style="font-size: 22px;">
+                        {{sectionFmt.fmt_distance}} {{sectionFmt.fmt_distance_suffix}}
+                    </div>
+                  <div class="col" style="text-align: center"><i class="{{sectionFmt.icon}}", style="font-size: 25px; color: {{sectionFmt.color}}"></i></div>
+              </div>
+          </div>
+        <div id="chart">
+            <svg></svg>
+        </div>
         <div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"
                 ng-click="refreshMap()" translate>{{'map-refresh'}}</button>
