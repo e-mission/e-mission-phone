@@ -3,22 +3,22 @@
         <!-- <div class="intro-space"></div> -->
         <div class="intro-title">
         <center><img alt="NREL OpenPATH icon" src="img/icon.png"/ style="width: 25%; height: auto;"></center>
-        </div>
-        <div class="intro-text">
-        <div>
         <center><button class="button button-clear button-dark" ng-click="showDetails($event)"><b translate>{{'.welcome-to-nrel-openpath'}}ℹ️ </b></button></center>
         </div>
-        <!--  -->
+        <div class="intro-text">
+        <p translate>{{'.proceed-further'}} </p>
 
-        <span translate>{{'.proceed-further'}} </span>
+        <p translate>{{'.what-is-opcode'}} </p>
 
         <div class="intro-space"></div>
 
         <ion-list>
             <ion-item class="item-text-wrap">
             <div>
-            <i class="icon ion-iphone"></i>
-            <span translate>{{'.proceed-phone'}} </span>
+            <button ng-enabled="scanEnabled" class="button button-block button-balanced" ng-click="scanCode()">
+              <span translate>{{'.scan-button'}}</span>
+            </button>
+            <span class="join-inline-info" translate>{{'.scan-details'}} </span>
             </div>
             </ion-item>
             <ion-item class="item-text-wrap">
@@ -26,17 +26,25 @@
             </ion-item>
             <ion-item class="item-text-wrap">
             <div>
-            <i class="icon ion-laptop"></i>
-            <span translate>{{'.proceed-laptop'}}</span>
+            <button ng-enabled="False" class="button button-block button-clear button-royal">
+            <span translate>{{'.click-link-button'}}</span>
+            </button>
+            <span class="join-inline-info" translate>{{'.click-link-details'}}</span>
+            </div>
+            </ion-item>
+            <ion-item class="item-text-wrap">
+            <center> <b> - <span translate>{{'.or'}}</span> - </b> </center>
+            </ion-item>
+            <ion-item class="item-text-wrap">
+            <div>
+            <button class="button button-block button-positive" ng-click="pasteCode()">
+              <span translate>{{'.paste-button'}}</span>
+            </button>
+            <span class="join-inline-info" translate>{{'.paste-details'}}</span>
             </div>
             </ion-item>
         </ion-list>
         <div class="intro-space"></div>
         </div>
     </ion-content>
-    <ion-footer-bar class="bar-positive">
-      <button ng-enabled="scanEnabled" class="button button-block button-clear" ng-click="scanCode()">
-        <span translate>{{'.scan-now'}}</span>
-      </button>
-    </ion-footer-bar>
 </ion-view>
