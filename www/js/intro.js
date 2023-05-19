@@ -77,32 +77,22 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.overallStatus = false;
 
-  // Adapted from https://stackoverflow.com/a/63363662/4040267
-  // made available under a CC BY-SA 4.0 license
-
-  $scope.generateRandomToken = function(length) {
-    var randomInts = window.crypto.getRandomValues(new Uint8Array(length * 2));
-    var randomChars = Array.from(randomInts).map((b) => String.fromCharCode(b));
-    var randomString = randomChars.join("");
-    var validRandomString = window.btoa(randomString).replace(/[+/]/g, "");
-    var truncatedRandomString = validRandomString.substring(0, length);
-    return "nrelop_"+$scope.ui_config.name+"_"+truncatedRandomString;
-  }
-
   $scope.disagree = function() {
     $state.go('root.main.heatmap');
   };
 
   $scope.agree = function() {
-    $scope.randomToken = $scope.generateRandomToken(45);
-    window.Logger.log("Signing in with random token "+$scope.randomToken);
-
+    $scope.scannedToken = $scope.ui_config.joined.opcode;
     StartPrefs.markConsented().then(function(response) {
       $ionicHistory.clearHistory();
-      if ($state.is('root.intro')) {
-        $scope.next();
+      if ($scope.scannedToken) {
+        $scope.login($scope.scannedToken);
       } else {
-        StartPrefs.loadPreferredScreen();
+          if ($state.is('root.intro')) {
+            $scope.next();
+          } else {
+            StartPrefs.loadPreferredScreen();
+          }
       }
     });
   };
@@ -126,68 +116,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         window.Logger.log(window.Logger.LEVEL_INFO, errorMsg + ' ' + res);
       });
   }
-
-  $scope.loginNew = function() {
-    $scope.login($scope.randomToken);
-  };
-
-  $scope.typeExisting = function() {
-    $scope.data = {};
-    const tokenPopup = $ionicPopup.show({
-        template: '<input type="String" ng-model="data.existing_token">',
-        title: $translate.instant('login.enter-existing-token') + '<br>',
-        scope: $scope,
-        buttons: [
-          {
-            text: '<b>' + $translate.instant('login.button-accept') + '</b>',
-            type: 'button-positive',
-            onTap: function(e) {
-              if (!$scope.data.existing_token) {
-                //don't allow the user to close unless he enters a username
-
-                e.preventDefault();
-              } else {
-                return $scope.data.existing_token;
-              }
-            }
-          },{
-            text: '<b>' + $translate.instant('login.button-decline') + '</b>',
-            type: 'button-stable',
-            onTap: function(e) {
-              return null;
-            }
-          }
-        ]
-    });
-    tokenPopup.then(function(token) {
-        if (token != null) {
-            $scope.alreadySaved = false;
-            $scope.login(token);
-        }
-    }).catch(function(err) {
-        $scope.alertError(err);
-    });
-  };
-
-  $scope.scanExisting = function() {
-    const EXPECTED_PREFIX = "emission://login_token?token=";
-    cordova.plugins.barcodeScanner.scan(
-      function (result) {
-          if (result.format == "QR_CODE" &&
-              result.cancelled == false &&
-              result.text.startsWith(EXPECTED_PREFIX)) {
-              const extractedToken = result.text.substring(EXPECTED_PREFIX.length, result.length);
-              Logger.log("From QR code, extracted token "+extractedToken);
-              $scope.alreadySaved = false;
-              $scope.login(extractedToken);
-          } else {
-              $ionicPopup.alert({template: "invalid token format "+result.text});
-          }
-      },
-      function (error) {
-          $ionicPopup.alert({template: "Scanning failed: " + error});
-      });
-  };
 
   $scope.login = function(token) {
     window.cordova.plugins.OPCodeAuth.setOPCode(token).then(function(opcode) {
