@@ -5,23 +5,28 @@
         <button class="button button-icon" ng-click="increaseHeight()">
             <i class="icon ion-arrow-resize"></i>
         </button>
+        <div class="filter-select-wrapper">
+            <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
         <select id="filter-select" ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
             <option ng-repeat="filter in filterInputs" value="{{filter.key}}" translate>
                 {{filter.text}}
-            </option>
+                </option>
             <option value="show-all" translate>
                 {{'.show-all'}}
-            </option>
-        </select>
-        <!-- if there are no filter inputs, just show "All Trips" and disable the select -->
-        <select ng-if="!filterInputs" style="appearance: button; -webkit-appearance: button; pointer-events: none">
-            <option value="show-all" translate>
-                {{'.show-all'}}
-            </option>
-        </select>
-        <input type="date" ng-model="infScrollControl.selectedDay" ng-change="loadWeekOfSelectedDay()"
-                min="{{infScrollControl.pipelineRange.start_date}}" max="{{infScrollControl.pipelineRange.end_date}}"
-                placeholder="{{infScrollControl.selRangeText}}">
+                </option>
+            </select>
+            <!-- if there are no filter inputs, just show "All Trips" and disable the select -->
+            <select ng-if="!filterInputs" style="appearance: button; -webkit-appearance: button; pointer-events: none">
+                <option value="show-all" translate>
+                    {{'.show-all'}}
+                </option>
+            </select>
+        </div>
+        <div class="date-input-wrapper" data-text="{{infScrollControl.selRangeText}}">
+            <input type="date" ng-model="infScrollControl.selectedDay" ng-change="loadWeekOfSelectedDay()"
+                min="{{infScrollControl.pipelineRange.start_date}}" max="{{infScrollControl.pipelineRange.end_date}}">
+            <hr class="date-input-divider" />
+        </div>
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">

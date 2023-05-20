@@ -302,7 +302,8 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
               $scope.infScrollControl.latestLoadedTs = $scope.infScrollControl.latestLoadedTs + ONE_WEEK;
           }
         }
-        $scope.infScrollControl.selRangeText = moment($scope.infScrollControl.oldestLoadedTs*1000).format("L") + "—" + moment($scope.infScrollControl.latestLoadedTs*1000).format("L");
+        $scope.infScrollControl.selRangeText = moment($scope.infScrollControl.oldestLoadedTs*1000).format("L")
+                                            + "\n" + moment($scope.infScrollControl.latestLoadedTs*1000).format("L");
         $scope.recomputeListEntries();
         Logger.log("Broadcasting infinite scroll complete");
         $ionicLoading.hide();
