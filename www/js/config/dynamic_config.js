@@ -2,7 +2,7 @@
 
 angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
-        $window, $state, $rootScope, $timeout, Logger) {
+        $window, $state, $rootScope, $timeout, Logger, $translate) {
     // also used in the startprefs class
     // but without importing this
     const CONFIG_PHONE_UI="config/app_ui_config";
@@ -72,7 +72,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     return savedConfig;
                 }
             })
-            .catch((err) => Logger.displayError("Unable to read saved config", err));
+            .catch((err) => Logger.displayError($translate.instant('config.unable-read-saved-config'), err));
     }
 
     /**
@@ -106,7 +106,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     if (thenGoToIntro) $state.go("root.intro")
                 })
                 .then(() => true)
-                .catch((storeError) => Logger.displayError("Error storing downloaded study configuration", storeError));
+                .catch((storeError) => Logger.displayError($translate.instant('config.unable-to-store-config'), storeError));
         });
     }
 
@@ -180,10 +180,10 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         const tokenParts = token.split("_");
         if (tokenParts.length < 3) {
           // all tokens must have at least nrelop_[study name]_...
-          throw new Error("token "+token+" does not have at least two '_' characters");
+          throw new Error($translate.instant('config.not-enough-parts-old-style', {"token": token}));
         }
         if (tokenParts[0] != "nrelop") {
-          throw new Error("token "+token+" does not start with 'nrelop', please re-check");
+          throw new Error($translate.instant('config.no-nrelop-start', {token: token}));
         }
         return tokenParts[1];
     }
@@ -193,20 +193,20 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             // new style study, expects token with sub-group
             const tokenParts = token.split("_");
             if (tokenParts.length <= 3) { // no subpart defined
-                throw new Error("Invalid opcode format, expected 'nrelop_study_subgroup_[random string]");
+                throw new Error($translate.instant('config.not-enough-parts', {token: token}));
             }
             if (config.opcode.subgroups) {
                 if (config.opcode.subgroups.indexOf(tokenParts[2]) == -1) {
                 // subpart not in config list
-                    throw new Error("Invalid opcode, subgroup '"+tokenParts[2]+"' not found in list '"+config.opcode.subgroups+"'");
+                    throw new Error($translate.instant('config.invalid-subgroup', {token: token, subgroup: tokenParts[2], config_subgroups: config.opcode.subgroups}));
                 } else {
-                    console.log("subgroup "+tokenParts[2]+" found in list");
+                    console.log("subgroup "+tokenParts[2]+" found in list "+config.opcode.subgroups);
                     return tokenParts[2];
                 }
             } else {
                 if (tokenParts[2] != "default") {
                     // subpart not in config list
-                    throw new Error("Invalid opcode, no subgroups, expected 'default' subgroup");
+                    throw new Error($translate.instant('config.invalid-subgroup', {token: token}));
                 } else {
                     console.log("no subgroups in config, 'default' subgroup found in token ");
                     return tokenParts[2];
@@ -245,10 +245,10 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     // on successful download, cache the token in the rootScope
                     .then((wasUpdated) => {$rootScope.scannedToken = dc.scannedToken})
                     .catch((fetchErr) => {
-                        Logger.displayError("Unable to download study config", fetchErr);
+                        Logger.displayError($translate.instant('config.unable-download-config'), fetchErr);
                     });
             } catch (error) {
-                Logger.displayError("Invalid token format", error);
+                Logger.displayError($translate.instant('config.invalid-opcode-format'), error);
                 return Promise.reject(error);
             }
         });
@@ -276,7 +276,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
         }).catch((err) => {
-            Logger.displayError("Error loading config on app start", err)
+            Logger.displayError($translate('config.error-loading-config-app-start'), err)
         });
     };
     $ionicPlatform.ready().then(function() {

@@ -465,5 +465,17 @@
         "dont-force-kill": "Do not force kill the app",
         "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
         "close": "Close"
+    },
+    "config": {
+        "unable-read-saved-config": "Unable to read saved config",
+        "unable-to-store-config": "Unable to store downladed config",
+        "not-enough-parts-old-style": "OPcode {{token}} does not have at least two '_' characters",
+        "no-nrelop-start": "OPcode {{token}} does not start with 'nrelop'",
+        "not-enough-parts": "OPcode {{token}} does not have at least three '_' characters",
+        "invalid-subgroup": "Invalid OPcode {{token}}, subgroup {{subgroup}} not found in list {{config_subgroups}}",
+        "invalid-subgroup-no-default": "Invalid OPcode {{token}}, no subgroups, expected 'default' subgroup",
+        "unable-download-config": "Unable to download study config",
+        "invalid-opcode-format": "Invalid OPcode format",
+        "error-loading-config-app-start": "Error loading config on app start"
     }
 }
