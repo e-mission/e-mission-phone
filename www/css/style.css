@@ -697,8 +697,8 @@ background-image: none !important; }
 .load-more-btn {
   background: white;
   border-radius: 50px;
-  color: hsl(200 100% 35%);
-  border: 1px solid;
+  color: #222;
+  border: 1px solid rgb(0 0 0 / .2);
   padding: 3px 20px;
   margin: auto;
   display: block;
@@ -946,6 +946,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag, .stop-time-tag {
   position: absolute;
   display: flex;
+  width: max-content;
   padding: 0 .5em;
   left: 50%;
   border-radius: 50px;
