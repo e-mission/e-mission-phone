@@ -40,20 +40,20 @@ angular.module('emission.survey.multilabel.infscrollfilters',[
 
     sf.UNLABELED = {
         key: "unlabeled",
-        text: $translate.instant(".unlabeled"),
+        text: $translate.instant("diary.unlabeled"),
         filter: unlabeledCheck,
         width: "col-50"
     }
 
     sf.INVALID_EBIKE = {
         key: "invalid_ebike",
-        text: $translate.instant(".invalid-ebike"),
+        text: $translate.instant("diary.invalid-ebike"),
         filter: invalidCheck
     }
 
     sf.TO_LABEL = {
         key: "to_label",
-        text: $translate.instant(".to-label"),
+        text: $translate.instant("diary.to-label"),
         filter: toLabelCheck,
         width: "col-50"
     }

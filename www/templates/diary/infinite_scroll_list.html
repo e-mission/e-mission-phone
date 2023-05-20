@@ -7,12 +7,13 @@
         </button>
         <div class="filter-select-wrapper">
             <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
-        <select id="filter-select" ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
-            <option ng-repeat="filter in filterInputs" value="{{filter.key}}" translate>
-                {{filter.text}}
+                <option ng-repeat="filter in filterInputs" value="{{filter.key}}">
+                    {{filter.text | translate}}
+                    {{filter.state && data.displayTrips ?
+                        '(' + data.displayTrips.length + '/' + data.allTrips.length + ')' : ''}}
                 </option>
-            <option value="show-all" translate>
-                {{'.show-all'}}
+                <option value="show-all">
+                    {{'diary.show-all' | translate}} ({{data.allTrips.length}})
                 </option>
             </select>
             <!-- if there are no filter inputs, just show "All Trips" and disable the select -->

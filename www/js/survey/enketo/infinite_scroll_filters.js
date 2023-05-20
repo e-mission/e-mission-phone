@@ -20,13 +20,13 @@ angular.module('emission.survey.enketo.trip.infscrollfilters',[
 
     sf.UNLABELED = {
         key: "unlabeled",
-        text: $translate.instant(".unlabeled"),
+        text: $translate.instant("diary.unlabeled"),
         filter: unlabeledCheck
     }
 
     sf.TO_LABEL = {
         key: "to_label",
-        text: $translate.instant(".to-label"),
+        text: $translate.instant("diary.to-label"),
         filter: unlabeledCheck
     }
 

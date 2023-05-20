@@ -422,17 +422,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.data.displayTrips = $scope.data.allTrips;
     };
 
-    const select = $('#filter-select');
-    const sp = '\u2005'
-
-    const selectedFilter = select.find(":selected");
-    const text = selectedFilter.text().split(sp)[0];
-    selectedFilter.text(`${text + sp}(${$scope.data.displayTrips.length}/${$scope.data.allTrips.length})`);
-
-    const showAllFilter = select.find('[value="show-all"]');
-    const showAllText = showAllFilter.text().split(sp)[0];
-    showAllFilter.text(`${showAllText + sp}(${$scope.data.allTrips.length})`);
-    
     $scope.data.listEntries = ['header'];
     $scope.data.displayTrips.forEach((cTrip) => {
       const start_place = cTrip.start_confirmed_place;
