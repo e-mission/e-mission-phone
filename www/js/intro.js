@@ -36,7 +36,6 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         i18nUtils.geti18nFileName("templates/", "intro/summary", ".html"),
         i18nUtils.geti18nFileName("templates/", "intro/consent", ".html"),
         i18nUtils.geti18nFileName("templates/", "intro/sensor_explanation", ".html"),
-        i18nUtils.geti18nFileName("templates/", "intro/login", ".html"),
         i18nUtils.geti18nFileName("templates/", "intro/survey", ".html")
       ]);
       allIntroFiles.then(function(allIntroFilePaths) {
@@ -45,8 +44,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
           $scope.summaryFile = allIntroFilePaths[0];
           $scope.consentFile = allIntroFilePaths[1];
           $scope.explainFile = allIntroFilePaths[2];
-          $scope.loginFile = allIntroFilePaths[3];
-          $scope.surveyFile = allIntroFilePaths[4];
+          $scope.surveyFile = allIntroFilePaths[3];
         });
       });
   }
