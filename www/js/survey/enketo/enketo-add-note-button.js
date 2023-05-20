@@ -164,7 +164,6 @@ angular.module('emission.survey.enketo.add-note-button',
         // initialize additions array as empty if it doesn't already exist
         timelineEntry.additionsList ||= [];
         enbs.populateManualInputs(timelineEntry, enbs.SINGLE_KEY, manualResultMap[enbs.SINGLE_KEY]);
-        timelineEntry.finalInference = {};
     } else {
         console.log("timelineEntry information not yet bound, skipping fill");
     }
