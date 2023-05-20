@@ -24,7 +24,7 @@
             </select>
         </div>
         <div class="date-input-wrapper" data-text="{{infScrollControl.selRangeText}}">
-            <input type="date" ng-model="infScrollControl.selectedDay" ng-change="loadWeekOfSelectedDay()"
+            <input type="date" ng-model="infScrollControl.selectedDay" ng-change="loadWeekOfSelectedDay()" value="{{infScrollControl.selectedDay}}"
                 min="{{infScrollControl.pipelineRange.start_date}}" max="{{infScrollControl.pipelineRange.end_date}}">
             <hr class="date-input-divider" />
         </div>
