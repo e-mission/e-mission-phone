@@ -6,18 +6,19 @@
  */
 
 angular.module('emission.splash.localnotify', ['emission.plugin.logger',
-                                              'emission.splash.startprefs'])
+                                              'emission.splash.startprefs',
+                                              'ionic-toast'])
 .factory('LocalNotify', function($window, $ionicPlatform, $ionicPopup,
-    $state, $rootScope, Logger) {
+    $state, $rootScope, ionicToast, Logger) {
   var localNotify = {};
 
   /*
    * Return the state to redirect to, undefined otherwise
    */
-  localNotify.getRedirectState = function(notification) {
+  localNotify.getRedirectState = function(data) {
     // TODO: Think whether this should be in data or in category
-    if (angular.isDefined(notification.data)) {
-      return [notification.data.redirectTo, notification.data.redirectParams];
+    if (angular.isDefined(data)) {
+      return [data.redirectTo, data.redirectParams];
     }
     return undefined;
   }
@@ -61,7 +62,11 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
     // cancel the notification to avoid "hey! I just fixed this, why is the notification still around!"
     // issues
     // $window.cordova.plugins.notification.local.cancel(notification.id);
-    var [targetState, targetParams] = localNotify.getRedirectState(notification);
+    let redirectData = notification;
+    if (state.event == 'action') {
+      redirectData = notification.data.action;
+    }
+    var [targetState, targetParams] = localNotify.getRedirectState(redirectData);
     Logger.log("targetState = "+targetState);
     if (angular.isDefined(targetState)) {
       if (state.foreground == true) {
@@ -84,6 +89,7 @@ angular.module('emission.splash.localnotify', ['emission.plugin.logger',
         // alert("notification cancelled, no report");
     });
     $window.cordova.plugins.notification.local.on('trigger', function (notification, state, data) {
+      ionicToast.show(`Notification: ${notification.title}\n${notification.text}`, 'bottom', false, 250000);
       localNotify.handleNotification(notification, state, data);
     });
     $window.cordova.plugins.notification.local.on('click', function (notification, state, data) {

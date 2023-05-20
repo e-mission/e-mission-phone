@@ -40,29 +40,41 @@ angular.module('emission.survey.enketo.add-note-button',
 
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   $scope.getPrefillTimes = () => {
+
+    let begin = $scope.timelineEntry.start_ts || $scope.timelineEntry.enter_ts;
+    let stop = $scope.timelineEntry.end_ts || $scope.timelineEntry.exit_ts;
+
+    // if addition(s) already present on this timeline entry, `begin` where the last one left off
+    $scope.timelineEntry.additionsList.forEach(a => {
+      if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop)
+        begin = a.data.end_ts;
+    });
     
-    const begin = $scope.timelineEntry.start_fmt_time || $scope.timelineEntry.enter_fmt_time || moment.parseZone($scope.timelineEntry.exit_fmt_time).startOf('day').format() || moment.parseZone($scope.timelineEntry.end_fmt_time).startOf('day').format();
-    const stop = $scope.timelineEntry.end_fmt_time || $scope.timelineEntry.exit_fmt_time || moment.parseZone($scope.timelineEntry.enter_fmt_time).endOf('day').format() || moment.parseZone($scope.timelineEntry.start_fmt_time).endOf('day').format();
-    const momentBegin = moment.parseZone(begin);
-    let momentStop = moment.parseZone(stop);
-    // stop could be undefined because the last place will not have an exit time
-    if (!stop) {
-      // if begin is the same day as today, we will use the current time for stop
-      // else, stop will be begin + 1 hour
-      if (moment(begin).isSame(moment(), 'day')) {
-        momentStop = moment.parseZone();
-      } else {
-        momentStop = moment(momentBegin).add(1, 'hour');
-      }
+    const timezone = $scope.timelineEntry.start_local_dt?.timezone
+                      || $scope.timelineEntry.enter_local_dt?.timezone
+                      || $scope.timelineEntry.end_local_dt?.timezone
+                      || $scope.timelineEntry.exit_local_dt?.timezone;
+    const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
+    const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
+
+    const prefills = {}
+    // Fill in only the fields that are present
+    // Enketo requires these specific date/time formats
+    if (momentBegin) {
+      prefills.Start_date = momentBegin.format('YYYY-MM-DD');
+      prefills.Start_time = momentBegin.format('HH:mm:ss.SSSZ');
+    } else {
+      prefills.Start_date = momentStop.format('YYYY-MM-DD');
     }
 
-    return {
-      // Enketo requires these specific date/time formats
-      "Start_date": momentBegin.format('YYYY-MM-DD'),
-      "Start_time": momentBegin.format('HH:mm:ss.SSSZ'),
-      "End_date": momentStop.format('YYYY-MM-DD'),
-      "End_time": momentStop.format('HH:mm:ss.SSSZ')
+    if (momentStop) {
+      prefills.End_date = momentStop.format('YYYY-MM-DD');
+      prefills.End_time = momentStop.format('HH:mm:ss.SSSZ');
+    } else {
+      prefills.End_date = momentBegin.format('YYYY-MM-DD');
     }
+
+    return prefills;
   }
 
   const getScrollElement = function() {
@@ -152,7 +164,6 @@ angular.module('emission.survey.enketo.add-note-button',
         // initialize additions array as empty if it doesn't already exist
         timelineEntry.additionsList ||= [];
         enbs.populateManualInputs(timelineEntry, enbs.SINGLE_KEY, manualResultMap[enbs.SINGLE_KEY]);
-        timelineEntry.finalInference = {};
     } else {
         console.log("timelineEntry information not yet bound, skipping fill");
     }
