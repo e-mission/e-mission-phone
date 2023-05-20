@@ -129,7 +129,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   }
 
   dh.getFormattedSectionProperties = (trip, ImperialConfig) => {
-    return trip.sections.map((s) => ({
+    return trip.sections?.map((s) => ({
       fmt_time: dh.getLocalTimeString(s.start_local_dt),
       fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
