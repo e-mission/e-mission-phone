@@ -33,7 +33,7 @@ angular.module('emission', ['ionic',
     if (urlComponents.route == 'join') {
       ReferralHandler.setupGroupReferral(urlComponents);
       StartPrefs.loadWithPrefs();
-    } else if (urlComponents.route == 'join_study') {
+    } else if (urlComponents.route == 'login_token') {
       DynamicConfig.initByUser(urlComponents);
     }
   });
