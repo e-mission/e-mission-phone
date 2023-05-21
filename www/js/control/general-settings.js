@@ -351,14 +351,16 @@ angular.module('emission.main.control',['emission.services',
                 }
             });
         });
-        NotificationScheduler.getReminderPrefs().then((prefs) => {
-            $scope.$apply(() => {
-                const m = moment(prefs.reminder_time_of_day, 'HH:mm');
-                $scope.settings.notification.prefReminderTimeVal = m.toDate();
-                $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-                $scope.updatePrefReminderTime(false); // update the displayed time
+        if ($scope.ui_config.reminderSchemes) {
+            NotificationScheduler.getReminderPrefs().then((prefs) => {
+                $scope.$apply(() => {
+                    const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+                    $scope.settings.notification.prefReminderTimeVal = m.toDate();
+                    $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
+                    $scope.updatePrefReminderTime(false); // update the displayed time
+                });
             });
-        });
+        }
         $scope.getUserData();
     };
 
