@@ -348,7 +348,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     $scope.data.displayTrips.count = $scope.data.displayTrips.length;
     
     $scope.data.displayTimelineEntries = []
-    $scope.data.displayTrips.forEach((cTrip, i, displayTrips) => {
+    $scope.data.displayTrips.forEach((cTrip) => {
       const start_place = cTrip.start_confirmed_place;
       const end_place = cTrip.end_confirmed_place;
 
