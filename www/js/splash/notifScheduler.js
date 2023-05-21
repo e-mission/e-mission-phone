@@ -71,13 +71,14 @@ angular.module('emission.splash.notifscheduler',
     const scheduleNotifs = (scheme, notifTimes) => {
         return new Promise((rs) => {
             isScheduling = true;
+            const localeCode = $translate.use();
             const nots = notifTimes.map((n) => {
                 const nDate = n.toDate();
                 const seconds = nDate.getTime() / 1000;
                 return {
                     id: seconds,
-                    title: scheme.title,
-                    text: scheme.text,
+                    title: scheme.title[localeCode],
+                    text: scheme.text[localeCode],
                     trigger: {at: nDate},
                     actions: 'reminder-actions',
                     data: {
