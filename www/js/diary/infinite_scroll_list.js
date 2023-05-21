@@ -367,6 +367,18 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         // }
       }
 
+      /* don't display untracked time if the trips that came before and
+          after it are not displayed */
+      if (cTrip.key.includes('untracked')) {
+        const prevTrip = $scope.data.allTrips[$scope.data.allTrips.indexOf(cTrip) - 1];
+        const nextTrip = $scope.data.allTrips[$scope.data.allTrips.indexOf(cTrip) + 1];
+        const prevTripDisplayed = $scope.data.displayTrips.includes(prevTrip);
+        const nextTripDisplayed = $scope.data.displayTrips.includes(nextTrip);
+        if (prevTrip && !prevTripDisplayed || nextTrip && !nextTripDisplayed) {
+          return;
+        }
+      }
+
       // Add trip to the list
       $scope.data.displayTimelineEntries.push(cTrip);
 
