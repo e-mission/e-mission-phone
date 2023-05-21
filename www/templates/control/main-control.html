@@ -13,7 +13,7 @@
       <div class="control-list-text" translate>{{'.view-qrc'}}</div>
       <div ng-click="viewQRCode($event)" class="control-icon-button"><i class="ion-ios-grid-view"></i></div>
     </div>
-    <div class="control-list-item">
+    <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
       <div class="control-list-text" translate=".reminders-time-of-day" translate-values="{time: settings.notification.prefReminderTime}"></div>
       <div class="control-icon-button" style="position: relative">
         <i class="ion-clock"></i>
