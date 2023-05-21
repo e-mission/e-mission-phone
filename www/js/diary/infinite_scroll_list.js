@@ -345,9 +345,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     if (!alreadyFiltered) {
         $scope.data.displayTrips = $scope.data.allTrips;
     };
+    $scope.data.displayTrips.count = $scope.data.displayTrips.length;
     
     $scope.data.displayTimelineEntries = []
-    $scope.data.displayTrips.forEach((cTrip) => {
+    $scope.data.displayTrips.forEach((cTrip, i, displayTrips) => {
       const start_place = cTrip.start_confirmed_place;
       const end_place = cTrip.end_confirmed_place;
 
@@ -375,6 +376,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         const prevTripDisplayed = $scope.data.displayTrips.includes(prevTrip);
         const nextTripDisplayed = $scope.data.displayTrips.includes(nextTrip);
         if (prevTrip && !prevTripDisplayed || nextTrip && !nextTripDisplayed) {
+          $scope.data.displayTrips.count -= 1;
           return;
         }
       }
