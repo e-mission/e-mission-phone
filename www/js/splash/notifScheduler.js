@@ -182,6 +182,10 @@ angular.module('emission.splash.notifscheduler',
 
     $ionicPlatform.ready().then(async () => {
         _config = await DynamicConfig.configReady();
+        if (!_config.reminderSchemes) {
+            Logger.log("No reminder schemes found in config, not scheduling notifications");
+            return;
+        }
         setUpActions();
         update();
     });
