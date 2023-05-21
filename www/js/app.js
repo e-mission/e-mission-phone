@@ -13,10 +13,10 @@ angular.module('emission', ['ionic',
     'emission.services.email',
     'emission.intro', 'emission.main', 'emission.config.dynamic',
     'emission.config.server_conn', 'emission.join.ctrl',
-    'pascalprecht.translate'])
+    'pascalprecht.translate', 'angularLocalStorage'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, DynamicConfig, ServerConnConfig) {
+    CustomURLScheme, ReferralHandler, DynamicConfig, storage, ServerConnConfig) {
   console.log("Starting run");
   // ensure that plugin events are delivered after the ionicPlatform is ready
   // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
@@ -33,7 +33,7 @@ angular.module('emission', ['ionic',
     if (urlComponents.route == 'join') {
       ReferralHandler.setupGroupReferral(urlComponents);
       StartPrefs.loadWithPrefs();
-    } else if (urlComponents.route == 'join_study') {
+    } else if (urlComponents.route == 'login_token') {
       DynamicConfig.initByUser(urlComponents);
     }
   });
@@ -48,6 +48,11 @@ angular.module('emission', ['ionic',
       StatusBar.styleDefault();
     }
     cordova.plugin.http.setDataSerializer('json');
+    // backwards compat hack to be consistent with
+    // https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7#diff-962320754eba07107ecd413954411f725c98fd31cddbb5defd4a542d1607e5a3R160
+    // remove during migration to react native
+    storage.remove("OP_GEOFENCE_CFG");
+    cordova.plugins.BEMUserCache.removeLocalStorage("OP_GEOFENCE_CFG");
   });
   console.log("Ending run");
 })

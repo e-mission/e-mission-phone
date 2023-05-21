@@ -11,6 +11,14 @@ angular.module('emission.services', ['emission.plugin.logger',
             }, errorCallback);
     };
 
+    var processErrorMessages = function(errorMsg) {
+      if (errorMsg.includes("403")) {
+        errorMsg = "Error: OPcode does not exist on the server. " + errorMsg;
+        console.error("Error 403 found. " + errorMsg);
+      }
+      return errorMsg;
+    }
+
     this.registerUser = function(successCallback, errorCallback) {
             window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/create", successCallback, errorCallback);
     };
@@ -18,12 +26,22 @@ angular.module('emission.services', ['emission.plugin.logger',
     this.updateUser = function(updateDoc) {
         return new Promise(function(resolve, reject) {
             window.cordova.plugins.BEMServerComm.postUserPersonalData("/profile/update", "update_doc", updateDoc, resolve, reject);
+        })
+        .catch(error => {
+            error = "While updating user, " + error;
+            error = processErrorMessages(error);
+            throw(error);
         });
     };
 
     this.getUser = function() {
         return new Promise(function(resolve, reject) {
             window.cordova.plugins.BEMServerComm.getUserPersonalData("/profile/get", resolve, reject);
+        })
+        .catch(error => {
+            error = "While getting user, " + error;
+            error = processErrorMessages(error);
+            throw(error);
         });
     };
 
@@ -43,6 +61,11 @@ angular.module('emission.services', ['emission.plugin.logger',
         }
         return new Promise(function(resolve, reject) {
             window.cordova.plugins.BEMServerComm.postUserPersonalData("/usercache/putone", "the_entry", entryToPut, resolve, reject);
+        })
+        .catch(error => {
+            error = "While putting one entry, " + error;
+            error = processErrorMessages(error);
+            throw(error);
         });
     };
 
@@ -50,6 +73,11 @@ angular.module('emission.services', ['emission.plugin.logger',
         return new Promise(function(resolve, reject) {
           var dateString = date.startOf('day').format('YYYY-MM-DD');
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/timeline/getTrips/"+dateString, resolve, reject);
+        })
+        .catch(error => {
+          error = "While getting timeline for day, " + error;
+          error = processErrorMessages(error);
+          throw(error);
         });
     };
 
@@ -83,6 +111,11 @@ angular.module('emission.services', ['emission.plugin.logger',
     this.habiticaProxy = function(callOpts){
       return new Promise(function(resolve, reject){
         window.cordova.plugins.BEMServerComm.postUserPersonalData("/habiticaProxy", "callOpts", callOpts, resolve, reject);
+      })
+      .catch(error => {
+        error = "While habitica proxy, " + error;
+        error = processErrorMessages(error);
+        throw(error);
       });
     };
 
@@ -95,6 +128,11 @@ angular.module('emission.services', ['emission.plugin.logger',
         };
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/metrics/"+timeType, msgFiller, resolve, reject);
       })
+      .catch(error => {
+        error = "While getting metrics, " + error;
+        error = processErrorMessages(error);
+        throw(error);
+      });
     };
 
     this.getIncidents = function(start_ts, end_ts) {
@@ -108,6 +146,11 @@ angular.module('emission.services', ['emission.plugin.logger',
         console.log("About to call pushGetJSON for the timestamp");
         window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
       })
+      .catch(error => {
+        error = "While getting incidents, " + error;
+        error = processErrorMessages(error);
+        throw(error);
+      });
     };
 
     /*
@@ -144,6 +187,11 @@ angular.module('emission.services', ['emission.plugin.logger',
           };
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
           window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/local_date", msgFiller, resolve, reject);
+      })
+      .catch(error => {
+          error = "While getting raw entries for local date, " + error;
+          error = processErrorMessages(error);
+          throw(error);
       });
     };
 
@@ -163,6 +211,11 @@ angular.module('emission.services', ['emission.plugin.logger',
           };
           console.log("getRawEntries: about to get pushGetJSON for the timestamp");
           window.cordova.plugins.BEMServerComm.pushGetJSON("/datastreams/find_entries/timestamp", msgFiller, resolve, reject);
+      })
+      .catch(error => {
+          error = "While getting raw entries, " + error;
+          error = processErrorMessages(error);
+          throw(error);
       });
     };
 
@@ -170,6 +223,11 @@ angular.module('emission.services', ['emission.plugin.logger',
       return new Promise(function(resolve, reject) {
           console.log("getting pipeline complete timestamp");
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_complete_ts", resolve, reject);
+      })
+      .catch(error => {
+          error = "While getting pipeline complete timestamp, " + error;
+          error = processErrorMessages(error);
+          throw(error);
       });
     };
 
@@ -177,6 +235,11 @@ angular.module('emission.services', ['emission.plugin.logger',
       return new Promise(function(resolve, reject) {
           console.log("getting pipeline range timestamps");
           window.cordova.plugins.BEMServerComm.getUserPersonalData("/pipeline/get_range_ts", resolve, reject);
+      })
+      .catch(error => {
+          error = "While getting pipeline range timestamps, " + error;
+          error = processErrorMessages(error);
+          throw(error);
       });
     };
 
@@ -209,6 +272,11 @@ angular.module('emission.services', ['emission.plugin.logger',
               };
               window.cordova.plugins.BEMServerComm.pushGetJSON("/"+path, msgFiller, resolve, reject);
           }
+        })
+        .catch(error => {
+          error = "While getting aggregate data, " + error;
+          error = processErrorMessages(error);
+          throw(error);
         });
     };
 })

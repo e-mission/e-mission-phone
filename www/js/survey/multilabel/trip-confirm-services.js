@@ -29,6 +29,7 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
         }
         if (ui_config.intro.program_or_study == 'program') {
             ch.isProgram = true;
+            ch.mode_studied = ui_config.intro.mode_studied;
             // store a copy of the base input details
             ch.baseInputDetails = angular.copy(ch.inputDetails);
             ch.BASE_INPUTS = angular.copy(ch.INPUTS);
