@@ -5,7 +5,7 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.remotenotify',
                                         'emission.stats.clientstats'])
 .controller('JoinCtrl', function($scope, $state, $interval, $rootScope, 
-    $ionicPlatform, $ionicPopup, $ionicPopover) {
+    $ionicPlatform, $ionicPopup, $ionicPopover, $translate) {
     console.log('JoinCtrl invoked');
         // alert("attach debugger!");
         // PushNotify.startupInit();
@@ -52,4 +52,41 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
           });
       }
     }; // scanCode
+
+    $scope.pasteCode = function() {
+      $scope.data = {};
+      const tokenPopup = $ionicPopup.show({
+          template: '<input type="String" ng-model="data.existing_token">',
+          title: $translate.instant('login.enter-existing-token') + '<br>',
+          scope: $scope,
+          buttons: [
+            {
+              text: '<b>' + $translate.instant('login.button-accept') + '</b>',
+              type: 'button-positive',
+              onTap: function(e) {
+                if (!$scope.data.existing_token) {
+                  //don't allow the user to close unless he enters a username
+
+                  e.preventDefault();
+                } else {
+                  return $scope.data.existing_token;
+                }
+              }
+            },{
+              text: '<b>' + $translate.instant('login.button-decline') + '</b>',
+              type: 'button-stable',
+              onTap: function(e) {
+                return null;
+              }
+            }
+          ]
+      });
+      tokenPopup.then(function(token) {
+          if (token != null) {
+              handleOpenURL("emission://login_token?token="+token);
+          }
+      }).catch(function(err) {
+          $scope.alertError(err);
+      });
+    };
 });

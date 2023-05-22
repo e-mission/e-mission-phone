@@ -13,6 +13,15 @@
       <div class="control-list-text" translate>{{'.view-qrc'}}</div>
       <div ng-click="viewQRCode($event)" class="control-icon-button"><i class="ion-ios-grid-view"></i></div>
     </div>
+    <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
+      <div class="control-list-text" translate=".reminders-time-of-day" translate-values="{time: settings.notification.prefReminderTime}"></div>
+      <div class="control-icon-button" style="position: relative">
+        <i class="ion-clock"></i>
+        <input type="time" name="timeOfDay" value="{{settings.notification.prefReminderTimeOnLoad}}"
+          ng-model="settings.notification.prefReminderTimeVal" ng-change="updatePrefReminderTime()" ng-blur="updatePrefReminderTime()"
+          style="position: absolute; height: 100%; inset: 0; display: flex; opacity: 0;">
+      </div>
+    </div>
     <div class="control-list-item">
       <div class="control-list-text" translate>{{'.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
@@ -113,6 +122,10 @@
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.check-consent'}}</div>
         <div ng-click="checkConsent()" class="control-icon-button"><i class="ion-checkmark-circled"></i></div>
+      </div>
+      <div class="control-list-item">
+        <div class="control-list-text" translate>Dummy Notification in 5 Seconds</div>
+        <div ng-click="dummyNotification()" class="control-icon-button"><i class="ion-ios-bell"></i></div>
       </div>
       <div class="control-list-item">
         <div class="control-list-text" translate>{{'.invalidate-cached-docs'}}</div>

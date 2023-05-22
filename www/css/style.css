@@ -13,6 +13,15 @@ body.platform-ios {
     height: calc(100% - 90px);
 }
 
+.join-inline-info {
+  padding-bottom: 5%;
+  padding-right: 0%;
+  padding-left: 0%;
+  font-size: 13px;
+  width: 100%;
+  text-align: center;
+}
+
 [ng\:cloak], [ng-cloak], .ng-cloak {
   display: none !important;
 }
