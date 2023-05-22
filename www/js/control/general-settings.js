@@ -7,6 +7,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.localnotify',
                                         'emission.splash.notifscheduler',
                                         'ionic-datepicker',
+                                        'ionic-toast',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.main.metrics.factory',
@@ -21,7 +22,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicScrollDelegate, $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $ionicModal, $stateParams,
-               $rootScope, KVStore, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker, ionicToast,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                CarbonDatasetHelper, NotificationScheduler, LocalNotify,
@@ -361,6 +362,12 @@ angular.module('emission.main.control',['emission.services',
         });
         $scope.getUserData();
     };
+
+    $scope.copyToClipboard = (textToCopy) => {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
+        });
+    }
 
     $scope.returnToIntro = function() {
       var testReconsent = false
