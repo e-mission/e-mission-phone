@@ -945,6 +945,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag, .stop-time-tag {
   position: absolute;
   display: flex;
+  width: max-content;
   padding: 0 .5em;
   left: 50%;
   border-radius: 50px;
@@ -1919,6 +1920,16 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+.buttons input,
+.buttons select {
+  text-align: center;
+  border: 1px solid rgb(20 20 20 / .2);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #222;
+  pointer-events: all;
 }
 
 .enketo-plugin input[name*="_date"],
