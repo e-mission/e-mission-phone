@@ -580,7 +580,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
      * 
      * Let's abstract this out into our own minor state machine.
      */
-    var transition2Trip = function(transitionList) {
+    var transitions2Trips = function(transitionList) {
         var inTrip = false;
         var tripList = []
         var currStartTransitionIndex = -1;
@@ -846,7 +846,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       }
     }
 
-    var trip2Geojson = function(trip) {
+    var transitionTrip2TripObj = function(trip) {
       var tripStartTransition = trip[0];
       var tripEndTransition = trip[1];
       var tq = {key: "write_ts",
@@ -968,12 +968,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 console.log(moment(transition.data.ts * 1000).format()+":" + JSON.stringify(transition.data));
             });
             */
-            var tripsList = transition2Trip(transitionList);
+            var tripsList = transitions2Trips(transitionList);
             Logger.log("Mapped into"+tripsList.length+" trips. yay!");
             tripsList.forEach(function(trip) {
                 console.log(JSON.stringify(trip));
             });
-            var tripFillPromises = tripsList.map(trip2Geojson);
+            var tripFillPromises = tripsList.map(transitionTrip2TripObj);
             return Promise.all(tripFillPromises).then(function(raw_trip_gj_list) {
                 // Now we need to link up the trips. linking unprocessed trips
                 // to one another is fairly simple, but we need to link the
