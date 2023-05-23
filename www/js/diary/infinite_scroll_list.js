@@ -620,13 +620,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
     $scope.$on('$ionicView.enter', function(ev) {
       $scope.startTime = moment().utc()
-      // This workaround seems to no longer work
-      // In any case, only the first call to checkNewlabelTutorialDone does anything
-      /*// Workaround from
-      // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-      if(ev.targetScope !== $scope)
-        return;*/
-      // checkNewlabelTutorialDone();
     });
 
     $scope.$on('$ionicView.leave',function() {
@@ -654,16 +647,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         $scope.init(configObj);
       });
       $scope.isAndroid = $window.device.platform.toLowerCase() === "android";
-
-      $scope.$on('$ionicView.enter', function(ev) {
-        // This workaround seems to no longer work
-        // In any case, only the first call to checkNewlabelTutorialDone does anything
-        /*// Workaround from
-        // https://github.com/driftyco/ionic/issues/3433#issuecomment-195775629
-        if(ev.targetScope !== $scope)
-          return;*/
-        // checkNewlabelTutorialDone();
-      });
 
       $scope.$on('$ionicView.afterEnter', function() {
         ClientStats.addEvent(ClientStats.getStatKeys().CHECKED_INF_SCROLL).then(function() {
