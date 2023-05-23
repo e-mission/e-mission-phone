@@ -135,7 +135,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
       fmt_distance_suffix: ImperialConfig.getDistanceSuffix,
       icon: "icon " + MotionTypes[s.sensed_mode]?.icon,
-      color: MotionTypes[s.sensed_mode]?.color || "#000000",
+      color: MotionTypes[s.sensed_mode]?.color || "#333",
     }));
   };
 
@@ -706,78 +706,74 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return place_gj;
     }
 
-    var points2Geojson = function(trip, locationPoints) {
+    var points2TripProps = function(locationPoints) {
       var startPoint = locationPoints[0];
       var endPoint = locationPoints[locationPoints.length - 1];
       var tripAndSectionId = "unprocessed_"+startPoint.data.ts+"_"+endPoint.data.ts;
       var startMoment = moment.unix(startPoint.data.ts).tz(startPoint.metadata.time_zone);
       var endMoment = moment.unix(endPoint.data.ts).tz(endPoint.metadata.time_zone);
 
-      var sectionCoordinates = locationPoints.map(function(point) {
-        return [point.data.longitude, point.data.latitude];
-      });
-
-      var leafletLatLng = sectionCoordinates.map(function(currCoords) {
-        return L.GeoJSON.coordsToLatLng(currCoords);
-      });
-
-      var distances = [0];
-      for(var i = 0; i < leafletLatLng.length-1; i++) {
-        distances.push(leafletLatLng[i].distanceTo(leafletLatLng[i+1]));
-      }
-
-      var times = locationPoints.map(function(point) {
-        return point.data.ts;
-      });
-
-      var timeDeltas = [0];
-      for(var i = 0; i < times.length-1; i++) {
-        timeDeltas.push(times[i+1] - times[i]);
-      }
-
-      var speeds = [0];
-      if (distances.length != timeDeltas.length) {
-        throw "distances.length "+distances.length+" != timeDeltas.length "+timeDeltas.length;
-      }
-      for(var i = 1; i < times.length; i++) {
-        speeds.push(distances[i] / timeDeltas[i]);
-      }
-
-      var section_gj = {
-        "id": tripAndSectionId,
-        "type": "Feature",
-        "geometry": {
-            "type": "LineString",
-            "coordinates": sectionCoordinates
-        },
-        // missing properties are:
-        "properties": {
-            distances: distances,
-            distance: distances.reduce(function(acc, val) {
-              return acc + val;
-            }, 0),
-            duration: endPoint.data.ts - startPoint.data.ts,
-            end_fmt_time: endMoment.format(),
-            end_local_dt: moment2localdate(endMoment),
-            end_ts: endPoint.data.ts,
-            feature_type: "section",
-            sensed_mode: "MotionTypes.UNPROCESSED",
-            source: "unprocessed",
-            speeds: speeds,
-            start_fmt_time: startMoment.format(),
-            start_local_dt: moment2localdate(startMoment),
-            start_ts: startPoint.data.ts,
-            times: times,
-            inferred_labels: [],
-            expectation: 0,
-            confidence_threshold: 0,
-            user_input: {},
-            trip_id: {$oid: tripAndSectionId}
+      const speeds = [], dists = [];
+      let loc, locLatLng;
+      locationPoints.forEach((pt) => {
+        const ptLatLng = L.latLng([pt.data.latitude, pt.data.longitude]);
+        if (loc) {
+          const dist = locLatLng.distanceTo(ptLatLng);
+          const timeDelta = pt.data.ts - loc.data.ts;
+          dists.push(dist);
+          speeds.push(dist / timeDelta);
         }
-      }
+        loc = pt;
+        locLatLng = ptLatLng;
+      });
+      
+      const locations = locationPoints.map((point, i) => ({
+          loc: {
+            coordinates: [point.data.longitude, point.data.latitude]
+          },
+          ts: point.data.ts,
+          speed: speeds[i],
+      }));
+
+      // var times = locationPoints.map(function(point) {
+      //   return point.data.ts;
+      // });
+
+      // var timeDeltas = [0];
+      // for(var i = 0; i < times.length-1; i++) {
+      //   timeDeltas.push(times[i+1] - times[i]);
+      // }
+
+      // var speeds = [0];
+      // if (distances.length != timeDeltas.length) {
+      //   throw "distances.length "+distances.length+" != timeDeltas.length "+timeDeltas.length;
+      // }
+      // for(var i = 1; i < times.length; i++) {
+      //   speeds.push(distances[i] / timeDeltas[i]);
+      // }
+
       return {
-        type: "FeatureCollection",
-        features: [section_gj]
+        _id: {$oid: tripAndSectionId},
+        key: "UNPROCESSED_trip",
+        origin_key: "UNPROCESSED_trip",
+        additions: [],
+        distance: dists.reduce((a, b) => a + b, 0),
+        duration: endPoint.data.ts - startPoint.data.ts,
+        end_fmt_time: endMoment.format(),
+        end_local_dt: moment2localdate(endMoment),
+        end_ts: endPoint.data.ts,
+        locations: locations,
+        sensed_mode: "UNPROCESSED",
+        source: "unprocessed",
+        // speeds: speeds,
+        start_fmt_time: startMoment.format(),
+        start_local_dt: moment2localdate(startMoment),
+        start_ts: startPoint.data.ts,
+        // times: times,
+        inferred_labels: [],
+        expectation: 0,
+        confidence_threshold: 0,
+        user_input: {},
       }
     }
 
@@ -818,7 +814,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
           },
           style: {
-            color: MotionTypes[section?.sensed_mode]?.color || "#000000",
+            color: MotionTypes[section?.sensed_mode]?.color || "#333",
           }
         }
       });
@@ -890,6 +886,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             Logger.log("transitions: start = "+JSON.stringify(tripStartTransition.data)
                 + " end = "+JSON.stringify(tripEndTransition.data.ts));
           }
+
+          const tripProps = points2TripProps(filteredLocationList);
+
+          return {
+            ...tripProps,
+            start_loc: tripStartPoint.data.loc,
+            end_loc: tripEndPoint.data.loc,
+          }
           var features = [
             place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
             place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
@@ -925,57 +929,28 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
     }
 
-    var linkTrips = function(trip_gj1, trip_gj2) {
-        var trip_1_end = trip_gj1.features[1];
-        var trip_2_start = trip_gj2.features[0];
+    var linkTrips = function(trip1, trip2) {
+        // complete trip1
+        trip1.starting_trip = {$oid: trip2.id};
+        trip1.exit_fmt_time = trip2.enter_fmt_time;
+        trip1.exit_local_dt = trip2.enter_local_dt;
+        trip1.exit_ts = trip2.enter_ts;
 
-        // complete trip_1
-        trip_1_end.properties.starting_trip = {$oid: trip_gj2.properties.id};
-        trip_1_end.properties.exit_fmt_time = trip_2_start.properties.enter_fmt_time;
-        trip_1_end.properties.exit_local_dt = trip_2_start.properties.enter_local_dt;
-        trip_1_end.properties.exit_ts = trip_2_start.properties.enter_ts;
-
-        // start trip_2
-        trip_2_start.properties.ending_trip = {$oid: trip_gj1.properties.id};
-        trip_2_start.properties.enter_fmt_time = trip_1_end.properties.exit_fmt_time;
-        trip_2_start.properties.enter_local_dt = trip_1_end.properties.exit_local_dt;
-        trip_2_start.properties.enter_ts = trip_1_end.properties.exit_ts;
+        // start trip2
+        trip2.ending_trip = {$oid: trip1.id};
+        trip2.enter_fmt_time = trip1.exit_fmt_time;
+        trip2.enter_local_dt = trip1.exit_local_dt;
+        trip2.enter_ts = trip1.exit_ts;
     }
 
-    timeline.readUnprocessedTrips = function(day, tripListForDay) {
-      /*
-       * We want to read all unprocessed transitions, which are all transitions
-       * from the last processed trip until the end of the day. But now we
-       * need to figure out which timezone we need to use for the end of the
-       * day.
-       * 
-       * I think that it should be fine to use the current timezone.
-       * 
-       * Details: https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284284382
-       * One problem with simply querying for transactions after this is
-       * that sometimes we skip trips in the cleaning phase because they are
-       * spurious. So if we have already processed this day but had a
-       * spurious trip after the last real trip, it would show up again.
-       * 
-       * We deal with this by ensuring that this is called iff we are beyond
-       * the end of the processed data.
-       *
-       * Logic for start_ts described at
-       * https://github.com/e-mission/e-mission-phone/issues/214#issuecomment-284312004
-       */
+    timeline.readUnprocessedTrips = function(startTs, endTs, processedTripList) {
         $ionicLoading.show({
           template: $translate.instant('service.reading-unprocessed-data')
         });
-       if (tripListForDay.length == 0) {
-         var last_processed_ts = moment(day).startOf("day").unix();
-       } else {
-         var last_processed_ts = tripListForDay[tripListForDay.length - 1].properties.end_ts;
-       }
-       Logger.log("found "+tripListForDay.length+" trips, last_processed_ts = "+moment.unix(last_processed_ts).toString());
 
        var tq = {key: "write_ts",
-          startTs: last_processed_ts,
-          endTs: moment(day).endOf("day").unix()
+          startTs,
+          endTs
        }
        Logger.log("about to query for unprocessed trips from "
          +moment.unix(tq.startTs).toString()+" -> "+moment.unix(tq.endTs).toString());
@@ -1017,10 +992,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
                 }
                 Logger.log("finished linking trips for list of size "+trip_gj_list.length);
-                if (tripListForDay.length != 0 && trip_gj_list.length != 0) {
+                if (processedTripList.length != 0 && trip_gj_list.length != 0) {
                     // Need to link the entire chain above to the processed data
                     Logger.log("linking unprocessed and processed trip chains");
-                    var last_processed_trip = tripListForDay[tripListForDay.length - 1]
+                    var last_processed_trip = processedTripList.slice(-1);
                     linkTrips(last_processed_trip, trip_gj_list[0]);
                 }
                 $ionicLoading.hide();

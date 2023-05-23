@@ -105,11 +105,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
   $scope.getCardHeight = function(entry) {
     if (entry=='header' || entry=='footer') return 40;
     let height = 15; // 15 pixels of padding to account for iOS/Android rendering differences
-    if (entry.origin_key == 'analysis/confirmed_place') {
+    if (entry.origin_key.includes('place')) {
       height += 164;
-    } else if (entry.origin_key == 'analysis/confirmed_untracked') {
+    } else if (entry.origin_key.includes('untracked')) {
       height += 155;
-    } else if (entry.origin_key == 'analysis/confirmed_trip') {
+    } else if (entry.origin_key.includes('trip')) {
       // depending on if ENKETO or MULTILABEL is set, or what mode is chosen,
       // we may have 1, 2, or 3 buttons at any given time
       // 242 is the height without any buttons, and each button adds 54 pixels
@@ -249,64 +249,33 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     });
 
     Logger.log("Requesting trips from server from "+moment(startTs*1000).format("YYYY-MM-DD HH:mm:ss")+" to "+moment(endTs*1000).format("YYYY-MM-DD HH:mm:ss"));
-    Timeline.readAllCompositeTrips(startTs, endTs).then((ctList) => {
-        Logger.log("Received batch of size "+ctList.length);
-        $scope.populateCompositeTrips(ctList);
+
+    const pipelineEnd = $scope.infScrollControl.pipelineRange.end_ts;
+    const readCtPromise = Timeline.readAllCompositeTrips(startTs, endTs);
+    let readUtPromise = Promise.resolve([]);
+    if (endTs >= pipelineEnd) {
+      const nowTs = new Date().getTime() / 1000;
+      readUtPromise = Timeline.readUnprocessedTrips(pipelineEnd, nowTs, $scope.data.allTrips);
+    }
+    Promise.all([readCtPromise, readUtPromise]).then(([ctList, utList]) => {
+        const tripsRead = ctList.concat(utList);
+        Logger.log("Received batch of size "+tripsRead.length);
+        $scope.populateCompositeTrips(tripsRead);
         // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
-        ctList.slice().reverse().forEach(function(trip, index) {
+        tripsRead.slice().reverse().forEach(function(trip, index) {
             fillPlacesForTripAsync(trip);
             fillTrajectoriesForTrip(trip);
         });
         if (direction == 'future') {
-          $scope.data.allTrips = $scope.data.allTrips.concat(ctList);
+          $scope.data.allTrips = $scope.data.allTrips.concat(tripsRead);
         } else {
-          $scope.data.allTrips = ctList.concat($scope.data.allTrips);
+          $scope.data.allTrips = tripsRead.concat($scope.data.allTrips);
         }
-        Logger.log("After adding batch of size "+ctList.length+" cumulative size = "+$scope.data.allTrips.length);
+        Logger.log("After adding batch of size "+tripsRead.length+" cumulative size = "+$scope.data.allTrips.length);
         Timeline.setInfScrollCompositeTripList($scope.data.allTrips);
-        if (!direction || direction == 'past') {
-          const oldestTrip = ctList[0];
-          if (oldestTrip) {
-              if (oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
-                  Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
-                      +" pipeline starts at "+moment($scope.infScrollControl.pipelineRange.start_ts)
-                      +". Reached the start of pipeline, nothing earlier to load");
-                  $scope.infScrollControl.oldestLoadedTs = oldestTrip.start_ts;
-                  $scope.infScrollControl.reachedPipelineStart = true;
-              } else {
-                  // Since this was reversed, the first entry is the most recent
-                  $scope.infScrollControl.oldestLoadedTs =
-                      oldestTrip.end_ts - 1;
-                  Logger.log("new oldest loaded time = "+$scope.infScrollControl.oldestLoadedTs);
-              }
-          } else {
-              Logger.log("current batch of size 0 but haven't reached pipeline start, going on");
-              $scope.infScrollControl.oldestLoadedTs = $scope.infScrollControl.oldestLoadedTs - ONE_WEEK;
-          }
-        }
-        if (!direction || direction == 'future') {
-          const [latestTrip] = ctList.slice(-1);
-          if (latestTrip) {
-            if (latestTrip.end_ts >= $scope.infScrollControl.pipelineRange.end_ts) {
-                Logger.log("Latest trip in batch ends at "+ moment(latestTrip.end_ts)
-                    +" pipeline ends at "+moment($scope.infScrollControl.pipelineRange.end_ts)
-                    +". Reached the end of pipeline, nothing later to load");
-                $scope.infScrollControl.reachedPipelineEnd = true;
-                $scope.infScrollControl.latestLoadedTs = latestTrip.end_ts;
-            } else {
-                $scope.infScrollControl.latestLoadedTs =
-                    latestTrip.end_ts + 1;
-                Logger.log("new latest loaded time = "+$scope.infScrollControl.latestLoadedTs);
-            }
-          } else {
-              Logger.log("current batch of size 0 but haven't reached pipeline end, going on");
-              $scope.infScrollControl.latestLoadedTs = $scope.infScrollControl.latestLoadedTs + ONE_WEEK;
-          }
-        }
-        $scope.infScrollControl.selRangeText = moment($scope.infScrollControl.oldestLoadedTs*1000).format("L")
-                                            + "\n" + moment($scope.infScrollControl.latestLoadedTs*1000).format("L");
-        const rangeMiddle = ($scope.infScrollControl.oldestLoadedTs + $scope.infScrollControl.latestLoadedTs)/2;
-        $scope.infScrollControl.selectedDay = moment(rangeMiddle*1000).format("YYYY-MM-DD");
+        const oldestTrip = tripsRead[0];
+        const [latestTrip] = tripsRead.slice(-1);
+        $scope.updateTimeRange(direction, oldestTrip, latestTrip);
         $scope.recomputeListEntries();
         Logger.log("Broadcasting infinite scroll complete");
         $ionicLoading.hide();
@@ -319,6 +288,11 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         Logger.log("Broadcasting infinite scroll complete");
         $ionicLoading.hide();
         $scope.$broadcast('scroll.infiniteScrollComplete');
+    });
+    Timeline.readUnprocessedTrips(startTs, endTs, $scope.data.allTrips).then((utList) => {
+      Logger.log("Received unprocessed trip batch of size " + utList.length);
+    }).catch((err) => {
+      Logger.displayError("while reading unconfirmed trips", err);
     });
   };
 
@@ -405,6 +379,56 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": prev, "dest": $scope.getActiveFilters()});
   }
 
+  $scope.updateLoadedRange = (oldestTrip, latestTrip) => {
+    if (oldestTrip && oldestTrip.start_ts <= $scope.infScrollControl.pipelineRange.start_ts) {
+      Logger.log("Oldest trip in batch starts at "+ moment(oldestTrip.start_ts)
+          +" pipeline starts at "+moment($scope.infScrollControl.pipelineRange.start_ts)
+          +". Reached the start of pipeline, nothing earlier to load");
+      $scope.infScrollControl.oldestLoadedTs = oldestTrip.start_ts;
+      $scope.infScrollControl.reachedPipelineStart = true;
+    }
+    if (latestTrip && latestTrip.end_ts >= $scope.infScrollControl.pipelineRange.end_ts) {
+      Logger.log("Latest trip in batch ends at "+ moment(latestTrip.end_ts)
+          +" pipeline ends at "+moment($scope.infScrollControl.pipelineRange.end_ts)
+          +". Reached the end of pipeline, nothing later to load");
+      $scope.infScrollControl.reachedPipelineEnd = true;
+      $scope.infScrollControl.latestLoadedTs = latestTrip.end_ts;
+    }
+  }
+
+  $scope.updateTimeRange = (dir, oldestTrip, latestTrip) => {
+    $scope.updateLoadedRange(oldestTrip, latestTrip);
+    if (!dir || dir == 'past') {
+      if (oldestTrip) {
+          if (oldestTrip.start_ts > $scope.infScrollControl.pipelineRange.start_ts) {
+              // Since this was reversed, the first entry is the most recent
+              $scope.infScrollControl.oldestLoadedTs =
+                  oldestTrip.end_ts - 1;
+              Logger.log("new oldest loaded time = "+$scope.infScrollControl.oldestLoadedTs);
+          }
+      } else {
+          Logger.log("current batch of size 0 but haven't reached pipeline start, going on");
+          $scope.infScrollControl.oldestLoadedTs = $scope.infScrollControl.oldestLoadedTs - ONE_WEEK;
+      }
+    }
+    if (!dir || dir == 'future') {
+      if (latestTrip) {
+        if (latestTrip.end_ts < $scope.infScrollControl.pipelineRange.end_ts) {
+            $scope.infScrollControl.latestLoadedTs =
+                latestTrip.end_ts + 1;
+            Logger.log("new latest loaded time = "+$scope.infScrollControl.latestLoadedTs);
+        }
+      } else {
+          Logger.log("current batch of size 0 but haven't reached pipeline end, going on");
+          $scope.infScrollControl.latestLoadedTs = $scope.infScrollControl.latestLoadedTs + ONE_WEEK;
+      }
+    }
+    $scope.infScrollControl.selRangeText = moment($scope.infScrollControl.oldestLoadedTs*1000).format("L")
+                                        + "\n" + moment($scope.infScrollControl.latestLoadedTs*1000).format("L");
+    const rangeMiddle = ($scope.infScrollControl.oldestLoadedTs + $scope.infScrollControl.latestLoadedTs)/2;
+    $scope.infScrollControl.selectedDay = moment(rangeMiddle*1000).toDate();
+  }
+
   $scope.recomputeListEntries = function() {
     console.log("recomputing display timeline now");
     let alreadyFiltered = false;
@@ -431,7 +455,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       const end_place = cTrip.end_confirmed_place;
 
       // Add start place to the list, if not already present
-      let isInList = $scope.data.listEntries.find(e => e._id?.$oid == start_place._id.$oid);
+      let isInList = $scope.data.listEntries.find(e => e._id?.$oid == start_place?._id.$oid);
       if ($scope.showPlaces && start_place && !isInList) {
         // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
         if (isNaN(start_place.duration) || start_place.duration >= 60) {

@@ -1,5 +1,11 @@
 /* Empty. Add your own CSS if you like */
 
+:root {
+  --accent: hsl(200, 100%, 40%);
+  --accent-light: hsl(200, 100%, 75%);
+  --accent-dark: hsl(200 100% 30%);
+}
+
 body.platform-ios {
   padding-top: calc(env(safe-area-inset-top) / 2);
   margin: 0 10px 0 0;
@@ -52,11 +58,11 @@ body.platform-ios {
 
 }
 .button.ng-binding.button-positive {
-  background-color: #0088ce;
+  background-color: var(--accent);
   height: 40px;
 }
 .button.ng-binding.button-assertive {
-  background-color: #0088ce;
+  background-color: var(--accent);
   height: 40px;
 
 }
@@ -66,20 +72,20 @@ body.platform-ios {
   color: #ffffff
 }
 .selected_date_full.ng-binding {
-  color: #0088ce;
+  color: var(--accent);
 }
 .icon.ion-chevron-left {
- color: #0088ce;
+ color: var(--accent);
 }
 .icon.ion-chevron-right {
- color: #0088ce;
+ color: var(--accent);
 }
 .date_col.date_selected {
- background-color: #0088ce !important;
+ background-color: var(--accent) !important;
 
 }
 .date_col:active {
- background-color: #0088ce !important;
+ background-color: var(--accent) !important;
 }
 .customButtomIconSize:before {
     font-size: 25px !important;
@@ -142,27 +148,27 @@ body.platform-ios {
 
 .button.button-light-green {
   border-color: transparent;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: #fff; }
 .button.button-light-green:hover {
     color: #fff;
     text-decoration: none; }
 .button.button-light-green.active, .button.button-gold.activated {
-    background-color:#0088ce; }
+    background-color:var(--accent); }
 .button.button-light-green.button-clear {
     border-color: transparent;
     background: none;
     box-shadow: none;
-    color: #0088ce; }
+    color: var(--accent); }
 .button.button-light-green.button-icon {
     border-color: transparent;
     background: none; }
 .button.button-light-green.button-outline {
-    border-color: #0088ce;
+    border-color: var(--accent);
     background: transparent;
-    color: #0088ce; }
+    color: var(--accent); }
 .button.button-light-green.button-outline.active, .button.button-gold.button-outline.activated {
-    background-color: #0088ce;
+    background-color: var(--accent);
     box-shadow: none;
     color: #fff; }
 
@@ -197,7 +203,7 @@ progress.download::-webkit-progress-bar{
 }
 
 progress.download::-webkit-progress-value{
-  background: #80D0FF;
+  background: var(--accent-light);
   border-radius: 0;
 }
 
@@ -332,10 +338,10 @@ img.center {
   float:left;
 }
 #challenge.active {
-  color: #0088ce !important;
+  color: var(--accent) !important;
 }
 #party.active {
-  color: #0088ce !important;
+  color: var(--accent) !important;
 }
 #add-goal:active {
   color: #ededed !important;
@@ -356,7 +362,7 @@ img.center {
 
 #dashboard-footprint.card {
   background: #fff;
-  color: #0088ce;
+  color: var(--accent);
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -386,7 +392,7 @@ img.center {
 
 #dashboard-calorie.card {
   background: #fff;
-  color: #80D0FF;
+  color: var(--accent-light);
   border-radius: 5px;
   display: block;
   margin: 10px;
@@ -429,7 +435,7 @@ img.center {
 
 #dashboard-bottom.card {
   background-color: #fff;
-  color: #0088ce;
+  color: var(--accent);
   border-radius: 5px;
   display: block;
   /* height: 140px; */
@@ -450,13 +456,13 @@ img.center {
 }
 
 #arrow-color{
-  color: #0088ce;
+  color: var(--accent);
   font-size: 25px !important;
 }
 
 h4.dashboard-headers{
   color: #fff;
-  background: #0088ce;
+  background: var(--accent);
   padding-top: 5px;
   padding-bottom: 5px;
   margin-top: -1px;
@@ -479,7 +485,7 @@ h4.dashboard-headers{
 
 .user-carbon{
   font-weight: 700;
-  color: #0088ce;
+  color: var(--accent);
   font-size: 16px;
 }
 
@@ -497,20 +503,20 @@ h4.dashboard-headers{
 
 .user-calorie{
   font-weight: 700;
-  color: #0088ce;
+  color: var(--accent);
   font-size: 18px;
 }
 
 .percentage-change{
   font-weight: 700;
-  color: #0088ce;
+  color: var(--accent);
   margin-bottom: 20px;
 }
 
 .calorie-change{
   padding-top: 5px;
   font-weight: 700;
-  color: #0088ce;
+  color: var(--accent);
 }
 
 .dashboard-list{
@@ -522,7 +528,7 @@ h4.dashboard-headers{
   margin-bottom: 3px !important;
   margin-top: 3px !important;
   width: 90%;
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
   box-shadow: 0 0px 0px rgba(0, 0, 0, 0.3) !important;
 }
 
@@ -556,7 +562,7 @@ h4.dashboard-headers{
 }
 
 #green-leaf{
-  color: #80D0FF;
+  color: var(--accent-light);
   font-size: 45px;
   padding-top: 5px;
 }
@@ -635,7 +641,7 @@ h4.dashboard-headers{
   background-color: #1db2ff;  
 }
 #up_value_positive_big{
-  background-color: #0088ce;
+  background-color: var(--accent);
 }
 #down_value_negative_big{
   background-color: #E81431;
@@ -756,8 +762,8 @@ background-image: none !important; }
 }
 
 .toggle-on-ourcolor-bg{
-  border-color: #0088ce !important;
-  background-color: #0088ce !important;
+  border-color: var(--accent) !important;
+  background-color: var(--accent) !important;
 }
 
 .toggle-color{
@@ -773,7 +779,7 @@ background-image: none !important; }
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
 }
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
-    color: #0088ce;
+    color: var(--accent);
 }
 
 ion-header-bar {
@@ -812,7 +818,7 @@ ion-header-bar {
   color: #303030;
 }
 .date-picker-button {
-  color: #0088ce !important; padding: 0 15px; border-color: transparent; margin-top: 4px; 
+  color: var(--accent) !important; padding: 0 15px; border-color: transparent; margin-top: 4px; 
       /* box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23); */
                  border-style: solid; border-color: white; border-width: 0px; border-radius: 5px;
 }
@@ -971,13 +977,13 @@ button.button.back-button.buttons.button-clear.header-item {
   display: none;
 }
 .start-time-tag {
-  background: #80D0FF;
+  background: var(--accent-light);
   color: black;
   top: 0;
   transform: translate(-50%, -50%);
 }
 .stop-time-tag {
-  background: #0088ce;
+  background: var(--accent);
   color: white;
   bottom: 0;
   transform: translate(-50%, 50%);
@@ -986,7 +992,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag-diarytoremove {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   text-align: center;
-  background-color: #80D0FF;
+  background-color: var(--accent-light);
   color: black;
   width: 16%;
   height: 16px;
@@ -1000,7 +1006,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .stop-time-tag-diarytoremove {
   box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
   text-align: center;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   width: 16%;
   height: 16px;
@@ -1014,7 +1020,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .stop-time-tag-lower { /* this is used in both lists (infinite_scroll_list.js & list.js) around the differentCommon function */
         box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
         text-align: center;
-        background-color: #0088ce;
+        background-color: var(--accent);
         color: white;
         width: 16%;
         height: 16px;
@@ -1151,7 +1157,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .metric-title {
@@ -1173,7 +1179,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .metric-weekday-container-lower {
@@ -1183,7 +1189,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .metric-datepicker-container-lower {
@@ -1206,12 +1212,12 @@ html, #chart2, svg {
   border-radius: 20px;
   background-color: white;
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.03), 0 2px 3px rgba(0, 0, 0, 0.05);
-  color: #0088ce;
+  color: var(--accent);
   font-weight: 700;
   height: 30px;
 }
 .metric-change-data-button:active{
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   box-shadow: none;
 }
@@ -1221,7 +1227,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .heatmap-mode-button {
@@ -1230,7 +1236,7 @@ html, #chart2, svg {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
   
 }
@@ -1391,21 +1397,21 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .metric-get-button {
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #0088ce;
+  background-color: var(--accent);
   height: 35px;
 }
 .metric-get-button-inactive {
   width: 60px;
   border-radius: 5px;
   color: white;
-  background-color: #0088ce;
+  background-color: var(--accent);
   opacity: 0.7;
   height: 35px;
 }
@@ -1420,7 +1426,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .metric-half {
@@ -1448,7 +1454,7 @@ span.rz-bar-wrapper {
 .metric-current-title-nofilter {
   position: absolute;
   color: white;
-  background-color: #0088ce;
+  background-color: var(--accent);
   text-align: center;
   width: 100%;
   height: 35px;
@@ -1476,7 +1482,7 @@ span.rz-bar-wrapper {
   width: 25%;
   left: 50%;
   height: 35px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
 }
 .metric-filter-button {
@@ -1492,7 +1498,7 @@ span.rz-bar-wrapper {
   width: 25%;
   left: 75%;
   height: 35px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1506,14 +1512,14 @@ span.rz-bar-wrapper {
   overflow: hidden;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  color: #0088ce;
+  color: var(--accent);
 }
 .metric-chart-button-active {
   width: 50%;
   position: absolute;
   left: 50%;
   height: 30px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -1539,7 +1545,7 @@ span.rz-bar-wrapper {
   border-right-style: solid;
   border-right-width: 1px;
   height: 30px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   font-weight: 700;
   overflow: hidden;
@@ -1586,7 +1592,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   overflow: hidden;
   border-top-left-radius: 5px;
@@ -1599,7 +1605,7 @@ span.rz-bar-wrapper {
   font-size: 12px;
   font-weight: 700;
   overflow: hidden;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
@@ -1610,7 +1616,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   overflow: hidden;
   float: left;
@@ -1620,7 +1626,7 @@ span.rz-bar-wrapper {
   width:25%;
   font-size: 12px;
   font-weight: 700;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   overflow: hidden;
   float: left;
@@ -1675,11 +1681,11 @@ span.rz-bar-wrapper {
 }
 .metric-summary-title {
   padding: 2px;
-  color: #0088ce;
+  color: var(--accent);
   font-weight: 700;
 }
 .metric-summary-content {
-  color: #0088ce;
+  color: var(--accent);
   font-size: 12px;
   font-weight: 600;
 }
@@ -1751,7 +1757,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .heatmap-weekday-container-lower {
@@ -1761,7 +1767,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 1px rgba(0,0,0,0.03), 0 1px 1px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .heatmap-fixmap-button {
@@ -1771,7 +1777,7 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .heatmap-get-button {
@@ -1780,12 +1786,12 @@ span.rz-bar-wrapper {
   border-radius: 5px;
   background-color: white;
   box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 1px 2px rgba(0,0,0,0.05);
-  color: #0088ce;
+  color: var(--accent);
   height: 35px;
 }
 .metric-summary-option-button {
   float: right;
-  color: #0088ce;
+  color: var(--accent);
   background-color: white;
   height: 20px;
   border-radius: 5px;
@@ -1808,7 +1814,7 @@ span.rz-bar-wrapper {
   border-bottom-left-radius: 5px;
 
   background-color: white;
-  color: #0088ce;
+  color: var(--accent);
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1821,7 +1827,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
 
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1836,7 +1842,7 @@ span.rz-bar-wrapper {
   border-bottom-right-radius: 5px;
 
   background-color: white;
-  color: #0088ce;
+  color: var(--accent);
 }
 .full-toggle-right-active {
   width: 50%;
@@ -1846,7 +1852,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
 
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
 }
 .unit-toggle-container {
@@ -1859,7 +1865,7 @@ span.rz-bar-wrapper {
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
   background-color: white;
-  color: #0088ce;
+  color: var(--accent);
   border-right-style: solid;
   border-right-width: 1px;
   border-right-color: #ccc;
@@ -1870,7 +1876,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-left-radius: 5px;
   border-bottom-left-radius: 5px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   border-right-style: solid;
   border-right-width: 1px;
@@ -1883,7 +1889,7 @@ span.rz-bar-wrapper {
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
   background-color: white;
-  color: #0088ce;
+  color: var(--accent);
 }
 .unit-toggle-right-active {
   width: 50%;
@@ -1891,7 +1897,7 @@ span.rz-bar-wrapper {
   height: 35px;
   border-top-right-radius: 5px;
   border-bottom-right-radius: 5px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
 }
 .userdata-title {
@@ -1899,7 +1905,7 @@ span.rz-bar-wrapper {
 }
 .carbon-goal-chart {
   height: 5px;
-  background-color: #0088ce;
+  background-color: var(--accent);
   opacity: 0.6;
   border-radius: 2px;
   width: 100%;

@@ -2,7 +2,7 @@
 
 <div> <!-- Container to keep buttons together -->
     <div ng-repeat="input in trip.inputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
-        <div style="text-align: center; font-size: 14px; font-weight: bold; color: #0088ce" translate>{{input.labeltext}}</div>
+        <div class="input-confirm-label" translate>{{input.labeltext}}</div>
         <!-- Buttons (if trip is confirmed) -->
         <span ng-if="trip.userInput[input.name]" class="input-confirm-container">
             <button ng-click ="openPopover($event, trip, input.name)" class="button diary-btn diary-btn-blue btn-input-wrap two-lines">

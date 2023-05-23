@@ -96,11 +96,11 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #80D0FF;
+  background-color: var(--accent-light);
   border-radius: 100%;
 }
 .leaflet-div-icon-stop {
-  background-color: #0088ce;
+  background-color: var(--accent);
   border-radius: 100%;
 }
 .leaflet-div-ionicon {
@@ -142,8 +142,8 @@ a.item-content {
   font-weight: 500;
   box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
   background-color: white;
-  color: hsl(200 100% 35%);
-  border: .12em solid hsl(200 100% 40%);
+  color: var(--accent-dark);
+  border: .12em solid var(--accent);
 }
 
 .diary-btn-yellow,
@@ -156,7 +156,7 @@ a.item-content {
 .diary-btn-blue,
 .diary-btn-blue:hover,
 .diary-btn-blue:active {
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   border: 2px solid rgba(0, 136, 206, 0.2);
 }
@@ -167,6 +167,13 @@ a.item-content {
   scale: 1.7;
   margin-right: .6em;
   line-height: 100%;
+}
+
+.input-confirm-label {
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--accent);
 }
 
 .input-confirm-container {
@@ -236,6 +243,34 @@ a.item-content {
   border-radius: 5px;
 }
 
+.diary-card.draft {
+  /* draft trips will have a muted, greenish color */
+  --accent: hsl(150, 15%, 40%);
+  --accent-light: hsl(150, 25%, 72%);
+  --accent-dark: hsl(150, 35%, 30%);
+
+  --grid: hsla(150, 25%, 70%, .2);
+  /* subtle grid lines in the background, fading to white */
+  background: linear-gradient(
+                30deg,
+                hsla(150, 4%, 96%, 1) 50%,
+                hsla(0, 0%, 100%, 0.1)),
+              repeating-linear-gradient(
+                90deg,
+                var(--grid),
+                var(--grid) 0px,
+                transparent 2px,
+                transparent 20px
+              ),
+              repeating-linear-gradient(
+                0deg,
+                var(--grid),
+                var(--grid) 0px,
+                #fff 2px,
+                #fff 21px
+              );
+}
+
 .card-title {
   display: flex;
   justify-content: center;
@@ -259,7 +294,7 @@ a.item-content {
   width: 100%;
   height: 30px;
   margin: 2px;
-  border: 2px solid #0088ce;
+  border: 2px solid var(--accent);
   box-sizing: border-box;
   border-radius: 50px;
   background-color: #ffffff;
@@ -292,7 +327,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 
   .hr-lines:after {
@@ -303,7 +338,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 }
 @media screen and (orientation: landscape) {
@@ -315,7 +350,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 
   .hr-lines:after {
@@ -326,7 +361,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 }
 
@@ -354,6 +389,12 @@ a.item-content {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+.diary-street .icon {
+  color: var(--accent-light);
+}
+.diary-street + .diary-street .icon {
+  color: var(--accent);
 }
 .two-lines {
   -webkit-line-clamp: 2;
@@ -430,7 +471,7 @@ a.item-content {
 }
 
 .diary-modes-percents-text {
-  color: #0088ce;
+  color: var(--accent);
 }
 
 /* Purpose selection Override */
@@ -446,42 +487,42 @@ a.item-content {
 
 /* Date Picker Override */
 .ionic_datepicker_popup .today {
-  border: 1px solid #0088ce !important;
+  border: 1px solid var(--accent) !important;
 }
 
 .ionic_datepicker_popup .selected_date {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-head {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .selected_date_full {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
-  border-bottom: 1px solid #0088ce !important;
+  border-bottom: 1px solid var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
-  color: #0088ce !important;
+  color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .button-clear {
-  color: #0088ce !important;
+  color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-buttons button {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 div.labelfilterlist {
   margin: 0 !important;
 }
 
 .button.labelfilter {
-  color: #0088ce;
+  color: var(--accent);
   border-radius: 0px;
   border-width: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
@@ -489,7 +530,7 @@ div.labelfilterlist {
 }
 
 .button.labelfilter.on {
-    background-color: #0088ce;
+    background-color: var(--accent);
     color: white;
 }
 
