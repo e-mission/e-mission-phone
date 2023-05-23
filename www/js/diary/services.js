@@ -15,30 +15,10 @@ const MotionTypes = {
 }
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
-    'emission.services', 'emission.main.common.services',
-    'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function(CommonGraph, PostTripManualMarker, $translate){
+                                                'emission.services',
+                                                'emission.incident.posttrip.manual'])
+.factory('DiaryHelper', function($http, PostTripManualMarker, $translate){
   var dh = {};
-  // dh.expandEarlierOrLater = function(id) {
-  //   document.querySelector('#hidden-' + id.toString()).setAttribute('style', 'display: block;');
-  //   dh.increaseRestElementsTranslate3d(id);
-  // }
-  // dh.increaseRestElementsTranslate3d = function(id) {
-  //   var handle = document.querySelector('#hidden-' + id.toString());
-  //   var arr = handle.parentElement.parentElement.parentElement.style.transform.split(',');
-  //   var oldVal = parseInt(arr[1].substring(1, arr[1].length - 2));
-  //   var newVal = oldVal + 40;
-
-  //   var oldVal1 = parseInt(handle.parentElement.parentElement.parentElement.style.height);
-  //   var oldVal2 = parseInt(handle.parentElement.parentElement.parentElement.style.width);
-  //   arr[1] = newVal.toString();
-  //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
-  //   .setAttribute('style', 'transform: '+arr.join(','));
-  //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
-  //   .setAttribute('style', 'height: '+oldVal1);
-  //   document.querySelector('#hidden-' + id.toString()).parentElement.parentElement.parentElement
-  //   .setAttribute('style', 'width: '+oldVal2);
-  // }
 
   dh.isMultiDay = function(beginTs, endTs) {
     if (!beginTs || !endTs) return false;
@@ -76,19 +56,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       .format(new Date(t.format('LLL')));
   }
 
-  dh.isCommon = function(id) {
-    var ctrip = CommonGraph.trip2Common(id);
-    return !angular.isUndefined(ctrip);
-  }
-
-  dh.getHumanReadable = function(sensed_mode) {
-    var ret_string = sensed_mode.split('.')[1];
-    if (ret_string == 'ON_FOOT') {
-      return 'WALKING';
-    } else {
-      return ret_string;
-    }
-  }
   // Temporary function to avoid repear in getPercentages ret val.
   var filterRunning = function(mode) {
     if (mode == 'MotionTypes.RUNNING') {
@@ -139,33 +106,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     }));
   };
 
-  dh.starColor = function(num) {
-    if (num >= 3) {
-      return 'yellow';
-    } else {
-      return 'transparent';
-    }
-  }
-  dh.isDraft = function(tripgj) {
-    return false; // TODO: reinstate once trip structure is unified
-    if (// tripgj.data.features.length == 3 && // reinstate after the local and remote paths are unified
-      angular.isDefined(tripgj.data.features[2].features) &&
-      tripgj.data.features[2].features[0].properties.feature_type == "section" &&
-      tripgj.data.features[2].features[0].properties.sensed_mode == "MotionTypes.UNPROCESSED") {
-        return true;
-    } else {
-        return false;
-    }
-  }
-
-  dh.getTripBackground = function(tripgj) {
-      var background = "bg-light";
-      if (dh.isDraft(tripgj)) {
-        background = "bg-unprocessed";
-      }
-      return background;
-  }
-
   dh.getLocalTimeString = function (dt) {
     if (!dt) return;
     //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
@@ -174,14 +114,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     return moment(mdt).format("LT");
   };
 
-  dh.getFormattedTime = function(ts_in_secs) {
-    if (isNaN(ts_in_secs)) return;
-    if (angular.isDefined(ts_in_secs)) {
-      return moment(ts_in_secs * 1000).format('LT');
-    } else {
-      return "---";
-    }
-  };
   dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
     if (isNaN(end_ts_in_secs) || isNaN(start_ts_in_secs)) return;
     var startMoment = moment(start_ts_in_secs * 1000);
@@ -192,187 +124,58 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     if (isNaN(duration_in_secs)) return;
     return moment.duration(duration_in_secs * 1000).humanize()
   };
-  dh.getTripDetails = function(trip) {
-    return (trip.sections.length) + " sections";
-  };
-  dh.getEarlierOrLater = function(ts, id) {
-    if (!angular.isDefined(id)) {
-      return '';
-    }
-    var ctrip = CommonGraph.trip2Common(id);
-    if (!angular.isUndefined(ctrip)) {
-      // assume probabilities array is Monday-indexed + 1-indexed
-      var mostFrequestHour = ctrip.start_times[0].hour;
-      var thisHour = parseInt(dh.getFormattedTime(ts).split(':')[0]);
-      if (thisHour == mostFrequestHour) {
-        return '';
-      } else {
-        return (mostFrequestHour - thisHour).toString();
-      }
-    } else {
-      return '';
-    }
-  }
-  dh.getArrowClass = function(i) {
-    if (i == -1) {
-      return 'icon ion-arrow-down-c';
-    } else if (i == 0) {
-      return '';
-    } else {
-      return 'icon ion-arrow-up-c';
-    }
 
-  }
-  dh.getLongerOrShorter = function(trip, id) {
-    if (!angular.isDefined(id)) {
-      return false;
-    }
-    var noChangeReturn = [0, ''];
-    var ctrip = CommonGraph.trip2Common(id);
-    if (!angular.isUndefined(ctrip)) {
-      var cDuration = dh.average(ctrip.durations);
-      if (cDuration == null) {
-         return noChangeReturn;
+  /* this function was formerly 'CommonGraph.getDisplayName()',
+      located in 'common/services.js' */
+  dh.getNominatimLocName = function(loc_geojson) {
+    console.log(new Date().toTimeString()+" Getting display name for ", loc_geojson);
+    const address2Name = function(data) {
+      const address = data["address"];
+      var name = "";
+      if (angular.isDefined(address)) {
+          if (address["road"]) {
+            name = address["road"];
+          //sometimes it occurs that we cannot display street name because they are pedestrian or suburb places so we added them.
+          } else if (address["pedestrian"]) {
+          name = address["pedestrian"]
+          } else if (address["suburb"]) {
+          name = address["suburb"]
+          } else if (address["neighbourhood"]) {
+            name = address["neighbourhood"];
+          }
+          if (address["city"]) {
+            name = name + ", " + address["city"];
+          } else if (address["town"]) {
+            name = name + ", " + address["town"];
+          } else if (address["county"]) {
+            name = name + ", " + address["county"];
+          }
       }
-      var thisDuration = trip.properties.end_ts - trip.properties.start_ts;
-      var diff = thisDuration - cDuration;
-      if (diff < 60 && diff > -60) {
-        return noChangeReturn;
-      } else {
-        if (diff > 0) {
-          return [1, dh.getFormattedDuration(diff)];
-        } else {
-          return [-1, dh.getFormattedDuration(diff)];
-        }
-
-      }
-    } else {
-      return noChangeReturn;
+      console.log(new Date().toTimeString()+"got response, setting display name to "+name);
+      return name;
     }
-  }
-  dh.average = function(array) {
-     if (array.length == 0) {
-       // We want to special case the handling of the array length because
-       // otherwise we will get a divide by zero error and the dreaded nan
-       return null;
-     }
-    // check out cool use of reduce and arrow functions!
-    // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/Reduce
-    // Hm, arrow functions don't work, but reduce does!
-     var sum = array.reduce(function(previousValue, currentValue, currentIndex, array) {
-          return previousValue + currentValue;
-     });
-     return sum/array.length
-  }
-  dh.arrowColor = function(pn) {
-    if (pn == 0) {
-      return 'transparent';
-    } else if (pn == -1) {
-      return '#33e0bb';
-    } else {
-      return '#ff5251';
-    }
-  }
-   dh.parseEarlierOrLater = function(val) {
-      if (val[0] == '-') {
-        if (parseInt(val.substring(1)) == 1) {
-          return 'Started ' + val.substring(1) + ' hour earlier than usual'
-        } else {
-          return 'Started ' + val.substring(1) + ' hours earlier than usual'
-        }
-      } else {
-        if (parseInt(val) == 1) {
-          return 'Started ' + val + ' hour later than usual'
-        } else {
-          return 'Started ' + val + ' hours later than usual'
-        }
+    var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + loc_geojson.coordinates[1] + "&lon=" + loc_geojson.coordinates[0];
+    return $http.get(url).then((response) => {
+      console.log(new Date().toTimeString()+"while reading data from nominatim, status = "+response.status
+        +" data = "+JSON.stringify(response.data));
+      return address2Name(response.data);
+    }).catch((error) => {
+      if (!dh.nominatimError) {
+        dh.nominatimError = error;
+        Logger.displayError("while reading address data ",error);
       }
-    }
-
-  dh.fillCommonTripCount = function(tripWrapper) {
-      var cTrip = CommonGraph.trip2Common(tripWrapper.data.id);
-      if (!angular.isUndefined(cTrip)) {
-          tripWrapper.common.count = cTrip.trips.length;
-      }
-  };
-  dh.directiveForTrip = function(trip) {
-    var retVal = {};
-    retVal.data = trip;
-    retVal.style = style_feature;
-    retVal.onEachFeature = onEachFeature;
-    retVal.pointToLayer = dh.pointFormat;
-    retVal.start_place = trip.start_place;
-    retVal.end_place = trip.end_place;
-    retVal.stops = trip.stops;
-    retVal.sections = trip.sections;
-    retVal.tripSummary = trip.tripSummary;
-    // Hardcoding to avoid repeated nominatim calls
-    // retVal.start_place.properties.display_name = "Start";
-    // retVal.start_place.properties.display_name = "End";
-    return retVal;
+    });
   };
 
   dh.userModes = [
         "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
     ];
-  dh.showModes = function(section) {
-    return function() {
-      var currMode = dh.getHumanReadable(section.properties.sensed_mode);
-      var currButtons = [{ text: "<b>"+currMode+"</b>"}];
-      dh.userModes.forEach(function(item, index, array) {
-        if (item != currMode) {
-          currButtons.push({text: item});
-        }
-      });
-
-      // Show the action sheet
-      /*
-       var modeSheet = $ionicActionSheet.show({
-         buttons: currButtons,
-         titleText: 'Trip Mode?',
-         destructiveText: 'Delete',
-         buttonClicked: function(index) {
-          console.log("button "+index+" clicked for section "+JSON.stringify(section.properties));
-          return true;
-        },
-        destructiveButtonClicked: function(index) {
-         console.log("delete clicked for section "+JSON.stringify(section.properties));
-         return true;
-       }
-     });
-     */
-   }
- };
-  var style_feature = function(feature) {
-    switch(feature.properties.feature_type) {
-      case "section": return style_section(feature);
-      case "stop": return style_stop(feature);
-      default: return {}
-    }
-  };
-
-  var showClickTime = function(feature, layer) {
-    return layer.bindPopup("click: "+dh.getFormattedTime(feature.properties.ts));
-  };
-
-  var onEachFeature = function(feature, layer) {
-    // console.log("onEachFeature called with "+JSON.stringify(feature));
-    switch(feature.properties.feature_type) {
-      case "stop": layer.bindPopup(""+feature.properties.duration); break;
-      case "start_place": layer.bindPopup(""+feature.properties.display_name); break;
-      case "end_place": layer.bindPopup(""+feature.properties.display_name); break;
-      case "section": layer.on('click',
-        PostTripManualMarker.startAddingIncidentToSection(feature, layer)); break;
-      case "incident": PostTripManualMarker.displayIncident(feature, layer); break;
-    }
-};
 
   dh.pointFormat = function(feature, latlng) {
     switch(feature.properties.feature_type) {
       case "start_place": return L.marker(latlng, {icon: startIcon});
       case "end_place": return L.marker(latlng, {icon: stopIcon});
       case "stop": return L.circleMarker(latlng);
-      case "incident": return PostTripManualMarker.incidentMarker(feature, latlng);
       case "location": return L.marker(latlng, {icon: pointIcon});
       default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
     }
@@ -381,27 +184,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-start"><i class="ion-location"></i></div>'});
     var stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-stop"><i class="ion-flag"></i></div>'});
 
-    var style_stop = function(feature) {
-      return {fillColor: 'yellow', fillOpacity: 0.8};
-    };
-    var getColoredStyle = function(baseDict, color) {
-      baseDict.color = color;
-      return baseDict
-    };
-
-
-    var style_section = function(feature) {
-        var baseDict = {
-                weight: 5,
-                opacity: 1,
-        };
-        return getColoredStyle(baseDict, dh.getColor(feature.properties.sensed_mode));
-      };
-
   return dh;
 })
 .factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
-    $rootScope, CommonGraph, UnifiedDataLoader, Logger, $injector, $translate) {
+    $rootScope, UnifiedDataLoader, Logger, $injector, $translate) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -418,12 +204,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         manualInputFactory = $injector.get(surveyOpt.service);
       });
     });
-
-    // Internal function, not publicly exposed
-    var getKeyForDate = function(date) {
-      var dateString = date.startOf('day').format('YYYY-MM-DD');
-      return "diary/trips-"+dateString;
-    };
 
     timeline.getUnprocessedLabels = function(manualFactory, enbs) {
         /*
@@ -496,74 +276,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             return [];
         });
     };
-
-    timeline.updateFromDatabase = function(day) {
-      console.log("About to show 'Reading from cache'");
-      $ionicLoading.show({
-        template: $translate.instant('service.reading-cache')
-      });
-      return window.cordova.plugins.BEMUserCache.getDocument(getKeyForDate(day), false)
-      .then(function (timelineDoc) {
-         if (!window.cordova.plugins.BEMUserCache.isEmptyDoc(timelineDoc)) {
-           var tripList = timelineDoc;
-           console.log("About to hide 'Reading from cache'");
-           $ionicLoading.hide();
-           return tripList;
-         } else {
-           console.log("while reading data for "+day+" from database, no records found");
-           console.log("About to hide 'Reading from cache'");
-           $ionicLoading.hide();
-           return [];
-         }
-       });
-    };
-
-    timeline.updateFromServer = function(day) {
-      console.log("About to show 'Reading from server'");
-      $ionicLoading.show({
-        template: $translate.instant('service.reading-server')
-      });
-      return CommHelper.getTimelineForDay(day).then(function(response) {
-        var tripList = response.timeline;
-        window.Logger.log(window.Logger.LEVEL_DEBUG,
-          "while reading data for "+day+" from server, got nTrips = "+tripList.length);
-        console.log("About to hide 'Reading from server'");
-        $ionicLoading.hide();
-        console.log("Finished hiding ionicLoading, returning list of size "+tripList.length);
-        return tripList;
-     });
-    };
-
-    /*
-     * Used for quick debugging using the live updating server. But then I
-     * can't use plugins, so we read from the local file system instead. Should
-     * be replaced by a mock of the usercache instead, but this is code
-     * movement, not restructuring, so it should stay here.
-     */
-     var readAndUpdateFromFile = function(day, foundFn, notFoundFn) {
-      console.log("About to show 'Reading from local file'");
-      $ionicLoading.show({
-        template: 'Debugging: Reading from local file...'
-      });
-      return $http.get("test_data/"+getKeyForDate(day)).then(function(response) {
-       console.log("while reading data for "+day+" from file, status = "+response.status);
-       tripList = response.data;
-       return tripList;
-     });
-    };
-
-    timeline.isProcessingComplete = function(day) {
-      return CommHelper.getPipelineCompleteTs().then(function(result) {
-          var eod = moment(day).endOf("day").unix();
-          var retVal = (result.complete_ts > eod);
-          Logger.log("complete_ts = "
-              +result.complete_ts+"("+moment.unix(result.complete_ts).toString()+")"
-              +" end of current day = "
-              +eod+"("+moment.unix(eod).toString()+")"
-              +" retVal = "+retVal);
-          return [result.complete_ts, retVal];
-      });
-    }
 
     /*
      * This is going to be a bit tricky. As we can see from
@@ -663,47 +375,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             minute: currMoment.minute(),
             second: currMoment.second()
         };
-    }
-
-    var startPlacePropertyFiller = function(locationPoint) {
-      var locationMoment = moment.unix(locationPoint.data.ts).tz(locationPoint.metadata.time_zone);
-      // properties that need to be filled in while stitching together
-      // duration, ending_trip, enter_*
-      return {
-        "exit_fmt_time": locationMoment.format(),
-        "exit_local_dt": moment2localdate(locationMoment, locationPoint.metadata.time_zone),
-        "exit_ts": locationPoint.data.ts,
-        "feature_type": "start_place",
-        "raw_places": [],
-        "source": "unprocessed"
-      }
-    }
-
-    var endPlacePropertyFiller = function(locationPoint) {
-      var locationMoment = moment.unix(locationPoint.data.ts).tz(locationPoint.metadata.time_zone);
-      // properties that need to be filled in while stitching together
-      // duration, starting_trip, exit_*
-      return {
-        "enter_fmt_time": locationMoment.format(),
-        "enter_local_dt": moment2localdate(locationMoment, locationPoint.metadata.time_zone),
-        "enter_ts": locationPoint.data.ts,
-        "feature_type": "end_place",
-        "raw_places": [],
-        "source": "unprocessed"
-      }
-    }
-
-    var place2Geojson = function(trip, locationPoint, propertyFiller) {
-      var place_gj = {
-        "id": "unprocessed_"+locationPoint.data.ts,
-        "type": "Feature",
-        "geometry": {
-            "type": "Point",
-            "coordinates": [locationPoint.data.longitude, locationPoint.data.latitude]
-        },
-        "properties": propertyFiller(locationPoint)
-      }
-      return place_gj;
     }
 
     var points2TripProps = function(locationPoints) {
@@ -954,94 +625,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         });
     }
 
-    var processOrDisplayNone = function(day, tripList) {
-      if (angular.isDefined(tripList) && tripList.length != 0) {
-        console.log("trip count = "+tripList.length+", calling processTripsForDay");
-        processTripsForDay(day, tripList);
-      } else {
-        console.log("No trips found, alerting user");
-        timeline.data.currDay = day;
-        timeline.data.currDayTrips = []
-        timeline.data.currDaySummary = {}
-        $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'error'});
-        $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'error'});
-      }
-    }
-
     var localCacheReadFn = timeline.updateFromDatabase;
-
-    var addUnprocessedTrips = function(processedTripList, day, completeStatus) {
-        var tripList = processedTripList;
-        if (!completeStatus) {
-          return timeline.readUnprocessedTrips(day, processedTripList)
-            .then(function(unprocessedTripList) {
-              Logger.log("tripList.length = "+tripList.length
-                         +"unprocessedTripList.length = "+unprocessedTripList.length);
-              Array.prototype.push.apply(tripList, unprocessedTripList);
-              console.log("After merge, returning trip list of size "+tripList.length);
-              return tripList;
-            });
-        } else {
-            return tripList;
-        }
-    }
-
-    var readTripsAndUnprocessedInputs = function(day, tripReadFn, completeStatus, tq) {
-      console.log("Reading values for list ", manualInputFactory.MANUAL_KEYS);
-      var manualPromises = manualInputFactory.MANUAL_KEYS.map(function(inp_key) {
-        return UnifiedDataLoader.getUnifiedMessagesForInterval(
-            inp_key, tq).then(manualInputFactory.extractResult);
-      });
-      let tripsReadPromise = tripReadFn(day);
-      timeline.data.unifiedConfirmsResults = {};
-      let allManualPromise = Promise.all(manualPromises).then((manualResults) =>
-        manualInputFactory.processManualInputs(manualResults, timeline.data.unifiedConfirmsResults));
-
-      let allTripsPromise = tripsReadPromise.then((processedTripList) => {
-        console.log("Reading trips from server finished successfully with length "
-          +processedTripList.length+" completeStatus = "+completeStatus);
-        return addUnprocessedTrips(processedTripList, day, completeStatus);
-      }).then((combinedTripList) => processOrDisplayNone(day, combinedTripList));
-      return Promise.all([allManualPromise, allTripsPromise]).then(() => {
-        console.log("Finished reading processed/unprocessed trips with length "
-            +timeline.data.currDayTrips.length);
-      });
-    }
-
-    // Functions
-    timeline.updateForDay = function(day) { // currDay is a moment
-      // First, we try the server
-      var isProcessingCompletePromise = timeline.isProcessingComplete(day);
-
-      // First get the pipeline complete timestamp
-      isProcessingCompletePromise.then(([completeTs, completeStatus]) => {
-          // then, in parallel, read unprocessed user inputs
-          // and trips
-          // Also mode/purpose and (currently disabled) survey answers
-          var pendingTq = {
-             key: "write_ts",
-             startTs: completeTs,
-             endTs: moment().unix()
-          };
-          readTripsAndUnprocessedInputs(day, timeline.updateFromServer,
-                completeStatus, pendingTq)
-          .catch(function(error) {
-            // If there is any error reading from the server, we fallback on the local cache
-            Logger.log("while reading data from server for "+day +" error = "+JSON.stringify(error));
-            console.log("About to hide loading overlay");
-            $ionicLoading.hide();
-
-            // Also mode/purpose and (currently disabled) survey answers
-            let allTq = $window.cordova.plugins.BEMUserCache.getAllTimeQuery();
-            readTripsAndUnprocessedInputs(day, localCacheReadFn, undefined, allTq)
-            .catch(function(error) {
-              console.log("About to hide loading overlay");
-              $ionicLoading.hide();
-              Logger.displayError("while reading data from cache for "+day, error);
-            })
-        });
-     });
-    }
 
       timeline.getTrip = function(tripId) {
         return angular.isDefined(timeline.data.tripMap)? timeline.data.tripMap[tripId] : undefined;
@@ -1055,86 +639,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         return angular.isDefined(timeline.data.infScrollCompositeTripMap)? timeline.data.infScrollCompositeTripMap[tripId] : undefined;
       };
 
-      /*
-       Let us assume that we have recieved a list of trips for that date from somewhere
-       (either local usercache or the internet). Now, what do we need to process them?
-       */
-       var processTripsForDay = function(day, tripListForDay) {
-        console.log("About to show 'Processing trips'");
-        $ionicLoading.show({
-          template: 'Processing trips...'
-        });
-        tripListForDay.forEach(function(item, index, array) {
-          console.log(index + ":" + item.properties.start_fmt_time+", "+item.properties.duration);
-
-        });
-        timeline.data.currDay = day;
-        timeline.data.currDayTrips = tripListForDay;
-
-        timeline.data.tripMap = {};
-
-        timeline.data.currDayTrips.forEach(function(trip, index, array) {
-          timeline.data.tripMap[trip.id] = trip;
-        });
-
-        timeline.data.currDayTrips.forEach(function(trip, index, array) {
-          var tc = getTripComponents(trip);
-          trip.start_place = tc[0];
-          trip.end_place = tc[1];
-          trip.stops = tc[2];
-          trip.sections = tc[3];
-        });
-
-        timeline.data.currDayTrips.forEach(function(trip, index, array) {
-          if (angular.isDefined(trip.start_place.properties.display_name)) {
-            if (trip.start_place.properties.display_name != ", ") {
-                console.log("Already have display name "+ trip.start_place.properties.display_name +" for start_place")
-            } else {
-                console.log("Got display name "+ trip.start_place.properties.display_name +" for start_place, but it is blank, trying OSM nominatim now...");
-                CommonGraph.getDisplayName(trip.start_place.geometry).then((name) => {trip.start_place.properties.display_name = name;});
-            }
-          } else {
-            console.log("Don't have display name for start place, going to query nominatim")
-            CommonGraph.getDisplayName(trip.start_place.geometry).then((name) => {trip.start_place.properties.display_name = name;});
-          }
-          if (angular.isDefined(trip.end_place.properties.display_name)) {
-            if (trip.end_place.properties.display_name != ", ") {
-                console.log("Already have display name " + trip.end_place.properties.display_name + " for end_place")
-            } else {
-                console.log("Got display name "+ trip.end_place.properties.display_name +" for end_place, but it is blank, trying OSM nominatim now...");
-                CommonGraph.getDisplayName(trip.end_place.geometry).then((name) => {trip.end_place.properties.display_name = name;});
-            }
-          } else {
-            console.log("Don't have display name for end place, going to query nominatim")
-            CommonGraph.getDisplayName(trip.end_place.geometry).then((name) => {trip.end_place.properties.display_name = name;});
-          }
-        });
-
-        generateDaySummary();
-
-        if (tripListForDay.length == 0) {
-          handleZeroTrips();
-        }
-
-        console.log("currIndex = "+timeline.data.currDay+" currDayTrips = "+ timeline.data.currDayTrips.length);
-
-            // Return to the top of the page. If we don't do this, then we will be stuck at the
-            $rootScope.$emit(timeline.UPDATE_DONE, {'from': 'emit', 'status': 'success'});
-            $rootScope.$broadcast(timeline.UPDATE_DONE, {'from': 'broadcast', 'status': 'success'});
-            console.log("About to hide 'Processing trips'");
-            $ionicLoading.hide();
-          };
-
-    timeline.setTripWrappers = function(tripWrapperList) {
-        timeline.data.currDayTripWrappers = tripWrapperList;
-
-        timeline.data.tripWrapperMap = {};
-
-        timeline.data.currDayTripWrappers.forEach(function(tripw, index, array) {
-          timeline.data.tripWrapperMap[tripw.data.id] = tripw;
-        });
-    }
-
     timeline.setInfScrollCompositeTripList = function(compositeTripList) {
         timeline.data.infScrollCompositeTripList = compositeTripList;
 
@@ -1144,96 +648,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           timeline.data.infScrollCompositeTripMap[trip._id.$oid] = trip;
         });
     }
-
-    // TODO: Should this be in the factory or in the scope?
-    var generateDaySummary = function() {
-      var dayMovingTime = 0;
-      var dayStoppedTime = 0;
-      var dayDistance = 0;
-
-      timeline.data.currDayTrips.forEach(function(trip, index, array) {
-        trip.tripSummary = {}
-        var movingTime = 0
-        var stoppedTime = 0
-        trip.stops.forEach(function(stop, index, array) {
-          stoppedTime = stoppedTime + stop.properties.duration;
-        });
-        trip.sections.forEach(function(section, index, array) {
-          movingTime = movingTime + section.properties.duration;
-        });
-        trip.tripSummary.movingTime = movingTime;
-        trip.tripSummary.stoppedTime = stoppedTime;
-        trip.tripSummary.movingPct = (movingTime / (movingTime + stoppedTime)) * 100;
-        trip.tripSummary.stoppedPct = (stoppedTime / (movingTime + stoppedTime)) * 100;
-        dayMovingTime = dayMovingTime + trip.tripSummary.movingTime;
-        dayStoppedTime = dayStoppedTime + trip.tripSummary.stoppedTime;
-        console.log("distance = "+trip.properties.distance);
-        dayDistance = dayDistance + trip.properties.distance;
-      });
-
-      var dayInSecs = 24 * 60 * 60;
-
-      timeline.data.currDaySummary = {
-        breakdown: [
-        ["moving", dayMovingTime],
-        ["waiting", dayStoppedTime],
-        ["in place", dayInSecs - (dayMovingTime + dayStoppedTime)],
-        ]
-      }
-      timeline.data.currDaySummary.distance = dayDistance;
-    };
-
-    var handleZeroTrips = function() {
-      // showNoTripsAlert();
-      var dayInSecs = 24 * 60 * 60;
-      timeline.data.currDayTrips = []
-      timeline.data.currDaySummary = {}
-      timeline.data.currDaySummary = {
-        breakdown: [
-        ["moving", 0],
-        ["waiting", 0],
-        ["in place", dayInSecs],
-        ]
-      }
-      timeline.data.currDaySummary.distance = 0;
-    };
-
-    var getTripComponents = function(trip) {
-      console.log("getSections("+trip+") called");
-      var startPlace = null;
-      var endPlace = null;
-      var stopList = [];
-      var sectionList = [];
-      trip.features.forEach(function(feature, index, array) {
-            // console.log("Considering feature " + JSON.stringify(feature));
-            switch (feature.type) {
-              case "Feature":
-              switch(feature.properties.feature_type) {
-                case "start_place":
-                startPlace = feature;
-                break;
-                case "end_place":
-                endPlace = feature;
-                break;
-                case "stop":
-                stopList.push(feature);
-                break;
-              }
-              break;
-              case "FeatureCollection":
-              feature.features.forEach(function (item, index, array) {
-                if (angular.isDefined(item.properties) && angular.isDefined(item.properties.feature_type)) {
-                        // console.log("Considering feature with type " + item.properties.feature_type);
-                        if (item.properties.feature_type == "section") {
-                          console.log("FOUND section" + item + ", appending");
-                          sectionList.push(item);
-                        }
-                      }
-                    });
-            }
-          });
-      return [startPlace, endPlace, stopList, sectionList];
-    };
 
     return timeline;
   })
