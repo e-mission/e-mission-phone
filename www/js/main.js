@@ -1,7 +1,6 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.recent',
-                                 'emission.main.diary',
+angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
                                  'emission.main.metrics',
                                  'emission.config.dynamic',
@@ -39,26 +38,6 @@ angular.module('emission.main', ['emission.main.recent',
         controller: 'ControlCtrl'
       }
     }
-  })
-
-  .state('root.main.sensed', {
-    url: "/sensed",
-    views: {
-      'main-control': {
-        templateUrl: "templates/recent/sensedData.html",
-        controller: 'sensedDataCtrl'
-      }
-    }
-  })
-
-  .state('root.main.map', {
-      url: "/map",
-      views: {
-        'main-control': {
-          templateUrl: "templates/recent/map.html",
-          controller: 'mapCtrl'
-        }
-      }
   })
 
   .state('root.main.log', {

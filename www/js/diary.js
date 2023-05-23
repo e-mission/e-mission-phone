@@ -1,7 +1,6 @@
 angular.module('emission.main.diary',['emission.main.diary.infscrolllist',
                                       'emission.main.diary.infscrolldetail',
-                                      'emission.main.diary.services',
-                                      'emission.main.diary.current'])
+                                      'emission.main.diary.services'])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -24,15 +23,4 @@ angular.module('emission.main.diary',['emission.main.diary.infscrolllist',
         },
       }
   })
-
-  .state('root.main.current', {
-      url: "/current",
-      views: {
-        'main-diary': {
-          templateUrl: "templates/diary/current.html",
-          controller: 'CurrMapCtrl'
-        },
-      }
-      
-  });
 });
