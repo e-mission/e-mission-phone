@@ -97,6 +97,7 @@ a.item-content {
 }
 .leaflet-div-icon-start {
   background-color: var(--accent-light);
+  border: 2px solid var(--accent);
   border-radius: 100%;
 }
 .leaflet-div-icon-stop {
@@ -109,6 +110,7 @@ a.item-content {
   font-size: 100%;
   justify-content: center; 
   display: flex;
+  line-height: 15px;
 }
 .leaflet-div-ionicon-start {
   color: white;
@@ -133,12 +135,14 @@ a.item-content {
 
 .diary-btn {
   width: 100%;
-  padding: 5px 14px;
-  max-height: 40px;
+  padding-inline: 14px;
+  min-height: 28px;
+  max-height: 32px;
   margin: 2px;
   box-sizing: border-box;
   border-radius: 50px;
-  font-size: 0.8em !important;
+  font-size: 13px;
+  line-height: 1;
   font-weight: 500;
   box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
   background-color: white;
@@ -209,6 +213,7 @@ a.item-content {
   background: white;
   width: 100%;
   height: min-content;
+  font-size: 13px;
   line-height: 1.2;
   margin: 0;
   border: 1px solid rgb(0 0 0 / .2);
@@ -218,10 +223,13 @@ a.item-content {
   box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
+  background: linear-gradient(
+                  40deg,
+                  hsla(200, 30%, 97%, 1) 40%,
+                  hsla(0, 0%, 100%, 1)),
 }
 
-/* used for place list items */
-.diary-card.short {
+.diary-card.place, .diary-card.untracked {
   color: #222;
   background: hsl(200 100% 85%);
   border: 1px solid hsl(200 100% 10% / 0.2);
@@ -229,17 +237,40 @@ a.item-content {
   text-align: center;
 }
 
-/* used for untracked time list items */
-.diary-card.greyed {
-  color: #333;
-  background: hsl(0 30% 96%);
+.diary-card.untracked {
+    color: #333;
+    /* untracked time will have a reddish color */
+    --accent: hsl(350, 25%, 50%);
+    --accent-light: hsl(350, 65%, 85%);
+    --accent-dark: hsl(350, 65%, 30%);
+  
+    --grid: hsla(350, 25%, 80%, .2);
+    /* subtle x-grid lines in the background, fading to white */
+    background: linear-gradient(
+                  15deg,
+                  hsla(350, 10%, 92%, 1) 40%,
+                  hsla(350, 10%, 100%, 0.5)),
+                repeating-linear-gradient(
+                  45deg,
+                  var(--grid),
+                  var(--grid) 0px,
+                  transparent 2px,
+                  transparent 20px
+                ),
+                repeating-linear-gradient(
+                  -45deg,
+                  var(--grid),
+                  var(--grid) 0px,
+                  #fff 2px,
+                  #fff 21px
+                );
 }
 
-.diary-card.greyed .card-title b {
+.diary-card.untracked .card-title b {
   font-size: 13px;
   color: #222;
   padding: 0 4px;
-  background-color: #ffbbbb;
+  background-color: var(--accent-light);
   border-radius: 5px;
 }
 
@@ -249,11 +280,11 @@ a.item-content {
   --accent-light: hsl(150, 25%, 72%);
   --accent-dark: hsl(150, 35%, 30%);
 
-  --grid: hsla(150, 25%, 70%, .2);
+  --grid: hsla(150, 25%, 70%, .3);
   /* subtle grid lines in the background, fading to white */
   background: linear-gradient(
                 30deg,
-                hsla(150, 4%, 96%, 1) 50%,
+                hsla(150, 4%, 94%, 1) 50%,
                 hsla(0, 0%, 100%, 0.1)),
               repeating-linear-gradient(
                 90deg,
