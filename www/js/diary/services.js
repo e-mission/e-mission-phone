@@ -735,23 +735,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
           speed: speeds[i],
       }));
 
-      // var times = locationPoints.map(function(point) {
-      //   return point.data.ts;
-      // });
-
-      // var timeDeltas = [0];
-      // for(var i = 0; i < times.length-1; i++) {
-      //   timeDeltas.push(times[i+1] - times[i]);
-      // }
-
-      // var speeds = [0];
-      // if (distances.length != timeDeltas.length) {
-      //   throw "distances.length "+distances.length+" != timeDeltas.length "+timeDeltas.length;
-      // }
-      // for(var i = 1; i < times.length; i++) {
-      //   speeds.push(distances[i] / timeDeltas[i]);
-      // }
-
       return {
         _id: {$oid: tripAndSectionId},
         key: "UNPROCESSED_trip",
@@ -894,38 +877,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             start_loc: tripStartPoint.data.loc,
             end_loc: tripEndPoint.data.loc,
           }
-          var features = [
-            place2Geojson(trip, tripStartPoint, startPlacePropertyFiller),
-            place2Geojson(trip, tripEndPoint, endPlacePropertyFiller),
-            points2Geojson(trip, filteredLocationList)
-          ];
-          var section_gj = features[2];
-          var trip_gj = {
-            id: section_gj.features[0].id,
-            type: "FeatureCollection",
-            features: features,
-            inferred_labels: [],
-            expectation: 0,
-            confidence_threshold: 0,
-            user_input: {},
-            properties: angular.copy(section_gj.features[0].properties)
-          }
-
-          // Logger.log("section_gj.properties = "+JSON.stringify(section_gj.features[0].properties)+
-          //  " trip_gj.properties = "+JSON.stringify(trip_gj.properties));
-          // customize to trip versus section properties
-          trip_gj.properties.feature_type = "trip";
-          trip_gj.properties.start_loc = features[0].geometry;
-          trip_gj.properties.start_place = {$oid: features[0].id}
-          trip_gj.properties.end_loc = features[1].geometry;
-          trip_gj.properties.end_place = {$oid: features[1].id}
-          trip_gj.properties.raw_trip = [];
-
-          // delete the detailed lists which are only at the section level
-          delete(trip_gj.properties.distances);
-          delete(trip_gj.properties.speeds);
-          delete(trip_gj.properties.times);
-          return trip_gj;
         });
     }
 
