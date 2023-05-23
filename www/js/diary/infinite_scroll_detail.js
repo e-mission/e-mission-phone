@@ -1,17 +1,16 @@
 'use strict';
-angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthrough',
+angular.module('emission.main.diary.infscrolldetail',['ui-leaflet',
                                       'nvd3', 'emission.plugin.kvstore',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.plugin.logger',
-                                      'emission.stats.clientstats',
-                                      'emission.incident.posttrip.manual'])
+                                      'emission.stats.clientstats'])
 
 .controller("InfiniteDiaryDetailCtrl", function($scope, $rootScope, $injector, $window, $ionicPlatform,
                                         $state, $stateParams, ClientStats, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, nzTour, KVStore,
+                                        leafletData, leafletMapEvents, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
-                                        DynamicConfig, CommHelper, PostTripManualMarker, $translate) {
+                                        DynamicConfig, CommHelper, $translate) {
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -125,39 +124,6 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
     }
   };
 
-  /* START: ng-walkthrough code */
-  // Tour steps
-  var tour = {
-    config: {
-      mask: {
-        visibleOnNoTarget: true,
-        clickExit: true
-      },
-      previousText: $translate.instant('tour-previous'),
-      nextText: $translate.instant('tour-next'),
-      finishText: $translate.instant('tour-finish')
-    },
-    steps: [{
-      target: '#detail',
-      content: $translate.instant('details.tour-detail-content')
-    }, {
-      target: '#sectionList',
-      content: $translate.instant('details.tour-sectionList-content')
-    }, {
-      target: '#sectionPct',
-      content: $translate.instant('details.tour-sectionPct-content')
-    }]
-  };
-
-  var startWalkthrough = function () {
-    nzTour.start(tour).then(function(result) {
-      Logger.log("detail walkthrough start completed, no error");
-    }).catch(function(err) {
-      Logger.displayError("detail walkthrough start errored", err);
-    });
-  };
-
-
   var checkDetailTutorialDone = function () {
     var DETAIL_DONE_KEY = 'detail_tutorial_done';
     var detailTutorialDone = KVStore.getDirect(DETAIL_DONE_KEY);
@@ -205,5 +171,4 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet', 'ng-walkthro
       $scope.startTime = moment().utc()
     }
   })
-  /* END: ng-walkthrough code */
 })

@@ -194,9 +194,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
           var temp = ReferralHandler.getReferralNavigation();
-          if (temp == 'goals') {
-            return {state: 'root.main.goals', params: {}};
-          } else if ($rootScope.displayingIncident) {
+          if ($rootScope.displayingIncident) {
             logger.log("Showing tripconfirm from startprefs");
             return {state: 'root.main.diary'};
           } else if (angular.isDefined($rootScope.redirectTo)) {

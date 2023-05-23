@@ -11,13 +11,12 @@
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.appstatus.permissioncheck',
-                                      'emission.main.common.services',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.config.dynamic',
                                       'emission.splash.notifscheduler',
                                       'emission.survey',
-                                      'ng-walkthrough', 'nzTour', 'emission.plugin.kvstore',
+                                      'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger',
                                       'emission.main.diary.infscrolltripitem',
@@ -32,10 +31,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     $timeout,
-                                    leafletData, Timeline, CommonGraph, DiaryHelper,
+                                    leafletData, Timeline, DiaryHelper,
                                     SurveyOptions, NotificationScheduler,
                                     Config, ImperialConfig, DynamicConfig,
-                                    PostTripManualMarker, nzTour, KVStore,
+                                    KVStore,
                                     Logger, UnifiedDataLoader, InputMatcher,
                                     $ionicModal, $translate) {
   
@@ -588,9 +587,9 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
     const fillPlacesForTripAsync = function(tripgj) {
         const fillPromises = [
             placeLimiter.schedule(() =>
-                CommonGraph.getDisplayName(tripgj.start_loc)),
+                DiaryHelper.getNominatimLocName(tripgj.start_loc)),
             placeLimiter.schedule(() =>
-                CommonGraph.getDisplayName(tripgj.end_loc)),
+                DiaryHelper.getNominatimLocName(tripgj.end_loc)),
         ];
         Promise.all(fillPromises).then(function([startName, endName]) {
             $scope.$apply(() => {
@@ -612,150 +611,12 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
       $scope.$apply(() => {
         trip.geojson = tripgj;
         trip.geojson.pointToLayer = DiaryHelper.pointFormat;
-
-        console.log("Is our trip a draft? ", DiaryHelper.isDraft(trip));
-        trip.isDraft = DiaryHelper.isDraft(trip);
-        console.log("Tripgj == Draft: ", trip.isDraft);
       });
-    }
-
-
-    $scope.populateCommonInfo = function(tripgj) {
-        tripgj.common = {}
-        DiaryHelper.fillCommonTripCount(tripgj);
-        tripgj.common.different = $scope.differentCommon(tripgj);
-        tripgj.common.longerOrShorter = DiaryHelper.getLongerOrShorter(tripgj.data, tripgj.data.id);
-        tripgj.common.listColLeftClass = $scope.listColLeftClass(tripgj.common.longerOrShorter[0]);
-        tripgj.common.stopTimeTagClass = $scope.stopTimeTagClass(tripgj);
-        tripgj.common.arrowColor = DiaryHelper.arrowColor(tripgj.common.longerOrShorter[0]);
-        tripgj.common.arrowClass = DiaryHelper.getArrowClass(tripgj.common.longerOrShorter[0]);
-
-        tripgj.common.earlierOrLater = DiaryHelper.getEarlierOrLater(tripgj.data.properties.start_ts, tripgj.data.id);
-        tripgj.common.displayEarlierLater = DiaryHelper.parseEarlierOrLater(tripgj.common.earlierOrLater);
     }
 
     $scope.refresh = function() {
        $scope.setupInfScroll();
     };
-
-    // Tour steps
-    var tour = {
-      config: {
-        mask: {
-          visibleOnNoTarget: true,
-          clickExit: true,
-        },
-        previousText: $translate.instant('tour-previous'),
-        nextText: $translate.instant('tour-next'),
-        finishText: $translate.instant('tour-finish')
-      },
-      steps: [{
-        target: '.ion-view-background',
-        content: $translate.instant('new_label_tour.0')
-      },
-      {
-        target: '.labelfilter',
-        content: $translate.instant('new_label_tour.1')
-      },
-      {
-        target: '.labelfilter.last',
-        content: $translate.instant('new_label_tour.2')
-      },
-      {
-        target: '.diary-entry',
-        content: $translate.instant('new_label_tour.3')
-      },
-      {
-        target: '.diary-button',
-        content: $translate.instant('new_label_tour.4'),
-        before: function() {
-          return new Promise(function(resolve, reject) {
-            $ionicScrollDelegate.scrollTop(true);
-            resolve();
-          });
-        }
-      },
-      {
-        target: '.diary-entry',
-        content: $translate.instant('new_label_tour.5')
-      },
-      {
-        target: '.diary-entry',
-        content: $translate.instant('new_label_tour.6')
-      },
-      {
-        target: '.diary-entry',
-        content: $translate.instant('new_label_tour.7')
-      },
-      {
-        target: '.diary-entry',
-        content: $translate.instant('new_label_tour.8'),
-        after: function() {
-          return new Promise(function(resolve, reject) {
-            $ionicScrollDelegate.scrollBottom(true);
-            resolve();
-          });
-        }
-      },
-      {
-        target: '.labelfilter',
-        content: $translate.instant('new_label_tour.9')
-      },
-      {
-        target: '.ion-view-background',
-        content: $translate.instant('new_label_tour.10')
-      },
-      {
-        target: '.walkthrough-button',
-        content: $translate.instant('new_label_tour.11')
-      }
-      ]
-    };
-
-    var startWalkthrough = function () {
-      nzTour.start(tour).then(function(result) {
-        Logger.log("list walkthrough start completed, no error");
-      }).catch(function(err) {
-        Logger.displayError("list walkthrough start errored", err);
-      });
-    };
-
-    $scope.increaseHeight = function () {
-        // let's increase by a small amount to workaround the issue with the
-        // card not resizing the first time
-        $scope.itemHt = $scope.itemHt + 20;
-        const oldDisplayEntries = $scope.data.listEntries;
-        const TEN_MS = 10;
-        $scope.data.listEntries = [];
-        $timeout(() => {
-            $scope.$apply(() => {
-                // make sure that the new item-height is calculated by resetting the list
-                // that we iterate over
-                $scope.data.listEntries = oldDisplayEntries;
-                // make sure that the cards within the items are set to the new
-                // size. Apparently, `ng-style` is not recalulated although the
-                // variable has changed and the items have changed.
-                $(".list-card").css("height", $scope.itemHt + "px");
-           });
-        }, TEN_MS);
-    };
-
-    /*
-    * Checks if it is the first time the user has loaded the new label tab. If it is then
-    * show a walkthrough and store the info that the user has seen the tutorial.
-    */
-    var checkNewlabelTutorialDone = function () {
-      var NEWLABEL_DONE_KEY = 'newlabel_tutorial_done';
-      var newlabelTutorialDone = KVStore.getDirect(NEWLABEL_DONE_KEY);
-      if (!newlabelTutorialDone) {
-        startWalkthrough();
-        KVStore.set(NEWLABEL_DONE_KEY, true);
-      }
-    };
-
-    $scope.startWalkthrough = function () {
-      startWalkthrough();
-    }
 
     $scope.$on('$ionicView.enter', function(ev) {
       $scope.startTime = moment().utc()

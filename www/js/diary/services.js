@@ -15,9 +15,8 @@ const MotionTypes = {
 }
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
-                                                'emission.services',
-                                                'emission.incident.posttrip.manual'])
-.factory('DiaryHelper', function($http, PostTripManualMarker, $translate){
+                                                'emission.services'])
+.factory('DiaryHelper', function($http, $translate){
   var dh = {};
 
   dh.isMultiDay = function(beginTs, endTs) {

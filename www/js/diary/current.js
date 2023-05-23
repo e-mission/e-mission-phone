@@ -1,13 +1,12 @@
  angular.module('emission.main.diary.current', ['ui-leaflet',
                                                 'emission.services', 
                                                 'ionic',
-                                                'emission.incident.posttrip.manual',
                                                 'rzModule',
                                                 'emission.plugin.kvstore',
                                                 'emission.plugin.logger'])
 
 .controller('CurrMapCtrl', function($scope, Config, $state, $timeout, $ionicActionSheet,leafletData, 
-                                    Logger, $window, PostTripManualMarker, CommHelper, KVStore, $ionicPlatform, $translate) {
+                                    Logger, $window, CommHelper, KVStore, $ionicPlatform, $translate) {
     
   console.log("controller CurrMapCtrl called from current.js");
   var _map;
@@ -258,7 +257,6 @@
             $scope.features = [];
             marker = L.circleMarker(latlng);
             Logger.log(marker);
-            PostTripManualMarker.showSheet($scope.features, latlng, ts, marker, _map);
     })
     .catch(function(error) {
       Logger.displayError("Error while getting selected map location ", error);

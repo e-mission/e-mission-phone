@@ -5,7 +5,6 @@ angular.module('emission.main', ['emission.main.recent',
                                  'emission.main.control',
                                  'emission.main.metrics',
                                  'emission.config.dynamic',
-                                 'emission.survey.multilabel.posttrip.map',
                                  'emission.services',
                                  'emission.services.upload'])
 
@@ -58,20 +57,6 @@ angular.module('emission.main', ['emission.main.recent',
         'main-control': {
           templateUrl: "templates/recent/map.html",
           controller: 'mapCtrl'
-        }
-      }
-  })
-
-  .state('root.main.tripconfirm', {
-      url: "/tripconfirm",
-      params: {
-        start_ts: null,
-        end_ts: null
-      },
-      views: {
-        'main-control': {
-          templateUrl: "templates/tripconfirm/map.html",
-          controller: 'PostTripMapCtrl'
         }
       }
   })

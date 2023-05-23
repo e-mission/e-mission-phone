@@ -7,7 +7,7 @@ angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
         'emission.survey.multilabel.services',
         'emission.main.diary.infscrolldetail',
-        'ui-leaflet', 'ng-walkthrough',
+        'ui-leaflet',
         'nvd3', 'emission.plugin.kvstore',
         'emission.services',
         'emission.config.imperial',
@@ -15,8 +15,7 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.plugin.logger',
         'emission.stats.clientstats',
         'emission.survey.enketo.add-note-button',
-        'emission.survey.enketo.notes-list',
-        'emission.incident.posttrip.manual'])
+        'emission.survey.enketo.notes-list'])
 
 .directive("infiniteScrollTripItem", function(){
     return{
@@ -30,9 +29,9 @@ angular.module('emission.main.diary.infscrolltripitem',
     };
   })
 
-  .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform,
-                                        $state, leafletMapEvents, 
-                                        nzTour, Timeline, DiaryHelper, SurveyOptions,
+  .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform, $ionicPopup,
+                                        $state, leafletMapEvents, $translate,
+                                        Timeline, DiaryHelper, SurveyOptions,
                                         Config, DynamicConfig, $ionicScrollDelegate
                                         ){
     console.log("Trip Item Controller called");

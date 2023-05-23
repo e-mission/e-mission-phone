@@ -13,12 +13,11 @@
                 <div class="diary-modes-percents" ng-if="trip.percentages">
                     <span
                         class="diary-modes-percents-text"
-                        ng-if="!trip.isDraft"
                         ng-repeat="sectionPct in trip.percentages" style="color: {{ sectionPct.color }}">
                         <span class="diary-modes-percents-icon {{sectionPct.icon}}"></span>
                         <span>{{sectionPct.pct}}%</span>
                     </span>
-                    <button class="diary-draft-button" ng-if="trip.isDraft" ng-click="explainDraft($event)">
+                    <button class="diary-draft-button" ng-if="trip.key.includes('UNPROCESSED')" ng-click="explainDraft($event)">
                         <span translate>{{'.draft'}}</span>
                     </button>
                 </div>
