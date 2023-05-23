@@ -891,8 +891,9 @@ button.button.back-button.buttons.button-clear.header-item {
   max-width: calc(100% - 64px);
   overflow: hidden;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* number of lines to show */
-          line-clamp: 2; 
+  line-height: 1.1;
+  -webkit-line-clamp: 5; /* number of lines to show */
+          line-clamp: 5; 
   -webkit-box-orient: vertical;
   text-overflow: ellipsis;
 }

@@ -1,7 +1,7 @@
 <ion-view view-title="{{'control.profile' | translate}}" ng-class="ion-view-background" translate-namespace="control">
   <ion-content>
     <div class="control-list-item">
-      <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text">{{settings.auth.opcode}}</div>
+      <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
       <div ng-click="returnToIntro()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <enketo-demographics-button></enketo-demographics-button>
