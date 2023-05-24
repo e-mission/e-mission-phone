@@ -21,7 +21,6 @@
     "animate.css": "^3.5.2",
     "jquery": "^3.1.0",
     "leaflet-plugins": "^3.0.0",
-    "angularjs-slider": "^6.2.2",
     "angular-translate": "^2.18.1",
     "angular-translate-loader-static-files": "^2.18.1",
     "angular-translate-interpolation-messageformat": "^2.18.1",
