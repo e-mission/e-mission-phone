@@ -1,14 +1,18 @@
 'use strict';
 
-angular.module('emission.main.metrics',['nvd3',
-                                        'emission.services',
+import angular from 'angular';
+import 'nvd3';
+import ReactHello from './ReactHello';
+
+angular.module('emission.main.metrics',['emission.services',
                                         'ionic-datepicker',
                                         'emission.config.imperial',
                                         'emission.main.metrics.factory',
                                         'emission.main.metrics.mappings',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
-                                        'emission.plugin.logger'])
+                                        'emission.plugin.logger',
+                                        ReactHello.module])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     ClientStats, CommHelper, $window, $ionicPopup,

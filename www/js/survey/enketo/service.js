@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
@@ -7,8 +9,7 @@ angular.module('emission.survey.enketo.service', [
 ])
 .factory('EnketoSurvey', function(
   $window, $http, $translate, UnifiedDataLoader,
-  InputMatcher, EnketoSurveyAnswer, DynamicConfig, $translate
-) {
+  InputMatcher, EnketoSurveyAnswer, DynamicConfig) {
   /**
    * @typedef EnketoSurveyConfig
    * @type {{

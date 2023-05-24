@@ -8,6 +8,8 @@
  * All UI elements should only use $scope variables.
  */
 
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.trip.infscrollfilters',[
     'emission.survey.enketo.trip.button',
     'emission.plugin.logger'

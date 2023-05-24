@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.main.diary',['emission.main.diary.infscrolllist',
                                       'emission.main.diary.infscrolldetail',
                                       'emission.main.diary.services'])

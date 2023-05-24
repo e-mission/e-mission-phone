@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
                                         'emission.main.control.collection',
@@ -14,8 +16,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.kvstore',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
-                                        'emission.config.dynamic',
-                                        'monospaced.qrcode'])
+                                        'emission.config.dynamic'])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,

@@ -7,16 +7,35 @@
 // 'emission.controllers' is found in controllers.js
 'use strict';
 
+import angular from 'angular';
+import 'angular-animate';
+import 'angular-sanitize';
+import 'angular-translate';
+import '../manual_lib/angular-ui-router/angular-ui-router.js';
+import 'angular-local-storage';
+import 'angular-translate-loader-static-files';
+
+import 'moment';
+import 'moment-timezone';
+
+import 'ionic-toast';
+import 'ionic-datepicker';
+import 'angular-simple-logger';
+import 'ui-leaflet';
+
+import '../manual_lib/ionic/js/ionic.js';
+import '../manual_lib/ionic/js/ionic-angular.js';
+
 angular.module('emission', ['ionic',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.services.email',
     'emission.intro', 'emission.main', 'emission.config.dynamic',
     'emission.config.server_conn', 'emission.join.ctrl',
-    'pascalprecht.translate', 'angularLocalStorage'])
+    'pascalprecht.translate', 'LocalStorageModule'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, DynamicConfig, storage, ServerConnConfig) {
+    CustomURLScheme, ReferralHandler, DynamicConfig, localStorageService, ServerConnConfig) {
   console.log("Starting run");
   // ensure that plugin events are delivered after the ionicPlatform is ready
   // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
@@ -51,7 +70,7 @@ angular.module('emission', ['ionic',
     // backwards compat hack to be consistent with
     // https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7#diff-962320754eba07107ecd413954411f725c98fd31cddbb5defd4a542d1607e5a3R160
     // remove during migration to react native
-    storage.remove("OP_GEOFENCE_CFG");
+    localStorageService.remove("OP_GEOFENCE_CFG");
     cordova.plugins.BEMUserCache.removeLocalStorage("OP_GEOFENCE_CFG");
   });
   console.log("Ending run");
@@ -103,8 +122,8 @@ angular.module('emission', ['ionic',
   $urlRouterProvider.otherwise('/splash');
 
   // Allow the use of MessageForm interpolation for Gender and Plural.
-  $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
-                    .useSanitizeValueStrategy('escape');
+  // $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
+  //                   .useSanitizeValueStrategy('escape');
 
 
   // Define where we can find the .json and the fallback language

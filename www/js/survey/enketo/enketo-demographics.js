@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.demographics',
     ['emission.stats.clientstats',
         'emission.services',

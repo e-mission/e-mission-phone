@@ -402,7 +402,7 @@ a.item-content {
   font-style: 13px;
   background-color: #ffffff;
   border: none;
-  background-image: url("../img/icons/help_outline_black_24dp.svg");
+  /* background-image: url("../img/icons/help_outline_black_24dp.svg"); */
   background-repeat: no-repeat;
   background-position: left center;
   padding-left: 25px;

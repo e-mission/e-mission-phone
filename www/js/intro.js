@@ -1,12 +1,13 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
-                                  'ionic-toast',
-                                  'monospaced.qrcode'])
+                                  'ionic-toast'])
 
 .config(function($stateProvider) {
   $stateProvider

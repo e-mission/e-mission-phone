@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
                     'emission.plugin.logger',

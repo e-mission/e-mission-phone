@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.services', ['emission.plugin.logger',
                                      'emission.plugin.kvstore'])
 

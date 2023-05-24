@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',

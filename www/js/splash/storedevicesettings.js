@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services',
                                              'emission.splash.startprefs'])

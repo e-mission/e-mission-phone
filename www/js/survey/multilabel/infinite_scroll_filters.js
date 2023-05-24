@@ -8,6 +8,8 @@
  * All UI elements should only use $scope variables.
  */
 
+import angular from 'angular';
+
 angular.module('emission.survey.multilabel.infscrollfilters',[
     'emission.survey.multilabel.services',
     'emission.plugin.logger'

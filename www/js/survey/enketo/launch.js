@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.launch', [
   'emission.services',
   'emission.survey.enketo.service',

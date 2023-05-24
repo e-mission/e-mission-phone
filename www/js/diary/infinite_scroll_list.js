@@ -8,6 +8,9 @@
  * All UI elements should only use $scope variables.
  */
 
+import angular from 'angular';
+import Bottleneck from 'bottleneck';
+
 angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                       'ionic-datepicker',
                                       'emission.appstatus.permissioncheck',
@@ -331,6 +334,10 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
         }
     });
   }
+
+  $scope.$on("recomputeListEntries", () => {
+    $scope.recomputeListEntries();
+  });
 
   $scope.$on("scroll.infiniteScrollComplete", function() {
     Logger.log("infiniteScrollComplete broadcast")

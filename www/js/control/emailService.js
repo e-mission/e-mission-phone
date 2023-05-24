@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.services.email', ['emission.plugin.logger'])
 
     .service('EmailHelper', function ($window, $translate, $http, Logger) {

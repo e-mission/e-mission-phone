@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
 .factory('InputMatcher', function($translate, Logger){
   var im = {};

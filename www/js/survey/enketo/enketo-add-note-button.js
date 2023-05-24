@@ -2,6 +2,9 @@
  * Directive to display a survey to add notes to a timeline entry (trip or place)
  */
 
+import angular from 'angular';
+import DiaryButton from '../../diary/DiaryButton';
+
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',
         'emission.services',
@@ -9,7 +12,8 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.enketo.preview',
-        'emission.survey.inputmatcher'])
+        'emission.survey.inputmatcher',
+        DiaryButton.module])
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {

@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.splash.customURLScheme', [])
 
 .factory('CustomURLScheme', function($rootScope) {

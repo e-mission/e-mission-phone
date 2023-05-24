@@ -3,19 +3,24 @@
  * A directive to display each trip within the diary view.
  */
 
+import angular from 'angular';
+import DiaryButton from './DiaryButton';
+
 angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
         'emission.survey.multilabel.services',
         'emission.main.diary.infscrolldetail',
         'ui-leaflet',
-        'nvd3', 'emission.plugin.kvstore',
+        'emission.plugin.kvstore',
         'emission.services',
         'emission.config.imperial',
         'emission.config.dynamic',
         'emission.plugin.logger',
         'emission.stats.clientstats',
         'emission.survey.enketo.add-note-button',
-        'emission.survey.enketo.notes-list'])
+        'emission.survey.enketo.notes-list',
+        DiaryButton.module
+      ])
 
 .directive("infiniteScrollTripItem", function(){
     return{

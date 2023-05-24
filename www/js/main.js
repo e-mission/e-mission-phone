@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
                                  'emission.main.metrics',

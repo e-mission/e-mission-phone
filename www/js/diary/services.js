@@ -14,6 +14,8 @@ const MotionTypes = {
   11: {name: "AIR_OR_HSR", icon: "ion-plane", color: "red"}
 }
 
+import angular from 'angular';
+
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
 .factory('DiaryHelper', function($http, $translate){

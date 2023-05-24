@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.utils',
     "emission.plugin.logger", "emission.config.dynamic"])
 .factory("ConfirmHelper", function($http, $ionicPopup, $ionicPlatform, $translate, i18nUtils, DynamicConfig, Logger) {
@@ -54,9 +56,9 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
         }
         Logger.log("Finished initializing ch.INPUTS and ch.inputDetails" + ch.INPUTS);
         ch.inputParamsPromise = new Promise(function(resolve, reject) {
-          inputParams = {};
+          const inputParams = {};
           console.log("Starting promise execution with ", inputParams);
-          omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
+          const omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
           console.log("Promise list ", omPromises);
           Promise.all(omPromises).then((omObjList) =>
               ch.INPUTS.forEach(function(item, index) {

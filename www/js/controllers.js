@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.controllers', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',

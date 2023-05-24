@@ -1,6 +1,9 @@
 'use strict';
+import angular from 'angular';
+import 'nvd3';
+
 angular.module('emission.main.diary.infscrolldetail',['ui-leaflet',
-                                      'nvd3', 'emission.plugin.kvstore',
+                                      'emission.plugin.kvstore',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.plugin.logger',

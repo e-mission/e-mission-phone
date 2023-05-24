@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.config.imperial', ['emission.plugin.logger'])
 .factory('ImperialConfig', function($rootScope, DynamicConfig, Logger, $ionicPlatform) {
     // change to true if we want to use imperial units such as miles

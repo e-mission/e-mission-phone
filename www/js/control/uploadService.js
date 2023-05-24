@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.services.upload', ['emission.plugin.logger'])
 
     .service('UploadHelper', function ($window, $translate, $http, $rootScope, $ionicPopup, Logger) {

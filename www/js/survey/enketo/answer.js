@@ -1,9 +1,12 @@
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.answer', [
   'ionic',
   'emission.config.dynamic',
 ])
 .factory('EnketoSurveyAnswer', function(
-  $http, DynamicConfig, $translate, $translateMessageFormatInterpolation
+  $http, DynamicConfig, $translate,
+  // $translateMessageFormatInterpolation
 ) {
   /**
    * @typedef EnketoAnswerData
@@ -63,7 +66,8 @@ angular.module('emission.survey.enketo.answer', [
           }
         }
 
-        const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
+        // const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
+        const label = labelTemplate;
         return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
       })
     }

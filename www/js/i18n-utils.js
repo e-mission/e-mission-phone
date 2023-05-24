@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.i18n.utils', [])
 .factory("i18nUtils", function($http, $translate, Logger) {
   var iu = {};

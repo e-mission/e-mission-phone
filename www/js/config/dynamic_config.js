@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
         $window, $state, $rootScope, $timeout, Logger, $translate) {
@@ -42,8 +44,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     var readConfigFromServer = function(label) {
         Logger.log("Received request to join "+label);
         // The URL prefix from which config files will be downloaded and read.
-        // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
-        const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
+        // Change this if you supply your own config files.
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
             Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(result.data).substring(0,10));
@@ -125,13 +126,13 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     }
 
     const _getStudyName = function(connectUrl) {
-      const orig_host = new URL(connectUrl).hostname;
-      const first_domain = orig_host.split(".")[0];
-      if (first_domain == "openpath-stage") { return "stage"; }
-      const openpath_index = first_domain.search("-openpath");
-      if (openpath_index == -1) { return undefined; }
-      const study_name = first_domain.substr(0,openpath_index);
-      return study_name;
+        const orig_host = new URL(connectUrl).hostname;
+        const first_domain = orig_host.split(".")[0];
+        if (first_domain == "openpath-stage") { return "stage"; }
+        const openpath_index = first_domain.search("-openpath");
+        if (openpath_index == -1) { return undefined; }
+        const study_name = first_domain.substr(0,openpath_index);
+        return study_name;
     }
 
     const _fillStudyName = function(config) {
