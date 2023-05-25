@@ -21,9 +21,10 @@
                         <span translate>{{'.draft'}}</span>
                     </button>
                 </div>
-                <leaflet class="diary-map" geojson="trip.geojson" defaults="mapCtrl.defaults"
+                <leaflet-view></leaflet-view>
+                <!-- <leaflet class="diary-map" geojson="trip.geojson" defaults="mapCtrl.defaults"
                     id="$index" data-tap-disabled="true" height="{{mapHeight}}">
-                </leaflet>
+                </leaflet> -->
                 <div ng-if="configTripNotes" class="row" style="height: 20%; padding: 10px 20px">
                     <enketo-add-note-button notes-config="configTripNotes" timeline-entry="trip"
                         datakey="manual/trip_addition_input" style="margin: auto; width: 100%">

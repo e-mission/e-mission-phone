@@ -5,6 +5,7 @@
 
 import angular from 'angular';
 import DiaryButton from './DiaryButton';
+import LeafletView from './LeafletView';
 
 angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
@@ -19,7 +20,8 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.stats.clientstats',
         'emission.survey.enketo.add-note-button',
         'emission.survey.enketo.notes-list',
-        DiaryButton.module
+        DiaryButton.module,
+        LeafletView.module,
       ])
 
 .directive("infiniteScrollTripItem", function(){

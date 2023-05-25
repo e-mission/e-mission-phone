@@ -83,6 +83,7 @@ module.exports = {
   resolve: {
     alias: {
       'react-native$': 'react-native-web',
+      'react-native-webview': 'react-native-web-webview',
       'react-native-vector-icons': false
     },
     extensions: ['.web.js', '.jsx', '.tsx', '.ts', '.js'],
