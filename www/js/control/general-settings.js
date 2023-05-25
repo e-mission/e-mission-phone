@@ -369,14 +369,11 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    $scope.returnToIntro = function() {
-      var testReconsent = false
-      if (testReconsent) {
-        $rootScope.req_consent.approval_date = Math.random();
-        StartPrefs.loadPreferredScreen();
-      } else {
-        $state.go("root.intro");
-      }
+    $scope.logOut = function() {
+        // reset the saved config, then trigger a hard refresh
+        const CONFIG_PHONE_UI="config/app_ui_config";
+        $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+            .then($window.location.reload(true));
     };
 
     var getStartTransitionKey = function() {
