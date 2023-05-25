@@ -31,7 +31,7 @@
 
         <div class="control-list-item row">
             <div class="control-list-text col">
-                <div translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></div>
+                <div translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.count, allTripsLength: data.allTrips.length}"></div>
                 <div ng-if="data.allTrips.length > 0" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
             </div>
             <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
