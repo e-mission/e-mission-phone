@@ -11,7 +11,6 @@ angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
         'emission.survey.multilabel.services',
         'emission.main.diary.infscrolldetail',
-        'ui-leaflet',
         'emission.plugin.kvstore',
         'emission.services',
         'emission.config.imperial',
@@ -37,7 +36,7 @@ angular.module('emission.main.diary.infscrolltripitem',
   })
 
   .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform, $ionicPopup,
-                                        $state, leafletMapEvents, $translate,
+                                        $state, $translate,
                                         Timeline, DiaryHelper, SurveyOptions,
                                         Config, DynamicConfig, $ionicScrollDelegate
                                         ){
@@ -74,38 +73,8 @@ angular.module('emission.main.diary.infscrolltripitem',
       // don't want to go to the detail screen
     }
 
-    // In-Line Map, functionality pulled from Infinite Scroll Detail
-    $scope.mapCtrl = {};
-    angular.extend($scope.mapCtrl, {
-      defaults : {
-        zoomControl: false
-      }
-    });
-
-    angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
-
-    var mapEvents = leafletMapEvents.getAvailableMapEvents();
-    for (var k in mapEvents) {
-      var eventName = 'leafletDirectiveMap.infscroll-tripitem.' + mapEvents[k];
-      $scope.$on(eventName, function(event, data){
-          try {
-              console.log("in mapEvents, event = "+JSON.stringify(event.name)+
-                    " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
-                    " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
-          } catch (e) {
-              if (e instanceof TypeError) {
-                  console.log("in mapEvents, event = "+JSON.stringify(event.name)+
-                        " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
-                        " leafletObject is undefined");
-              } else {
-                  console.log(e);
-              }
-          }
-          $scope.eventDetected = event.name;
-      });
-    }
-
-    $scope.refreshTiles = function() {
-      $scope.$broadcast('invalidateSize');
-    }
+    $scope.mapOpts = {
+      zoomControl: false,
+      dragging: false,
+    };
 });

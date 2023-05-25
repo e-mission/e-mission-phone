@@ -75,8 +75,7 @@
     "react-native-vector-icons": "^9.2.0",
     "react-native-web": "^0.19.*",
     "react-native-web-webview": "^1.0.2",
-    "shelljs": "^0.8.5",
-    "ui-leaflet": "^1.0.0"
+    "shelljs": "^0.8.5"
   },
   "cordova": {
     "platforms": [

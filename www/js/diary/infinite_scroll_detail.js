@@ -1,17 +1,18 @@
 'use strict';
 import angular from 'angular';
 import 'nvd3';
+import LeafletView from './LeafletView';
 
-angular.module('emission.main.diary.infscrolldetail',['ui-leaflet',
+angular.module('emission.main.diary.infscrolldetail', [
                                       'emission.plugin.kvstore',
                                       'emission.services',
                                       'emission.config.imperial',
                                       'emission.plugin.logger',
-                                      'emission.stats.clientstats'])
+                                      'emission.stats.clientstats',
+                                      LeafletView.module])
 
 .controller("InfiniteDiaryDetailCtrl", function($scope, $rootScope, $injector, $window, $ionicPlatform,
-                                        $state, $stateParams, ClientStats, $ionicActionSheet,
-                                        leafletData, leafletMapEvents, KVStore,
+                                        $state, $stateParams, ClientStats, $ionicActionSheet, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
                                         DynamicConfig, CommHelper, $translate) {
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
@@ -23,23 +24,6 @@ angular.module('emission.main.diary.infscrolldetail',['ui-leaflet',
       $scope.surveyOpt = SurveyOptions[surveyOptKey];
     });
   });
-
-  $scope.mapCtrl = {};
-  angular.extend($scope.mapCtrl, {
-    defaults : {
-    }
-  });
-
-  angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
-
-  $scope.$on('leafletDirectiveMap.infscroll-detail.resize', function(event, data) {
-      console.log("diary/detail received resize event, invalidating map size");
-      data.leafletObject.invalidateSize();
-  });
-
-  $scope.refreshTiles = function() {
-      $scope.$broadcast('invalidateSize');
-  };
 
   $scope.trip = Timeline.getCompositeTrip($stateParams.tripId);
   $scope.formattedSectionProperties = DiaryHelper.getFormattedSectionProperties($scope.trip, ImperialConfig);

@@ -62,6 +62,11 @@ module.exports = {
             ],
           },
         },
+      },
+      // necessary to load html files
+      {
+        test: /\.html$/i,
+        loader: 'file-loader'
       }
     ],
   },

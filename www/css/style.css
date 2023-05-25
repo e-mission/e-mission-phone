@@ -1484,3 +1484,8 @@ html, #chart2, svg {
   display: inline-grid;
   width: 50%;
 }
+
+div[class*='css-view'] {
+  height: 100%;
+  width: 100%;
+}

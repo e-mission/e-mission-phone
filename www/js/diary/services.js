@@ -168,23 +168,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     });
   };
 
-  dh.userModes = [
-        "walk", "bicycle", "car", "bus", "light_rail", "train", "tram", "subway", "unicorn"
-    ];
-
-  dh.pointFormat = function(feature, latlng) {
-    switch(feature.properties.feature_type) {
-      case "start_place": return L.marker(latlng, {icon: startIcon});
-      case "end_place": return L.marker(latlng, {icon: stopIcon});
-      case "stop": return L.circleMarker(latlng);
-      case "location": return L.marker(latlng, {icon: pointIcon});
-      default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
-    }
-  };
-    var pointIcon = L.divIcon({className: 'leaflet-div-icon', iconSize: [0, 0]});
-    var startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-start"><i class="ion-location"></i></div>'});
-    var stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-stop"><i class="ion-flag"></i></div>'});
-
   return dh;
 })
 .factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
@@ -493,8 +476,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             start_ts: trip.start_ts,
             end_ts: trip.end_ts
           }
-        },
-        style: (feature) => feature.style
+        }
       }
     }
 

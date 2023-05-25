@@ -21,7 +21,6 @@ import 'moment-timezone';
 import 'ionic-toast';
 import 'ionic-datepicker';
 import 'angular-simple-logger';
-import 'ui-leaflet';
 
 import '../manual_lib/ionic/js/ionic.js';
 import '../manual_lib/ionic/js/ionic-angular.js';

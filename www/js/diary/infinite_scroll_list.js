@@ -11,7 +11,7 @@
 import angular from 'angular';
 import Bottleneck from 'bottleneck';
 
-angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
+angular.module('emission.main.diary.infscrolllist',[
                                       'ionic-datepicker',
                                       'emission.appstatus.permissioncheck',
                                       'emission.services',
@@ -34,7 +34,7 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
                                     $ionicActionSheet,
                                     ionicDatePicker,
                                     $timeout,
-                                    leafletData, Timeline, DiaryHelper,
+                                    Timeline, DiaryHelper,
                                     SurveyOptions, NotificationScheduler,
                                     Config, ImperialConfig, DynamicConfig,
                                     KVStore,
@@ -617,7 +617,6 @@ angular.module('emission.main.diary.infscrolllist',['ui-leaflet',
 
       $scope.$apply(() => {
         trip.geojson = tripgj;
-        trip.geojson.pointToLayer = DiaryHelper.pointFormat;
       });
     }
 
