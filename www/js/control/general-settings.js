@@ -370,10 +370,19 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.logOut = function() {
-        // reset the saved config, then trigger a hard refresh
-        const CONFIG_PHONE_UI="config/app_ui_config";
-        $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
-            .then($window.location.reload(true));
+        $ionicPopup.confirm({
+            title: $translate.instant('general-settings.are-you-sure'),
+            template: $translate.instant('general-settings.log-out-warning'),
+            cancelText: $translate.instant('general-settings.cancel'),
+            okText: $translate.instant('general-settings.confirm')
+        }).then(function(res) {
+            if (!res) return; // user cancelled
+            
+            // reset the saved config, then trigger a hard refresh
+            const CONFIG_PHONE_UI="config/app_ui_config";
+            $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+                .then($window.location.reload(true));
+        });
     };
 
     var getStartTransitionKey = function() {
