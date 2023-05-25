@@ -99,14 +99,15 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 CONFIG_PHONE_UI, toSaveConfig);
             const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
             // loaded new config, so it is both ready and changed
-            return storeConfigPromise.then(logSuccess)
-                .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
-                .then(dc.saveAndNotifyConfigReady(downloadedConfig))
-                .then(() => {
-                    if (thenGoToIntro) $state.go("root.intro")
-                })
-                .then(() => true)
-                .catch((storeError) => Logger.displayError($translate.instant('config.unable-to-store-config'), storeError));
+            return storeConfigPromise.then((result) => {
+                logSuccess(result);
+                dc.saveAndNotifyConfigChanged(downloadedConfig);
+                dc.saveAndNotifyConfigReady(downloadedConfig);
+                if (thenGoToIntro)
+                    $state.go("root.intro");
+                return true;
+            }).catch((storeError) =>
+                Logger.displayError($translate.instant('config.unable-to-store-config'), storeError));
         });
     }
 
