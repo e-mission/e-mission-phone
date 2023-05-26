@@ -37,6 +37,7 @@ import './js/survey/multilabel/infinite_scroll_filters.js';
 import './js/survey/multilabel/trip-confirm-services.js';
 import './js/survey/multilabel/multi-label-ui.js';
 import './js/diary.js';
+import './js/recent.js';
 import './js/diary/infinite_scroll_trip_item.js';
 import './js/diary/infinite_scroll_place_item.js';
 import './js/diary/infinite_scroll_untracked_time_item.js';

@@ -235,6 +235,9 @@ angular.module('emission.main.control',['emission.services',
     $scope.showLog = function() {
         $state.go("root.main.log");
     }
+    $scope.showSensed = function() {
+        $state.go("root.main.sensed");
+    }
     $scope.getState = function() {
         return ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {

@@ -5,6 +5,7 @@ import angular from 'angular';
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
                                  'emission.main.metrics',
+                                 'emission.main.recent',
                                  'emission.config.dynamic',
                                  'emission.services',
                                  'emission.services.upload'])
@@ -48,6 +49,16 @@ angular.module('emission.main', ['emission.main.diary',
       'main-control': {
         templateUrl: 'templates/recent/log.html',
         controller: 'logCtrl'
+      }
+    }
+  })
+
+  .state('root.main.sensed', {
+    url: "/sensed",
+    views: {
+      'main-control': {
+        templateUrl: "templates/recent/sensedData.html",
+        controller: 'sensedDataCtrl'
       }
     }
   });
