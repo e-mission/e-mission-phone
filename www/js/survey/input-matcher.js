@@ -3,7 +3,7 @@
 import angular from 'angular';
 
 angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
-.factory('InputMatcher', function($translate, Logger){
+.factory('InputMatcher', function(Logger){
   var im = {};
 
   const EPOCH_MAXIMUM = 2**31 - 1;

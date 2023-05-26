@@ -4,12 +4,12 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services',
                                              'emission.splash.startprefs'])
 .factory('StoreDeviceSettings', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, $translate, Logger, CommHelper, StartPrefs) {
+    $ionicPopup, Logger, CommHelper, StartPrefs) {
 
     var storedevicesettings = {};
 
     storedevicesettings.storeDeviceSettings = function() {
-      var lang = $translate.use();
+      var lang = i18next.resolvedLanguage;
       var manufacturer = $window.device.manufacturer;
       var osver = $window.device.version;
       return $window.cordova.getAppVersion.getVersionNumber().then(function(appver) {

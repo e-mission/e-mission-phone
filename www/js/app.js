@@ -18,6 +18,8 @@ import 'angular-translate-loader-static-files';
 import 'moment';
 import 'moment-timezone';
 
+import i18next from 'i18next';
+
 import 'ionic-toast';
 import 'ionic-datepicker';
 import 'angular-simple-logger';
@@ -25,7 +27,52 @@ import 'angular-simple-logger';
 import '../manual_lib/ionic/js/ionic.js';
 import '../manual_lib/ionic/js/ionic-angular.js';
 
-angular.module('emission', ['ionic',
+
+import en from '../i18n/en.json';
+import es from '../../locales/es/i18n/es.json';
+import fr from '../../locales/fr/i18n/fr.json';
+import it from '../../locales/it/i18n/it.json';
+const langs = { en, es, fr, it };
+
+let resources = {};
+for (const [lang, json] of Object.entries(langs)) {
+  resources[lang] = { translation: json }
+}
+
+const locales = !navigator?.length ? [navigator.language] : navigator.languages;
+
+let detectedLang;
+locales.forEach(locale => {
+  const lang = locale.trim().split(/-|_/)[0];
+  if (Object.keys(langs).includes(lang)) {
+    detectedLang = lang;
+  }
+});
+console.debug(`Detected language: ${detectedLang}`);
+console.debug('Resources:', resources);
+i18next.init({
+  debug: true,
+  resources,
+  lng: detectedLang,
+  fallbackLng: 'en'
+});
+
+console.debug('currlang:', i18next.resolvedLanguage);
+
+i18next.changeLanguage(detectedLang, (err, t) => {
+  if (err) {
+    console.error(err);
+  } else {
+    console.debug('i18next language changed to:', i18next.resolvedLanguage);
+    console.debug('t diary.draft:', t('diary.draft'));
+    console.debug('i18next.t diary.draft:', i18next.t('diary.draft'));
+  }
+});
+
+window.i18next = i18next;
+import 'ng-i18next';
+
+angular.module('emission', ['ionic', 'jm.i18next',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.services.email',
@@ -75,7 +122,7 @@ angular.module('emission', ['ionic',
   console.log("Ending run");
 })
 
-.config(function($stateProvider, $urlRouterProvider, $translateProvider, $compileProvider) {
+.config(function($stateProvider, $urlRouterProvider, $compileProvider) {
   console.log("Starting config");
   // alert("config");
 
@@ -119,27 +166,6 @@ angular.module('emission', ['ionic',
   // alert("about to fall back to otherwise");
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('/splash');
-
-  // Allow the use of MessageForm interpolation for Gender and Plural.
-  // $translateProvider.addInterpolation('$translateMessageFormatInterpolation')
-  //                   .useSanitizeValueStrategy('escape');
-
-
-  // Define where we can find the .json and the fallback language
-  $translateProvider
-    .fallbackLanguage('en')
-    .registerAvailableLanguageKeys(['en', 'fr', 'it', 'es'], {
-      'en_*': 'en',
-      'fr_*': 'fr',
-      'it_*': 'it',
-      'es_*': 'es',
-      '*': 'en'
-    })
-    .determinePreferredLanguage()
-    .useStaticFilesLoader({
-      prefix: 'i18n/',
-      suffix: '.json'
-    });
   
   console.log("Ending config");
 });

@@ -18,7 +18,7 @@
                         <span>{{sectionPct.pct}}%</span>
                     </span>
                     <button class="diary-draft-button" ng-if="trip.key.includes('UNPROCESSED')" ng-click="explainDraft($event)">
-                        <span translate>{{'.draft'}}</span>
+                        <span ng-i18next>{{'diary.draft'}}</span>
                     </button>
                 </div>
                 <leaflet-view class="diary-map" geojson="trip.geojson" opts="mapOpts"></leaflet-view>
@@ -43,10 +43,8 @@
                         </div>
                     </div>
                     <div class="row">
-                        <div class="diary-distance-time"
-                            translate=".distance-in-time"
-                            translate-value-distance="{{ trip.display_distance }} {{trip.display_distance_suffix }}"
-                            translate-value-time="{{ trip.display_time }}">
+                        <div class="diary-distance-time">
+                            {{ 'diary.distance-in-time' | i18next:{distance: trip.display_distance, distsuffix: trip.display_distance_suffix, time: trip.display_time} }}
                         </div>
                     </div>
 

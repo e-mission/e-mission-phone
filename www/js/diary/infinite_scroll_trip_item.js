@@ -36,8 +36,7 @@ angular.module('emission.main.diary.infscrolltripitem',
   })
 
   .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform, $ionicPopup,
-                                        $state, $translate,
-                                        Timeline, DiaryHelper, SurveyOptions,
+                                        $state, Timeline, DiaryHelper, SurveyOptions,
                                         Config, DynamicConfig, $ionicScrollDelegate
                                         ){
     console.log("Trip Item Controller called");
@@ -68,7 +67,7 @@ angular.module('emission.main.diary.infscrolltripitem',
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
-        template: $translate.instant('list-explainDraft-alert')
+        template: i18next.t('list-explainDraft-alert')
       });
       // don't want to go to the detail screen
     }

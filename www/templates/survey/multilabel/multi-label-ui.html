@@ -2,7 +2,7 @@
 
 <div> <!-- Container to keep buttons together -->
     <div ng-repeat="input in trip.inputDetails" ng-attr-id="{{ 'userinput' + input.name }}">
-        <div class="input-confirm-label" translate>{{input.labeltext}}</div>
+        <div class="input-confirm-label" ng-i18next>{{input.labeltext}}</div>
         <!-- Buttons (if trip is confirmed) -->
         <span ng-if="trip.userInput[input.name]" class="input-confirm-container">
             <button ng-click ="openPopover($event, trip, input.name)" class="button diary-btn diary-btn-blue btn-input-wrap two-lines">
@@ -12,15 +12,15 @@
 
         <!-- Buttons (if inferred, but not confirmed) -->
         <span ng-if="!trip.userInput[input.name] && trip.finalInference[input.name]" class="input-confirm-container">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button diary-btn diary-btn-yellow btn-input-wrap two-lines" translate>
+            <button ng-click ="openPopover($event, trip, input.name)" class="button diary-btn diary-btn-yellow btn-input-wrap two-lines" ng-i18next>
                 {{trip.finalInference[input.name].text}}
             </button>
         </span>
 
         <!-- Buttons (if not inferred or confirmed) -->
         <span ng-if="!trip.userInput[input.name] && !trip.finalInference[input.name]" class="input-confirm-container">
-            <button ng-click ="openPopover($event, trip, input.name)" class="button diary-btn btn-input-wrap two-lines" translate>
-            {{input.choosetext}}
+            <button ng-click ="openPopover($event, trip, input.name)" class="button diary-btn btn-input-wrap two-lines" ng-i18next>
+                {{input.choosetext}}
             </button>
         </span>
     </div>

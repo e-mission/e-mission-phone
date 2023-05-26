@@ -18,8 +18,7 @@ angular.module('emission.main.metrics',['emission.services',
                                     ClientStats, CommHelper, $window, $ionicPopup,
                                     ionicDatePicker, $ionicPlatform,
                                     FootprintHelper, CalorieCal, ImperialConfig, $ionicModal, $timeout, KVStore, CarbonDatasetHelper,
-                                    $rootScope, $location, $state, ReferHelper, Logger,
-                                    $translate) {
+                                    $rootScope, $location, $state, ReferHelper, Logger) {
     var lastTwoWeeksQuery = true;
     $scope.defaultTwoWeekUserCall = true;
 
@@ -175,7 +174,7 @@ angular.module('emission.main.metrics',['emission.services',
       showVis: true,
       showResult: true,
       current: true,
-      currentString: $translate.instant('metrics.last-week'),
+      currentString: i18next.t('metrics.last-week'),
       showChart: false,
       showSummary: true,
       showMe: true,
@@ -345,7 +344,7 @@ angular.module('emission.main.metrics',['emission.services',
                 bottom: 40,
                 left: 55
             },
-            noData: $translate.instant('metrics.chart-no-data'),
+            noData: i18next.t('metrics.chart-no-data'),
             showControls: false,
             showValues: true,
             stacked: false,
@@ -367,7 +366,7 @@ angular.module('emission.main.metrics',['emission.services',
 
             xAxis: {
                 axisLabelDistance: 3,
-                axisLabel: $translate.instant('metrics.chart-xaxis-date'),
+                axisLabel: i18next.t('metrics.chart-xaxis-date'),
                 tickFormat: function(d) {
                     var day = new Date(d * 1000)
                     day.setDate(day.getDate()+1) // Had to add a day to match date with data
@@ -377,7 +376,7 @@ angular.module('emission.main.metrics',['emission.services',
                 staggerLabels: true
             },
             yAxis: {
-              axisLabel: $translate.instant('metrics.trips-yaxis-number'),
+              axisLabel: i18next.t('metrics.trips-yaxis-number'),
               axisLabelDistance: -10
             },
             callback: function(chart) {
@@ -505,10 +504,10 @@ angular.module('emission.main.metrics',['emission.services',
 
    var getMetrics = function() {
       $ionicLoading.show({
-        template: $translate.instant('loading')
+        template: i18next.t('loading')
       });
       if(!$scope.defaultTwoWeekUserCall){
-        $scope.uictrl.currentString = $translate.instant('metrics.custom');
+        $scope.uictrl.currentString = i18next.t('metrics.custom');
         $scope.uictrl.current = false;
       }
       //$scope.uictrl.showRange = false;
@@ -588,8 +587,8 @@ angular.module('emission.main.metrics',['emission.services',
       })
       .catch(function(error) {
         $ionicLoading.hide();
-        $scope.carbonData.aggrCarbon = $translate.instant('metrics.carbon-data-unknown');
-        $scope.caloriesData.aggrCalories = $translate.instant('metrics.calorie-data-unknown');
+        $scope.carbonData.aggrCarbon = i18next.t('metrics.carbon-data-unknown');
+        $scope.caloriesData.aggrCalories = i18next.t('metrics.calorie-data-unknown');
         Logger.displayError("Error loading aggregate data, averages not available",
             error);
       });
@@ -897,25 +896,25 @@ angular.module('emission.main.metrics',['emission.services',
     $scope.showCharts = function(agg_metrics) {
       $scope.data = agg_metrics;
       $scope.countOptions = angular.copy($scope.options)
-      $scope.countOptions.chart.yAxis.axisLabel = $translate.instant('metrics.trips-yaxis-number');
+      $scope.countOptions.chart.yAxis.axisLabel = i18next.t('metrics.trips-yaxis-number');
       $scope.distanceOptions = angular.copy($scope.options)
       $scope.distanceOptions.chart.yAxis.axisLabel = ImperialConfig.getDistanceSuffix;
       $scope.durationOptions = angular.copy($scope.options)
-      $scope.durationOptions.chart.yAxis.axisLabel = $translate.instant('metrics.hours');
+      $scope.durationOptions.chart.yAxis.axisLabel = i18next.t('metrics.hours');
       $scope.speedOptions = angular.copy($scope.options)
       $scope.speedOptions.chart.yAxis.axisLabel = ImperialConfig.getSpeedSuffix;
     };
     $scope.pandaFreqOptions = [
-      {text: $translate.instant('metrics.pandafreqoptions-daily'), value: 'D'},
-      {text: $translate.instant('metrics.pandafreqoptions-weekly'), value: 'W'},
-      {text: $translate.instant('metrics.pandafreqoptions-biweekly'), value: '2W'},
-      {text: $translate.instant('metrics.pandafreqoptions-monthly'), value: 'M'},
-      {text: $translate.instant('metrics.pandafreqoptions-yearly'), value: 'A'}
+      {text: i18next.t('metrics.pandafreqoptions-daily'), value: 'D'},
+      {text: i18next.t('metrics.pandafreqoptions-weekly'), value: 'W'},
+      {text: i18next.t('metrics.pandafreqoptions-biweekly'), value: '2W'},
+      {text: i18next.t('metrics.pandafreqoptions-monthly'), value: 'M'},
+      {text: i18next.t('metrics.pandafreqoptions-yearly'), value: 'A'}
     ];
     $scope.freqOptions = [
-      {text: $translate.instant('metrics.freqoptions-daily'), value:'DAILY'},
-      {text: $translate.instant('metrics.freqoptions-monthly'), value: 'MONTHLY'},
-      {text: $translate.instant('metrics.freqoptions-yearly'), value: 'YEARLY'}
+      {text: i18next.t('metrics.freqoptions-daily'), value:'DAILY'},
+      {text: i18next.t('metrics.freqoptions-monthly'), value: 'MONTHLY'},
+      {text: i18next.t('metrics.freqoptions-yearly'), value: 'YEARLY'}
     ];
 
     /*
@@ -1044,7 +1043,7 @@ angular.module('emission.main.metrics',['emission.services',
 
     $scope.formatCount = function(value) {
         const formatVal = Math.round(value);
-        const unit = $translate.instant('metrics.trips');
+        const unit = i18next.t('metrics.trips');
         const stringRep = formatVal + " " + unit;
         return [formatVal, unit, stringRep];
     }
@@ -1059,7 +1058,7 @@ angular.module('emission.main.metrics',['emission.services',
     $scope.formatDuration = function(value) {
         const durM = moment.duration(value * 1000);
         const formatVal = durM.asHours();
-        const unit = $translate.instant('metrics.hours');
+        const unit = i18next.t('metrics.hours');
         const stringRep = durM.humanize();
         return [formatVal, unit, stringRep];
     }
@@ -1115,7 +1114,7 @@ angular.module('emission.main.metrics',['emission.services',
 
     $scope.changeWeekday = function(stringSetFunction, target) {
       var weekdayOptions = [
-        {text: $translate.instant('weekdays-all'), value: null},
+        {text: i18next.t('weekdays-all'), value: null},
         {text: moment.weekdays(1), value: 0},
         {text: moment.weekdays(2), value: 1},
         {text: moment.weekdays(3), value: 2},
@@ -1126,8 +1125,8 @@ angular.module('emission.main.metrics',['emission.services',
       ];
       $ionicActionSheet.show({
         buttons: weekdayOptions,
-        titleText: $translate.instant('weekdays-select'),
-        cancelText: $translate.instant('metrics.cancel'),
+        titleText: i18next.t('weekdays-select'),
+        cancelText: i18next.t('metrics.cancel'),
         buttonClicked: function(index, button) {
           stringSetFunction(button.text);
           if (target === 'from') {
@@ -1144,8 +1143,8 @@ angular.module('emission.main.metrics',['emission.services',
     $scope.changeFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.freqOptions,
-          titleText: $translate.instant('metrics.select-frequency'),
-          cancelText: $translate.instant('metrics.cancel'),
+          titleText: i18next.t('metrics.select-frequency'),
+          cancelText: i18next.t('metrics.cancel'),
           buttonClicked: function(index, button) {
             $scope.selectCtrl.freqString = button.text;
             $scope.selectCtrl.freq = button.value;
@@ -1157,8 +1156,8 @@ angular.module('emission.main.metrics',['emission.services',
     $scope.changePandaFreq = function() {
         $ionicActionSheet.show({
           buttons: $scope.pandaFreqOptions,
-          titleText: $translate.instant('metrics.select-pandafrequency'),
-          cancelText: $translate.instant('metrics.cancel'),
+          titleText: i18next.t('metrics.select-pandafrequency'),
+          cancelText: i18next.t('metrics.cancel'),
           buttonClicked: function(index, button) {
             $scope.selectCtrl.pandaFreqString = button.text;
             $scope.selectCtrl.pandaFreq = button.value;
@@ -1181,9 +1180,9 @@ angular.module('emission.main.metrics',['emission.services',
       var now = moment().utc();
       var weekAgoFromNow = moment().utc().subtract(7, 'd');
       $scope.selectCtrl.freq = 'DAILY';
-      $scope.selectCtrl.freqString = $translate.instant('metrics.freqoptions-daily');
+      $scope.selectCtrl.freqString = i18next.t('metrics.freqoptions-daily');
       $scope.selectCtrl.pandaFreq = 'D';
-      $scope.selectCtrl.pandaFreqString = $translate.instant('metrics.pandafreqoptions-daily');
+      $scope.selectCtrl.pandaFreqString = i18next.t('metrics.pandafreqoptions-daily');
       // local_date saved as localdate
       $scope.selectCtrl.fromDateLocalDate = moment2Localdate(weekAgoFromNow);
       $scope.selectCtrl.toDateLocalDate = moment2Localdate(now);
@@ -1191,8 +1190,8 @@ angular.module('emission.main.metrics',['emission.services',
       $scope.selectCtrl.fromDateTimestamp= weekAgoFromNow;
       $scope.selectCtrl.toDateTimestamp = now;
 
-      $scope.selectCtrl.fromDateWeekdayString = $translate.instant('weekdays-all');
-      $scope.selectCtrl.toDateWeekdayString = $translate.instant('weekdays-all');
+      $scope.selectCtrl.fromDateWeekdayString = i18next.t('weekdays-all');
+      $scope.selectCtrl.toDateWeekdayString = i18next.t('weekdays-all');
 
       $scope.selectCtrl.fromDateWeekdayValue = null;
       $scope.selectCtrl.toDateWeekdayValue = null;
@@ -1328,9 +1327,9 @@ angular.module('emission.main.metrics',['emission.services',
       title: '',
       scope: $scope,
       buttons: [
-        { text: $translate.instant('metrics.cancel') },
+        { text: i18next.t('metrics.cancel') },
         {
-          text: '<b>'+ $translate.instant('metrics.confirm') +'</b>',
+          text: '<b>'+ i18next.t('metrics.confirm') +'</b>',
           type: 'button-positive',
           onTap: function(e) {
             if (!($scope.userData.gender != -1 && $scope.userData.age && $scope.userData.weight && $scope.userData.height)) {
@@ -1346,10 +1345,10 @@ angular.module('emission.main.metrics',['emission.services',
   }
 
   $scope.datepickerObjBase = {
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
-      titleLabel: $translate.instant('metrics.pick-a-date'),
+      todayLabel: i18next.t('list-datepicker-today'),  //Optional
+      closeLabel: i18next.t('list-datepicker-close'),  //Optional
+      setLabel: i18next.t('list-datepicker-set'),  //Optional
+      titleLabel: i18next.t('metrics.pick-a-date'),
       mondayFirst: false,
       weeksList: moment.weekdaysMin(),
       monthsList: moment.monthsShort(),

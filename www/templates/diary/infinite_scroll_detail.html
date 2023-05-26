@@ -1,4 +1,4 @@
-<ion-view translate-namespace="diary">
+<ion-view>
     <ion-nav-title>{{ trip.display_date }}</ion-nav-title>
     <ion-content class="has-header" overflow-scroll="true" padding="true">
         <div class="row" style="">
@@ -25,8 +25,17 @@
         <div style="height: 15px;"></div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
             <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
-            <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.distance'}}</p>{{trip.display_distance}} {{trip.display_distance_suffix}}</div>
-            <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;"><p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" translate>{{'.time'}}</p>{{trip.display_time}}</div>
+                <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" ng-i18next>
+                    {{'diary.distance'}}
+                </p>
+                {{trip.display_distance}} {{trip.display_distance_suffix}}
+            </div>
+            <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">
+                <p style="font-size: 1.1em; color: #cccccc; margin-bottom: 0;" ng-i18next>
+                    {{'diary.time'}}
+                </p>
+                {{trip.display_time}}
+            </div>
             <div id="sectionPct" class="col">
               <i class="{{sectionPct.icon}}" ng-repeat="sectionPct in trip.percentages" style="margin-left: 10px; margin-right: 10px; font-size: 15px;" ng-style="{{sectionPct.color}}"></i>
               <br>
@@ -62,9 +71,9 @@
         </div>
         <div style="" class="button-bar">
             <button class="button button-stable button-block icon ion-refresh"
-                ng-click="refreshMap()" translate>{{'map-refresh'}}</button>
+                ng-click="refreshMap()" ng-i18next>{{'map-refresh'}}</button>
             <button class="button button-stable button-block"
-                ng-click="refreshTiles()" translate>{{'map-fixmap'}}</button>
+                ng-click="refreshTiles()" ng-i18next>{{'map-fixmap'}}</button>
         </div>
     </ion-content>
 </ion-view>

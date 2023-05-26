@@ -382,7 +382,6 @@ angular.module('emission.services', ['emission.plugin.logger',
 })
 .service('ControlHelper', function($window,
                                    $ionicPopup,
-                                   $translate,
                                    CommHelper,
                                    Logger) {
 
@@ -454,14 +453,14 @@ angular.module('emission.services', ['emission.plugin.logger',
                         attachFile = "app://cache/"+dumpFile;
                       }
                       if (ionic.Platform.isIOS()) {
-                        alert($translate.instant('email-service.email-account-mail-app'));
+                        alert(i18next.t('email-service.email-account-mail-app'));
                       }
                       var email = {
                         attachments: [
                           attachFile
                         ],
-                        subject: $translate.instant('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
-                        body: $translate.instant('email-service.email-data.body-data-consists-of-list-of-entries')
+                        subject: i18next.t('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
+                        body: i18next.t('email-service.email-data.body-data-consists-of-list-of-entries')
                       }
                       $window.cordova.plugins.email.open(email).then(resolve());
                     }

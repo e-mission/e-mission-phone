@@ -8,7 +8,7 @@ angular.module('emission.splash.notifscheduler',
                     'emission.stats.clientstats',
                     'emission.config.dynamic'])
 
-.factory('NotificationScheduler', function($http, $window, $ionicPlatform, $translate,
+.factory('NotificationScheduler', function($http, $window, $ionicPlatform,
                                             ClientStats, DynamicConfig, CommHelper, Logger) {
 
     const scheduler = {};
@@ -73,7 +73,7 @@ angular.module('emission.splash.notifscheduler',
     const scheduleNotifs = (scheme, notifTimes) => {
         return new Promise((rs) => {
             isScheduling = true;
-            const localeCode = $translate.use();
+            const localeCode = i18next.resolvedLanguage;
             const nots = notifTimes.map((n) => {
                 const nDate = n.toDate();
                 const seconds = nDate.getTime() / 1000;

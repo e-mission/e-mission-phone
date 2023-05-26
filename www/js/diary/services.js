@@ -18,7 +18,7 @@ import angular from 'angular';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
-.factory('DiaryHelper', function($http, $translate){
+.factory('DiaryHelper', function($http){
   var dh = {};
 
   dh.isMultiDay = function(beginTs, endTs) {
@@ -53,7 +53,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
     if (!t._isAMomentObject) t = moment(t);
     const opts = { weekday: 'short', month: 'short', day: 'numeric' };
-    return Intl.DateTimeFormat($translate.use(), opts)
+    return Intl.DateTimeFormat(i18next.resolvedLanguage, opts)
       .format(new Date(t.format('LLL')));
   }
 
@@ -171,7 +171,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   return dh;
 })
 .factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
-    $rootScope, UnifiedDataLoader, Logger, $injector, $translate) {
+    $rootScope, UnifiedDataLoader, Logger, $injector) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
     // day, including the indication of the current day
@@ -233,7 +233,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     timeline.readAllCompositeTrips = function(startTs, endTs) {
       $ionicLoading.show({
-        template: $translate.instant('service.reading-server')
+        template: i18next.t('service.reading-server')
       });
       const readPromises = [
         CommHelper.getRawEntries(["analysis/composite_trip"],
@@ -547,7 +547,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     timeline.readUnprocessedTrips = function(startTs, endTs, processedTripList) {
         $ionicLoading.show({
-          template: $translate.instant('service.reading-unprocessed-data')
+          template: i18next.t('service.reading-unprocessed-data')
         });
 
        var tq = {key: "write_ts",

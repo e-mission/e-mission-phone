@@ -4,7 +4,7 @@ import angular from 'angular';
 
 angular.module('emission.services.email', ['emission.plugin.logger'])
 
-    .service('EmailHelper', function ($window, $translate, $http, Logger) {
+    .service('EmailHelper', function ($window, $http, Logger) {
 
         const getEmailConfig = function () {
             return new Promise(function (resolve, reject) {
@@ -55,7 +55,7 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
                 // generate a reasonably relevant error message
 
                 if (ionic.Platform.isIOS() && !hasAct) {
-                    alert($translate.instant('email-service.email-account-not-configured'));
+                    alert(i18next.t('email-service.email-account-not-configured'));
                     return;
                 }
 
@@ -63,7 +63,7 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
                     parentDir = "app://databases";
                 }
                 if (ionic.Platform.isIOS()) {
-                    alert($translate.instant('email-service.email-account-mail-app'));
+                    alert(i18next.t('email-service.email-account-mail-app'));
                     parentDir = cordova.file.dataDirectory + "../LocalDatabase";
                 }
 
@@ -77,19 +77,19 @@ angular.module('emission.services.email', ['emission.plugin.logger'])
                 window.Logger.log(window.Logger.LEVEL_INFO,
                     "Going to export logs to "+parentDir);
                  */
-                alert($translate.instant('email-service.going-to-email', { parentDir: parentDir }));
+                alert(i18next.t('email-service.going-to-email', { parentDir: parentDir }));
                 var email = {
                     to: address,
                     attachments: [
                         parentDir
                     ],
-                    subject: $translate.instant('email-service.email-log.subject-logs'),
-                    body: $translate.instant('email-service.email-log.body-please-fill-in-what-is-wrong')
+                    subject: i18next.t('email-service.email-log.subject-logs'),
+                    body: i18next.t('email-service.email-log.body-please-fill-in-what-is-wrong')
                 }
 
                 $window.cordova.plugins.email.open(email, function () {
                   Logger.log("email app closed while sending, "+JSON.stringify(email)+" not sure if we should do anything");
-                  // alert($translate.instant('email-service.no-email-address-configured') + err);
+                  // alert(i18next.t('email-service.no-email-address-configured') + err);
                   return;
                 });
             });

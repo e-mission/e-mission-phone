@@ -39,7 +39,7 @@ angular.module('emission.main.diary.infscrolllist',[
                                     Config, ImperialConfig, DynamicConfig,
                                     KVStore,
                                     Logger, UnifiedDataLoader, InputMatcher,
-                                    $ionicModal, $translate) {
+                                    $ionicModal) {
   
   // TODO: load only a subset of entries instead of everything
 
@@ -88,11 +88,11 @@ angular.module('emission.main.diary.infscrolllist',[
     $scope.$broadcast("recomputeAppStatus", (status) => {
       if (!status) {
         $ionicPopup.show({
-          title: $translate.instant('control.incorrect-app-status'),
-          template: $translate.instant('control.fix-app-status'),
+          title: i18next.t('control.incorrect-app-status'),
+          template: i18next.t('control.fix-app-status'),
           scope: $scope,
           buttons: [{
-            text: $translate.instant('control.fix'),
+            text: i18next.t('control.fix'),
             type: 'button-assertive',
             onTap: function(e) {
               $state.go('root.main.control', {launchAppStatusModal: 1});
@@ -247,7 +247,7 @@ angular.module('emission.main.diary.infscrolllist',[
     }
     Logger.log("Turning on the ionic loading overlay in setupInfScroll");
     $ionicLoading.show({
-        template: $translate.instant('service.reading-server')
+        template: i18next.t('service.reading-server')
     });
 
     Logger.log("Requesting trips from server from "+moment(startTs*1000).format("YYYY-MM-DD HH:mm:ss")+" to "+moment(endTs*1000).format("YYYY-MM-DD HH:mm:ss"));
@@ -307,7 +307,7 @@ angular.module('emission.main.diary.infscrolllist',[
     $scope.data.listEntries = [];
     Logger.log("Turning on the ionic loading overlay in setupInfScroll");
     $ionicLoading.show({
-        template: $translate.instant('service.reading-server')
+        template: i18next.t('service.reading-server')
     });
     Timeline.getUnprocessedLabels($scope.labelPopulateFactory, $scope.enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
         if (pipelineRange.end_ts) {

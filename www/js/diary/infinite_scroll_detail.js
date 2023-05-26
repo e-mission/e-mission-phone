@@ -14,7 +14,7 @@ angular.module('emission.main.diary.infscrolldetail', [
 .controller("InfiniteDiaryDetailCtrl", function($scope, $rootScope, $injector, $window, $ionicPlatform,
                                         $state, $stateParams, ClientStats, $ionicActionSheet, KVStore,
                                         Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
-                                        DynamicConfig, CommHelper, $translate) {
+                                        DynamicConfig, CommHelper) {
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));
 
@@ -41,7 +41,7 @@ angular.module('emission.main.diary.infscrolldetail', [
     });
     var dataset = {
       values: data,
-      key: $translate.instant('details.speed'),
+      key: i18next.t('details.speed'),
       color: '#7777ff',
     }
     var chart = nv.models.lineChart()
@@ -53,10 +53,10 @@ angular.module('emission.main.diary.infscrolldetail', [
       .showXAxis(true);        //Show the x-axis
     chart.xAxis
       .tickFormat(d3.format(".1f"))
-      .axisLabel($translate.instant('details.time') + ' (mins)');
+      .axisLabel(i18next.t('details.time') + ' (mins)');
 
     chart.yAxis     //Chart y-axis settings
-      .axisLabel($translate.instant('details.speed') + ' (m/s)')
+      .axisLabel(i18next.t('details.speed') + ' (m/s)')
       .tickFormat(d3.format('.1f'));
 
     d3.selectAll('#chart svg')    //Select the <svg> element you want to render the chart in.

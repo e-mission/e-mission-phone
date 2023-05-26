@@ -25,14 +25,14 @@ angular.module('emission.survey.enketo.add-note-button',
     templateUrl: 'templates/survey/enketo/add-note-button.html'
   };
 })
-.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs, $translate,
+.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs,
     EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
     EnketoNotesButtonService) {
   console.log("Invoked enketo directive controller for add-note-button");
   $scope.notes = [];
 
   const updateLabel = () => {
-    const localeCode = $translate.use();
+    const localeCode = i18next.resolvedLanguage;
     if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
       $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
     } else {

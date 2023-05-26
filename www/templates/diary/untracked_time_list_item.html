@@ -10,9 +10,8 @@
                     <b class="card-date">{{triplike.display_date}}</b>
                 </div>
                 <div class="card-title">
-                    <b translate=".untracked-time-range"
-                        translate-value-start="{{ triplike.display_start_time }}"
-                        translate-value-end=" {{ triplike.display_end_time }}">
+                    <b>
+                        {{ 'diary.untracked-time-range' | i18next: {start: triplike.display_start_time, end: triplike.display_end_time} }}
                     </b>
                 </div>
                 <div style="margin: 5px">

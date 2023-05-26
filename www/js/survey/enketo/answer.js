@@ -1,13 +1,11 @@
 import angular from 'angular';
+import MessageFormat from 'messageformat';
 
 angular.module('emission.survey.enketo.answer', [
   'ionic',
   'emission.config.dynamic',
 ])
-.factory('EnketoSurveyAnswer', function(
-  $http, DynamicConfig, $translate,
-  // $translateMessageFormatInterpolation
-) {
+.factory('EnketoSurveyAnswer', function($http, DynamicConfig,) {
   /**
    * @typedef EnketoAnswerData
    * @type {object}
@@ -45,7 +43,7 @@ angular.module('emission.survey.enketo.answer', [
       return _lazyLoadConfig().then(configSurveys => {
 
         const config = configSurveys[name]; // config for this survey
-        const lang = $translate.use();
+        const lang = i18next.resolvedLanguage;
         const labelTemplate = config.labelTemplate?.[lang];
 
         if (!labelTemplate) return "Answered"; // no template given in config
@@ -66,8 +64,9 @@ angular.module('emission.survey.enketo.answer', [
           }
         }
 
-        // const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
-        const label = labelTemplate;
+        // use MessageFormat interpolate the label template with the label vars
+        const mf = new MessageFormat(lang);
+        const label = mf.compile(labelTemplate)(labelVars);
         return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
       })
     }

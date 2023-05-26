@@ -16,7 +16,7 @@ angular.module('emission.appstatus.permissioncheck',
     };
 }).
 controller("PermissionCheckControl", function($scope, $element, $attrs,
-        $ionicPlatform, $ionicPopup, $window, $translate) {
+        $ionicPlatform, $ionicPopup, $window) {
     console.log("PermissionCheckControl initialized with status "+$scope.overallstatus);
 
     $scope.setupLocChecks = function(platform, version) {
@@ -197,15 +197,15 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("description tags are "+androidSettingsDescTag+" "+androidPermDescTag);
         // location settings
         let locSettingsCheck = {
-            name: $translate.instant("intro.appstatus.locsettings.name"),
-            desc: $translate.instant(androidSettingsDescTag),
+            name: i18next.t("intro.appstatus.locsettings.name"),
+            desc: i18next.t(androidSettingsDescTag),
             statusState: false,
             fix: fixSettings,
             refresh: checkSettings
         }
         let locPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.locperms.name"),
-            desc: $translate.instant(androidPermDescTag),
+            name: i18next.t("intro.appstatus.locperms.name"),
+            desc: i18next.t(androidPermDescTag),
             statusState: false,
             fix: fixPerms,
             refresh: checkPerms
@@ -243,15 +243,15 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("description tags are "+iOSSettingsDescTag+" "+iOSPermDescTag);
         // location settings
         let locSettingsCheck = {
-            name: $translate.instant("intro.appstatus.locsettings.name"),
-            desc: $translate.instant(iOSSettingsDescTag),
+            name: i18next.t("intro.appstatus.locsettings.name"),
+            desc: i18next.t(iOSSettingsDescTag),
             statusState: false,
             fix: fixSettings,
             refresh: checkSettings
         }
         let locPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.locperms.name"),
-            desc: $translate.instant(iOSPermDescTag),
+            name: i18next.t("intro.appstatus.locperms.name"),
+            desc: i18next.t(iOSPermDescTag),
             statusState: false,
             fix: fixPerms,
             refresh: checkPerms
@@ -275,12 +275,12 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         };
   
         let fitnessPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.fitnessperms.name"),
-            desc: $translate.instant("intro.appstatus.fitnessperms.description.android"),
+            name: i18next.t("intro.appstatus.fitnessperms.name"),
+            desc: i18next.t("intro.appstatus.fitnessperms.description.android"),
             fix: fixPerms,
             refresh: checkPerms
         }
-        $scope.overallFitnessName = $translate.instant("intro.appstatus.overall-fitness-name-android");
+        $scope.overallFitnessName = i18next.t("intro.appstatus.overall-fitness-name-android");
         $scope.fitnessChecks = [fitnessPermissionsCheck];
         refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
     }
@@ -300,12 +300,12 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         };
   
         let fitnessPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.fitnessperms.name"),
-            desc: $translate.instant("intro.appstatus.fitnessperms.description.ios"),
+            name: i18next.t("intro.appstatus.fitnessperms.name"),
+            desc: i18next.t("intro.appstatus.fitnessperms.description.ios"),
             fix: fixPerms,
             refresh: checkPerms
         }
-        $scope.overallFitnessName = $translate.instant("intro.appstatus.overall-fitness-name-ios");
+        $scope.overallFitnessName = i18next.t("intro.appstatus.overall-fitness-name-ios");
         $scope.fitnessChecks = [fitnessPermissionsCheck];
         refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
     }
@@ -322,8 +322,8 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
                 $scope.recomputeNotificationStatus, false);
         };
         let appAndChannelNotificationsCheck = {
-            name: $translate.instant("intro.appstatus.notificationperms.app-enabled-name"),
-            desc: $translate.instant("intro.appstatus.notificationperms.description.android-enable"),
+            name: i18next.t("intro.appstatus.notificationperms.app-enabled-name"),
+            desc: i18next.t("intro.appstatus.notificationperms.description.android-enable"),
             fix: fixPerms,
             refresh: checkPerms
         }
@@ -357,14 +357,14 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
         }
         let unusedAppsUnrestrictedCheck = {
-            name: $translate.instant("intro.appstatus.unusedapprestrict.name"),
-            desc: $translate.instant(androidUnusedDescTag),
+            name: i18next.t("intro.appstatus.unusedapprestrict.name"),
+            desc: i18next.t(androidUnusedDescTag),
             fix: fixPerms,
             refresh: checkPerms
         }
         let ignoreBatteryOptCheck = {
-            name: $translate.instant("intro.appstatus.ignorebatteryopt.name"),
-            desc: $translate.instant("intro.appstatus.ignorebatteryopt.description.android-disable"),
+            name: i18next.t("intro.appstatus.ignorebatteryopt.name"),
+            desc: i18next.t("intro.appstatus.ignorebatteryopt.description.android-disable"),
             fix: fixBatteryOpt,
             refresh: checkBatteryOpt
         }
@@ -375,16 +375,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     $scope.setupPermissionText = function() {
         if($scope.platform.toLowerCase() == "ios") {
           if($scope.osver < 13) {
-              $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-lt-13");
+              $scope.locationPermExplanation = i18next.t("intro.permissions.locationPermExplanation-ios-lt-13");
           } else {
-              $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
+              $scope.locationPermExplanation = i18next.t("intro.permissions.locationPermExplanation-ios-gte-13");
           }
         }
   
         $scope.backgroundRestricted = false;
         if($window.device.manufacturer.toLowerCase() == "samsung") {
           $scope.backgroundRestricted = true;
-          $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
+          $scope.allowBackgroundInstructions = i18next.t("intro.allow_background.samsung");
         }
   
         console.log("Explanation = "+$scope.locationPermExplanation);
