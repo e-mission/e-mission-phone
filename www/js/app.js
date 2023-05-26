@@ -1,10 +1,5 @@
 // Ionic E-Mission App
 
-// angular.module is a global place for creating, registering and retrieving Angular modules
-// 'emission' is the name of this angular module example (also set in a <body> attribute in index.html)
-// the 2nd parameter is an array of 'requires'
-// 'emission.services' is found in services.js
-// 'emission.controllers' is found in controllers.js
 'use strict';
 
 import angular from 'angular';
@@ -40,7 +35,6 @@ for (const [lang, json] of Object.entries(langs)) {
 }
 
 const locales = !navigator?.length ? [navigator.language] : navigator.languages;
-
 let detectedLang;
 locales.forEach(locale => {
   const lang = locale.trim().split(/-|_/)[0];
@@ -48,25 +42,12 @@ locales.forEach(locale => {
     detectedLang = lang;
   }
 });
-console.debug(`Detected language: ${detectedLang}`);
-console.debug('Resources:', resources);
+
 i18next.init({
   debug: true,
   resources,
   lng: detectedLang,
   fallbackLng: 'en'
-});
-
-console.debug('currlang:', i18next.resolvedLanguage);
-
-i18next.changeLanguage(detectedLang, (err, t) => {
-  if (err) {
-    console.error(err);
-  } else {
-    console.debug('i18next language changed to:', i18next.resolvedLanguage);
-    console.debug('t diary.draft:', t('diary.draft'));
-    console.debug('i18next.t diary.draft:', i18next.t('diary.draft'));
-  }
 });
 
 window.i18next = i18next;
