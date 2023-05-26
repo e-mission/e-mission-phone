@@ -54,7 +54,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     if (!t._isAMomentObject) t = moment(t);
     const opts = { weekday: 'short', month: 'short', day: 'numeric' };
     return Intl.DateTimeFormat(i18next.resolvedLanguage, opts)
-      .format(new Date(t.format('LLL')));
+      .format(new Date(t));
   }
 
   // Temporary function to avoid repear in getPercentages ret val.
