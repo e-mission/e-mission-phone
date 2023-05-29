@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.stats.clientstats', [])
 
 .factory('ClientStats', function($window) {

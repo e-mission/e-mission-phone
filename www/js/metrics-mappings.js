@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
                                      'emission.survey.multilabel.services',
                                      'emission.plugin.kvstore',

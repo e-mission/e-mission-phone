@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',
@@ -5,7 +7,7 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.remotenotify',
                                         'emission.stats.clientstats'])
 .controller('JoinCtrl', function($scope, $state, $interval, $rootScope, 
-    $ionicPlatform, $ionicPopup, $ionicPopover, $translate) {
+    $ionicPlatform, $ionicPopup, $ionicPopover) {
     console.log('JoinCtrl invoked');
         // alert("attach debugger!");
         // PushNotify.startupInit();
@@ -33,6 +35,13 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
       $scope.popover.hide($event)
     }
 
+    function handleOpenURL(url) {
+      console.log("onLaunch method from external function called");
+      var c = document.querySelectorAll("[ng-app]")[0];
+      var scope = angular.element(c).scope();
+      scope.$broadcast("CUSTOM_URL_LAUNCH", url);
+    };
+
     $scope.scanCode = function() {
       if (!$scope.scanEnabled) {
           $ionicPopup.alert({template: "plugins not yet initialized, please retry later"});
@@ -57,11 +66,11 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
       $scope.data = {};
       const tokenPopup = $ionicPopup.show({
           template: '<input type="String" ng-model="data.existing_token">',
-          title: $translate.instant('login.enter-existing-token') + '<br>',
+          title: i18next.t('login.enter-existing-token') + '<br>',
           scope: $scope,
           buttons: [
             {
-              text: '<b>' + $translate.instant('login.button-accept') + '</b>',
+              text: '<b>' + i18next.t('login.button-accept') + '</b>',
               type: 'button-positive',
               onTap: function(e) {
                 if (!$scope.data.existing_token) {
@@ -73,7 +82,7 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                 }
               }
             },{
-              text: '<b>' + $translate.instant('login.button-decline') + '</b>',
+              text: '<b>' + i18next.t('login.button-decline') + '</b>',
               type: 'button-stable',
               onTap: function(e) {
                 return null;

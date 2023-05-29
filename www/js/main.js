@@ -1,14 +1,12 @@
 'use strict';
 
-angular.module('emission.main', ['emission.main.recent',
-                                 'emission.main.diary',
+import angular from 'angular';
+
+angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
-                                 'emission.main.goals',
-                                 'emission.main.common',
-                                 'emission.main.heatmap',
                                  'emission.main.metrics',
+                                 'emission.main.recent',
                                  'emission.config.dynamic',
-                                 'emission.survey.multilabel.posttrip.map',
                                  'emission.services',
                                  'emission.services.upload'])
 
@@ -20,27 +18,6 @@ angular.module('emission.main', ['emission.main.recent',
     abstract: true,
     templateUrl: 'templates/main.html',
     controller: 'MainCtrl'
-  })
-
-  .state('root.main.common', {
-    url: '/common',
-    abstract: true,
-    views: {
-      'main-common': {
-        templateUrl: 'templates/main-common.html',
-        controller: 'CommonCtrl'
-      }
-    },
-  })
-
-  .state('root.main.heatmap', {
-    url: '/heatmap',
-    views: {
-      'main-heatmap': {
-        templateUrl: 'templates/main-heatmap.html',
-        controller: 'HeatmapCtrl'
-      }
-    }
   })
 
   .state('root.main.metrics', {
@@ -66,12 +43,12 @@ angular.module('emission.main', ['emission.main.recent',
     }
   })
 
-  .state('root.main.goals', {
-    url: '/goals',
+  .state('root.main.log', {
+    url: '/log',
     views: {
-      'main-goals': {
-        templateUrl: 'templates/main-goals.html',
-        controller: 'GoalsCtrl'
+      'main-control': {
+        templateUrl: 'templates/recent/log.html',
+        controller: 'logCtrl'
       }
     }
   })
@@ -82,54 +59,6 @@ angular.module('emission.main', ['emission.main.recent',
       'main-control': {
         templateUrl: "templates/recent/sensedData.html",
         controller: 'sensedDataCtrl'
-      }
-    }
-  })
-
-  .state('root.main.map', {
-      url: "/map",
-      views: {
-        'main-control': {
-          templateUrl: "templates/recent/map.html",
-          controller: 'mapCtrl'
-        }
-      }
-  })
-
-  .state('root.main.incident', {
-      url: "/incident",
-      params: {
-        start_ts: null,
-        end_ts: null
-      },
-      views: {
-        'main-control': {
-          templateUrl: "templates/incident/map.html",
-          controller: 'PostTripMapCtrl'
-        }
-      }
-  })
-
-  .state('root.main.tripconfirm', {
-      url: "/tripconfirm",
-      params: {
-        start_ts: null,
-        end_ts: null
-      },
-      views: {
-        'main-control': {
-          templateUrl: "templates/tripconfirm/map.html",
-          controller: 'PostTripMapCtrl'
-        }
-      }
-  })
-
-  .state('root.main.log', {
-    url: '/log',
-    views: {
-      'main-control': {
-        templateUrl: 'templates/recent/log.html',
-        controller: 'logCtrl'
       }
     }
   });
@@ -151,12 +80,12 @@ angular.module('emission.main', ['emission.main.recent',
     }
 })
 
-.controller('MainCtrl', function($scope, $state, $rootScope, $translate, $ionicPlatform, DynamicConfig) {
+.controller('MainCtrl', function($scope, $state, $rootScope, $ionicPlatform, DynamicConfig) {
     // Currently this is blank since it is basically a placeholder for the
     // three screens. But we can totally add hooks here if we want. It is the
     // controller for all the screens because none of them do anything for now.
 
-    moment.locale($translate.use());
+    moment.locale(i18next.resolvedLanguage);
 
     $scope.tabsCustomClass = function() {
         return "tabs-icon-top tabs-custom";
@@ -165,10 +94,8 @@ angular.module('emission.main', ['emission.main.recent',
     $ionicPlatform.ready().then(function() {
       DynamicConfig.configReady().then((newConfig) => {
         $scope.dCfg = newConfig;
-        $scope.showDiary = !(newConfig.survey_info.buttons);
         $scope.showMetrics = newConfig.survey_info['trip-labels'] == 'MULTILABEL';
-        console.log("screen-select: showDiary = "+$scope.showDiary+" metrics = "+$scope.showMetrics
-            +" setting tabSel to done");
+        console.log("screen-select: showMetrics = "+$scope.showMetrics);;
         console.log("screen-select: in dynamic config load, tabs list is ", $('.tab-item'));
       });
     });

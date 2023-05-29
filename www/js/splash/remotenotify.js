@@ -12,6 +12,8 @@
  */
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.splash.remotenotify', ['emission.plugin.logger',
                     'emission.splash.startprefs',
                     'emission.stats.clientstats'])

@@ -1,7 +1,9 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
-.factory('InputMatcher', function($translate, Logger){
+.factory('InputMatcher', function(Logger){
   var im = {};
 
   const EPOCH_MAXIMUM = 2**31 - 1;
@@ -35,13 +37,13 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
   }
 
   im.validUserInputForTimelineEntry = function(tlEntry, userInput, logsEnabled) {
-    if (tlEntry.isDraft == true)
+    if (tlEntry.key.includes('UNPROCESSED') == true)
         return im.validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
 
     /* Place-level inputs always have a key starting with 'manual/place', and
         trip-level inputs never have a key starting with 'manual/place'
        So if these don't match, we can immediately return false */
-    const entryIsPlace = tlEntry.key == 'analysis/confirmed_place';
+    const entryIsPlace = tlEntry.origin_key == 'analysis/confirmed_place';
     const isPlaceInput = (userInput.key || userInput.metadata.key).startsWith('manual/place');
     if (entryIsPlace != isPlaceInput)
         return false;

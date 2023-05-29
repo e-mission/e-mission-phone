@@ -1,14 +1,14 @@
-<ion-view translate-namespace="join">
+<ion-view>
     <ion-content class="has-footer">
         <!-- <div class="intro-space"></div> -->
         <div class="intro-title">
         <center><img alt="NREL OpenPATH icon" src="img/icon.png"/ style="width: 25%; height: auto;"></center>
-        <center><button class="button button-clear button-dark" ng-click="showDetails($event)"><b translate>{{'.welcome-to-nrel-openpath'}}ℹ️ </b></button></center>
+        <center><button class="button button-clear button-dark" ng-click="showDetails($event)"><b ng-i18next>{{'join.welcome-to-nrel-openpath'}}ℹ️ </b></button></center>
         </div>
         <div class="intro-text">
-        <p translate>{{'.proceed-further'}} </p>
+        <p ng-i18next>{{'join.proceed-further'}} </p>
 
-        <p translate>{{'.what-is-opcode'}} </p>
+        <p ng-i18next>{{'join.what-is-opcode'}} </p>
 
         <div class="intro-space"></div>
 
@@ -16,20 +16,20 @@
             <ion-item class="item-text-wrap">
             <div>
             <button ng-enabled="scanEnabled" class="button button-block button-balanced" ng-click="scanCode()">
-              <span translate>{{'.scan-button'}}</span>
+              <span ng-i18next>{{'join.scan-button'}}</span>
             </button>
-            <span class="join-inline-info" translate>{{'.scan-details'}} </span>
+            <span class="join-inline-info" ng-i18next>{{'join.scan-details'}} </span>
             </div>
             </ion-item>
             <ion-item class="item-text-wrap">
-            <center> <b> - <span translate>{{'.or'}}</span> - </b> </center>
+            <center> <b> - <span ng-i18next>{{'join.or'}}</span> - </b> </center>
             </ion-item>
             <ion-item class="item-text-wrap">
             <div>
             <button class="button button-block button-positive" ng-click="pasteCode()">
-              <span translate>{{'.paste-button'}}</span>
+              <span ng-i18next>{{'join.paste-button'}}</span>
             </button>
-            <span class="join-inline-info" translate>{{'.paste-details'}}</span>
+            <span class="join-inline-info" ng-i18next>{{'join.paste-details'}}</span>
             </div>
             </ion-item>
         </ion-list>

@@ -3,6 +3,8 @@
  * A directive to display the list of notes for a trip or place
  */
 
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.notes-list',
     ['emission.survey.enketo.launch'])
 

@@ -3,13 +3,15 @@
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
- *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
+ *      'recomputeListEntries` which modifies the *list* of trips and places
  *      as necessary. An example with the label view is removing the labeled trips from
  *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
  * - The view is associated with a state which we can record in the client stats.
  * - The directive implements a `verifyTrip` function that can be invoked by
  *      other components.
  */
+
+import angular from 'angular';
 
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',
@@ -30,26 +32,6 @@ angular.module('emission.survey.enketo.trip.button',
     EnketoSurveyLaunch, $ionicPopover, $window, ClientStats,
     EnketoTripButtonService) {
   console.log("Invoked enketo directive controller for labels "+EnketoTripButtonService.SINGLE_KEY);
-
-  var findViewElement = function() {
-      // console.log("$element is ", $element);
-      // console.log("parent row is", $element.parents("ion-item"));
-      let rowElement = $element.parents("ion-view")
-      // console.log("row Element is", rowElement);
-      return angular.element(rowElement);
-  }
-
-  var findViewState = function() {
-      let viewState = findViewElement().attr("state")
-      // console.log("view state is ", viewState);
-      return viewState;
-  }
-
-  var findViewScope = function() {
-      let viewScope = findViewElement().scope();
-      // console.log("view scope is ", viewScope);
-      return viewScope;
-  }
 
   /**
    * BEGIN: Required external interface for all label directives
@@ -131,13 +113,11 @@ angular.module('emission.survey.enketo.trip.button',
     // This used to be in `$scope.store` in the multi-label-ui 
     // but the enketo libraries store the values internally now, so we move
     // this here
-    let viewScope = findViewScope();
-    EnketoTripButtonService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+    EnketoTripButtonService.updateTripProperties(tripToUpdate);  // Redo our inferences, filters, etc. based on this new information
   };
 
   $scope.init = function() {
       console.log("During initialization, trip is ", $scope.timelineEntry);
-      $scope.currViewState = findViewState();
   }
 
   $scope.init();
@@ -220,7 +200,7 @@ angular.module('emission.survey.enketo.trip.button',
     }
   }
 
-  etbs.updateTripProperties = function(trip, viewScope) {
+  etbs.updateTripProperties = function(trip) {
     // currently a NOP since we don't have any other trip properties
     return;
   }
@@ -270,23 +250,9 @@ angular.module('emission.survey.enketo.trip.button',
    * - create a one minute timeout that will remove the wait and recompute
    * - clear the existing timeout (if any)
    */
-  etbs.updateVisibilityAfterDelay = function(trip, viewScope) {
+  etbs.updateVisibilityAfterDelay = function(trip) {
     // currently a NOP since we don't have any other trip properties
     return;
-    // We have just edited this trip, and are now waiting to see if the user
-    // is going to modify it further
-    trip.waitingForMod = true;
-    let currTimeoutPromise = trip.timeoutPromise;
-    Logger.log("trip starting at "+trip.start_fmt_time+": creating new timeout of "+etbs.recomputedelay);
-    trip.timeoutPromise = $timeout(function() {
-      Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
-      trip.waitingForMod = false;
-      trip.timeoutPromise = undefined;
-      console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTimelineEntries();
-    }, etbs.recomputedelay);
-    Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
-    $timeout.cancel(currTimeoutPromise);
   }
   return etbs;
 });

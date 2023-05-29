@@ -3033,13 +3033,13 @@
 }
 
 .enketo-plugin .leaflet-control-layers-toggle {
-  background-image: url(images/layers.png);
+  /* background-image: url(images/layers.png); */
   width: 36px;
   height: 36px;
 }
 
 .enketo-plugin .leaflet-retina .leaflet-control-layers-toggle {
-  background-image: url(images/layers-2x.png);
+  /* background-image: url(images/layers-2x.png); */
   background-size: 26px 26px;
 }
 
@@ -3088,7 +3088,7 @@
 
 /* Default icon URLs */
 .enketo-plugin .leaflet-default-icon-path {
-  background-image: url(images/marker-icon.png);
+  /* background-image: url(images/marker-icon.png); */
 }
 
 /* attribution and scale controls */

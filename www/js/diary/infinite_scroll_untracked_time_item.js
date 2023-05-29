@@ -3,6 +3,8 @@
  * A directive to display untracked time within the diary view.
  */
 
+import angular from 'angular';
+
 angular.module('emission.main.diary.infscrolluntrackedtimeitem',
     ['emission.main.diary.infscrolllist',
         'emission.survey.multilabel.services',

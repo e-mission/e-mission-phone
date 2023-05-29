@@ -3,6 +3,8 @@
  * A directive to display each place within the diary view.
  */
 
+import angular from 'angular';
+
 angular.module('emission.main.diary.infscrollplaceitem',
     ['emission.main.diary.infscrolllist',
         'emission.survey.multilabel.services',

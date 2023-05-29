@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.splash.customURLScheme', [])
 
 .factory('CustomURLScheme', function($rootScope) {
@@ -36,11 +38,3 @@ angular.module('emission.splash.customURLScheme', [])
 
     return cus;
 });
-
-function handleOpenURL(url) {
-    console.log("onLaunch method from external function called");
-    var c = document.querySelectorAll("[ng-app]")[0];
-    var scope = angular.element(c).scope();
-    scope.$broadcast("CUSTOM_URL_LAUNCH", url);
-};
-

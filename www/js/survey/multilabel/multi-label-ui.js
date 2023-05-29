@@ -3,13 +3,15 @@
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
- *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
+ *      'recomputeListEntries` which modifies the *list* of trips and places
  *      as necessary. An example with the label view is removing the labeled trips from
  *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
  * - The view is associated with a state which we can record in the client stats.
  * - The directive implements a `verifyTrip` function that can be invoked by
  *      other components.
  */
+
+import angular from 'angular';
 
 angular.module('emission.survey.multilabel.buttons',
     ['emission.survey.multilabel.services',
@@ -29,26 +31,6 @@ angular.module('emission.survey.multilabel.buttons',
 .controller("MultiLabelCtrl", function($scope, $element, $attrs,
     ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, DynamicConfig, MultiLabelService, Logger) {
   console.log("Created multilabel directive controller, waiting for init");
-
-  var findViewElement = function() {
-      // console.log("$element is ", $element);
-      // console.log("parent row is", $element.parents("ion-item"));
-      let rowElement = $element.parents("ion-view")
-      // console.log("row Element is", rowElement);
-      return angular.element(rowElement);
-  }
-
-  var findViewState = function() {
-      let viewState = findViewElement().attr("state")
-      // console.log("view state is ", viewState);
-      return viewState;
-  }
-
-  var findViewScope = function() {
-      let viewScope = findViewElement().scope();
-      // console.log("view scope is ", viewScope);
-      return viewScope;
-  }
 
   /**
    * BEGIN: Required external interface for all label directives
@@ -226,8 +208,7 @@ angular.module('emission.survey.multilabel.buttons',
           tripToUpdate.userInput[inputType] = angular.copy($scope.inputParams[inputType].value2entry[input.value]);
           tripToUpdate.userInput[inputType].write_ts = Date.now();
         }
-        let viewScope = findViewScope();
-        MultiLabelService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
+        MultiLabelService.updateTripProperties(tripToUpdate);  // Redo our inferences, filters, etc. based on this new information
         // KS: this will currently always trigger for a program
         // we might want to trigger it only if it changed to/from the mode studied
         // you may also need to experiment with moving this up or down depending on timing
@@ -274,7 +255,6 @@ angular.module('emission.survey.multilabel.buttons',
 
       ConfirmHelper.inputParamsPromise.then((inputParams) => $scope.inputParams = inputParams);
       console.log("Finished initializing directive, popovers = ", $scope.popovers);
-      $scope.currViewState = findViewState();
   }
 
 
@@ -387,13 +367,13 @@ angular.module('emission.survey.multilabel.buttons',
     });
   }
 
-  mls.updateTripProperties = function(trip, viewScope) {
+  mls.updateTripProperties = function(trip) {
     // special check for programs
     // TODO: make this part of the dynamic config
     mls.expandInputsIfNecessary(trip);
     mls.inferFinalLabels(trip);
     mls.updateVerifiability(trip);
-    mls.updateVisibilityAfterDelay(trip, viewScope);
+    mls.updateVisibilityAfterDelay(trip);
   }
   /**
    * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
@@ -525,7 +505,7 @@ angular.module('emission.survey.multilabel.buttons',
    * - create a one minute timeout that will remove the wait and recompute
    * - clear the existing timeout (if any)
    */
-  mls.updateVisibilityAfterDelay = function(trip, viewScope) {
+  mls.updateVisibilityAfterDelay = function(trip) {
     // We have just edited this trip, and are now waiting to see if the user
     // is going to modify it further
     trip.waitingForMod = true;
@@ -535,8 +515,7 @@ angular.module('emission.survey.multilabel.buttons',
       Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
       trip.waitingForMod = false;
       trip.timeoutPromise = undefined;
-      console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTimelineEntries();
+      $rootScope.broadcast("recomputeListEntries");
     }, mls.recomputedelay);
     Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
     $timeout.cancel(currTimeoutPromise);

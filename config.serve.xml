@@ -9,6 +9,7 @@
   </author>
     <content src="index.html" />
     <access origin="*" />
+    <allow-navigation href="*" />
     <hook src="hooks/before_prepare/download_translation.js" type="before_prepare" />
     <preference name="webviewbounce" value="false" />
     <preference name="UIWebViewBounce" value="false" />

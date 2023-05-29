@@ -27,14 +27,14 @@
               Used some quick-and-dirty inline CSS styles here because the form-footer should be styled in the
               mother application. The HTML markup can be changed as well.
           -->
-          <a href="#" class="previous-page disabled" style="position:absolute; left: 10px; bottom: 40px;" translate>{{'.back'}}</a>
-          <button id="validate-form" class="btn btn-primary" ng-click="enketoSurvey.validateAndSave()" style="width:200px; margin-left: calc(50% - 100px);" translate>{{'.save'}}</button>
-      <a href="#survey-paper" class="btn btn-primary next-page disabled" style="width: 200px; margin-left: calc(50% - 100px)" ng-click="enketoSurvey.onNext()" translate>{{'.next'}}</a>
+          <a href="#" class="previous-page disabled" style="position:absolute; left: 10px; bottom: 40px;" ng-i18next>{{'survey.back'}}</a>
+          <button id="validate-form" class="btn btn-primary" ng-click="enketoSurvey.validateAndSave()" style="width:200px; margin-left: calc(50% - 100px);" ng-i18next>{{'survey.save'}}</button>
+      <a href="#survey-paper" class="btn btn-primary next-page disabled" style="width: 200px; margin-left: calc(50% - 100px)" ng-click="enketoSurvey.onNext()" ng-i18next>{{'survey.next'}}</a>
 
-          <div class="enketo-power" style="margin-bottom: 30px;"><span translate>{{'.powered-by'}}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
+          <div class="enketo-power" style="margin-bottom: 30px;"><span ng-i18next>{{'survey.powered-by'}}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
           <div class="form-footer__jump-nav" style="display: flex; flex-direction: row;">
-              <a href="#" class="btn btn-default disabled first-page" style="flex: 1; border-radius: 0;" translate>{{'.return-to-beginning'}}</a>
-              <a href="#" class="btn btn-default disabled last-page" style="flex: 1; border-radius: 0;" translate>{{'.go-to-end'}}</a>
+              <a href="#" class="btn btn-default disabled first-page" style="flex: 1; border-radius: 0;" ng-i18next>{{'survey.return-to-beginning'}}</a>
+              <a href="#" class="btn btn-default disabled last-page" style="flex: 1; border-radius: 0;" ng-i18next>{{'survey.go-to-end'}}</a>
           </div>
           <!--<ol class="page-toc"></ol>-->
       </section>

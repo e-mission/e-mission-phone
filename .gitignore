@@ -13,6 +13,7 @@ app-settings.json
 *.apk
 *.app.zip
 *.ipa
+www/dist/
 www/js/control/collect-settings.js
 www/js/control/sync-settings.js
 www/js/control/transition-notify-settings.js

@@ -96,12 +96,14 @@ a.item-content {
   border-color: white;  
 }
 .leaflet-div-icon-start {
-  background-color: #80D0FF;
+  background-color: var(--accent-light);
+  border: 2px solid var(--accent);
   border-radius: 100%;
 }
 .leaflet-div-icon-stop {
-  background-color: #0088ce;
+  background-color: var(--accent);
   border-radius: 100%;
+  font-size: 15px;
 }
 .leaflet-div-ionicon {
   background: transparent; 
@@ -109,6 +111,7 @@ a.item-content {
   font-size: 100%;
   justify-content: center; 
   display: flex;
+  line-height: 14px;
 }
 .leaflet-div-ionicon-start {
   color: white;
@@ -116,7 +119,7 @@ a.item-content {
 .leaflet-div-ionicon-stop {
   color: white;
   margin-top: 1px;
-  margin-left: 3px;
+  margin-left: 2px;
 }
 .inner-icon {
   background-color: white;
@@ -133,17 +136,19 @@ a.item-content {
 
 .diary-btn {
   width: 100%;
-  padding: 5px 14px;
-  max-height: 40px;
+  padding-inline: 14px;
+  min-height: 28px;
+  max-height: 32px;
   margin: 2px;
   box-sizing: border-box;
   border-radius: 50px;
-  font-size: 0.8em !important;
+  font-size: 13px;
+  line-height: 1;
   font-weight: 500;
   box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
   background-color: white;
-  color: hsl(200 100% 35%);
-  border: .12em solid hsl(200 100% 40%);
+  color: var(--accent-dark);
+  border: .12em solid var(--accent);
 }
 
 .diary-btn-yellow,
@@ -156,7 +161,7 @@ a.item-content {
 .diary-btn-blue,
 .diary-btn-blue:hover,
 .diary-btn-blue:active {
-  background-color: #0088ce;
+  background-color: var(--accent);
   color: white;
   border: 2px solid rgba(0, 136, 206, 0.2);
 }
@@ -167,6 +172,13 @@ a.item-content {
   scale: 1.7;
   margin-right: .6em;
   line-height: 100%;
+}
+
+.input-confirm-label {
+  text-align: center;
+  font-size: 14px;
+  font-weight: bold;
+  color: var(--accent);
 }
 
 .input-confirm-container {
@@ -202,6 +214,7 @@ a.item-content {
   background: white;
   width: 100%;
   height: min-content;
+  font-size: 13px;
   line-height: 1.2;
   margin: 0;
   border: 1px solid rgb(0 0 0 / .2);
@@ -211,10 +224,13 @@ a.item-content {
   box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
+  background: linear-gradient(
+                  40deg,
+                  hsla(200, 30%, 97%, 1) 40%,
+                  hsla(0, 0%, 100%, 1)),
 }
 
-/* used for place list items */
-.diary-card.short {
+.diary-card.place, .diary-card.untracked {
   color: #222;
   background: hsl(200 100% 85%);
   border: 1px solid hsl(200 100% 10% / 0.2);
@@ -222,18 +238,69 @@ a.item-content {
   text-align: center;
 }
 
-/* used for untracked time list items */
-.diary-card.greyed {
-  color: #333;
-  background: hsl(0 30% 96%);
+.diary-card.untracked {
+    color: #333;
+    /* untracked time will have a reddish color */
+    --accent: hsl(350, 25%, 50%);
+    --accent-light: hsl(350, 65%, 85%);
+    --accent-dark: hsl(350, 65%, 30%);
+  
+    --grid: hsla(350, 25%, 80%, .2);
+    /* subtle x-grid lines in the background, fading to white */
+    background: linear-gradient(
+                  15deg,
+                  hsla(350, 10%, 92%, 1) 40%,
+                  hsla(350, 10%, 100%, 0.5)),
+                repeating-linear-gradient(
+                  45deg,
+                  var(--grid),
+                  var(--grid) 0px,
+                  transparent 2px,
+                  transparent 20px
+                ),
+                repeating-linear-gradient(
+                  -45deg,
+                  var(--grid),
+                  var(--grid) 0px,
+                  #fff 2px,
+                  #fff 21px
+                );
 }
 
-.diary-card.greyed .card-title b {
+.diary-card.untracked .card-title b {
   font-size: 13px;
   color: #222;
   padding: 0 4px;
-  background-color: #ffbbbb;
+  background-color: var(--accent-light);
   border-radius: 5px;
+}
+
+.diary-card.draft {
+  /* draft trips will have a muted, greenish color */
+  --accent: hsl(150, 15%, 40%);
+  --accent-light: hsl(150, 25%, 72%);
+  --accent-dark: hsl(150, 35%, 30%);
+
+  --grid: hsla(150, 25%, 70%, .3);
+  /* subtle grid lines in the background, fading to white */
+  background: linear-gradient(
+                30deg,
+                hsla(150, 4%, 94%, 1) 50%,
+                hsla(0, 0%, 100%, 0.1)),
+              repeating-linear-gradient(
+                90deg,
+                var(--grid),
+                var(--grid) 0px,
+                transparent 2px,
+                transparent 20px
+              ),
+              repeating-linear-gradient(
+                0deg,
+                var(--grid),
+                var(--grid) 0px,
+                #fff 2px,
+                #fff 21px
+              );
 }
 
 .card-title {
@@ -259,7 +326,7 @@ a.item-content {
   width: 100%;
   height: 30px;
   margin: 2px;
-  border: 2px solid #0088ce;
+  border: 2px solid var(--accent);
   box-sizing: border-box;
   border-radius: 50px;
   background-color: #ffffff;
@@ -292,7 +359,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 
   .hr-lines:after {
@@ -303,7 +370,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 }
 @media screen and (orientation: landscape) {
@@ -315,7 +382,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     left: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 
   .hr-lines:after {
@@ -326,7 +393,7 @@ a.item-content {
     position: absolute;
     top: 50%;
     right: 0;
-    background: #80D0FF;
+    background: var(--accent-light);
   }
 }
 
@@ -336,7 +403,7 @@ a.item-content {
   font-style: 13px;
   background-color: #ffffff;
   border: none;
-  background-image: url("../img/icons/help_outline_black_24dp.svg");
+  /* background-image: url("../img/icons/help_outline_black_24dp.svg"); */
   background-repeat: no-repeat;
   background-position: left center;
   padding-left: 25px;
@@ -355,6 +422,12 @@ a.item-content {
   overflow: hidden;
   text-overflow: ellipsis;
 }
+.diary-street .icon {
+  color: var(--accent-light);
+}
+.diary-street + .diary-street .icon {
+  color: var(--accent);
+}
 .two-lines {
   -webkit-line-clamp: 2;
   display: -webkit-box;
@@ -369,23 +442,29 @@ a.item-content {
 }
 
 .diary-map {
+  position: absolute;
+  inset: 0;
+}
+
+.diary-map > div {
   overflow: hidden;
   border-radius: 30px 0px 0px 30px;
   z-index: 0;
-  /* height must be specified in the html */
 }
 
-.diary-map, .diary-map .leaflet-interactive {
+.diary-map, .diary-map * {
   pointer-events: none !important;
 }
 
 /* when trip notes are enabled, the map has rounded right corners */
-.enhanced-trip-item .diary-map {
+.enhanced-trip-item .diary-map > div{
   border-radius: 30px 0px 30px 0px;
 }
 
 .diary-map-shell {
+  position: relative;
   width: 50%;
+  max-height: 100%;
 }
 
 .diary-infos {
@@ -415,15 +494,21 @@ a.item-content {
 }
 
 .diary-modes-percents {
+  position: absolute;
+  z-index: 1;
+  left: 50%;
+  translate: -50%;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50px;
+  display: flex;
+  gap: 8px;
+  font-size: 12px;
   margin: 5px 0;
+  padding: 1px 5px;
 }
 
 .diary-modes-percents-text {
-  color: #0088ce;
-}
-
-.diary-modes-percents-icon {
-  color: #0088ce;
+  color: var(--accent);
 }
 
 /* Purpose selection Override */
@@ -439,42 +524,42 @@ a.item-content {
 
 /* Date Picker Override */
 .ionic_datepicker_popup .today {
-  border: 1px solid #0088ce !important;
+  border: 1px solid var(--accent) !important;
 }
 
 .ionic_datepicker_popup .selected_date {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-head {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .selected_date_full {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .month_select, .ionic_datepicker_popup .popup-body .year_select {
-  border-bottom: 1px solid #0088ce !important;
+  border-bottom: 1px solid var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .month_select:after, .ionic_datepicker_popup .popup-body .year_select:after {
-  color: #0088ce !important;
+  color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-body .button-clear {
-  color: #0088ce !important;
+  color: var(--accent) !important;
 }
 
 .ionic_datepicker_popup .popup-buttons button {
-  background-color: #0088ce !important;
+  background-color: var(--accent) !important;
 }
 div.labelfilterlist {
   margin: 0 !important;
 }
 
 .button.labelfilter {
-  color: #0088ce;
+  color: var(--accent);
   border-radius: 0px;
   border-width: 0;
   box-shadow: 0 1px 2px rgba(0,0,0,0.16), 0 2px 2px rgba(0,0,0,0.23);
@@ -482,7 +567,7 @@ div.labelfilterlist {
 }
 
 .button.labelfilter.on {
-    background-color: #0088ce;
+    background-color: var(--accent);
     color: white;
 }
 

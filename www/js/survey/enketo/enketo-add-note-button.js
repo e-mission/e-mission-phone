@@ -2,6 +2,9 @@
  * Directive to display a survey to add notes to a timeline entry (trip or place)
  */
 
+import angular from 'angular';
+import DiaryButton from '../../diary/DiaryButton';
+
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',
         'emission.services',
@@ -9,7 +12,8 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.enketo.preview',
-        'emission.survey.inputmatcher'])
+        'emission.survey.inputmatcher',
+        DiaryButton.module])
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {
@@ -21,14 +25,14 @@ angular.module('emission.survey.enketo.add-note-button',
     templateUrl: 'templates/survey/enketo/add-note-button.html'
   };
 })
-.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs, $translate,
+.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs,
     EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
     EnketoNotesButtonService) {
   console.log("Invoked enketo directive controller for add-note-button");
   $scope.notes = [];
 
   const updateLabel = () => {
-    const localeCode = $translate.use();
+    const localeCode = i18next.resolvedLanguage;
     if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
       $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
     } else {

@@ -1,10 +1,10 @@
 <ion-content>
-<div class="consent-title" translate-namespace="login">
-<center><h2 translate>{{'.make-sure-save-your-opcode'}}</h2></center>
+<div class="consent-title">
+<center><h2 ng-i18next>{{'login.make-sure-save-your-opcode'}}</h2></center>
 </div>
 <div class="consent-text">
 
-<center><h3 translate-namespace="login" translate>{{'.cannot-retrieve'}}</h3></center>
+<center><h3 ng-i18next>{{'login.cannot-retrieve'}}</h3></center>
 
 <center><qrcode class="col" aria-label="qrcode for user email" data="{{currentToken}}" size="220" download></qrcode></center>
 
@@ -15,12 +15,12 @@
     </button>
 </div>
 
-<div class="row" style="margin-top: 20px;" translate-namespace="login">
+<div class="row" style="margin-top: 20px;">
   <div class="col" style="margin-left: 5px">
-      <button class="button button-block button-positive button-outline" ng-click="shareQR()" id="consent-button"><span translate>{{'.save'}}</span></button>
+      <button class="button button-block button-positive button-outline" ng-click="shareQR()" id="consent-button"><span ng-i18next>{{'login.save'}}</span></button>
   </div>
   <div class="col" style="margin-right: 5px">
-      <button class="button button-block button-assertive button-outline" ng-click="next()" id="consent-button"><span translate>{{'.continue'}}</span></button>
+      <button class="button button-block button-assertive button-outline" ng-click="next()" id="consent-button"><span ng-i18next>{{'login.continue'}}</span></button>
   </div>
 </div>
 </div>

@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.preview',
     ['emission.stats.clientstats'])
 .directive('enketoSurveyPreview', function() {
