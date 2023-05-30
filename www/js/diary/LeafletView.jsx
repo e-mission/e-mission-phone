@@ -45,5 +45,5 @@ LeafletView.propTypes = {
   opts: object
 }
 
-angularize(LeafletView, 'emission.main.diary.button');
+angularize(LeafletView, 'emission.main.leaflet');
 export default LeafletView;
