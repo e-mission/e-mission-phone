@@ -9,7 +9,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var logger = Logger;
     var nTimesCalled = 0;
     var startprefs = {};
-    var DEFAULT_THEME_KEY = 'curr_theme';
      // Boolean: represents that the "intro" - the one page summary
      // and the login are done
     var INTRO_DONE_KEY = 'intro_done';
@@ -22,14 +21,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.CONSENTED_EVENT = "data_collection_consented";
     startprefs.INTRO_DONE_EVENT = "intro_done";
-
-    startprefs.setDefaultTheme = function(new_theme) {
-      KVStore.set(DEFAULT_THEME_KEY, new_theme);
-    }
-
-    startprefs.getDefaultTheme = function() {
-      return KVStore.get(DEFAULT_THEME_KEY);
-    }
 
     var writeConsentToNative = function() {
       return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
