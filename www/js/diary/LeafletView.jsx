@@ -29,15 +29,13 @@ const LeafletView = ({ geojson, opts }) => {
   );
 };
 
-const pointIcon = L.divIcon({className: 'leaflet-div-icon', iconSize: [0, 0]});
 const startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-start">★</div>'});
 const stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-stop">⚑</div>'});
 const pointToLayer = (feature, latlng) => {
   switch(feature.properties.feature_type) {
     case "start_place": return L.marker(latlng, {icon: startIcon});
     case "end_place": return L.marker(latlng, {icon: stopIcon});
-    case "stop": return L.circleMarker(latlng);
-    case "location": return L.marker(latlng, {icon: pointIcon});
+    // case "stop": return L.circleMarker(latlng);
     default: alert("Found unknown type in feature"  + feature); return L.marker(latlng)
   }
 };
