@@ -224,8 +224,7 @@ a.item-content {
   box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
-  background: linear-gradient(
-                  40deg,
+  background: linear-gradient(40deg,
                   hsla(200, 30%, 97%, 1) 40%,
                   hsla(0, 0%, 100%, 1)),
 }
@@ -247,24 +246,15 @@ a.item-content {
   
     --grid: hsla(350, 25%, 80%, .2);
     /* subtle x-grid lines in the background, fading to white */
-    background: linear-gradient(
-                  15deg,
+    background: linear-gradient(15deg,
                   hsla(350, 10%, 92%, 1) 40%,
                   hsla(350, 10%, 100%, 0.5)),
-                repeating-linear-gradient(
-                  45deg,
-                  var(--grid),
-                  var(--grid) 0px,
-                  transparent 2px,
-                  transparent 20px
-                ),
-                repeating-linear-gradient(
-                  -45deg,
-                  var(--grid),
-                  var(--grid) 0px,
-                  #fff 2px,
-                  #fff 21px
-                );
+                repeating-linear-gradient(45deg,
+                  var(--grid), var(--grid) 0px,
+                  transparent 2px, transparent 20px),
+                repeating-linear-gradient(-45deg,
+                  var(--grid), var(--grid) 0px,
+                  #fff 2px, #fff 21px);
 }
 
 .diary-card.untracked .card-title b {
@@ -275,7 +265,7 @@ a.item-content {
   border-radius: 5px;
 }
 
-.diary-card.draft {
+.diary-card.draft, .diary-details.draft {
   /* draft trips will have a muted, greenish color */
   --accent: hsl(150, 15%, 40%);
   --accent-light: hsl(150, 25%, 72%);
@@ -283,24 +273,15 @@ a.item-content {
 
   --grid: hsla(150, 25%, 70%, .3);
   /* subtle grid lines in the background, fading to white */
-  background: linear-gradient(
-                30deg,
-                hsla(150, 4%, 94%, 1) 50%,
-                hsla(0, 0%, 100%, 0.1)),
-              repeating-linear-gradient(
-                90deg,
-                var(--grid),
-                var(--grid) 0px,
-                transparent 2px,
-                transparent 20px
-              ),
-              repeating-linear-gradient(
-                0deg,
-                var(--grid),
-                var(--grid) 0px,
-                #fff 2px,
-                #fff 21px
-              );
+  background: linear-gradient(30deg,
+                hsla(150, 4%, 94%, .9) 50%,
+                hsla(0, 0%, 100%, .5)),
+              repeating-linear-gradient(90deg,
+                var(--grid), var(--grid) 0px,
+                transparent 2px, transparent 20px),
+              repeating-linear-gradient(0deg,
+                var(--grid), var(--grid) 0px,
+                #fff 2px, #fff 21px);
 }
 
 .card-title {
