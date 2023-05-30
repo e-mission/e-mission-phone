@@ -45,11 +45,10 @@ export function makeComponentProps(Component) {
     controller: /*@ngInject*/ function($element) {
       this.$onChanges = () => {
         const props = toProps(propTypes, this);
-        ReactDOM.render(
+        ReactDOM.createRoot($element[0]).render(
           <PaperProvider theme={theme}>
             <Component { ...props } />
-          </PaperProvider>,
-          $element[0]
+          </PaperProvider>
         );
       };
       this.$onDestroy = () => ReactDOM.unmountComponentAtNode($element[0]);
