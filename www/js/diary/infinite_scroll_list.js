@@ -339,6 +339,10 @@ angular.module('emission.main.diary.infscrolllist',[
     $scope.recomputeListEntries();
   });
 
+  $scope.$on("scrollResize", () => {
+    $ionicScrollDelegate.resize();
+  });
+
   $scope.$on("scroll.infiniteScrollComplete", function() {
     Logger.log("infiniteScrollComplete broadcast")
     if ($scope.infScrollControl.callback != undefined) {

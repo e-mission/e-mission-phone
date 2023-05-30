@@ -28,7 +28,7 @@ angular.module('emission.survey.multilabel.buttons',
     templateUrl: 'templates/survey/multilabel/multi-label-ui.html'
   };
 })
-.controller("MultiLabelCtrl", function($scope, $element, $attrs,
+.controller("MultiLabelCtrl", function($scope, $rootScope, $element, $attrs,
     ConfirmHelper, $ionicPopover, $ionicPlatform, $window, ClientStats, DynamicConfig, MultiLabelService, Logger) {
   console.log("Created multilabel directive controller, waiting for init");
 
@@ -164,22 +164,6 @@ angular.module('emission.survey.multilabel.buttons',
     closePopover(inputType);
   };
 
-  var getScrollElement = function() {
-    if (!$scope.scrollElement) {
-        console.log("scrollElement is not cached, trying to read it ");
-        const ionItemElement = $element.closest('ion-item')
-        if (ionItemElement) {
-            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
-            $scope.scrollElement = ionItemElement.closest('ion-content');
-        } else {
-            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
-        }
-    }
-    // TODO: comment this out after testing to avoid log spew
-    console.log("Returning scrollElement ", $scope.scrollElement);
-    return $scope.scrollElement;
-  }
-
   $scope.store = function (inputType, input, isOther) {
     if(isOther) {
       // Let's make the value for user entered inputs look consistent with our
@@ -191,7 +175,7 @@ angular.module('emission.survey.multilabel.buttons',
     var tripToUpdate = $scope.editingTrip;
     var needsResize = false;
     if (ConfirmHelper.isProgram) { // Only resize trip item if it is a program, and if changing to/from the mode studied
-      if (input.value == ConfirmHelper.mode_studied || !jQuery.isEmptyObject(tripToUpdate.userInput) && tripToUpdate.userInput.MODE.value == ConfirmHelper.mode_studied) {
+      if (input.value == ConfirmHelper.mode_studied || tripToUpdate.userInput?.MODE?.value == ConfirmHelper.mode_studied) {
         console.log("switching to/from "+ConfirmHelper.mode_studied+", resizing scroll element")
         needsResize = true;
       }
@@ -212,8 +196,7 @@ angular.module('emission.survey.multilabel.buttons',
         // KS: this will currently always trigger for a program
         // we might want to trigger it only if it changed to/from the mode studied
         // you may also need to experiment with moving this up or down depending on timing
-        const scrollElement = getScrollElement();
-        scrollElement && needsResize? scrollElement.trigger('scroll-resize') : console.log("not in list, skipping resize");
+        needsResize? $rootScope.$broadcast('scrollResize') : console.log("not in list, skipping resize");
       });
     });
     if (isOther == true)
@@ -265,7 +248,7 @@ angular.module('emission.survey.multilabel.buttons',
     }).catch((err) => Logger.displayError("Error while handling config in MultiLabelCtrl", err));
   });
 })
-.factory("MultiLabelService", function(ConfirmHelper, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
+.factory("MultiLabelService", function($rootScope, ConfirmHelper, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
   mls.init = function() {
@@ -515,7 +498,7 @@ angular.module('emission.survey.multilabel.buttons',
       Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
       trip.waitingForMod = false;
       trip.timeoutPromise = undefined;
-      $rootScope.broadcast("recomputeListEntries");
+      $rootScope.$broadcast("recomputeListEntries");
     }, mls.recomputedelay);
     Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
     $timeout.cancel(currTimeoutPromise);
