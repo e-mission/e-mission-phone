@@ -1415,6 +1415,10 @@ html, #chart2, svg {
     overflow: scroll !important;
 }
 
+.buttons {
+  margin-left: 10px;
+}
+
 .filter-select-wrapper,
 .date-input-wrapper {
   display: flex;

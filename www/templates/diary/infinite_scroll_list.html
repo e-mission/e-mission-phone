@@ -2,9 +2,6 @@
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="left" id="toget" class="row buttons">
-        <button class="button button-icon" ng-click="increaseHeight()">
-            <i class="icon ion-arrow-resize"></i>
-        </button>
         <div class="filter-select-wrapper">
             <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
                 <option ng-repeat="filter in filterInputs" value="{{filter.key}}">
