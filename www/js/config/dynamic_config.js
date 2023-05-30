@@ -45,6 +45,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         Logger.log("Received request to join "+label);
         // The URL prefix from which config files will be downloaded and read.
         // Change this if you supply your own config files.
+        const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
             Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(result.data).substring(0,10));
