@@ -5,7 +5,7 @@
         <div class="filter-select-wrapper">
             <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
                 <option ng-repeat="filter in filterInputs" value="{{filter.key}}">
-                    {{filter.text | i18next}}
+                    {{filter.text}}
                     {{filter.state && data.displayTrips ?
                         '(' + data.displayTrips.length + '/' + data.allTrips.length + ')' : ''}}
                 </option>
