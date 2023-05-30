@@ -15,7 +15,8 @@ app-settings.json
 *.ipa
 www/dist/
 www/js/control/collect-settings.js
+www/templates/control/main-collect-settings.html
 www/js/control/sync-settings.js
-www/js/control/transition-notify-settings.js
+www/templates/control/main-sync-settings.html
 config.xml
 package.json
