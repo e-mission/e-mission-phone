@@ -36,7 +36,7 @@ angular.module('emission.main.diary.infscrolllist',[
                                     $timeout,
                                     Timeline, DiaryHelper,
                                     SurveyOptions, NotificationScheduler,
-                                    Config, ImperialConfig, DynamicConfig,
+                                    ImperialConfig, DynamicConfig,
                                     KVStore,
                                     Logger, UnifiedDataLoader, InputMatcher,
                                     $ionicModal) {
@@ -496,19 +496,6 @@ angular.module('emission.main.diary.infscrolllist',[
     });
     $scope.data.listEntries.push('footer');
   }
-
-  angular.extend($scope, {
-      defaults: {
-          zoomControl: false,
-          dragging: true,
-          zoomAnimation: false,
-          touchZoom: true,
-          doubleClickZoom: true,
-          boxZoom: true,
-      }
-  });
-
-  angular.extend($scope.defaults, Config.getMapTiles())
 
 //   moment.locale('en', {
 //   relativeTime : {

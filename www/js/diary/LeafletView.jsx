@@ -10,7 +10,9 @@ const LeafletView = ({ geojson, opts }) => {
   useEffect(() => {
     const map = L.map(mapRef.current, opts || {});
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+      opacity: 1,
+      detectRetina: true,
     }).addTo(map);
     const gj = L.geoJson(geojson.data, {
       pointToLayer: pointToLayer,

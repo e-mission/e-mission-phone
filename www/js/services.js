@@ -496,27 +496,6 @@ angular.module('emission.services', ['emission.plugin.logger',
 
 })
 
-// common configuration methods across all screens
-// e.g. maps
-// for consistent L&F
-
-.factory('Config', function() {
-    var config = {};
-
-    config.getMapTiles = function() {
-      return {
-          tileLayer: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          tileLayerOptions: {
-              attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-              opacity: 0.9,
-              detectRetina: true,
-              reuseTiles: true,
-          }
-      };
-    };
-    return config;
-})
-
 .factory('Chats', function() {
   // Might use a resource here that returns a JSON array
 
