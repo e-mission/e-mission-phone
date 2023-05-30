@@ -81,7 +81,6 @@ angular.module('emission.main.diary.infscrolllist',[
     $scope.filterInputs[0].state = true;
     $scope.selFilter = $scope.filterInputs[0].key;
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
-    $scope.allTrips = false;
   }
 
   $scope.checkPermissionsStatus = () => {
@@ -373,12 +372,10 @@ angular.module('emission.main.diary.infscrolllist',[
           f.state = false;
         }
       });
-      $scope.allTrips = false;
     } else {
       $scope.filterInputs.forEach((f) => {
         f.state = false;
       });
-      $scope.allTrips = true;
     }
 
     $scope.recomputeListEntries();
