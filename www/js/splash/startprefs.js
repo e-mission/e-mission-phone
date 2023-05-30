@@ -195,11 +195,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
-          var temp = ReferralHandler.getReferralNavigation();
-          if ($rootScope.displayingIncident) {
-            logger.log("Showing tripconfirm from startprefs");
-            return {state: 'root.main.diary'};
-          } else if (angular.isDefined($rootScope.redirectTo)) {
+          if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             var redirParams = $rootScope.redirectParams;
             $rootScope.redirectTo = undefined;

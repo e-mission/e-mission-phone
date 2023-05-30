@@ -137,24 +137,6 @@ angular.module('emission.services', ['emission.plugin.logger',
       });
     };
 
-    this.getIncidents = function(start_ts, end_ts) {
-      return new Promise(function(resolve, reject) {
-        var msgFiller = function(message) {
-           message.start_time = start_ts;
-           message.end_time = end_ts;
-           message.sel_region = null;
-           console.log("About to return message "+JSON.stringify(message));
-        };
-        console.log("About to call pushGetJSON for the timestamp");
-        window.cordova.plugins.BEMServerComm.pushGetJSON("/result/heatmap/incidents/timestamp", msgFiller, resolve, reject);
-      })
-      .catch(error => {
-        error = "While getting incidents, " + error;
-        error = processErrorMessages(error);
-        throw(error);
-      });
-    };
-
     /*
      * key_list = list of keys to retrieve or None for all keys
      * start_time = beginning timestamp for range
