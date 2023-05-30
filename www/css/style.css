@@ -1492,4 +1492,11 @@ html, #chart2, svg {
 div[class*='css-view'] {
   height: 100%;
   width: 100%;
+  position: absolute;
+}
+
+div[class*='css-view'] > div[class*='css-view'] {
+  position: static;
+  height: 100%;
+  width: 100%;
 }
