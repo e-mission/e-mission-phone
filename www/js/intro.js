@@ -188,6 +188,15 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
         $scope.lang = $translate.use();
         $scope.ui_config = newConfig;
+
+        // backwards compat hack to fill in the raw_data_use for programs that don't have it
+        const default_raw_data_use = {
+            "en": `to monitor the ${newConfig.intro.program_or_study}, send personalized surveys or provide recommendations to participants`,
+            "es": `para monitorear el ${newConfig.intro.program_or_study}, enviar encuestas personalizadas o proporcionar recomendaciones a los participantes`
+        }
+        Object.entries(newConfig.intro.translated_text).forEach(([lang, val]) => {
+            val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
+        });
         // TODO: we should be able to use $translate for this, right?
         $scope.template_text = newConfig.intro.translated_text[$scope.lang];
         if (!$scope.template_text) {
