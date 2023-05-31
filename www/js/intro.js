@@ -83,8 +83,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.agree = function() {
-    $scope.scannedToken = "emission://login_token?token=nrelop_dev-emulator-program_D-50"
-    // $scope.scannedToken = $scope.ui_config.joined.opcode;
+    $scope.scannedToken = $scope.ui_config.joined.opcode;
     StartPrefs.markConsented().then(function(response) {
       $ionicHistory.clearHistory();
       if ($scope.scannedToken) {
