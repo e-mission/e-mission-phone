@@ -193,6 +193,11 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         if (!$scope.template_text) {
             $scope.template_text = newConfig.intro.translated_text["en"]
         }
+        // Backwards compat hack to fill in the `app_required` based on the
+        // old-style "program_or_study"
+        // remove this at the end of 2023 when all programs have been migrated over
+        $scope.ui_config.app_required = $scope.ui_config?.intro.app_required || $scope.ui_config?.intro.program_or_study == 'program';
+        $scope.ui_config.opcode.autogen = $scope.ui_config?.opcode.autogen || $scope.ui_config?.intro.program_or_study == 'study';
         $scope.init();
       });
     });
