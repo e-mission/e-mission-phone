@@ -10,6 +10,7 @@
 
 import angular from 'angular';
 import Bottleneck from 'bottleneck';
+import { invalidateMaps } from './LeafletView';
 
 angular.module('emission.main.diary.infscrolllist',[
                                       'ionic-datepicker',
@@ -496,6 +497,7 @@ angular.module('emission.main.diary.infscrolllist',[
       }
     });
     $scope.data.listEntries.push('footer');
+    invalidateMaps();
   }
 
 //   moment.locale('en', {

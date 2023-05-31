@@ -3,6 +3,11 @@ import { angularize } from "../angular-react-helper";
 import { object, string } from "prop-types";
 import { View } from "react-native";
 
+const mapSet = new Set();
+export function invalidateMaps() {
+  mapSet.forEach(map => map.invalidateSize());
+}
+
 const LeafletView = ({ geojson, opts }) => {
 
   const mapRef = useRef(null);
@@ -20,6 +25,7 @@ const LeafletView = ({ geojson, opts }) => {
     }).addTo(map);
     const gjBounds = gj.getBounds().pad(0.2);
     map.fitBounds(gjBounds);
+    mapSet.add(map);
   }, []);
 
   return (
