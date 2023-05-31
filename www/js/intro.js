@@ -1,13 +1,15 @@
 'use strict';
 
 import angular from 'angular';
+import QrCode from './control/QrCode';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
-                                  'ionic-toast'])
+                                  'ionic-toast',
+                                  QrCode.module])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -81,7 +83,8 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.agree = function() {
-    $scope.scannedToken = $scope.ui_config.joined.opcode;
+    $scope.scannedToken = "emission://login_token?token=nrelop_dev-emulator-program_D-50"
+    // $scope.scannedToken = $scope.ui_config.joined.opcode;
     StartPrefs.markConsented().then(function(response) {
       $ionicHistory.clearHistory();
       if ($scope.scannedToken) {
