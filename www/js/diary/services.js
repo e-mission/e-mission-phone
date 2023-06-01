@@ -59,7 +59,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     if (!t._isAMomentObject) t = moment(t);
     const opts = { weekday: 'short', month: 'short', day: 'numeric' };
     return Intl.DateTimeFormat($translate.use(), opts)
-      .format(new Date(t.format('LLL')));
+      .format(new Date(t));
   }
 
   dh.isCommon = function(id) {

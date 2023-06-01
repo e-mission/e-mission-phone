@@ -99,14 +99,15 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 CONFIG_PHONE_UI, toSaveConfig);
             const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
             // loaded new config, so it is both ready and changed
-            return storeConfigPromise.then(logSuccess)
-                .then(dc.saveAndNotifyConfigChanged(downloadedConfig))
-                .then(dc.saveAndNotifyConfigReady(downloadedConfig))
-                .then(() => {
-                    if (thenGoToIntro) $state.go("root.intro")
-                })
-                .then(() => true)
-                .catch((storeError) => Logger.displayError($translate.instant('config.unable-to-store-config'), storeError));
+            return storeConfigPromise.then((result) => {
+                logSuccess(result);
+                dc.saveAndNotifyConfigChanged(downloadedConfig);
+                dc.saveAndNotifyConfigReady(downloadedConfig);
+                if (thenGoToIntro)
+                    $state.go("root.intro");
+                return true;
+            }).catch((storeError) =>
+                Logger.displayError($translate.instant('config.unable-to-store-config'), storeError));
         });
     }
 
@@ -228,30 +229,18 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
 
     dc.initByUser = function(urlComponents) {
         dc.scannedToken = urlComponents.token;
-        loadSavedConfig().then((savedConfig) => {
-            if(savedConfig && angular.equals(savedConfig.joined.opcode, dc.scannedToken)) {
-                Logger.log("UI_CONFIG: existing label " + JSON.stringify(savedConfig.label) +
-                    " and new one " + JSON.stringify(urlComponents), " are the same, skipping download");
-                // use dc.$apply here to be consistent with $http so we can consistently
-                // skip it in the listeners
-                // only loaded existing config, so it is ready, but not changed
-                $rootScope.$apply(() => dc.saveAndNotifyConfigReady);
-                return; // labels are the same
-            }
-            // if the labels are different, we need to download the new config
-            try {
-                const newStudyLabel = dc.extractStudyName(dc.scannedToken);
-                return loadNewConfig(newStudyLabel, true)
-                    // on successful download, cache the token in the rootScope
-                    .then((wasUpdated) => {$rootScope.scannedToken = dc.scannedToken})
-                    .catch((fetchErr) => {
-                        Logger.displayError($translate.instant('config.unable-download-config'), fetchErr);
-                    });
-            } catch (error) {
-                Logger.displayError($translate.instant('config.invalid-opcode-format'), error);
-                return Promise.reject(error);
-            }
-        });
+        try {
+            const newStudyLabel = dc.extractStudyName(dc.scannedToken);
+            return loadNewConfig(newStudyLabel, true)
+                // on successful download, cache the token in the rootScope
+                .then((wasUpdated) => {$rootScope.scannedToken = dc.scannedToken})
+                .catch((fetchErr) => {
+                    Logger.displayError($translate.instant('config.unable-download-config'), fetchErr);
+                });
+        } catch (error) {
+            Logger.displayError($translate.instant('config.invalid-opcode-format'), error);
+            return Promise.reject(error);
+        }
     };
     dc.initAtLaunch = function () {
         loadSavedConfig().then((existingConfig) => {
