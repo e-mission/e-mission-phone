@@ -4,206 +4,6 @@
     <h:title>OpenPATH Short Demographics Survey</h:title>
     <model odk:xforms-version="1.0.0">
       <itext>
-        <translation default="true()" lang="English (en)">
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25:label">
-            <value>Personal Level Information</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/In_which_year_were_you_born:label">
-            <value>In which year were you born?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender:label">
-            <value>What is your gender?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/man:label">
-            <value>Man</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/woman:label">
-            <value>Woman</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/non_binary_genderqueer_gender_non_confor:label">
-            <value>Non-binary/genderqueer/gender non-conforming</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/other:label">
-            <value>Other</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity:label">
-            <value>What is your race/ethnicity?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity:hint">
-            <value>Please select all that apply.</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/black_or_african_american:label">
-            <value>Black or African American</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/white_or_caucasian:label">
-            <value>White or Caucasian</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/hispanic_latino_a_x_or_spanish:label">
-            <value>Hispanic, Latino/a/x, or Spanish</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/east_asian:label">
-            <value>East Asian</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/south_asian:label">
-            <value>South Asian</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/american_indian_or_alaska_native:label">
-            <value>American Indian or Alaska Native</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/native_hawaiian_or_other_pacific_islande:label">
-            <value>Native Hawaiian or Other Pacific Islander</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/multiracial_multiethnic:label">
-            <value>Multiracial/Multiethnic</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/other:label">
-            <value>Other</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license:label">
-            <value>Do you have a valid drivers license?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/yes:label">
-            <value>Yes</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/no:label">
-            <value>No</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d:label">
-            <value>What is the highest level of education you have completed?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/less_than_a_high_school_graduate:label">
-            <value>Less than a high school graduate</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/high_school_graduate_or_ged:label">
-            <value>High school graduate or GED</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/some_college_or_associates_degree:label">
-            <value>Some college or associates degree</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/bachelor_s_degree:label">
-            <value>Bachelor's degree</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/graduate_degree_or_professional_degree:label">
-            <value>Graduate degree or professional degree</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98:label">
-            <value>Household Level Information</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type:label">
-            <value>What is your home type?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/single_family_own:label">
-            <value>Single-Family Residence, Owned</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/single_family_rent:label">
-            <value>Single-Family Residence, Rented</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/multi_family_own:label">
-            <value>Multi-Family Residence, Owned</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/multi_family_rent:label">
-            <value>Multi-Family Residence, Rented</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/shelter:label">
-            <value>Shelter</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category:label">
-            <value>Please identify which category represents your total household income, before taxes, for last year.</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category:hint">
-            <value>We are asking this because income is related to how, when and why people go from place to place. This information will be used for statistical purposes only.</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/less_than__24_999:label">
-            <value>Less than $24,999</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_25_000_to__49_999:label">
-            <value>$25,000 to $49,999</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_50_000_to__99_999:label">
-            <value>$50,000 to $99,999</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_100_000_to__149_999:label">
-            <value>$100,000 to $149,999</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_150_000_to__199_999:label">
-            <value>$150,000 to $199,999</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_200_000_or_more:label">
-            <value>$200,000 or more</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p:label">
-            <value>Including yourself, how many people live in your home?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/1:label">
-            <value>1</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/2:label">
-            <value>2</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/3:label">
-            <value>3</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/4:label">
-            <value>4</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/5:label">
-            <value>5</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/6:label">
-            <value>6</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/7:label">
-            <value>7</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/more_than_7:label">
-            <value>More than 7</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow:label">
-            <value>How many motor vehicles are owned, leased, or available for regular use by the people who currently live in your household?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow:hint">
-            <value>Include motorcycles, mopeds and RVs.</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/0:label">
-            <value>0</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/1:label">
-            <value>1</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/2:label">
-            <value>2</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/3:label">
-            <value>3</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/more_than_3:label">
-            <value>More than 3</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/prefer_not_to_say:label">
-            <value>Prefer not to say</value>
-          </text>
-        </translation>
         <translation lang="Spanish (es)">
           <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25:label">
             <value>Información de nivel personal</value>
@@ -212,16 +12,19 @@
             <value>¿En que año naciste?</value>
           </text>
           <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender:label">
-            <value>¿Cuál es su género?</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/man:label">
-            <value>Hombre</value>
+            <value>¿Cuál describe de la mejor manera su género?</value>
           </text>
           <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/woman:label">
             <value>Mujer</value>
           </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/non_binary_genderqueer_gender_non_confor:label">
-            <value>No binaria / genderqueer / género no conforme</value>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/man:label">
+            <value>Hombre</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/transgender:label">
+            <value>Transgénero</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/non_binary:label">
+            <value>No binaria</value>
           </text>
           <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/other:label">
             <value>Otro</value>
@@ -273,9 +76,6 @@
           </text>
           <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/no:label">
             <value>No</value>
-          </text>
-          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/prefer_not_to_say:label">
-            <value>Prefiero no decirlo</value>
           </text>
           <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d:label">
             <value>¿Cuál es el grado más alto o el título que ha obtenido?</value>
@@ -404,6 +204,206 @@
             <value>Prefiero no decirlo</value>
           </text>
         </translation>
+        <translation default="true()" lang="English (en)">
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25:label">
+            <value>Personal Level Information</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/In_which_year_were_you_born:label">
+            <value>In which year were you born?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender:label">
+            <value>What best describes your gender?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/woman:label">
+            <value>Woman</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/man:label">
+            <value>Man</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/transgender:label">
+            <value>Transgender</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/non_binary:label">
+            <value>Non-binary</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/other:label">
+            <value>Other</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity:label">
+            <value>What is your race/ethnicity?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity:hint">
+            <value>Please select all that apply.</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/black_or_african_american:label">
+            <value>Black or African American</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/white_or_caucasian:label">
+            <value>White or Caucasian</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/hispanic_latino_a_x_or_spanish:label">
+            <value>Hispanic, Latino/a/x, or Spanish</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/east_asian:label">
+            <value>East Asian</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/south_asian:label">
+            <value>South Asian</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/american_indian_or_alaska_native:label">
+            <value>American Indian or Alaska Native</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/native_hawaiian_or_other_pacific_islande:label">
+            <value>Native Hawaiian or Other Pacific Islander</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/multiracial_multiethnic:label">
+            <value>Multiracial/Multiethnic</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/other:label">
+            <value>Other</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_race_ethnicity/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license:label">
+            <value>Do you have a valid drivers license?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/yes:label">
+            <value>Yes</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/no:label">
+            <value>No</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d:label">
+            <value>What is the highest level of education you have completed?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/less_than_a_high_school_graduate:label">
+            <value>Less than a high school graduate</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/high_school_graduate_or_ged:label">
+            <value>High school graduate or GED</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/some_college_or_associates_degree:label">
+            <value>Some college or associates degree</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/bachelor_s_degree:label">
+            <value>Bachelor's degree</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/graduate_degree_or_professional_degree:label">
+            <value>Graduate degree or professional degree</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98:label">
+            <value>Household Level Information</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type:label">
+            <value>What is your home type?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/single_family_own:label">
+            <value>Single-Family Residence, Owned</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/single_family_rent:label">
+            <value>Single-Family Residence, Rented</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/multi_family_own:label">
+            <value>Multi-Family Residence, Owned</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/multi_family_rent:label">
+            <value>Multi-Family Residence, Rented</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/shelter:label">
+            <value>Shelter</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/What_is_your_home_type/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category:label">
+            <value>Please identify which category represents your total household income, before taxes, for last year.</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category:hint">
+            <value>We are asking this because income is related to how, when and why people go from place to place. This information will be used for statistical purposes only.</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/less_than__24_999:label">
+            <value>Less than $24,999</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_25_000_to__49_999:label">
+            <value>$25,000 to $49,999</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_50_000_to__99_999:label">
+            <value>$50,000 to $99,999</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_100_000_to__149_999:label">
+            <value>$100,000 to $149,999</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_150_000_to__199_999:label">
+            <value>$150,000 to $199,999</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/_200_000_or_more:label">
+            <value>$200,000 or more</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Please_identify_which_category/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p:label">
+            <value>Including yourself, how many people live in your home?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/1:label">
+            <value>1</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/2:label">
+            <value>2</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/3:label">
+            <value>3</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/4:label">
+            <value>4</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/5:label">
+            <value>5</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/6:label">
+            <value>6</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/7:label">
+            <value>7</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/more_than_7:label">
+            <value>More than 7</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/Including_yourself_how_many_p/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow:label">
+            <value>How many motor vehicles are owned, leased, or available for regular use by the people who currently live in your household?</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow:hint">
+            <value>Include motorcycles, mopeds and RVs.</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/0:label">
+            <value>0</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/1:label">
+            <value>1</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/2:label">
+            <value>2</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/3:label">
+            <value>3</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/more_than_3:label">
+            <value>More than 3</value>
+          </text>
+          <text id="/aQMhJWsbwsGcgiDJHWyfri/group_pa5ah98/How_many_motor_vehicles_are_ow/prefer_not_to_say:label">
+            <value>Prefer not to say</value>
+          </text>
+        </translation>
       </itext>
       <instance>
         <aQMhJWsbwsGcgiDJHWyfri id="demo_survey_v2">
@@ -452,16 +452,20 @@
       <select1 ref="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender">
         <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender:label')"/>
         <item>
-          <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/man:label')"/>
-          <value>man</value>
-        </item>
-        <item>
           <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/woman:label')"/>
           <value>woman</value>
         </item>
         <item>
-          <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/non_binary_genderqueer_gender_non_confor:label')"/>
-          <value>non_binary_genderqueer_gender_non_confor</value>
+          <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/man:label')"/>
+          <value>man</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/transgender:label')"/>
+          <value>transgender</value>
+        </item>
+        <item>
+          <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/non_binary:label')"/>
+          <value>non_binary</value>
         </item>
         <item>
           <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_your_gender/other:label')"/>
@@ -525,10 +529,6 @@
         <item>
           <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/no:label')"/>
           <value>no</value>
-        </item>
-        <item>
-          <label ref="jr:itext('/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/Do_you_have_a_driver_license/prefer_not_to_say:label')"/>
-          <value>prefer_not_to_say</value>
         </item>
       </select1>
       <select1 ref="/aQMhJWsbwsGcgiDJHWyfri/group_hg4zz25/What_is_the_highest_grade_or_d">
