@@ -7,6 +7,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.localnotify',
                                         'emission.splash.notifscheduler',
                                         'ionic-datepicker',
+                                        'ionic-toast',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.main.metrics.factory',
@@ -21,7 +22,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicScrollDelegate, $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $ionicModal, $stateParams,
-               $rootScope, KVStore, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker, ionicToast,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                CarbonDatasetHelper, NotificationScheduler, LocalNotify,
@@ -362,14 +363,26 @@ angular.module('emission.main.control',['emission.services',
         $scope.getUserData();
     };
 
-    $scope.returnToIntro = function() {
-      var testReconsent = false
-      if (testReconsent) {
-        $rootScope.req_consent.approval_date = Math.random();
-        StartPrefs.loadPreferredScreen();
-      } else {
-        $state.go("root.intro");
-      }
+    $scope.copyToClipboard = (textToCopy) => {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
+        });
+    }
+
+    $scope.logOut = function() {
+        $ionicPopup.confirm({
+            title: $translate.instant('general-settings.are-you-sure'),
+            template: $translate.instant('general-settings.log-out-warning'),
+            cancelText: $translate.instant('general-settings.cancel'),
+            okText: $translate.instant('general-settings.confirm')
+        }).then(function(res) {
+            if (!res) return; // user cancelled
+            
+            // reset the saved config, then trigger a hard refresh
+            const CONFIG_PHONE_UI="config/app_ui_config";
+            $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+                .then($window.location.reload(true));
+        });
     };
 
     var getStartTransitionKey = function() {

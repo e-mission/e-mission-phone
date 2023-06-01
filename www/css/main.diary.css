@@ -133,12 +133,14 @@ a.item-content {
 
 .diary-btn {
   width: 100%;
-  padding: 5px 14px;
-  max-height: 40px;
+  padding-inline: 14px;
+  min-height: 28px;
+  max-height: 32px;
   margin: 2px;
   box-sizing: border-box;
   border-radius: 50px;
-  font-size: 0.8em !important;
+  font-size: 13px;
+  line-height: 1;
   font-weight: 500;
   box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 3px rgb(0 0 0 / .12);
   background-color: white;
@@ -202,6 +204,7 @@ a.item-content {
   background: white;
   width: 100%;
   height: min-content;
+  font-size: 13px;
   line-height: 1.2;
   margin: 0;
   border: 1px solid rgb(0 0 0 / .2);

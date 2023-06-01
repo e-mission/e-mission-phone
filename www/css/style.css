@@ -706,8 +706,7 @@ background-image: none !important; }
 /* Light theme */
 .control-icon-button{
   text-align: center;
-  float: right;
-  height: 100%;
+  max-height: 56px;
   background-color: #6c757d;
   color: #fff;
   padding-top: 16px;
@@ -870,9 +869,6 @@ a.list-text {
   box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
 }
 
-button.button.ng-binding {
-  font-size: 15px;
-}
 button.button.ng-binding i.icon.ion-edit {
   font-size: 12px;
 }
@@ -884,10 +880,22 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Profile tab */
 .control-list-item {
-  height: 50px; margin-top: 0.5px;
+  display: flex;
+  min-height: 50px;
+  margin-top: 0.5px;
+  justify-content: space-between;
 }
 .control-list-text {
-  padding: 15px; float: left;
+  padding-inline: 15px;
+  margin-block: auto;
+  max-width: calc(100% - 64px);
+  overflow: hidden;
+  display: -webkit-box;
+  line-height: 1.1;
+  -webkit-line-clamp: 5; /* number of lines to show */
+          line-clamp: 5; 
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
 }
 .control-list-toggle {
   float: right; margin-top: 5px; margin-right: 2px;
@@ -945,6 +953,7 @@ button.button.back-button.buttons.button-clear.header-item {
 .start-time-tag, .stop-time-tag {
   position: absolute;
   display: flex;
+  width: max-content;
   padding: 0 .5em;
   left: 50%;
   border-radius: 50px;
@@ -1919,6 +1928,16 @@ span.rz-bar-wrapper {
     height: 100%;
     -webkit-overflow-scrolling: touch !important;
     overflow: scroll !important;
+}
+
+.buttons input,
+.buttons select {
+  text-align: center;
+  border: 1px solid rgb(20 20 20 / .2);
+  border-radius: 10px;
+  font-size: 13px;
+  color: #222;
+  pointer-events: all;
 }
 
 .enketo-plugin input[name*="_date"],
