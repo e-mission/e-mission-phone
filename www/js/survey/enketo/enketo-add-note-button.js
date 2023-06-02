@@ -73,8 +73,6 @@ angular.module('emission.survey.enketo.add-note-button',
     if (momentStop) {
       prefills.End_date = momentStop.format('YYYY-MM-DD');
       prefills.End_time = momentStop.format('HH:mm:ss.SSS');
-    } else {
-      prefills.End_date = momentBegin.format('YYYY-MM-DD');
     }
 
     return prefills;

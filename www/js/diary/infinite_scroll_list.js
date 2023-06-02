@@ -456,7 +456,7 @@ angular.module('emission.main.diary.infscrolllist',[
     if (!alreadyFiltered) {
         $scope.data.displayTrips = $scope.data.allTrips;
     };
-
+    $scope.data.displayTrips.count = $scope.data.displayTrips.length;
     $scope.data.listEntries = ['header'];
     $scope.data.displayTrips.forEach((cTrip) => {
       const start_place = cTrip.start_confirmed_place;
@@ -476,6 +476,19 @@ angular.module('emission.main.diary.infscrolllist',[
           // We will set display_start_time to the beginning of the day
           // start_place.display_start_time = moment(start_place.exit_fmt_time).parseZone().startOf('day').format("h:mm A");
         // }
+      }
+
+      /* don't display untracked time if the trips that came before and
+          after it are not displayed */
+      if (cTrip.key.includes('untracked')) {
+        const prevTrip = $scope.data.allTrips[$scope.data.allTrips.indexOf(cTrip) - 1];
+        const nextTrip = $scope.data.allTrips[$scope.data.allTrips.indexOf(cTrip) + 1];
+        const prevTripDisplayed = $scope.data.displayTrips.includes(prevTrip);
+        const nextTripDisplayed = $scope.data.displayTrips.includes(nextTrip);
+        if (prevTrip && !prevTripDisplayed || nextTrip && !nextTripDisplayed) {
+          $scope.data.displayTrips.count -= 1;
+          return;
+        }
       }
 
       // Add trip to the list

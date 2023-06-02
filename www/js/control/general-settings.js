@@ -10,6 +10,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.splash.localnotify',
                                         'emission.splash.notifscheduler',
                                         'ionic-datepicker',
+                                        'ionic-toast',
                                         'ionic-datepicker.provider',
                                         'emission.splash.startprefs',
                                         'emission.main.metrics.factory',
@@ -24,7 +25,7 @@ angular.module('emission.main.control',['emission.services',
                $ionicScrollDelegate, $ionicPlatform,
                $state, $ionicPopup, $ionicActionSheet, $ionicPopover,
                $ionicModal, $stateParams,
-               $rootScope, KVStore, ionicDatePicker,
+               $rootScope, KVStore, ionicDatePicker, ionicToast,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
                CarbonDatasetHelper, NotificationScheduler, LocalNotify,
@@ -184,6 +185,25 @@ angular.module('emission.main.control',['emission.services',
     $ionicPlatform.ready().then(function() {
         DynamicConfig.configReady().then(function(newConfig) {
             $scope.ui_config = newConfig;
+            // backwards compat hack to fill in the raw_data_use for programs that don't have it
+            const default_raw_data_use = {
+                "en": `to monitor the ${newConfig.intro.program_or_study}, send personalized surveys or provide recommendations to participants`,
+                "es": `para monitorear el ${newConfig.intro.program_or_study}, enviar encuestas personalizadas o proporcionar recomendaciones a los participantes`
+            }
+            Object.entries(newConfig.intro.translated_text).forEach(([lang, val]) => {
+                val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
+            });
+            // TODO: we should be able to use $translate for this, right?
+            $scope.template_text = newConfig.intro.translated_text[$scope.lang];
+            if (!$scope.template_text) {
+                $scope.template_text = newConfig.intro.translated_text["en"]
+            }
+            // Backwards compat hack to fill in the `app_required` based on the
+            // old-style "program_or_study"
+            // remove this at the end of 2023 when all programs have been migrated over
+            $scope.ui_config.intro.app_required = $scope.ui_config?.intro.app_required || $scope.ui_config?.intro.program_or_study == 'program';
+            $scope.ui_config.opcode = $scope.ui_config.opcode || {};
+            $scope.ui_config.opcode.autogen = $scope.ui_config?.opcode?.autogen || $scope.ui_config?.intro.program_or_study == 'study';
             $scope.refreshScreen();
         });
     });
@@ -372,14 +392,26 @@ angular.module('emission.main.control',['emission.services',
         $scope.getUserData();
     };
 
-    $scope.returnToIntro = function() {
-      var testReconsent = false
-      if (testReconsent) {
-        $rootScope.req_consent.approval_date = Math.random();
-        StartPrefs.loadPreferredScreen();
-      } else {
-        $state.go("root.intro");
-      }
+    $scope.copyToClipboard = (textToCopy) => {
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
+        });
+    }
+
+    $scope.logOut = function() {
+        $ionicPopup.confirm({
+            title: $translate.instant('general-settings.are-you-sure'),
+            template: $translate.instant('general-settings.log-out-warning'),
+            cancelText: $translate.instant('general-settings.cancel'),
+            okText: $translate.instant('general-settings.confirm')
+        }).then(function(res) {
+            if (!res) return; // user cancelled
+            
+            // reset the saved config, then trigger a hard refresh
+            const CONFIG_PHONE_UI="config/app_ui_config";
+            $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+                .then($window.location.reload(true));
+        });
     };
 
     var getStartTransitionKey = function() {
