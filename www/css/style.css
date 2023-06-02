@@ -1450,7 +1450,6 @@ html, #chart2, svg {
   border: 1px solid rgb(20 20 20 / .2);
   border-radius: 10px;
   font-size: 13px;
-  line-height: .8;
   color: #222;
   pointer-events: all;
   min-width: 11ch;
