@@ -11,7 +11,6 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.config.dynamic',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
-        'emission.survey.enketo.preview',
         'emission.survey.inputmatcher',
         DiaryButton.module])
 .directive('enketoAddNoteButton', function() {
@@ -66,14 +65,14 @@ angular.module('emission.survey.enketo.add-note-button',
     // Enketo requires these specific date/time formats
     if (momentBegin) {
       prefills.Start_date = momentBegin.format('YYYY-MM-DD');
-      prefills.Start_time = momentBegin.format('HH:mm:ss.SSSZ');
+      prefills.Start_time = momentBegin.format('HH:mm:ss.SSS');
     } else {
       prefills.Start_date = momentStop.format('YYYY-MM-DD');
     }
 
     if (momentStop) {
       prefills.End_date = momentStop.format('YYYY-MM-DD');
-      prefills.End_time = momentStop.format('HH:mm:ss.SSSZ');
+      prefills.End_time = momentStop.format('HH:mm:ss.SSS');
     } else {
       prefills.End_date = momentBegin.format('YYYY-MM-DD');
     }
