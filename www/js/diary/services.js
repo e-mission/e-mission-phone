@@ -238,7 +238,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     const unpack = (obj) => ({
       ...obj.data,
       _id: obj._id,
-      key: obj.metadata.key
+      key: obj.metadata.key,
+      origin_key: obj.metadata.origin_key || obj.metadata.key,
     });
 
     timeline.readAllCompositeTrips = function(startTs, endTs) {
@@ -256,7 +257,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               const unpackedCt = unpack(ct);
               return {
                 ...unpackedCt,
-                origin_key: ct.metadata.origin_key,
                 start_confirmed_place: unpack(unpackedCt.start_confirmed_place),
                 end_confirmed_place: unpack(unpackedCt.end_confirmed_place),
                 locations: unpackedCt.locations?.map(unpack),
