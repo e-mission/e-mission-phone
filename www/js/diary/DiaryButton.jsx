@@ -24,7 +24,7 @@ const buttonStyles = StyleSheet.create({
     borderWidth: 1.5,
   },
   buttonContent: {
-    height: 30,
+    height: 25,
   },
 });
 
