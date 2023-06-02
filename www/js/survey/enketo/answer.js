@@ -52,7 +52,7 @@ angular.module('emission.survey.enketo.answer', [
 
         // gather vars that will be interpolated into the template according to the survey config
         const labelVars = {}
-        for (lblVar in config.labelVars) {
+        for (let lblVar in config.labelVars) {
           const fieldName = config.labelVars[lblVar].key;
           let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
           if (fieldStr == '<null>') fieldStr = null;
