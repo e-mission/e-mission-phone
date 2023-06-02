@@ -10,8 +10,8 @@
 }
 
 .main {
-    padding-top:50px;
-    padding-bottom:50px !important;
+  padding-top:50px;
+  min-height: 100%;
 }
 
 .row {

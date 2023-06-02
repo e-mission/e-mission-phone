@@ -4,11 +4,7 @@ import './css/intro.css';
 import './css/appstatus.css';
 import './css/main.recent.css';
 import './css/main.diary.css';
-import './manual_lib/enketo/css/formhub.css';
-import './manual_lib/enketo/css/formhub-print.css';
 import './manual_lib/fontawesome/css/all.min.css';
-
-import 'leaflet/dist/leaflet-src.js';
 import 'leaflet/dist/leaflet.css';
 
 import './js/app.js';

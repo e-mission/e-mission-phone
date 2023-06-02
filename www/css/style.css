@@ -1,5 +1,12 @@
-/* Empty. Add your own CSS if you like */
+/* Scoped styles for Enketo */
+/* if we don't contain them here, they will leak into the rest of the app */
+.enketo-plugin {
+  @import 'enketo-core/src/sass/formhub/formhub.scss';
+}
 
+.enketo-plugin .form-header {
+  max-height: 50px;
+}
 
 .fill-container {
   display: block;
@@ -443,10 +450,6 @@ background-image: none !important; }
 .toggle-on-ourcolor-bg{
   border-color: var(--accent) !important;
   background-color: var(--accent) !important;
-}
-
-.toggle-color{
-  @include toggle-small-style($toggle-on-ourcolor-bg);
 }
 
 .control-info{
@@ -1494,9 +1497,11 @@ html, #chart2, svg {
   left: calc(8px + 2.5ch);
 }
 
-.enketo-plugin input[name*="_date"],
-.enketo-plugin input[name*="_time"] {
-  display: flex !important;
+.enketo-plugin .question.inline-datetime > input[name*="_date"],
+.enketo-plugin .question.inline-datetime > input[name*="_time"] {
+  display: flex;
+  width: auto;
+  min-width: 65%;
   max-width: 85%;
 }
 
