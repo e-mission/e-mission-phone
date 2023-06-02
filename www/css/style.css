@@ -1,5 +1,22 @@
 /* Empty. Add your own CSS if you like */
 
+
+.fill-container {
+  display: block;
+  position: relative;
+}
+
+.fill-container div[class*='css-view'] {
+  height: 100%;
+  width: 100%;
+  position: absolute;
+}
+
+.fill-container div[class*='css-view'] > div[class*='css-view'] {
+  position: static;
+}
+
+/* default color pallete (may be overridden by child elements) */
 :root {
   --accent: hsl(200, 100%, 40%);
   --accent-light: hsl(200, 100%, 75%);
@@ -1487,16 +1504,4 @@ html, #chart2, svg {
 .enketo-plugin .question.inline-datetime {
   display: inline-grid;
   width: 50%;
-}
-
-div[class*='css-view'] {
-  height: 100%;
-  width: 100%;
-  position: absolute;
-}
-
-div[class*='css-view'] > div[class*='css-view'] {
-  position: static;
-  height: 100%;
-  width: 100%;
 }
