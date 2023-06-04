@@ -147,15 +147,23 @@ angular.module('emission.survey.enketo.answer', [
   function resolveTimestamps(xmlDoc, timelineEntry) {
     // check for Date and Time fields
     const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
-    const startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
+    let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
     const endDate = xmlDoc.getElementsByTagName('End_date')?.[0]?.innerHTML;
-    const endTime = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
+    let endTime = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
 
     // if any of the fields are missing, return null
     if (!startDate || !startTime || !endDate || !endTime) return null; 
 
-    let additionStartTs = moment(startDate + 'T' + startTime).unix();
-    let additionEndTs = moment(endDate + 'T' + endTime).unix();
+    const timezone = timelineEntry.start_local_dt?.timezone
+                    || timelineEntry.enter_local_dt?.timezone
+                    || timelineEntry.end_local_dt?.timezone
+                    || timelineEntry.exit_local_dt?.timezone;
+    // split by + or - to get time without offset
+    startTime = startTime.split(/\-|\+/)[0];
+    endTime = endTime.split(/\-|\+/)[0];
+
+    let additionStartTs = moment.tz(startDate+'T'+startTime, timezone).unix();
+    let additionEndTs = moment.tz(endDate+'T'+endTime, timezone).unix();
 
     if (additionStartTs > additionEndTs) {
       return undefined; // if the start time is after the end time, this is an invalid response

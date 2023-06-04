@@ -60,19 +60,22 @@ angular.module('emission.survey.enketo.add-note-button',
     const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
     const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
 
+    // the current, local time offset (e.g. -07:00)
+    const currOffset = moment().toISOString(true).slice(-6);
+
     const prefills = {}
     // Fill in only the fields that are present
     // Enketo requires these specific date/time formats
     if (momentBegin) {
       prefills.Start_date = momentBegin.format('YYYY-MM-DD');
-      prefills.Start_time = momentBegin.format('HH:mm:ss.SSS');
+      prefills.Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
     } else {
       prefills.Start_date = momentStop.format('YYYY-MM-DD');
     }
 
     if (momentStop) {
       prefills.End_date = momentStop.format('YYYY-MM-DD');
-      prefills.End_time = momentStop.format('HH:mm:ss.SSS');
+      prefills.End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
     }
 
     return prefills;
