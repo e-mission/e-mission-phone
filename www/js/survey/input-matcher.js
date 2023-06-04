@@ -37,7 +37,8 @@ angular.module('emission.survey.inputmatcher', ['emission.plugin.logger'])
   }
 
   im.validUserInputForTimelineEntry = function(tlEntry, userInput, logsEnabled) {
-    if (tlEntry.key.includes('UNPROCESSED') == true)
+    if (!tlEntry.origin_key) return false;
+    if (tlEntry.origin_key.includes('UNPROCESSED') == true)
         return im.validUserInputForDraftTrip(tlEntry, userInput, logsEnabled);
 
     /* Place-level inputs always have a key starting with 'manual/place', and
