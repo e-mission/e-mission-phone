@@ -400,10 +400,10 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.logOut = function() {
         $ionicPopup.confirm({
-            title: $translate.instant('general-settings.are-you-sure'),
-            template: $translate.instant('general-settings.log-out-warning'),
-            cancelText: $translate.instant('general-settings.cancel'),
-            okText: $translate.instant('general-settings.confirm')
+            title: i18next.t('general-settings.are-you-sure'),
+            template: i18next.t('general-settings.log-out-warning'),
+            cancelText: i18next.t('general-settings.cancel'),
+            okText: i18next.t('general-settings.confirm')
         }).then(function(res) {
             if (!res) return; // user cancelled
             
