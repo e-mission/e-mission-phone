@@ -353,10 +353,13 @@ angular.module('emission.main.diary.infscrolllist',[
 
   $scope.$on("enketo.noteAddition", (e, addition) => {
     $scope.$apply(() => {
-      // TODO support places
+      // Find the list entry that matches the addition
       const matchingTimelineEntry = $scope.data.listEntries.find((entry) => 
         InputMatcher.validUserInputForTimelineEntry(entry, addition, false)
       );
+      if (!matchingTimelineEntry) {
+        return Logger.displayError("Could not find matching timeline entry for addition", addition);
+      }
       matchingTimelineEntry.additionsList ||= [];
       matchingTimelineEntry.additionsList.push(addition);
       $ionicScrollDelegate.resize();
