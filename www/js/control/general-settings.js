@@ -106,15 +106,6 @@ angular.module('emission.main.control',['emission.services',
             $scope.qrp.show($event);
         } else {
             $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
-                // const qr = new QRCode({
-                //     content: $scope.tokenURL,
-                //     padding: 0
-                // });
-                // q.el.querySelector('#qr-opcode').innerHTML = qr.svg();
-                // QRCode.toCanvas(q.el.querySelector('#qr-opcode'), $scope.tokenURL, { width: 500 }, (e, canv) => {
-                //     e && console.error("Error while generating QR Code", e);
-                //     // q.el.querySelector('#qr-opcode').appendChild(canv);
-                // });
                 $scope.qrp = q;
                 $scope.qrp.show($event);
             }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
