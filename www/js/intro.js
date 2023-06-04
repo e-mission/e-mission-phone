@@ -78,8 +78,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.overallStatus = false;
 
+  /* If the user does not consent, we boot them back out to the join screen */
   $scope.disagree = function() {
-    debugger;
+    // reset the saved config, then trigger a hard refresh
+    const CONFIG_PHONE_UI="config/app_ui_config";
+    $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+        .then($window.location.reload(true));
   };
 
   $scope.agree = function() {
