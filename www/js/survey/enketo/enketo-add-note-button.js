@@ -81,22 +81,6 @@ angular.module('emission.survey.enketo.add-note-button',
     return prefills;
   }
 
-  const getScrollElement = function() {
-    if (!$scope.scrollElement) {
-        console.log("scrollElement is not cached, trying to read it ");
-        const ionItemElement = $element.closest('ion-item')
-        if (ionItemElement) {
-            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
-            $scope.scrollElement = ionItemElement.closest('ion-content');
-        } else {
-            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
-        }
-    }
-    // TODO: comment this out after testing to avoid log spew
-    console.log("Returning scrollElement ", $scope.scrollElement);
-    return $scope.scrollElement;
-  }
-
   $scope.openPopover = function ($event, timelineEntry, inputType) {
     const surveyName = $scope.notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
@@ -116,7 +100,7 @@ angular.module('emission.survey.enketo.add-note-button',
         };
 
         // adding the addition for display is handled in infinite_scroll_list.js
-        $scope.$emit('enketo.noteAddition', addition, getScrollElement());
+        $scope.$emit('enketo.noteAddition', addition);
         
         // store is commented out since the enketo survey launch currently
         // stores the value as well

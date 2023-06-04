@@ -351,7 +351,7 @@ angular.module('emission.main.diary.infscrolllist',[
     }
   });
 
-  $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
+  $scope.$on("enketo.noteAddition", (e, addition) => {
     $scope.$apply(() => {
       // TODO support places
       const matchingTimelineEntry = $scope.data.listEntries.find((entry) => 
@@ -359,7 +359,7 @@ angular.module('emission.main.diary.infscrolllist',[
       );
       matchingTimelineEntry.additionsList ||= [];
       matchingTimelineEntry.additionsList.push(addition);
-      scrollElement.trigger('scroll-resize');
+      $ionicScrollDelegate.resize();
     })
   });
 

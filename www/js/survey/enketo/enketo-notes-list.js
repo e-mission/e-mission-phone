@@ -25,16 +25,6 @@ angular.module('emission.survey.enketo.notes-list',
                                 EnketoSurveyLaunch, DiaryHelper) {
     console.log("Notes List Controller called");
 
-    const getScrollElement = function() {
-      if (!$scope.scrollElement) {
-          const ionItemElement = $element.closest('ion-item')
-          if (ionItemElement) {
-              $scope.scrollElement = ionItemElement.closest('ion-content');
-          }
-      }
-      return $scope.scrollElement;
-    }
-
     $scope.setDisplayDt = function(entry) {
       const timezone = $scope.timelineEntry.start_local_dt?.timezone
                       || $scope.timelineEntry.enter_local_dt?.timezone
@@ -89,8 +79,7 @@ angular.module('emission.survey.enketo.notes-list',
         .then(() => 
           $scope.$apply(() => {
             $scope.additionEntries.splice(index, 1);
-            const scrollElement = getScrollElement();
-            if (scrollElement) scrollElement.trigger('scroll-resize');
+            $scope.$emit('scrollResize');
           })
         );
     }
@@ -112,7 +101,7 @@ angular.module('emission.survey.enketo.notes-list',
           };
 
           // adding the addition for display is handled in infinite_scroll_list.js
-          $scope.$emit('enketo.noteAddition', addition, getScrollElement());
+          $scope.$emit('enketo.noteAddition', addition);
           
           $scope.deleteEntry(entry);
 
