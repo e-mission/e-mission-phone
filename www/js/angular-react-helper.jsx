@@ -3,7 +3,7 @@
 // Modified to use React 18 and wrap elements with the React Native Paper Provider
 
 import angular from 'angular';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import React from 'react';
 import { Provider as PaperProvider, MD3LightTheme as DefaultTheme } from 'react-native-paper';
 
@@ -38,21 +38,26 @@ export function angularize(component, modulePath) {
     .component(nameCamelCase, makeComponentProps(component));
 }
 
+const roots = new Map();
 export function makeComponentProps(Component) {
   const propTypes = Component.propTypes || {};
   return {
     bindings: toBindings(propTypes),
     controller: /*@ngInject*/ function($element) {
+      let root = roots.get($element[0]);
+      if (!root) {
+        root = createRoot($element[0]);
+        roots.set($element[0], root);
+      }
       this.$onChanges = () => {
         const props = toProps(propTypes, this);
-        ReactDOM.render(
+        root.render(
           <PaperProvider theme={theme}>
             <Component { ...props } />
-          </PaperProvider>,
-          $element[0]
+          </PaperProvider>
         );
       };
-      this.$onDestroy = () => ReactDOM.unmountComponentAtNode($element[0]);
+      this.$onDestroy = () => root.unmount();
     }
   };
 }

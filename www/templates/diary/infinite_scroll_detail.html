@@ -1,6 +1,6 @@
 <ion-view>
     <ion-nav-title>{{ trip.display_date }}</ion-nav-title>
-    <ion-content class="has-header" overflow-scroll="true" padding="true">
+    <ion-content class="has-header diary-details" ng-class="{draft: trip.key.includes('UNPROCESSED')}" overflow-scroll="true" padding="true">
         <div class="row" style="">
             <div class="col-30">
                 <div style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;">{{trip.display_start_time}}</div>
@@ -9,19 +9,18 @@
             </div>
 
             <div class="col-70">
-
-                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: '0'}};">
-                    <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
+                <div class="diary-street two-lines" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0">
+                    <i class="icon ion-location"></i>
                     {{trip.start_display_name}}
                 </div>
-                <div class="item item-icon-left" id="no-border" href="#" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0;">
-                    <i class="icon ion-flag" style="font-size: 16px; left: 0; color: #0088ce;"></i>
+                <div class="diary-street two-lines" style="font-size: 1em; padding-top: 5px; padding-bottom: 5px;padding-left: 25px; margin-top: 0; margin-bottom: 0">
+                    <i class="icon ion-flag"></i>
                     {{trip.end_display_name}}
                 </div>
             </div>
         </div>
         <div style="height: 10px;"></div>
-        <leaflet-view geojson="trip.geojson"></leaflet-view>
+        <leaflet-view geojson="trip.geojson" class="fill-container" style="height: 50%; width: 100%"></leaflet-view>
         <div style="height: 15px;"></div>
         <div class="row" style="padding-top: 10px !important; padding-bottom: 10px !important; padding-left: 20px !important; padding-right: 20px !important;">
             <div class="col" style="width: 30%; margin-top: 0; font-size: 1.1em; font-weight: thin;">

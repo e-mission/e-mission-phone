@@ -11,7 +11,6 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.config.dynamic',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
-        'emission.survey.enketo.preview',
         'emission.survey.inputmatcher',
         DiaryButton.module])
 .directive('enketoAddNoteButton', function() {
@@ -61,40 +60,25 @@ angular.module('emission.survey.enketo.add-note-button',
     const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
     const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
 
+    // the current, local time offset (e.g. -07:00)
+    const currOffset = moment().toISOString(true).slice(-6);
+
     const prefills = {}
     // Fill in only the fields that are present
     // Enketo requires these specific date/time formats
     if (momentBegin) {
       prefills.Start_date = momentBegin.format('YYYY-MM-DD');
-      prefills.Start_time = momentBegin.format('HH:mm:ss.SSSZ');
+      prefills.Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
     } else {
       prefills.Start_date = momentStop.format('YYYY-MM-DD');
     }
 
     if (momentStop) {
       prefills.End_date = momentStop.format('YYYY-MM-DD');
-      prefills.End_time = momentStop.format('HH:mm:ss.SSSZ');
-    } else {
-      prefills.End_date = momentBegin.format('YYYY-MM-DD');
+      prefills.End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
     }
 
     return prefills;
-  }
-
-  const getScrollElement = function() {
-    if (!$scope.scrollElement) {
-        console.log("scrollElement is not cached, trying to read it ");
-        const ionItemElement = $element.closest('ion-item')
-        if (ionItemElement) {
-            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
-            $scope.scrollElement = ionItemElement.closest('ion-content');
-        } else {
-            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
-        }
-    }
-    // TODO: comment this out after testing to avoid log spew
-    console.log("Returning scrollElement ", $scope.scrollElement);
-    return $scope.scrollElement;
   }
 
   $scope.openPopover = function ($event, timelineEntry, inputType) {
@@ -116,7 +100,7 @@ angular.module('emission.survey.enketo.add-note-button',
         };
 
         // adding the addition for display is handled in infinite_scroll_list.js
-        $scope.$emit('enketo.noteAddition', addition, getScrollElement());
+        $scope.$emit('enketo.noteAddition', addition);
         
         // store is commented out since the enketo survey launch currently
         // stores the value as well

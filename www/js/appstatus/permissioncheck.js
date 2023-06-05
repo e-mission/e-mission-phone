@@ -159,7 +159,6 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     }
 
     $scope.setupAndroidLocChecks = function(platform, version) {
-        debugger;
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
             return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationSettings,

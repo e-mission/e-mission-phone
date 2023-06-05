@@ -10,8 +10,8 @@
 }
 
 .main {
-    padding-top:50px;
-    padding-bottom:50px !important;
+  padding-top:50px;
+  min-height: 100%;
 }
 
 .row {
@@ -224,8 +224,7 @@ a.item-content {
   box-shadow: 0 3px 4px rgb(0 0 0 / 5%), 0 4px 4px rgb(0 0 0 / 8%);
   display: flex;
   flex-wrap: wrap;
-  background: linear-gradient(
-                  40deg,
+  background: linear-gradient(40deg,
                   hsla(200, 30%, 97%, 1) 40%,
                   hsla(0, 0%, 100%, 1)),
 }
@@ -247,24 +246,15 @@ a.item-content {
   
     --grid: hsla(350, 25%, 80%, .2);
     /* subtle x-grid lines in the background, fading to white */
-    background: linear-gradient(
-                  15deg,
+    background: linear-gradient(15deg,
                   hsla(350, 10%, 92%, 1) 40%,
                   hsla(350, 10%, 100%, 0.5)),
-                repeating-linear-gradient(
-                  45deg,
-                  var(--grid),
-                  var(--grid) 0px,
-                  transparent 2px,
-                  transparent 20px
-                ),
-                repeating-linear-gradient(
-                  -45deg,
-                  var(--grid),
-                  var(--grid) 0px,
-                  #fff 2px,
-                  #fff 21px
-                );
+                repeating-linear-gradient(45deg,
+                  var(--grid), var(--grid) 0px,
+                  transparent 2px, transparent 20px),
+                repeating-linear-gradient(-45deg,
+                  var(--grid), var(--grid) 0px,
+                  #fff 2px, #fff 21px);
 }
 
 .diary-card.untracked .card-title b {
@@ -275,7 +265,7 @@ a.item-content {
   border-radius: 5px;
 }
 
-.diary-card.draft {
+.diary-card.draft, .diary-details.draft {
   /* draft trips will have a muted, greenish color */
   --accent: hsl(150, 15%, 40%);
   --accent-light: hsl(150, 25%, 72%);
@@ -283,24 +273,15 @@ a.item-content {
 
   --grid: hsla(150, 25%, 70%, .3);
   /* subtle grid lines in the background, fading to white */
-  background: linear-gradient(
-                30deg,
-                hsla(150, 4%, 94%, 1) 50%,
-                hsla(0, 0%, 100%, 0.1)),
-              repeating-linear-gradient(
-                90deg,
-                var(--grid),
-                var(--grid) 0px,
-                transparent 2px,
-                transparent 20px
-              ),
-              repeating-linear-gradient(
-                0deg,
-                var(--grid),
-                var(--grid) 0px,
-                #fff 2px,
-                #fff 21px
-              );
+  background: linear-gradient(30deg,
+                hsla(150, 4%, 94%, .9) 50%,
+                hsla(0, 0%, 100%, .5)),
+              repeating-linear-gradient(90deg,
+                var(--grid), var(--grid) 0px,
+                transparent 2px, transparent 20px),
+              repeating-linear-gradient(0deg,
+                var(--grid), var(--grid) 0px,
+                #fff 2px, #fff 21px);
 }
 
 .card-title {
@@ -397,18 +378,6 @@ a.item-content {
   }
 }
 
-.diary-draft-button {
-  font-style: normal;
-  font-weight: normal;
-  font-style: 13px;
-  background-color: #ffffff;
-  border: none;
-  /* background-image: url("../img/icons/help_outline_black_24dp.svg"); */
-  background-repeat: no-repeat;
-  background-position: left center;
-  padding-left: 25px;
-}
-
 .diary-route {
   margin: 5px 0;
   height: 85px;
@@ -441,11 +410,6 @@ a.item-content {
   text-overflow: ellipsis;
 }
 
-.diary-map {
-  position: absolute;
-  inset: 0;
-}
-
 .diary-map > div {
   overflow: hidden;
   border-radius: 30px 0px 0px 30px;
@@ -462,9 +426,14 @@ a.item-content {
 }
 
 .diary-map-shell {
-  position: relative;
   width: 50%;
   max-height: 100%;
+  display: grid;
+  grid-template-rows: 1fr;
+}
+
+.enhanced-trip-item .diary-map-shell {
+  grid-template-rows: 4fr 1fr;
 }
 
 .diary-infos {

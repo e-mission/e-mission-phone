@@ -1,17 +1,27 @@
 'use strict';
 
 const MotionTypes = {
-  0: {name: "IN_VEHICLE", icon: "ion-speedometer", color: "purple"},
-  1: {name: "BICYCLING", icon: "ion-android-bicycle", color: "green"},
-  2: {name: "ON_FOOT", icon: "ion-android-walk", color: "brown"},
-  3: {name: "STILL", icon: "ion-android-walk", color: "brown"},
-  4: {name: "UNKNOWN", icon: "ion-ios-help", color: "orange"},
-  5: {name: "TILTING", icon: "ion-ios-help", color: "orange"},
-  7: {name: "WALKING", icon: "ion-android-walk", color: "brown"},
-  8: {name: "RUNNING", icon: "ion-android-walk", color: "brown"},
-  9: {name: "NONE", icon: "ion-ios-help", color: "orange"},
-  10: {name: "STOPPED_WHILE_IN_VEHICLE", icon: "ion-speedometer", color: "purple"},
-  11: {name: "AIR_OR_HSR", icon: "ion-plane", color: "red"}
+  IN_VEHICLE: {name: "IN_VEHICLE", icon: "ion-speedometer", color: "purple"},
+  BICYCLING: {name: "BICYCLING", icon: "ion-android-bicycle", color: "green"},
+  UNKNOWN: {name: "UNKNOWN", icon: "ion-ios-help", color: "orange"},
+  WALKING: {name: "WALKING", icon: "ion-android-walk", color: "brown"},
+  RUNNING: {name: "RUNNING", icon: "ion-android-walk", color: "brown"}, // TODO: do we need this or is it always converted to WALKING?
+  CAR: {name: "CAR", icon: "ion-android-car", color: "red"},
+  AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "ion-plane", color: "red"},
+  // based on OSM routes/tags:
+  BUS: {name: "BUS", icon: "ion-android-bus", color: "red"},
+  LIGHT_RAIL: {name: "LIGHT_RAIL", icon: "lightrail fas fa-subway", color: "red"},
+  TRAIN: {name: "TRAIN", icon: "ion-android-train", color: "red"},
+  TRAM: {name: "TRAM", icon: "fas fa-tram", color: "red"},
+  SUBWAY: {name: "SUBWAY", icon: "fas fa-subway", color: "red"},
+  FERRY: {name: "FERRY", icon: "fas fa-ship", color: "red"},
+  TROLLEYBUS: {name: "TROLLEYBUS", icon: "fas fa-bus", color: "red"},
+  UNPROCESSED: {name: "UNPROCESSED", icon: "ion-ios-help", color: "orange"}
+}
+const motionTypeOf = (motionName) => {
+  let key = ('' + motionName).toUpperCase();
+  key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
+  return MotionTypes[motionName] || MotionTypes.UNKNOWN;
 }
 
 import angular from 'angular';
@@ -87,8 +97,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         const fract = dists[mode] / totalDist;
         return {
             mode: mode,
-            icon: "icon " + MotionTypes[mode]?.icon,
-            color: MotionTypes[mode]?.color || 'black',
+            icon: "icon " + motionTypeOf(mode)?.icon,
+            color: motionTypeOf(mode)?.color || 'black',
             pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
         };
     });
@@ -102,8 +112,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
       fmt_distance_suffix: ImperialConfig.getDistanceSuffix,
-      icon: "icon " + MotionTypes[s.sensed_mode]?.icon,
-      color: MotionTypes[s.sensed_mode]?.color || "#333",
+      icon: "icon " + motionTypeOf(s.sensed_mode)?.icon,
+      color: motionTypeOf(s.sensed_mode)?.color || "#333",
     }));
   };
 
@@ -228,7 +238,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     const unpack = (obj) => ({
       ...obj.data,
       _id: obj._id,
-      key: obj.metadata.key
+      key: obj.metadata.key,
+      origin_key: obj.metadata.origin_key || obj.metadata.key,
     });
 
     timeline.readAllCompositeTrips = function(startTs, endTs) {
@@ -246,7 +257,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
               const unpackedCt = unpack(ct);
               return {
                 ...unpackedCt,
-                origin_key: ct.metadata.origin_key,
                 start_confirmed_place: unpack(unpackedCt.start_confirmed_place),
                 end_confirmed_place: unpack(unpackedCt.end_confirmed_place),
                 locations: unpackedCt.locations?.map(unpack),
@@ -449,7 +459,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
           },
           style: {
-            color: MotionTypes[section?.sensed_mode]?.color || "#333",
+            color: motionTypeOf(section?.sensed_mode)?.color || "#333",
           }
         }
       });

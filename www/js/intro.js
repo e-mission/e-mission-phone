@@ -1,13 +1,15 @@
 'use strict';
 
 import angular from 'angular';
+import QrCode from './control/QrCode';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
-                                  'ionic-toast'])
+                                  'ionic-toast',
+                                  QrCode.module])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -76,8 +78,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.overallStatus = false;
 
+  /* If the user does not consent, we boot them back out to the join screen */
   $scope.disagree = function() {
-    debugger;
+    // reset the saved config, then trigger a hard refresh
+    const CONFIG_PHONE_UI="config/app_ui_config";
+    $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+        .then($window.location.reload(true));
   };
 
   $scope.agree = function() {
@@ -189,10 +195,29 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
         $scope.lang = i18next.resolvedLanguage;
         $scope.ui_config = newConfig;
+
+        // backwards compat hack to fill in the raw_data_use for programs that don't have it
+        const default_raw_data_use = {
+            "en": `to monitor the ${newConfig.intro.program_or_study}, send personalized surveys or provide recommendations to participants`,
+            "es": `para monitorear el ${newConfig.intro.program_or_study}, enviar encuestas personalizadas o proporcionar recomendaciones a los participantes`
+        }
+        Object.entries(newConfig.intro.translated_text).forEach(([lang, val]) => {
+            val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
+        });
         // TODO: we should be able to use i18n for this, right?
         $scope.template_text = newConfig.intro.translated_text[$scope.lang];
         if (!$scope.template_text) {
             $scope.template_text = newConfig.intro.translated_text["en"]
+        }
+        // Backwards compat hack to fill in the `app_required` based on the
+        // old-style "program_or_study"
+        // remove this at the end of 2023 when all programs have been migrated over
+        if ($scope.ui_config.intro.app_required == undefined) {
+            $scope.ui_config.intro.app_required = $scope.ui_config?.intro.program_or_study == 'program';
+        }
+        $scope.ui_config.opcode = $scope.ui_config.opcode || {};
+        if ($scope.ui_config.opcode.autogen == undefined) {
+            $scope.ui_config.opcode.autogen = $scope.ui_config?.intro.program_or_study == 'study';
         }
         $scope.init();
       });

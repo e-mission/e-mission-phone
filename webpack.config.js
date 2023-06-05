@@ -12,10 +12,10 @@ module.exports = {
   },
   module: {
     rules: [
-      // to load CSS
+      // to load CSS and SCSS (enketo-core only supplies SCSS)
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader'],
+        test: /\.(scss|css)$/,
+        use: ['style-loader', 'css-loader', 'sass-loader'],
       },
       // to resolve url() in CSS
       {
@@ -74,6 +74,7 @@ module.exports = {
     // to load jQuery and moment globally
     new webpack.ProvidePlugin({
       $: 'jquery',
+      jQuery: 'jquery',
       moment: 'moment',
       L: 'leaflet',
     })
@@ -89,7 +90,11 @@ module.exports = {
     alias: {
       'react-native$': 'react-native-web',
       'react-native-webview': 'react-native-web-webview',
-      'react-native-vector-icons': false
+      'react-native-vector-icons': false,
+      /* Enketo expects its per-app configuration to be available as 'enketo-config',
+        so we have to alias it here.
+      https://github.com/enketo/enketo-core#global-configuration */
+      'enketo/config': path.resolve(__dirname, 'www/js/config/enketo-config')
     },
     extensions: ['.web.js', '.jsx', '.tsx', '.ts', '.js'],
   },

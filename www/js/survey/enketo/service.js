@@ -1,4 +1,6 @@
 import angular from 'angular';
+import { Form } from 'enketo-core';
+import { XMLParser } from 'fast-xml-parser';
 
 angular.module('emission.survey.enketo.service', [
   'ionic',
@@ -69,7 +71,7 @@ angular.module('emission.survey.enketo.service', [
    * @returns {string[]} load errors
    */
   function _loadForm(opts = {}) {
-    const formSelector = 'form.or:eq(0)';
+    const formEl = document.querySelector('form.or');
     const data = {
       // required string of the default instance defined in the XForm
       modelStr: _state.loaded.model,
@@ -80,8 +82,7 @@ angular.module('emission.survey.enketo.service', [
       session: opts.session || {}
     };
     const currLang = i18next.resolvedLanguage;
-    _state.form = new $window.FormModule(formSelector, data,
-        {language: currLang});
+    _state.form = new Form(formEl, data, { language: currLang });
     return _state.form.init();
   }
 
@@ -144,8 +145,8 @@ angular.module('emission.survey.enketo.service', [
     const xmlParser = new $window.DOMParser();
     const xmlResponse = _state.form.getDataStr();
     const xmlDoc = xmlParser.parseFromString(xmlResponse, 'text/xml');
-    const jsonDocResponse = $.xml2json(xmlResponse, {attrkey: 'attr'});
-
+    const xml2js = new XMLParser({ignoreAttributes: false, attributeNamePrefix: 'attr'});
+    const jsonDocResponse = xml2js.parse(xmlResponse);
     return EnketoSurveyAnswer.resolveLabel(_state.name, xmlDoc).then(rsLabel => {
       const data = {
         label: rsLabel,
@@ -161,9 +162,9 @@ angular.module('emission.survey.enketo.service', [
           return new Error(i18next.t('survey.enketo-timestamps-invalid')); //"Timestamps are invalid. Please ensure that the start time is before the end time.");
         }
         // if timestamps were not resolved from the survey, we will use the trip or place timestamps
-        timestamps ||= _state.opts.timelineEntry.data.properties;
-        data.start_ts = timestamps.start_ts;
-        data.end_ts = timestamps.end_ts;
+        timestamps ||= _state.opts.timelineEntry;
+        data.start_ts = timestamps.start_ts || timestamps.enter_ts;
+        data.end_ts = timestamps.end_ts || timestamps.exit_ts;
         // UUID generated using this method https://stackoverflow.com/a/66332305
         data.match_id = URL.createObjectURL(new Blob([])).slice(-36);
       } else {

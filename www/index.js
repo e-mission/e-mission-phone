@@ -4,11 +4,7 @@ import './css/intro.css';
 import './css/appstatus.css';
 import './css/main.recent.css';
 import './css/main.diary.css';
-import './manual_lib/enketo/css/formhub.css';
-import './manual_lib/enketo/css/formhub-print.css';
 import './manual_lib/fontawesome/css/all.min.css';
-
-import 'leaflet/dist/leaflet-src.js';
 import 'leaflet/dist/leaflet.css';
 
 import './js/app.js';
@@ -53,7 +49,6 @@ import './js/survey/enketo/enketo-trip-button.js';
 import './js/survey/enketo/enketo-demographics.js';
 import './js/survey/enketo/enketo-add-note-button.js';
 import './js/survey/enketo/enketo-notes-list.js';
-import './js/survey/enketo/enketo-preview.js';
 import './js/metrics.js';
 import './js/control/general-settings.js';
 import './js/control/emailService.js';

@@ -13,7 +13,7 @@ angular.module('emission.main.diary.infscrolldetail', [
 
 .controller("InfiniteDiaryDetailCtrl", function($scope, $rootScope, $injector, $window, $ionicPlatform,
                                         $state, $stateParams, ClientStats, $ionicActionSheet, KVStore,
-                                        Logger, Timeline, DiaryHelper, SurveyOptions, Config, ImperialConfig,
+                                        Logger, Timeline, DiaryHelper, SurveyOptions, ImperialConfig,
                                         DynamicConfig, CommHelper) {
   console.log("controller InfiniteDiaryDetailCtrl called with params = "+
     JSON.stringify($stateParams));

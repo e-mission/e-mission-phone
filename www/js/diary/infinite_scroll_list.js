@@ -10,6 +10,7 @@
 
 import angular from 'angular';
 import Bottleneck from 'bottleneck';
+import { invalidateMaps } from './LeafletView';
 
 angular.module('emission.main.diary.infscrolllist',[
                                       'ionic-datepicker',
@@ -36,7 +37,7 @@ angular.module('emission.main.diary.infscrolllist',[
                                     $timeout,
                                     Timeline, DiaryHelper,
                                     SurveyOptions, NotificationScheduler,
-                                    Config, ImperialConfig, DynamicConfig,
+                                    ImperialConfig, DynamicConfig,
                                     KVStore,
                                     Logger, UnifiedDataLoader, InputMatcher,
                                     $ionicModal) {
@@ -81,7 +82,6 @@ angular.module('emission.main.diary.infscrolllist',[
     $scope.filterInputs[0].state = true;
     $scope.selFilter = $scope.filterInputs[0].key;
     ClientStats.addReading(ClientStats.getStatKeys().LABEL_TAB_SWITCH, {"source": null, "dest": $scope.getActiveFilters()});
-    $scope.allTrips = false;
   }
 
   $scope.checkPermissionsStatus = () => {
@@ -339,6 +339,10 @@ angular.module('emission.main.diary.infscrolllist',[
     $scope.recomputeListEntries();
   });
 
+  $scope.$on("scrollResize", () => {
+    $ionicScrollDelegate.resize();
+  });
+
   $scope.$on("scroll.infiniteScrollComplete", function() {
     Logger.log("infiniteScrollComplete broadcast")
     if ($scope.infScrollControl.callback != undefined) {
@@ -347,15 +351,18 @@ angular.module('emission.main.diary.infscrolllist',[
     }
   });
 
-  $scope.$on("enketo.noteAddition", (e, addition, scrollElement) => {
+  $scope.$on("enketo.noteAddition", (e, addition) => {
     $scope.$apply(() => {
-      // TODO support places
+      // Find the list entry that matches the addition
       const matchingTimelineEntry = $scope.data.listEntries.find((entry) => 
         InputMatcher.validUserInputForTimelineEntry(entry, addition, false)
       );
+      if (!matchingTimelineEntry) {
+        return Logger.displayError("Could not find matching timeline entry for addition", addition);
+      }
       matchingTimelineEntry.additionsList ||= [];
       matchingTimelineEntry.additionsList.push(addition);
-      scrollElement.trigger('scroll-resize');
+      $ionicScrollDelegate.resize();
     })
   });
 
@@ -369,12 +376,10 @@ angular.module('emission.main.diary.infscrolllist',[
           f.state = false;
         }
       });
-      $scope.allTrips = false;
     } else {
       $scope.filterInputs.forEach((f) => {
         f.state = false;
       });
-      $scope.allTrips = true;
     }
 
     $scope.recomputeListEntries();
@@ -454,7 +459,7 @@ angular.module('emission.main.diary.infscrolllist',[
     if (!alreadyFiltered) {
         $scope.data.displayTrips = $scope.data.allTrips;
     };
-
+    $scope.data.displayTrips.count = $scope.data.displayTrips.length;
     $scope.data.listEntries = ['header'];
     $scope.data.displayTrips.forEach((cTrip) => {
       const start_place = cTrip.start_confirmed_place;
@@ -476,6 +481,19 @@ angular.module('emission.main.diary.infscrolllist',[
         // }
       }
 
+      /* don't display untracked time if the trips that came before and
+          after it are not displayed */
+      if (cTrip.key.includes('untracked')) {
+        const prevTrip = $scope.data.allTrips[$scope.data.allTrips.indexOf(cTrip) - 1];
+        const nextTrip = $scope.data.allTrips[$scope.data.allTrips.indexOf(cTrip) + 1];
+        const prevTripDisplayed = $scope.data.displayTrips.includes(prevTrip);
+        const nextTripDisplayed = $scope.data.displayTrips.includes(nextTrip);
+        if (prevTrip && !prevTripDisplayed || nextTrip && !nextTripDisplayed) {
+          $scope.data.displayTrips.count -= 1;
+          return;
+        }
+      }
+
       // Add trip to the list
       $scope.data.listEntries.push(cTrip);
 
@@ -495,20 +513,8 @@ angular.module('emission.main.diary.infscrolllist',[
       }
     });
     $scope.data.listEntries.push('footer');
+    invalidateMaps();
   }
-
-  angular.extend($scope, {
-      defaults: {
-          zoomControl: false,
-          dragging: true,
-          zoomAnimation: false,
-          touchZoom: true,
-          doubleClickZoom: true,
-          boxZoom: true,
-      }
-  });
-
-  angular.extend($scope.defaults, Config.getMapTiles())
 
 //   moment.locale('en', {
 //   relativeTime : {

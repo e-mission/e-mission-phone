@@ -37,7 +37,7 @@ angular.module('emission.main.diary.infscrolltripitem',
 
   .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform, $ionicPopup,
                                         $state, Timeline, DiaryHelper, SurveyOptions,
-                                        Config, DynamicConfig, $ionicScrollDelegate
+                                        DynamicConfig, $ionicScrollDelegate
                                         ){
     console.log("Trip Item Controller called");
 
