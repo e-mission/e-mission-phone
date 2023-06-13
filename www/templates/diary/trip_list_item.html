@@ -3,10 +3,7 @@
 
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
         <div class="diary-card" ng-class="[diary-card, {draft: trip.key.includes('UNPROCESSED')}]">
-            <div class="start-time-tag">
-                <b>{{trip.display_start_time}}</b>
-                <i ng-if="trip.display_start_date_abbr">&nbsp;({{trip.display_start_date_abbr}})</i>
-            </div>
+            <timestamp-badge time="trip.display_start_time" date="trip.display_start_date_abbr" light-bg="true"></timestamp-badge>
             <!-- Leaflet Map -->
             <div id="left-diary-card" class="diary-map-shell" ng-click="showDetail($event, trip)">
                 <!-- Modes / Percentages -->
@@ -84,10 +81,7 @@
                 </div>
             </div>
             <enketo-notes-list ng-if="trip.additionsList.length" timeline-entry="trip" addition-entries="trip.additionsList"></enketo-notes-list>
-            <div class="stop-time-tag">
-                <b>{{trip.display_end_time}}</b>
-                <i ng-if="trip.display_end_date_abbr">&nbsp;({{trip.display_end_date_abbr}})</i>
-            </div>
+            <timestamp-badge time="trip.display_end_time" date="trip.display_end_date_abbr"></timestamp-badge>
         </div>
     </ion-item>
 </div>

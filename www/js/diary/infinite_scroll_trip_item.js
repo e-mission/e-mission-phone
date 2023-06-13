@@ -6,6 +6,7 @@
 import angular from 'angular';
 import DiaryButton from './DiaryButton';
 import LeafletView from './LeafletView';
+import TimestampBadge from './TimestampBadge';
 
 angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
@@ -21,6 +22,7 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.survey.enketo.notes-list',
         DiaryButton.module,
         LeafletView.module,
+        TimestampBadge.module
       ])
 
 .directive("infiniteScrollTripItem", function(){

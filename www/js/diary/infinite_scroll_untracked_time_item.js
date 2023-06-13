@@ -4,6 +4,7 @@
  */
 
 import angular from 'angular';
+import TimestampBadge from './TimestampBadge';
 
 angular.module('emission.main.diary.infscrolluntrackedtimeitem',
     ['emission.main.diary.infscrolllist',
@@ -12,7 +13,8 @@ angular.module('emission.main.diary.infscrolluntrackedtimeitem',
         'emission.config.imperial',
         'emission.config.dynamic',
         'emission.plugin.logger',
-        'emission.stats.clientstats',])
+        'emission.stats.clientstats',
+        TimestampBadge.module])
 
   .directive("infiniteScrollUntrackedTimeItem", function () {
     return {
