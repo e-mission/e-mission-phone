@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import QrCode from './QrCode';
+import ControlDataTable from './ControlDataTable';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -19,7 +20,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
-                                        QrCode.module])
+                                        QrCode.module,
+                                        ControlDataTable.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
