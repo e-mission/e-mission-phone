@@ -4,12 +4,14 @@ import { angularize } from "../angular-react-helper";
 import { Button } from 'react-native-paper';
 import { string } from "prop-types";
 
-const DiaryButton = ({ text }) => {
+const DiaryButton = ({ text, fillColor, ...buttonProps }) => {
   return (
     <Button mode="elevated"
-      buttonColor="white"
-      style={buttonStyles.button}
-      contentStyle={buttonStyles.buttonContent}>
+      buttonColor={fillColor || "white"}
+      style={fillColor ? buttonStyles.fillButton : buttonStyles.outlineButton}
+      labelStyle={fillColor ? {color: 'white'} : {}}
+      contentStyle={buttonStyles.buttonContent}
+      {...buttonProps}>
       {text}
     </Button>
   );
@@ -19,9 +21,12 @@ DiaryButton.propTypes = {
 }
 
 const buttonStyles = StyleSheet.create({
-  button: {
+  outlineButton: {
     borderColor: '#0088ce',
     borderWidth: 1.5,
+  },
+  fillButton: {
+    color: '#FFFFFF',
   },
   buttonContent: {
     height: 25,
