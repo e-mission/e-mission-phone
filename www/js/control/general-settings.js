@@ -3,6 +3,7 @@
 import angular from 'angular';
 import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
+import ControlListItem from './ControlListItem';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -21,7 +22,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
                                         QrCode.module,
-                                        ControlDataTable.module])
+                                        ControlDataTable.module,
+                                        ControlListItem.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
@@ -133,6 +135,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
         if (storeNewVal)
             NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
+        $scope.settings.notification.scheduledNotifs = cordova.plugins.notification.local.scheduledNotifs;
     }
 
     $scope.fixAppStatus = function() {
@@ -376,6 +379,7 @@ angular.module('emission.main.control',['emission.services',
             NotificationScheduler.getReminderPrefs().then((prefs) => {
                 $scope.$apply(() => {
                     const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+                    $scope.settings.notification.scheduledNotifs = cordova.plugins.notification.local.scheduledNotifs;
                     $scope.settings.notification.prefReminderTimeVal = m.toDate();
                     $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
                     $scope.updatePrefReminderTime(false); // update the displayed time

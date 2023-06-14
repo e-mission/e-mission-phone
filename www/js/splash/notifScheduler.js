@@ -65,6 +65,14 @@ angular.module('emission.splash.notifscheduler',
             if (!notifs?.length)
                 return Logger.log(`${prefix}, there are no scheduled notifications`);
             const time = moment(notifs?.[0].trigger.at).format('HH:mm');
+            cordova.plugins.notification.local.scheduledNotifs = notifs.map((n) => {
+                const time = moment(n.trigger.at).format('LT');
+                const date = moment(n.trigger.at).format('LL');
+                return {
+                    key: date,
+                    val: time
+                }
+            });
             Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time}`);
         });
     }

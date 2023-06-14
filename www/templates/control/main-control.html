@@ -5,7 +5,13 @@
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
     <enketo-demographics-button></enketo-demographics-button>
-    <div class="control-list-item">
+    <!-- each list item is very similar:
+      contains a text and a button icon or switch (for the most part) 
+      moving to react -- a text component and an icon button component that live in a list item comoponent? -->
+    <!-- <div class="control-list-item">
+      <control-list-item text="View Privacy" icon-name = "eye"></control-list-item>
+    </div> -->
+      <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.view-privacy'}}</div>
       <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
     </div>
@@ -122,10 +128,10 @@
       </div>
       <!-- maybe notif schedule preview could go here? -->
       <div class = "control-list-item">
-        <div class="control-list-text" ng-i18next>Upcoming Notifications</div>
+        <div class="control-list-text" ng-i18next>{Upcoming Notifications}</div>
         <!-- <div ng-click="dummyNotification()" class="control-icon-button"><i class="ion-ios-bell"></i></div> -->
       </div>
-      <!-- <control-data-table class = "detail item-text-wrap control-info" control-data = "settings.notification.show_config"></control-data-table> -->
+      <control-data-table ng-if="settings.notification.prefReminderTime" control-data="settings.notification.scheduledNotifs"></control-data-table>
 
       <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.invalidate-cached-docs'}}</div>
@@ -147,7 +153,6 @@
         <div class="control-list-text" ng-i18next>{{'control.check-sensed-data'}}</div>
         <div ng-click="showSensed()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
-      
       <!-- replacing collection and sync with React DataTable-->
       <!-- collection li and data table -->
       <div class="control-list-item">
@@ -156,7 +161,7 @@
       </div>
       
       <!-- not sure what if any class(es) are appropriate here, chose these based off existing code, no particular change in appearance -->
-      <control-data-table class = "detail item-text-wrap control-info" control-data = "settings.collect.show_config"></control-data-table>
+      <control-data-table control-data="settings.collect.show_config"></control-data-table>
       
       <!-- <ion-list>
           <ion-item class="row" ng-repeat="entry in settings.collect.show_config">
@@ -170,7 +175,7 @@
         <div class="control-list-text" ng-i18next>{{'control.sync'}}</div>
         <div ng-click="editSyncConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
-      <control-data-table class = "detail item-text-wrap control-info" control-data = "settings.sync.show_config"></control-data-table>
+      <control-data-table control-data="settings.sync.show_config"></control-data-table>
       
       <!-- <ion-list>
         <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
