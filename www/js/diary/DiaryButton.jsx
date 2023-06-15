@@ -9,7 +9,7 @@ const DiaryButton = ({ text, fillColor, ...buttonProps }) => {
     <Button mode="elevated"
       buttonColor={fillColor || "white"}
       style={fillColor ? buttonStyles.fillButton : buttonStyles.outlineButton}
-      labelStyle={fillColor ? {color: 'white'} : {}}
+      labelStyle={fillColor ? {color: 'white', ...buttonStyles.label} : buttonStyles.label}
       contentStyle={buttonStyles.buttonContent}
       {...buttonProps}>
       {text}
@@ -31,6 +31,11 @@ const buttonStyles = StyleSheet.create({
   buttonContent: {
     height: 25,
   },
+  label: {
+    marginHorizontal: 0,
+    fontSize: 13,
+    fontWeight: 500,
+  }
 });
 
 angularize(DiaryButton, 'emission.main.diary.button');

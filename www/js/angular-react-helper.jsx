@@ -81,3 +81,9 @@ export function getAngularService(name) {
 
   return service;
 }
+
+export function createScopeWithVars(vars) {
+  const scope = getAngularService("$rootScope").$new();
+  Object.assign(scope, vars);
+  return scope;
+}

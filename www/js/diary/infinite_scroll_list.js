@@ -335,6 +335,18 @@ angular.module('emission.main.diary.infscrolllist',[
     });
   }
 
+  $scope.$on("repopulateInputsAndInferences", (e, callback) => {
+    Timeline.getUnprocessedLabels($scope.labelPopulateFactory, $scope.enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
+      $scope.$apply(() => {
+        $scope.data.listEntries.filter((e) => e.additionsList || e.userInput).forEach((e) => {
+          $scope.labelPopulateFactory.populateInputsAndInferences(e, manualResultMap);
+          $scope.enbs.populateInputsAndInferences(e, enbsResultMap);
+        });
+        callback();
+      });
+    });
+  });
+
   $scope.$on("recomputeListEntries", () => {
     $scope.recomputeListEntries();
   });
