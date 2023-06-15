@@ -52,7 +52,7 @@ export function makeComponentProps(Component) {
         root = createRoot($element[0]);
         const props = toProps(propTypes, this);
         root.render(
-          <PaperProvider theme={theme}>
+          <PaperProvider theme={theme} children>
             <style type="text/css">{`
               @font-face {
                 font-family: 'MaterialCommunityIcons';
@@ -68,7 +68,7 @@ export function makeComponentProps(Component) {
   };
 }
 
-export function getAngularService(name) {
+export function getAngularService(name: string) {
   const injector = angular.element(document.body).injector();
   if (!injector || !injector.get) {
     throw new Error(`Couldn't find angular injector to get "${name}" service`);
@@ -79,7 +79,7 @@ export function getAngularService(name) {
     throw new Error(`Couldn't find "${name}" angular service`);
   }
 
-  return service;
+  return (service as any); // casting to 'any' because not all Angular services are typed
 }
 
 export function createScopeWithVars(vars) {

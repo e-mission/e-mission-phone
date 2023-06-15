@@ -87,7 +87,7 @@ const MultilabelButtonGroup = ({ trip, unifiedConfirmsResults, recomputeDelay })
                           || trip.userInput?.MODE?.value == ConfirmHelper.mode_studied);
 
     const storageKey = ConfirmHelper.inputDetails[inputType].key;
-    window.cordova.plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
+    window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
       closePopover?.();
       const rootScope = getAngularService("$rootScope");
       if (needsResize) {
