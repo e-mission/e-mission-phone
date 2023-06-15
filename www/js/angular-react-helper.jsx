@@ -38,18 +38,18 @@ export function angularize(component, modulePath) {
     .component(nameCamelCase, makeComponentProps(component));
 }
 
-const roots = new Map();
 export function makeComponentProps(Component) {
   const propTypes = Component.propTypes || {};
   return {
     bindings: toBindings(propTypes),
-    controller: /*@ngInject*/ function($element) {
-      let root = roots.get($element[0]);
-      if (!root) {
-        root = createRoot($element[0]);
-        roots.set($element[0], root);
-      }
+    controller: function($element) {
+      /* TODO: once the inf scroll list is converted to React and no longer uses
+        collection-repeat, we can just set the root here one time
+        and will not have to reassign it in $onChanges. */
+      /* Until then, React will complain everytime we reassign an element's root */
+      let root;
       this.$onChanges = () => {
+        root = createRoot($element[0]);
         const props = toProps(propTypes, this);
         root.render(
           <PaperProvider theme={theme}>

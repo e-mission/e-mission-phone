@@ -5,8 +5,11 @@
 }
 
 .enketo-plugin .form-header {
-  max-height: 50px;
+    max-height: 50px;
 }
+
+/* nvd3 styles */
+@import 'nvd3/build/nv.d3.css';
 
 .fill-container {
   display: block;
@@ -773,14 +776,8 @@ button.button.back-button.buttons.button-clear.header-item {
 svg {
     display: block;
 }
-html, #chart1, svg {
-    padding: 0px;
-    margin: 0 10px 0 0;
-
-}
-html, #chart2, svg {
-    padding: 0px;
-    margin: 0 10px 0 0;
+#chart, #chart svg {
+  margin-right: 10px;
 }
 .nvd3, nv-noData {
   font-weight: 300 !important;
