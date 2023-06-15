@@ -53,6 +53,12 @@ export function makeComponentProps(Component) {
         const props = toProps(propTypes, this);
         root.render(
           <PaperProvider theme={theme}>
+            <style type="text/css">{`
+              @font-face {
+                font-family: 'MaterialCommunityIcons';
+                src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
+              }`}
+            </style>
             <Component { ...props } />
           </PaperProvider>
         );
