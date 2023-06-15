@@ -11,10 +11,10 @@ const theme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: '#0088ce',
-    primaryContainer: '#80D0FF',
-    secondary: '#0088ce',
-    secondaryContainer: '#80D0FF',
+    primary: '#0080b9', // lch(50% 50 250)
+    primaryContainer: '#90ceff', // lch(80% 40 250)
+    secondary: '#f2795c', // lch(65% 60 40)
+    secondaryContainer: '#ffb39e', // lch(80% 45 40)
   },
 };
 
