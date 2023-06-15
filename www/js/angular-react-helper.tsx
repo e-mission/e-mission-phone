@@ -52,7 +52,7 @@ export function makeComponentProps(Component) {
         root = createRoot($element[0]);
         const props = toProps(propTypes, this);
         root.render(
-          <PaperProvider theme={theme} children>
+          <PaperProvider theme={theme}>
             <style type="text/css">{`
               @font-face {
                 font-family: 'MaterialCommunityIcons';

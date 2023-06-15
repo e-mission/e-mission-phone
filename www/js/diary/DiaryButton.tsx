@@ -9,7 +9,7 @@ const DiaryButton = ({ text, fillColor, ...buttonProps } : Props) => {
       style={fillColor ? buttonStyles.fillButton : buttonStyles.outlineButton}
       labelStyle={fillColor ? {color: 'white', ...buttonStyles.label} : buttonStyles.label}
       contentStyle={buttonStyles.buttonContent}
-      {...buttonProps} children>
+      {...buttonProps}>
       {text}
     </Button>
   );
