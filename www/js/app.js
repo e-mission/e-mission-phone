@@ -14,6 +14,7 @@ import 'moment';
 import 'moment-timezone';
 
 import i18next from 'i18next';
+import { initReactI18next } from 'react-i18next';
 
 import 'ionic-toast';
 import 'ionic-datepicker';
@@ -43,7 +44,8 @@ locales.forEach(locale => {
   }
 });
 
-i18next.init({
+i18next.use(initReactI18next)
+  .init({
   debug: true,
   resources,
   lng: detectedLang,

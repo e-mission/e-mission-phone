@@ -65,7 +65,8 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
     $scope.pasteCode = function() {
       $scope.data = {};
       const tokenPopup = $ionicPopup.show({
-          template: '<input type="String" style="font-family: monospace;" ng-model="data.existing_token">',
+          template: `<input autocorrect="off" autocapitalize="none"
+                      style="font-family: monospace;" ng-model="data.existing_token">`,
           title: i18next.t('login.enter-existing-token') + '<br>',
           scope: $scope,
           buttons: [
