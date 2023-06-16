@@ -4,7 +4,6 @@ import angular from 'angular';
 import MultilabelButtonGroup from './multilabel/MultiLabelButtonGroup';
 
 angular.module('emission.survey', [
-                    "emission.survey.verifycheck",
                     "emission.survey.external.launch",
                     "emission.survey.multilabel.buttons",
                     "emission.survey.multilabel.infscrollfilters",

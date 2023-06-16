@@ -33,54 +33,6 @@ angular.module('emission.survey.enketo.trip.button',
     EnketoTripButtonService) {
   console.log("Invoked enketo directive controller for labels "+EnketoTripButtonService.SINGLE_KEY);
 
-  /**
-   * BEGIN: Required external interface for all label directives
-   * These methods will be invoked by the verifycheck directive
-   * For more details on cooperating directives in this situation, please see:
-   * e-mission/e-mission-docs#674 (comment)
-   * to
-   * e-mission/e-mission-docs#674 (comment)
-   *
-   * Input: none
-   * Side effect: verifies the trip (partially if needed) and updates the trip
-   * verifiability status.
-   */
-
-    /**
-     * verifyTrip turns all of a given trip's yellow labels green
-     */
-    $scope.verifyTrip = function() {
-      console.log("About to verify trip "+$scope.timelineEntry.start_ts
-        +" -> "+$scope.timelineEntry.end_ts+" with current visibility"
-        + $scope.timelineEntry.verifiability);
-      // Return early since we don't want to support trip verification yet
-      return;
-      if ($scope.timelineEntry.verifiability != "can-verify") {
-        ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
-            {"verifiable": false, "currView": $scope.currentViewState});
-        return;
-      }
-      ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
-            {"verifiable": true,
-             "currView": $scope.currentViewState,
-             "userInput": angular.toJson($scope.timelineEntry.userInput),
-             "finalInference": angular.toJson($scope.timelineEntry.finalInference)});
-
-      $scope.draftInput = {
-        "start_ts": $scope.timelineEntry.start_ts,
-        "end_ts": $scope.timelineEntry.end_ts
-      };
-      $scope.editingTrip = $scope.timelineEntry;
-
-      const inferred = $scope.timelineEntry.finalInference[EnketoTripButtonService.SINGLE_KEY];
-      // TODO: figure out what to do with "other". For now, do not verify.
-      if (inferred && !$scope.timelineEntry.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
-    }
-
-  /*
-   * END: Required external interface for all label directives
-   */
-
   if ($scope.recomputedelay == "") {
     let THIRTY_SECS = 30 * 1000;
     $scope.recomputedelay = THIRTY_SECS;
