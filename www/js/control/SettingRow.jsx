@@ -11,9 +11,10 @@ biggest struggle here is how to pass i18n keys as parameters (or strings in gene
 const SettingRow = ({textKey, iconName}) => {
     const { t } = useTranslation(); //this accesses the translations
     console.log("row created!!!!!", "translate hard-code" + t('general-settings.are-you-sure') + "translate via param" + t(textKey)+ " and the icon (plain string) " + iconName);
+    //from the above print statement the textKey is "0" and iconName is "undefined" but the hard-coded translation key works great!
     return (
         <Text variant="headlineSmall">
-        {"translated text" + t(textKey)}
+        {"translated text" + t(textKey)} 
         </Text>
     );
 };
