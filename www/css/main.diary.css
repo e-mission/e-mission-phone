@@ -190,6 +190,12 @@ a.item-content {
   width: 230px;
 }
 
+.popover .scroll-content {
+  height: auto;
+  margin: 0 !important;
+  border-radius: 0 0 10px 10px !important;
+}
+
 .big-popover {
   height: 40%;
   width: 75%;
