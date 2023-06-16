@@ -6,11 +6,12 @@ import { array } from "prop-types";
 // Note the camelCase to dash-case conventions when translating to .html files!
 // val with explicit call toString() to resolve bool values not showing
 const ControlDataTable = ({ controlData }) => {
-  console.log("Printing data trying to tabulate", controlData);
+  // console.log("Printing data trying to tabulate", controlData);
   return (
+    //rows require unique keys!
     <DataTable style={styles.table}>
       {controlData.map((e) =>
-        <DataTable.Row>
+        <DataTable.Row key={e.key}> 
           <DataTable.Cell>{e.key}</DataTable.Cell>
           <DataTable.Cell>{e.val.toString()}</DataTable.Cell>
         </DataTable.Row>
