@@ -120,13 +120,12 @@
         <div ng-click="checkConsent()" class="control-icon-button"><i class="ion-checkmark-circled"></i></div>
       </div>
       <div class="control-list-item">
-        <div class="control-list-text" ng-i18next>Dummy Notification in 5 Seconds</div>
+        <div class="control-list-text" ng-i18next>{{'control.dummy-notification'}}</div>
         <div ng-click="dummyNotification()" class="control-icon-button"><i class="ion-ios-bell"></i></div>
       </div>
-      <!-- maybe notif schedule preview could go here? -->
+      <!-- notif scheudle preview (react component) -->
       <div class = "control-list-item">
-        <div class="control-list-text" ng-i18next>{Upcoming Notifications}</div>
-        <!-- <div ng-click="dummyNotification()" class="control-icon-button"><i class="ion-ios-bell"></i></div> -->
+        <div class="control-list-text" ng-i18next>{{'control.upcoming-notifications'}}</div>
       </div>
       <control-data-table ng-if="settings.notification.prefReminderTime" control-data="settings.notification.scheduledNotifs"></control-data-table>
 
