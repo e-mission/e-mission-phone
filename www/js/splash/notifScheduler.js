@@ -65,7 +65,10 @@ angular.module('emission.splash.notifscheduler',
             if (!notifs?.length)
                 return Logger.log(`${prefix}, there are no scheduled notifications`);
             const time = moment(notifs?.[0].trigger.at).format('HH:mm');
-            cordova.plugins.notification.local.scheduledNotifs = notifs.map((n) => {
+            //change where this is stored - plugin should be read-only
+            
+            // cordova.plugins.notification.local.scheduledNotifs = notifs.map((n) => {
+            scheduler.scheduledNotifs = notifs.map((n) => {
                 const time = moment(n.trigger.at).format('LT');
                 const date = moment(n.trigger.at).format('LL');
                 return {
@@ -73,7 +76,9 @@ angular.module('emission.splash.notifscheduler',
                     val: time
                 }
             });
-            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time}`);
+            //have the list of scheduled show up in this log
+            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time} see list here:`);
+            console.log("notifications", scheduler.scheduledNotifs);
         });
     }
 
