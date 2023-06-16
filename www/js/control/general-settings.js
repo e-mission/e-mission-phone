@@ -3,7 +3,6 @@
 import angular from 'angular';
 import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
-import ControlListItem from './ControlListItem';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -22,8 +21,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
                                         QrCode.module,
-                                        ControlDataTable.module,
-                                        ControlListItem.module])
+                                        ControlDataTable.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
@@ -379,6 +377,7 @@ angular.module('emission.main.control',['emission.services',
             NotificationScheduler.getReminderPrefs().then((prefs) => {
                 $scope.$apply(() => {
                     const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+                    // defining data used to populate the upcoming display
                     $scope.settings.notification.scheduledNotifs = cordova.plugins.notification.local.scheduledNotifs;
                     $scope.settings.notification.prefReminderTimeVal = m.toDate();
                     $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;

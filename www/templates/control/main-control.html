@@ -8,10 +8,7 @@
     <!-- each list item is very similar:
       contains a text and a button icon or switch (for the most part) 
       moving to react -- a text component and an icon button component that live in a list item comoponent? -->
-    <!-- <div class="control-list-item">
-      <control-list-item text="View Privacy" icon-name = "eye"></control-list-item>
-    </div> -->
-      <div class="control-list-item">
+    <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.view-privacy'}}</div>
       <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
     </div>
@@ -153,40 +150,20 @@
         <div class="control-list-text" ng-i18next>{{'control.check-sensed-data'}}</div>
         <div ng-click="showSensed()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div>
-      <!-- replacing collection and sync with React DataTable-->
+      <!-- replaced collection and sync with React DataTable-->
       <!-- collection li and data table -->
       <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.collection'}}</div>
         <div ng-click="editCollectionConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
-      
-      <!-- not sure what if any class(es) are appropriate here, chose these based off existing code, no particular change in appearance -->
       <control-data-table control-data="settings.collect.show_config"></control-data-table>
-      
-      <!-- <ion-list>
-          <ion-item class="row" ng-repeat="entry in settings.collect.show_config">
-                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
-                <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
-          </ion-item>
-      </ion-list> -->
-      
+
       <!-- sync li and data table -->
       <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.sync'}}</div>
         <div ng-click="editSyncConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <control-data-table control-data="settings.sync.show_config"></control-data-table>
-      
-      <!-- <ion-list>
-        <ion-item class="row" ng-repeat="entry in settings.sync.show_config">
-              <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
-              <div class="col detail item-text-wrap control-info"> {{entry.val}}</div>
-        </ion-item>
-        <ion-item class="row">
-              <div class="col timestamp item-text-wrap control-info">host</div>
-              <div class="col detail item-text-wrap control-info"> {{settings.connect.url}}</div>
-        </ion-item>
-      </ion-list> -->
       
     <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.app-version'}}</div>
