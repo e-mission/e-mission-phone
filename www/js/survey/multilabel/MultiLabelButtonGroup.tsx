@@ -128,7 +128,7 @@ const MultilabelButtonGroup = ({ trip, unifiedConfirmsResults, recomputeDelay })
         })}
       </View>
       <View>
-        <IconButton icon="check" mode='outlined' size={16} onPress={verifyTrip} style={{width: 20, height: 20, margin: 3}}/>
+        <IconButton icon='check-bold' mode='outlined' size={16} onPress={verifyTrip} style={{width: 20, height: 20, margin: 3}}/>
       </View>
     </View>
   );
