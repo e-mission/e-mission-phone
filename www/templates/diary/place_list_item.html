@@ -13,9 +13,9 @@
                     <b>{{place.display_name}}</b>
                 </div>
                 <div style="margin: 10px auto; max-width: 150px;">
-                    <enketo-add-note-button notes-config="configPlaceNotes" timeline-entry="place"
-                        dataKey="manual/place_addition_input" style="margin: auto">
-                    </enketo-add-note-button>
+                    <add-note-button notes-config="configPlaceNotes" timeline-entry="place"
+                        store-key="'manual/place_addition_input'">
+                    </add-note-button>
                 </div>
                 <enketo-notes-list ng-if="place.additionsList.length" timeline-entry="place" addition-entries="place.additionsList"></enketo-notes-list>
             </div>

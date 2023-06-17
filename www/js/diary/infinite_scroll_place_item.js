@@ -5,6 +5,7 @@
 
 import angular from 'angular';
 import TimestampBadge from './TimestampBadge';
+import AddNoteButton from '../survey/enketo/AddNoteButton';
 
 angular.module('emission.main.diary.infscrollplaceitem',
     ['emission.main.diary.infscrolllist',
@@ -14,7 +15,7 @@ angular.module('emission.main.diary.infscrollplaceitem',
         'emission.config.dynamic',
         'emission.plugin.logger',
         'emission.stats.clientstats',
-        'emission.survey.enketo.add-note-button',
+        AddNoteButton.module,
         TimestampBadge.module])
 
   .directive("infiniteScrollPlaceItem", function () {

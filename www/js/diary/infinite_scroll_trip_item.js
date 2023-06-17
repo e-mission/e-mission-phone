@@ -7,6 +7,7 @@ import angular from 'angular';
 import DiaryButton from './DiaryButton';
 import LeafletView from './LeafletView';
 import TimestampBadge from './TimestampBadge';
+import AddNoteButton from '../survey/enketo/AddNoteButton';
 
 angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
@@ -18,8 +19,8 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.config.dynamic',
         'emission.plugin.logger',
         'emission.stats.clientstats',
-        'emission.survey.enketo.add-note-button',
         'emission.survey.enketo.notes-list',
+        AddNoteButton.module,
         DiaryButton.module,
         LeafletView.module,
         TimestampBadge.module
@@ -44,6 +45,7 @@ angular.module('emission.main.diary.infscrolltripitem',
     console.log("Trip Item Controller called");
 
     const DEFAULT_ITEM_HT = 274;
+    $scope.configTripNotes = '';
 
     // config will initially be undefined, so we will watch
     $scope.$watch('config', function (loadedConfig) {
