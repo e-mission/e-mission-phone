@@ -1,3 +1,2 @@
-<!-- <multilabel trip="timelineEntry" recomputedelay={{recomputedelay}} ng-if="elementTag == 'multilabel'"></multilabel> -->
-<multilabel-button-group trip="timelineEntry"></multilabel-button-group>
-<enketo-trip-button timeline-entry="timelineEntry" recomputedelay={{recomputedelay}} ng-if="elementTag == 'enketo-trip-button'"></enketo-trip-button>
+<multilabel-button-group ng-if="elementTag=='multilabel'" trip="timelineEntry"></multilabel-button-group>
+<enketo-trip-button ng-if="elementTag=='enketo-trip-button'" timeline-entry="timelineEntry" recomputedelay={{recomputedelay}}></enketo-trip-button>
