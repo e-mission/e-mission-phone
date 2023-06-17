@@ -75,7 +75,9 @@
                     </div> 
                 </div>
             </div>
-            <enketo-notes-list ng-if="trip.additionsList.length" timeline-entry="trip" addition-entries="trip.additionsList"></enketo-notes-list>
+            <added-notes-list ng-if="trip.additionsList.length" timeline-entry="trip"
+                                addition-entries="trip.additionsList" style="width: 100%">
+            </added-notes-list>
             <timestamp-badge time="trip.display_end_time" date="trip.display_end_date_abbr"></timestamp-badge>
         </div>
     </ion-item>

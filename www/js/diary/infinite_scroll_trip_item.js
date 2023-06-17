@@ -8,6 +8,7 @@ import DiaryButton from './DiaryButton';
 import LeafletView from './LeafletView';
 import TimestampBadge from './TimestampBadge';
 import AddNoteButton from '../survey/enketo/AddNoteButton';
+import AddedNotesList from '../survey/enketo/AddedNotesList';
 
 angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
@@ -19,8 +20,8 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.config.dynamic',
         'emission.plugin.logger',
         'emission.stats.clientstats',
-        'emission.survey.enketo.notes-list',
         AddNoteButton.module,
+        AddedNotesList.module,
         DiaryButton.module,
         LeafletView.module,
         TimestampBadge.module

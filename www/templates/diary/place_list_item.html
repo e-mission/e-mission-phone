@@ -17,7 +17,9 @@
                         store-key="'manual/place_addition_input'">
                     </add-note-button>
                 </div>
-                <enketo-notes-list ng-if="place.additionsList.length" timeline-entry="place" addition-entries="place.additionsList"></enketo-notes-list>
+                <added-notes-list ng-if="place.additionsList.length" timeline-entry="place"
+                                    addition-entries="place.additionsList" style="width: 100%">
+                </added-notes-list>
             </div>
             <timestamp-badge time="place.display_end_time" date="place.display_end_date_abbr"></timestamp-badge>
         </div>

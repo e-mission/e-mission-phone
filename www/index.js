@@ -47,7 +47,6 @@ import './js/survey/enketo/infinite_scroll_filters.js';
 import './js/survey/enketo/enketo-trip-button.js';
 import './js/survey/enketo/enketo-demographics.js';
 import './js/survey/enketo/enketo-add-note-button.js';
-import './js/survey/enketo/enketo-notes-list.js';
 import './js/metrics.js';
 import './js/control/general-settings.js';
 import './js/control/emailService.js';
