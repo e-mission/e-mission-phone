@@ -1,6 +1,10 @@
-/* This button launches an Enketo survey associated with the trip or place (timelineEntry)
-  The use case for this may be recording activities during a trip, or
-  recording notes about a place. The survey used is specified by the config.
+/* This button launches an Enketo survey associated with the trip or place (timelineEntry).
+  The use case for this may be recording activities during a trip, or recording notes about
+  a place. The survey used is specified by the config.
+
+  Unlike the UserInputButton, this button can record multiple things per trip or place.
+  From each survey response, a new addition is created and added to the timeline entry.
+  The start and end times of the addition are determined by the survey response.
 */
 
 import React, { useEffect, useState } from "react";
