@@ -18,62 +18,6 @@ angular.module('emission.survey.enketo.trip.button',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.inputmatcher'])
-.directive('enketoTripButton', function() {
-  return {
-    scope: {
-        timelineEntry: "=",
-        recomputedelay: "@",
-    },
-    controller: "EnketoTripButtonCtrl",
-    templateUrl: 'templates/survey/enketo/summary-trip-button.html'
-  };
-})
-.controller("EnketoTripButtonCtrl", function($scope, $element, $attrs,
-    EnketoSurveyLaunch, $ionicPopover, $window, ClientStats,
-    EnketoTripButtonService) {
-  console.log("Invoked enketo directive controller for labels "+EnketoTripButtonService.SINGLE_KEY);
-
-  if ($scope.recomputedelay == "") {
-    let THIRTY_SECS = 30 * 1000;
-    $scope.recomputedelay = THIRTY_SECS;
-  } else {
-    $scope.recomputedelay = $scope.recomputedelay * 1000;
-  }
-
-  EnketoTripButtonService.setRecomputeDelay($scope.recomputedelay);
-
-  $scope.openPopover = function ($event, trip, inputType) {
-    const prevResponse = trip.userInput?.[EnketoTripButtonService.SINGLE_KEY];
-    return EnketoSurveyLaunch
-      .launch($scope, 'TripConfirmSurvey', { timelineEntry: trip, prefilledSurveyResponse: prevResponse?.data?.xmlResponse })
-      .then(result => {
-        if (!result) {
-          return;
-        }
-        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {
-            data: result,
-            write_ts: Date.now()
-        });
-        // store is commented out since the enketo survey launch currently
-        // stores the value as well
-        // $scope.store(inputType, result, false);
-      });
-  };
-
-
-  $scope.store = function (inputType, input, isOther) {
-    // This used to be in `$scope.store` in the multi-label-ui 
-    // but the enketo libraries store the values internally now, so we move
-    // this here
-    EnketoTripButtonService.updateTripProperties(tripToUpdate);  // Redo our inferences, filters, etc. based on this new information
-  };
-
-  $scope.init = function() {
-      console.log("During initialization, trip is ", $scope.timelineEntry);
-  }
-
-  $scope.init();
-})
 .factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");

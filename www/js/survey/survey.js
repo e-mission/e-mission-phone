@@ -1,16 +1,18 @@
 'use strict';
 
 import angular from 'angular';
+
 import MultilabelButtonGroup from './multilabel/MultiLabelButtonGroup';
+import UserInputButton from './enketo/UserInputButton';
 
 angular.module('emission.survey', [
                     "emission.survey.external.launch",
                     "emission.survey.multilabel.buttons",
                     "emission.survey.multilabel.infscrollfilters",
-                    "emission.survey.enketo.trip.button",
                     "emission.survey.enketo.add-note-button",
                     "emission.survey.enketo.trip.infscrollfilters",
                     MultilabelButtonGroup.module,
+                    UserInputButton.module,
                     ])
 
 .factory("SurveyOptions", function() {
