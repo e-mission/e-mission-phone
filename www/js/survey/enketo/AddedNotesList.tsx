@@ -9,7 +9,7 @@ import moment from "moment";
 import { Text } from "react-native"
 import { DataTable, IconButton } from "react-native-paper";
 
-const AddedNotesList = ({ timelineEntry, additionEntries, onDelete }) => {
+const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
   const [rerender, setRerender] = useState(false);
 
@@ -17,10 +17,6 @@ const AddedNotesList = ({ timelineEntry, additionEntries, onDelete }) => {
   const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
   const $rootScope = getAngularService("$rootScope");
   const $ionicPopup = getAngularService("$ionicPopup");
-
-  useEffect(() => {
-    // init
-  }, []);
 
   function setDisplayDt(entry) {
     const timezone = timelineEntry.start_local_dt?.timezone
@@ -137,15 +133,6 @@ const styles = {
     borderBottomColor: 'rgba(0,0,0,0.1)',
     pointerEvents: 'auto',
   }),
-  label: {
-    flex: 5,
-  },
-  dateTime: {
-    flex: 4,
-  },
-  delete: {
-    flex: 1,
-  },
 }
 
 AddedNotesList.propTypes = {
