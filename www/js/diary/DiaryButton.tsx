@@ -35,6 +35,8 @@ const buttonStyles : any = {
     marginHorizontal: 0,
     fontSize: 13,
     fontWeight: '500',
+    flex: 1,
+    placeItems: 'center',
   }
 };
 
