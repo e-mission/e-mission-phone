@@ -11,6 +11,9 @@
 import angular from 'angular';
 import Bottleneck from 'bottleneck';
 import { invalidateMaps } from './LeafletView';
+import TripCard from './TripCard';
+import PlaceCard from './PlaceCard';
+import UntrackedTimeCard from './UntrackedTimeCard';
 
 angular.module('emission.main.diary.infscrolllist',[
                                       'ionic-datepicker',
@@ -23,9 +26,9 @@ angular.module('emission.main.diary.infscrolllist',[
                                       'emission.plugin.kvstore',
                                       'emission.stats.clientstats',
                                       'emission.plugin.logger',
-                                      'emission.main.diary.infscrolltripitem',
-                                      'emission.main.diary.infscrollplaceitem',
-                                      'emission.main.diary.infscrolluntrackedtimeitem',
+                                      TripCard.module,
+                                      PlaceCard.module,
+                                      UntrackedTimeCard.module,
                                     ])
 
 .controller("InfiniteDiaryListCtrl", function($window, $scope, $rootScope, $injector,
@@ -620,12 +623,17 @@ angular.module('emission.main.diary.infscrolllist',[
             $scope.$apply(() => {
                 if (tripgj.start_confirmed_place) {
                   tripgj.start_confirmed_place.display_name = startName;
+                  tripgj.start_confirmed_place.onChanged?.(); /* Temporary hack, see below */
                 }
                 tripgj.start_display_name = startName;
                 tripgj.end_display_name = endName;
                 if (tripgj.end_confirmed_place) {
                   tripgj.end_confirmed_place.display_name = endName;
+                  tripgj.end_confirmed_place.onChanged?.(); /* Temporary hack, see below */
                 }
+                tripgj.onChanged?.(); /* Temporary hack for React to update when
+                                          data changes in Angular.
+                                        Will not be needed later. */
             });
         });
     }

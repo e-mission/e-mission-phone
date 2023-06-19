@@ -46,9 +46,9 @@
 		<ion-list>
             <div collection-repeat="entry in data.listEntries" item-height="getCardHeight(entry)">
                 <button ng-if="entry=='header'" ng-click="loadMoreTrips('past')" class="load-more-btn">{{infScrollControl.reachedPipelineStart ? '{No Previous Trips}' : '{Load Previous Week}'}}</button>
-                <infinite-scroll-trip-item ng-if="entry.origin_key.includes('trip')" trip="entry" config="ui_config"></infinite-scroll-trip-item>
-                <infinite-scroll-place-item ng-if="entry.origin_key.includes('place')" place="entry" config="ui_config"></infinite-scroll-place-item>
-                <infinite-scroll-untracked-time-item ng-if="entry.origin_key.includes('untracked')" triplike="entry"></infinite-scroll-untracked-time-item>
+                <trip-card ng-if="entry.origin_key.includes('trip')" trip="entry"></trip-card>
+                <place-card ng-if="entry.origin_key.includes('place')" place="entry"></place-card>
+                <untracked-time-card ng-if="entry.origin_key.includes('untracked')" triplike="entry"></untracked-time-card>
                 <button ng-if="entry=='footer'" ng-click="loadMoreTrips('future')" class="load-more-btn">{{infScrollControl.reachedPipelineEnd ? '{No New Trips}' : '{Load Next Week}'}}</button>
             </div>
         </ion-list>
