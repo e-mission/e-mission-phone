@@ -6,13 +6,13 @@ import { angularize } from "../angular-react-helper";
 import { bool, string } from "prop-types";
 import { Badge, Text, useTheme } from "react-native-paper";
 
-const TimestampBadge = ({ lightBg, time, date=null }) => {
+const TimestampBadge = ({ lightBg, time, date=null, ...otherProps }) => {
   const { colors } = useTheme();
   const bgColor = lightBg ? colors.primaryContainer : colors.primary;
   const textColor = lightBg ? 'black' : 'white';
 
   return (
-    <Badge style={{backgroundColor: bgColor, ...styles.badge}}>
+    <Badge style={{backgroundColor: bgColor, ...styles.badge}} {...otherProps}>
       <Text style={{color: textColor, ...styles.time}}>
         {time}
       </Text>
@@ -29,6 +29,7 @@ const styles = {
     paddingHorizontal: 6,
     paddingVertical: 0,
     fontSize: 12.5,
+    alignSelf: 'center',
   },
   time: {
     fontWeight: 500, // medium / semibold
