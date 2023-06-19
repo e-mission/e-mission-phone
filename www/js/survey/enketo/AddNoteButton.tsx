@@ -23,10 +23,6 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
   const $rootScope = getAngularService("$rootScope");
 
   useEffect(() => {
-    // init
-  }, []);
-
-  const updateLabel = () => {
     let newLabel: string;
     const localeCode = i18n.resolvedLanguage;
     if (notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
@@ -36,8 +32,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
       newLabel = notesConfig?.['not-filled-in-label']?.[localeCode];
       setDisplayLabel(newLabel);
     }
-    return newLabel;
-  };
+  }, [notesConfig]);
 
   // return a dictionary of fields we want to prefill, using start/enter and end/exit times
   function getPrefillTimes() {
@@ -99,7 +94,7 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
   };
 
   return (
-    <DiaryButton text={displayLabel || updateLabel()}
+    <DiaryButton text={displayLabel}
                   icon={'plus-thick'}
                   onPress={() => launchAddNoteSurvey()} />
   );
