@@ -18,7 +18,7 @@ const TimestampBadge = ({ lightBg, time, date=null, ...otherProps }) => {
       </Text>
       {/* if date is not passed as prop, it will not be shown */
       date && <Text style={{color: textColor, ...styles.date}}>
-        {` (${date})` /* date shown in parentheses with space before */}
+        {`\xa0(${date})` /* date shown in parentheses with space before */}
       </Text>}
     </Badge>
   );
@@ -27,9 +27,12 @@ const styles = {
   badge: {
     flex: 1,
     paddingHorizontal: 6,
-    paddingVertical: 0,
     fontSize: 12.5,
-    alignSelf: 'center',
+    display: 'flex',
+    margin: 'auto',
+    alignItems: 'center',
+    maxHeight: 20,
+    lineHeight: 18,
   },
   time: {
     fontWeight: 500, // medium / semibold
