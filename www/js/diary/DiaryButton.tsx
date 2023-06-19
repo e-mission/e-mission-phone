@@ -30,11 +30,12 @@ const buttonStyles = StyleSheet.create({
     height: 25,
   },
   label: {
-    marginHorizontal: 0,
+    marginHorizontal: 4,
     fontSize: 13,
     fontWeight: '500',
     flex: 1,
     placeItems: 'center',
+    whiteSpace: 'nowrap',
   }
 });
 
