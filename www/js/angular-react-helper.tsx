@@ -5,18 +5,8 @@
 import angular from 'angular';
 import { createRoot } from 'react-dom/client';
 import React from 'react';
-import { Provider as PaperProvider, MD3LightTheme as DefaultTheme } from 'react-native-paper';
-
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#0080b9', // lch(50% 50 250)
-    primaryContainer: '#90ceff', // lch(80% 40 250)
-    secondary: '#f2795c', // lch(65% 60 40)
-    secondaryContainer: '#ffb39e', // lch(80% 45 40)
-  },
-};
+import { Provider as PaperProvider, MD3LightTheme as DefaultTheme, MD3Colors } from 'react-native-paper';
+import { getTheme } from './appTheme';
 
 function toBindings(propTypes) {
   const bindings = {};
@@ -38,6 +28,7 @@ export function angularize(component, modulePath) {
     .component(nameCamelCase, makeComponentProps(component));
 }
 
+const theme = getTheme();
 export function makeComponentProps(Component) {
   const propTypes = Component.propTypes || {};
   return {
