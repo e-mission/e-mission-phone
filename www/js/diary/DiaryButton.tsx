@@ -1,12 +1,17 @@
 import React from "react";
 import { angularize } from "../angular-react-helper";
-import { Button } from 'react-native-paper';
+import { StyleSheet } from 'react-native';
+import { Button, useTheme } from 'react-native-paper';
 
 const DiaryButton = ({ text, fillColor, ...buttonProps } : Props) => {
+
+  const { colors } = useTheme();
+  const style = fillColor ? { color: colors.onPrimary }
+                          : { borderColor: colors.primary, borderWidth: 1.5 };
+
   return (
     <Button mode="elevated"
-      buttonColor={fillColor || "white"}
-      style={fillColor ? buttonStyles.fillButton : buttonStyles.outlineButton}
+      buttonColor={fillColor || "white"} style={style}
       labelStyle={fillColor ? {color: 'white', ...buttonStyles.label} : buttonStyles.label}
       contentStyle={buttonStyles.buttonContent}
       {...buttonProps}>
@@ -20,14 +25,7 @@ interface Props {
   [key: string]: any,
 }
 
-const buttonStyles : any = {
-  outlineButton: {
-    borderColor: '#0088ce',
-    borderWidth: 1.5,
-  },
-  fillButton: {
-    color: '#FFFFFF',
-  },
+const buttonStyles = StyleSheet.create({
   buttonContent: {
     height: 25,
   },
@@ -38,7 +36,7 @@ const buttonStyles : any = {
     flex: 1,
     placeItems: 'center',
   }
-};
+});
 
 angularize(DiaryButton, 'emission.main.diary.button');
 export default DiaryButton;
