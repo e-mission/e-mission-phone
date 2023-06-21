@@ -9,7 +9,7 @@ import { angularize } from "../angular-react-helper";
 import { func, object } from "prop-types";
 import moment from "moment";
 
-const DateSelect = ({ tsRange, setOldest, setLatest }) => {
+const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
 
   const [dateRange, setDateRange] = useState('-\n-');
   const [selDate, setSelDate] = useState('-');
@@ -23,18 +23,11 @@ const DateSelect = ({ tsRange, setOldest, setLatest }) => {
     setSelDate(mid);
   }, [tsRange]);
 
-  function selectRange(chosenDay) {
-    const threeDaysBefore = moment(chosenDay).subtract(3, 'days');
-    const threeDaysAfter = moment(chosenDay).add(3, 'days');
-    setOldest(threeDaysBefore.unix());
-    setLatest(threeDaysAfter.unix());
-  }
-
   return (
     <div style={s.wrapper}>
       <span style={s.text}>{dateRange}</span>
       <input type="date" value={selDate}
-              onChange={(e) => selectRange(e.target.value)}
+              onChange={(e) => loadSpecificWeekFn(e.target.value)}
               style={s.input} />
       <hr style={s.divider} />
       <span style={s.icon}></span>
@@ -94,12 +87,6 @@ const s: any = {
     transform: 'translateY(-50%)',
   }
 };
-
-DateSelect.propTypes = {
-  tsRange: object,
-  setOldest: func,
-  setLatest: func,
-}
 
 angularize(DateSelect, 'emission.main.diary.DateSelect');
 export default DateSelect;
