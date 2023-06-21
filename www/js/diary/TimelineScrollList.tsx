@@ -11,7 +11,7 @@ import LoadMoreButton from "./LoadMoreButton";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "./LeafletView";
-import { Appbar } from "react-native-paper";
+import { ActivityIndicator, Appbar } from "react-native-paper";
 import FilterSelect from "./FilterSelect";
 import DateSelect from "./DateSelect";
 import Bottleneck from "bottleneck";
@@ -33,6 +33,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
   const [displayTrips, setDisplayTrips] = useState([]);
   const [listEntries, setListEntries] = useState([]);
   const [refreshTime, setRefreshTime] = useState(null);
+  const [isLoading, setIsLoading] = useState<string|false>('replace');
 
   const loadedRange = useMemo(() => ({
     start_ts: allTrips?.[0]?.start_ts || pipelineRange.end_ts,
@@ -116,15 +117,18 @@ const TimelineScrollList = ({ ...otherProps }) => {
     const reachedPipelineEnd = loadedRange.end_ts && loadedRange.end_ts >= pipelineRange.end_ts;
 
     if (when == 'past' && !reachedPipelineStart) {
+      if(!isLoading) setIsLoading('prepend');
       const [ctList, utList] = await fetchTripsInRange(loadedRange.start_ts - ONE_WEEK, loadedRange.start_ts - 1);
       handleFetchedTrips(ctList, utList, 'prepend');
     } else if (when == 'future' && !reachedPipelineEnd) {
+      if(!isLoading) setIsLoading('append');
       const [ctList, utList] = await fetchTripsInRange(loadedRange.end_ts + 1, loadedRange.end_ts + ONE_WEEK);
       handleFetchedTrips(ctList, utList, 'append');
     }
   }
 
   async function loadSpecificWeek(day: string) {
+    if (!isLoading) setIsLoading('replace');
     const threeDaysBefore = moment(day).subtract(3, 'days').unix();
     const threeDaysAfter = moment(day).add(3, 'days').unix();
     const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
@@ -234,7 +238,9 @@ const TimelineScrollList = ({ ...otherProps }) => {
   }, [displayTrips]);
 
   useEffect(() => {
+    if (!listEntries?.length) return;
     invalidateMaps();
+    setIsLoading(false);
   }, [listEntries]);
 
   function checkPermissionsStatus() {
@@ -330,6 +336,8 @@ const TimelineScrollList = ({ ...otherProps }) => {
                   </LoadMoreButton>;
   
   const separator = () => <View style={{ height: 8 }} />
+  const bigSpinner = <ActivityIndicator size="large" style={{margin: 15}} />
+  const smallSpinner = <ActivityIndicator size="small" style={{margin: 5}} />
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
@@ -345,7 +353,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <View style={{ flex: 1, maxHeight: windowHeight - 160 }}>
-      {listEntries && listEntries.length > 0 &&
+      {listEntries?.length > 0 && isLoading!='replace' &&
         <FlashList inverted
           ref={listRef}
           data={reversedListEntries}
@@ -356,11 +364,12 @@ const TimelineScrollList = ({ ...otherProps }) => {
                 load more trips when the user is approaching the bottom or top of the list.
                 This might be a nicer experience than the current header and footer buttons. */
           // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
-          ListHeaderComponent={!reachedPipelineEnd && header}
-          ListFooterComponent={footer}
+          ListHeaderComponent={isLoading=='append' ? smallSpinner : (!reachedPipelineEnd && header)}
+          ListFooterComponent={isLoading=='prepend' ? smallSpinner : footer}
           ItemSeparatorComponent={separator}
           {...otherProps} />
       }
+      {isLoading=='replace' && bigSpinner}
     </View>
   </>);
 }
