@@ -153,9 +153,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
     }
   }
 
-  /* direction: 'past' if we are loading older trips, 'future' if we are loading newer trips,
-      if not given, we are replacing the current list with only the new trips */
-  async function fetchTripsInRange(startTs: number, endTs: number, direction?: string) {
+  async function fetchTripsInRange(startTs: number, endTs: number) {
     if (!loadedRange.start_ts) {
       console.warn("trying to read data too early, early return");
       return;
