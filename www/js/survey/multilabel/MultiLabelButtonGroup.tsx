@@ -2,21 +2,21 @@
   In the default configuration, these are the "Mode" and "Purpose" buttons.
   Next to the buttons is a small checkmark icon, which marks inferrel labels as confirmed */
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { angularize, createScopeWithVars, getAngularService } from "../../angular-react-helper";
 import { object, number } from "prop-types";
 import { View } from "react-native";
 import { IconButton, Text, useTheme } from "react-native-paper";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
+import { TimelineScrollContext } from "../../diary/TimelineScrollList";
 
 const MultilabelButtonGroup = ({ trip }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
+  const { repopulateTimelineEntry } = useContext(TimelineScrollContext);
 
   const [ inputParams, setInputParams ] = useState({});
-  const [ rerender, setRerender ] = useState(false);
-
   let closePopover;
 
   const ConfirmHelper = getAngularService("ConfirmHelper");
@@ -82,21 +82,10 @@ const MultilabelButtonGroup = ({ trip }) => {
       "label": chosenLabel,
     };
 
-    const needsResize = ConfirmHelper.isProgram &&
-                          (chosenLabel == ConfirmHelper.mode_studied
-                          || trip.userInput?.MODE?.value == ConfirmHelper.mode_studied);
-
     const storageKey = ConfirmHelper.inputDetails[inputType].key;
     window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
       closePopover?.();
-      const rootScope = getAngularService("$rootScope");
-      if (needsResize) {
-        rootScope.$broadcast("scrollResize");
-      }
-      rootScope.$broadcast("repopulateInputsAndInferences", () => {
-        // callback: once repopulation is done, this component needs to rerender
-        setRerender(!rerender);
-      });
+      repopulateTimelineEntry(trip._id.$oid);
       console.debug("Successfully stored input data "+JSON.stringify(inputDataToStore));
     });
   }

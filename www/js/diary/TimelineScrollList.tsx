@@ -21,6 +21,7 @@ let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
+export const TimelineScrollContext = React.createContext<any>(null);
 
 const TimelineScrollList = ({ ...otherProps }) => {
   const { height: windowHeight } = useWindowDimensions();
@@ -37,7 +38,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
 
   const loadedRange = useMemo(() => ({
     start_ts: allTrips?.[0]?.start_ts || pipelineRange.end_ts,
-    end_ts: allTrips?.slice(-1)?.[0]?.start_ts || pipelineRange.end_ts,
+    end_ts: allTrips?.slice(-1)?.[0]?.end_ts || pipelineRange.end_ts,
   }), [allTrips, pipelineRange]);
 
   const $rootScope = getAngularService('$rootScope');
@@ -313,6 +314,34 @@ const TimelineScrollList = ({ ...otherProps }) => {
     tlEntry.end_display_name = "\xa0";
   }
 
+  async function repopulateTimelineEntry(oid: string) {
+    const [_, newLabels, newNotes] = await Timeline.getUnprocessedLabels(labelPopulateFactory, enbs);
+    const index = listEntries.findIndex(x=> x._id.$oid === oid);
+    if (index < 0)
+      return console.error("Item with oid: " + oid + " not found in list");
+    const newEntry = {...listEntries[index]};
+    populateBasicClasses(newEntry);
+    labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
+    enbs.populateInputsAndInferences(newEntry, newNotes);
+    setListEntries([
+      ...listEntries.slice(0, index),
+      newEntry,
+      ...listEntries.slice(index + 1)
+    ]);
+  }
+
+  function updateListEntry(oid: string, newAttributes: object) {
+    const index = listEntries.findIndex(x=> x._id.$oid === oid);
+    if (index < 0)
+      console.error("Item with oid: " + oid + " not found in list");
+    else
+      setListEntries([
+        ...listEntries.slice(0, index),
+        Object.assign({}, listEntries[index], newAttributes),
+        ...listEntries.slice(index + 1)
+      ]);
+  }
+
   const renderCard = ({ item: listEntry }) => {
     if (listEntry.origin_key.includes('trip')) {
       return <TripCard trip={listEntry} />
@@ -342,36 +371,38 @@ const TimelineScrollList = ({ ...otherProps }) => {
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
 
-  return (<>
-    <Appbar.Header statusBarHeight={12} elevated={true} style={{height: 46, backgroundColor: 'white', elevation: 3}}>
-      <FilterSelect filters={filterInputs}
-                    setFilters={setFilterInputs}
-                    numListDisplayed={displayTrips.length}
-                    numListTotal={allTrips.length} />
-      <DateSelect tsRange={{ oldestTs: loadedRange.start_ts, latestTs: loadedRange.end_ts }}
-                  loadSpecificWeekFn={loadSpecificWeek} />
-      <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
-    </Appbar.Header>
-    <View style={{ flex: 1, maxHeight: windowHeight - 160 }}>
-      {listEntries?.length > 0 && isLoading!='replace' &&
-        <FlashList inverted
-          ref={listRef}
-          data={reversedListEntries}
-          renderItem={renderCard}
-          estimatedItemSize={240}
-          keyExtractor={(item) => item._id.$oid}
-          /* TODO: We can capture onScroll events like this, so we should be able to automatically
-                load more trips when the user is approaching the bottom or top of the list.
-                This might be a nicer experience than the current header and footer buttons. */
-          // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
-          ListHeaderComponent={isLoading=='append' ? smallSpinner : (!reachedPipelineEnd && header)}
-          ListFooterComponent={isLoading=='prepend' ? smallSpinner : footer}
-          ItemSeparatorComponent={separator}
-          {...otherProps} />
-      }
-      {isLoading=='replace' && bigSpinner}
-    </View>
-  </>);
+  return (
+    <TimelineScrollContext.Provider value={{ updateListEntry, repopulateTimelineEntry }}>
+      <Appbar.Header statusBarHeight={12} elevated={true} style={{height: 46, backgroundColor: 'white', elevation: 3}}>
+        <FilterSelect filters={filterInputs}
+                      setFilters={setFilterInputs}
+                      numListDisplayed={displayTrips.length}
+                      numListTotal={allTrips.length} />
+        <DateSelect tsRange={{ oldestTs: loadedRange.start_ts, latestTs: loadedRange.end_ts }}
+                    loadSpecificWeekFn={loadSpecificWeek} />
+        <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
+      </Appbar.Header>
+      <View style={{ flex: 1, maxHeight: windowHeight - 160 }}>
+        {listEntries?.length > 0 && isLoading!='replace' &&
+          <FlashList inverted
+            ref={listRef}
+            data={reversedListEntries}
+            renderItem={renderCard}
+            estimatedItemSize={240}
+            keyExtractor={(item) => item._id.$oid}
+            /* TODO: We can capture onScroll events like this, so we should be able to automatically
+                  load more trips when the user is approaching the bottom or top of the list.
+                  This might be a nicer experience than the current header and footer buttons. */
+            // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
+            ListHeaderComponent={isLoading=='append' ? smallSpinner : (!reachedPipelineEnd && header)}
+            ListFooterComponent={isLoading=='prepend' ? smallSpinner : footer}
+            ItemSeparatorComponent={separator}
+            {...otherProps} />
+        }
+        {isLoading=='replace' && bigSpinner}
+      </View>
+    </TimelineScrollContext.Provider>
+  );
 }
 
 angularize(TimelineScrollList, 'emission.main.diary.timelinescrolllist');
