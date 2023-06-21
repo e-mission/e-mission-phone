@@ -88,5 +88,4 @@ const s: any = {
   }
 };
 
-angularize(DateSelect, 'emission.main.diary.DateSelect');
 export default DateSelect;

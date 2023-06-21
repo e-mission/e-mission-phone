@@ -47,5 +47,4 @@ TimestampBadge.propTypes = {
   date: string
 }
 
-angularize(TimestampBadge, 'emission.main.diary.timestampBadge');
 export default TimestampBadge;

@@ -72,5 +72,5 @@ UserInputButton.propTypes = {
   notesConfig: object,
 }
 
-angularize(UserInputButton, 'emission.survey.userinputbutton');
+angularize(UserInputButton, 'UserInputButton', 'emission.survey.userinputbutton');
 export default UserInputButton;

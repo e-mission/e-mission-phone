@@ -76,5 +76,4 @@ FilterSelect.propTypes = {
   numListTotal: number,
 }
 
-angularize(FilterSelect, 'emission.main.diary.filterselect');
 export default FilterSelect;

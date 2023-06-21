@@ -81,5 +81,4 @@ UntrackedTimeCard.propTypes = {
   triplike: object,
 }
 
-angularize(UntrackedTimeCard, 'emission.main.diary.untrackedtimecard');
 export default UntrackedTimeCard;

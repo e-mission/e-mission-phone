@@ -128,5 +128,5 @@ MultilabelButtonGroup.propTypes = {
   recomputeDelay: number,
 }
 
-angularize(MultilabelButtonGroup, 'emission.main.diary.multilabelbtngroup');
+angularize(MultilabelButtonGroup, 'MultilabelButtonGroup', 'emission.main.diary.multilabelbtngroup');
 export default MultilabelButtonGroup;

@@ -151,5 +151,4 @@ TripCard.propTypes = {
   trip: object,
 }
 
-angularize(TripCard, 'emission.main.diary.tripcard');
 export default TripCard;

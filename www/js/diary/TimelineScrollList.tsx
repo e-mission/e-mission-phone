@@ -404,5 +404,5 @@ const TimelineScrollList = ({ ...otherProps }) => {
   );
 }
 
-angularize(TimelineScrollList, 'emission.main.diary.timelinescrolllist');
+angularize(TimelineScrollList, 'TimelineScrollList', 'emission.main.diary.timelinescrolllist');
 export default TimelineScrollList;

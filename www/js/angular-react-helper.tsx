@@ -20,9 +20,9 @@ function toProps(propTypes, controller) {
   return props;
 }
 
-export function angularize(component, modulePath) {
+export function angularize(component, name, modulePath) {
   component.module = modulePath;
-  const nameCamelCase = component.name[0].toLowerCase() + component.name.slice(1);
+  const nameCamelCase = name[0].toLowerCase() + name.slice(1);
   angular
     .module(modulePath, [])
     .component(nameCamelCase, makeComponentProps(component));

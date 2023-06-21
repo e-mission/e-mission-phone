@@ -140,5 +140,4 @@ AddedNotesList.propTypes = {
   additionEntries: array,
 };
 
-angularize(AddedNotesList, 'emission.survey.addednoteslist');
 export default AddedNotesList;

@@ -26,5 +26,4 @@ const s = StyleSheet.create({
   }
 });
 
-angularize(LoadMoreButton, 'emission.main.diary.loadmorebutton');
 export default LoadMoreButton;

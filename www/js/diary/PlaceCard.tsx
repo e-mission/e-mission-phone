@@ -80,5 +80,4 @@ PlaceCard.propTypes = {
   place: object,
 }
 
-angularize(PlaceCard, 'emission.main.diary.placecard');
 export default PlaceCard;

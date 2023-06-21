@@ -61,5 +61,5 @@ LeafletView.propTypes = {
   opts: object
 }
 
-angularize(LeafletView, 'emission.main.leaflet');
+angularize(LeafletView, 'LeafletView', 'emission.main.leaflet');
 export default LeafletView;

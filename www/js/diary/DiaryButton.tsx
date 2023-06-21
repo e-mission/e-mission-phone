@@ -39,5 +39,4 @@ const buttonStyles = StyleSheet.create({
   }
 });
 
-angularize(DiaryButton, 'emission.main.diary.button');
 export default DiaryButton;

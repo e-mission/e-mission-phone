@@ -106,5 +106,4 @@ AddNoteButton.propTypes = {
   storeKey: string,
 }
 
-angularize(AddNoteButton, 'emission.survey.addnotebutton');
 export default AddNoteButton;
