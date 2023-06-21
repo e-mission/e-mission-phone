@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import { FlashList } from "@shopify/flash-list";
 import TripCard from "./TripCard";
@@ -15,6 +15,7 @@ import { Appbar } from "react-native-paper";
 import FilterSelect from "./FilterSelect";
 import DateSelect from "./DateSelect";
 import Bottleneck from "bottleneck";
+import moment from "moment";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -22,19 +23,20 @@ const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
 
 const TimelineScrollList = ({ ...otherProps }) => {
-  const { width: windowWidth, height: windowHeight } = useWindowDimensions();
+  const { height: windowHeight } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
   const { t } = useTranslation();
 
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState({ start_ts: 0, end_ts: 0 });
-  const [oldestSelectedTs, setOldestSelectedTs] = useState(0);
-  const [latestSelectedTs, setLatestSelectedTs] = useState(0);
-  const [oldestLoadedTs, setOldestLoadedTs] = useState(0);
-  const [latestLoadedTs, setLatestLoadedTs] = useState(0);
   const [allTrips, setAllTrips] = useState([]);
   const [displayTrips, setDisplayTrips] = useState([]);
   const [listEntries, setListEntries] = useState([]);
+
+  const loadedRange = useMemo(() => ({
+    start_ts: allTrips?.[0]?.start_ts || pipelineRange.end_ts,
+    end_ts: allTrips?.slice(-1)?.[0]?.start_ts || pipelineRange.end_ts,
+  }), [allTrips, pipelineRange]);
 
   const $rootScope = getAngularService('$rootScope');
   const $state = getAngularService('$state');
@@ -72,26 +74,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
   }, [appConfig, loading]);
 
   useEffect(() => {
-    if (loading) return;
-    if (oldestSelectedTs && oldestSelectedTs < oldestLoadedTs) {
-      readDataFromServer(oldestSelectedTs, oldestLoadedTs, 'past');
-    } else if (latestSelectedTs && latestSelectedTs > latestLoadedTs) {
-      readDataFromServer(latestLoadedTs, latestSelectedTs, 'future');
-    } else {
-      // nothing new to load
-    }
-  }, [oldestSelectedTs, latestSelectedTs]);
-
-  useEffect(() => {
     Timeline.setInfScrollCompositeTripList(allTrips);
-    const oldestTrip = allTrips[0];
-    const [latestTrip] = allTrips.slice(-1);
-    updateLoadedRange(oldestTrip, latestTrip);
-    if (oldestTrip && oldestTrip.start_ts > pipelineRange.start_ts) {
-      setOldestLoadedTs(oldestTrip.start_ts - 1);
-    } else if (latestTrip && latestTrip.end_ts < pipelineRange.end_ts) {
-      setLatestLoadedTs(latestTrip.end_ts + 1);
-    }
     const activeFilter = filterInputs?.find((f) => f.state == true);
     if (activeFilter) {
       setDisplayTrips(allTrips.filter(
@@ -111,40 +94,62 @@ const TimelineScrollList = ({ ...otherProps }) => {
         notesResultMap = enbsResultMap;
         console.log("After reading in the label controller, manualResultMap " + JSON.stringify(manualResultMap), manualResultMap);
         setPipelineRange(pipelineRange);
-        setOldestLoadedTs(pipelineRange.end_ts);
-        setOldestSelectedTs(pipelineRange.end_ts - ONE_WEEK);
-        setLatestLoadedTs(pipelineRange.end_ts);
-        setLatestSelectedTs(pipelineRange.end_ts);
       }
     });
   }
 
+  // once pipelineRange is set, load the most recent week of data
+  useEffect(() => {
+    if (pipelineRange.end_ts) {
+      loadAnotherWeek('past');
+    }
+  }, [pipelineRange]);
+
   function refresh() {
-    Timeline.getUnprocessedLabels(labelPopulateFactory, enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
-      setOldestSelectedTs(pipelineRange.end_ts - ONE_WEEK);
-      setLatestSelectedTs(pipelineRange.end_ts);
-      readDataFromServer(pipelineRange.end_ts - ONE_WEEK, pipelineRange.end_ts);
-    });
+    loadTimelineEntries();
   }
 
-  function loadMoreTrips(when) {
-    const reachedPipelineStart = oldestLoadedTs <= pipelineRange.start_ts;
-    const reachedPipelineEnd = latestLoadedTs >= pipelineRange.end_ts;
-    if (!oldestLoadedTs) {
-      console.warn("trying to read data too early, early return");
-      return;
-    }
+  async function loadAnotherWeek(when: 'past'|'future') {
+    const reachedPipelineStart = loadedRange.start_ts && loadedRange.start_ts <= pipelineRange.start_ts;
+    const reachedPipelineEnd = loadedRange.end_ts && loadedRange.end_ts >= pipelineRange.end_ts;
+
     if (when == 'past' && !reachedPipelineStart) {
-      setOldestSelectedTs(oldestLoadedTs - ONE_WEEK);
+      const [ctList, utList] = await fetchTripsInRange(loadedRange.start_ts - ONE_WEEK, loadedRange.start_ts - 1);
+      handleFetchedTrips(ctList, utList, 'prepend');
     } else if (when == 'future' && !reachedPipelineEnd) {
-      setLatestSelectedTs(latestLoadedTs + ONE_WEEK);
+      const [ctList, utList] = await fetchTripsInRange(loadedRange.end_ts + 1, loadedRange.end_ts + ONE_WEEK);
+      handleFetchedTrips(ctList, utList, 'append');
+    }
+  }
+
+  async function loadSpecificWeek(day: string) {
+    const threeDaysBefore = moment(day).subtract(3, 'days').unix();
+    const threeDaysAfter = moment(day).add(3, 'days').unix();
+    const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
+    handleFetchedTrips(ctList, utList, 'replace');
+  }
+
+  function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
+    const tripsRead = ctList.concat(utList);
+    populateCompositeTrips(tripsRead);
+    // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
+    tripsRead.slice().reverse().forEach(function (trip, index) {
+      trip.geojson = Timeline.compositeTrip2Geojson(trip);
+      fillPlacesForTripAsync(trip);
+    });
+    if (mode == 'append') {
+      setAllTrips(allTrips.concat(tripsRead));
+    } else if (mode == 'prepend') {
+      setAllTrips(tripsRead.concat(allTrips));
+    } else if (mode == 'replace') {
+      setAllTrips(tripsRead);
     }
   }
 
   /* direction: 'past' if we are loading older trips, 'future' if we are loading newer trips,
       if not given, we are replacing the current list with only the new trips */
-  function readDataFromServer(startTs: number, endTs: number, direction?: string) {
-    if (!oldestLoadedTs) {
+  async function fetchTripsInRange(startTs: number, endTs: number, direction?: string) {
+    if (!loadedRange.start_ts) {
       console.warn("trying to read data too early, early return");
       return;
     }
@@ -157,24 +162,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
-    return Promise.all([readCompositePromise, readUnprocessedPromise]).then(([ctList, utList]) => {
-      const tripsRead = ctList.concat(utList);
-      populateCompositeTrips(tripsRead);
-      // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
-      tripsRead.slice().reverse().forEach(function (trip, index) {
-        trip.geojson = Timeline.compositeTrip2Geojson(trip);
-        fillPlacesForTripAsync(trip);
-      });
-      if (direction == 'future') {
-        setAllTrips(allTrips.concat(tripsRead));
-      } else if (direction == 'past') {
-        setAllTrips(tripsRead.concat(allTrips));
-      } else {
-        setAllTrips(tripsRead);
-      }
-    }).catch((err) => {
-      console.error("while reading confirmed trips", err);
-    });
+    return await Promise.all([readCompositePromise, readUnprocessedPromise]);
   };
 
   function fillPlacesForTripAsync(trip) {
@@ -199,19 +187,6 @@ const TimelineScrollList = ({ ...otherProps }) => {
                                       data changes in Angular.
                                     Will not be needed later. */
     });
-  }
-
-  function updateLoadedRange(oldestTrip, latestTrip) {
-    if (oldestTrip && oldestTrip.start_ts <= pipelineRange.start_ts) {
-      setOldestLoadedTs(oldestTrip.start_ts);
-    }
-    if (latestTrip && latestTrip.end_ts >= pipelineRange.end_ts) {
-      setLatestLoadedTs(latestTrip.end_ts);
-    }
-  }
-
-  function updateTimeRange(oldestTrip, latestTrip) {
-
   }
 
   useEffect(() => {
@@ -340,12 +315,18 @@ const TimelineScrollList = ({ ...otherProps }) => {
     }
   };
 
-  const header =  <LoadMoreButton onPressFn={() => loadMoreTrips('future')}>
-                      Show More Travel
+  const reachedPipelineStart = (loadedRange.start_ts <= pipelineRange.start_ts);
+  const footer =  <LoadMoreButton onPressFn={() => loadAnotherWeek('past')}
+                                  disabled={reachedPipelineStart}>
+                      { reachedPipelineStart ? "No more travel" : "Show Older Travel"}
                   </LoadMoreButton>;
-  const footer =  <LoadMoreButton onPressFn={() => loadMoreTrips('past')}>
-                      Show Older Travel
+
+  const reachedPipelineEnd = (loadedRange.end_ts >= pipelineRange.end_ts);
+  const header =  <LoadMoreButton onPressFn={() => loadAnotherWeek('future')}
+                                  disabled={reachedPipelineEnd}>
+                      { reachedPipelineEnd ? "No more travel" : "Show More Travel"}
                   </LoadMoreButton>;
+  
   const separator = () => <View style={{ height: 8 }} />
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
@@ -357,10 +338,9 @@ const TimelineScrollList = ({ ...otherProps }) => {
                     setFilters={setFilterInputs}
                     numListDisplayed={displayTrips.length}
                     numListTotal={allTrips.length} />
-      <DateSelect tsRange={{ oldestTs: oldestLoadedTs, latestTs: latestLoadedTs }}
-                  setOldest={setOldestSelectedTs}
-                  setLatest={setLatestSelectedTs} />
-      <Appbar.Action icon="refresh" onPress={() => refresh()} />
+      <DateSelect tsRange={{ oldestTs: loadedRange.start_ts, latestTs: loadedRange.end_ts }}
+                  loadSpecificWeekFn={loadSpecificWeek} />
+      <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <View style={{ flex: 1, maxHeight: windowHeight - 160 }}>
       {listEntries && listEntries.length > 0 &&
@@ -376,7 +356,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
                 load more trips when the user is approaching the bottom or top of the list.
                 This might be a nicer experience than the current header and footer buttons. */
           // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
-          ListHeaderComponent={header}
+          ListHeaderComponent={!reachedPipelineEnd && header}
           ListFooterComponent={footer}
           ItemSeparatorComponent={separator}
           {...otherProps} />
