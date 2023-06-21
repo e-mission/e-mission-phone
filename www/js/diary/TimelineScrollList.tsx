@@ -86,9 +86,21 @@ const TimelineScrollList = ({ ...otherProps }) => {
     Timeline.setInfScrollCompositeTripList(allTrips);
     const oldestTrip = allTrips[0];
     const [latestTrip] = allTrips.slice(-1);
-    updateTimeRange(oldestTrip, latestTrip);
-    recomputeListEntries();
-  }, [allTrips]);
+    updateLoadedRange(oldestTrip, latestTrip);
+    if (oldestTrip && oldestTrip.start_ts > pipelineRange.start_ts) {
+      setOldestLoadedTs(oldestTrip.start_ts - 1);
+    } else if (latestTrip && latestTrip.end_ts < pipelineRange.end_ts) {
+      setLatestLoadedTs(latestTrip.end_ts + 1);
+    }
+    const activeFilter = filterInputs?.find((f) => f.state == true);
+    if (activeFilter) {
+      setDisplayTrips(allTrips.filter(
+        t => (t.waitingForMod == true) || activeFilter?.filter(t)
+      ));
+    } else {
+      setDisplayTrips(allTrips);
+    }
+  }, [allTrips, filterInputs]);
 
   const listRef = useRef(null);
 
@@ -111,7 +123,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
     Timeline.getUnprocessedLabels(labelPopulateFactory, enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
       setOldestSelectedTs(pipelineRange.end_ts - ONE_WEEK);
       setLatestSelectedTs(pipelineRange.end_ts);
-      readDataFromServer(pipelineRange.end_ts - ONE_WEEK, pipelineRange.end_ts, 'past');
+      readDataFromServer(pipelineRange.end_ts - ONE_WEEK, pipelineRange.end_ts);
     });
   }
 
@@ -129,19 +141,23 @@ const TimelineScrollList = ({ ...otherProps }) => {
     }
   }
 
-  function readDataFromServer(startTs, endTs, direction) {
+  /* direction: 'past' if we are loading older trips, 'future' if we are loading newer trips,
+      if not given, we are replacing the current list with only the new trips */
+  function readDataFromServer(startTs: number, endTs: number, direction?: string) {
     if (!oldestLoadedTs) {
       console.warn("trying to read data too early, early return");
       return;
     }
 
-    const readCtPromise = Timeline.readAllCompositeTrips(startTs, endTs);
-    let readUtPromise = Promise.resolve([]);
+    const readCompositePromise = Timeline.readAllCompositeTrips(startTs, endTs);
+    let readUnprocessedPromise;
     if (endTs >= pipelineRange.end_ts) {
       const nowTs = new Date().getTime() / 1000;
-      readUtPromise = Timeline.readUnprocessedTrips(pipelineRange.end_ts, nowTs, allTrips);
+      readUnprocessedPromise = Timeline.readUnprocessedTrips(pipelineRange.end_ts, nowTs, allTrips);
+    } else {
+      readUnprocessedPromise = Promise.resolve([]);
     }
-    return Promise.all([readCtPromise, readUtPromise]).then(([ctList, utList]) => {
+    return Promise.all([readCompositePromise, readUnprocessedPromise]).then(([ctList, utList]) => {
       const tripsRead = ctList.concat(utList);
       populateCompositeTrips(tripsRead);
       // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
@@ -151,8 +167,10 @@ const TimelineScrollList = ({ ...otherProps }) => {
       });
       if (direction == 'future') {
         setAllTrips(allTrips.concat(tripsRead));
-      } else {
+      } else if (direction == 'past') {
         setAllTrips(tripsRead.concat(allTrips));
+      } else {
+        setAllTrips(tripsRead);
       }
     }).catch((err) => {
       console.error("while reading confirmed trips", err);
@@ -193,23 +211,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
   }
 
   function updateTimeRange(oldestTrip, latestTrip) {
-    updateLoadedRange(oldestTrip, latestTrip);
-    if (oldestTrip && oldestTrip.start_ts > pipelineRange.start_ts) {
-      setOldestLoadedTs(oldestTrip.start_ts - 1);
-    } else if (latestTrip && latestTrip.end_ts < pipelineRange.end_ts) {
-      setLatestLoadedTs(latestTrip.end_ts + 1);
-    }
-  }
 
-  function recomputeListEntries() {
-    const activeFilter = filterInputs?.find((f) => f.state == true);
-    if (activeFilter) {
-      setDisplayTrips(allTrips.filter(
-        t => (t.waitingForMod == true) || activeFilter?.filter(t))
-      );
-    } else {
-      setDisplayTrips(allTrips);
-    }
   }
 
   useEffect(() => {
@@ -252,7 +254,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
       }
     });
     setListEntries(newListEntries);
-  }, [displayTrips, filterInputs]);
+  }, [displayTrips]);
 
   useEffect(() => {
     invalidateMaps();
