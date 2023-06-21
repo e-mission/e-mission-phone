@@ -352,7 +352,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
 
   return (<>
-    <Appbar.Header statusBarHeight={12} elevated={true} style={{height: 46, backgroundColor: 'white'}}>
+    <Appbar.Header statusBarHeight={12} elevated={true} style={{height: 46, backgroundColor: 'white', elevation: 3}}>
       <FilterSelect filters={filterInputs}
                     setFilters={setFilterInputs}
                     numListDisplayed={displayTrips.length}
