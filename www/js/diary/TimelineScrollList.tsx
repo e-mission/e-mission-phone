@@ -32,6 +32,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
   const [allTrips, setAllTrips] = useState([]);
   const [displayTrips, setDisplayTrips] = useState([]);
   const [listEntries, setListEntries] = useState([]);
+  const [refreshTime, setRefreshTime] = useState(null);
 
   const loadedRange = useMemo(() => ({
     start_ts: allTrips?.[0]?.start_ts || pipelineRange.end_ts,
@@ -71,7 +72,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
       setFilterInputs(allFalseFilters);
     }
     loadTimelineEntries();
-  }, [appConfig, loading]);
+  }, [appConfig, loading, refreshTime]);
 
   useEffect(() => {
     Timeline.setInfScrollCompositeTripList(allTrips);
@@ -106,7 +107,8 @@ const TimelineScrollList = ({ ...otherProps }) => {
   }, [pipelineRange]);
 
   function refresh() {
-    loadTimelineEntries();
+    setAllTrips([]);
+    setRefreshTime(new Date());
   }
 
   async function loadAnotherWeek(when: 'past'|'future') {
