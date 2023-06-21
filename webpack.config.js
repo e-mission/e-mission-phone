@@ -1,11 +1,8 @@
 const path = require('path')
-const glob = require('glob')
 const webpack = require('webpack')
 
 module.exports = {
-  mode: 'development',
   entry: './www/index.js',
-  devtool: 'inline-source-map',
   output: {
     path: path.resolve(__dirname, 'www/dist'),
     filename: 'bundle.js',
@@ -71,11 +68,6 @@ module.exports = {
       __DEV__: process.env.NODE_ENV !== 'production' || true,
     }),
   ],
-  devServer: {
-    historyApiFallback: true,
-    contentBase: './',
-    hot: true,
-  },
   // "react-native" must be aliased to "react-native-web"
   // https://necolas.github.io/react-native-web/docs/setup/#package-aliasing
   resolve: {
