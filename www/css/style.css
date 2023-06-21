@@ -478,8 +478,8 @@ ion-header-bar {
   background-color: #f5f5f5 !important;
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 12%);
 }
-.ion-view-background{
-  background-color: #ededed !important;
+ion-nav-view {
+  z-index: 10;
 }
 .tabs-custom > .tabs,
 .tabs.tabs-custom {
@@ -508,6 +508,9 @@ ion-header-bar {
     border-color: #fff; }
 .title.title-center.header-item {
   color: #303030;
+}
+.title.title-center.header-item:empty {
+  display: none;
 }
 .date-picker-button {
   color: var(--accent) !important; padding: 0 15px; border-color: transparent; margin-top: 4px; 
@@ -589,6 +592,7 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Profile tab */
 .control-list-item {
+  background: #fff;
   display: flex;
   min-height: 50px;
   margin-top: 0.5px;

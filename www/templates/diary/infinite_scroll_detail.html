@@ -1,5 +1,7 @@
-<ion-view>
-    <ion-nav-title>{{ trip.display_date }}</ion-nav-title>
+<ion-view view-title="{{trip.display_date }}">
+    <ion-nav-bar class="bar-stable">
+        <ion-nav-back-button></ion-nav-back-button>
+    </ion-nav-bar>
     <ion-content class="has-header diary-details" ng-class="{draft: trip.key.includes('UNPROCESSED')}" overflow-scroll="true" padding="true">
         <div class="row" style="">
             <div class="col-30">
