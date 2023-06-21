@@ -109,6 +109,7 @@ const TimelineScrollList = ({ ...otherProps }) => {
   }, [pipelineRange]);
 
   function refresh() {
+    setIsLoading('replace');
     setAllTrips([]);
     setRefreshTime(new Date());
   }
