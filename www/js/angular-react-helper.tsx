@@ -33,7 +33,7 @@ export function makeComponentProps(Component) {
   const propTypes = Component.propTypes || {};
   return {
     bindings: toBindings(propTypes),
-    controller: function($element) {
+    controller: ['$element', function($element) {
       /* TODO: once the inf scroll list is converted to React and no longer uses
         collection-repeat, we can just set the root here one time
         and will not have to reassign it in $onChanges. */
@@ -55,7 +55,7 @@ export function makeComponentProps(Component) {
         );
       };
       this.$onDestroy = () => root.unmount();
-    }
+    }]
   };
 }
 
