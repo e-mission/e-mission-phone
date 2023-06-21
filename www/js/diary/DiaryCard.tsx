@@ -39,6 +39,7 @@ export const cardStyles = StyleSheet.create({
   card: {
     position: 'relative',
     alignSelf: 'center',
+    marginVertical: 10,
   },
   cardContent: {
     flex: 1,
