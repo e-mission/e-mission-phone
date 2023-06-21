@@ -481,6 +481,9 @@ ion-header-bar {
 ion-nav-view {
   z-index: 10;
 }
+.pane {
+  background-color: #eee !important;
+}
 .tabs-custom > .tabs,
 .tabs.tabs-custom {
   border-color: #5D3A23;
