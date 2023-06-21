@@ -94,7 +94,7 @@ const MultilabelButtonGroup = ({ trip }) => {
   return (
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
       <View style={{width: 'calc(100% - 20px)'}}>
-        {inputKeys.map((key) => {
+        {inputKeys.map((key, i) => {
           const input = trip.inputDetails[key];
           const inputIsConfirmed = trip.userInput[input.name];
           const inputIsInferred = trip.finalInference[input.name];
@@ -107,7 +107,7 @@ const MultilabelButtonGroup = ({ trip }) => {
           const btnText = inputIsConfirmed?.text || inputIsInferred?.text || input.choosetext;
 
           return (
-            <View key={trip._id['$oid'] + '_' + input.name}>
+            <View key={i}>
               <Text>{t(input.labeltext)}</Text>
               <DiaryButton text={t(btnText)}
                 onPress={(e) => openPopover(e, input.name)}
