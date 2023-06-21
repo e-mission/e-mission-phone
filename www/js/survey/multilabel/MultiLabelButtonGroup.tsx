@@ -10,7 +10,7 @@ import { IconButton, Text, useTheme } from "react-native-paper";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 
-const MultilabelButtonGroup = ({ trip, unifiedConfirmsResults, recomputeDelay }) => {
+const MultilabelButtonGroup = ({ trip }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
 
