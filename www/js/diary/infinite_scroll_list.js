@@ -12,6 +12,9 @@ import angular from 'angular';
 import TimelineScrollList from './TimelineScrollList';
 
 angular.module('emission.main.diary.infscrolllist',[
+                                      'emission.plugin.logger',
+                                      'emission.survey',
+                                      'emission.main.diary.services',
                                       TimelineScrollList.module,
                                     ])
 
