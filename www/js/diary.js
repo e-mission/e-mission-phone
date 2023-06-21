@@ -10,7 +10,7 @@ angular.module('emission.main.diary',['emission.main.diary.infscrolllist',
       url: "/inf_scroll",
       views: {
         'main-inf-scroll': {
-          templateUrl: "templates/diary/infinite_scroll_list.html",
+          template: "<timeline-scroll-list></timeline-scroll-list>",
           controller: 'InfiniteDiaryListCtrl'
         },
       }

@@ -64,7 +64,12 @@ module.exports = {
       jQuery: 'jquery',
       moment: 'moment',
       L: 'leaflet',
-    })
+    }),
+    new webpack.DefinePlugin({
+      // __DEV__ is needed by FlashList; it's set false for production so that certain debugging
+      // checks can be skipped and performance can be improved
+      __DEV__: process.env.NODE_ENV !== 'production' || true,
+    }),
   ],
   devServer: {
     historyApiFallback: true,
