@@ -349,8 +349,6 @@ const TimelineScrollList = ({ ...otherProps }) => {
           data={reversedListEntries}
           renderItem={renderCard}
           estimatedItemSize={240}
-          estimatedFirstItemOffset={80}
-          estimatedListSize={{ width: windowWidth, height: 200 * listEntries.length }}
           keyExtractor={(item) => item._id.$oid}
           /* TODO: We can capture onScroll events like this, so we should be able to automatically
                 load more trips when the user is approaching the bottom or top of the list.
