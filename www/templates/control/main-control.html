@@ -1,21 +1,29 @@
 <ion-view view-title="{{'control.profile' | i18next}}" ng-class="ion-view-background">
   <ion-content>
+    
+    <!-- opcode and logout - this row has two clicks! (and an argument for one of them) -->
     <div class="control-list-item">
       <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div>
+
+    <!-- custom piece already? -->
     <enketo-demographics-button></enketo-demographics-button>
-    <!-- profile screen now shows text! -->
-    <!-- <setting-row text-key="'control.view-privacy'" icon-name="'eye'" action = "viewPrivacyPolicy" event="$event"></setting-row> -->
-    <!-- how to handle functions that need arguments!! don't know yet! -->
+
+    <!-- view privacy policy - popup w/event argument -->
     <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.view-privacy'}}</div>
       <div ng-click="viewPrivacyPolicy($event)" class="control-icon-button"><i class="ion-eye"></i></div>
     </div>
+    <!-- <setting-row text-key="'control.view-privacy'" icon-name="'eye'" action = "viewPrivacyPolicy" event="$event"></setting-row> -->
+
+    <!-- QR code - popup w/event argument -->
     <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.view-qrc'}}</div>
       <div ng-click="viewQRCode($event)" class="control-icon-button"><i class="ion-ios-grid-view"></i></div>
     </div>
+
+    <!-- reminder time -- things with the clock? -->
     <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
       <div class="control-list-text">
         {{'control.reminders-time-of-day' | i18next: {time: settings.notification.prefReminderTime} }}
@@ -27,6 +35,8 @@
           style="position: absolute; height: 100%; inset: 0; display: flex; opacity: 0;">
       </div>
     </div>
+
+    <!-- tracking - a toggle! -->
     <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
@@ -36,11 +46,13 @@
         </div>
       </label>
     </div>
+
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.app-status'}}</div>
       <div ng-click="fixAppStatus()" class="control-icon-button"><i class="ion-checkmark"></i></div>
     </div> -->
     <setting-row text-key="'control.app-status'" icon-name="'check'" action="fixAppStatus"></setting-row>
+    
     <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
@@ -50,6 +62,7 @@
         </div>
       </label>
     </div>
+
     <!-- below..not using i18n? -->
     <div class="control-list-item">
       <div class="control-list-text">{{carbonDatasetString}}</div> 
@@ -61,6 +74,7 @@
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
     </div> -->
     <setting-row text-key="'control.force-sync'" icon-name="'cycle'" action="forceSync"></setting-row>
+    
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.share'}}</div>
       <div ng-click="share()" class="control-icon-button" ><i class="ion-share"></i></div>
@@ -88,6 +102,7 @@
     </div> -->
     <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog"></setting-row>
 
+    <!-- not sure where this is? -->
     <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text" ng-i18next>{{'control.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
@@ -107,35 +122,40 @@
       </ion-list>
     </div>
 
-
-    <div class="control-list-item">
+    <!-- this dropdown is less smooth than the angular one -- need to work on the visuals :) -->
+    <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.dev-zone'}}</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
-    </div>
+    </div> -->
     <setting-row text-key="'control.dev-zone'" icon-name="'carrot'" action="expandDeveloperZone"></setting-row>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
+      
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.refresh'}}</div>
         <div ng-click="refreshScreen()" class="control-icon-button"><i class="ion-refresh"></i></div>
       </div> -->
       <setting-row text-key="'control.refresh'" icon-name="'refresh'" action="refreshScreen"></setting-row>
+     
       <!-- <div class="control-list-item">
           <div class="control-list-text" ng-i18next>{{'control.end-trip-sync'}}</div>
           <div ng-click="endForceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
       </div> -->
       <setting-row text-key="'control.end-trip-sync'" icon-name="'sync'" action="endForceSync"></setting-row>
+      
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.check-consent'}}</div>
         <div ng-click="checkConsent()" class="control-icon-button"><i class="ion-checkmark-circled"></i></div>
       </div> -->
       <setting-row text-key="'control.check-consent'" icon-name="'check'" action="checkConsent"></setting-row>
+      
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.dummy-notification'}}</div>
         <div ng-click="dummyNotification()" class="control-icon-button"><i class="ion-ios-bell"></i></div>
       </div> -->
       <setting-row text-key="'control.dummy-notification'" icon-name="'bell'" action="dummyNotification"></setting-row>
+      
       <!-- notif schedule preview (react component) -->
       <div class = "control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.upcoming-notifications'}}</div>
@@ -147,27 +167,32 @@
         <div ng-click="invalidateCache()" class="control-icon-button"><i class="ion-backspace"></i></div>
       </div> -->
       <setting-row text-key="'control.invalidate-cached-docs'" icon-name="'delete'" action="invalidateCache"></setting-row>
+      
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.nuke-all'}}</div>
         <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
       </div> -->
       <setting-row text-key="'control.nuke-all'" icon-name="'garbage'" action="nukeUserCache"></setting-row>
+      
       <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
         <div ng-click="forceState()" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <!-- here the action is good, but text key needs work! -->
       <setting-row text-key="'parseState(settings.collect.state)'" icon-name="'pencil'" action="forceState"></setting-row>
+      
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.check-log'}}</div>
         <div ng-click="showLog()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div> -->
       <setting-row text-key="'control.check-log'" icon-name="'arrow'" action="showLog"></setting-row>
+     
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.check-sensed-data'}}</div>
         <div ng-click="showSensed()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div> -->
       <setting-row text-key="'control.check-sensed-data'" icon-name="'arrow'" action="showSensed"></setting-row>
+      
       <!-- replaced collection and sync with React DataTable-->
       <!-- collection li and data table -->
       <div class="control-list-item">
@@ -182,10 +207,12 @@
         <div ng-click="editSyncConfig($event)" class="gray-icon control-icon-button"><i class="ion-edit"></i></div>
       </div>
       <control-data-table control-data="settings.sync.show_config"></control-data-table>
-      
+    
+    <!-- app version - dual text no actions! -->
     <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.app-version'}}</div>
       <div class="control-version-number">{{settings.clientAppVer}}</div>
     </div>
+  
   </ion-content>
 </ion-view>
