@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet, View } from "react-native";
 import { Button, useTheme } from "react-native-paper";
-import { angularize } from "../angular-react-helper";
+import { angularize } from "../../angular-react-helper";
 
 const LoadMoreButton = ({ children, onPressFn, ...otherProps }) => {
   const { colors } = useTheme();

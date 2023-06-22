@@ -5,7 +5,7 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize } from "../angular-react-helper";
+import { angularize } from "../../angular-react-helper";
 import { func, object } from "prop-types";
 import moment from "moment";
 

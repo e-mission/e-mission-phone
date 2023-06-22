@@ -9,7 +9,7 @@
  */
 
 import angular from 'angular';
-import TimelineScrollList from './TimelineScrollList';
+import TimelineScrollList from './list/TimelineScrollList';
 
 angular.module('emission.main.diary.infscrolllist',[
                                       'emission.plugin.logger',

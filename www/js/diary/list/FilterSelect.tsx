@@ -5,7 +5,7 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize } from "../angular-react-helper";
+import { angularize } from "../../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import { array, number } from "prop-types";
 
