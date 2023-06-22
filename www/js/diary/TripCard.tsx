@@ -9,7 +9,7 @@ import { angularize, getAngularService } from "../angular-react-helper";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Card, Divider, IconButton, PaperProvider, Text, useTheme } from 'react-native-paper';
 import { object } from "prop-types";
-import LeafletView from "./LeafletView";
+import LeafletView from "../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import TimestampBadge from "./TimestampBadge";
 import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";

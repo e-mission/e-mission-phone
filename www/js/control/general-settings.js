@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import QrCode from './QrCode';
+import QrCode from '../components/QrCode';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',

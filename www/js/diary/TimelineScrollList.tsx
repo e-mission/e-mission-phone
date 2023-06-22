@@ -10,7 +10,7 @@ import { angularize, getAngularService } from "../angular-react-helper";
 import LoadMoreButton from "./LoadMoreButton";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
-import { invalidateMaps } from "./LeafletView";
+import { invalidateMaps } from "../components/LeafletView";
 import { ActivityIndicator, Appbar } from "react-native-paper";
 import FilterSelect from "./FilterSelect";
 import DateSelect from "./DateSelect";

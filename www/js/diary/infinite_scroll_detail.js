@@ -1,7 +1,7 @@
 'use strict';
 import angular from 'angular';
 import 'nvd3';
-import LeafletView from './LeafletView';
+import LeafletView from '../components/LeafletView';
 
 angular.module('emission.main.diary.infscrolldetail', [
                                       'emission.plugin.kvstore',
