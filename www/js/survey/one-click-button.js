@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.survey.verifycheck', [])
 .directive('verifycheck', function($timeout) {
   return {

@@ -1,24 +1,30 @@
-<ion-view class="ion-view-background" translate-namespace="diary">
+<ion-view class="ion-view-background">
     <ion-nav-bar class="bar-stable">
     </ion-nav-bar>
     <ion-nav-buttons side="left" id="toget" class="row buttons">
-        <button class="button button-icon" ng-click="increaseHeight()">
-            <i class="icon ion-arrow-resize"></i>
-        </button>
-        <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
-            <option ng-repeat="filter in filterInputs" value="{{filter.key}}" translate>
-                {{filter.text}}
-            </option>
-            <option value="show-all" translate>
-                {{'.show-all'}}
-            </option>
-        </select>
-        <!-- if there are no filter inputs, just show "All Trips" and disable the select -->
-        <select ng-if="!filterInputs" style="appearance: none; -webkit-appearance: none; padding-inline: 6px; pointer-events: none">
-            <option value="show-all" translate>
-                {{'.show-all'}}
-            </option>
-        </select>
+        <div class="filter-select-wrapper">
+            <select ng-if="filterInputs" ng-model="selFilter" ng-change="updateFilterSel(selFilter)">
+                <option ng-repeat="filter in filterInputs" value="{{filter.key}}">
+                    {{filter.text}}
+                    {{filter.state && data.displayTrips ?
+                        '(' + data.displayTrips.length + '/' + data.allTrips.length + ')' : ''}}
+                </option>
+                <option value="show-all">
+                    {{'diary.show-all' | i18next}} ({{data.allTrips.length}})
+                </option>
+            </select>
+            <!-- if there are no filter inputs, just show "All Trips" and disable the select -->
+            <select ng-if="!filterInputs" style="appearance: button; -webkit-appearance: button; pointer-events: none">
+                <option value="show-all" ng-i18next>
+                    {{'diary.show-all'}}
+                </option>
+            </select>
+        </div>
+        <div class="date-input-wrapper" data-text="{{infScrollControl.selRangeText}}">
+            <input type="date" ng-model="infScrollControl.selectedDay" ng-change="loadWeekOfSelectedDay()" value="{{infScrollControl.selectedDay}}"
+                min="{{infScrollControl.pipelineRange.start_date}}" max="{{infScrollControl.pipelineRange.end_date}}">
+            <hr class="date-input-divider" />
+        </div>
     </ion-nav-buttons>
     
     <ion-nav-buttons side="right">
@@ -29,20 +35,21 @@
     </ion-nav-buttons>
 	<ion-content class="diary-entry">
 
-        <div class="control-list-item row">
-            <div class="control-list-text col">
-                <div translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.count, allTripsLength: data.allTrips.length}"></div>
-                <div ng-if="data.allTrips.length > 0" translate="diary.filter-display-range" translate-values="{currentStart: data.allTrips.slice(-1)[0].start_ts * 1000, currentEnd: infScrollControl.currentEnd * 1000}"></div>
-            </div>
-            <div ng-click="readDataFromServer()" ng-if="!infScrollControl.reachedEnd" id="gray" class="control-icon-button"><i class="ion-ios-download"></i></div>
-            <div ng-if="infScrollControl.reachedEnd" id="green" class="control-icon-button"><i class="ion-checkmark"></i></div>
+        <div style="padding: 5px; font-size: 13px;">
+            <!-- TODO: remove this if we're sure we don't need it -->
+            <!-- <div class="control-list-text">
+                <span translate="diary.filter-display-status" translate-values="{displayTripsLength: data.displayTrips.length, allTripsLength: data.allTrips.length}"></span>
+                <span ng-if="data.allTrips.length > 0" translate="diary.filter-display-range" translate-values="{currentEnd: infScrollControl.oldestLoadedTs * 1000, currentStart: infScrollControl.latestLoadedTs * 1000}"></span>
+            </div> -->
         </div>
 
 		<ion-list>
-            <div collection-repeat="entry in data.displayTimelineEntries" item-height="getCardHeight(entry)">
-                <infinite-scroll-trip-item ng-if="entry.key.includes('trip')" trip="entry" config="ui_config"></infinite-scroll-trip-item>
-                <infinite-scroll-place-item ng-if="entry.key.includes('place')" place="entry" config="ui_config"></infinite-scroll-place-item>
-                <infinite-scroll-untracked-time-item ng-if="entry.key.includes('untracked')" triplike="entry"></infinite-scroll-untracked-time-item>
+            <div collection-repeat="entry in data.listEntries" item-height="getCardHeight(entry)">
+                <button ng-if="entry=='header'" ng-click="loadMoreTrips('past')" class="load-more-btn">{{infScrollControl.reachedPipelineStart ? '{No Previous Trips}' : '{Load Previous Week}'}}</button>
+                <infinite-scroll-trip-item ng-if="entry.origin_key.includes('trip')" trip="entry" config="ui_config"></infinite-scroll-trip-item>
+                <infinite-scroll-place-item ng-if="entry.origin_key.includes('place')" place="entry" config="ui_config"></infinite-scroll-place-item>
+                <infinite-scroll-untracked-time-item ng-if="entry.origin_key.includes('untracked')" triplike="entry"></infinite-scroll-untracked-time-item>
+                <button ng-if="entry=='footer'" ng-click="loadMoreTrips('future')" class="load-more-btn">{{infScrollControl.reachedPipelineEnd ? '{No New Trips}' : '{Load Next Week}'}}</button>
             </div>
         </ion-list>
 	</ion-content>

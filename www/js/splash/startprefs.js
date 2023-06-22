@@ -1,13 +1,14 @@
+import angular from 'angular';
+
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
                                               'emission.plugin.kvstore'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, KVStore, storage, $http, Logger, ReferralHandler) {
+      $ionicPopup, KVStore, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var nTimesCalled = 0;
     var startprefs = {};
-    var DEFAULT_THEME_KEY = 'curr_theme';
      // Boolean: represents that the "intro" - the one page summary
      // and the login are done
     var INTRO_DONE_KEY = 'intro_done';
@@ -20,14 +21,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 
     startprefs.CONSENTED_EVENT = "data_collection_consented";
     startprefs.INTRO_DONE_EVENT = "intro_done";
-
-    startprefs.setDefaultTheme = function(new_theme) {
-      storage.set(DEFAULT_THEME_KEY, new_theme);
-    }
-
-    startprefs.getDefaultTheme = function() {
-      return storage.get(DEFAULT_THEME_KEY);
-    }
 
     var writeConsentToNative = function() {
       return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
@@ -193,13 +186,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
-          var temp = ReferralHandler.getReferralNavigation();
-          if (temp == 'goals') {
-            return {state: 'root.main.goals', params: {}};
-          } else if ($rootScope.displayingIncident) {
-            logger.log("Showing tripconfirm from startprefs");
-            return {state: 'root.main.diary'};
-          } else if (angular.isDefined($rootScope.redirectTo)) {
+          if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             var redirParams = $rootScope.redirectParams;
             $rootScope.redirectTo = undefined;

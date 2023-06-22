@@ -2,14 +2,17 @@
  * Directive to display a survey to add notes to a timeline entry (trip or place)
  */
 
+import angular from 'angular';
+import DiaryButton from '../../diary/DiaryButton';
+
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',
         'emission.services',
         'emission.config.dynamic',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
-        'emission.survey.enketo.preview',
-        'emission.survey.inputmatcher'])
+        'emission.survey.inputmatcher',
+        DiaryButton.module])
 .directive('enketoAddNoteButton', function() {
   return {
     scope: {
@@ -21,14 +24,14 @@ angular.module('emission.survey.enketo.add-note-button',
     templateUrl: 'templates/survey/enketo/add-note-button.html'
   };
 })
-.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs, $translate,
+.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs,
     EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
     EnketoNotesButtonService) {
   console.log("Invoked enketo directive controller for add-note-button");
   $scope.notes = [];
 
   const updateLabel = () => {
-    const localeCode = $translate.use();
+    const localeCode = i18next.resolvedLanguage;
     if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
       $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
     } else {
@@ -57,38 +60,25 @@ angular.module('emission.survey.enketo.add-note-button',
     const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
     const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
 
+    // the current, local time offset (e.g. -07:00)
+    const currOffset = moment().toISOString(true).slice(-6);
+
     const prefills = {}
     // Fill in only the fields that are present
     // Enketo requires these specific date/time formats
     if (momentBegin) {
       prefills.Start_date = momentBegin.format('YYYY-MM-DD');
-      prefills.Start_time = momentBegin.format('HH:mm:ss.SSSZ');
+      prefills.Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
     } else {
       prefills.Start_date = momentStop.format('YYYY-MM-DD');
     }
 
     if (momentStop) {
       prefills.End_date = momentStop.format('YYYY-MM-DD');
-      prefills.End_time = momentStop.format('HH:mm:ss.SSSZ');
+      prefills.End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
     }
 
     return prefills;
-  }
-
-  const getScrollElement = function() {
-    if (!$scope.scrollElement) {
-        console.log("scrollElement is not cached, trying to read it ");
-        const ionItemElement = $element.closest('ion-item')
-        if (ionItemElement) {
-            console.log("ionItemElement is defined, we are in a list, finding the parent scroll");
-            $scope.scrollElement = ionItemElement.closest('ion-content');
-        } else {
-            console.log("ionItemElement is defined, we are in a detail screen, ignoring");
-        }
-    }
-    // TODO: comment this out after testing to avoid log spew
-    console.log("Returning scrollElement ", $scope.scrollElement);
-    return $scope.scrollElement;
   }
 
   $scope.openPopover = function ($event, timelineEntry, inputType) {
@@ -110,7 +100,7 @@ angular.module('emission.survey.enketo.add-note-button',
         };
 
         // adding the addition for display is handled in infinite_scroll_list.js
-        $scope.$emit('enketo.noteAddition', addition, getScrollElement());
+        $scope.$emit('enketo.noteAddition', addition);
         
         // store is commented out since the enketo survey launch currently
         // stores the value as well

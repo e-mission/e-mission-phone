@@ -1,7 +1,9 @@
-angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
-                                           'angularLocalStorage'])
+import angular from 'angular';
 
-.factory('KVStore', function($window, Logger, storage, $ionicPopup) {
+angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
+                                           'LocalStorageModule'])
+
+.factory('KVStore', function($window, Logger, localStorageService, $ionicPopup) {
     var logger = Logger;
     var kvstoreJs = {}
     /*
@@ -37,12 +39,12 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
          * or the local only succeed if native succeeds. I think parallel is
          * better for greater robustness.
          */
-        storage.set(key, store_val);
+        localStorageService.set(key, store_val);
         return getNativePlugin().putLocalStorage(key, store_val);
     }
 
     var getUnifiedValue = function(key) {
-        var ls_stored_val = storage.get(key, undefined);
+        var ls_stored_val = localStorageService.get(key, undefined);
         return getNativePlugin().getLocalStorage(key, false).then(function(uc_stored_val) {
             logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+" ls_stored_val = "+JSON.stringify(ls_stored_val));
             if (angular.equals(ls_stored_val, uc_stored_val)) {
@@ -55,7 +57,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                     logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
                                 " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                                 " copying native "+key+" to local...");
-                    storage.set(key, uc_stored_val);
+                    localStorageService.set(key, uc_stored_val);
                     return uc_stored_val;
                 } else if (uc_stored_val == null) {
                     console.assert(ls_stored_val != null);
@@ -84,7 +86,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                 logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
                             " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                             " copying native "+key+" to local...");
-                storage.set(key, uc_stored_val);
+                localStorageService.set(key, uc_stored_val);
                 return uc_stored_val;
             }
         });
@@ -123,16 +125,16 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
     kvstoreJs.getDirect = function(key) {
         // will run in background, we won't wait for the results
         getUnifiedValue(key);
-        return unmungeValue(key, storage.get(key));
+        return unmungeValue(key, localStorageService.get(key));
     }
 
     kvstoreJs.remove = function(key) {
-        storage.remove(key);
+        localStorageService.remove(key);
         return getNativePlugin().removeLocalStorage(key);
     }
 
     kvstoreJs.clearAll = function() {
-        storage.clearAll();
+        localStorageService.clearAll();
         return getNativePlugin().clearAll();
     }
 
@@ -143,7 +145,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
      * will be covered using clearAll.
      */
     kvstoreJs.clearOnlyLocal = function() {
-        return storage.clearAll();
+        return localStorageService.clearAll();
     }
 
     kvstoreJs.clearOnlyNative = function() {

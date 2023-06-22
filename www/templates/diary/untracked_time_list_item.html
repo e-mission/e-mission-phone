@@ -1,6 +1,6 @@
 <div>
     <ion-item class="unified-diary-item" style="background-color: transparent;" class="list-item">
-        <div class="diary-card short greyed" style="padding-block: 12px">
+        <div class="diary-card untracked" style="padding-block: 12px">
             <div class="start-time-tag">
                 <b>{{triplike.display_start_time}}</b>
                 <i ng-if="triplike.display_start_date_abbr">&nbsp;({{triplike.display_start_date_abbr}})</i>
@@ -10,18 +10,17 @@
                     <b class="card-date">{{triplike.display_date}}</b>
                 </div>
                 <div class="card-title">
-                    <b translate=".untracked-time-range"
-                        translate-value-start="{{ triplike.display_start_time }}"
-                        translate-value-end=" {{ triplike.display_end_time }}">
+                    <b>
+                        {{ 'diary.untracked-time-range' | i18next: {start: triplike.display_start_time, end: triplike.display_end_time} }}
                     </b>
                 </div>
                 <div style="margin: 5px">
                     <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
-                        <i class="icon ion-location" style="font-size: 16px; left: 0; color: #80D0FF;"></i>
+                        <i class="icon ion-location" style="font-size: 16px; left: 0"></i>
                         {{triplike.start_display_name}}
                     </div>
                     <div class="diary-street two-lines" ng-click="showDetail($event, trip)">
-                        <i class="icon ion-flag" style="font-size: 16px; left: 0; color: #0088ce;"></i>
+                        <i class="icon ion-flag" style="font-size: 16px; left: 0"></i>
                         {{triplike.end_display_name}}
                     </div>
                 </div>

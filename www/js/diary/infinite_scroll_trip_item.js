@@ -3,12 +3,15 @@
  * A directive to display each trip within the diary view.
  */
 
+import angular from 'angular';
+import DiaryButton from './DiaryButton';
+import LeafletView from './LeafletView';
+
 angular.module('emission.main.diary.infscrolltripitem',
     ['emission.main.diary.infscrolllist',
         'emission.survey.multilabel.services',
         'emission.main.diary.infscrolldetail',
-        'ui-leaflet', 'ng-walkthrough',
-        'nvd3', 'emission.plugin.kvstore',
+        'emission.plugin.kvstore',
         'emission.services',
         'emission.config.imperial',
         'emission.config.dynamic',
@@ -16,7 +19,9 @@ angular.module('emission.main.diary.infscrolltripitem',
         'emission.stats.clientstats',
         'emission.survey.enketo.add-note-button',
         'emission.survey.enketo.notes-list',
-        'emission.incident.posttrip.manual'])
+        DiaryButton.module,
+        LeafletView.module,
+      ])
 
 .directive("infiniteScrollTripItem", function(){
     return{
@@ -30,10 +35,9 @@ angular.module('emission.main.diary.infscrolltripitem',
     };
   })
 
-  .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform,
-                                        $state, leafletMapEvents, 
-                                        nzTour, Timeline, DiaryHelper, SurveyOptions,
-                                        Config, DynamicConfig, $ionicScrollDelegate
+  .controller("TripItemCtrl", function($scope, $injector, $ionicPlatform, $ionicPopup,
+                                        $state, Timeline, DiaryHelper, SurveyOptions,
+                                        DynamicConfig, $ionicScrollDelegate
                                         ){
     console.log("Trip Item Controller called");
 
@@ -52,7 +56,7 @@ angular.module('emission.main.diary.infscrolltripitem',
     // Added function from infiniteScrollListCtrl
     $scope.showDetail = function($event) {
       $state.go("root.main.inf_scroll-detail", {
-          tripId: $scope.trip._id
+          tripId: $scope.trip._id.$oid
       });
       console.log("Testing if showDetail has the trip defined: ", $scope.trip);
     }
@@ -63,43 +67,13 @@ angular.module('emission.main.diary.infscrolltripitem',
     $scope.explainDraft = function($event) {
       $event.stopPropagation();
       $ionicPopup.alert({
-        template: $translate.instant('list-explainDraft-alert')
+        template: i18next.t('list-explainDraft-alert')
       });
       // don't want to go to the detail screen
     }
 
-    // In-Line Map, functionality pulled from Infinite Scroll Detail
-    $scope.mapCtrl = {};
-    angular.extend($scope.mapCtrl, {
-      defaults : {
-        zoomControl: false
-      }
-    });
-
-    angular.extend($scope.mapCtrl.defaults, Config.getMapTiles())
-
-    var mapEvents = leafletMapEvents.getAvailableMapEvents();
-    for (var k in mapEvents) {
-      var eventName = 'leafletDirectiveMap.infscroll-tripitem.' + mapEvents[k];
-      $scope.$on(eventName, function(event, data){
-          try {
-              console.log("in mapEvents, event = "+JSON.stringify(event.name)+
-                    " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
-                    " leafletObject = "+JSON.stringify(data.leafletObject.getBounds()));
-          } catch (e) {
-              if (e instanceof TypeError) {
-                  console.log("in mapEvents, event = "+JSON.stringify(event.name)+
-                        " leafletEvent = "+JSON.stringify(data.leafletEvent.type)+
-                        " leafletObject is undefined");
-              } else {
-                  console.log(e);
-              }
-          }
-          $scope.eventDetected = event.name;
-      });
-    }
-
-    $scope.refreshTiles = function() {
-      $scope.$broadcast('invalidateSize');
-    }
+    $scope.mapOpts = {
+      zoomControl: false,
+      dragging: false,
+    };
 });

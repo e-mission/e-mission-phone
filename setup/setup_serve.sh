@@ -10,9 +10,6 @@ echo "Configuring the repo for UI development"
 echo "Setting up all npm packages"
 npm install
 
-echo "Updating bower"
-npx bower update --allow-root
-
 echo "Pulling the plugin-specific UIs"
 npm run setup-serve
 

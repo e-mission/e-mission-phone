@@ -13,6 +13,8 @@
  * notification handling gets more complex, we should consider decoupling it as well.
  */
 
+import angular from 'angular';
+
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services',
                                               'emission.splash.startprefs'])

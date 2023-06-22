@@ -1,9 +1,11 @@
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.demographics',
     ['emission.stats.clientstats',
         'emission.services',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
-        'emission.survey.enketo.preview',
+        // 'emission.survey.enketo.preview',
         'emission.survey.inputmatcher'])
 .directive('enketoDemographicsButton', function() {
   return {
@@ -45,7 +47,7 @@ angular.module('emission.survey.enketo.demographics',
   $scope.init();
 })
 .controller("EnketoDemographicsInlineCtrl", function($scope, $window, $element, $attrs,
-    $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats, $translate,
+    $http, EnketoSurveyLaunch, EnketoSurvey, $ionicPopover, ClientStats,
     EnketoDemographicsService, $ionicPlatform, $timeout) {
   console.log("Invoked enketo inline directive controller for demographics ");
 
@@ -53,7 +55,7 @@ angular.module('emission.survey.enketo.demographics',
     return EnketoSurvey.validateAndSave()
     .then(result => {
       if (!result) {
-        $ionicPopup.alert({template: $translate.instant('survey.enketo-form-errors')});
+        $ionicPopup.alert({template: i18next.t('survey.enketo-form-errors')});
       } else {
         $scope.ngDone();
       }
@@ -120,7 +122,7 @@ angular.module('emission.survey.enketo.demographics',
 
   $ionicPlatform.ready(() => $scope.init());
 })
-.factory("EnketoDemographicsService", function(UnifiedDataLoader, $window, $ionicLoading, $translate) {
+.factory("EnketoDemographicsService", function(UnifiedDataLoader, $window, $ionicLoading) {
   var eds = {};
   console.log("Creating EnketoDemographicsService");
   eds.key = "manual/demographic_survey";

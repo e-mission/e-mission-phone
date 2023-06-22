@@ -1,19 +1,5 @@
 angular.module('emission.main.recent', ['emission.services'])
 
-
-.controller('appCtrl', function($scope, $timeout) {
-    $scope.openNativeSettings = function() {
-        window.Logger.log(window.Logger.LEVEL_DEBUG, "about to open native settings");
-        window.cordova.plugins.BEMLaunchNative.launch("NativeSettings", function(result) {
-            window.Logger.log(window.Logger.LEVEL_DEBUG,
-                "Successfully opened screen NativeSettings, result is "+result);
-        }, function(err) {
-            window.Logger.log(window.Logger.LEVEL_ERROR,
-                "Unable to open screen NativeSettings because of err "+err);
-        });
-    }
-})
-
 .controller('logCtrl', function(ControlHelper, $scope, EmailHelper) {
     console.log("Launching logCtr");
     var RETRIEVE_COUNT = 100;
@@ -62,7 +48,7 @@ angular.module('emission.main.recent', ['emission.services'])
     }
 
     $scope.processEntries = function(entryList) {
-        for (i = 0; i < entryList.length; i++) {
+        for (let i = 0; i < entryList.length; i++) {
             var currEntry = entryList[i];
             currEntry.fmt_time = moment.unix(currEntry.ts).format("llll");
             $scope.entries.push(currEntry);
@@ -110,7 +96,7 @@ angular.module('emission.main.recent', ['emission.services'])
     }
 
     $scope.config.keys = []
-    for (key in $scope.config.key_data_mapping) {
+    for (let key in $scope.config.key_data_mapping) {
         $scope.config.keys.push(key);
     }
 
@@ -137,6 +123,7 @@ angular.module('emission.main.recent', ['emission.services'])
     }
 
   $scope.updateEntries = function() {
+    let usercacheFn, usercacheKey;
     if (angular.isUndefined($scope.selected.key)) {
         usercacheFn = db.getAllMessages;
         usercacheKey = "statemachine/transition";
@@ -147,7 +134,7 @@ angular.module('emission.main.recent', ['emission.services'])
     usercacheFn(usercacheKey, true).then(function(entryList) {
       $scope.entries = [];
       $scope.$apply(function() {
-          for (i = 0; i < entryList.length; i++) {
+          for (let i = 0; i < entryList.length; i++) {
             // $scope.entries.push({metadata: {write_ts: 1, write_fmt_time: "1"}, data: "1"})
             var currEntry = entryList[i];
             currEntry.metadata.write_fmt_time = moment.unix(currEntry.metadata.write_ts)
@@ -168,40 +155,3 @@ angular.module('emission.main.recent', ['emission.services'])
 
   $scope.updateEntries();
 })
-
-.controller('mapCtrl', function($scope, Config) {
-    /* Let's keep a reference to the database for convenience */
-    var db = window.cordova.plugins.BEMUserCache;
-    $scope.mapCtrl = {};
-    $scope.mapCtrl.selKey = "background/location";
-
-    angular.extend($scope.mapCtrl, {
-        defaults : Config.getMapTiles()
-    });
-
-    $scope.$on('leafletDirectiveMap.resize', function(event, data) {
-          console.log("recent/map received resize event, invalidating map size");
-          data.leafletObject.invalidateSize();
-    });
-
-    $scope.refreshMap = function() {
-        db.getAllSensorData($scope.mapCtrl.selKey, function(entryList) {
-            var coordinates = entryList.map(function(locWrapper, index, locList) {
-                var parsedData = JSON.parse(locWrapper.data);
-                return [parsedData.longitude, parsedData.latitude];
-            });
-            $scope.$apply(function() {
-                $scope.mapCtrl.geojson = {};
-                $scope.mapCtrl.geojson.data = {
-                  "type": "LineString",
-                  "coordinates": coordinates
-                }
-            });
-        });
-    };
-
-    $scope.refreshMap();
-});
-
-
-

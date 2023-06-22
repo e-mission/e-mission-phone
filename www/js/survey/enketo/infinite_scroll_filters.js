@@ -8,11 +8,13 @@
  * All UI elements should only use $scope variables.
  */
 
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.trip.infscrollfilters',[
     'emission.survey.enketo.trip.button',
     'emission.plugin.logger'
   ])
-.factory('EnketoTripInfScrollFilters', function(Logger, EnketoTripButtonService, $translate){
+.factory('EnketoTripInfScrollFilters', function(Logger, EnketoTripButtonService){
     var sf = {};
     var unlabeledCheck = function(t) {
        return !angular.isDefined(t.userInput[EnketoTripButtonService.SINGLE_KEY]);
@@ -20,13 +22,13 @@ angular.module('emission.survey.enketo.trip.infscrollfilters',[
 
     sf.UNLABELED = {
         key: "unlabeled",
-        text: $translate.instant(".unlabeled"),
+        text: i18next.t("diary.unlabeled"),
         filter: unlabeledCheck
     }
 
     sf.TO_LABEL = {
         key: "to_label",
-        text: $translate.instant(".to-label"),
+        text: i18next.t("diary.to-label"),
         filter: unlabeledCheck
     }
 

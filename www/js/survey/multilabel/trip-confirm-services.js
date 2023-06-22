@@ -1,6 +1,8 @@
+import angular from 'angular';
+
 angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.utils',
     "emission.plugin.logger", "emission.config.dynamic"])
-.factory("ConfirmHelper", function($http, $ionicPopup, $ionicPlatform, $translate, i18nUtils, DynamicConfig, Logger) {
+.factory("ConfirmHelper", function($http, $ionicPopup, $ionicPlatform, i18nUtils, DynamicConfig, Logger) {
     var ch = {};
     ch.init = function(ui_config) {
         Logger.log("About to start initializing the confirm helper for " + ui_config.intro.program_or_study);
@@ -10,8 +12,8 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
         ch.inputDetails = {
             "MODE": {
                 name: "MODE",
-                labeltext: $translate.instant(".mode"),
-                choosetext: $translate.instant(".choose-mode"),
+                labeltext: "diary.mode",
+                choosetext: "diary.choose-mode",
                 width: labelWidth["base"],
                 btnWidth: btnWidth["base"],
                 key: "manual/mode_confirm",
@@ -19,8 +21,8 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
             },
             "PURPOSE": {
                 name: "PURPOSE",
-                labeltext: $translate.instant(".purpose"),
-                choosetext: $translate.instant(".choose-purpose"),
+                labeltext: "diary.purpose",
+                choosetext: "diary.choose-purpose",
                 width: labelWidth["base"],
                 btnWidth: btnWidth["base"],
                 key: "manual/purpose_confirm",
@@ -44,8 +46,8 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
             console.log("Finished resetting label widths ",ch.inputDetails);
             ch.inputDetails["REPLACED_MODE"] = {
                 name: "REPLACED_MODE",
-                labeltext: $translate.instant(".replaces"),
-                choosetext: $translate.instant(".choose-replaced-mode"),
+                labeltext: "diary.replaces",
+                choosetext: "diary.choose-replaced-mode",
                 width: labelWidth["intervention"],
                 btnWidth: btnWidth["intervention"],
                 key: "manual/replaced_mode",
@@ -54,9 +56,9 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
         }
         Logger.log("Finished initializing ch.INPUTS and ch.inputDetails" + ch.INPUTS);
         ch.inputParamsPromise = new Promise(function(resolve, reject) {
-          inputParams = {};
+          const inputParams = {};
           console.log("Starting promise execution with ", inputParams);
-          omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
+          const omPromises = ch.INPUTS.map((item) => ch.getOptionsAndMaps(item));
           console.log("Promise list ", omPromises);
           Promise.all(omPromises).then((omObjList) =>
               ch.INPUTS.forEach(function(item, index) {
@@ -135,7 +137,7 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
      */
     ch.getOptions = function(inputType) {
         if (!angular.isDefined(ch.inputDetails[inputType].options)) {
-            var lang = $translate.use();
+            var lang = i18next.resolvedLanguage;
             return loadAndPopulateOptions()
                 .then(function () { 
                     return ch.inputDetails[inputType].options;
@@ -146,18 +148,18 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
     }
 
     ch.checkOtherOption = function(inputType, onTapFn, $scope) {
-          $ionicPopup.show({title: $translate.instant("trip-confirm.services-please-fill-in",{text: inputType.toLowerCase()}),
+          $ionicPopup.show({title: i18next.t("trip-confirm.services-please-fill-in",{text: inputType.toLowerCase()}),
             scope: $scope,
             template: '<input type = "text" ng-model = "selected.other.text">',
             buttons: [
-                { text: $translate.instant('trip-confirm.services-cancel'),
+                { text: i18next.t('trip-confirm.services-cancel'),
                   onTap: function(e) {
                     ch.INPUTS.forEach(function(item) {
                         $scope.selected[item] = {value: ''};
                     });
                   }
                 }, {
-                   text: '<b>' + $translate.instant('trip-confirm.services-save') + '</b>',
+                   text: '<b>' + i18next.t('trip-confirm.services-save') + '</b>',
                    type: 'button-positive',
                    onTap: onTapFn($scope, inputType)
                 }

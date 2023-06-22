@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.survey', [
                     "emission.survey.verifycheck",
                     "emission.survey.external.launch",

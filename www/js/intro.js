@@ -1,12 +1,15 @@
 'use strict';
 
+import angular from 'angular';
+import QrCode from './control/QrCode';
+
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
                                   'ionic-toast',
-                                  'monospaced.qrcode'])
+                                  QrCode.module])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -25,7 +28,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, DynamicConfig, i18nUtils, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, DynamicConfig, i18nUtils) {
 
   /*
    * Move all the state that is currently in the controller body into the init
@@ -75,8 +78,12 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.overallStatus = false;
 
+  /* If the user does not consent, we boot them back out to the join screen */
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    // reset the saved config, then trigger a hard refresh
+    const CONFIG_PHONE_UI="config/app_ui_config";
+    $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+        .then($window.location.reload(true));
   };
 
   $scope.agree = function() {
@@ -186,7 +193,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $ionicPlatform.ready().then(() => {
       DynamicConfig.configReady().then((newConfig) => {
         Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
-        $scope.lang = $translate.use();
+        $scope.lang = i18next.resolvedLanguage;
         $scope.ui_config = newConfig;
 
         // backwards compat hack to fill in the raw_data_use for programs that don't have it
@@ -197,7 +204,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         Object.entries(newConfig.intro.translated_text).forEach(([lang, val]) => {
             val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
         });
-        // TODO: we should be able to use $translate for this, right?
+        // TODO: we should be able to use i18n for this, right?
         $scope.template_text = newConfig.intro.translated_text[$scope.lang];
         if (!$scope.template_text) {
             $scope.template_text = newConfig.intro.translated_text["en"]

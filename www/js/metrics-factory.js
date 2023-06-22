@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.main.metrics.factory',
         ['emission.main.metrics.mappings',
         'emission.plugin.kvstore'])
