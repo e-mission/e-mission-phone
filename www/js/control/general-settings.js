@@ -133,7 +133,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
         if (storeNewVal)
             NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
-        $scope.settings.notification.scheduledNotifs = cordova.plugins.notification.local.scheduledNotifs;
+        $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
     }
 
     $scope.fixAppStatus = function() {
