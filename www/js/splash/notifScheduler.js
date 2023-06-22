@@ -65,8 +65,7 @@ angular.module('emission.splash.notifscheduler',
             if (!notifs?.length)
                 return Logger.log(`${prefix}, there are no scheduled notifications`);
             const time = moment(notifs?.[0].trigger.at).format('HH:mm');
-            //change where this is stored - plugin should be read-only
-            
+            //was in plugin, changed to scheduler
             scheduler.scheduledNotifs = notifs.map((n) => {
                 const time = moment(n.trigger.at).format('LT');
                 const date = moment(n.trigger.at).format('LL');
