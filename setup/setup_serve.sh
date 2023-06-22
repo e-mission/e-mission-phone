@@ -15,3 +15,5 @@ npx bower update --allow-root
 
 echo "Pulling the plugin-specific UIs"
 npm run setup-serve
+
+npx cordova prepare
