@@ -2,7 +2,7 @@
   Used in the label screen, on the trip, place, and/or untracked cards */
 
 import React from "react";
-import { angularize } from "../angular-react-helper";
+import { angularize } from "../../angular-react-helper";
 import { bool, string } from "prop-types";
 import { Badge, Text, useTheme } from "react-native-paper";
 

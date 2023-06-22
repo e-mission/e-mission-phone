@@ -8,11 +8,11 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize } from "../angular-react-helper";
+import { angularize } from "../../angular-react-helper";
 import { View, StyleSheet } from 'react-native';
 import { Divider, IconButton, Text } from 'react-native-paper';
 import { object } from "prop-types";
-import { getTheme } from "../appTheme";
+import { getTheme } from "../../appTheme";
 import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 

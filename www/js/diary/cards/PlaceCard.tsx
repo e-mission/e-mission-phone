@@ -7,14 +7,14 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize } from "../angular-react-helper";
+import { angularize } from "../../angular-react-helper";
 import { View, StyleSheet } from 'react-native';
 import { IconButton, Text } from 'react-native-paper';
 import { object } from "prop-types";
-import useAppConfig from "../useAppConfig";
-import AddNoteButton from "../survey/enketo/AddNoteButton";
-import AddedNotesList from "../survey/enketo/AddedNotesList";
-import { getTheme } from "../appTheme";
+import useAppConfig from "../../useAppConfig";
+import AddNoteButton from "../../survey/enketo/AddNoteButton";
+import AddedNotesList from "../../survey/enketo/AddedNotesList";
+import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 
 const PlaceCard = ({ place }) => {

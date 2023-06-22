@@ -5,19 +5,19 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { angularize, getAngularService } from "../../angular-react-helper";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Card, Divider, IconButton, PaperProvider, Text, useTheme } from 'react-native-paper';
 import { object } from "prop-types";
-import LeafletView from "../components/LeafletView";
+import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import TimestampBadge from "./TimestampBadge";
-import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";
-import UserInputButton from "../survey/enketo/UserInputButton";
-import useAppConfig from "../useAppConfig";
-import AddNoteButton from "../survey/enketo/AddNoteButton";
-import AddedNotesList from "../survey/enketo/AddedNotesList";
-import { getTheme } from "../appTheme";
+import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
+import UserInputButton from "../../survey/enketo/UserInputButton";
+import useAppConfig from "../../useAppConfig";
+import AddNoteButton from "../../survey/enketo/AddNoteButton";
+import AddedNotesList from "../../survey/enketo/AddedNotesList";
+import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 
 const TripCard = ({ trip }) => {

@@ -3,9 +3,9 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { View, useWindowDimensions } from "react-native";
 import { FlashList } from "@shopify/flash-list";
-import TripCard from "./TripCard";
-import PlaceCard from "./PlaceCard";
-import UntrackedTimeCard from "./UntrackedTimeCard";
+import TripCard from "./cards/TripCard";
+import PlaceCard from "./cards/PlaceCard";
+import UntrackedTimeCard from "./cards/UntrackedTimeCard";
 import { angularize, getAngularService } from "../angular-react-helper";
 import LoadMoreButton from "./LoadMoreButton";
 import useAppConfig from "../useAppConfig";
