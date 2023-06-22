@@ -34,7 +34,10 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
         .leaflet-bottom {
           max-width: 100%;
         }
-        .leaflet-control-attribution {
+        .leaflet-pane {
+          z-index: -1;
+        }
+       .leaflet-control-attribution {
           width: 100%;
           white-space: nowrap;
           z-index: 9;
