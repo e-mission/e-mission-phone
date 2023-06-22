@@ -10,7 +10,7 @@ const ControlDataTable = ({ controlData }) => {
   return (
     //rows require unique keys!
     <DataTable style={styles.table}>
-      {controlData.map((e) =>
+      {controlData?.map((e) =>
         <DataTable.Row key={e.key}> 
           <DataTable.Cell>{e.key}</DataTable.Cell>
           <DataTable.Cell>{e.val.toString()}</DataTable.Cell>
