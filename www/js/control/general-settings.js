@@ -165,7 +165,7 @@ angular.module('emission.main.control',['emission.services',
                 gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
             }
             for (var i in temp) {
-                $scope.userData.push({key: i, value: temp[i]});
+                $scope.userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
             }
         }
         });

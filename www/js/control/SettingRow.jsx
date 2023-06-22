@@ -7,16 +7,11 @@ import { string, func, object} from "prop-types";
 const SettingRow = ({textKey, iconName, action}) => {
     const { t } = useTranslation(); //this accesses the translations
 
-    function clickTest()
-    {
-        console.log("pressed");
-        {action()};
-    }
     return (
        <List.Item
        title = {t(textKey)}
        description = {iconName}
-       onPress = {clickTest}
+       onPress = {(e) => action(e)}
        >
        </List.Item>
     );
