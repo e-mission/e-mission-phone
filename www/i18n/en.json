@@ -101,6 +101,7 @@
         "nuke-everything" : "Everything",
         "clear-data": "Clear data",
         "are-you-sure": "Are you sure?",
+        "log-out": "Log Out",
         "log-out-warning": "You will be logged out and your credentials will not be saved. Unsynced data may be lost.",
         "cancel": "Cancel",
         "confirm": "Confirm",

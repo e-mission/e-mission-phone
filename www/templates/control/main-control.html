@@ -7,7 +7,7 @@
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div> -->
     <setting-row text-key="settings.auth.opcode" icon-name="'clipboard'" action = "copyOpToClipboard"></setting-row>
-    <setting-row text-key="settings.auth.opcode" icon-name="'exit'" action = "logOut"></setting-row>
+    <setting-row text-key="'general-settings.log-out'" icon-name="'exit'" action = "logOut"></setting-row>
 
     <!-- custom piece already? -->
     <enketo-demographics-button></enketo-demographics-button>
@@ -74,7 +74,7 @@
     </div> -->
     <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle'" action = "toggleLowAccuracy"></setting-row>
 
-    <!-- below..not using i18n? -->
+    <!-- using i18n in general-settings -- it's compound :) -->
     <!-- <div class="control-list-item">
       <div class="control-list-text">{{carbonDatasetString}}</div> 
       <div ng-click="changeCarbonDataset()" class="control-icon-button" ><i class="ion-stats-bars"></i></div>
