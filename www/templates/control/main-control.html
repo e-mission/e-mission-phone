@@ -6,8 +6,7 @@
       <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div> -->
-    <setting-row text-key="settings.auth.opcode" icon-name="'clipboard-account'" action = "copyOpToClipboard"></setting-row>
-    <setting-row text-key="'general-settings.log-out'" icon-name="'logout'" action = "logOut"></setting-row>
+    <setting-row text-key="settings.auth.opcode" icon-name="'logout'" action = "logOut"></setting-row>
 
     <!-- demographics survey -- leaving for now -->
     <enketo-demographics-button></enketo-demographics-button>

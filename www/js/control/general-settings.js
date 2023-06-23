@@ -394,14 +394,7 @@ angular.module('emission.main.control',['emission.services',
         navigator.clipboard.writeText(textToCopy).then(() => {
             ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
         });
-    }
-
-    // needed a parameter-less function to maintain the flow with the react transition :)
-    $scope.copyOpToClipboard = function() {
-        navigator.clipboard.writeText($scope.settings.auth.opcode).then(() => {
-            ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
-        });
-    }    
+    }  
 
     $scope.logOut = function() {
         $ionicPopup.confirm({
