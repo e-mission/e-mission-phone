@@ -54,12 +54,18 @@ body.platform-ios {
   margin: 0 10px 0 0;
 }
 
-.platform-ios .view-container {
-  height: calc(100% - (env(safe-area-inset-top) / 2));
+.view-container.tab-content {
+  height: auto !important;
+  bottom: 50px !important;
+  top: 0px !important;
 }
 
-.platform-ios .scroll-content {
-    height: calc(100% - 90px);
+.has-tabs {
+  bottom: 0 !important;
+}
+
+.platform-ios .view-container {
+  height: calc(100% - (env(safe-area-inset-top) / 2));
 }
 
 .join-inline-info {
