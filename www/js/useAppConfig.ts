@@ -7,10 +7,12 @@ const useAppConfig = () => {
   const [loading, setLoading] = useState<boolean>(true);
 
   const DynamicConfig = getAngularService('DynamicConfig');
+  const $ionicPlatform = getAngularService('$ionicPlatform');
 
   useEffect(() => {
     setLoading(true);
-    DynamicConfig.configReady().then((config) => {
+    const promises = [$ionicPlatform.ready(), DynamicConfig.configReady()]
+    Promise.all(promises).then(([_, config]) => {
       setAppConfig(config);
       setLoading(false);
     });
