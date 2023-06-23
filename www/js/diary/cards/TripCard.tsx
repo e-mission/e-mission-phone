@@ -50,8 +50,7 @@ const TripCard = ({ trip }) => {
   }, [appConfig, loading]);
 
   function showDetail() {
-    const tripId = trip._id.$oid;
-    navigation.navigate("label.details", { tripId });
+    navigation.navigate("label.details", { trip });
   }
 
   const mapOpts = { zoomControl: false, dragging: false };
@@ -86,7 +85,7 @@ const TripCard = ({ trip }) => {
             </Text>
           </View>
           <View style={cardStyles.panelSection}>{/* start and end locations */}
-          <View style={[cardStyles.location, {justifyContent: 'flex-start'}]}>
+            <View style={[cardStyles.location, {justifyContent: 'flex-start'}]}>
               <IconButton icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer} size={18}
                           style={cardStyles.locationIcon} />
               <Text numberOfLines={2} style={s.locationText}>
