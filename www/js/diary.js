@@ -1,5 +1,5 @@
 import angular from 'angular';
-import LabelTab from './diary/list/LabelTab';
+import LabelTab from './diary/LabelTab';
 
 angular.module('emission.main.diary',['emission.main.diary.infscrolldetail',
                                       'emission.main.diary.services',

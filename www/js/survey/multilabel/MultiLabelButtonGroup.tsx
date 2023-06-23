@@ -9,7 +9,7 @@ import { View } from "react-native";
 import { IconButton, Text, useTheme } from "react-native-paper";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
-import { LabelTabContext } from "../../diary/list/LabelTab";
+import { LabelTabContext } from "../../diary/LabelTab";
 
 const MultilabelButtonGroup = ({ trip }) => {
   const { colors } = useTheme();
