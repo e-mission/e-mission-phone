@@ -34,6 +34,14 @@ div[class*='css-text'] {
   position: static;
 }
 
+/* Without this, the LabelTab does not fill the entire height of the screen.
+    It has something to do with React Navigation's NavigationContainer.
+  This should not be necessary once the entire app's routing has been
+    converted to use React Navigation */
+label-tab > div {
+  height: 100%;
+}
+
 /* default color pallete (may be overridden by child elements) */
 :root {
   --accent: hsl(200, 100%, 40%);

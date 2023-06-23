@@ -1,22 +1,17 @@
 
 
 import React, { useEffect, useMemo, useRef, useState } from "react";
-import { View, useWindowDimensions } from "react-native";
-import { FlashList } from "@shopify/flash-list";
-import TripCard from "./cards/TripCard";
-import PlaceCard from "./cards/PlaceCard";
-import UntrackedTimeCard from "./cards/UntrackedTimeCard";
+import { useWindowDimensions } from "react-native";
 import { angularize, getAngularService } from "../angular-react-helper";
-import LoadMoreButton from "./list/LoadMoreButton";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "../components/LeafletView";
-import { ActivityIndicator, Appbar } from "react-native-paper";
-import FilterSelect from "./list/FilterSelect";
-import DateSelect from "./list/DateSelect";
 import Bottleneck from "bottleneck";
 import moment from "moment";
-import TimelineScrollList from "./list/TimelineScrollList";
+import LabelScreen from "./LabelScreen";
+import { createStackNavigator } from "@react-navigation/stack";
+import LabelScreenDetails from "./LabelDetailsScreen";
+import { NavigationContainer } from "@react-navigation/native";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -342,25 +337,32 @@ const LabelTab = () => {
       ]);
   }
 
+  const contextVals = {
+    allTrips,
+    displayTrips,
+    listEntries,
+    filterInputs,
+    setFilterInputs,
+    loadedRange,
+    pipelineRange,
+    isLoading,
+    loadAnotherWeek,
+    loadSpecificWeek,
+    refresh,
+    updateListEntry,
+    repopulateTimelineEntry,
+  }
+
+  const Tab = createStackNavigator();
+
   return (
-    <LabelTabContext.Provider value={{ updateListEntry, repopulateTimelineEntry }}>
-      <Appbar.Header statusBarHeight={12} elevated={true} style={{height: 46, backgroundColor: 'white', elevation: 3}}>
-        <FilterSelect filters={filterInputs}
-                      setFilters={setFilterInputs}
-                      numListDisplayed={displayTrips.length}
-                      numListTotal={allTrips.length} />
-        <DateSelect tsRange={{ oldestTs: loadedRange.start_ts, latestTs: loadedRange.end_ts }}
-                    loadSpecificWeekFn={loadSpecificWeek} />
-        <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
-      </Appbar.Header>
-      <View style={{ flex: 1, maxHeight: windowHeight - 160 }}>
-        <TimelineScrollList
-          listEntries={listEntries}
-          loadedRange={loadedRange}
-          pipelineRange={pipelineRange}
-          loadMoreFn={loadAnotherWeek}
-          isLoading={isLoading} />
-      </View>
+    <LabelTabContext.Provider value={contextVals}>
+      <NavigationContainer>
+        <Tab.Navigator screenOptions={{headerShown: false, animationEnabled: true}}>
+          <Tab.Screen name="label.main" component={LabelScreen} />
+          <Tab.Screen name="label.details" component={LabelScreenDetails} />
+        </Tab.Navigator>
+      </NavigationContainer>
     </LabelTabContext.Provider>
   );
 }

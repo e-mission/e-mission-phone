@@ -19,12 +19,14 @@ import AddNoteButton from "../../survey/enketo/AddNoteButton";
 import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
+import { useNavigation } from "@react-navigation/native";
 
 const TripCard = ({ trip }) => {
 
   const { t } = useTranslation();
   const { height, width } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
+  const navigation = useNavigation<any>();
 
   const SurveyOptions = getAngularService('SurveyOptions');
   const $state = getAngularService('$state');
@@ -49,7 +51,7 @@ const TripCard = ({ trip }) => {
 
   function showDetail() {
     const tripId = trip._id.$oid;
-    $state.go("root.main.inf_scroll-detail", { tripId });
+    navigation.navigate("label.details", { tripId });
   }
 
   const mapOpts = { zoomControl: false, dragging: false };

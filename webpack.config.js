@@ -22,7 +22,8 @@ module.exports = {
       {
         test: /\.(png|jpg)$/,
         include: [path.resolve(__dirname, 'www/css'),
-                  path.resolve(__dirname, 'node_modules/react-native-paper')],
+                  path.resolve(__dirname, 'node_modules/react-native-paper'),
+                  path.resolve(__dirname, 'node_modules/@react-navigation/elements')],
         use: 'url-loader',
       },
       // necessary for react-native-web to bundle JSX
