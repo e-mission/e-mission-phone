@@ -9,12 +9,12 @@ import { View } from "react-native";
 import { IconButton, Text, useTheme } from "react-native-paper";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
-import { TimelineScrollContext } from "../../diary/list/LabelTab";
+import { LabelTabContext } from "../../diary/list/LabelTab";
 
 const MultilabelButtonGroup = ({ trip }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { repopulateTimelineEntry } = useContext(TimelineScrollContext);
+  const { repopulateTimelineEntry } = useContext(LabelTabContext);
 
   const [ inputParams, setInputParams ] = useState({});
   let closePopover;

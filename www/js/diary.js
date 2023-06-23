@@ -1,8 +1,10 @@
 import angular from 'angular';
+import LabelTab from './diary/list/LabelTab';
 
-angular.module('emission.main.diary',['emission.main.diary.infscrolllist',
-                                      'emission.main.diary.infscrolldetail',
-                                      'emission.main.diary.services'])
+angular.module('emission.main.diary',['emission.main.diary.infscrolldetail',
+                                      'emission.main.diary.services',
+                                      'emission.survey',
+                                      LabelTab.module])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -10,8 +12,7 @@ angular.module('emission.main.diary',['emission.main.diary.infscrolllist',
       url: "/inf_scroll",
       views: {
         'main-inf-scroll': {
-          template: "<timeline-scroll-list></timeline-scroll-list>",
-          controller: 'InfiniteDiaryListCtrl'
+          template: "<label-tab></label-tab>",
         },
       }
   })

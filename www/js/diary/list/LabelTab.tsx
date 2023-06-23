@@ -16,14 +16,15 @@ import FilterSelect from "./FilterSelect";
 import DateSelect from "./DateSelect";
 import Bottleneck from "bottleneck";
 import moment from "moment";
+import TimelineScrollList from "./TimelineScrollList";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
-export const TimelineScrollContext = React.createContext<any>(null);
+export const LabelTabContext = React.createContext<any>(null);
 
-const TimelineScrollList = ({ ...otherProps }) => {
+const LabelTab = () => {
   const { height: windowHeight } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
   const { t } = useTranslation();
@@ -341,37 +342,8 @@ const TimelineScrollList = ({ ...otherProps }) => {
       ]);
   }
 
-  const renderCard = ({ item: listEntry }) => {
-    if (listEntry.origin_key.includes('trip')) {
-      return <TripCard trip={listEntry} />
-    } else if (listEntry.origin_key.includes('place')) {
-      return <PlaceCard place={listEntry} />
-    } else if (listEntry.origin_key.includes('untracked')) {
-      return <UntrackedTimeCard triplike={listEntry} />
-    }
-  };
-
-  const reachedPipelineStart = (loadedRange.start_ts <= pipelineRange.start_ts);
-  const footer =  <LoadMoreButton onPressFn={() => loadAnotherWeek('past')}
-                                  disabled={reachedPipelineStart}>
-                      { reachedPipelineStart ? "No more travel" : "Show Older Travel"}
-                  </LoadMoreButton>;
-
-  const reachedPipelineEnd = (loadedRange.end_ts >= pipelineRange.end_ts);
-  const header =  <LoadMoreButton onPressFn={() => loadAnotherWeek('future')}
-                                  disabled={reachedPipelineEnd}>
-                      { reachedPipelineEnd ? "No more travel" : "Show More Travel"}
-                  </LoadMoreButton>;
-  
-  const separator = () => <View style={{ height: 8 }} />
-  const bigSpinner = <ActivityIndicator size="large" style={{margin: 15}} />
-  const smallSpinner = <ActivityIndicator size="small" style={{margin: 5}} />
-
-  // The way that FlashList inverts the scroll view means we have to reverse the order of items too
-  const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
-
   return (
-    <TimelineScrollContext.Provider value={{ updateListEntry, repopulateTimelineEntry }}>
+    <LabelTabContext.Provider value={{ updateListEntry, repopulateTimelineEntry }}>
       <Appbar.Header statusBarHeight={12} elevated={true} style={{height: 46, backgroundColor: 'white', elevation: 3}}>
         <FilterSelect filters={filterInputs}
                       setFilters={setFilterInputs}
@@ -382,27 +354,16 @@ const TimelineScrollList = ({ ...otherProps }) => {
         <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
       </Appbar.Header>
       <View style={{ flex: 1, maxHeight: windowHeight - 160 }}>
-        {listEntries?.length > 0 && isLoading!='replace' &&
-          <FlashList inverted
-            ref={listRef}
-            data={reversedListEntries}
-            renderItem={renderCard}
-            estimatedItemSize={240}
-            keyExtractor={(item) => item._id.$oid}
-            /* TODO: We can capture onScroll events like this, so we should be able to automatically
-                  load more trips when the user is approaching the bottom or top of the list.
-                  This might be a nicer experience than the current header and footer buttons. */
-            // onScroll={e => console.debug(e.nativeEvent.contentOffset.y)}
-            ListHeaderComponent={isLoading=='append' ? smallSpinner : (!reachedPipelineEnd && header)}
-            ListFooterComponent={isLoading=='prepend' ? smallSpinner : footer}
-            ItemSeparatorComponent={separator}
-            {...otherProps} />
-        }
-        {isLoading=='replace' && bigSpinner}
+        <TimelineScrollList
+          listEntries={listEntries}
+          loadedRange={loadedRange}
+          pipelineRange={pipelineRange}
+          loadMoreFn={loadAnotherWeek}
+          isLoading={isLoading} />
       </View>
-    </TimelineScrollContext.Provider>
+    </LabelTabContext.Provider>
   );
 }
 
-angularize(TimelineScrollList, 'TimelineScrollList', 'emission.main.diary.timelinescrolllist');
-export default TimelineScrollList;
+angularize(LabelTab, 'LabelTab', 'emission.main.diary.labeltab');
+export default LabelTab;
