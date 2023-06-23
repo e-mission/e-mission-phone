@@ -6,8 +6,8 @@
       <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
     </div> -->
-    <setting-row text-key="settings.auth.opcode" icon-name="'clipboard'" action = "copyOpToClipboard"></setting-row>
-    <setting-row text-key="'general-settings.log-out'" icon-name="'exit'" action = "logOut"></setting-row>
+    <setting-row text-key="settings.auth.opcode" icon-name="'clipboard-account'" action = "copyOpToClipboard"></setting-row>
+    <setting-row text-key="'general-settings.log-out'" icon-name="'logout'" action = "logOut"></setting-row>
 
     <!-- custom piece already? -->
     <enketo-demographics-button></enketo-demographics-button>
@@ -54,7 +54,7 @@
         </div>
       </label>
     </div> -->
-    <setting-row text-key="'control.tracking'" icon-name="'toggle'" action = "userStartStopTracking"></setting-row>
+    <setting-row text-key="'control.tracking'" icon-name="'toggle-switch'" action = "userStartStopTracking"></setting-row>
 
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.app-status'}}</div>
@@ -72,20 +72,20 @@
         </div>
       </label>
     </div> -->
-    <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle'" action = "toggleLowAccuracy"></setting-row>
+    <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle-switch'" action = "toggleLowAccuracy"></setting-row>
 
     <!-- using i18n in general-settings -- it's compound :) -->
     <!-- <div class="control-list-item">
       <div class="control-list-text">{{carbonDatasetString}}</div> 
       <div ng-click="changeCarbonDataset()" class="control-icon-button" ><i class="ion-stats-bars"></i></div>
     </div> -->
-    <setting-row text-key="carbonDatasetString" icon-name="'graph'" action = "changeCarbonDataset"></setting-row>
+    <setting-row text-key="carbonDatasetString" icon-name="'database-cog'" action = "changeCarbonDataset"></setting-row>
     
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.force-sync'}}</div>
       <div ng-click="forceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
     </div> -->
-    <setting-row text-key="'control.force-sync'" icon-name="'cycle'" action="forceSync"></setting-row>
+    <setting-row text-key="'control.force-sync'" icon-name="'sync'" action="forceSync"></setting-row>
     
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.share'}}</div>
@@ -119,14 +119,14 @@
       <div class="control-list-text" ng-i18next>{{'control.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
     </div> -->
-    <setting-row ng-show="userDataSaved()" text-key="'control.user-data'" icon-name="'carrot'" action="toggleUserData"></setting-row>
+    <setting-row ng-show="userDataSaved()" text-key="'control.user-data'" icon-name="'arrow-expand-down'" action="toggleUserData"></setting-row>
     <!-- Begin user data can see it on my phone?-->
     <div class="" ng-show="userDataExpanded()">
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.erase-data'}}</div>
         <div ng-click="eraseUserData()" class="gray-icon control-icon-button"><i class="ion-trash-b"></i></div>
       </div> -->
-      <setting-row text-key="'control.erase-data'" icon-name="'trash'" action="eraseUserData"></setting-row>
+      <setting-row text-key="'control.erase-data'" icon-name="'delete-forever'" action="eraseUserData"></setting-row>
       <!-- a sneaky table! -->
       <control-data-table control-data="userData"></control-data-table>
       <!-- <ion-list>
@@ -142,7 +142,7 @@
       <div class="control-list-text" ng-i18next>{{'control.dev-zone'}}</div>
       <div ng-click="expandDeveloperZone()" class="control-icon-button"><i ng-class="getExpandButtonClass()" id="expandButton"></i></div>
     </div> -->
-    <setting-row text-key="'control.dev-zone'" icon-name="'carrot'" action="expandDeveloperZone"></setting-row>
+    <setting-row text-key="'control.dev-zone'" icon-name="'arrow-expand-down'" action="expandDeveloperZone"></setting-row>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
@@ -157,7 +157,7 @@
           <div class="control-list-text" ng-i18next>{{'control.end-trip-sync'}}</div>
           <div ng-click="endForceSync()" class="control-icon-button" ><i class="ion-android-sync"></i></div>
       </div> -->
-      <setting-row text-key="'control.end-trip-sync'" icon-name="'sync'" action="endForceSync"></setting-row>
+      <setting-row text-key="'control.end-trip-sync'" icon-name="'sync-alert'" action="endForceSync"></setting-row>
       
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.check-consent'}}</div>
@@ -175,7 +175,7 @@
       <!-- <div class = "control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.upcoming-notifications'}}</div>
       </div> -->
-      <setting-row text-key="'control.upcoming-notifications'" icon-name="'none'" action=""></setting-row>
+      <setting-row text-key="'control.upcoming-notifications'" icon-name="'bell-check'" action=""></setting-row>
       <control-data-table ng-if="settings.notification.prefReminderTime" control-data="settings.notification.scheduledNotifs"></control-data-table>
 
       <!-- <div class="control-list-item">
@@ -188,7 +188,7 @@
         <div class="control-list-text" ng-i18next>{{'control.nuke-all'}}</div>
         <div ng-click="nukeUserCache()" class="control-icon-button"><i class="ion-ios7-bell"></i></div>
       </div> -->
-      <setting-row text-key="'control.nuke-all'" icon-name="'garbage'" action="nukeUserCache"></setting-row>
+      <setting-row text-key="'control.nuke-all'" icon-name="'delete-forever'" action="nukeUserCache"></setting-row>
       
       <!-- <div class="control-list-item">
         <div class="control-list-text">{{parseState(settings.collect.state)}}</div>
@@ -200,13 +200,13 @@
         <div class="control-list-text" ng-i18next>{{'control.check-log'}}</div>
         <div ng-click="showLog()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div> -->
-      <setting-row text-key="'control.check-log'" icon-name="'arrow'" action="showLog"></setting-row>
+      <setting-row text-key="'control.check-log'" icon-name="'arrow-expand-right'" action="showLog"></setting-row>
      
       <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.check-sensed-data'}}</div>
         <div ng-click="showSensed()" class="gray-icon control-icon-button"><i class="ion-ios-arrow-right"></i></div>
       </div> -->
-      <setting-row text-key="'control.check-sensed-data'" icon-name="'arrow'" action="showSensed"></setting-row>
+      <setting-row text-key="'control.check-sensed-data'" icon-name="'arrow-expand-right'" action="showSensed"></setting-row>
       
       <!-- replaced collection and sync with React DataTable-->
       <!-- collection li and data table -->
@@ -231,7 +231,8 @@
       <div class="control-version-number">{{settings.clientAppVer}}</div>
     </div> -->
     <!-- work around to show version - cheating with the icon name here, will need to modify later -->
-    <setting-row text-key="'control.app-version'" icon-name="settings.clientAppVer" action=""></setting-row>
-  
+    <setting-row text-key="'control.app-version'" icon-name="application" action=""></setting-row>
+    <setting-row text-key="settings.clientAppVer" icon-name="" action=""></setting-row>
+    
   </ion-content>
 </ion-view>

@@ -10,8 +10,8 @@ const SettingRow = ({textKey, iconName, action}) => {
     return (
        <List.Item
        title = {t(textKey)}
-       description = {iconName}
        onPress = {(e) => action(e)}
+       right={props => <List.Icon {...props} icon={iconName} />}
        >
        </List.Item>
     );
