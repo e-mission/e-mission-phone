@@ -2,10 +2,12 @@
   <ion-content>
     
     <!-- opcode and logout - this row has two clicks! (and an argument for one of them) -->
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
-    </div>
+    </div> -->
+    <setting-row text-key="settings.auth.opcode" icon-name="'clipboard'" action = "copyOpToClipboard"></setting-row>
+    <setting-row text-key="settings.auth.opcode" icon-name="'exit'" action = "logOut"></setting-row>
 
     <!-- custom piece already? -->
     <enketo-demographics-button></enketo-demographics-button>
@@ -36,9 +38,14 @@
           style="position: absolute; height: 100%; inset: 0; display: flex; opacity: 0;">
       </div>
     </div>
+    <!-- <setting-row text-key="'control.reminders-time-of-day' | i18next: {time: settings.notification.prefReminderTime}" icon-name="'clock'" action = "">
+      <input type="time" name="timeOfDay" value="{{settings.notification.prefReminderTimeOnLoad}}"
+          ng-model="settings.notification.prefReminderTimeVal" ng-change="updatePrefReminderTime()" ng-blur="updatePrefReminderTime()"
+          style="position: absolute; height: 100%; inset: 0; display: flex; opacity: 0;">
+    </setting-row> -->
 
     <!-- tracking - a toggle! -->
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.tracking'}}</div>
       <label ng-click="userStartStopTracking()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="settings.collect.trackingOn">
@@ -46,7 +53,8 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
+    </div> -->
+    <setting-row text-key="'control.tracking'" icon-name="'toggle'" action = "userStartStopTracking"></setting-row>
 
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.app-status'}}</div>
@@ -55,7 +63,7 @@
     <setting-row text-key="'control.app-status'" icon-name="'check'" action="fixAppStatus"></setting-row>
     
     <!-- accuracy - another toggle! -->
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.medium-accuracy'}}</div>
       <label ng-click="toggleLowAccuracy()" class="toggle control-list-toggle toggle-color">
         <input type="checkbox" ng-checked="getLowAccuracy()">
@@ -63,13 +71,15 @@
           <div class="handle"></div>
         </div>
       </label>
-    </div>
+    </div> -->
+    <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle'" action = "toggleLowAccuracy"></setting-row>
 
     <!-- below..not using i18n? -->
-    <div class="control-list-item">
+    <!-- <div class="control-list-item">
       <div class="control-list-text">{{carbonDatasetString}}</div> 
       <div ng-click="changeCarbonDataset()" class="control-icon-button" ><i class="ion-stats-bars"></i></div>
-    </div>
+    </div> -->
+    <setting-row text-key="carbonDatasetString" icon-name="'graph'" action = "changeCarbonDataset"></setting-row>
     
     <!-- <div class="control-list-item">
       <div class="control-list-text" ng-i18next>{{'control.force-sync'}}</div>
@@ -105,16 +115,17 @@
     <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog"></setting-row>
 
     <!-- not sure where this is? -->
-    <div class="control-list-item" ng-show="userDataSaved()">
+    <!-- <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text" ng-i18next>{{'control.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
-    </div>
+    </div> -->
+    <setting-row ng-show="userDataSaved()" text-key="'control.user-data'" icon-name="'carrot'" action="toggleUserData"></setting-row>
     <!-- Begin user data can see it on my phone?-->
     <div class="" ng-show="userDataExpanded()">
-      <div class="control-list-item">
+      <!-- <div class="control-list-item">
         <div class="control-list-text" ng-i18next>{{'control.erase-data'}}</div>
         <div ng-click="eraseUserData()" class="gray-icon control-icon-button"><i class="ion-trash-b"></i></div>
-      </div>
+      </div> -->
       <setting-row text-key="'control.erase-data'" icon-name="'trash'" action="eraseUserData"></setting-row>
       <!-- a sneaky table! -->
       <control-data-table control-data="userData"></control-data-table>
