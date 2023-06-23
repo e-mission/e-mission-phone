@@ -1,7 +1,6 @@
 
 
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { useWindowDimensions } from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
 import { angularize, getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
@@ -20,7 +19,6 @@ const ONE_WEEK = ONE_DAY * 7; // seconds
 export const LabelTabContext = React.createContext<any>(null);
 
 const LabelTab = () => {
-  const { height: windowHeight } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
   const { t } = useTranslation();
 
@@ -83,8 +81,6 @@ const LabelTab = () => {
       setDisplayTrips(allTrips);
     }
   }, [allTrips, filterInputs]);
-
-  const listRef = useRef(null);
 
   function loadTimelineEntries() {
     Timeline.getUnprocessedLabels(labelPopulateFactory, enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
