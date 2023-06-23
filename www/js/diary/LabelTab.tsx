@@ -22,6 +22,7 @@ const LabelTab = () => {
   const { appConfig, loading } = useAppConfig();
   const { t } = useTranslation();
 
+  const [surveyOpt, setSurveyOpt] = useState(null);
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState({ start_ts: 0, end_ts: 0 });
   const [allTrips, setAllTrips] = useState([]);
@@ -49,6 +50,7 @@ const LabelTab = () => {
     if (loading) return;
     const surveyOptKey = appConfig.survey_info['trip-labels'];
     const surveyOpt = SurveyOptions[surveyOptKey];
+    setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
     labelPopulateFactory = getAngularService(surveyOpt.service);
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
@@ -334,6 +336,7 @@ const LabelTab = () => {
   }
 
   const contextVals = {
+    surveyOpt,
     allTrips,
     displayTrips,
     listEntries,
