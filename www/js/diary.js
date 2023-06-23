@@ -4,6 +4,7 @@ import LabelTab from './diary/LabelTab';
 angular.module('emission.main.diary',['emission.main.diary.infscrolldetail',
                                       'emission.main.diary.services',
                                       'emission.survey',
+                                      'emission.plugin.logger',
                                       LabelTab.module])
 
 .config(function($stateProvider) {
