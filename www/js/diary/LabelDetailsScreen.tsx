@@ -32,7 +32,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
         </Text>
           <IconButton icon='map-marker-star' iconColor={colors.primaryContainer} size={18}
             style={cardStyles.locationIcon} />
-          <Text numberOfLines={2} style={s.locationText}>
+          <Text numberOfLines={2}>
             {trip.start_display_name}
           </Text>
       </View>
@@ -43,7 +43,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
         </Text>
           <IconButton icon='flag' iconColor={colors.primary} size={18}
             style={cardStyles.locationIcon} />
-          <Text numberOfLines={2} style={s.locationText}>
+          <Text numberOfLines={2}>
             {trip.end_display_name}
           </Text>
       </View>
