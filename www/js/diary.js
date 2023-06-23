@@ -1,8 +1,7 @@
 import angular from 'angular';
 import LabelTab from './diary/LabelTab';
 
-angular.module('emission.main.diary',['emission.main.diary.infscrolldetail',
-                                      'emission.main.diary.services',
+angular.module('emission.main.diary',['emission.main.diary.services',
                                       'emission.survey',
                                       'emission.plugin.logger',
                                       LabelTab.module])
@@ -14,16 +13,6 @@ angular.module('emission.main.diary',['emission.main.diary.infscrolldetail',
       views: {
         'main-inf-scroll': {
           template: "<label-tab></label-tab>",
-        },
-      }
-  })
-
-  .state('root.main.inf_scroll-detail', {
-      url: "/inf_scroll/:tripId",
-      views: {
-        'main-inf-scroll': {
-          templateUrl: "templates/diary/infinite_scroll_detail.html",
-          controller: 'InfiniteDiaryDetailCtrl'
         },
       }
   })

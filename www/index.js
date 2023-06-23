@@ -33,7 +33,6 @@ import './js/survey/multilabel/trip-confirm-services.js';
 import './js/survey/multilabel/multi-label-ui.js';
 import './js/diary.js';
 import './js/recent.js';
-import './js/diary/infinite_scroll_detail.js';
 import './js/diary/services.js';
 import './js/survey/external/launch.js';
 import './js/survey/enketo/answer.js';
