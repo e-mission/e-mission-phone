@@ -10,8 +10,8 @@ import { LabelTabContext } from "./LabelTab";
 const LabelScreen = () => {
 
   const { filterInputs, setFilterInputs, displayTrips, allTrips,
-          loadedRange, loadSpecificWeekFn, refreshFn, listEntries,
-          pipelineRange, loadAnotherWeekFn, isLoading } = useContext(LabelTabContext);
+          loadedRange, loadSpecificWeek, refresh, listEntries,
+          pipelineRange, loadAnotherWeek, isLoading } = useContext(LabelTabContext);
 
   return (<>
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
@@ -20,15 +20,15 @@ const LabelScreen = () => {
         numListDisplayed={displayTrips.length}
         numListTotal={allTrips.length} />
       <DateSelect tsRange={{ oldestTs: loadedRange.start_ts, latestTs: loadedRange.end_ts }}
-        loadSpecificWeekFn={loadSpecificWeekFn} />
-      <Appbar.Action icon="refresh" size={32} onPress={() => refreshFn()} />
+        loadSpecificWeekFn={loadSpecificWeek} />
+      <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <View style={{ flex: 1 }}>
       <TimelineScrollList
         listEntries={listEntries}
         loadedRange={loadedRange}
         pipelineRange={pipelineRange}
-        loadMoreFn={loadAnotherWeekFn}
+        loadMoreFn={loadAnotherWeek}
         isLoading={isLoading} />
     </View>
   </>)
