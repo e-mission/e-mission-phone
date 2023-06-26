@@ -11,11 +11,9 @@
     <!-- demographics survey -- leaving for now -->
     <enketo-demographics-button></enketo-demographics-button>
 
-    <!-- view privacy policy -->
-    <setting-row text-key="'control.view-privacy'" icon-name="'eye'" action = "viewPrivacyPolicy"></setting-row>
+    <setting-row text-key="'control.view-privacy'" icon-name="'eye'" action = "viewPrivacyPolicy" is-toggle="false"></setting-row>
 
-    <!-- QR code -->
-    <setting-row text-key="'control.view-qrc'" icon-name="'grid'" action = "viewQRCode"></setting-row>
+    <setting-row text-key="'control.view-qrc'" icon-name="'grid'" action = "viewQRCode" is-toggle="false"></setting-row>
 
     <!-- reminder time -- leaving for now -->
     <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
@@ -40,9 +38,9 @@
         </div>
       </label>
     </div> -->
-    <setting-row text-key="'control.tracking'" icon-name="'toggle-switch'" action = "userStartStopTracking"></setting-row>
+    <setting-row text-key="'control.tracking'" icon-name="'toggle-switch'" action = "userStartStopTracking" is-toggle="true" toggle-val="getTracking"></setting-row>
 
-    <setting-row text-key="'control.app-status'" icon-name="'check'" action="fixAppStatus"></setting-row>
+    <setting-row text-key="'control.app-status'" icon-name="'check'" action="fixAppStatus" is-toggle="false"></setting-row>
     
     <!-- accuracy - another toggle! -->
     <!-- <div class="control-list-item">
@@ -54,84 +52,69 @@
         </div>
       </label>
     </div> -->
-    <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle-switch'" action = "toggleLowAccuracy"></setting-row>
+    <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle-switch'" action = "toggleLowAccuracy" is-toggle="true" toggle-val="getLowAccuracy"></setting-row>
 
-    <setting-row text-key="carbonDatasetString" icon-name="'database-cog'" action = "changeCarbonDataset"></setting-row>
-    <setting-row text-key="'control.force-sync'" icon-name="'sync'" action="forceSync"></setting-row>
-    <setting-row text-key="'control.share'" icon-name="'share'" action="share"></setting-row>
+    <setting-row text-key="carbonDatasetString" icon-name="'database-cog'" action = "changeCarbonDataset" is-toggle="false"></setting-row>
+    <setting-row text-key="'control.force-sync'" icon-name="'sync'" action="forceSync" is-toggle="false"></setting-row>
+    <setting-row text-key="'control.share'" icon-name="'share'" action="share" is-toggle="false"></setting-row>
 
-    <!-- <div class="control-list-item">
-      <div class="control-list-text" ng-i18next>{{'control.download-json-dump'}}</div>
-      <div ng-click="openDatePicker()" class="control-icon-button">
-        <i class="ion-ios-calendar-outline" style="font-size: 16px !important;"></i>
-      </div>
-      <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div>
-    </div> -->
-    <setting-row text-key="'control.download-json-dump'" icon-name="'calendar'" action="openDatePicker"></setting-row>
+    <setting-row text-key="'control.download-json-dump'" icon-name="'calendar'" action="openDatePicker" is-toggle="false"></setting-row>
+
+    <!-- I'm not sure what getMyData() does or where it's used so I don't know how to convert it!
+    It was a part of the downloadDump item, as if a second icon alongside the calendar -->
+    <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div>
+    <setting-row text-key="'control.download-json-dump'" icon-name="'email'" action="getMyData"></setting-row> -->
 
     <setting-row ng-if="ui_config.profile_controls.support_upload == true" text-key="'control.upload-log'" icon-name="'cloud'" action="uploadLog"></setting-row>
-    <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog"></setting-row>
+    <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog" is-toggle="false"></setting-row>
 
     <!-- UserData dropdown - believe I've converted but relatively untested -->
     <!-- <div class="control-list-item" ng-show="userDataSaved()">
       <div class="control-list-text" ng-i18next>{{'control.user-data'}}</div>
       <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
     </div> -->
-    <setting-row ng-show="userDataSaved()" text-key="'control.user-data'" icon-name="'arrow-expand-down'" action="toggleUserData"></setting-row>
-    <!-- Begin user data can see it on my phone?-->
+    <setting-row ng-show="userDataSaved()" text-key="'control.user-data'" icon-name="'arrow-expand-down'" action="toggleUserData" is-toggle="false"></setting-row>
     <div class="" ng-show="userDataExpanded()">
-      <!-- <div class="control-list-item">
-        <div class="control-list-text" ng-i18next>{{'control.erase-data'}}</div>
-        <div ng-click="eraseUserData()" class="gray-icon control-icon-button"><i class="ion-trash-b"></i></div>
-      </div> -->
-      <setting-row text-key="'control.erase-data'" icon-name="'delete-forever'" action="eraseUserData"></setting-row>
-      <!-- a sneaky table! -->
+      <setting-row text-key="'control.erase-data'" icon-name="'delete-forever'" action="eraseUserData" is-toggle="false"></setting-row>
       <control-data-table control-data="userData"></control-data-table>
-      <!-- <ion-list>
-          <ion-item class="row" ng-repeat="entry in userData">
-                <div class="col timestamp item-text-wrap control-info">{{entry.key}}</div>
-                <div class="col detail item-text-wrap" style="padding: 2px 4px !important;"> {{entry.value}}</div>
-          </ion-item>
-      </ion-list> -->
     </div>
 
     <!-- this dropdown is less smooth than the angular one -- need to work on the visuals :) -->
-    <setting-row text-key="'control.dev-zone'" icon-name="'arrow-expand-down'" action="expandDeveloperZone"></setting-row>
+    <setting-row text-key="'control.dev-zone'" icon-name="'arrow-expand-down'" action="expandDeveloperZone" is-toggle="false"></setting-row>
 
     <!-- Begin developer zone -->
     <div class="" ng-show="collectionExpanded()">
       
-      <setting-row text-key="'control.refresh'" icon-name="'refresh'" action="refreshScreen"></setting-row>
+      <setting-row text-key="'control.refresh'" icon-name="'refresh'" action="refreshScreen" is-toggle="false"></setting-row>
 
-      <setting-row text-key="'control.end-trip-sync'" icon-name="'sync-alert'" action="endForceSync"></setting-row>
+      <setting-row text-key="'control.end-trip-sync'" icon-name="'sync-alert'" action="endForceSync" is-toggle="false"></setting-row>
 
-      <setting-row text-key="'control.check-consent'" icon-name="'check'" action="checkConsent"></setting-row>
+      <setting-row text-key="'control.check-consent'" icon-name="'check'" action="checkConsent" is-toggle="false"></setting-row>
 
-      <setting-row text-key="'control.dummy-notification'" icon-name="'bell'" action="dummyNotification"></setting-row>
+      <setting-row text-key="'control.dummy-notification'" icon-name="'bell'" action="dummyNotification" is-toggle="false"></setting-row>
       
-      <setting-row text-key="'control.upcoming-notifications'" icon-name="'bell-check'" action=""></setting-row>
-      <control-data-table ng-if="settings.notification.prefReminderTime" control-data="settings.notification.scheduledNotifs"></control-data-table>
+      <setting-row text-key="'control.upcoming-notifications'" icon-name="'bell-check'" action="" is-toggle="false"></setting-row>
+      <control-data-table ng-if="settings.notification.prefReminderTime" control-data="settings.notification.scheduledNotifs" is-toggle="false"></control-data-table>
 
-      <setting-row text-key="'control.invalidate-cached-docs'" icon-name="'delete'" action="invalidateCache"></setting-row>
+      <setting-row text-key="'control.invalidate-cached-docs'" icon-name="'delete'" action="invalidateCache" is-toggle="false"></setting-row>
       
-      <setting-row text-key="'control.nuke-all'" icon-name="'delete-forever'" action="nukeUserCache"></setting-row>
+      <setting-row text-key="'control.nuke-all'" icon-name="'delete-forever'" action="nukeUserCache" is-toggle="false"></setting-row>
       
-      <setting-row text-key="parseState(settings.collect.state)" icon-name="'pencil'" action="forceState"></setting-row>
+      <setting-row text-key="parseState(settings.collect.state)" icon-name="'pencil'" action="forceState" is-toggle="false"></setting-row>
 
-      <setting-row text-key="'control.check-log'" icon-name="'arrow-expand-right'" action="showLog"></setting-row>
+      <setting-row text-key="'control.check-log'" icon-name="'arrow-expand-right'" action="showLog" is-toggle="false"></setting-row>
 
-      <setting-row text-key="'control.check-sensed-data'" icon-name="'arrow-expand-right'" action="showSensed"></setting-row>
+      <setting-row text-key="'control.check-sensed-data'" icon-name="'arrow-expand-right'" action="showSensed" is-toggle="false"></setting-row>
       
-      <setting-row text-key="'control.collection'" icon-name="'pencil'" action="editCollectionConfig"></setting-row>
+      <setting-row text-key="'control.collection'" icon-name="'pencil'" action="editCollectionConfig" is-toggle="false"></setting-row>
       <control-data-table control-data="settings.collect.show_config"></control-data-table>
 
-      <setting-row text-key="'control.sync'" icon-name="'pencil'" action="editSyncConfig"></setting-row>
+      <setting-row text-key="'control.sync'" icon-name="'pencil'" action="editSyncConfig" is-toggle="false"></setting-row>
       <control-data-table control-data="settings.sync.show_config"></control-data-table>
     
-    <!-- app version - dual text no actions! -->
-    <!-- work around to show version - cheating with the icon name here, will need to modify later -->
-    <setting-row text-key="'control.app-version'" icon-name="application" action=""></setting-row>
-    <setting-row text-key="settings.clientAppVer" icon-name="" action=""></setting-row>
-    
+      <setting-row text-key="'control.app-version'" icon-name="application" action="" is-toggle="false"></setting-row>
+      <setting-row text-key="settings.clientAppVer" icon-name="" action="" is-toggle="false"></setting-row>
+
+    </div>
   </ion-content>
 </ion-view>
