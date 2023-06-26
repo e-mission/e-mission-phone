@@ -5,6 +5,7 @@ import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
 import SettingRow from './SettingRow';
 import UserData from './UserData';
+import ExpansionSection from './MenuDropper';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -25,7 +26,8 @@ angular.module('emission.main.control',['emission.services',
                                         QrCode.module,
                                         ControlDataTable.module,
                                         SettingRow.module,
-                                        UserData.module])
+                                        UserData.module,
+                                        ExpansionSection.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,

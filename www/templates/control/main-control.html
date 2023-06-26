@@ -68,8 +68,10 @@
     <setting-row ng-if="ui_config.profile_controls.support_upload == true" text-key="'control.upload-log'" icon-name="'cloud'" action="uploadLog"></setting-row>
     <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog" is-toggle="false"></setting-row>
 
-    <!-- Dropdown! a little hard-code :( -->
-    <user-data data="userData" button-action="eraseUserData"></user-data>
+    <!-- Dropdown! With map! -->
+    <expansion-section section-title="'control.user-data'" section-contents="[{type: 'row', data: [], textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false},
+                                                                              {type: 'table', data: userData, textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false}]">
+    </expansion-section>
 
     <!-- this dropdown is less smooth than the angular one -- need to work on the visuals :) -->
     <setting-row text-key="'control.dev-zone'" icon-name="'arrow-expand-down'" action="expandDeveloperZone" is-toggle="false"></setting-row>
