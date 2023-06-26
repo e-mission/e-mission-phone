@@ -1,18 +1,12 @@
 <ion-view view-title="{{'control.profile' | i18next}}" ng-class="ion-view-background">
   <ion-content>
     
-    <!-- opcode and logout - this row has two clicks! (and an argument for one of them) -->
-    <!-- <div class="control-list-item">
-      <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
-      <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>
-    </div> -->
     <setting-row text-key="settings.auth.opcode" icon-name="'logout'" action = "logOut"></setting-row>
 
     <!-- demographics survey -- leaving for now -->
     <enketo-demographics-button></enketo-demographics-button>
 
     <setting-row text-key="'control.view-privacy'" icon-name="'eye'" action = "viewPrivacyPolicy" is-toggle="false"></setting-row>
-
     <setting-row text-key="'control.view-qrc'" icon-name="'grid'" action = "viewQRCode" is-toggle="false"></setting-row>
 
     <!-- reminder time -- leaving for now -->
@@ -68,47 +62,32 @@
     <setting-row ng-if="ui_config.profile_controls.support_upload == true" text-key="'control.upload-log'" icon-name="'cloud'" action="uploadLog"></setting-row>
     <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog" is-toggle="false"></setting-row>
 
-    <!-- Dropdown! With map! -->
+    <!-- Dropdown for user data -->
     <expansion-section section-title="'control.user-data'" section-contents="[{type: 'row', data: [], textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false},
                                                                               {type: 'table', data: userData, textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false}]">
     </expansion-section>
 
-    <!-- this dropdown is less smooth than the angular one -- need to work on the visuals :) -->
-    <setting-row text-key="'control.dev-zone'" icon-name="'arrow-expand-down'" action="expandDeveloperZone" is-toggle="false"></setting-row>
+    <!-- Dropdown for developer zone -->
+    <expansion-section section-title="'control.dev-zone'" section-contents="[
+        {type: 'row', data: [], textKey: 'control.refresh', action: refreshScreen, iconName: 'refresh', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.end-trip-sync', action: endForceSync, iconName: 'sync-alert', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.check-consent', action: checkConsent, iconName: 'check', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.dummy-notification', action: dummyNotification, iconName: 'bell', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.upcoming-notifications', action: '', iconName: 'bell-check', isToggle: false},
+        {type: 'table', data: settings.notification.scheduledNotifs},
+        {type: 'row', data: [], textKey: 'control.invalidate-cached-docs', action: invalidateCache , iconName: 'delete', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.nuke-all', action: nukeUserCache, iconName: 'delete-forever', isToggle: false},
+        {type: 'row', data: [], textKey: parseState(settings.collect.state), action: forceState, iconName: 'pencil', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.check-log', action: showLog, iconName: 'arrow-expand-right', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.check-sensed-data', action: showSensed, iconName: 'arrow-expand-right', isToggle: false},
+        {type: 'row', data: [], textKey: 'control.collection', action: editCollectionConfig, iconName: 'pencil', isToggle: false},
+        {type: 'table', data: settings.collect.show_config},
+        {type: 'row', data: [], textKey: 'control.sync', action: editSyncConfig, iconName: 'pencil', isToggle: false},
+        {type: 'table', data: settings.sync.show_config},
+        {type: 'row', data: [], textKey: 'control.app-version', action: '', iconName: 'application', isToggle: false},
+        {type: 'row', data: [], textKey: settings.clientAppVer, action: '', iconName: '', isToggle: false}
+    ]">
+    </expansion-section>
 
-    <!-- Begin developer zone -->
-    <div class="" ng-show="collectionExpanded()">
-      
-      <setting-row text-key="'control.refresh'" icon-name="'refresh'" action="refreshScreen" is-toggle="false"></setting-row>
-
-      <setting-row text-key="'control.end-trip-sync'" icon-name="'sync-alert'" action="endForceSync" is-toggle="false"></setting-row>
-
-      <setting-row text-key="'control.check-consent'" icon-name="'check'" action="checkConsent" is-toggle="false"></setting-row>
-
-      <setting-row text-key="'control.dummy-notification'" icon-name="'bell'" action="dummyNotification" is-toggle="false"></setting-row>
-      
-      <setting-row text-key="'control.upcoming-notifications'" icon-name="'bell-check'" action="" is-toggle="false"></setting-row>
-      <control-data-table ng-if="settings.notification.prefReminderTime" control-data="settings.notification.scheduledNotifs" is-toggle="false"></control-data-table>
-
-      <setting-row text-key="'control.invalidate-cached-docs'" icon-name="'delete'" action="invalidateCache" is-toggle="false"></setting-row>
-      
-      <setting-row text-key="'control.nuke-all'" icon-name="'delete-forever'" action="nukeUserCache" is-toggle="false"></setting-row>
-      
-      <setting-row text-key="parseState(settings.collect.state)" icon-name="'pencil'" action="forceState" is-toggle="false"></setting-row>
-
-      <setting-row text-key="'control.check-log'" icon-name="'arrow-expand-right'" action="showLog" is-toggle="false"></setting-row>
-
-      <setting-row text-key="'control.check-sensed-data'" icon-name="'arrow-expand-right'" action="showSensed" is-toggle="false"></setting-row>
-      
-      <setting-row text-key="'control.collection'" icon-name="'pencil'" action="editCollectionConfig" is-toggle="false"></setting-row>
-      <control-data-table control-data="settings.collect.show_config"></control-data-table>
-
-      <setting-row text-key="'control.sync'" icon-name="'pencil'" action="editSyncConfig" is-toggle="false"></setting-row>
-      <control-data-table control-data="settings.sync.show_config"></control-data-table>
-    
-      <setting-row text-key="'control.app-version'" icon-name="application" action="" is-toggle="false"></setting-row>
-      <setting-row text-key="settings.clientAppVer" icon-name="" action="" is-toggle="false"></setting-row>
-
-    </div>
   </ion-content>
 </ion-view>

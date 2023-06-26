@@ -4,8 +4,7 @@ import angular from 'angular';
 import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
 import SettingRow from './SettingRow';
-import UserData from './UserData';
-import ExpansionSection from './MenuDropper';
+import ExpansionSection from './ExpandMenu';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -26,7 +25,6 @@ angular.module('emission.main.control',['emission.services',
                                         QrCode.module,
                                         ControlDataTable.module,
                                         SettingRow.module,
-                                        UserData.module,
                                         ExpansionSection.module])
 
 .controller('ControlCtrl', function($scope, $window,
