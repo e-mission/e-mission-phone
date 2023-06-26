@@ -359,7 +359,11 @@ const LabelTab = () => {
       <NavigationContainer>
         <Tab.Navigator screenOptions={{headerShown: false, animationEnabled: true}}>
           <Tab.Screen name="label.main" component={LabelScreen} />
-          <Tab.Screen name="label.details" component={LabelScreenDetails} />
+          <Tab.Screen name="label.details" component={LabelScreenDetails}
+                      /* When we go to the details screen, we want to keep the main screen in memory
+                        so that we can go right back to it and the scroll position will be preserved.
+                        This is what `detachPreviousScreen:false` does. */
+                      options={{detachPreviousScreen: false}} />
         </Tab.Navigator>
       </NavigationContainer>
     </LabelTabContext.Provider>
