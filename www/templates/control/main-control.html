@@ -68,16 +68,8 @@
     <setting-row ng-if="ui_config.profile_controls.support_upload == true" text-key="'control.upload-log'" icon-name="'cloud'" action="uploadLog"></setting-row>
     <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog" is-toggle="false"></setting-row>
 
-    <!-- UserData dropdown - believe I've converted but relatively untested -->
-    <!-- <div class="control-list-item" ng-show="userDataSaved()">
-      <div class="control-list-text" ng-i18next>{{'control.user-data'}}</div>
-      <div ng-click="toggleUserData()" class="control-icon-button"><i ng-class="getUserDataExpandButtonClass()" id="userDataButton"></i></div>
-    </div> -->
-    <setting-row ng-show="userDataSaved()" text-key="'control.user-data'" icon-name="'arrow-expand-down'" action="toggleUserData" is-toggle="false"></setting-row>
-    <div class="" ng-show="userDataExpanded()">
-      <setting-row text-key="'control.erase-data'" icon-name="'delete-forever'" action="eraseUserData" is-toggle="false"></setting-row>
-      <control-data-table control-data="userData"></control-data-table>
-    </div>
+    <!-- Dropdown! a little hard-code :( -->
+    <user-data data="userData" button-action="eraseUserData"></user-data>
 
     <!-- this dropdown is less smooth than the angular one -- need to work on the visuals :) -->
     <setting-row text-key="'control.dev-zone'" icon-name="'arrow-expand-down'" action="expandDeveloperZone" is-toggle="false"></setting-row>

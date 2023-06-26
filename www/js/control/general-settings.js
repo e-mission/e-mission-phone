@@ -4,6 +4,7 @@ import angular from 'angular';
 import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
 import SettingRow from './SettingRow';
+import UserData from './UserData';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -23,7 +24,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.config.dynamic',
                                         QrCode.module,
                                         ControlDataTable.module,
-                                        SettingRow.module])
+                                        SettingRow.module,
+                                        UserData.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
