@@ -67,6 +67,15 @@ const TripCard = ({ trip }) => {
                         /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
                         style={[{minHeight: width / 2}, mapStyle]} />
+          <View style={s.modePercents}>
+            {trip.percentages?.map?.((pct, i) => (
+              <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
+                <IconButton icon={pct.icon} size={15} iconColor={pct.color}
+                            style={{width: 15, height: 15, margin: 0, marginRight: 2}} />
+                <Text style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>
+              </View>
+            ))}
+          </View>
           {showAddNoteButton && 
             <View style={s.notesButton}>
               <AddNoteButton timelineEntry={trip}
@@ -130,6 +139,15 @@ const s = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: 15,
     borderBottomRightRadius: 15,
+  },
+  modePercents: {
+    position: 'absolute',
+    flexDirection: 'row',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    borderRadius: 50,
+    left: '50%',
+    transform: 'translate(-50%)',
+    marginVertical: 5,
   },
   notesButton: {
     paddingHorizontal: 8,
