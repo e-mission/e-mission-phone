@@ -5,13 +5,12 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize, getAngularService } from "../../angular-react-helper";
+import { getAngularService } from "../../angular-react-helper";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
-import { Card, Divider, IconButton, PaperProvider, Text, useTheme } from 'react-native-paper';
+import { Divider, IconButton, Text } from 'react-native-paper';
 import { object } from "prop-types";
 import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
-import TimestampBadge from "./TimestampBadge";
 import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
 import UserInputButton from "../../survey/enketo/UserInputButton";
 import useAppConfig from "../../useAppConfig";
@@ -24,7 +23,7 @@ import { useNavigation } from "@react-navigation/native";
 const TripCard = ({ trip }) => {
 
   const { t } = useTranslation();
-  const { height, width } = useWindowDimensions();
+  const { width: windowWidth } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
   const navigation = useNavigation<any>();
 
@@ -66,7 +65,7 @@ const TripCard = ({ trip }) => {
           <LeafletView geojson={trip.geojson} opts={mapOpts}
                         /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
-                        style={[{minHeight: width / 2}, mapStyle]} />
+                        style={[{minHeight: windowWidth / 2}, mapStyle]} />
           <View style={s.modePercents}>
             {trip.percentages?.map?.((pct, i) => (
               <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
