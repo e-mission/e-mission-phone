@@ -1,23 +1,7 @@
 <ion-view view-title="{{'control.profile' | i18next}}" ng-class="ion-view-background">
   <ion-content>
     
-    <profile-settings temp-func-bundle="{
-        'logOut': logOut,
-        'opcode' : settings.auth.opcode,
-        'viewPrivacyPolicy': viewPrivacyPolicy,
-        'viewQRCode': viewQRCode,
-        'userStartStopTracking': userStartStopTracking,
-        'fixAppStatus': fixAppStatus,
-        'toggleLowAccuracy': toggleLowAccuracy,
-        'carbonString': carbonDatasetString,
-        'changeCarbonDataset': changeCarbonDataset,
-        'openDatePicker': openDatePicker,
-        'forceSync': forceSync,
-        'share': share,
-        'uploadLog': uploadLog,
-        'emailLog': emailLog
-    }">
-  </profile-settings>
+    <profile-settings settings-scope="this"></profile-settings>
 
     <!-- demographics survey -- leaving for now -->
     <enketo-demographics-button></enketo-demographics-button>
