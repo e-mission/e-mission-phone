@@ -12,14 +12,17 @@ import { array, number } from "prop-types";
 const FilterSelect = ({ filters, setFilters, numListDisplayed, numListTotal }) => {
 
   const { t } = useTranslation();
-  const [selectedFilter, setSelectedFilter] = useState('show-all');
+  const [selectedFilter, setSelectedFilter] = useState();
 
   useEffect(() => {
-    setSelectedFilter(filters?.find(f => f.state)?.key);
-  }, []);
+    if (!selectedFilter) {
+      setSelectedFilter(filters?.find(f => f.state)?.key);
+    }
+  }, [filters]);
 
   useEffect(() => {
-    if (selectedFilter === 'show-all') {
+    if (!selectedFilter) return;
+    if (selectedFilter == 'show-all') {
       setFilters(filters.map(f => ({ ...f, state: false })));
     } else {
       setFilters(filters.map(f => {
