@@ -1,13 +1,26 @@
 <ion-view view-title="{{'control.profile' | i18next}}" ng-class="ion-view-background">
   <ion-content>
     
-    <setting-row text-key="settings.auth.opcode" icon-name="'logout'" action = "logOut"></setting-row>
+    <profile-settings temp-func-bundle="{
+        'logOut': logOut,
+        'opcode' : settings.auth.opcode,
+        'viewPrivacyPolicy': viewPrivacyPolicy,
+        'viewQRCode': viewQRCode,
+        'userStartStopTracking': userStartStopTracking,
+        'fixAppStatus': fixAppStatus,
+        'toggleLowAccuracy': toggleLowAccuracy,
+        'carbonString': carbonDatasetString,
+        'changeCarbonDataset': changeCarbonDataset,
+        'openDatePicker': openDatePicker,
+        'forceSync': forceSync,
+        'share': share,
+        'uploadLog': uploadLog,
+        'emailLog': emailLog
+    }">
+  </profile-settings>
 
     <!-- demographics survey -- leaving for now -->
     <enketo-demographics-button></enketo-demographics-button>
-
-    <setting-row text-key="'control.view-privacy'" icon-name="'eye'" action = "viewPrivacyPolicy" is-toggle="false"></setting-row>
-    <setting-row text-key="'control.view-qrc'" icon-name="'grid'" action = "viewQRCode" is-toggle="false"></setting-row>
 
     <!-- reminder time -- leaving for now -->
     <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
@@ -32,9 +45,7 @@
         </div>
       </label>
     </div> -->
-    <setting-row text-key="'control.tracking'" icon-name="'toggle-switch'" action = "userStartStopTracking" is-toggle="true" toggle-val="getTracking"></setting-row>
-
-    <setting-row text-key="'control.app-status'" icon-name="'check'" action="fixAppStatus" is-toggle="false"></setting-row>
+    <!-- <setting-row text-key="'control.tracking'" icon-name="'toggle-switch'" action = "userStartStopTracking" is-toggle="true" toggle-val="getTracking"></setting-row> -->
     
     <!-- accuracy - another toggle! -->
     <!-- <div class="control-list-item">
@@ -46,25 +57,20 @@
         </div>
       </label>
     </div> -->
-    <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle-switch'" action = "toggleLowAccuracy" is-toggle="true" toggle-val="getLowAccuracy"></setting-row>
-
-    <setting-row text-key="carbonDatasetString" icon-name="'database-cog'" action = "changeCarbonDataset" is-toggle="false"></setting-row>
-    <setting-row text-key="'control.force-sync'" icon-name="'sync'" action="forceSync" is-toggle="false"></setting-row>
-    <setting-row text-key="'control.share'" icon-name="'share'" action="share" is-toggle="false"></setting-row>
-
-    <setting-row text-key="'control.download-json-dump'" icon-name="'calendar'" action="openDatePicker" is-toggle="false"></setting-row>
+    <!-- <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle-switch'" action = "toggleLowAccuracy" is-toggle="true" toggle-val="getLowAccuracy"></setting-row> -->
 
     <!-- I'm not sure what getMyData() does or where it's used so I don't know how to convert it!
     It was a part of the downloadDump item, as if a second icon alongside the calendar -->
     <!-- <div ng-click="getMyData()" class="control-icon-button"><i class="ion-android-mail"></i></div>
     <setting-row text-key="'control.download-json-dump'" icon-name="'email'" action="getMyData"></setting-row> -->
 
-    <setting-row ng-if="ui_config.profile_controls.support_upload == true" text-key="'control.upload-log'" icon-name="'cloud'" action="uploadLog"></setting-row>
-    <setting-row text-key="'control.email-log'" icon-name="'email'" action="emailLog" is-toggle="false"></setting-row>
+    <!-- fully moving to react will allow nesting of components in the way angularized react does not -->
 
     <!-- Dropdown for user data -->
-    <expansion-section section-title="'control.user-data'" section-contents="[{type: 'row', data: [], textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false},
-                                                                              {type: 'table', data: userData, textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false}]">
+    <expansion-section section-title="'control.user-data'" section-contents="[
+        {type: 'row', data: [], textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false},
+        {type: 'table', data: userData, textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false}
+    ]">
     </expansion-section>
 
     <!-- Dropdown for developer zone -->
