@@ -4,15 +4,19 @@
     when we have fully migrated to React Native.
 */
 
-import React, { useEffect, useState } from "react";
-import { angularize } from "../../angular-react-helper";
-import { func, object } from "prop-types";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import moment from "moment";
+import { LabelTabContext } from "../LabelTab";
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
 
+  const { pipelineRange } = useContext(LabelTabContext);
   const [dateRange, setDateRange] = useState('-\n-');
   const [selDate, setSelDate] = useState('-');
+  const minMaxDates = useMemo(() => ({
+    min: moment.unix(pipelineRange?.start_ts).format('YYYY-MM-DD'),
+    max: moment.unix(pipelineRange?.end_ts).format('YYYY-MM-DD'),
+  }), [pipelineRange]);
 
   useEffect(() => {
     if (!tsRange.oldestTs) return;
@@ -27,6 +31,7 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
     <div style={s.wrapper}>
       <span style={s.text}>{dateRange}</span>
       <input type="date" value={selDate}
+              min={minMaxDates.min} max={minMaxDates.max}
               onChange={(e) => loadSpecificWeekFn(e.target.value)}
               style={s.input} />
       <hr style={s.divider} />
