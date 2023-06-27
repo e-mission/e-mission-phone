@@ -267,7 +267,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
         }).catch((err) => {
-            Logger.displayError('Error loading config on app start', err)
+            Logger.displayError(i18next.t('config.loading-config-app-start', err))
         });
     };
     $ionicPlatform.ready().then(function() {
