@@ -5,6 +5,7 @@ import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
 import SettingRow from './SettingRow';
 import ExpansionSection from './ExpandMenu';
+import ProfileSettings from './ProfileSettings';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -25,7 +26,8 @@ angular.module('emission.main.control',['emission.services',
                                         QrCode.module,
                                         ControlDataTable.module,
                                         SettingRow.module,
-                                        ExpansionSection.module])
+                                        ExpansionSection.module,
+                                        ProfileSettings.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
@@ -219,6 +221,22 @@ angular.module('emission.main.control',['emission.services',
         }
     }
     $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
+    
+    $scope.getTracking = function() {
+        console.log("tracking on or off?", $scope.settings.collect.trackingOn);
+        //  return true: toggle on; return false: toggle off.
+        var isTracking = $scope.settings.collect.trackingOn;
+        if (!angular.isDefined(isTracking)) {
+            // config not loaded when loading ui, set default as false
+            // TODO: Read the value if it is not defined.
+            // Otherwise, don't we have a race with reading?
+            // we don't really $apply on this field...
+            return false;
+        } else {
+            console.log("tracking on or off?", $scope.settings.collect.trackingOn);
+            return $scope.settings.collect.trackingOn;
+        }
+    }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
