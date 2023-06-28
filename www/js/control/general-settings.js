@@ -3,6 +3,9 @@
 import angular from 'angular';
 import ControlDataTable from './ControlDataTable';
 import QrCode from '../components/QrCode';
+import SettingRow from './SettingRow';
+import ExpansionSection from './ExpandMenu';
+import ProfileSettings from './ProfileSettings';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -21,7 +24,10 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
                                         QrCode.module,
-                                        ControlDataTable.module])
+                                        ControlDataTable.module,
+                                        SettingRow.module,
+                                        ExpansionSection.module,
+                                        ProfileSettings.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
@@ -163,7 +169,7 @@ angular.module('emission.main.control',['emission.services',
                 gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
             }
             for (var i in temp) {
-                $scope.userData.push({key: i, value: temp[i]});
+                $scope.userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
             }
         }
         });
@@ -215,10 +221,27 @@ angular.module('emission.main.control',['emission.services',
             // we don't really $apply on this field...
             return false;
         } else {
+            $scope.settings.collect.lowAccuracy = isMediumAccuracy; //adding to scope to use w/ switches
             return isMediumAccuracy;
         }
     }
     $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
+    
+    $scope.getTracking = function() {
+        console.log("tracking on or off?", $scope.settings.collect.trackingOn);
+        //  return true: toggle on; return false: toggle off.
+        var isTracking = $scope.settings.collect.trackingOn;
+        if (!angular.isDefined(isTracking)) {
+            // config not loaded when loading ui, set default as false
+            // TODO: Read the value if it is not defined.
+            // Otherwise, don't we have a race with reading?
+            // we don't really $apply on this field...
+            return false;
+        } else {
+            console.log("tracking on or off?", $scope.settings.collect.trackingOn);
+            return $scope.settings.collect.trackingOn;
+        }
+    }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
@@ -396,7 +419,7 @@ angular.module('emission.main.control',['emission.services',
         navigator.clipboard.writeText(textToCopy).then(() => {
             ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
         });
-    }
+    }  
 
     $scope.logOut = function() {
         $ionicPopup.confirm({
