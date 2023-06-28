@@ -1,5 +1,6 @@
 <ion-view view-title="{{'control.profile' | i18next}}" ng-class="ion-view-background">
-  <ion-content>
+  <ion-nav-bar class="bar-stable"></ion-nav-bar>
+  <ion-content style="padding-top: 10px">
     <div class="control-list-item">
       <div ng-click="copyToClipboard(settings.auth.opcode)" class="control-list-text"><pre>{{settings.auth.opcode}}</pre></div>
       <div ng-click="logOut()" id ="switch-user" class="control-icon-button"><i class="icon ion-log-out"></i></div>

@@ -4,7 +4,7 @@
    </ion-header-bar>
    <ion-content>
         <ion-list ng-repeat="purpose in inputParams.PURPOSE.options">
-		    <ion-radio ng-class="'two-lines'" ng-click="choose('PURPOSE')" ng-model="selected.PURPOSE.value" ng-value="purpose.value">{{purpose.text}}</ion-radio>
+		    <ion-radio ng-class="'two-lines'" ng-click="choose('PURPOSE', purpose.value)">{{purpose.text}}</ion-radio>
 		</ion-list>
    </ion-content>
 </ion-popover-view>

@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import QrCode from './control/QrCode';
+import QrCode from './components/QrCode';
 
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',

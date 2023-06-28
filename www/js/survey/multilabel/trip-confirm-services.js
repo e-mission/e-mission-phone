@@ -147,26 +147,6 @@ angular.module('emission.survey.multilabel.services', ['ionic', 'emission.i18n.u
         }
     }
 
-    ch.checkOtherOption = function(inputType, onTapFn, $scope) {
-          $ionicPopup.show({title: i18next.t("trip-confirm.services-please-fill-in",{text: inputType.toLowerCase()}),
-            scope: $scope,
-            template: '<input type = "text" ng-model = "selected.other.text">',
-            buttons: [
-                { text: i18next.t('trip-confirm.services-cancel'),
-                  onTap: function(e) {
-                    ch.INPUTS.forEach(function(item) {
-                        $scope.selected[item] = {value: ''};
-                    });
-                  }
-                }, {
-                   text: '<b>' + i18next.t('trip-confirm.services-save') + '</b>',
-                   type: 'button-positive',
-                   onTap: onTapFn($scope, inputType)
-                }
-            ]
-          });
-    }
-
     ch.otherTextToValue = function(otherText) {
         return otherText.toLowerCase().replace(" ", "_");
     }

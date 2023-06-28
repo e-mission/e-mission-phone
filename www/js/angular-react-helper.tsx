@@ -5,18 +5,8 @@
 import angular from 'angular';
 import { createRoot } from 'react-dom/client';
 import React from 'react';
-import { Provider as PaperProvider, MD3LightTheme as DefaultTheme } from 'react-native-paper';
-
-const theme = {
-  ...DefaultTheme,
-  colors: {
-    ...DefaultTheme.colors,
-    primary: '#0088ce',
-    primaryContainer: '#80D0FF',
-    secondary: '#0088ce',
-    secondaryContainer: '#80D0FF',
-  },
-};
+import { Provider as PaperProvider, MD3LightTheme as DefaultTheme, MD3Colors } from 'react-native-paper';
+import { getTheme } from './appTheme';
 
 function toBindings(propTypes) {
   const bindings = {};
@@ -30,19 +20,20 @@ function toProps(propTypes, controller) {
   return props;
 }
 
-export function angularize(component, modulePath) {
+export function angularize(component, name, modulePath) {
   component.module = modulePath;
-  const nameCamelCase = component.name[0].toLowerCase() + component.name.slice(1);
+  const nameCamelCase = name[0].toLowerCase() + name.slice(1);
   angular
     .module(modulePath, [])
     .component(nameCamelCase, makeComponentProps(component));
 }
 
+const theme = getTheme();
 export function makeComponentProps(Component) {
   const propTypes = Component.propTypes || {};
   return {
     bindings: toBindings(propTypes),
-    controller: function($element) {
+    controller: ['$element', function($element) {
       /* TODO: once the inf scroll list is converted to React and no longer uses
         collection-repeat, we can just set the root here one time
         and will not have to reassign it in $onChanges. */
@@ -53,16 +44,22 @@ export function makeComponentProps(Component) {
         const props = toProps(propTypes, this);
         root.render(
           <PaperProvider theme={theme}>
+            <style type="text/css">{`
+              @font-face {
+                font-family: 'MaterialCommunityIcons';
+                src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
+              }`}
+            </style>
             <Component { ...props } />
           </PaperProvider>
         );
       };
       this.$onDestroy = () => root.unmount();
-    }
+    }]
   };
 }
 
-export function getAngularService(name) {
+export function getAngularService(name: string) {
   const injector = angular.element(document.body).injector();
   if (!injector || !injector.get) {
     throw new Error(`Couldn't find angular injector to get "${name}" service`);
@@ -73,5 +70,11 @@ export function getAngularService(name) {
     throw new Error(`Couldn't find "${name}" angular service`);
   }
 
-  return service;
+  return (service as any); // casting to 'any' because not all Angular services are typed
+}
+
+export function createScopeWithVars(vars) {
+  const scope = getAngularService("$rootScope").$new();
+  Object.assign(scope, vars);
+  return scope;
 }

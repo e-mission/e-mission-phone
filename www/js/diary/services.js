@@ -1,22 +1,23 @@
 'use strict';
 
 const MotionTypes = {
-  IN_VEHICLE: {name: "IN_VEHICLE", icon: "ion-speedometer", color: "purple"},
-  BICYCLING: {name: "BICYCLING", icon: "ion-android-bicycle", color: "green"},
-  UNKNOWN: {name: "UNKNOWN", icon: "ion-ios-help", color: "orange"},
-  WALKING: {name: "WALKING", icon: "ion-android-walk", color: "brown"},
-  RUNNING: {name: "RUNNING", icon: "ion-android-walk", color: "brown"}, // TODO: do we need this or is it always converted to WALKING?
-  CAR: {name: "CAR", icon: "ion-android-car", color: "red"},
-  AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "ion-plane", color: "red"},
+  IN_VEHICLE: {name: "IN_VEHICLE", icon: "speedometer", color: "purple"},
+  ON_FOOT: {name: "ON_FOOT", icon: "walk", color: "brown"},
+  BICYCLING: {name: "BICYCLING", icon: "bike", color: "green"},
+  UNKNOWN: {name: "UNKNOWN", icon: "help", color: "orange"},
+  WALKING: {name: "WALKING", icon: "walk", color: "brown"},
+  RUNNING: {name: "RUNNING", icon: "walk", color: "brown"}, // TODO: do we need this or is it always converted to WALKING?
+  CAR: {name: "CAR", icon: "car", color: "red"},
+  AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "airplane", color: "red"},
   // based on OSM routes/tags:
-  BUS: {name: "BUS", icon: "ion-android-bus", color: "red"},
-  LIGHT_RAIL: {name: "LIGHT_RAIL", icon: "lightrail fas fa-subway", color: "red"},
-  TRAIN: {name: "TRAIN", icon: "ion-android-train", color: "red"},
+  BUS: {name: "BUS", icon: "bus", color: "red"},
+  LIGHT_RAIL: {name: "LIGHT_RAIL", icon: "train-car-passenger", color: "red"},
+  TRAIN: {name: "TRAIN", icon: "train-car-passenger", color: "red"},
   TRAM: {name: "TRAM", icon: "fas fa-tram", color: "red"},
-  SUBWAY: {name: "SUBWAY", icon: "fas fa-subway", color: "red"},
-  FERRY: {name: "FERRY", icon: "fas fa-ship", color: "red"},
-  TROLLEYBUS: {name: "TROLLEYBUS", icon: "fas fa-bus", color: "red"},
-  UNPROCESSED: {name: "UNPROCESSED", icon: "ion-ios-help", color: "orange"}
+  SUBWAY: {name: "SUBWAY", icon: "subway-variant", color: "red"},
+  FERRY: {name: "FERRY", icon: "ferry", color: "red"},
+  TROLLEYBUS: {name: "TROLLEYBUS", icon: "bus-side", color: "red"},
+  UNPROCESSED: {name: "UNPROCESSED", icon: "help", color: "orange"}
 }
 const motionTypeOf = (motionName) => {
   let key = ('' + motionName).toUpperCase();
@@ -82,7 +83,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     var totalDist = 0;
     for (var i=0; i<trip.sections.length; i++) {
-      let filteredMode = filterRunning(trip.sections[i].sensed_mode);
+      let filteredMode = filterRunning(trip.sections[i].sensed_mode_str);
       if (filteredMode in dists) {
         dists[filteredMode] += trip.sections[i].distance;
         totalDist += trip.sections[i].distance;
@@ -97,7 +98,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         const fract = dists[mode] / totalDist;
         return {
             mode: mode,
-            icon: "icon " + motionTypeOf(mode)?.icon,
+            icon: motionTypeOf(mode)?.icon,
             color: motionTypeOf(mode)?.color || 'black',
             pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
         };
@@ -112,8 +113,8 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
       fmt_distance_suffix: ImperialConfig.getDistanceSuffix,
-      icon: "icon " + motionTypeOf(s.sensed_mode)?.icon,
-      color: motionTypeOf(s.sensed_mode)?.color || "#333",
+      icon: motionTypeOf(s.sensed_mode_str)?.icon,
+      color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
     }));
   };
 
@@ -459,7 +460,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
           },
           style: {
-            color: motionTypeOf(section?.sensed_mode)?.color || "#333",
+            color: motionTypeOf(section?.sensed_mode_str)?.color || "#333",
           }
         }
       });
