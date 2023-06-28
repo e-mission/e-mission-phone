@@ -3,9 +3,6 @@
     
     <profile-settings settings-scope="this"></profile-settings>
 
-    <!-- demographics survey -- leaving for now -->
-    <enketo-demographics-button></enketo-demographics-button>
-
     <!-- reminder time -- leaving for now -->
     <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
       <div class="control-list-text">
@@ -50,15 +47,8 @@
 
     <!-- fully moving to react will allow nesting of components in the way angularized react does not -->
 
-    <!-- Dropdown for user data -->
-    <expansion-section section-title="'control.user-data'" section-contents="[
-        {type: 'row', data: [], textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false},
-        {type: 'table', data: userData, textKey: 'control.erase-data', action: eraseUserData, iconName: 'delete-forever', isToggle: false}
-    ]">
-    </expansion-section>
-
     <!-- Dropdown for developer zone -->
-    <expansion-section section-title="'control.dev-zone'" section-contents="[
+    <!-- <expansion-section section-title="'control.dev-zone'" section-contents="[
         {type: 'row', data: [], textKey: 'control.refresh', action: refreshScreen, iconName: 'refresh', isToggle: false},
         {type: 'row', data: [], textKey: 'control.end-trip-sync', action: endForceSync, iconName: 'sync-alert', isToggle: false},
         {type: 'row', data: [], textKey: 'control.check-consent', action: checkConsent, iconName: 'check', isToggle: false},
@@ -77,7 +67,7 @@
         {type: 'row', data: [], textKey: 'control.app-version', action: '', iconName: 'application', isToggle: false},
         {type: 'row', data: [], textKey: settings.clientAppVer, action: '', iconName: '', isToggle: false}
     ]">
-    </expansion-section>
+    </expansion-section> -->
 
   </ion-content>
 </ion-view>
