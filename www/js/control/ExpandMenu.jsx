@@ -26,5 +26,5 @@ ExpansionSection.propTypes = {
     sectionTitle: string
 }
 
-angularize(ExpansionSection, 'emission.main.control.expansionSection'); 
+angularize(ExpansionSection, 'ExpansionSection', 'emission.main.control.expansionSection'); 
 export default ExpansionSection;

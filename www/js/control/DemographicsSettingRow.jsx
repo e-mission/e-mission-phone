@@ -27,5 +27,5 @@ const DemographicsSettingRow = ({ }) => {
           textKey="control.edit-demographics" isToggle={false} />
 };
 
-angularize(DemographicsSettingRow, 'emission.main.control.demographicsSettingRow');
+angularize(DemographicsSettingRow, 'DemographicsSettingRow','emission.main.control.demographicsSettingRow');
 export default DemographicsSettingRow;

@@ -86,6 +86,6 @@ const ProfileSettings = ({ settingsScope }) => {
       settingsScope: object
     }
    
-  angularize(ProfileSettings, 'emission.main.control.profileSettings'); 
+  angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;
   

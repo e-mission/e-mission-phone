@@ -46,5 +46,5 @@ SettingRow.propTypes = {
     switchValue: bool
 }
 
-angularize(SettingRow, 'emission.main.control.settingRow'); 
+angularize(SettingRow, 'SettingRow', 'emission.main.control.settingRow'); 
 export default SettingRow;
