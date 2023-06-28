@@ -60,15 +60,6 @@ const ProfileSettings = ({ settingsScope }) => {
                <ControlDataTable controlData={userData}></ControlDataTable>
            </ExpansionSection>
 
-        {/* 
-        {type: 'row', data: [], textKey: 'control.collection', action: editCollectionConfig, iconName: 'pencil', isToggle: false},
-        {type: 'table', data: settings.collect.show_config},
-        {type: 'row', data: [], textKey: 'control.sync', action: editSyncConfig, iconName: 'pencil', isToggle: false},
-        {type: 'table', data: settings.sync.show_config},
-        {type: 'row', data: [], textKey: 'control.app-version', action: '', iconName: 'application', isToggle: false},
-        {type: 'row', data: [], textKey: settings.clientAppVer, action: '', iconName: '', isToggle: false} */}
-
-
            <ExpansionSection sectionTitle="control.dev-zone">
                <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>

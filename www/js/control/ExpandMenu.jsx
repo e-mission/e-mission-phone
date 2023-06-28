@@ -21,30 +21,22 @@ and needs to be handled accordingly */
      isToggle: bool}
 */
 
+//any pure functions can go outside
 
-const ExpansionSection = ({sectionTitle, sectionContents}) => {
+const ExpansionSection = (props) => {
     const { t } = useTranslation(); //this accesses the translations
     const [expanded, setExpanded] = React.useState(false);
 
     const handlePress = () => setExpanded(!expanded);
 
+    // anything that mutates must go in --- depend on props or state...
+
   return (
     <List.Accordion
-    title={t(sectionTitle)}
+    title={t(props.sectionTitle)}
     expanded={expanded}
     onPress={handlePress}>
-        {sectionContents?.map((item) =>
-            {
-                if(item.type == "row")
-                {
-                    return (<SettingRow key={item.textKey} textKey={item.textKey} iconName={item.iconName} action={item.action} isToggle={item.isToggle}></SettingRow> );
-                }
-                else
-                {
-                    return (<ControlDataTable controlData={item.data}></ControlDataTable>)
-                }
-            }
-      )}
+        {props.children}
     </List.Accordion>
   );
 };
