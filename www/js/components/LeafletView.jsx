@@ -8,7 +8,7 @@ export function invalidateMaps() {
   mapSet.forEach(map => map.invalidateSize());
 }
 
-const LeafletView = ({ geojson, opts }) => {
+const LeafletView = ({ geojson, opts, ...otherProps }) => {
 
   const mapRef = useRef(null);
 
@@ -29,8 +29,21 @@ const LeafletView = ({ geojson, opts }) => {
   }, []);
 
   return (
-    <View>
-      <div id="map" ref={mapRef} style={{width: '100%', height: '100%'}}></div>
+    <View {...otherProps}>
+      <style>{`
+        .leaflet-bottom {
+          max-width: 100%;
+        }
+        .leaflet-pane {
+          z-index: -1;
+        }
+       .leaflet-control-attribution {
+          width: 100%;
+          white-space: nowrap;
+          z-index: 9;
+        }
+      `}</style>
+      <div id="map" ref={mapRef} style={{width: '100%', height: '100%', zIndex: 0}}></div>
     </View>
   );
 };
@@ -51,5 +64,5 @@ LeafletView.propTypes = {
   opts: object
 }
 
-angularize(LeafletView, 'emission.main.leaflet');
+angularize(LeafletView, 'LeafletView', 'emission.main.leaflet');
 export default LeafletView;

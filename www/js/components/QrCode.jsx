@@ -15,5 +15,5 @@ QrCode.propTypes = {
   value: string,
 }
 
-angularize(QrCode, 'emission.main.qrcode');
+angularize(QrCode, 'QrCode', 'emission.main.qrcode');
 export default QrCode;

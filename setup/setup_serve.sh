@@ -12,3 +12,5 @@ npm install
 
 echo "Pulling the plugin-specific UIs"
 npm run setup-serve
+
+npx cordova prepare

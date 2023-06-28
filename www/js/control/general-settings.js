@@ -1,8 +1,8 @@
 'use strict';
 
 import angular from 'angular';
-import QrCode from './QrCode';
 import ControlDataTable from './ControlDataTable';
+import QrCode from '../components/QrCode';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -195,9 +195,13 @@ angular.module('emission.main.control',['emission.services',
             // Backwards compat hack to fill in the `app_required` based on the
             // old-style "program_or_study"
             // remove this at the end of 2023 when all programs have been migrated over
-            $scope.ui_config.intro.app_required = $scope.ui_config?.intro.app_required || $scope.ui_config?.intro.program_or_study == 'program';
+            if ($scope.ui_config.intro.app_required == undefined) {
+                $scope.ui_config.intro.app_required = $scope.ui_config?.intro.program_or_study == 'program';
+            }
             $scope.ui_config.opcode = $scope.ui_config.opcode || {};
-            $scope.ui_config.opcode.autogen = $scope.ui_config?.opcode?.autogen || $scope.ui_config?.intro.program_or_study == 'study';
+            if ($scope.ui_config.opcode.autogen == undefined) {
+                $scope.ui_config.opcode.autogen = $scope.ui_config?.intro.program_or_study == 'study';
+            }
             $scope.refreshScreen();
         });
     });
