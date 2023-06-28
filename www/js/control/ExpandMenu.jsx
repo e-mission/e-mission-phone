@@ -3,26 +3,8 @@ import { angularize} from "../angular-react-helper";
 import { List } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { array, string } from "prop-types";
-import SettingRow from "./SettingRow";
-import ControlDataTable from "./ControlDataTable";
-
-/* hoping for a dropdown that is parameterized
-some sort of object passed in that dicates everything
-each "thing" in the list will either be a dataTable
-or a settingRow
-and needs to be handled accordingly */
-
-/*
-    {type: row/table
-     data: []
-     titleKey: ''
-     action: function
-     iconName: ''
-     isToggle: bool}
-*/
 
 //any pure functions can go outside
-
 const ExpansionSection = (props) => {
     const { t } = useTranslation(); //this accesses the translations
     const [expanded, setExpanded] = React.useState(false);
@@ -41,7 +23,6 @@ const ExpansionSection = (props) => {
   );
 };
 ExpansionSection.propTypes = {
-    sectionContents: array,
     sectionTitle: string
 }
 
