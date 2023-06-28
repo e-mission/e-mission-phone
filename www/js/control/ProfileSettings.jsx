@@ -7,40 +7,29 @@ import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
 
 //any pure functions can go outside
-const ProfileSettings = ({ settingsScope }) => {
+const ProfileSettings = ({ settingsScope, settingsObject }) => {
     // anything that mutates must go in --- depend on props or state... 
 
     // settingsScope is the $scope of general-settings.js
     // grab any variables or functions you need from it like this:
+
+
+    //why is settings not defined but everything else is fine?
     const { logOut, viewPrivacyPolicy, viewQRCode, userStartStopTracking, 
         fixAppStatus, toggleLowAccuracy, changeCarbonDataset,
         forceSync, share, openDatePicker, uploadLog, emailLog,
-        eraseUserData, userData, carbonDatasetString, settings,
+        eraseUserData, userData, carbonDatasetString, 
         refreshScreen, endForceSync, checkConsent, dummyNotification, 
         invalidateCache, nukeUserCache, showLog, showSensed,
         editCollectionConfig, editSyncConfig, parseState, forceState  } = settingsScope;
 
-    // let opcode = settings.auth.opcode
-    function getTracking(){
-        if(settings?.collect?.trackingOn){
-            return settings.collect.trackingOn;
-        }
-        else{
-            return false;
-        }
-    }
-    function getOpcode(){
-        if(settings?.auth?.opcode){
-            return settings.auth.opcode;
-        }
-        else{
-            return "ERROR GETTING OPCODE";
-        }
-    }
+    console.log("settings?", settingsObject);
+    let settings = settingsObject;
+    console.log("settings", settings);
 
     return (
         <>
-           <SettingRow textKey={settings?.auth?.opcode} iconName='logout' action={logOut}></SettingRow>
+           <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode}></SettingRow>
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
@@ -77,13 +66,11 @@ const ProfileSettings = ({ settingsScope }) => {
                <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
                <ControlDataTable controlData={settings?.collect?.show_config}></ControlDataTable>
                <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
-               <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")}></SettingRow>
-               <SettingRow textKey={settings?.clientAppVer} iconName="" action={()=>console.log("")}></SettingRow>
+               <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
         </>
     );
     };
- 
   ProfileSettings.propTypes = {
       settingsScope: object
     }

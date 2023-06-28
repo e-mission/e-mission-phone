@@ -1,7 +1,7 @@
 <ion-view view-title="{{'control.profile' | i18next}}" ng-class="ion-view-background">
   <ion-content>
     
-    <profile-settings settings-scope="this"></profile-settings>
+    <profile-settings settings-scope="this" settings-object="settings"></profile-settings>
 
     <!-- reminder time -- leaving for now -->
     <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
@@ -26,7 +26,6 @@
         </div>
       </label>
     </div> -->
-    <!-- <setting-row text-key="'control.tracking'" icon-name="'toggle-switch'" action = "userStartStopTracking" is-toggle="true" toggle-val="getTracking"></setting-row> -->
     
     <!-- accuracy - another toggle! -->
     <!-- <div class="control-list-item">
@@ -38,7 +37,6 @@
         </div>
       </label>
     </div> -->
-    <!-- <setting-row text-key="'control.medium-accuracy'" icon-name="'toggle-switch'" action = "toggleLowAccuracy" is-toggle="true" toggle-val="getLowAccuracy"></setting-row> -->
 
     <!-- I'm not sure what getMyData() does or where it's used so I don't know how to convert it!
     It was a part of the downloadDump item, as if a second icon alongside the calendar -->
