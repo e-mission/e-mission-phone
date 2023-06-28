@@ -89,5 +89,5 @@ const buttonStyles = StyleSheet.create({
   }
 });
 
-angularize(ReactHello, 'emission.main.reacthello');
+angularize(ReactHello, 'ReactHello', 'emission.main.reacthello');
 export default ReactHello;

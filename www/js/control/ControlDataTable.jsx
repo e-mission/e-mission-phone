@@ -34,5 +34,5 @@ ControlDataTable.propTypes = {
  
 // need call to angularize to let the React and Angular co-mingle
   //second argument is "module path" - can access later as ControlDataTable.module
-angularize(ControlDataTable, 'emission.main.control.dataTable'); 
+angularize(ControlDataTable, 'ControlDataTable', 'emission.main.control.dataTable'); 
 export default ControlDataTable;

@@ -11,6 +11,14 @@
 /* nvd3 styles */
 @import 'nvd3/build/nv.d3.css';
 
+/* Annoyingly, React Native Web applies `white-space: nowrap`
+    on Text elements and doesn't give us a way to change it in the style prop,
+    effectively preventing multiline text.
+  This is a workaround to override that style. */
+div[class*='css-text'] {
+  white-space: normal;
+}
+
 .fill-container {
   display: block;
   position: relative;
@@ -26,6 +34,14 @@
   position: static;
 }
 
+/* Without this, the LabelTab does not fill the entire height of the screen.
+    It has something to do with React Navigation's NavigationContainer.
+  This should not be necessary once the entire app's routing has been
+    converted to use React Navigation */
+label-tab > div {
+  height: 100%;
+}
+
 /* default color pallete (may be overridden by child elements) */
 :root {
   --accent: hsl(200, 100%, 40%);
@@ -38,12 +54,18 @@ body.platform-ios {
   margin: 0 10px 0 0;
 }
 
-.platform-ios .view-container {
-  height: calc(100% - (env(safe-area-inset-top) / 2));
+.view-container.tab-content {
+  height: auto !important;
+  bottom: 50px !important;
+  top: 0px !important;
 }
 
-.platform-ios .scroll-content {
-    height: calc(100% - 90px);
+.has-tabs {
+  bottom: 0 !important;
+}
+
+.platform-ios .view-container {
+  height: calc(100% - (env(safe-area-inset-top) / 2));
 }
 
 .join-inline-info {
@@ -465,13 +487,21 @@ background-image: none !important; }
 .tab-item.tab-item-active, .tab-item.active, .tab-item.activated {
     color: var(--accent);
 }
-
+.platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) > * {
+  margin-top: 15px;
+}
+.platform-ios.platform-cordova:not(.fullscreen) .bar-header:not(.bar-subheader) {
+  height: 58px;
+}
 ion-header-bar {
   background-color: #f5f5f5 !important;
   box-shadow: 0 1px 2px rgb(0 0 0 / 8%), 0 3px 6px rgb(0 0 0 / 12%);
 }
-.ion-view-background{
-  background-color: #ededed !important;
+ion-nav-view {
+  z-index: 10;
+}
+.pane {
+  background-color: #eee !important;
 }
 .tabs-custom > .tabs,
 .tabs.tabs-custom {
@@ -500,6 +530,9 @@ ion-header-bar {
     border-color: #fff; }
 .title.title-center.header-item {
   color: #303030;
+}
+.title.title-center.header-item:empty {
+  display: none;
 }
 .date-picker-button {
   color: var(--accent) !important; padding: 0 15px; border-color: transparent; margin-top: 4px; 
@@ -581,6 +614,7 @@ button.button.back-button.buttons.button-clear.header-item {
 }
 /* Profile tab */
 .control-list-item {
+  background: #fff;
   display: flex;
   min-height: 50px;
   margin-top: 0.5px;
@@ -651,78 +685,18 @@ button.button.back-button.buttons.button-clear.header-item {
   text-align: center; padding: 0.25em 0.8em; border-bottom-color: #ccc; border-bottom-width: 0.5px; border-bottom-style: solid;
 }
 
-.start-time-tag, .stop-time-tag {
+timestamp-badge {
   position: absolute;
-  display: flex;
-  width: max-content;
-  padding: 0 .5em;
-  left: 50%;
-  border-radius: 50px;
-  font-size: 13px;
-  box-shadow: 0 1px 2px rgb(0 0 0 / .1), 0 2px 4px rgb(0 0 0 / .2);
-  z-index: 999;
-  white-space: pre-line;
-}
-.start-time-tag > *, .stop-time-tag > * {
-  padding: .25em 0;
-}
-.start-time-tag > *:empty, .stop-time-tag > *:empty {
-  display: none;
-}
-.start-time-tag {
-  background: var(--accent-light);
-  color: black;
-  top: 0;
-  transform: translate(-50%, -50%);
-}
-.stop-time-tag {
-  background: var(--accent);
-  color: white;
   bottom: 0;
+  left: 50%;
   transform: translate(-50%, 50%);
+  z-index: 999;
 }
 
-.start-time-tag-diarytoremove {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  text-align: center;
-  background-color: var(--accent-light);
-  color: black;
-  width: 16%;
-  height: 16px;
-  border-radius: 8px;
-  font-size: 9px;
-  position: absolute;
-  left: 1%;
-  top: 15px;
-  line-height: 16px;
-}
-.stop-time-tag-diarytoremove {
-  box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-  text-align: center;
-  background-color: var(--accent);
-  color: white;
-  width: 16%;
-  height: 16px;
-  border-radius: 8px;
-  font-size: 9px;
-  position: absolute;
-  left: 1%;
-  bottom: 15px;
-  line-height: 16px;
-}
-.stop-time-tag-lower { /* this is used in both lists (infinite_scroll_list.js & list.js) around the differentCommon function */
-        box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
-        text-align: center;
-        background-color: var(--accent);
-        color: white;
-        width: 16%;
-        height: 16px;
-        border-radius: 8px;
-        font-size: 9px;
-        position: absolute;
-        left: 1%;
-        top: 310px;
-        line-height: 16px;
+timestamp-badge[light-bg] {
+  top: 0;
+  bottom: unset;
+  transform: translate(-50%, -50%);
 }
 
 .start-end-addresses-container {

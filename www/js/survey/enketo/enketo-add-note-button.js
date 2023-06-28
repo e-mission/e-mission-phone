@@ -3,7 +3,6 @@
  */
 
 import angular from 'angular';
-import DiaryButton from '../../diary/DiaryButton';
 
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',
@@ -11,103 +10,7 @@ angular.module('emission.survey.enketo.add-note-button',
         'emission.config.dynamic',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
-        'emission.survey.inputmatcher',
-        DiaryButton.module])
-.directive('enketoAddNoteButton', function() {
-  return {
-    scope: {
-      timelineEntry: '=',
-      notesConfig: '=',
-      datakey: '@',
-    },
-    controller: "EnketoAddNoteButtonCtrl",
-    templateUrl: 'templates/survey/enketo/add-note-button.html'
-  };
-})
-.controller("EnketoAddNoteButtonCtrl", function($scope, $element, $attrs,
-    EnketoSurveyLaunch, $ionicPopover, ClientStats, DynamicConfig,
-    EnketoNotesButtonService) {
-  console.log("Invoked enketo directive controller for add-note-button");
-  $scope.notes = [];
-
-  const updateLabel = () => {
-    const localeCode = i18next.resolvedLanguage;
-    if ($scope.notesConfig?.['filled-in-label'] && timelineEntry.additionsList?.length > 0) {
-      $scope.displayLabel = $scope.notesConfig?.['filled-in-label']?.[localeCode];
-    } else {
-      $scope.displayLabel = $scope.notesConfig?.['not-filled-in-label']?.[localeCode];
-    }
-  }
-  $scope.$watch('notesConfig', updateLabel);
-  $scope.$watch('timelineEntry.additionsList', updateLabel);
-
-  // return a dictionary of fields we want to prefill, using start/enter and end/exit times
-  $scope.getPrefillTimes = () => {
-
-    let begin = $scope.timelineEntry.start_ts || $scope.timelineEntry.enter_ts;
-    let stop = $scope.timelineEntry.end_ts || $scope.timelineEntry.exit_ts;
-
-    // if addition(s) already present on this timeline entry, `begin` where the last one left off
-    $scope.timelineEntry.additionsList.forEach(a => {
-      if (a.data.end_ts > (begin || 0) && a.data.end_ts != stop)
-        begin = a.data.end_ts;
-    });
-    
-    const timezone = $scope.timelineEntry.start_local_dt?.timezone
-                      || $scope.timelineEntry.enter_local_dt?.timezone
-                      || $scope.timelineEntry.end_local_dt?.timezone
-                      || $scope.timelineEntry.exit_local_dt?.timezone;
-    const momentBegin = begin ? moment(begin * 1000).tz(timezone) : null;
-    const momentStop = stop ? moment(stop * 1000).tz(timezone) : null;
-
-    // the current, local time offset (e.g. -07:00)
-    const currOffset = moment().toISOString(true).slice(-6);
-
-    const prefills = {}
-    // Fill in only the fields that are present
-    // Enketo requires these specific date/time formats
-    if (momentBegin) {
-      prefills.Start_date = momentBegin.format('YYYY-MM-DD');
-      prefills.Start_time = momentBegin.format('HH:mm:ss.SSS') + currOffset;
-    } else {
-      prefills.Start_date = momentStop.format('YYYY-MM-DD');
-    }
-
-    if (momentStop) {
-      prefills.End_date = momentStop.format('YYYY-MM-DD');
-      prefills.End_time = momentStop.format('HH:mm:ss.SSS') + currOffset;
-    }
-
-    return prefills;
-  }
-
-  $scope.openPopover = function ($event, timelineEntry, inputType) {
-    const surveyName = $scope.notesConfig.surveyName;
-    console.log('About to launch survey ', surveyName);
-
-    // prevents the click event from bubbling through to the card and opening the details page
-    if ($event.stopPropagation) $event.stopPropagation();
-    return EnketoSurveyLaunch
-      .launch($scope, surveyName, { timelineEntry: timelineEntry, prefillFields: $scope.getPrefillTimes(), dataKey: $scope.datakey })
-      .then(result => {
-        if (!result) {
-          return;
-        }
-        const addition = {
-          data: result,
-          write_ts: Date.now(),
-          key: $scope.datakey
-        };
-
-        // adding the addition for display is handled in infinite_scroll_list.js
-        $scope.$emit('enketo.noteAddition', addition);
-        
-        // store is commented out since the enketo survey launch currently
-        // stores the value as well
-        // $scope.store(inputType, result, false);
-      });
-  };
-})
+        'emission.survey.inputmatcher'])
 .factory("EnketoNotesButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
   var enbs = {};
   console.log("Creating EnketoNotesButtonService");
