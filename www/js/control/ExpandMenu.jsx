@@ -4,14 +4,11 @@ import { List } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { array, string } from "prop-types";
 
-//any pure functions can go outside
 const ExpansionSection = (props) => {
     const { t } = useTranslation(); //this accesses the translations
     const [expanded, setExpanded] = React.useState(false);
 
     const handlePress = () => setExpanded(!expanded);
-
-    // anything that mutates must go in --- depend on props or state...
 
   return (
     <List.Accordion
