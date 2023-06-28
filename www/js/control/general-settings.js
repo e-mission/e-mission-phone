@@ -217,6 +217,7 @@ angular.module('emission.main.control',['emission.services',
             // we don't really $apply on this field...
             return false;
         } else {
+            $scope.settings.collect.lowAccuracy = isMediumAccuracy; //adding to scope to use w/ switches
             return isMediumAccuracy;
         }
     }
