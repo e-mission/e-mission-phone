@@ -105,8 +105,8 @@
             <div ng-class="currentQueryForCalorie()">
               <div class="user-calorie"><rangedisplay range="caloriesData.userCalories"></rangedisplay> kcal</div>
               <div class="calorie-change" ng-if="foodCompare == 'cookie'">{{'main-metrics.equals-cookies' | i18next:{count: numberOfCookies.low} }}</div>
-              <div class="calorie-change" ng-if="foodCompare == 'iceCream'">{{'main-metrics.equals-icecream' | i18next:{icecream: numberOfIceCreams.low} }}</div>
-              <div class="calorie-change" ng-if="foodCompare == 'banana'">{{'main-metrics.equals-bananas' | i18next:{bananas: numberOfBananas.low} }}</div>
+              <div class="calorie-change" ng-if="foodCompare == 'iceCream'">{{'main-metrics.equals-icecream' | i18next:{count: numberOfIceCreams.low} }}</div>
+              <div class="calorie-change" ng-if="foodCompare == 'banana'">{{'main-metrics.equals-bananas' | i18next:{count: numberOfBananas.low} }}</div>
               <diffdisplay ng-if="caloriesData.greaterLesserPct" change="caloriesData.greaterLesserPct"></diffdisplay>
             </div>
             </div>
