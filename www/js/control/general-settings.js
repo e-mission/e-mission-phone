@@ -232,7 +232,7 @@ angular.module('emission.main.control',['emission.services',
     }
 
     //this is the action called in ProfileSettings for the accuracy toggle
-    $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
+    // $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
     
     $scope.getTracking = function() {
         console.log("tracking on or off?", $scope.settings.collect.trackingOn);
@@ -555,9 +555,10 @@ angular.module('emission.main.control',['emission.services',
         }).then($scope.forceSync);
     }
 
-    $scope.forceState = ControlCollectionHelper.forceState;
-    $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
-    $scope.editSyncConfig = ControlSyncHelper.editConfig;
+    //migrated!
+    // $scope.forceState = ControlCollectionHelper.forceState;
+    // $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
+    // $scope.editSyncConfig = ControlSyncHelper.editConfig;
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();

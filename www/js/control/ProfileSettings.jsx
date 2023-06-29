@@ -18,12 +18,12 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     //why is settings not defined but everything else is fine?
     const { logOut, viewPrivacyPolicy, viewQRCode, 
-        fixAppStatus, toggleLowAccuracy, changeCarbonDataset,
+        fixAppStatus, changeCarbonDataset,
         forceSync, share, openDatePicker,
         eraseUserData, userData,
         refreshScreen, endForceSync, checkConsent, dummyNotification, 
         invalidateCache, nukeUserCache, showLog, showSensed,
-        editCollectionConfig, editSyncConfig, parseState, forceState  } = settingsScope;
+         parseState, } = settingsScope;
 
     console.log("settings?", settingsObject);
     let settings = settingsObject;
@@ -33,6 +33,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
     const ControlCollectionHelper = getAngularService('ControlCollectionHelper');
+    const ControlSyncHelper = getAngularService('ControlSyncHelper');
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
@@ -54,6 +55,16 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         }
     }
 
+    const forceState = ControlCollectionHelper.forceState;
+    const editCollectionConfig = ControlCollectionHelper.editConfig;
+    const editSyncConfig = ControlSyncHelper.editConfig;
+    const toggleLowAccuracy = function() {
+        console.log("change attempt in ProfileSettigns");
+        //the function below is very broken!!
+        ControlCollectionHelper.toggleLowAccuracy();
+        settings.collect.lowAccuracy = ControlCollectionHelper.isMediumAccuracy();
+    }
+
     return (
         <>
            <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode}></SettingRow>
@@ -63,7 +74,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            {/* this toggle only kinda works */}
            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={settings?.collect?.trackingOn}></SettingRow>
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
-           {/* this switch is also a troublemaker (it's just not fully implemented well yet) */}
+           {/* this switch is also fussy */}
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={settings?.collect?.lowAccuracy}></SettingRow>
            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={changeCarbonDataset}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
@@ -83,6 +94,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
                <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
+               {/* upcoming notifications seem to be undefined at time of render :( */}
                <SettingRow textKey="control.upcoming-notifications" iconName="bell-check" action={()=>console.log("")}></SettingRow>
                <ControlDataTable controlData={settings?.notification?.scheduledNotifs}></ControlDataTable>
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
