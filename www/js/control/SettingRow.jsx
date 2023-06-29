@@ -13,7 +13,7 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
     if (switchValue) {
         rightComponent = <Switch value={switchValue} onValueChange={(e) => action(e)}/>;
     } else {
-        rightComponent = <IconButton icon={iconName} onPress={(e) => action(e)} style={styles.icon}/>;
+        rightComponent = <IconButton icon={iconName} onPress={(e) => action(e)}/>;
     }
     let descriptionText;
     if(desc) {
@@ -35,20 +35,17 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
 };
 const styles = StyleSheet.create({
     item:{
-        flex: .75,
         justifyContent: 'space-between',
+        alignContent: 'center',
         backgroundColor: '#fff',
-        padding: 5,
+        paddingTop: 0,
+        height: 60,
         margin: 5,
     },
     title: {
         fontSize: 16,
         marginVertical: 2,
     },
-    icon: {
-        marginVertical: 2,
-        color: "#99FF66",
-    }
   });
 SettingRow.propTypes = {
     textKey: string,

@@ -30,6 +30,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     return (
         <>
            <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode}></SettingRow>
+           <SettingRow textKey="Testing" iconName='logout' action={logOut} desc="this is a test"></SettingRow>
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
