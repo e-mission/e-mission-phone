@@ -48,10 +48,10 @@
     </div>
     <div ng-if="uictrl.showResult">
       <div ng-if="uictrl.showChart">
-        <nvd3 ng-if="uictrl.showTrips" options="countOptions" data="data.count" style="padding: 10px;"></nvd3>
-        <nvd3 ng-if="uictrl.showDistance" options="distanceOptions" data="data.distance" style="padding: 10px;"></nvd3>
-        <nvd3 ng-if="uictrl.showDuration" options="durationOptions" data="data.duration" style="padding: 10px;"></nvd3>
-        <nvd3 ng-if="uictrl.showSpeed" options="speedOptions" data="data.mean_speed" style="padding: 10px;"></nvd3>
+        <bar-chart ng-if="uictrl.showDistance" chart-data="data.distance" options="distanceOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showTrips" chart-data="data.count" options="countOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showDuration" chart-data="data.duration" options="durationOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showSpeed" chart-data="data.mean_speed" options="speedOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
       </div>
       <div ng-if="uictrl.showSummary" overflow-scroll="true">
         <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
