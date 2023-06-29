@@ -75,8 +75,8 @@ const LabelScreenDetails = ({ route, navigation }) => {
           </View>
           <View style={{justifyContent: 'center'}}>
             {trip.percentages?.map?.((pct, i) => (
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <IconButton key={i} icon={pct.icon} size={16} style={{height: 24, width: 24, margin: 0}}
+              <View key={i} style={{flexDirection: 'row', alignItems: 'center'}}>
+                <IconButton icon={pct.icon} size={16} style={{height: 24, width: 24, margin: 0}}
                   iconColor={pct.color} />
                 <Text style={{fontSize: 13, fontWeight: 'bold'}}>
                   {pct.pct}%

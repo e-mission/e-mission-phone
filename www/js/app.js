@@ -13,9 +13,6 @@ import 'angular-translate-loader-static-files';
 import 'moment';
 import 'moment-timezone';
 
-import i18next from 'i18next';
-import { initReactI18next } from 'react-i18next';
-
 import 'ionic-toast';
 import 'ionic-datepicker';
 import 'angular-simple-logger';
@@ -23,36 +20,8 @@ import 'angular-simple-logger';
 import '../manual_lib/ionic/js/ionic.js';
 import '../manual_lib/ionic/js/ionic-angular.js';
 
-
-import en from '../i18n/en.json';
-import es from '../../locales/es/i18n/es.json';
-import fr from '../../locales/fr/i18n/fr.json';
-import it from '../../locales/it/i18n/it.json';
-const langs = { en, es, fr, it };
-
-let resources = {};
-for (const [lang, json] of Object.entries(langs)) {
-  resources[lang] = { translation: json }
-}
-
-const locales = !navigator?.length ? [navigator.language] : navigator.languages;
-let detectedLang;
-locales.forEach(locale => {
-  const lang = locale.trim().split(/-|_/)[0];
-  if (Object.keys(langs).includes(lang)) {
-    detectedLang = lang;
-  }
-});
-
-i18next.use(initReactI18next)
-  .init({
-  debug: true,
-  resources,
-  lng: detectedLang,
-  fallbackLng: 'en'
-});
-
-window.i18next = i18next;
+import initializedI18next from './i18nextInit';
+window.i18next = initializedI18next;
 import 'ng-i18next';
 
 angular.module('emission', ['ionic', 'jm.i18next',
