@@ -81,17 +81,19 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    //these have been converted!!
+    // $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
-    $scope.uploadLog = function () {
-        UploadHelper.uploadFile("loggerDB")
-    };
+    // $scope.uploadLog = function () {
+    //     UploadHelper.uploadFile("loggerDB")
+    // };
 
-    $scope.emailLog = function () {
-        // Passing true, we want to send logs
-        EmailHelper.sendEmail("loggerDB")
-    };
+    // $scope.emailLog = function () {
+    //     // Passing true, we want to send logs
+    //     EmailHelper.sendEmail("loggerDB")
+    // };
 
+    //this function used in ProfileSettings to viewPrivacyPolicy
     $scope.viewPrivacyPolicy = function($event) {
         // button -> list element -> scroll
         // const targetEl = $event.currentTarget.parentElement.parentElement;
@@ -108,6 +110,7 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
+    //this function used in ProfileSettings to viewQRCode
     $scope.viewQRCode = function($event) {
         $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.opcode;
         if ($scope.qrp) {
@@ -120,6 +123,7 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
+    //this function used in ProfileSettings to send DummyNotification
     $scope.dummyNotification = () => {
         cordova.plugins.notification.local.addActions('dummy-actions', [
             { id: 'action', title: 'Yes' },
@@ -142,6 +146,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
     }
 
+    //called in ProfileSettings on the AppStatus row
     $scope.fixAppStatus = function() {
         $scope.$broadcast("recomputeAppStatus");
         $scope.appStatusModal.show();
@@ -225,6 +230,8 @@ angular.module('emission.main.control',['emission.services',
             return isMediumAccuracy;
         }
     }
+
+    //this is the action called in ProfileSettings for the accuracy toggle
     $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
     
     $scope.getTracking = function() {
@@ -284,9 +291,11 @@ angular.module('emission.main.control',['emission.services',
             Logger.displayError("while getting opcode, ",error);
         });
     };
+    //in ProfileSettings in DevZone
     $scope.showLog = function() {
         $state.go("root.main.log");
     }
+    //inProfileSettings in DevZone
     $scope.showSensed = function() {
         $state.go("root.main.sensed");
     }
@@ -317,6 +326,7 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    //in ProfileSettings in DevZone
     $scope.nukeUserCache = function() {
         var nukeChoiceActions = [{text: i18next.t('general-settings.nuke-ui-state-only'),
                                   action: KVStore.clearOnlyLocal},
@@ -336,6 +346,7 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    //in ProfileSettings in DevZone
     $scope.invalidateCache = function() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
             $scope.$apply(function() {
@@ -370,6 +381,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.refreshScreen();
     });
 
+    //in ProfileSettings in DevZone
     $scope.refreshScreen = function() {
         console.log("Refreshing screen");
         $scope.settings = {};
@@ -422,6 +434,7 @@ angular.module('emission.main.control',['emission.services',
     //     });
     // }  
 
+    //used in ProfileSettings at the profile/logout/opcode row
     $scope.logOut = function() {
         $ionicPopup.confirm({
             title: i18next.t('general-settings.are-you-sure'),
@@ -528,6 +541,7 @@ angular.module('emission.main.control',['emission.services',
         })
     }
 
+    //in ProfileSettings in DevZone
     $scope.endForceSync = function() {
         /* First, quickly start and end the trip. Let's listen to the promise
          * result for start so that we ensure ordering */
@@ -567,13 +581,14 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     };
-    $scope.userStartStopTracking = function() {
-        if ($scope.settings.collect.trackingOn){
-            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
-        } else {
-            return ControlCollectionHelper.forceTransition('START_TRACKING');
-        }
-    }
+    //moved this into ProfileSettings :)
+    // $scope.userStartStopTracking = function() {
+    //     if ($scope.settings.collect.trackingOn){
+    //         return ControlCollectionHelper.forceTransition('STOP_TRACKING');
+    //     } else {
+    //         return ControlCollectionHelper.forceTransition('START_TRACKING');
+    //     }
+    // }
 
     //using the react accordians now!
     // $scope.getExpandButtonClass = function() {
@@ -583,11 +598,13 @@ angular.module('emission.main.control',['emission.services',
     //     return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
     // }
 
+    //in ProfileSettings in UserData
     $scope.eraseUserData = function() {
         CalorieCal.delete().then(function() {
             $ionicPopup.alert({template: i18next.t('general-settings.user-data-erased')});
         });
     }
+    //in ProfileSettings in DevZone -- part of force/edit state
     $scope.parseState = function(state) {
         if (state) {
             if($scope.isAndroid()){
@@ -597,6 +614,7 @@ angular.module('emission.main.control',['emission.services',
             }
         }
     }
+    //in ProfileSettings change carbon set
     $scope.changeCarbonDataset = function() {
         $ionicActionSheet.show({
           buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
@@ -666,6 +684,7 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
+    //in ProfileSettings in DevZone (above two functions are helpers)
     $scope.checkConsent = function() {
         StartPrefs.getConsentDocument().then(function(resultDoc){
             if (resultDoc == null) {
@@ -684,6 +703,7 @@ angular.module('emission.main.control',['emission.services',
         url: i18next.t('general-settings.share-url')
     }
 
+    //in ProfileSettings above is a helper var!
     $scope.share = function() {
         window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
