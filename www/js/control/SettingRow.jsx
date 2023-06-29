@@ -9,11 +9,13 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
     const { t } = useTranslation(); //this accesses the translations
 
     let rightComponent;
-    // will using switchValue here only render when the value is true?
-    if (switchValue) {
-        rightComponent = <Switch value={switchValue} onValueChange={(e) => action(e)}/>;
-    } else {
+    if (iconName) {
         rightComponent = <IconButton icon={iconName} onPress={(e) => action(e)}/>;
+    } else {
+        //when toggled from OFF to ON, the switch display does not update
+        //update takes when screen is "refreshed" - by tabbing btwn screens, showing policy...
+        //works just fine when going from ON to OFF
+        rightComponent = <Switch value={switchValue} onValueChange={(e) => action(e)}/>;
     }
     let descriptionText;
     if(desc) {
@@ -38,7 +40,6 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignContent: 'center',
         backgroundColor: '#fff',
-        paddingTop: 0,
         height: 60,
         margin: 5,
     },
