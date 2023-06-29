@@ -26,7 +26,7 @@ const styles = StyleSheet.create({
   section:{
       justifyContent: 'space-between',
       backgroundColor: '#fff',
-      height: 60,
+      height: 75,
       margin: 5,
   },
   title: {

@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignContent: 'center',
         backgroundColor: '#fff',
-        height: 60,
+        height: 75,
         margin: 5,
     },
     title: {
