@@ -415,11 +415,12 @@ angular.module('emission.main.control',['emission.services',
         $scope.getUserData();
     };
 
-    $scope.copyToClipboard = (textToCopy) => {
-        navigator.clipboard.writeText(textToCopy).then(() => {
-            ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
-        });
-    }  
+    //this feature has been eliminated (as of right now)
+    // $scope.copyToClipboard = (textToCopy) => {
+    //     navigator.clipboard.writeText(textToCopy).then(() => {
+    //         ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
+    //     });
+    // }  
 
     $scope.logOut = function() {
         $ionicPopup.confirm({
@@ -574,12 +575,14 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    $scope.getExpandButtonClass = function() {
-        return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
-    }
-    $scope.getUserDataExpandButtonClass = function() {
-        return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
-    }
+    //using the react accordians now!
+    // $scope.getExpandButtonClass = function() {
+    //     return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
+    // }
+    // $scope.getUserDataExpandButtonClass = function() {
+    //     return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
+    // }
+
     $scope.eraseUserData = function() {
         CalorieCal.delete().then(function() {
             $ionicPopup.alert({template: i18next.t('general-settings.user-data-erased')});
@@ -607,31 +610,33 @@ angular.module('emission.main.control',['emission.services',
           }
         });
     };
-    $scope.expandDeveloperZone = function() {
-        if ($scope.collectionExpanded()) {
-            $scope.expanded = false;
-            $ionicScrollDelegate.resize();
-            $ionicScrollDelegate.scrollTo(0, 0, true);
+    //this was eliminated in coversion because the React accordians handle their state
 
-        } else {
-            $scope.expanded = true;
-            $ionicScrollDelegate.resize();
-            $ionicScrollDelegate.scrollTo(0, 1000, true);
-        }
-    }
-    $scope.toggleUserData = function() {
-        if ($scope.dataExpanded) {
-            $scope.dataExpanded = false;
-        } else {
-            $scope.dataExpanded = true;
-        }
-    }
-    $scope.collectionExpanded = function() {
-        return $scope.expanded;
-    }
-    $scope.userDataExpanded = function() {
-        return $scope.dataExpanded && $scope.userDataSaved();
-    }
+    // $scope.expandDeveloperZone = function() {
+    //     if ($scope.collectionExpanded()) {
+    //         $scope.expanded = false;
+    //         $ionicScrollDelegate.resize();
+    //         $ionicScrollDelegate.scrollTo(0, 0, true);
+
+    //     } else {
+    //         $scope.expanded = true;
+    //         $ionicScrollDelegate.resize();
+    //         $ionicScrollDelegate.scrollTo(0, 1000, true);
+    //     }
+    // }
+    // $scope.toggleUserData = function() {
+    //     if ($scope.dataExpanded) {
+    //         $scope.dataExpanded = false;
+    //     } else {
+    //         $scope.dataExpanded = true;
+    //     }
+    // }
+    // $scope.collectionExpanded = function() {
+    //     return $scope.expanded;
+    // }
+    // $scope.userDataExpanded = function() {
+    //     return $scope.dataExpanded && $scope.userDataSaved();
+    // }
 
     var handleNoConsent = function(resultDoc) {
         $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})
