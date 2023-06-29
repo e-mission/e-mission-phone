@@ -18,7 +18,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     //why is settings not defined but everything else is fine?
     const { logOut, viewPrivacyPolicy, viewQRCode, 
-        fixAppStatus, changeCarbonDataset,
+        fixAppStatus, changeCarbonDataset, userDataSaved,
         forceSync, share, openDatePicker,
         eraseUserData, userData,
         refreshScreen, endForceSync, checkConsent, dummyNotification, 
@@ -65,6 +65,15 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         settings.collect.lowAccuracy = ControlCollectionHelper.isMediumAccuracy();
     }
 
+    let userDataSection;
+    if(userDataSaved())
+    {
+        userDataSection = <ExpansionSection sectionTitle="control.user-data">
+                            <SettingRow textKey="control.erase-data" iconName="delete-forever" action={eraseUserData}></SettingRow>
+                            <ControlDataTable controlData={userData}></ControlDataTable>
+                        </ExpansionSection>;
+    }
+
     return (
         <>
            <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode}></SettingRow>
@@ -84,11 +93,8 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>
            <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
 
-           <ExpansionSection sectionTitle="control.user-data">
-               <SettingRow textKey="control.erase-data" iconName="delete-forever" action={eraseUserData}></SettingRow>
-               <ControlDataTable controlData={userData}></ControlDataTable>
-           </ExpansionSection>
-
+            {userDataSection}
+           
            <ExpansionSection sectionTitle="control.dev-zone">
                <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
