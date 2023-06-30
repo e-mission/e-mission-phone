@@ -7,17 +7,18 @@
   The start and end times of the addition are determined by the survey response.
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { angularize, getAngularService } from "../../angular-react-helper";
 import { object, string } from "prop-types";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
+import { LabelTabContext } from "../../diary/LabelTab";
 
 const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
   const { t, i18n } = useTranslation();
-
   const [displayLabel, setDisplayLabel] = useState('');
+  const { repopulateTimelineEntry } = useContext(LabelTabContext)
 
   const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
   const $rootScope = getAngularService("$rootScope");
@@ -80,16 +81,8 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
     return EnketoSurveyLaunch
       .launch($rootScope, surveyName, { timelineEntry, prefillFields, dataKey: storeKey })
       .then(result => {
-        if (!result) {
-          return;
-        }
-        const addition = {
-          data: result,
-          write_ts: Date.now(),
-          key: storeKey,
-        };
-        // adding the addition for display is handled in infinite_scroll_list.js
-        $rootScope.$broadcast('enketo.noteAddition', addition);
+        if (!result) return;
+        repopulateTimelineEntry(timelineEntry._id.$oid);
       });
   };
 
