@@ -8,7 +8,8 @@
     "url": "git+https://github.com/e-mission/e-mission-phone.git"
   },
   "scripts": {
-    "build": "npx webpack --config webpack.prod.js && npx cordova build"
+    "build": "npx webpack --config webpack.prod.js && npx cordova build",
+    "build-dev": "npx webpack --config webpack.dev.js && npx cordova build"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
