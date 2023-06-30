@@ -1,4 +1,10 @@
-
+/* LabelTab is the root component for the label tab. It is a stack navigator
+    that has two screens: LabelListScreen and LabelScreenDetails.
+  LabelListScreen is the main screen, which is a scrollable list of timeline entries,
+    while LabelScreenDetails is the view that shows when the user clicks on a trip.
+  LabelTabContext is provided to the entire child tree and allows the screens to
+    share the data that has been loaded and interacted with.
+*/
 
 import React, { useEffect, useMemo, useState } from "react";
 import { angularize, getAngularService } from "../angular-react-helper";
@@ -7,7 +13,7 @@ import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "../components/LeafletView";
 import Bottleneck from "bottleneck";
 import moment from "moment";
-import LabelScreen from "./LabelScreen";
+import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
@@ -379,7 +385,7 @@ const LabelTab = () => {
     <LabelTabContext.Provider value={contextVals}>
       <NavigationContainer>
         <Tab.Navigator screenOptions={{headerShown: false, animationEnabled: true}}>
-          <Tab.Screen name="label.main" component={LabelScreen} />
+          <Tab.Screen name="label.main" component={LabelListScreen} />
           <Tab.Screen name="label.details" component={LabelScreenDetails}
                       /* When we go to the details screen, we want to keep the main screen in memory
                         so that we can go right back to it and the scroll position will be preserved.

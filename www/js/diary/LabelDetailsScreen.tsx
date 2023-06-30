@@ -1,6 +1,6 @@
 /* A screen to show details of a trip, including a recap of trip info, a full-size map,
     listed sections of the trip, and a graph of speed during the trip.
-  Navigated to from the main LabelScreen by clicking a trip card. */
+  Navigated to from the main LabelListScreen by clicking a trip card. */
 
 import React, { useContext } from "react";
 import { View, ScrollView, StyleSheet, useWindowDimensions } from "react-native";

@@ -1,13 +1,12 @@
 import React, { useContext } from "react";
-import { object, func, array, bool, string, oneOfType } from "prop-types";
-import { View, useWindowDimensions } from "react-native";
+import { View } from "react-native";
 import { Appbar } from "react-native-paper";
 import DateSelect from "./list/DateSelect";
 import FilterSelect from "./list/FilterSelect";
 import TimelineScrollList from "./list/TimelineScrollList";
 import { LabelTabContext } from "./LabelTab";
 
-const LabelScreen = () => {
+const LabelListScreen = () => {
 
   const { filterInputs, setFilterInputs, displayTrips, allTrips,
           queriedRange, loadSpecificWeek, refresh, listEntries,
@@ -34,4 +33,4 @@ const LabelScreen = () => {
   </>)
 }
 
-export default LabelScreen;
+export default LabelListScreen;
