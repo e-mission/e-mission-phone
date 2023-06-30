@@ -10,7 +10,7 @@ const MotionTypes = {
   CAR: {name: "CAR", icon: "car", color: "red"},
   AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "airplane", color: "red"},
   // based on OSM routes/tags:
-  BUS: {name: "BUS", icon: "bus", color: "red"},
+  BUS: {name: "BUS", icon: "bus-side", color: "red"},
   LIGHT_RAIL: {name: "LIGHT_RAIL", icon: "train-car-passenger", color: "red"},
   TRAIN: {name: "TRAIN", icon: "train-car-passenger", color: "red"},
   TRAM: {name: "TRAM", icon: "fas fa-tram", color: "red"},
