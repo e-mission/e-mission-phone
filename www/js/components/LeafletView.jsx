@@ -43,7 +43,8 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           z-index: 9;
         }
       `}</style>
-      <div id="map" ref={mapRef} style={{width: '100%', height: '100%', zIndex: 0}}></div>
+      <div id="map" ref={mapRef} data-tap-disabled="true"
+            style={{width: '100%', height: '100%', zIndex: 0}}></div>
     </View>
   );
 };
