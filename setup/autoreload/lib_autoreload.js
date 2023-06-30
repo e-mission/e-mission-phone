@@ -31,7 +31,7 @@ module.exports = function(options) {
     // enable AutoReload
     if (options.autoreload) {
         var watch = chokidar.watch(watches, {
-            ignored: /[\/\\]\./,
+            ignored: [ /[\/\\]\./, path.join(process.cwd(), 'www/js/**/*') ],
             ignoreInitial: true,
             persistent: true
         });
