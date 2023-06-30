@@ -22,18 +22,18 @@ const separator = () => <View style={{ height: 8 }} />
 const bigSpinner = <ActivityIndicator size="large" style={{margin: 15}} />
 const smallSpinner = <ActivityIndicator size="small" style={{margin: 5}} />
 
-const TimelineScrollList = ({ listEntries, loadedRange, pipelineRange, loadMoreFn, isLoading }) => {
+const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMoreFn, isLoading }) => {
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
 
-  const reachedPipelineStart = (loadedRange.start_ts <= pipelineRange.start_ts);
+  const reachedPipelineStart = (queriedRange?.start_ts <= pipelineRange?.start_ts);
   const footer =  <LoadMoreButton onPressFn={() => loadMoreFn('past')}
                                   disabled={reachedPipelineStart}>
                       { reachedPipelineStart ? "No more travel" : "Show Older Travel"}
                   </LoadMoreButton>;
   
-  const reachedPipelineEnd = (loadedRange.end_ts >= pipelineRange.end_ts);
+  const reachedPipelineEnd = (queriedRange?.end_ts >= pipelineRange?.end_ts);
   const header =  <LoadMoreButton onPressFn={() => loadMoreFn('future')}
                                   disabled={reachedPipelineEnd}>
                       { reachedPipelineEnd ? "No more travel" : "Show More Travel"}
@@ -63,7 +63,7 @@ const TimelineScrollList = ({ listEntries, loadedRange, pipelineRange, loadMoreF
 
 TimelineScrollList.propTypes = {
   listEntries: array,
-  loadedRange: object,
+  queriedRange: object,
   pipelineRange: object,
   loadMoreFn: func,
   isLoading: oneOfType([bool, string])

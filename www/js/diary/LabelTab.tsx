@@ -24,17 +24,13 @@ const LabelTab = () => {
 
   const [surveyOpt, setSurveyOpt] = useState(null);
   const [filterInputs, setFilterInputs] = useState([]);
-  const [pipelineRange, setPipelineRange] = useState({ start_ts: 0, end_ts: 0 });
+  const [pipelineRange, setPipelineRange] = useState(null);
+  const [queriedRange, setQueriedRange] = useState(null);
   const [allTrips, setAllTrips] = useState([]);
   const [displayTrips, setDisplayTrips] = useState([]);
   const [listEntries, setListEntries] = useState([]);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string|false>('replace');
-
-  const loadedRange = useMemo(() => ({
-    start_ts: allTrips?.[0]?.start_ts || pipelineRange.end_ts,
-    end_ts: allTrips?.slice(-1)?.[0]?.end_ts || pipelineRange.end_ts,
-  }), [allTrips, pipelineRange]);
 
   const $rootScope = getAngularService('$rootScope');
   const $state = getAngularService('$state');
@@ -97,7 +93,7 @@ const LabelTab = () => {
 
   // once pipelineRange is set, load the most recent week of data
   useEffect(() => {
-    if (pipelineRange.end_ts) {
+    if (pipelineRange) {
       loadAnotherWeek('past');
     }
   }, [pipelineRange]);
@@ -109,17 +105,28 @@ const LabelTab = () => {
   }
 
   async function loadAnotherWeek(when: 'past'|'future') {
-    const reachedPipelineStart = loadedRange.start_ts && loadedRange.start_ts <= pipelineRange.start_ts;
-    const reachedPipelineEnd = loadedRange.end_ts && loadedRange.end_ts >= pipelineRange.end_ts;
+    const reachedPipelineStart = queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
+    const reachedPipelineEnd = queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
 
-    if (when == 'past' && !reachedPipelineStart) {
+    if (!queriedRange) {
+      // first time loading
+      if(!isLoading) setIsLoading('replace');
+      const nowTs = new Date().getTime() / 1000;
+      const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
+      handleFetchedTrips(ctList, utList, 'replace');
+      setQueriedRange({start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs});
+    } else if (when == 'past' && !reachedPipelineStart) {
       if(!isLoading) setIsLoading('prepend');
-      const [ctList, utList] = await fetchTripsInRange(loadedRange.start_ts - ONE_WEEK, loadedRange.start_ts - 1);
+      const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
+      const [ctList, utList] = await fetchTripsInRange(queriedRange.start_ts - ONE_WEEK, queriedRange.start_ts - 1);
       handleFetchedTrips(ctList, utList, 'prepend');
+      setQueriedRange({start_ts: fetchStartTs, end_ts: queriedRange.end_ts})
     } else if (when == 'future' && !reachedPipelineEnd) {
       if(!isLoading) setIsLoading('append');
-      const [ctList, utList] = await fetchTripsInRange(loadedRange.end_ts + 1, loadedRange.end_ts + ONE_WEEK);
+      const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
+      const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
       handleFetchedTrips(ctList, utList, 'append');
+      setQueriedRange({start_ts: queriedRange.start_ts, end_ts: fetchEndTs})
     }
   }
 
@@ -129,6 +136,7 @@ const LabelTab = () => {
     const threeDaysAfter = moment(day).add(3, 'days').unix();
     const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
     handleFetchedTrips(ctList, utList, 'replace');
+    setQueriedRange({start_ts: threeDaysBefore, end_ts: threeDaysAfter});
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
@@ -149,7 +157,7 @@ const LabelTab = () => {
   }
 
   async function fetchTripsInRange(startTs: number, endTs: number) {
-    if (!loadedRange.start_ts) {
+    if (!pipelineRange.start_ts) {
       console.warn("trying to read data too early, early return");
       return;
     }
@@ -162,7 +170,20 @@ const LabelTab = () => {
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
-    return await Promise.all([readCompositePromise, readUnprocessedPromise]);
+    const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
+    if (queriedRange &&
+        (startTs >= queriedRange.start_ts && startTs <= queriedRange.end_ts
+        || endTs >= queriedRange.start_ts && endTs <= queriedRange.end_ts)) {
+        // we just expanded on the existing range, so update
+        setQueriedRange({
+          start_ts: Math.min(startTs, queriedRange.start_ts),
+          end_ts: Math.max(endTs, queriedRange.end_ts)
+        });
+    } else {
+      // this range didn't overlap with the existing range, so replace
+      setQueriedRange({start_ts: startTs, end_ts: endTs});
+    }
+    return results;
   };
 
   function fillPlacesForTripAsync(trip) {
@@ -342,7 +363,7 @@ const LabelTab = () => {
     listEntries,
     filterInputs,
     setFilterInputs,
-    loadedRange,
+    queriedRange,
     pipelineRange,
     isLoading,
     loadAnotherWeek,
