@@ -2,16 +2,18 @@
   Notes are added from the AddNoteButton and are derived from survey responses.
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useState } from "react";
 import { angularize, createScopeWithVars, getAngularService } from "../../angular-react-helper";
 import { array, object } from "prop-types";
 import moment from "moment";
 import { Text } from "react-native"
 import { DataTable, IconButton } from "react-native-paper";
+import { LabelTabContext } from "../../diary/LabelTab";
 
 const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
   const [rerender, setRerender] = useState(false);
+  const { repopulateTimelineEntry } = useContext(LabelTabContext);
 
   const DiaryHelper = getAngularService("DiaryHelper");
   const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
@@ -52,7 +54,6 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
       .then(() => {
         additionEntries.splice(index, 1);
         setRerender(!rerender); // force rerender
-        $rootScope.$broadcast('scrollResize');
       });
   }
 
@@ -81,17 +82,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
     return EnketoSurveyLaunch
       .launch($rootScope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey, timelineEntry })
       .then(result => {
-        if (!result) {
-          return;
-        }
-        const addition = {
-          data: result,
-          write_ts: Date.now(),
-          key: dataKey
-        };
-
-        // adding the addition for display is handled in infinite_scroll_list.js
-        $rootScope.$broadcast('enketo.noteAddition', addition);
+        if (!result) return;
+        repopulateTimelineEntry(timelineEntry._id.$oid);
         deleteEntry(entry);
       });
   }
@@ -104,18 +96,18 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
         return (
           <DataTable.Row key={index} style={styles.row(isLastRow)}>
             <DataTable.Cell onPress={() => editEntry(entry)}
-                            style={{flex: 5}}
+                            style={[styles.cell, {flex: 5, pointerEvents: 'auto'}]}
                             textStyle={{fontSize: 12, fontWeight: 'bold'}}>
               <Text numberOfLines={2}>{entry.data.label}</Text>
             </DataTable.Cell>
             <DataTable.Cell onPress={() => editEntry(entry)}
-                            style={{flex: 4}}
+                            style={[styles.cell, {flex: 4}]}
                             textStyle={{fontSize: 12, lineHeight: 12}}>
               <Text style={{display: 'flex'}}>{entry.displayDt?.date}</Text>
               <Text style={{display: 'flex'}}>{entry.displayDt?.time || setDisplayDt(entry)}</Text>
             </DataTable.Cell>
             <DataTable.Cell onPress={() => confirmDeleteEntry(entry)}
-                            style={{flex: 1}}>
+                            style={[styles.cell, {flex: 1}]}>
               <IconButton icon="delete" size={18} />
             </DataTable.Cell>
           </DataTable.Row>
@@ -125,14 +117,17 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
   );
 };
 
-const styles = {
+const styles:any = {
   row: (isLastRow) => ({
     minHeight: 36,
     height: 36,
     borderBottomWidth: (isLastRow ? 0 : 1),
     borderBottomColor: 'rgba(0,0,0,0.1)',
-    pointerEvents: 'auto',
+    pointerEvents: 'all',
   }),
+  cell: {
+    pointerEvents: 'auto',
+  },
 }
 
 AddedNotesList.propTypes = {
