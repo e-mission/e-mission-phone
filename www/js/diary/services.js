@@ -6,7 +6,6 @@ const MotionTypes = {
   BICYCLING: {name: "BICYCLING", icon: "bike", color: "green"},
   UNKNOWN: {name: "UNKNOWN", icon: "help", color: "orange"},
   WALKING: {name: "WALKING", icon: "walk", color: "brown"},
-  RUNNING: {name: "RUNNING", icon: "walk", color: "brown"}, // TODO: do we need this or is it always converted to WALKING?
   CAR: {name: "CAR", icon: "car", color: "red"},
   AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "airplane", color: "red"},
   // based on OSM routes/tags:
