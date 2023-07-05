@@ -19,12 +19,14 @@ import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
+import { useImperialConfig } from "../../config/useImperialConfig";
 
 const TripCard = ({ trip }) => {
 
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
+  const { getFormattedDistance, distanceSuffix } = useImperialConfig();
   const navigation = useNavigation<any>();
 
   const SurveyOptions = getAngularService('SurveyOptions');
@@ -89,7 +91,7 @@ const TripCard = ({ trip }) => {
               <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>{trip.display_date}</Text>
             </Text>
             <Text style={{fontSize: 13, textAlign: 'center'}}>
-              {t('diary.distance-in-time', {distance: trip.display_distance, distsuffix: trip.display_distance_suffix, time: trip.display_time})}
+              {t('diary.distance-in-time', {distance: getFormattedDistance(trip.distance), distsuffix: distanceSuffix, time: trip.display_time})}
             </Text>
           </View>
           <View style={cardStyles.panelSection}>{/* start and end locations */}

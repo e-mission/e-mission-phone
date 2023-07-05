@@ -52,7 +52,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       fmt_time: dh.getLocalTimeString(s.start_local_dt),
       fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-      fmt_distance_suffix: ImperialConfig.getDistanceSuffix,
+      fmt_distance_suffix: ImperialConfig.distanceSuffix,
       icon: motionTypeOf(s.sensed_mode_str)?.icon,
       color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
     }));
@@ -496,7 +496,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         trip2.enter_ts = trip1.exit_ts;
     }
 
-    timeline.readUnprocessedTrips = function(startTs, endTs, processedTripList) {
+    timeline.readUnprocessedTrips = function(startTs, endTs, lastProcessedTrip) {
         $ionicLoading.show({
           template: i18next.t('service.reading-unprocessed-data')
         });
@@ -545,11 +545,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
                 }
                 Logger.log("finished linking trips for list of size "+trip_gj_list.length);
-                if (processedTripList.length != 0 && trip_gj_list.length != 0) {
+                if (lastProcessedTrip && trip_gj_list.length != 0) {
                     // Need to link the entire chain above to the processed data
                     Logger.log("linking unprocessed and processed trip chains");
-                    var last_processed_trip = processedTripList.slice(-1);
-                    linkTrips(last_processed_trip, trip_gj_list[0]);
+                    linkTrips(lastProcessedTrip, trip_gj_list[0]);
                 }
                 $ionicLoading.hide();
                 Logger.log("Returning final list of size "+trip_gj_list.length);

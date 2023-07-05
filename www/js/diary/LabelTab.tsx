@@ -6,7 +6,7 @@
     share the data that has been loaded and interacted with.
 */
 
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { angularize, getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
@@ -17,7 +17,7 @@ import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { getFormattedDate, getFormattedDateAbbr, isMultiDay } from "./diaryHelper";
+import { compositeTrips2TimelineMap, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -33,9 +33,8 @@ const LabelTab = () => {
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
-  const [allTrips, setAllTrips] = useState([]);
-  const [displayTrips, setDisplayTrips] = useState([]);
-  const [listEntries, setListEntries] = useState([]);
+  const [timelineMap, setTimelineMap] = useState(null);
+  const [displayedEntries, setDisplayedEntries] = useState([]);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string|false>('replace');
 
@@ -44,7 +43,6 @@ const LabelTab = () => {
   const $ionicPopup = getAngularService('$ionicPopup');
   const Timeline = getAngularService('Timeline');
   const DiaryHelper = getAngularService('DiaryHelper');
-  const ImperialConfig = getAngularService('ImperialConfig');
   const SurveyOptions = getAngularService('SurveyOptions');
   const enbs = getAngularService('EnketoNotesButtonService');
 
@@ -73,19 +71,33 @@ const LabelTab = () => {
       setFilterInputs(allFalseFilters);
     }
     loadTimelineEntries();
-  }, [appConfig, loading, refreshTime]);
+  }, [appConfig, refreshTime]);
 
+  // whenever timelineMap is updated, update the displayedEntries
+  // according to the active filter
   useEffect(() => {
-    Timeline.setInfScrollCompositeTripList(allTrips);
+    if (!timelineMap) return setDisplayedEntries([]);
+    const allEntries = Array.from<any>(timelineMap.values());
     const activeFilter = filterInputs?.find((f) => f.state == true);
+    let entriesToDisplay = allEntries;
     if (activeFilter) {
-      setDisplayTrips(allTrips.filter(
+      const entriesAfterFilter = allEntries.filter(
         t => (t.waitingForMod == true) || activeFilter?.filter(t)
-      ));
-    } else {
-      setDisplayTrips(allTrips);
+      );
+      /* next, filter out any untracked time if the trips that came before and
+        after it are no longer displayed */
+      entriesToDisplay = entriesAfterFilter.filter((tlEntry) => {
+        if (!tlEntry.origin_key.includes('untracked')) return true;
+        const prevTrip = allEntries[allEntries.indexOf(tlEntry) - 1];
+        const nextTrip = allEntries[allEntries.indexOf(tlEntry) + 1];
+        const prevTripDisplayed = entriesAfterFilter.includes(prevTrip);
+        const nextTripDisplayed = entriesAfterFilter.includes(nextTrip);
+        // if either the trip before or after is displayed, then keep the untracked time
+        return prevTripDisplayed || nextTripDisplayed;
+      });
     }
-  }, [allTrips, filterInputs]);
+    setDisplayedEntries(entriesToDisplay);
+  }, [timelineMap, filterInputs]);
 
   function loadTimelineEntries() {
     Timeline.getUnprocessedLabels(labelPopulateFactory, enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
@@ -107,7 +119,8 @@ const LabelTab = () => {
 
   function refresh() {
     setIsLoading('replace');
-    setAllTrips([]);
+    setQueriedRange(null);
+    setTimelineMap(null);
     setRefreshTime(new Date());
   }
 
@@ -148,18 +161,21 @@ const LabelTab = () => {
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
-    populateCompositeTrips(tripsRead);
+    populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
     // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
       trip.geojson = Timeline.compositeTrip2Geojson(trip);
       fillPlacesForTripAsync(trip);
     });
+    const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     if (mode == 'append') {
-      setAllTrips(allTrips.concat(tripsRead));
+      setTimelineMap(new Map([...timelineMap, ...readTimelineMap]));
     } else if (mode == 'prepend') {
-      setAllTrips(tripsRead.concat(allTrips));
+      setTimelineMap(new Map([...readTimelineMap, ...timelineMap]));
     } else if (mode == 'replace') {
-      setAllTrips(tripsRead);
+      setTimelineMap(readTimelineMap);
+    } else {
+      return console.error("Unknown insertion mode " + mode);
     }
   }
 
@@ -173,26 +189,18 @@ const LabelTab = () => {
     let readUnprocessedPromise;
     if (endTs >= pipelineRange.end_ts) {
       const nowTs = new Date().getTime() / 1000;
-      readUnprocessedPromise = Timeline.readUnprocessedTrips(pipelineRange.end_ts, nowTs, allTrips);
+      const lastProcessedTrip = timelineMap && [...timelineMap?.values()].reverse().find(
+        trip => trip.origin_key.includes('confirmed_trip')
+      );
+      readUnprocessedPromise = Timeline.readUnprocessedTrips(pipelineRange.end_ts, nowTs, lastProcessedTrip);
     } else {
       readUnprocessedPromise = Promise.resolve([]);
     }
     const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
-    if (queriedRange &&
-        (startTs >= queriedRange.start_ts && startTs <= queriedRange.end_ts
-        || endTs >= queriedRange.start_ts && endTs <= queriedRange.end_ts)) {
-        // we just expanded on the existing range, so update
-        setQueriedRange({
-          start_ts: Math.min(startTs, queriedRange.start_ts),
-          end_ts: Math.max(endTs, queriedRange.end_ts)
-        });
-    } else {
-      // this range didn't overlap with the existing range, so replace
-      setQueriedRange({start_ts: startTs, end_ts: endTs});
-    }
     return results;
   };
 
+  // TODO extract the logic for filling place names to helpers or hooks
   function fillPlacesForTripAsync(trip) {
     const fillPromises = [
       placeLimiter.schedule(() =>
@@ -218,53 +226,12 @@ const LabelTab = () => {
   }
 
   useEffect(() => {
-    if (!displayTrips?.length) return;
-    const newListEntries = [];
-    displayTrips.forEach((cTrip) => {
-      const start_place = cTrip.start_confirmed_place;
-      const end_place = cTrip.end_confirmed_place;
-
-      // Add start place to the list, if not already present
-      let isInList = newListEntries.find(e => e._id?.$oid == start_place?._id.$oid);
-      if (showPlaces && start_place && !isInList) {
-        // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
-        if (isNaN(start_place.duration) || start_place.duration >= 60) {
-          newListEntries.push(start_place);
-        }
-      }
-
-      /* don't display untracked time if the trips that came before and
-          after it are not displayed */
-      if (cTrip.key.includes('untracked')) {
-        const prevTrip = allTrips[allTrips.indexOf(cTrip) - 1];
-        const nextTrip = allTrips[allTrips.indexOf(cTrip) + 1];
-        const prevTripDisplayed = displayTrips.includes(prevTrip);
-        const nextTripDisplayed = displayTrips.includes(nextTrip);
-        if (prevTrip && !prevTripDisplayed || nextTrip && !nextTripDisplayed) {
-          return;
-        }
-      }
-
-      // Add trip to the list
-      newListEntries.push(cTrip);
-
-      // Add end place to the list
-      if (showPlaces && end_place) {
-        // Only display places with duration >= 60 seconds, or with no duration (i.e. currently ongoing)
-        if (isNaN(end_place.duration) || end_place.duration >= 60) {
-          newListEntries.push(end_place);
-        }
-      }
-    });
-    setListEntries(newListEntries);
-  }, [displayTrips]);
-
-  useEffect(() => {
-    if (!listEntries?.length) return;
+    if (!displayedEntries?.length) return;
     invalidateMaps();
     setIsLoading(false);
-  }, [listEntries]);
+  }, [displayedEntries]);
 
+  // TODO move this out of LabelTab; should be a global check & popup that can show in any tab
   function checkPermissionsStatus() {
     $rootScope.$broadcast("recomputeAppStatus", (status) => {
       if (!status) {
@@ -285,89 +252,23 @@ const LabelTab = () => {
     });
   }
 
-  function populateCompositeTrips(ctList) {
-    ctList.forEach((ct, i) => {
-      if (showPlaces && ct.start_confirmed_place) {
-        const cp = ct.start_confirmed_place;
-        cp.getNextEntry = () => ctList[i];
-        populateBasicClasses(cp);
-        labelPopulateFactory.populateInputsAndInferences(cp, labelsResultMap);
-        enbs.populateInputsAndInferences(cp, notesResultMap);
-      }
-      if (showPlaces && ct.end_confirmed_place) {
-        const cp = ct.end_confirmed_place;
-        cp.getNextEntry = () => ctList[i + 1];
-        populateBasicClasses(cp);
-        labelPopulateFactory.populateInputsAndInferences(cp, labelsResultMap);
-        enbs.populateInputsAndInferences(cp, notesResultMap);
-        ct.getNextEntry = () => cp;
-      } else {
-        ct.getNextEntry = () => ctList[i + 1];
-      }
-      populateBasicClasses(ct);
-      labelPopulateFactory.populateInputsAndInferences(ct, labelsResultMap);
-      enbs.populateInputsAndInferences(ct, notesResultMap);
-    });
-  }
-
-  function populateBasicClasses(tlEntry) {
-    const beginTs = tlEntry.start_ts || tlEntry.enter_ts;
-    const endTs = tlEntry.end_ts || tlEntry.exit_ts;
-    const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
-    const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
-    const tlEntryIsMultiDay = isMultiDay(beginTs, endTs);
-    tlEntry.display_date = getFormattedDate(beginTs, endTs);
-    tlEntry.display_start_time = DiaryHelper.getLocalTimeString(beginDt);
-    tlEntry.display_end_time = DiaryHelper.getLocalTimeString(endDt);
-    if (tlEntryIsMultiDay) {
-      tlEntry.display_start_date_abbr = getFormattedDateAbbr(beginTs);
-      tlEntry.display_end_date_abbr = getFormattedDateAbbr(endTs);
-    }
-    tlEntry.display_duration = DiaryHelper.getFormattedDuration(beginTs, endTs);
-    tlEntry.display_time = DiaryHelper.getFormattedTimeRange(beginTs, endTs);
-    if (tlEntry.distance) {
-      tlEntry.display_distance = ImperialConfig.getFormattedDistance(tlEntry.distance);
-      tlEntry.display_distance_suffix = ImperialConfig.getDistanceSuffix;
-    }
-    tlEntry.percentages = DiaryHelper.getPercentages(tlEntry);
-    // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
-    tlEntry.start_display_name = "\xa0";
-    tlEntry.end_display_name = "\xa0";
-  }
-
   async function repopulateTimelineEntry(oid: string) {
+    if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
+
     const [_, newLabels, newNotes] = await Timeline.getUnprocessedLabels(labelPopulateFactory, enbs);
-    const index = listEntries.findIndex(x=> x._id.$oid === oid);
-    if (index < 0)
-      return console.error("Item with oid: " + oid + " not found in list");
-    const newEntry = {...listEntries[index]};
+    const newEntry = {...timelineMap.get(oid)};
     populateBasicClasses(newEntry);
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
-    setListEntries([
-      ...listEntries.slice(0, index),
-      newEntry,
-      ...listEntries.slice(index + 1)
-    ]);
-  }
-
-  function updateListEntry(oid: string, newAttributes: object) {
-    const index = listEntries.findIndex(x=> x._id.$oid === oid);
-    if (index < 0)
-      console.error("Item with oid: " + oid + " not found in list");
-    else
-      setListEntries([
-        ...listEntries.slice(0, index),
-        Object.assign({}, listEntries[index], newAttributes),
-        ...listEntries.slice(index + 1)
-      ]);
+    const newTimelineMap = new Map(timelineMap);
+    newTimelineMap.set(oid, newEntry);
+    setTimelineMap(newTimelineMap);
   }
 
   const contextVals = {
     surveyOpt,
-    allTrips,
-    displayTrips,
-    listEntries,
+    timelineMap,
+    displayedEntries,
     filterInputs,
     setFilterInputs,
     queriedRange,
@@ -376,7 +277,6 @@ const LabelTab = () => {
     loadAnotherWeek,
     loadSpecificWeek,
     refresh,
-    updateListEntry,
     repopulateTimelineEntry,
   }
 

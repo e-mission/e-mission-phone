@@ -12,18 +12,19 @@ import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";
 import UserInputButton from "../survey/enketo/UserInputButton";
 import { getAngularService } from "../angular-react-helper";
+import { useImperialConfig } from "../config/useImperialConfig";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
   const { surveyOpt } = useContext(LabelTabContext);
+  const { getFormattedDistance, distanceSuffix } = useImperialConfig();
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const { colors } = useTheme();
   const { trip } = route.params;
 
-  const ImperialConfig = getAngularService('ImperialConfig');
   const DiaryHelper = getAngularService('DiaryHelper');
-  const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, ImperialConfig);
+  const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
 
   return (<>
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
@@ -62,7 +63,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
               {t('diary.distance')}
             </Text>
             <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-              {`${trip.display_distance} ${trip.display_distance_suffix}`}
+              {`${getFormattedDistance(trip.distance)} ${distanceSuffix}`}
             </Text>
           </View>
           <View style={{justifyContent: 'center'}}>
