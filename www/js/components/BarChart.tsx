@@ -1,6 +1,6 @@
 
 import React, { useRef, useState } from 'react';
-import { array, object, bool } from 'prop-types';
+import { array, string, bool } from 'prop-types';
 import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -92,6 +92,10 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
                 beforeUpdate: (axis) => {
                   setNumVisibleDatasets(axis.chart.getVisibleDatasetCount())
                 },
+                reverse: true,
+              },
+              x: {
+                title: { display: true, text: axisTitle },
               },
             } : {
               x: {
@@ -101,6 +105,9 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
                   unit: 'day',
                   tooltipFormat: 'MMM DD',
                 },
+              },
+              y: {
+                title: { display: true, text: axisTitle },
               },
             }),
           },
@@ -135,7 +142,8 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
 
 BarChart.propTypes = {
   chartData: array,
-  chartOpts: object,
+  axisTitle: string,
+  lineAnnotations: array,
   isHorizontal: bool,
 };
 

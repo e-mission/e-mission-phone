@@ -48,10 +48,10 @@
     </div>
     <div ng-if="uictrl.showResult">
       <div ng-if="uictrl.showChart">
-        <bar-chart ng-if="uictrl.showDistance" chart-data="data.distance" options="distanceOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
-        <bar-chart ng-if="uictrl.showTrips" chart-data="data.count" options="countOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
-        <bar-chart ng-if="uictrl.showDuration" chart-data="data.duration" options="durationOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
-        <bar-chart ng-if="uictrl.showSpeed" chart-data="data.mean_speed" options="speedOptions" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showDistance" chart-data="data.distance" axis-title="distanceOptions.chart.yAxis.axisLabel" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showTrips" chart-data="data.count" axis-title="countOptions.chart.yAxis.axisLabel" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showDuration" chart-data="data.duration" axis-title="durationOptions.chart.yAxis.axisLabel" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        <bar-chart ng-if="uictrl.showSpeed" chart-data="data.mean_speed" axis-title="speedOptions.chart.yAxis.axisLabel" is-horizontal="true" style="padding: 10px;"></bar-chart>
       </div>
       <div ng-if="uictrl.showSummary" overflow-scroll="true">
         <div ng-class="changeFootprintCardHeight()" id="dashboard-footprint" class="card">
