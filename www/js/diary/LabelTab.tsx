@@ -17,6 +17,7 @@ import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
+import { getFormattedDate, getFormattedDateAbbr, isMultiDay } from "./diaryHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
@@ -314,13 +315,13 @@ const LabelTab = () => {
     const endTs = tlEntry.end_ts || tlEntry.exit_ts;
     const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
     const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
-    const isMultiDay = DiaryHelper.isMultiDay(beginTs, endTs);
-    tlEntry.display_date = DiaryHelper.getFormattedDate(beginTs, endTs, isMultiDay);
+    const tlEntryIsMultiDay = isMultiDay(beginTs, endTs);
+    tlEntry.display_date = getFormattedDate(beginTs, endTs);
     tlEntry.display_start_time = DiaryHelper.getLocalTimeString(beginDt);
     tlEntry.display_end_time = DiaryHelper.getLocalTimeString(endDt);
-    if (isMultiDay) {
-      tlEntry.display_start_date_abbr = DiaryHelper.getFormattedDateAbbr(beginTs);
-      tlEntry.display_end_date_abbr = DiaryHelper.getFormattedDateAbbr(endTs);
+    if (tlEntryIsMultiDay) {
+      tlEntry.display_start_date_abbr = getFormattedDateAbbr(beginTs);
+      tlEntry.display_end_date_abbr = getFormattedDateAbbr(endTs);
     }
     tlEntry.display_duration = DiaryHelper.getFormattedDuration(beginTs, endTs);
     tlEntry.display_time = DiaryHelper.getFormattedTimeRange(beginTs, endTs);

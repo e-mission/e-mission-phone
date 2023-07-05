@@ -9,6 +9,7 @@ import moment from "moment";
 import { Text } from "react-native"
 import { DataTable, IconButton } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
+import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 
 const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
@@ -28,10 +29,10 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
     const beginTs = entry.data.start_ts || entry.data.enter_ts;
     const stopTs = entry.data.end_ts || entry.data.exit_ts;
     let d;
-    if (DiaryHelper.isMultiDay(beginTs, stopTs)) {
+    if (isMultiDay(beginTs, stopTs)) {
       const beginTsZoned = moment.parseZone(beginTs*1000).tz(timezone);
       const stopTsZoned = moment.parseZone(stopTs*1000).tz(timezone);
-      d = DiaryHelper.getFormattedDateAbbr(beginTsZoned, stopTsZoned);
+      d = getFormattedDateAbbr(beginTsZoned.unix(), stopTsZoned.unix());
     }
     const begin = moment.parseZone(beginTs*1000).tz(timezone).format('LT');
     const stop = moment.parseZone(stopTs*1000).tz(timezone).format('LT');
