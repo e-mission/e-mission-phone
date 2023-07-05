@@ -327,24 +327,24 @@ angular.module('emission.main.control',['emission.services',
     }
 
     //in ProfileSettings in DevZone
-    $scope.nukeUserCache = function() {
-        var nukeChoiceActions = [{text: i18next.t('general-settings.nuke-ui-state-only'),
-                                  action: KVStore.clearOnlyLocal},
-                                 {text: i18next.t('general-settings.nuke-native-cache-only'),
-                                  action: KVStore.clearOnlyNative},
-                                 {text: i18next.t('general-settings.nuke-everything'),
-                                  action: KVStore.clearAll}];
+    // $scope.nukeUserCache = function() {
+    //     var nukeChoiceActions = [{text: i18next.t('general-settings.nuke-ui-state-only'),
+    //                               action: KVStore.clearOnlyLocal},
+    //                              {text: i18next.t('general-settings.nuke-native-cache-only'),
+    //                               action: KVStore.clearOnlyNative},
+    //                              {text: i18next.t('general-settings.nuke-everything'),
+    //                               action: KVStore.clearAll}];
 
-        $ionicActionSheet.show({
-            titleText: i18next.t('general-settings.clear-data'),
-            cancelText: i18next.t('general-settings.cancel'),
-            buttons: nukeChoiceActions,
-            buttonClicked: function(index, button) {
-                button.action();
-                return true;
-            }
-        });
-    }
+    //     $ionicActionSheet.show({
+    //         titleText: i18next.t('general-settings.clear-data'),
+    //         cancelText: i18next.t('general-settings.cancel'),
+    //         buttons: nukeChoiceActions,
+    //         buttonClicked: function(index, button) {
+    //             button.action();
+    //             return true;
+    //         }
+    //     });
+    // }
 
     //in ProfileSettings in DevZone
     $scope.invalidateCache = function() {

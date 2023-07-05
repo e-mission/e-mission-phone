@@ -33,6 +33,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     var profileSettings = {};
     const [nukeSetVis, setNukeVis] = React.useState(false);
+    const [carbonDataVis, setCarbonDataVis] = React.useState(false);
     
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
@@ -42,7 +43,13 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     // const CalorieCal = getAngularService('CalorieCal');
     const KVStore = getAngularService('KVStore');
 
+    const forceState = ControlCollectionHelper.forceState;
+    const editCollectionConfig = ControlCollectionHelper.editConfig;
+    const editSyncConfig = ControlSyncHelper.editConfig;
+
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
+    console.log(carbonOptions);
 
     const uploadLog = function () {
         UploadHelper.uploadFile("loggerDB")
@@ -73,9 +80,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         }
     }
 
-    const forceState = ControlCollectionHelper.forceState;
-    const editCollectionConfig = ControlCollectionHelper.editConfig;
-    const editSyncConfig = ControlSyncHelper.editConfig;
+    
     const toggleLowAccuracy = function() {
         console.log("change attempt in ProfileSettigns");
         //the function below is very broken!!
@@ -90,10 +95,6 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     //         return showConfig;
     //     });
     // };
-
-    const nukeUserCache = function() {
-        setNukeSetVis(true);
-    }
 
     let userDataSection;
     if(userDataSaved())
@@ -115,7 +116,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
            {/* this switch is also fussy */}
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={settings?.collect?.lowAccuracy}></SettingRow>
-           <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={changeCarbonDataset}></SettingRow>
+           <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
            <SettingRow textKey="control.download-json-dump" iconName="calendar" action={openDatePicker}></SettingRow>
@@ -145,14 +146,34 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
 
+        {/* menu for "nuke data" */}
            <Dialog visible={nukeSetVis}
-          onDismiss={() => setNukeVis(false)}>
+            onDismiss={() => setNukeVis(false)}>
                 <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                 <Dialog.Actions>
                     <Button onPress={KVStore.clearOnlyLocal}>{t('general-settings.nuke-ui-state-only')}</Button>
                     <Button onPress={KVStore.clearOnlyNative}>{t('general-settings.nuke-native-cache-only')}</Button>
                     <Button onPress={KVStore.clearAll}>{t('general-settings.nuke-everything')}</Button>
                     <Button onPress={() => setNukeVis(false)}>{t('general-settings.cancel')}</Button>
+                </Dialog.Actions>
+            </Dialog>
+        {/* menu for "set carbon dataset - only somewhat working" */}
+            <Dialog visible={carbonDataVis}
+            onDismiss={() => setCarbonDataVis(false)}>
+                <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
+                <Dialog.Actions>
+                    {carbonOptions.map((e) =>
+                        <Button key={e.text}
+                        onPress={() =>  {
+                            console.log("changeCarbonDataset(): chose locale " + e.value);
+                            CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(e.value); //there's some sort of error here
+                            carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+                            }}
+                        >
+                            {e.text}
+                        </Button>
+                    )}
+                    <Button onPress={() => setCarbonDataVis(false)}>{t('general-settings.cancel')}</Button>
                 </Dialog.Actions>
             </Dialog>
         </>
