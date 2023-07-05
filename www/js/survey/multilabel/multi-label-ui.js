@@ -92,29 +92,6 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
-  /*
-   * This is a HACK to work around the issue that the label screen and diary
-   * screen are not unified. We should remove this, and the timestamp in the
-   * userInput field when we do.
-   */
-  mls.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
-    ConfirmHelper.INPUTS.forEach(function(item, index) {
-        let pmInput = potentiallyModifiedTrip.userInput;
-        let origInput = originalTrip.userInput;
-        if (((pmInput[item] || {}).write_ts || 0) > ((origInput[item] || {}).write_ts || 0)) {
-            origInput[item] = pmInput[item];
-        }
-    });
-  }
-
-  mls.updateTripProperties = function(trip) {
-    // special check for programs
-    // TODO: make this part of the dynamic config
-    mls.expandInputsIfNecessary(trip);
-    mls.inferFinalLabels(trip);
-    mls.updateVerifiability(trip);
-    mls.updateVisibilityAfterDelay(trip);
-  }
   /**
    * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
    * The algorithm below operationalizes these principles:
@@ -205,23 +182,11 @@ angular.module('emission.survey.multilabel.buttons',
     }
   }
 
-
   /**
    * MODE (becomes manual/mode_confirm) becomes mode_confirm
    */
   mls.inputType2retKey = function(inputType) {
     return ConfirmHelper.inputDetails[inputType].key.split("/")[1];
-  }
-
-  /**
-   * For a given trip, compute how the "verify" button should behave.
-   * If the trip has at least one yellow label, the button should be clickable.
-   * If the trip has all green labels, the button should be disabled because everything has already been verified.
-   * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
-   */
-
-  mls.setRecomputeDelay = function(rd) {
-    mls.recomputedelay = rd;
   }
 
   mls.updateVerifiability = function(trip) {
@@ -236,29 +201,5 @@ angular.module('emission.survey.multilabel.buttons',
     trip.verifiability = someYellow ? "can-verify" : (allGreen ? "already-verified" : "cannot-verify");
   }
 
-  /*
-   * Embody the logic for delayed update:
-   * the recompute logic already keeps trips that are waitingForModification
-   * even if they would be filtered otherwise.
-   * so here:
-   * - set the trip as waiting for potential modifications
-   * - create a one minute timeout that will remove the wait and recompute
-   * - clear the existing timeout (if any)
-   */
-  mls.updateVisibilityAfterDelay = function(trip) {
-    // We have just edited this trip, and are now waiting to see if the user
-    // is going to modify it further
-    trip.waitingForMod = true;
-    let currTimeoutPromise = trip.timeoutPromise;
-    Logger.log("trip starting at "+trip.start_fmt_time+": creating new timeout of "+mls.recomputedelay);
-    trip.timeoutPromise = $timeout(function() {
-      Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
-      trip.waitingForMod = false;
-      trip.timeoutPromise = undefined;
-      $rootScope.$broadcast("recomputeListEntries");
-    }, mls.recomputedelay);
-    Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
-    $timeout.cancel(currTimeoutPromise);
-  }
   return mls;
 });

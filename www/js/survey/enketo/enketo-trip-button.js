@@ -83,23 +83,6 @@ angular.module('emission.survey.enketo.trip.button',
     }
   }
 
-  /*
-   * This is a HACK to work around the issue that the label screen and diary
-   * screen are not unified. We should remove this, and the timestamp in the
-   * userInput field when we do.
-   */
-  etbs.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
-    let pmInput = potentiallyModifiedTrip.userInput;
-    let origInput = originalTrip.userInput;
-    if (((pmInput[etbs.SINGLE_KEY] || {}).write_ts || 0) > ((origInput[etbs.SINGLE_KEY] || {}).write_ts || 0)) {
-        origInput[etbs.SINGLE_KEY] = pmInput[etbs.SINGLE_KEY];
-    }
-  }
-
-  etbs.updateTripProperties = function(trip) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-  }
   /**
    * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
    * The algorithm below operationalizes these principles:
@@ -120,35 +103,11 @@ angular.module('emission.survey.enketo.trip.button',
     return etbs.key.split("/")[1];
   }
 
-  /**
-   * For a given trip, compute how the "verify" button should behave.
-   * If the trip has at least one yellow label, the button should be clickable.
-   * If the trip has all green labels, the button should be disabled because everything has already been verified.
-   * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
-   */
-
-  etbs.setRecomputeDelay = function(rd) {
-    etbs.recomputedelay = rd;
-  }
-
   etbs.updateVerifiability = function(trip) {
     // currently a NOP since we don't have any other trip properties
     trip.verifiability = "cannot-verify";
     return;
   }
 
-  /*
-   * Embody the logic for delayed update:
-   * the recompute logic already keeps trips that are waitingForModification
-   * even if they would be filtered otherwise.
-   * so here:
-   * - set the trip as waiting for potential modifications
-   * - create a one minute timeout that will remove the wait and recompute
-   * - clear the existing timeout (if any)
-   */
-  etbs.updateVisibilityAfterDelay = function(trip) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-  }
   return etbs;
 });
