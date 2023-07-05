@@ -2,7 +2,7 @@
 import React, { useRef, useState } from 'react';
 import { array, object, bool } from 'prop-types';
 import { angularize } from '../angular-react-helper';
-import { View, useWindowDimensions } from 'react-native';
+import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
@@ -22,17 +22,22 @@ Chart.register(
 const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=false }) => {
 
   const { colors } = useTheme();
-  const { height: windowHeight } = useWindowDimensions();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
 
   const barChartRef = useRef<Chart>(null);
 
   const defaultPalette = [
-    colors.primary,
-    colors.secondary,
-    colors.tertiary,
-    colors.error,
-  ];
+    '#c95465', // red oklch(60% 0.15 14)
+    '#4a71b1', // blue oklch(55% 0.11 260)
+    '#d2824e', // orange oklch(68% 0.12 52)
+    '#856b5d', // brown oklch(55% 0.04 50)
+    '#59894f', // green oklch(58% 0.1 140)
+    '#e0cc55', // yellow oklch(84% 0.14 100)
+    '#b273ac', // purple oklch(64% 0.11 330)
+    '#f09da6', // pink oklch(78% 0.1 12)
+    '#b3aca8', // grey oklch(75% 0.01 55)
+    '#80afad', // teal oklch(72% 0.05 192)
+  ]
 
   const indexAxis = isHorizontal ? 'y' : 'x';
 
