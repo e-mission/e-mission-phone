@@ -40,7 +40,7 @@ const PlaceCard = ({ place }) => {
           </Text>
         </View>
         <View style={cardStyles.panelSection}>{/*  place name */}
-          <View style={cardStyles.location}>
+          <View style={[cardStyles.location, {paddingHorizontal: 10}]}>
             <IconButton icon='map-marker-star' size={18}
               style={cardStyles.locationIcon} />
             <Text style={s.locationText}>
@@ -73,6 +73,7 @@ const s = StyleSheet.create({
     fontSize: 14,
     lineHeight: 14,
     fontWeight: 'bold',
+    textAlign: 'center',
   },
 });
 
