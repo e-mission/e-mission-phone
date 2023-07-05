@@ -1,4 +1,5 @@
 import React from "react";
+import { Dialog, Button } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { object } from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -6,6 +7,7 @@ import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
 import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
+import ActionSheet from "./DialogMenu";
 
 //any pure functions can go outside
 const ProfileSettings = ({ settingsScope, settingsObject }) => {
@@ -22,18 +24,23 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         forceSync, share, openDatePicker,
         eraseUserData, userData,
         refreshScreen, endForceSync, checkConsent, dummyNotification, 
-        invalidateCache, nukeUserCache, showLog, showSensed,
+        invalidateCache, showLog, showSensed,
          parseState, } = settingsScope;
 
     console.log("settings?", settingsObject);
     let settings = settingsObject;
     console.log("settings", settings);
+
+    var profileSettings = {};
+    const [nukeSetVis, setNukeVis] = React.useState(false);
     
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
     const ControlCollectionHelper = getAngularService('ControlCollectionHelper');
     const ControlSyncHelper = getAngularService('ControlSyncHelper');
+    // const CalorieCal = getAngularService('CalorieCal');
+    const KVStore = getAngularService('KVStore');
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
@@ -55,6 +62,17 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         }
     }
 
+    const getLowAccuracy = function() {
+        var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        if(isMediumAccuracy === undefined) {
+            return false;
+        }
+        else{
+            profileSettings.collect.lowAccuracy = isMediumAccuracy;
+            return isMediumAccuracy;
+        }
+    }
+
     const forceState = ControlCollectionHelper.forceState;
     const editCollectionConfig = ControlCollectionHelper.editConfig;
     const editSyncConfig = ControlSyncHelper.editConfig;
@@ -62,7 +80,19 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         console.log("change attempt in ProfileSettigns");
         //the function below is very broken!!
         ControlCollectionHelper.toggleLowAccuracy();
-        settings.collect.lowAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        getLowAccuracy();
+    }
+
+    // const getCollectionSettings = function() {
+    //     ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
+    //         profileSettings.collect.show_config = showConfig;
+    //         console.log("settings", showConfig);
+    //         return showConfig;
+    //     });
+    // };
+
+    const nukeUserCache = function() {
+        setNukeSetVis(true);
     }
 
     let userDataSection;
@@ -104,7 +134,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <SettingRow textKey="control.upcoming-notifications" iconName="bell-check" action={()=>console.log("")}></SettingRow>
                <ControlDataTable controlData={settings?.notification?.scheduledNotifs}></ControlDataTable>
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
-               <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={nukeUserCache}></SettingRow>
+               <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
                <SettingRow textKey={parseState(settings?.collect?.state)} iconName="pencil" action={forceState}></SettingRow>
                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
@@ -114,6 +144,17 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <ControlDataTable controlData={settings?.sync?.show_config}></ControlDataTable>
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
+
+           <Dialog visible={nukeSetVis}
+          onDismiss={() => setNukeVis(false)}>
+                <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
+                <Dialog.Actions>
+                    <Button onPress={KVStore.clearOnlyLocal}>{t('general-settings.nuke-ui-state-only')}</Button>
+                    <Button onPress={KVStore.clearOnlyNative}>{t('general-settings.nuke-native-cache-only')}</Button>
+                    <Button onPress={KVStore.clearAll}>{t('general-settings.nuke-everything')}</Button>
+                    <Button onPress={() => setNukeVis(false)}>{t('general-settings.cancel')}</Button>
+                </Dialog.Actions>
+            </Dialog>
         </>
     );
     };
@@ -124,4 +165,3 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
    
   angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;
-  
