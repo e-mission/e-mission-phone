@@ -10,10 +10,11 @@ export function invalidateMaps() {
 
 const LeafletView = ({ geojson, opts, ...otherProps }) => {
 
-  const mapRef = useRef(null);
+  const mapElRef = useRef(null);
+  const leafletMapRef = useRef(null);
+  const geoJsonIdRef = useRef(null);
 
-  useEffect(() => {
-    const map = L.map(mapRef.current, opts || {});
+  function initMap(map) {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>',
       opacity: 1,
@@ -25,8 +26,24 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
     }).addTo(map);
     const gjBounds = gj.getBounds().pad(0.2);
     map.fitBounds(gjBounds);
+    geoJsonIdRef.current = geojson.data.id;
+    leafletMapRef.current = map;
     mapSet.add(map);
+  }
+
+  useEffect(() => {
+    const map = L.map(mapElRef.current, opts || {});
+    initMap(map);
   }, []);
+
+  /* If the geojson is different between renders, we need to recreate the map
+    (happens because of FlashList's view recycling on the trip cards:
+      https://shopify.github.io/flash-list/docs/recycling) */
+  if (geoJsonIdRef.current && geoJsonIdRef.current !== geojson.data.id) {
+    console.debug('leafletMapRef changed, invalidating map', geoJsonIdRef.current, geojson.data.id);
+    leafletMapRef.current.eachLayer(layer => leafletMapRef.current.removeLayer(layer));
+    initMap(leafletMapRef.current);
+  }
 
   return (
     <View {...otherProps}>
@@ -43,7 +60,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           z-index: 9;
         }
       `}</style>
-      <div id="map" ref={mapRef} data-tap-disabled="true"
+      <div id="map" ref={mapElRef} data-tap-disabled="true"
             style={{width: '100%', height: '100%', zIndex: 0}}></div>
     </View>
   );
