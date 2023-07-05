@@ -12,7 +12,7 @@ import 'angular-translate-loader-static-files';
 
 import 'moment';
 import 'moment-timezone';
-import 'chartjs-adapter-moment';
+import 'chartjs-adapter-luxon';
 
 import i18next from 'i18next';
 import { initReactI18next } from 'react-i18next';

@@ -85,9 +85,12 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
               y: {
                 offset: true,
                 type: 'time',
+                adapters: {
+                  date: { zone: 'utc' },
+                },
                 time: {
                   unit: 'day',
-                  tooltipFormat: 'MMM DD',
+                  tooltipFormat: 'DDD', // Luxon "localized date with full month": e.g. August 6, 2014
                 },
                 beforeUpdate: (axis) => {
                   setNumVisibleDatasets(axis.chart.getVisibleDatasetCount())
@@ -101,9 +104,12 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
               x: {
                 offset: true,
                 type: 'time',
+                adapters: {
+                  date: { zone: 'utc' },
+                },
                 time: {
                   unit: 'day',
-                  tooltipFormat: 'MMM DD',
+                  tooltipFormat: 'DDD', // Luxon "localized date with full month": e.g. August 6, 2014
                 },
               },
               y: {
