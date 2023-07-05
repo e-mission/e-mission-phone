@@ -20,7 +20,8 @@ const LabelListScreen = () => {
         numListTotal={allTrips.length} />
       <DateSelect tsRange={{ oldestTs: queriedRange?.start_ts, latestTs: queriedRange?.end_ts }}
         loadSpecificWeekFn={loadSpecificWeek} />
-      <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
+      <Appbar.Action icon="refresh" size={32} onPress={() => refresh()}
+        style={{marginLeft: 'auto'}} />
     </Appbar.Header>
     <View style={{ flex: 1 }}>
       <TimelineScrollList

@@ -65,3 +65,10 @@ i18next.use(initReactI18next)
   });
 
 export default i18next;
+
+// Next, register the translations for react-native-paper-dates
+import { en, es, fr, it, registerTranslation } from 'react-native-paper-dates';
+const rnpDatesLangs = { en, es, fr, it };
+for (const lang of Object.keys(rnpDatesLangs)) {
+  registerTranslation(lang, rnpDatesLangs[lang]);
+}
