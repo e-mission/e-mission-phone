@@ -159,7 +159,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.appStatusModal.hide();
     }
 
-    $scope.userData = []
+    // $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
         $scope.rawUserData = userDataFromStorage;

@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Button } from "react-native-paper";
+import { Dialog, Button, Portal } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { object } from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -7,7 +7,6 @@ import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
 import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
-import ActionSheet from "./DialogMenu";
 
 //any pure functions can go outside
 const ProfileSettings = ({ settingsScope, settingsObject }) => {
@@ -20,9 +19,9 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     //why is settings not defined but everything else is fine?
     const { logOut, viewPrivacyPolicy, viewQRCode, 
-        fixAppStatus, changeCarbonDataset, userDataSaved,
+        fixAppStatus, changeCarbonDataset,
         forceSync, share, openDatePicker,
-        eraseUserData, userData,
+        eraseUserData,
         refreshScreen, endForceSync, checkConsent, dummyNotification, 
         invalidateCache, showLog, showSensed,
          parseState, } = settingsScope;
@@ -80,7 +79,6 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         }
     }
 
-    
     const toggleLowAccuracy = function() {
         console.log("change attempt in ProfileSettigns");
         //the function below is very broken!!
@@ -95,6 +93,43 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     //         return showConfig;
     //     });
     // };
+
+    var userData = [];
+    var rawUserData;
+    const getUserData = function() {
+        return CalorieCal.get().then(function(userDataFromStorage) {
+            rawUserData = userDataFromStorage;
+            if(userDataSaved()) {
+                userData = []
+                var height = userDataFromStorage.height.toString();
+                var weight = userDataFromStorage.weight.toString();
+                var temp  =  {
+                    age: userDataFromStorage.age,
+                    height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+                    weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+                    gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
+                }
+                for (var i in temp) {
+                    userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
+                }
+            }
+        });
+    }
+    const userDataSaved = function() {
+        console.log(rawUserData);
+        var defined;
+        if(rawUserData){
+            defined = true;
+        }
+        else{
+            defined = false;
+        }
+        if (defined && rawUserData != null) {
+            return rawUserData.userDataSaved;
+        } else {
+            return false;
+        }
+    }
 
     let userDataSection;
     if(userDataSaved())
@@ -147,35 +182,55 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            </ExpansionSection>
 
         {/* menu for "nuke data" */}
-           <Dialog visible={nukeSetVis}
-            onDismiss={() => setNukeVis(false)}>
-                <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
-                <Dialog.Actions>
-                    <Button onPress={KVStore.clearOnlyLocal}>{t('general-settings.nuke-ui-state-only')}</Button>
-                    <Button onPress={KVStore.clearOnlyNative}>{t('general-settings.nuke-native-cache-only')}</Button>
-                    <Button onPress={KVStore.clearAll}>{t('general-settings.nuke-everything')}</Button>
-                    <Button onPress={() => setNukeVis(false)}>{t('general-settings.cancel')}</Button>
-                </Dialog.Actions>
-            </Dialog>
-        {/* menu for "set carbon dataset - only somewhat working" */}
-            <Dialog visible={carbonDataVis}
-            onDismiss={() => setCarbonDataVis(false)}>
-                <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
-                <Dialog.Actions>
-                    {carbonOptions.map((e) =>
-                        <Button key={e.text}
-                        onPress={() =>  {
-                            console.log("changeCarbonDataset(): chose locale " + e.value);
-                            CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(e.value); //there's some sort of error here
-                            carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-                            }}
-                        >
-                            {e.text}
+            <Portal>
+                <Dialog visible={nukeSetVis}
+            
+                onDismiss={() => setNukeVis(false)}>
+                    <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
+                    <Dialog.Content>
+                        <Button onPress={() => {KVStore.clearOnlyLocal;
+                                                setNukeVis(false);}}>
+                            {t('general-settings.nuke-ui-state-only')}
                         </Button>
-                    )}
-                    <Button onPress={() => setCarbonDataVis(false)}>{t('general-settings.cancel')}</Button>
-                </Dialog.Actions>
-            </Dialog>
+                        <Button onPress={() => {KVStore.clearOnlyNative;
+                                                setNukeVis(false);}}>
+                            {t('general-settings.nuke-native-cache-only')}
+                        </Button>
+                        <Button onPress={() => {KVStore.clearAll;
+                                                setNukeVis(false);}}>
+                            {t('general-settings.nuke-everything')}
+                        </Button>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setNukeVis(false)}>{t('general-settings.cancel')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
+        {/* menu for "set carbon dataset - only somewhat working" */}
+            <Portal>
+                <Dialog visible={carbonDataVis}
+                onDismiss={() => setCarbonDataVis(false)}>
+                    <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
+                    <Dialog.Content>
+                        {carbonOptions.map((e) =>
+                            <Button key={e.text}
+                            onPress={() =>  {
+                                console.log("changeCarbonDataset(): chose locale " + e.value);
+                                CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(e.value); //there's some sort of error here
+                                //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
+                                carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+                                setCarbonDataVis(false);
+                                }}
+                            >
+                                {e.text}
+                            </Button>
+                        )}
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setCarbonDataVis(false)}>{t('general-settings.cancel')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Portal>
         </>
     );
     };
