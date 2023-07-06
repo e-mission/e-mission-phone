@@ -65,7 +65,17 @@ angular.module('emission.splash.notifscheduler',
             if (!notifs?.length)
                 return Logger.log(`${prefix}, there are no scheduled notifications`);
             const time = moment(notifs?.[0].trigger.at).format('HH:mm');
-            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time}`);
+            //was in plugin, changed to scheduler
+            scheduler.scheduledNotifs = notifs.map((n) => {
+                const time = moment(n.trigger.at).format('LT');
+                const date = moment(n.trigger.at).format('LL');
+                return {
+                    key: date,
+                    val: time
+                }
+            });
+            //have the list of scheduled show up in this log
+            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time} first is ${scheduler.scheduledNotifs[0].key} at ${scheduler.scheduledNotifs[0].val}`);
         });
     }
 
