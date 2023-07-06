@@ -3,9 +3,6 @@
 import angular from 'angular';
 import ControlDataTable from './ControlDataTable';
 import QrCode from '../components/QrCode';
-import SettingRow from './SettingRow';
-import ExpansionSection from './ExpandMenu';
-import ProfileSettings from './ProfileSettings';
 
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
@@ -24,10 +21,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
                                         QrCode.module,
-                                        ControlDataTable.module,
-                                        SettingRow.module,
-                                        ExpansionSection.module,
-                                        ProfileSettings.module])
+                                        ControlDataTable.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
@@ -174,7 +168,7 @@ angular.module('emission.main.control',['emission.services',
                 gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
             }
             for (var i in temp) {
-                $scope.userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
+                $scope.userData.push({key: i, value: temp[i]});
             }
         }
         });
