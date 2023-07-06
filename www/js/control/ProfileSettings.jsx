@@ -1,5 +1,5 @@
 import React from "react";
-import { Dialog, Button, Portal } from "react-native-paper";
+import { Dialog, Button, Modal } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { object } from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -182,9 +182,9 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            </ExpansionSection>
 
         {/* menu for "nuke data" */}
-            <Portal>
+            <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
+            transparent={true}>
                 <Dialog visible={nukeSetVis}
-            
                 onDismiss={() => setNukeVis(false)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
@@ -205,11 +205,12 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                         <Button onPress={() => setNukeVis(false)}>{t('general-settings.cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
-            </Portal>
+            </Modal>
         {/* menu for "set carbon dataset - only somewhat working" */}
-            <Portal>
+            <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
+                transparent={true}>
                 <Dialog visible={carbonDataVis}
-                onDismiss={() => setCarbonDataVis(false)}>
+                    onDismiss={() => setCarbonDataVis(false)}>
                     <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
                     <Dialog.Content>
                         {carbonOptions.map((e) =>
@@ -230,7 +231,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                         <Button onPress={() => setCarbonDataVis(false)}>{t('general-settings.cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
-            </Portal>
+            </Modal>
         </>
     );
     };
