@@ -615,20 +615,20 @@ angular.module('emission.main.control',['emission.services',
             }
         }
     }
-    //in ProfileSettings change carbon set
-    $scope.changeCarbonDataset = function() {
-        $ionicActionSheet.show({
-          buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
-          titleText: i18next.t('general-settings.choose-dataset'),
-          cancelText: i18next.t('general-settings.cancel'),
-          buttonClicked: function(index, button) {
-            console.log("changeCarbonDataset(): chose locale " + button.value);
-            CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
-            $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-            return true;
-          }
-        });
-    };
+    // //in ProfileSettings change carbon set
+    // $scope.changeCarbonDataset = function() {
+    //     $ionicActionSheet.show({
+    //       buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
+    //       titleText: i18next.t('general-settings.choose-dataset'),
+    //       cancelText: i18next.t('general-settings.cancel'),
+    //       buttonClicked: function(index, button) {
+    //         console.log("changeCarbonDataset(): chose locale " + button.value);
+    //         CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
+    //         $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    //         return true;
+    //       }
+    //     });
+    // };
     //this was eliminated in coversion because the React accordians handle their state
 
     // $scope.expandDeveloperZone = function() {
@@ -704,15 +704,15 @@ angular.module('emission.main.control',['emission.services',
         url: i18next.t('general-settings.share-url')
     }
 
-    //in ProfileSettings above is a helper var!
-    $scope.share = function() {
-        window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
-            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-        }, function(msg) {
-            console.log("Sharing failed with message: " + msg);
-        });
-    }
+    // //in ProfileSettings above is a helper var!
+    // $scope.share = function() {
+    //     window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
+    //         console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+    //         console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+    //     }, function(msg) {
+    //         console.log("Sharing failed with message: " + msg);
+    //     });
+    // }
 
     $scope.shareQR = function() {
         var prepopulateQRMessage = {};  

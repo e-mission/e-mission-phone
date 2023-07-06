@@ -1,4 +1,5 @@
 import React from "react";
+import {Platform} from "react-native";
 import { Dialog, Button, Modal } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { object } from "prop-types";
@@ -56,6 +57,14 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         // Passing true, we want to send logs
         EmailHelper.sendEmail("loggerDB")
     };
+
+    const isAndroid = function() {
+        return Platform.OS == "android";
+    }
+
+    const isIOS = function() {
+        return Platform.OS == "ios";
+    }
 
     const userStartStopTracking = function() {
         //note the dependency on the settings object (still passed in)
