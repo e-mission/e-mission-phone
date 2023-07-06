@@ -1,6 +1,6 @@
-import React from "react";
-import {Platform} from "react-native";
-import { Dialog, Button, Modal } from "react-native-paper";
+import React, {useEffect} from "react";
+import { Platform, Modal } from "react-native";
+import { Dialog, Button } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { object } from "prop-types";
 import { useTranslation } from "react-i18next";
@@ -45,8 +45,26 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     var profileSettings = {};
     const [nukeSetVis, setNukeVis] = React.useState(false);
     const [carbonDataVis, setCarbonDataVis] = React.useState(false);
+    const [collectSettings, setCollectSettings] = React.useState({});
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
+
+    //watch for changes settings workaround
+    useEffect(() => {
+        var defined;
+        if(settings.collect?.trackingOn){
+            defined = true;
+        }
+        else{
+           return;
+        }
+        //if empty or undefined, do nothing
+        if(!defined){
+            return;
+        }
+        //else update
+        setCollectSettings(settings.collect);
+      }, [settings.collect]);
     
     //methods that control the settings
     const uploadLog = function () {
@@ -68,7 +86,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     const userStartStopTracking = function() {
         //note the dependency on the settings object (still passed in)
-        if (settings.collect.trackingOn){
+        if (collectSettings.trackingOn){
             return ControlCollectionHelper.forceTransition('STOP_TRACKING');
         } else {
             return ControlCollectionHelper.forceTransition('START_TRACKING');
@@ -170,10 +188,10 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
            {/* this toggle only kinda works */}
-           <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={settings?.collect?.trackingOn}></SettingRow>
+           <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
            {/* this switch is also fussy */}
-           <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={settings?.collect?.lowAccuracy}></SettingRow>
+           <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
