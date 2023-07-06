@@ -19,37 +19,37 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     //why is settings not defined but everything else is fine?
     const { logOut, viewPrivacyPolicy, viewQRCode, 
-        fixAppStatus, changeCarbonDataset,
-        forceSync, share, openDatePicker,
-        eraseUserData,
-        refreshScreen, endForceSync, checkConsent, dummyNotification, 
-        invalidateCache, showLog, showSensed,
-         parseState, } = settingsScope;
+        fixAppStatus, forceSync, share, openDatePicker,
+        eraseUserData, refreshScreen, endForceSync, checkConsent, 
+        dummyNotification, invalidateCache, showLog, showSensed,
+        parseState, } = settingsScope;
 
     console.log("settings?", settingsObject);
     let settings = settingsObject;
     console.log("settings", settings);
 
-    var profileSettings = {};
-    const [nukeSetVis, setNukeVis] = React.useState(false);
-    const [carbonDataVis, setCarbonDataVis] = React.useState(false);
-    
+    //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
     const ControlCollectionHelper = getAngularService('ControlCollectionHelper');
     const ControlSyncHelper = getAngularService('ControlSyncHelper');
-    // const CalorieCal = getAngularService('CalorieCal');
+    const CalorieCal = getAngularService('CalorieCal');
     const KVStore = getAngularService('KVStore');
 
+    //functions that come directly from an Angular service
     const forceState = ControlCollectionHelper.forceState;
     const editCollectionConfig = ControlCollectionHelper.editConfig;
     const editSyncConfig = ControlSyncHelper.editConfig;
 
+    //states and variables used to control/create the settings
+    var profileSettings = {};
+    const [nukeSetVis, setNukeVis] = React.useState(false);
+    const [carbonDataVis, setCarbonDataVis] = React.useState(false);
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
-    console.log(carbonOptions);
-
+    
+    //methods that control the settings
     const uploadLog = function () {
         UploadHelper.uploadFile("loggerDB")
     };
@@ -81,7 +81,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     const toggleLowAccuracy = function() {
         console.log("change attempt in ProfileSettigns");
-        //the function below is very broken!!
+        //the function below is broken?
         ControlCollectionHelper.toggleLowAccuracy();
         getLowAccuracy();
     }
@@ -131,6 +131,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         }
     }
 
+    //conditional creation of the user dropdown
     let userDataSection;
     if(userDataSaved())
     {

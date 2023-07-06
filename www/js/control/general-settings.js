@@ -216,39 +216,39 @@ angular.module('emission.main.control',['emission.services',
             $scope.refreshScreen();
         });
     });
-    $scope.getLowAccuracy = function() {
-        //  return true: toggle on; return false: toggle off.
-        var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
-        if (!angular.isDefined(isMediumAccuracy)) {
-            // config not loaded when loading ui, set default as false
-            // TODO: Read the value if it is not defined.
-            // Otherwise, don't we have a race with reading?
-            // we don't really $apply on this field...
-            return false;
-        } else {
-            $scope.settings.collect.lowAccuracy = isMediumAccuracy; //adding to scope to use w/ switches
-            return isMediumAccuracy;
-        }
-    }
+    // $scope.getLowAccuracy = function() {
+    //     //  return true: toggle on; return false: toggle off.
+    //     var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
+    //     if (!angular.isDefined(isMediumAccuracy)) {
+    //         // config not loaded when loading ui, set default as false
+    //         // TODO: Read the value if it is not defined.
+    //         // Otherwise, don't we have a race with reading?
+    //         // we don't really $apply on this field...
+    //         return false;
+    //     } else {
+    //         $scope.settings.collect.lowAccuracy = isMediumAccuracy; //adding to scope to use w/ switches
+    //         return isMediumAccuracy;
+    //     }
+    // }
 
     //this is the action called in ProfileSettings for the accuracy toggle
     // $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
     
-    $scope.getTracking = function() {
-        console.log("tracking on or off?", $scope.settings.collect.trackingOn);
-        //  return true: toggle on; return false: toggle off.
-        var isTracking = $scope.settings.collect.trackingOn;
-        if (!angular.isDefined(isTracking)) {
-            // config not loaded when loading ui, set default as false
-            // TODO: Read the value if it is not defined.
-            // Otherwise, don't we have a race with reading?
-            // we don't really $apply on this field...
-            return false;
-        } else {
-            console.log("tracking on or off?", $scope.settings.collect.trackingOn);
-            return $scope.settings.collect.trackingOn;
-        }
-    }
+    // $scope.getTracking = function() {
+    //     console.log("tracking on or off?", $scope.settings.collect.trackingOn);
+    //     //  return true: toggle on; return false: toggle off.
+    //     var isTracking = $scope.settings.collect.trackingOn;
+    //     if (!angular.isDefined(isTracking)) {
+    //         // config not loaded when loading ui, set default as false
+    //         // TODO: Read the value if it is not defined.
+    //         // Otherwise, don't we have a race with reading?
+    //         // we don't really $apply on this field...
+    //         return false;
+    //     } else {
+    //         console.log("tracking on or off?", $scope.settings.collect.trackingOn);
+    //         return $scope.settings.collect.trackingOn;
+    //     }
+    // }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
