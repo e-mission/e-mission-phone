@@ -10,7 +10,7 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
 
     let rightComponent;
     if (iconName) {
-        rightComponent = <IconButton icon={iconName} onPress={(e) => action(e)}/>;
+        rightComponent = <List.Icon icon={iconName}/>;
     } else {
         //when toggled from OFF to ON, the switch display does not update
         //update takes when screen is "refreshed" - by tabbing btwn screens, showing policy...
@@ -30,7 +30,7 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
         title={t(textKey)}
         titleStyle={styles.title}
         description={desc}
-        onPress={() => console.log("empty")}
+        onPress={(e) => action(e)}
         right={() => rightComponent}
         />
     );
