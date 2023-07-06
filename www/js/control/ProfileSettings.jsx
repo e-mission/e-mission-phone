@@ -13,16 +13,14 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     // anything that mutates must go in --- depend on props or state... 
     const { t } = useTranslation(); 
 
-    // settingsScope is the $scope of general-settings.js
-    // grab any variables or functions you need from it like this:
-
-
+    //settingsScope is the $scope of general-settings.js
+    //grab any variables or functions you need from it like this:
     //why is settings not defined but everything else is fine?
     const { logOut, viewPrivacyPolicy, viewQRCode, 
-        fixAppStatus, forceSync, share, openDatePicker,
+        fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
-        parseState, } = settingsScope;
+        parseState } = settingsScope;
 
     console.log("settings?", settingsObject);
     let settings = settingsObject;
@@ -107,7 +105,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                     age: userDataFromStorage.age,
                     height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
                     weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                    gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
+                    gender: userDataFromStorage.gender == 1? t('gender-male') : t('gender-female')
                 }
                 for (var i in temp) {
                     userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
@@ -126,9 +124,24 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         }
         if (defined && rawUserData != null) {
             return rawUserData.userDataSaved;
-        } else {
+        } else{
             return false;
         }
+    }
+
+    var prepopulateMessage = {
+        message: t('general-settings.share-message'),
+        subject: t('general-settings.share-subject'),
+        url: t('general-settings.share-url')
+    }
+
+    const share = function() {
+        window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
+                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+            }, function(msg) {
+                console.log("Sharing failed with message: " + msg);
+            });
     }
 
     //conditional creation of the user dropdown
