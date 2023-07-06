@@ -70,11 +70,11 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     const getLowAccuracy = function() {
         var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
-        if(isMediumAccuracy === undefined) {
+        if(typeof isMediumAccuracy == 'undefined') {
             return false;
         }
         else{
-            profileSettings.collect.lowAccuracy = isMediumAccuracy;
+            settings.collect.lowAccuracy = isMediumAccuracy;
             return isMediumAccuracy;
         }
     }
@@ -206,6 +206,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
+
         {/* menu for "set carbon dataset - only somewhat working" */}
             <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
                 transparent={true}>
