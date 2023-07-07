@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import 'nvd3';
+import BarChart from './components/BarChart';
 
 angular.module('emission.main.metrics',['emission.services',
                                         'ionic-datepicker',
@@ -10,7 +11,8 @@ angular.module('emission.main.metrics',['emission.services',
                                         'emission.main.metrics.mappings',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
-                                        'emission.plugin.logger'])
+                                        'emission.plugin.logger',
+                                        BarChart.module])
 
 .controller('MetricsCtrl', function($scope, $ionicActionSheet, $ionicLoading,
                                     ClientStats, CommHelper, $window, $ionicPopup,
@@ -1083,13 +1085,10 @@ angular.module('emission.main.metrics',['emission.services',
             let modeStatList = modeMap["values"];
             let formattedModeStatList = modeStatList.map((modeStat) => {
                 let [formatVal, unit, stringRep] = formatter(modeStat[1]);
-                let copiedModeStat = angular.copy(modeStat);
-                copiedModeStat[1] = formatVal;
-                copiedModeStat.push(unit);
-                copiedModeStat.push(stringRep);
-                return copiedModeStat;
+                // horizontal graphs: date on y axis and value on x axis
+                return { y: modeStat[0] * 1000, x: formatVal };
             });
-            formattedModeList.push({key: currMode, values: formattedModeStatList});
+            formattedModeList.push({label: currMode, records: formattedModeStatList});
         });
         return formattedModeList;
     }

@@ -12,6 +12,7 @@ import 'angular-translate-loader-static-files';
 
 import 'moment';
 import 'moment-timezone';
+import 'chartjs-adapter-luxon';
 
 import 'ionic-toast';
 import 'ionic-datepicker';
