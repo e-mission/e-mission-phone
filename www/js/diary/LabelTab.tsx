@@ -6,7 +6,7 @@
     share the data that has been loaded and interacted with.
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { angularize, getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
@@ -82,7 +82,7 @@ const LabelTab = () => {
     let entriesToDisplay = allEntries;
     if (activeFilter) {
       const entriesAfterFilter = allEntries.filter(
-        t => (t.waitingForMod == true) || activeFilter?.filter(t)
+        t => t.justRepopulated || activeFilter?.filter(t)
       );
       /* next, filter out any untracked time if the trips that came before and
         after it are no longer displayed */
@@ -252,17 +252,29 @@ const LabelTab = () => {
     });
   }
 
+  const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
-
     const [_, newLabels, newNotes] = await Timeline.getUnprocessedLabels(labelPopulateFactory, enbs);
-    const newEntry = {...timelineMap.get(oid)};
+    const repopTime = new Date().getTime();
+    const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
     populateBasicClasses(newEntry);
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
-    const newTimelineMap = new Map(timelineMap);
-    newTimelineMap.set(oid, newEntry);
+    const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
     setTimelineMap(newTimelineMap);
+
+    // after 30 seconds, remove the justRepopulated flag unless it was repopulated again since then
+    /* ref is needed to avoid stale closure:
+      https://legacy.reactjs.org/docs/hooks-faq.html#why-am-i-seeing-stale-props-or-state-inside-my-function */
+    timelineMapRef.current = newTimelineMap;
+    setTimeout(() => {
+      const entry = {...timelineMapRef.current.get(oid)};
+      if (entry.justRepopulated != repopTime)
+        return console.log("Entry " + oid + " was repopulated again, skipping");
+      const newTimelineMap = new Map(timelineMapRef.current).set(oid, {...entry, justRepopulated: false});
+      setTimelineMap(newTimelineMap);
+    }, 30000);
   }
 
   const contextVals = {
