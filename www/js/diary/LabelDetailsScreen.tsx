@@ -13,6 +13,7 @@ import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";
 import UserInputButton from "../survey/enketo/UserInputButton";
 import { getAngularService } from "../angular-react-helper";
 import { useImperialConfig } from "../config/useImperialConfig";
+import { useAddressNames } from "./addressNamesHelper";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -23,6 +24,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { colors } = useTheme();
   const { tripId } = route.params;
   const trip = timelineMap.get(tripId);
+  const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
 
   const DiaryHelper = getAngularService('DiaryHelper');
   const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
@@ -40,7 +42,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           <IconButton icon='map-marker-star' iconColor={colors.primaryContainer} size={18}
             style={cardStyles.locationIcon} />
           <Text numberOfLines={2}>
-            {trip.start_display_name}
+            {tripStartDisplayName}
           </Text>
       </View>
       <Divider style={{ marginVertical: 4 }} />
@@ -51,7 +53,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           <IconButton icon='flag' iconColor={colors.primary} size={18}
             style={cardStyles.locationIcon} />
           <Text numberOfLines={2}>
-            {trip.end_display_name}
+            {tripEndDisplayName}
           </Text>
       </View>
     </Surface>

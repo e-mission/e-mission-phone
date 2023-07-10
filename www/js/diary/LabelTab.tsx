@@ -18,9 +18,9 @@ import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
+import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
-const placeLimiter = new Bottleneck({ maxConcurrent: 2, minTime: 500 });
 const ONE_DAY = 24 * 60 * 60; // seconds
 const ONE_WEEK = ONE_DAY * 7; // seconds
 export const LabelTabContext = React.createContext<any>(null);
@@ -119,6 +119,7 @@ const LabelTab = () => {
 
   function refresh() {
     setIsLoading('replace');
+    resetNominatimLimiter();
     setQueriedRange(null);
     setTimelineMap(null);
     setRefreshTime(new Date());
@@ -152,6 +153,7 @@ const LabelTab = () => {
 
   async function loadSpecificWeek(day: string) {
     if (!isLoading) setIsLoading('replace');
+    resetNominatimLimiter();
     const threeDaysBefore = moment(day).subtract(3, 'days').unix();
     const threeDaysAfter = moment(day).add(3, 'days').unix();
     const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
@@ -165,7 +167,7 @@ const LabelTab = () => {
     // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
       trip.geojson = Timeline.compositeTrip2Geojson(trip);
-      fillPlacesForTripAsync(trip);
+      fillLocationNamesOfTrip(trip);
     });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
     if (mode == 'append') {
@@ -199,31 +201,6 @@ const LabelTab = () => {
     const results = await Promise.all([readCompositePromise, readUnprocessedPromise]);
     return results;
   };
-
-  // TODO extract the logic for filling place names to helpers or hooks
-  function fillPlacesForTripAsync(trip) {
-    const fillPromises = [
-      placeLimiter.schedule(() =>
-        DiaryHelper.getNominatimLocName(trip.start_loc)),
-      placeLimiter.schedule(() =>
-        DiaryHelper.getNominatimLocName(trip.end_loc)),
-    ];
-    Promise.all(fillPromises).then(function ([startName, endName]) {
-      if (trip.start_confirmed_place) {
-        trip.start_confirmed_place.display_name = startName;
-        trip.start_confirmed_place.onChanged?.(); /* Temporary hack, see below */
-      }
-      trip.start_display_name = startName;
-      trip.end_display_name = endName;
-      if (trip.end_confirmed_place) {
-        trip.end_confirmed_place.display_name = endName;
-        trip.end_confirmed_place.onChanged?.(); /* Temporary hack, see below */
-      }
-      trip.onChanged?.(); /* Temporary hack for React to update when
-                                      data changes in Angular.
-                                    Will not be needed later. */
-    });
-  }
 
   useEffect(() => {
     if (!displayedEntries?.length) return;
