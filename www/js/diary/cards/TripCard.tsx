@@ -51,7 +51,7 @@ const TripCard = ({ trip }) => {
   }, [appConfig, loading]);
 
   function showDetail() {
-    navigation.navigate("label.details", { trip });
+    navigation.navigate("label.details", { tripId: trip._id.$oid });
   }
 
   const mapOpts = { zoomControl: false, dragging: false };

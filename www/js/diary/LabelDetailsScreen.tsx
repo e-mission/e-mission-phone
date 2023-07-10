@@ -16,12 +16,13 @@ import { useImperialConfig } from "../config/useImperialConfig";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
-  const { surveyOpt } = useContext(LabelTabContext);
+  const { surveyOpt, timelineMap } = useContext(LabelTabContext);
   const { getFormattedDistance, distanceSuffix } = useImperialConfig();
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const { colors } = useTheme();
-  const { trip } = route.params;
+  const { tripId } = route.params;
+  const trip = timelineMap.get(tripId);
 
   const DiaryHelper = getAngularService('DiaryHelper');
   const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
