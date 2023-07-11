@@ -192,6 +192,10 @@
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
         "list-pick-a-date": "Pick a date",
+        "today": "Today",
+        "no-more-travel": "No more travel to show",
+        "show-more-travel": "Show More Travel",
+        "show-older-travel": "Show Older Travel",
         "no-trips-today": "No trips recorded on this day"
     },
 

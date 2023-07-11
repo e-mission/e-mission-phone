@@ -1,6 +1,6 @@
 /* A screen to show details of a trip, including a recap of trip info, a full-size map,
     listed sections of the trip, and a graph of speed during the trip.
-  Navigated to from the main LabelScreen by clicking a trip card. */
+  Navigated to from the main LabelListScreen by clicking a trip card. */
 
 import React, { useContext } from "react";
 import { View, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
@@ -12,18 +12,22 @@ import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";
 import UserInputButton from "../survey/enketo/UserInputButton";
 import { getAngularService } from "../angular-react-helper";
+import { useImperialConfig } from "../config/useImperialConfig";
+import { useAddressNames } from "./addressNamesHelper";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
-  const { surveyOpt } = useContext(LabelTabContext);
+  const { surveyOpt, timelineMap } = useContext(LabelTabContext);
+  const { getFormattedDistance, distanceSuffix } = useImperialConfig();
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const { colors } = useTheme();
-  const { trip } = route.params;
+  const { tripId } = route.params;
+  const trip = timelineMap.get(tripId);
+  const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
 
-  const ImperialConfig = getAngularService('ImperialConfig');
   const DiaryHelper = getAngularService('DiaryHelper');
-  const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, ImperialConfig);
+  const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
 
   return (<>
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
@@ -38,7 +42,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           <IconButton icon='map-marker-star' iconColor={colors.primaryContainer} size={18}
             style={cardStyles.locationIcon} />
           <Text numberOfLines={2}>
-            {trip.start_display_name}
+            {tripStartDisplayName}
           </Text>
       </View>
       <Divider style={{ marginVertical: 4 }} />
@@ -49,7 +53,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           <IconButton icon='flag' iconColor={colors.primary} size={18}
             style={cardStyles.locationIcon} />
           <Text numberOfLines={2}>
-            {trip.end_display_name}
+            {tripEndDisplayName}
           </Text>
       </View>
     </Surface>
@@ -62,7 +66,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
               {t('diary.distance')}
             </Text>
             <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-              {`${trip.display_distance} ${trip.display_distance_suffix}`}
+              {`${getFormattedDistance(trip.distance)} ${distanceSuffix}`}
             </Text>
           </View>
           <View style={{justifyContent: 'center'}}>
