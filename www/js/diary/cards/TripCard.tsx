@@ -19,29 +19,23 @@ import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
+import { useImperialConfig } from "../../config/useImperialConfig";
+import { useAddressNames } from "../addressNamesHelper";
 
 const TripCard = ({ trip }) => {
 
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
+  const { getFormattedDistance, distanceSuffix } = useImperialConfig();
+  let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
 
   const SurveyOptions = getAngularService('SurveyOptions');
-  const $state = getAngularService('$state');
-
   const [surveyOpt, setSurveyOpt] = useState(null);
-  const [rerender, setRerender] = useState(false);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
-
-  useEffect(() => {
-    trip.onChanged = () => {
-      console.log("DiaryCard: timelineEntry changed, force update");
-      setRerender(!rerender);
-    }
-  }, []);
 
   useEffect(() => {
     const surveyOptKey = appConfig?.survey_info?.['trip-labels'];
@@ -49,7 +43,7 @@ const TripCard = ({ trip }) => {
   }, [appConfig, loading]);
 
   function showDetail() {
-    navigation.navigate("label.details", { trip });
+    navigation.navigate("label.details", { tripId: trip._id.$oid });
   }
 
   const mapOpts = { zoomControl: false, dragging: false };
@@ -89,7 +83,7 @@ const TripCard = ({ trip }) => {
               <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>{trip.display_date}</Text>
             </Text>
             <Text style={{fontSize: 13, textAlign: 'center'}}>
-              {t('diary.distance-in-time', {distance: trip.display_distance, distsuffix: trip.display_distance_suffix, time: trip.display_time})}
+              {t('diary.distance-in-time', {distance: getFormattedDistance(trip.distance), distsuffix: distanceSuffix, time: trip.display_time})}
             </Text>
           </View>
           <View style={cardStyles.panelSection}>{/* start and end locations */}
@@ -97,7 +91,7 @@ const TripCard = ({ trip }) => {
               <IconButton icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer} size={18}
                           style={cardStyles.locationIcon} />
               <Text numberOfLines={2} style={s.locationText}>
-                {trip.start_display_name}
+                {tripStartDisplayName}
               </Text>
             </View>
             <Divider style={{marginVertical: 4}} />
@@ -105,7 +99,7 @@ const TripCard = ({ trip }) => {
               <IconButton icon='flag' iconColor={flavoredTheme.colors.primary} size={18}
                           style={cardStyles.locationIcon} />
               <Text numberOfLines={2} style={s.locationText}>
-                {trip.end_display_name}
+                {tripEndDisplayName}
               </Text>
             </View>
           </View>

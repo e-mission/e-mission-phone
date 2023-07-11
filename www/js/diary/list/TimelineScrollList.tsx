@@ -7,6 +7,7 @@ import UntrackedTimeCard from '../cards/UntrackedTimeCard';
 import { View } from 'react-native';
 import { ActivityIndicator } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
+import { useTranslation } from 'react-i18next';
 
 const renderCard = ({ item: listEntry }) => {
   if (listEntry.origin_key.includes('trip')) {
@@ -22,21 +23,23 @@ const separator = () => <View style={{ height: 8 }} />
 const bigSpinner = <ActivityIndicator size="large" style={{margin: 15}} />
 const smallSpinner = <ActivityIndicator size="small" style={{margin: 5}} />
 
-const TimelineScrollList = ({ listEntries, loadedRange, pipelineRange, loadMoreFn, isLoading }) => {
+const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMoreFn, isLoading }) => {
+
+  const { t } = useTranslation();
 
   // The way that FlashList inverts the scroll view means we have to reverse the order of items too
   const reversedListEntries = listEntries ? [...listEntries].reverse() : [];
 
-  const reachedPipelineStart = (loadedRange.start_ts <= pipelineRange.start_ts);
+  const reachedPipelineStart = (queriedRange?.start_ts <= pipelineRange?.start_ts);
   const footer =  <LoadMoreButton onPressFn={() => loadMoreFn('past')}
                                   disabled={reachedPipelineStart}>
-                      { reachedPipelineStart ? "No more travel" : "Show Older Travel"}
+                      { reachedPipelineStart ? t('diary.no-more-travel') : t('diary.show-older-travel')}
                   </LoadMoreButton>;
   
-  const reachedPipelineEnd = (loadedRange.end_ts >= pipelineRange.end_ts);
+  const reachedPipelineEnd = (queriedRange?.end_ts >= pipelineRange?.end_ts);
   const header =  <LoadMoreButton onPressFn={() => loadMoreFn('future')}
                                   disabled={reachedPipelineEnd}>
-                      { reachedPipelineEnd ? "No more travel" : "Show More Travel"}
+                      { reachedPipelineEnd ? t('diary.no-more-travel') : t('diary.show-more-travel')}
                   </LoadMoreButton>;
 
   if (isLoading=='replace') {
@@ -63,7 +66,7 @@ const TimelineScrollList = ({ listEntries, loadedRange, pipelineRange, loadMoreF
 
 TimelineScrollList.propTypes = {
   listEntries: array,
-  loadedRange: object,
+  queriedRange: object,
   pipelineRange: object,
   loadMoreFn: func,
   isLoading: oneOfType([bool, string])

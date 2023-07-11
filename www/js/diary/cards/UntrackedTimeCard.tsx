@@ -7,25 +7,18 @@
   UntrackedTimeCards use the reddish 'untracked' theme flavor.
 */
 
-import React, { useEffect, useState } from "react";
-import { angularize } from "../../angular-react-helper";
+import React from "react";
 import { View, StyleSheet } from 'react-native';
 import { Divider, IconButton, Text } from 'react-native-paper';
 import { object } from "prop-types";
 import { getTheme } from "../../appTheme";
 import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
+import { useAddressNames } from "../addressNamesHelper";
 
 const UntrackedTimeCard = ({ triplike }) => {
   const { t } = useTranslation();
-  const [rerender, setRerender] = useState(false);
-
-  useEffect(() => {
-    triplike.onChanged = () => {
-      console.log("DiaryCard: timelineEntry changed, force update");
-      setRerender(!rerender);
-    }
-  }, []);
+  const [ triplikeStartDisplayName, triplikeEndDisplayName ] = useAddressNames(triplike);
 
   const flavoredTheme = getTheme('untracked');
 
@@ -47,7 +40,7 @@ const UntrackedTimeCard = ({ triplike }) => {
             <IconButton icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer} size={18}
               style={cardStyles.locationIcon} />
             <Text style={s.locationText}>
-              {triplike.start_display_name}
+              {triplikeStartDisplayName}
             </Text>
           </View>
           <Divider style={{ marginVertical: 2 }} />
@@ -55,7 +48,7 @@ const UntrackedTimeCard = ({ triplike }) => {
             <IconButton icon='flag' iconColor={flavoredTheme.colors.primary} size={18}
               style={cardStyles.locationIcon} />
             <Text style={s.locationText}>
-              {triplike.end_display_name}
+              {triplikeEndDisplayName}
             </Text>
           </View>
         </View>

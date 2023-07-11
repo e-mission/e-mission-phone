@@ -24,13 +24,13 @@ div[class*='css-text'] {
   position: relative;
 }
 
-.fill-container div[class*='css-view'] {
+.fill-container div[class*='css-'] {
   height: 100%;
   width: 100%;
   position: absolute;
 }
 
-.fill-container div[class*='css-view'] > div[class*='css-view'] {
+.fill-container div[class*='css-'] > div[class*='css-'] {
   position: static;
 }
 

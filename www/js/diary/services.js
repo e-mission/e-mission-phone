@@ -1,72 +1,12 @@
 'use strict';
 
-const MotionTypes = {
-  IN_VEHICLE: {name: "IN_VEHICLE", icon: "speedometer", color: "purple"},
-  ON_FOOT: {name: "ON_FOOT", icon: "walk", color: "brown"},
-  BICYCLING: {name: "BICYCLING", icon: "bike", color: "green"},
-  UNKNOWN: {name: "UNKNOWN", icon: "help", color: "orange"},
-  WALKING: {name: "WALKING", icon: "walk", color: "brown"},
-  RUNNING: {name: "RUNNING", icon: "walk", color: "brown"}, // TODO: do we need this or is it always converted to WALKING?
-  CAR: {name: "CAR", icon: "car", color: "red"},
-  AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "airplane", color: "red"},
-  // based on OSM routes/tags:
-  BUS: {name: "BUS", icon: "bus", color: "red"},
-  LIGHT_RAIL: {name: "LIGHT_RAIL", icon: "train-car-passenger", color: "red"},
-  TRAIN: {name: "TRAIN", icon: "train-car-passenger", color: "red"},
-  TRAM: {name: "TRAM", icon: "fas fa-tram", color: "red"},
-  SUBWAY: {name: "SUBWAY", icon: "subway-variant", color: "red"},
-  FERRY: {name: "FERRY", icon: "ferry", color: "red"},
-  TROLLEYBUS: {name: "TROLLEYBUS", icon: "bus-side", color: "red"},
-  UNPROCESSED: {name: "UNPROCESSED", icon: "help", color: "orange"}
-}
-const motionTypeOf = (motionName) => {
-  let key = ('' + motionName).toUpperCase();
-  key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return MotionTypes[motionName] || MotionTypes.UNKNOWN;
-}
-
 import angular from 'angular';
+import { motionTypeOf } from './diaryHelper';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
 .factory('DiaryHelper', function($http){
   var dh = {};
-
-  dh.isMultiDay = function(beginTs, endTs) {
-    if (!beginTs || !endTs) return false;
-    return moment(beginTs * 1000).format('YYYYMMDD') != moment(endTs * 1000).format('YYYYMMDD');
-  }
-
-  /* returns a formatted range if both params are defined, 
-    one formatted date if only one is defined */
-  dh.getFormattedDate = function(beginTs, endTs=null) {
-    if (!beginTs && !endTs) return;
-    if (dh.isMultiDay(beginTs, endTs)) {
-      return `${dh.getFormattedDate(beginTs)} - ${dh.getFormattedDate(endTs)}`;
-    }
-    let t = beginTs || endTs;    // whichever is defined. may be timestamp or dt object
-    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
-    if (!t._isAMomentObject) t = moment(t);
-   // We use ddd LL to get Wed, May 3, 2023 or equivalent
-   // LL only has the date, month and year
-   // LLLL has the day of the week, but also the time
-    return t.format('ddd LL');
-  }
-
-  /* returns a formatted range if both params are defined, 
-    one formatted date if only one is defined */
-  dh.getFormattedDateAbbr = function(beginTs, endTs=null) {
-    if (!beginTs && !endTs) return;
-    if (dh.isMultiDay(beginTs, endTs)) {
-      return `${dh.getFormattedDateAbbr(beginTs)} - ${dh.getFormattedDateAbbr(endTs)}`;
-    }
-    let t = beginTs || endTs;    // whichever is defined. may be timestamp or object
-    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
-    if (!t._isAMomentObject) t = moment(t);
-    const opts = { weekday: 'short', month: 'short', day: 'numeric' };
-    return Intl.DateTimeFormat(i18next.resolvedLanguage, opts)
-      .format(new Date(t));
-  }
 
   // Temporary function to avoid repear in getPercentages ret val.
   var filterRunning = function(mode) {
@@ -112,7 +52,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       fmt_time: dh.getLocalTimeString(s.start_local_dt),
       fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-      fmt_distance_suffix: ImperialConfig.getDistanceSuffix,
+      fmt_distance_suffix: ImperialConfig.distanceSuffix,
       icon: motionTypeOf(s.sensed_mode_str)?.icon,
       color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
     }));
@@ -556,7 +496,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         trip2.enter_ts = trip1.exit_ts;
     }
 
-    timeline.readUnprocessedTrips = function(startTs, endTs, processedTripList) {
+    timeline.readUnprocessedTrips = function(startTs, endTs, lastProcessedTrip) {
         $ionicLoading.show({
           template: i18next.t('service.reading-unprocessed-data')
         });
@@ -605,11 +545,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
                 }
                 Logger.log("finished linking trips for list of size "+trip_gj_list.length);
-                if (processedTripList.length != 0 && trip_gj_list.length != 0) {
+                if (lastProcessedTrip && trip_gj_list.length != 0) {
                     // Need to link the entire chain above to the processed data
                     Logger.log("linking unprocessed and processed trip chains");
-                    var last_processed_trip = processedTripList.slice(-1);
-                    linkTrips(last_processed_trip, trip_gj_list[0]);
+                    linkTrips(lastProcessedTrip, trip_gj_list[0]);
                 }
                 $ionicLoading.hide();
                 Logger.log("Returning final list of size "+trip_gj_list.length);
