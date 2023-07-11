@@ -40,11 +40,13 @@ import enJson from '../i18n/en.json';
 import esJson from '../../locales/es/i18n/es.json';
 import frJson from '../../locales/fr/i18n/fr.json';
 import itJson from '../../locales/it/i18n/it.json';
+import loJson from '../../locales/lo/i18n/lo.json';
 const langs = {
   en: { translation: enJson },
   es: { translation: mergeInTranslations(esJson, enJson) },
   fr: { translation: mergeInTranslations(frJson, enJson) },
-  it: { translation: mergeInTranslations(itJson, enJson) }
+  it: { translation: mergeInTranslations(itJson, enJson) },
+  lo: { translation: mergeInTranslations(loJson, enJson) },
 };
 
 const locales = navigator?.languages?.length ? navigator.languages : [navigator.language];
@@ -68,7 +70,11 @@ export default i18next;
 
 // Next, register the translations for react-native-paper-dates
 import { en, es, fr, it, registerTranslation } from 'react-native-paper-dates';
-const rnpDatesLangs = { en, es, fr, it };
+const rnpDatesLangs = {
+  en, es, fr, it,
+  lo: loJson['react-native-paper-dates'] /* Lao translations are not included in the library,
+                                          so we register them from 'lo.json' in /locales */
+};
 for (const lang of Object.keys(rnpDatesLangs)) {
   registerTranslation(lang, rnpDatesLangs[lang]);
 }
