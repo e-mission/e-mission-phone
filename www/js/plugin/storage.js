@@ -1,10 +1,11 @@
 import angular from 'angular';
 
 angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
-                                           'LocalStorageModule'])
+                                           'LocalStorageModule',
+                                           'emission.stats.clientstats'])
 
 .factory('KVStore', function($window, Logger, localStorageService, $ionicPopup,
-        $ionicPlatform) {
+        $ionicPlatform, ClientStats) {
     var logger = Logger;
     var kvstoreJs = {}
     /*
@@ -179,14 +180,30 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
             let [foundWeb, missingWeb] = findMissing(nativeKeys, webKeys);
             logger.log("STORAGE_PLUGIN: Found native keys "+foundNative+" missing native keys "+missingNative);
             logger.log("STORAGE_PLUGIN: Found web keys "+foundWeb+" missing web keys "+missingWeb);
-
             const allMissing = missingNative.concat(missingWeb);
             logger.log("STORAGE_PLUGIN: Syncing all missing keys "+allMissing);
             allMissing.forEach(getUnifiedValue);
+            if (allMissing.length != 0) {
+                ClientStats.addReading(ClientStats.getStatKeys().MISSING_KEYS, {
+                    "type": "local_storage_mismatch",
+                    "allMissingLength": allMissing.length,
+                    "missingWebLength": missingWeb.length,
+                    "missingNativeLength": missingNative.length,
+                    "foundWebLength": foundWeb.length,
+                    "foundNativeLength": foundNative.length,
+                    "allMissing": allMissing,
+                }).then(Logger.log("Logged missing keys to client stats"));
+            }
         });
         const listAllKeys = getNativePlugin().listAllUniqueKeys().then((nativeKeys) => {
             logger.log("STORAGE_PLUGIN: For the record, all unique native keys are "+nativeKeys);
+            if (nativeKeys.length == 0) {
+                ClientStats.addReading(ClientStats.getStatKeys().MISSING_KEYS, {
+                    "type": "all_native",
+                }).then(Logger.log("Logged all missing native keys to client stats"));
+            }
         });
+
         return Promise.all([syncKeys, listAllKeys]);
     }
 
