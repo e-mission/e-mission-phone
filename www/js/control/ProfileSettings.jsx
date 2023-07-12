@@ -21,7 +21,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
-        parseState } = settingsScope;
+        parseState, ui_config } = settingsScope;
 
     console.log("settings?", settingsObject);
     let settings = settingsObject;
@@ -181,6 +181,14 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                         </ExpansionSection>;
     }
 
+    //show the upload log dependent on config -- still importing the ui_config the workaround way
+    let logUploadSection;
+    console.log("ui config thing", ui_config.profile_controls.support_upload);
+    if(ui_config.profile_controls.support_upload == true)
+    {
+        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
+    }
+
     return (
         <>
            <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode}></SettingRow>
@@ -197,7 +205,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
            <SettingRow textKey="control.download-json-dump" iconName="calendar" action={openDatePicker}></SettingRow>
            {/* this row missing condition!!! Should only show iff ui_config.profile_controls.support_upload == true */}
-           <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>
+           {logUploadSection}
            <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
 
             {userDataSection}
