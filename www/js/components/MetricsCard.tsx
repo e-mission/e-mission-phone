@@ -1,5 +1,5 @@
 
-import React, { useRef, useState } from 'react';
+import React, { useRef, state, useState } from 'react';
 import { array, string, bool } from 'prop-types';
 import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
@@ -7,9 +7,11 @@ import { useTheme , Card, CardProps} from 'react-native-paper';
 import BarChart from './BarChart';
 import MetricsDetails from './MetricDetails';
 
+
 const MetricsCard = ({chartData, axisTitle}) => {
- 
+  
   const { colors } = useTheme();
+  const [state, setState] = useState({detailsView : false})
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
 
   const defaultPalette = [
@@ -24,20 +26,22 @@ const MetricsCard = ({chartData, axisTitle}) => {
     '#b3aca8', // grey oklch(75% 0.01 55)
     '#80afad', // teal oklch(72% 0.05 192)
   ]
-  const details : bool = false;
   return (
     <Card children={{}}>
       <Card.Title title="card title"/>
-      {details ? (
+      <Card.Content>
+      {state.detailsView ? (
         <MetricsDetails chartData={chartData}/>
       ) : (
         <BarChart chartData={chartData} axisTitle={axisTitle} isHorizontal={true}/>
       )
       }
+      </Card.Content>
       
     </Card>
   )
 }
+
 
 MetricsCard.propTypes = {
   chartData: array,
