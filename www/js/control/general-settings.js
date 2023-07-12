@@ -107,17 +107,17 @@ angular.module('emission.main.control',['emission.services',
     }
 
     //this function used in ProfileSettings to viewQRCode
-    $scope.viewQRCode = function($event) {
-        $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.opcode;
-        if ($scope.qrp) {
-            $scope.qrp.show($event);
-        } else {
-            $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
-                $scope.qrp = q;
-                $scope.qrp.show($event);
-            }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
-        }
-    }
+    // $scope.viewQRCode = function($event) {
+    //     $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.opcode;
+    //     if ($scope.qrp) {
+    //         $scope.qrp.show($event);
+    //     } else {
+    //         $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
+    //             $scope.qrp = q;
+    //             $scope.qrp.show($event);
+    //         }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
+    //     }
+    // }
 
     //this function used in ProfileSettings to send DummyNotification
     $scope.dummyNotification = () => {
@@ -710,19 +710,19 @@ angular.module('emission.main.control',['emission.services',
     //     });
     // }
 
-    $scope.shareQR = function() {
-        var prepopulateQRMessage = {};  
-        const c = document.getElementsByClassName('qrcode-link');
-        const cbase64 = c[0].getAttribute('href');
-        prepopulateQRMessage.files = [cbase64];
-        prepopulateQRMessage.url = $scope.settings.auth.opcode;
+    // $scope.shareQR = function() {
+    //     var prepopulateQRMessage = {};  
+    //     const c = document.getElementsByClassName('qrcode-link');
+    //     const cbase64 = c[0].getAttribute('href');
+    //     prepopulateQRMessage.files = [cbase64];
+    //     prepopulateQRMessage.url = $scope.settings.auth.opcode;
 
-        window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-        }, function(msg) {
-            console.log("Sharing failed with message: " + msg);
-        });
-    }
+    //     window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+    //         console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+    //         console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+    //     }, function(msg) {
+    //         console.log("Sharing failed with message: " + msg);
+    //     });
+    // }
 
 });

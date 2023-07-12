@@ -8,6 +8,7 @@ import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
 import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
+import PopOpCode from "./popOpCode";
 
 //any pure functions can go outside
 const ProfileSettings = ({ settingsScope, settingsObject }) => {
@@ -17,7 +18,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     //settingsScope is the $scope of general-settings.js
     //grab any variables or functions you need from it like this:
     //why is settings not defined but everything else is fine?
-    const { logOut, viewPrivacyPolicy, viewQRCode, 
+    const { logOut, viewPrivacyPolicy, 
         fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
@@ -121,6 +122,26 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
     var userData = [];
     var rawUserData;
+    const shareQR = function() {
+        var prepopulateQRMessage = {};  
+        const c = document.getElementsByClassName('qrcode-link');
+        const cbase64 = c[0].getAttribute('href');
+        prepopulateQRMessage.files = [cbase64];
+        prepopulateQRMessage.url = $scope.settings.auth.opcode;
+
+        window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+        }, function(msg) {
+            console.log("Sharing failed with message: " + msg);
+        });
+    }
+
+    const viewQRCode = function(e) {
+        // tokenURL = "emission://login_token?token="+settings.auth.opcode;
+        setOpCodeVis(true);
+    }
+
     const getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
             rawUserData = userDataFromStorage;
@@ -286,6 +307,8 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
+
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings.auth.opcode} action={shareQR}></PopOpCode>
         </>
     );
     };
