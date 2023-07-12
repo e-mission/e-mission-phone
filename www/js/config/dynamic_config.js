@@ -69,16 +69,16 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
         return Promise.all([rwDocRead, kvDocRead])
             .then(([rwConfig, kvStoreConfig]) => {
                 const savedConfig = kvStoreConfig? kvStoreConfig : rwConfig;
-                Logger.log("DYNAMIC CONFIG: kvStoreConfig key length = "+ Object.keys(kvStoreConfig).length
-                    +" rwConfig key length = "+ Object.keys(rwConfig).length
+                Logger.log("DYNAMIC CONFIG: kvStoreConfig key length = "+ Object.keys(kvStoreConfig || {}).length
+                    +" rwConfig key length = "+ Object.keys(rwConfig || {}).length
                     +" using kvStoreConfig? "+(kvStoreConfig? true: false));
                 if (!kvStoreConfig && rwConfig) {
                     // Backwards compat, can remove at the end of 2023
                     Logger.log("DYNAMIC CONFIG: rwConfig found, kvStoreConfig not found, setting to fix backwards compat");
                     KVStore.set(CONFIG_PHONE_UI_KVSTORE, rwConfig);
                 }
-                if ((Object.keys(kvStoreConfig).length > 0)
-                    && (Object.keys(rwConfig).length == 0)) {
+                if ((Object.keys(kvStoreConfig || {}).length > 0)
+                    && (Object.keys(rwConfig || {}).length == 0)) {
                     // Might as well sync the RW config if it doesn't exist and
                     // have triple-redundancy for this
                     nativePlugin.putRWDocument(CONFIG_PHONE_UI, kvStoreConfig);
