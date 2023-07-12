@@ -20,7 +20,7 @@ Chart.register(
 );
 
 const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=false }) => {
-
+ 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
 

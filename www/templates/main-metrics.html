@@ -133,23 +133,9 @@
           <ion-slide id="modes">
             <div id="dashboard-bottom" class="card">
               <h4 class="dashboard-headers" ng-i18next>{{'main-metrics.distance'}}</h4>
-                <div ng-if="summaryData.defaultSummary.distance.length == 0" style="margin-top: 20px;color: #008acf;font-weight: 700;" ng-i18next>{{'main-metrics.no-summary-data'}}</div>
-                <div class="row" ng-repeat="d in summaryData.defaultSummary.distance" ng-if="$index % 2 == 0" ng-init="dIndex = $index" style="padding-top: 5px !important;">
-                  <div ng-repeat="i in [0,1]" ng-if="(dIndex + i)<summaryData.defaultSummary.distance.length" class="col-50" style="margin-bottom: 10px;">
-                    
-                    <div class="metric-summary-left">
-                      <i ng-class="'icon ' + modeIcon(summaryData.defaultSummary.distance[dIndex + i].key)" style="font-size: 30px !important; color: #008acf;"></i>
-                    </div>
-                    <div class="metric-summary-right">
-                      <div class="metric-summary-title">
-                        {{ summaryData.defaultSummary.distance[dIndex + i].key }}
-                      </div>
-                      <div class="metric-summary-content">
-                        {{ formatDistance(summaryData.defaultSummary.distance[dIndex + i].values).slice(-1)[0] }}
-                      </div>
-                    </div>
-                  </div> 
-                </div>
+              <bar-chart chart-data="data.distance" axis-title="distanceOptions.chart.yAxis.axisLabel" is-horizontal="true" style="padding: 10px;"></bar-chart>
+        
+        
             </div>
           </ion-slide>
           <ion-slide id="modes">
