@@ -3,7 +3,7 @@ import React, { useRef, state, useState } from 'react';
 import { array, string, bool } from 'prop-types';
 import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
-import { useTheme , Card, CardProps} from 'react-native-paper';
+import { useTheme , Card, IconButton} from 'react-native-paper';
 import BarChart from './BarChart';
 import MetricsDetails from './MetricDetails';
 
@@ -28,15 +28,22 @@ const MetricsCard = ({chartData, axisTitle}) => {
   ]
   return (
     <Card children={{}}>
-      <Card.Title title="card title"/>
-      <Card.Content>
+      <Card.Title title="Hey Guys!"/>
+      
       {state.detailsView ? (
+        <Card.Content>
+        <IconButton icon="chart-bar" mode="contained" onPress={()=> setState({detailsView : false})}/>
         <MetricsDetails chartData={chartData}/>
+        </Card.Content>
       ) : (
+        
+        <Card.Content>
+        <IconButton icon="abacus" mode="contained" onPress={()=> setState({detailsView : true})}/>
         <BarChart chartData={chartData} axisTitle={axisTitle} isHorizontal={true}/>
+        </Card.Content>
       )
       }
-      </Card.Content>
+      
       
     </Card>
   )
