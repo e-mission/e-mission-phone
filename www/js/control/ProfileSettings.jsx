@@ -230,9 +230,11 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
 
-        {/* menu for "nuke data" */}
+        {/* menu for "nuke data"  -- elevation not really working?? */}
             <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
-            transparent={true}>
+            elevated={true}
+            transparent={true}
+            style={{ elevation: 3 }}>
                 <Dialog visible={nukeSetVis}
                 onDismiss={() => setNukeVis(false)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
@@ -258,6 +260,8 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
         {/* menu for "set carbon dataset - only somewhat working" */}
             <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
+                elevated={true}
+                style={{ elevation: 3 }}
                 transparent={true}>
                 <Dialog visible={carbonDataVis}
                     onDismiss={() => setCarbonDataVis(false)}>
