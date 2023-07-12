@@ -408,9 +408,7 @@ angular.module('emission.main.control',['emission.services',
             if (!res) return; // user cancelled
             
             // reset the saved config, then trigger a hard refresh
-            const CONFIG_PHONE_UI="config/app_ui_config";
-            $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
-                .then($window.location.reload(true));
+            DynamicConfig.resetConfigAndRefresh();
         });
     };
 

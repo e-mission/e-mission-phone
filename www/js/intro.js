@@ -8,6 +8,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
+                                  'emission.plugin.kvstore',
                                   'ionic-toast',
                                   QrCode.module])
 
@@ -28,7 +29,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, DynamicConfig, i18nUtils) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, KVStore, SurveyLaunch, DynamicConfig, i18nUtils) {
 
   /*
    * Move all the state that is currently in the controller body into the init
@@ -81,9 +82,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   /* If the user does not consent, we boot them back out to the join screen */
   $scope.disagree = function() {
     // reset the saved config, then trigger a hard refresh
-    const CONFIG_PHONE_UI="config/app_ui_config";
-    $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
-        .then($window.location.reload(true));
+    DynamicConfig.resetConfigAndRefresh();
   };
 
   $scope.agree = function() {
@@ -123,7 +122,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $scope.login = function(token) {
-    window.cordova.plugins.OPCodeAuth.setOPCode(token).then(function(opcode) {
+    const EXPECTED_METHOD = "prompted-auth";
+    const dbStorageObject = {"token": token};
+    KVStore.set(EXPECTED_METHOD, dbStorageObject).then(function(opcode) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(opcode, 'middle', false, 2500);

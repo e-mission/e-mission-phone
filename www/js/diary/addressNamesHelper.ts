@@ -153,7 +153,8 @@ export function useAddressNames(tlEntry) {
 
   useEffect(() => {
     if (locData) {
-      setAddressNames([toAddressName(JSON.parse(locData))]);
+      const loc = typeof locData === 'string' ? JSON.parse(locData) : locData;
+      setAddressNames([toAddressName(loc)]);
     } else if (startLocData && endLocData) {
       const startLoc = typeof startLocData === 'string' ? JSON.parse(startLocData) : startLocData;
       const endLoc = typeof endLocData === 'string' ? JSON.parse(endLocData) : endLocData;
