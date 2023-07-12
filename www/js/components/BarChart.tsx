@@ -26,7 +26,7 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
 
   const barChartRef = useRef<Chart>(null);
 
-  const defaultPalette = [
+  const defaultPalette = [ 
     '#c95465', // red oklch(60% 0.15 14)
     '#4a71b1', // blue oklch(55% 0.11 260)
     '#d2824e', // orange oklch(68% 0.12 52)

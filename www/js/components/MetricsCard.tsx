@@ -3,9 +3,10 @@ import React, { useRef, state, useState } from 'react';
 import { array, string, bool } from 'prop-types';
 import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
-import { useTheme , Card, IconButton} from 'react-native-paper';
+import { useTheme , Card, IconButton, Surface, SurfaceProps} from 'react-native-paper';
 import BarChart from './BarChart';
 import MetricsDetails from './MetricDetails';
+import { StyleSheet } from 'react-native';
 
 
 const MetricsCard = ({chartData, axisTitle}) => {
@@ -24,23 +25,37 @@ const MetricsCard = ({chartData, axisTitle}) => {
     '#b273ac', // purple oklch(64% 0.11 330)
     '#f09da6', // pink oklch(78% 0.1 12)
     '#b3aca8', // grey oklch(75% 0.01 55)
-    '#80afad', // teal oklch(72% 0.05 192)
+    '#80afad', // teal oklch(72% 0.05 192) 
   ]
   return (
-    <Card children={{}}>
-      <Card.Title title="Hey Guys!"/>
+    <Card children={{}} style={{width:"90%", alignSelf:"center", height:"280px" }}>
+      <Surface style={{backgroundColor: 'rgba(0, 136, 206, 1)', height: "60px"}}>
+        <Card.Title 
+          titleStyle={{textAlign:"center", color:"white", fontSize:"20px"}}
+          title="My Distance"
+          right={state.detailsView ?
+            (()=><IconButton icon="chart-bar" mode="contained" onPress={()=> setState({detailsView : false})}/>
+            ):
+            (
+             ()=> <IconButton icon="abacus" mode="contained" onPress={()=> setState({detailsView : true})}/>
+            )}
+        />
+        </Surface>
+      
       
       {state.detailsView ? (
-        <Card.Content>
-        <IconButton icon="chart-bar" mode="contained" onPress={()=> setState({detailsView : false})}/>
-        <MetricsDetails chartData={chartData}/>
-        </Card.Content>
+        <>
+          <Card.Content>
+            <MetricsDetails chartData={chartData}/>
+          </Card.Content>
+       </>
+
       ) : (
-        
-        <Card.Content>
-        <IconButton icon="abacus" mode="contained" onPress={()=> setState({detailsView : true})}/>
-        <BarChart chartData={chartData} axisTitle={axisTitle} isHorizontal={true}/>
-        </Card.Content>
+        <>
+          <Card.Content>
+            <BarChart chartData={chartData} axisTitle={axisTitle} isHorizontal={true}/>
+          </Card.Content>
+        </>
       )
       }
       
@@ -57,6 +72,11 @@ MetricsCard.propTypes = {
 angularize(MetricsCard, 'MetricsCard', 'emission.main.metricscard');
 export default MetricsCard;
 
+const cardStyles = StyleSheet.create({
+  cardLabel: {
+    color: '#c95465'
+  }
+});
 // const sampleAnnotations = [
 //   { value: 35, label: 'Target1' },
 //   { value: 65, label: 'Target2' },
