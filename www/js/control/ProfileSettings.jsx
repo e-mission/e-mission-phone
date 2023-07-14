@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, { useState, useEffect } from "react";
 import { Platform, Modal } from "react-native";
 import { Dialog, Button } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
@@ -8,25 +8,26 @@ import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
 import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
-import PopOpCode from "./popOpCode";
+import PopOpCode from "./PopOpCode";
+import useAppConfig from "../useAppConfig";
+
+let controlUpdateCompleteListenerRegistered = false;
 
 //any pure functions can go outside
-const ProfileSettings = ({ settingsScope, settingsObject }) => {
+const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
-    const { t } = useTranslation(); 
+    const { t } = useTranslation();
+    const { appConfig, loading } = useAppConfig();
 
-    //settingsScope is the $scope of general-settings.js
-    //grab any variables or functions you need from it like this:
-    //why is settings not defined but everything else is fine?
-    const { logOut, viewPrivacyPolicy, 
+    // get the scope of the general-settings.js file
+    const mainMetricsEl = document.getElementById('main-control').querySelector('ion-view');
+    const settingsScope = angular.element(mainMetricsEl).scope();
+    // grab any variables or functions we need from it like this:
+    const { settings, logOut, viewPrivacyPolicy,
         fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
-        parseState, ui_config } = settingsScope;
-
-    console.log("settings?", settingsObject);
-    let settings = settingsObject;
-    console.log("settings", settings);
+        parseState } = settingsScope;
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -37,35 +38,58 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     const CalorieCal = getAngularService('CalorieCal');
     const KVStore = getAngularService('KVStore');
 
+    if (!controlUpdateCompleteListenerRegistered) {
+        settingsScope.$on('control.update.complete', function() {
+            console.debug("Received control.update.complete event, refreshing screen");
+            refreshScreen();
+            refreshCollectSettings();
+        });
+        controlUpdateCompleteListenerRegistered = true;
+    }
+
     //functions that come directly from an Angular service
     const forceState = ControlCollectionHelper.forceState;
     const editCollectionConfig = ControlCollectionHelper.editConfig;
     const editSyncConfig = ControlSyncHelper.editConfig;
 
     //states and variables used to control/create the settings
-    var profileSettings = {};
-    const [nukeSetVis, setNukeVis] = React.useState(false);
-    const [carbonDataVis, setCarbonDataVis] = React.useState(false);
-    const [collectSettings, setCollectSettings] = React.useState({});
+    const [opCodeVis, setOpCodeVis] = useState(false);
+    const [nukeSetVis, setNukeVis] = useState(false);
+    const [carbonDataVis, setCarbonDataVis] = useState(false);
+    const [collectSettings, setCollectSettings] = useState({});
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
 
-    //watch for changes settings workaround
     useEffect(() => {
-        var defined;
-        if(settings.collect?.trackingOn){
-            defined = true;
+        if (appConfig) {
+            refreshCollectSettings();
         }
-        else{
-           return;
+    }, [appConfig]);
+
+    async function refreshCollectSettings() {
+        console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
+        const newCollectSettings = {};
+
+        // refresh collect plugin configuration
+        const collectionPluginConfig = await ControlCollectionHelper.getCollectionSettings();
+        newCollectSettings.config = collectionPluginConfig;
+        
+        const collectionPluginState = await ControlCollectionHelper.getState();
+        newCollectSettings.state = collectionPluginState;
+        newCollectSettings.trackingOn = collectionPluginState != "local.state.tracking_stopped"
+                                        && collectionPluginState != "STATE_TRACKING_STOPPED";
+
+        // I am not sure that this is actually needed anymore since https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7
+        const geofenceConfig = await KVStore.get("OP_GEOFENCE_CFG");
+        newCollectSettings.experimentalGeofenceOn = geofenceConfig != null;
+
+        const isLowAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        if (typeof isLowAccuracy != 'undefined') {
+            newCollectSettings.lowAccuracy = isLowAccuracy;
         }
-        //if empty or undefined, do nothing
-        if(!defined){
-            return;
-        }
-        //else update
-        setCollectSettings(settings.collect);
-      }, [settings.collect]);
+
+        setCollectSettings(newCollectSettings);
+    }
     
     //methods that control the settings
     const uploadLog = function () {
@@ -77,48 +101,18 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         EmailHelper.sendEmail("loggerDB")
     };
 
-    const isAndroid = function() {
-        return Platform.OS == "android";
-    }
-
-    const isIOS = function() {
-        return Platform.OS == "ios";
-    }
-
-    const userStartStopTracking = function() {
-        //note the dependency on the settings object (still passed in)
-        if (collectSettings.trackingOn){
-            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
-        } else {
-            return ControlCollectionHelper.forceTransition('START_TRACKING');
-        }
-    }
-
-    const getLowAccuracy = function() {
-        var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
-        if(typeof isMediumAccuracy == 'undefined') {
-            return false;
-        }
-        else{
-            settings.collect.lowAccuracy = isMediumAccuracy;
-            return isMediumAccuracy;
-        }
+    async function userStartStopTracking() {
+        const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
+        ControlCollectionHelper.forceTransition(transitionToForce);
+        /* the ControlCollectionHelper.forceTransition call above will trigger a
+            'control.update.complete' event when it's done, which will trigger refreshCollectSettings.
+          So we don't need to call refreshCollectSettings here. */
     }
 
     const toggleLowAccuracy = function() {
-        console.log("change attempt in ProfileSettigns");
-        //the function below is broken?
         ControlCollectionHelper.toggleLowAccuracy();
-        getLowAccuracy();
+        refreshCollectSettings();
     }
-
-    // const getCollectionSettings = function() {
-    //     ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
-    //         profileSettings.collect.show_config = showConfig;
-    //         console.log("settings", showConfig);
-    //         return showConfig;
-    //     });
-    // };
 
     var userData = [];
     var rawUserData;
@@ -202,11 +196,9 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                         </ExpansionSection>;
     }
 
-    //show the upload log dependent on config -- still importing the ui_config the workaround way
     let logUploadSection;
-    console.log("ui config thing", ui_config.profile_controls.support_upload);
-    if(ui_config.profile_controls.support_upload == true)
-    {
+    console.debug("appConfg: support_upload:", appConfig?.profile_controls?.support_upload);
+    if (appConfig?.profile_controls?.support_upload) {
         logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
     }
 
@@ -216,16 +208,13 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
-           {/* this toggle only kinda works */}
            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
-           {/* this switch is also fussy */}
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
            <SettingRow textKey="control.download-json-dump" iconName="calendar" action={openDatePicker}></SettingRow>
-           {/* this row missing condition!!! Should only show iff ui_config.profile_controls.support_upload == true */}
            {logUploadSection}
            <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
 
@@ -241,11 +230,11 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <ControlDataTable controlData={settings?.notification?.scheduledNotifs}></ControlDataTable>
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
-               <SettingRow textKey={parseState(settings?.collect?.state)} iconName="pencil" action={forceState}></SettingRow>
+               <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={forceState}></SettingRow>
                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
                <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
-               <ControlDataTable controlData={settings?.collect?.show_config}></ControlDataTable>
+               <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                <ControlDataTable controlData={settings?.sync?.show_config}></ControlDataTable>
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
@@ -308,14 +297,10 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                 </Dialog>
             </Modal>
 
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings.auth.opcode} action={shareQR}></PopOpCode>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings?.auth?.opcode} action={shareQR}></PopOpCode>
         </>
     );
-    };
-  ProfileSettings.propTypes = {
-      settingsScope: object,
-      settingsObject: object
-    }
+};
    
   angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;
