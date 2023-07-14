@@ -27,7 +27,7 @@ const ProfileSettings = () => {
         fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
-        parseState } = settingsScope;
+        parseState, userDataSaved, userData } = settingsScope;
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -114,8 +114,8 @@ const ProfileSettings = () => {
         refreshCollectSettings();
     }
 
-    var userData = [];
-    var rawUserData;
+    // var userData = [];
+    // var rawUserData;
     const shareQR = function() {
         var prepopulateQRMessage = {};  
         const c = document.getElementsByClassName('qrcode-link');
@@ -136,40 +136,40 @@ const ProfileSettings = () => {
         setOpCodeVis(true);
     }
 
-    const getUserData = function() {
-        return CalorieCal.get().then(function(userDataFromStorage) {
-            rawUserData = userDataFromStorage;
-            if(userDataSaved()) {
-                userData = []
-                var height = userDataFromStorage.height.toString();
-                var weight = userDataFromStorage.weight.toString();
-                var temp  =  {
-                    age: userDataFromStorage.age,
-                    height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-                    weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                    gender: userDataFromStorage.gender == 1? t('gender-male') : t('gender-female')
-                }
-                for (var i in temp) {
-                    userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
-                }
-            }
-        });
-    }
-    const userDataSaved = function() {
-        console.log(rawUserData);
-        var defined;
-        if(rawUserData){
-            defined = true;
-        }
-        else{
-            defined = false;
-        }
-        if (defined && rawUserData != null) {
-            return rawUserData.userDataSaved;
-        } else{
-            return false;
-        }
-    }
+    // const getUserData = function() {
+    //     return CalorieCal.get().then(function(userDataFromStorage) {
+    //         rawUserData = userDataFromStorage;
+    //         if(userDataSaved()) {
+    //             userData = []
+    //             var height = userDataFromStorage.height.toString();
+    //             var weight = userDataFromStorage.weight.toString();
+    //             var temp  =  {
+    //                 age: userDataFromStorage.age,
+    //                 height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+    //                 weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+    //                 gender: userDataFromStorage.gender == 1? t('gender-male') : t('gender-female')
+    //             }
+    //             for (var i in temp) {
+    //                 userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
+    //             }
+    //         }
+    //     });
+    // }
+    // const userDataSaved = function() {
+    //     console.log("user data?", rawUserData);
+    //     var defined;
+    //     if(rawUserData){
+    //         defined = true;
+    //     }
+    //     else{
+    //         defined = false;
+    //     }
+    //     if (defined && rawUserData != null) {
+    //         return rawUserData.userDataSaved;
+    //     } else{
+    //         return false;
+    //     }
+    // }
 
     var prepopulateMessage = {
         message: t('general-settings.share-message'),
@@ -186,7 +186,7 @@ const ProfileSettings = () => {
             });
     }
 
-    //conditional creation of the user dropdown
+    //conditional creation of setting sections
     let userDataSection;
     if(userDataSaved())
     {

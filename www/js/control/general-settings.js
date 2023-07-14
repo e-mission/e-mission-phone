@@ -155,7 +155,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.appStatusModal.hide();
     }
 
-    // $scope.userData = []
+    $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
         $scope.rawUserData = userDataFromStorage;
@@ -170,7 +170,7 @@ angular.module('emission.main.control',['emission.services',
                 gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
             }
             for (var i in temp) {
-                $scope.userData.push({key: i, value: temp[i]});
+                $scope.userData.push({key: i, val: temp[i]}); //needs to be val for the data table!
             }
         }
         });
