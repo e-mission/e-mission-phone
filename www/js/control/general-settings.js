@@ -322,6 +322,7 @@ angular.module('emission.main.control',['emission.services',
                 $scope.$apply(() => {
                     const m = moment(prefs.reminder_time_of_day, 'HH:mm');
                     // defining data used to populate the upcoming display
+                    
                     $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
                     $scope.settings.notification.prefReminderTimeVal = m.toDate();
                     $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
