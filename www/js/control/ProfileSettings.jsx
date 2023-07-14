@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { Platform, Modal } from "react-native";
+import { Modal } from "react-native";
 import { Dialog, Button } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
-import { object } from "prop-types";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
