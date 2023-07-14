@@ -15,7 +15,7 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
         //when toggled from OFF to ON, the switch display does not update
         //update takes when screen is "refreshed" - by tabbing btwn screens, showing policy...
         //works just fine when going from ON to OFF
-        rightComponent = <Switch value={switchValue} onValueChange={(e) => action(e)}/>;
+        rightComponent = <Switch value={switchValue} />;
     }
     let descriptionText;
     if(desc) {
