@@ -117,10 +117,9 @@ const ProfileSettings = () => {
     // var rawUserData;
     const shareQR = function() {
         var prepopulateQRMessage = {};  
-        const c = document.getElementsByClassName('qrcode-link');
-        const cbase64 = c[0].getAttribute('href');
-        prepopulateQRMessage.files = [cbase64];
-        prepopulateQRMessage.url = $scope.settings.auth.opcode;
+        var qrAddress = "emission://login_token?token="+settings?.auth?.opcode;
+        prepopulateQRMessage.files = [qrAddress];
+        prepopulateQRMessage.url = settings.auth.opcode;
 
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
@@ -131,7 +130,6 @@ const ProfileSettings = () => {
     }
 
     const viewQRCode = function(e) {
-        // tokenURL = "emission://login_token?token="+settings.auth.opcode;
         setOpCodeVis(true);
     }
 
