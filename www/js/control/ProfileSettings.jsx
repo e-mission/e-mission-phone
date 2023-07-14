@@ -47,7 +47,6 @@ const ProfileSettings = () => {
     }
 
     //functions that come directly from an Angular service
-    const forceState = ControlCollectionHelper.forceState;
     const editCollectionConfig = ControlCollectionHelper.editConfig;
     const editSyncConfig = ControlSyncHelper.editConfig;
 
@@ -55,9 +54,16 @@ const ProfileSettings = () => {
     const [opCodeVis, setOpCodeVis] = useState(false);
     const [nukeSetVis, setNukeVis] = useState(false);
     const [carbonDataVis, setCarbonDataVis] = useState(false);
+    const [forceStateVis, setForceStateVis] = useState(false);
     const [collectSettings, setCollectSettings] = useState({});
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
+    const stateActions = [{text: "Initialize", transition: "INITIALIZE"},
+    {text: 'Start trip', transition: "EXITED_GEOFENCE"},
+    {text: 'End trip', transition: "STOPPED_MOVING"},
+    {text: 'Visit ended', transition: "VISIT_ENDED"},
+    {text: 'Visit started', transition: "VISIT_STARTED"},
+    {text: 'Remote push', transition: "RECEIVED_SILENT_PUSH"}]
 
     useEffect(() => {
         if (appConfig) {
@@ -227,7 +233,7 @@ const ProfileSettings = () => {
                <ControlDataTable controlData={settings?.notification?.scheduledNotifs}></ControlDataTable>
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
-               <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={forceState}></SettingRow>
+               <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
                <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
@@ -290,6 +296,33 @@ const ProfileSettings = () => {
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={() => setCarbonDataVis(false)}>{t('general-settings.cancel')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
+            {/* force state sheet */}
+            <Modal visible={forceStateVis} onDismiss={() => setForceStateVis(false)}
+                elevated={true}
+                style={{ elevation: 3 }}
+                transparent={true}>
+                <Dialog visible={forceStateVis}
+                    onDismiss={() => setForceStateVis(false)}>
+                    <Dialog.Title>{"Force State"}</Dialog.Title>
+                    <Dialog.Content>
+                        {stateActions.map((e) =>
+                            <Button key={e.text}
+                            onPress={() =>  {
+                                console.log("changeCarbonDataset(): chose locale " + e.text);
+                                ControlCollectionHelper.forceTransition(e.transition); 
+                                setForceStateVis(false);
+                                }}
+                            >
+                                {e.text}
+                            </Button>
+                        )}
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setForceStateVis(false)}>{t('general-settings.cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
