@@ -257,13 +257,14 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getCollectionSettings = function() {
-        ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
-            $scope.$apply(function() {
-                $scope.settings.collect.show_config = showConfig;
-            })
-        });
-    };
+    // this logic now lives in ProfileSettings' refreshCollectionSettings; remove this
+    // $scope.getCollectionSettings = function() {
+    //     ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
+    //         $scope.$apply(function() {
+    //             $scope.settings.collect.show_config = showConfig;
+    //         })
+    //     });
+    // };
 
     $scope.getSyncSettings = function() {
         ControlSyncHelper.getSyncSettings().then(function(showConfig) {
@@ -297,9 +298,10 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.getState = function() {
         return ControlCollectionHelper.getState().then(function(response) {
-            $scope.$apply(function() {
-                $scope.settings.collect.state = response;
-            });
+            /* collect state is now stored in ProfileSettings' collectSettings */
+            // $scope.$apply(function() {
+            //     $scope.settings.collect.state = response;
+            // });
             return response;
         }, function(error) {
             Logger.displayError("while getting current state", error);
@@ -381,33 +383,34 @@ angular.module('emission.main.control',['emission.services',
     $scope.refreshScreen = function() {
         console.log("Refreshing screen");
         $scope.settings = {};
-        $scope.settings.collect = {};
+        // $scope.settings.collect = {}; // collectSettings are moved to ProfileSettings; remove this
         $scope.settings.sync = {};
         $scope.settings.notification = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
-        $scope.getCollectionSettings();
+        // $scope.getCollectionSettings(); // collectSettings are moved to ProfileSettings; remove this
         $scope.getSyncSettings();
         $scope.getOPCode();
-        $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
-            $scope.$apply(function() {
-                console.log("Setting settings.collect.trackingOn = "+isTracking);
-                $scope.settings.collect.trackingOn = isTracking;
-            });
-        });
-        KVStore.get("OP_GEOFENCE_CFG").then(function(storedCfg) {
-            $scope.$apply(function() {
-                if (storedCfg == null) {
-                    console.log("Setting settings.collect.experimentalGeofenceOn = false");
-                    $scope.settings.collect.experimentalGeofenceOn = false;
-                } else {
-                    console.log("Setting settings.collect.experimentalGeofenceOn = true");
-                    $scope.settings.collect.experimentalGeofenceOn = true;
-                }
-            });
-        });
+        /* this is moved to ProfileSettings; remove this */
+        // $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
+        //     $scope.$apply(function() {
+        //         console.log("Setting settings.collect.trackingOn = "+isTracking);
+        //         $scope.settings.collect.trackingOn = isTracking;
+        //     });
+        // });
+        // KVStore.get("OP_GEOFENCE_CFG").then(function(storedCfg) {
+        //     $scope.$apply(function() {
+        //         if (storedCfg == null) {
+        //             console.log("Setting settings.collect.experimentalGeofenceOn = false");
+        //             $scope.settings.collect.experimentalGeofenceOn = false;
+        //         } else {
+        //             console.log("Setting settings.collect.experimentalGeofenceOn = true");
+        //             $scope.settings.collect.experimentalGeofenceOn = true;
+        //         }
+        //     });
+        // });
         if ($scope.ui_config.reminderSchemes) {
             NotificationScheduler.getReminderPrefs().then((prefs) => {
                 $scope.$apply(() => {
@@ -569,15 +572,16 @@ angular.module('emission.main.control',['emission.services',
     }).then(function(popover) {
         $scope.syncSettingsPopup = popover;
     });
-    $scope.isTrackingOn = function() {
-        return $ionicPlatform.ready().then(function() {
-            if($scope.isAndroid()){
-                return $scope.settings.collect.state != "local.state.tracking_stopped";
-            } else if ($scope.isIOS()) {
-                return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-            }
-        });
-    };
+    // moved to ProfileSettings
+    // $scope.isTrackingOn = function() {
+    //     return $ionicPlatform.ready().then(function() {
+    //         if($scope.isAndroid()){
+    //             return $scope.settings.collect.state != "local.state.tracking_stopped";
+    //         } else if ($scope.isIOS()) {
+    //             return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
+    //         }
+    //     });
+    // };
     //moved this into ProfileSettings :)
     // $scope.userStartStopTracking = function() {
     //     if ($scope.settings.collect.trackingOn){
