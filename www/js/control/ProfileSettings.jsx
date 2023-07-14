@@ -20,8 +20,8 @@ const ProfileSettings = () => {
     const { appConfig, loading } = useAppConfig();
 
     // get the scope of the general-settings.js file
-    const mainMetricsEl = document.getElementById('main-control').querySelector('ion-view');
-    const settingsScope = angular.element(mainMetricsEl).scope();
+    const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
+    const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
     const { settings, logOut, viewPrivacyPolicy,
         fixAppStatus, forceSync, openDatePicker,
