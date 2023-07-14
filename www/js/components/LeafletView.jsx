@@ -40,7 +40,6 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
     (happens because of FlashList's view recycling on the trip cards:
       https://shopify.github.io/flash-list/docs/recycling) */
   if (geoJsonIdRef.current && geoJsonIdRef.current !== geojson.data.id) {
-    console.debug('leafletMapRef changed, invalidating map', geoJsonIdRef.current, geojson.data.id);
     leafletMapRef.current.eachLayer(layer => leafletMapRef.current.removeLayer(layer));
     initMap(leafletMapRef.current);
   }
