@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal } from "react-native";
-import { Dialog, Button } from "react-native-paper";
+import { Modal, StyleSheet } from "react-native";
+import { Dialog, Button, useTheme } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -17,6 +17,7 @@ const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
     const { t } = useTranslation();
     const { appConfig, loading } = useAppConfig();
+    const { colors } = useTheme();
 
     // get the scope of the general-settings.js file
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
@@ -245,11 +246,10 @@ const ProfileSettings = () => {
 
         {/* menu for "nuke data"  -- elevation not really working?? */}
             <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
-            elevated={true}
-            transparent={true}
-            style={{ elevation: 3 }}>
+            transparent={true}>
                 <Dialog visible={nukeSetVis}
-                onDismiss={() => setNukeVis(false)}>
+                onDismiss={() => setNukeVis(false)}
+                style={styles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
                         <Button onPress={() => {KVStore.clearOnlyLocal;
@@ -273,11 +273,10 @@ const ProfileSettings = () => {
 
         {/* menu for "set carbon dataset - only somewhat working" */}
             <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
-                elevated={true}
-                style={{ elevation: 3 }}
-                transparent={true}>
+            transparent={true}>
                 <Dialog visible={carbonDataVis}
-                    onDismiss={() => setCarbonDataVis(false)}>
+                    onDismiss={() => setCarbonDataVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
                     <Dialog.Content>
                         {carbonOptions.map((e) =>
@@ -302,11 +301,10 @@ const ProfileSettings = () => {
 
             {/* force state sheet */}
             <Modal visible={forceStateVis} onDismiss={() => setForceStateVis(false)}
-                elevated={true}
-                style={{ elevation: 3 }}
-                transparent={true}>
+            transparent={true}>
                 <Dialog visible={forceStateVis}
-                    onDismiss={() => setForceStateVis(false)}>
+                    onDismiss={() => setForceStateVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{"Force State"}</Dialog.Title>
                     <Dialog.Content>
                         {stateActions.map((e) =>
@@ -331,6 +329,12 @@ const ProfileSettings = () => {
         </>
     );
 };
+const styles = StyleSheet.create({
+    dialog: (surfaceColor) => ({
+        backgroundColor: surfaceColor,
+        margin: 1,
+    }),
+  });
    
   angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;
