@@ -145,7 +145,7 @@ const s = StyleSheet.create({
   notesButton: {
     paddingHorizontal: 8,
     paddingVertical: 12,
-    width: 150,
+    minWidth: 150,
     margin: 'auto',
   },
   rightPanel: {
