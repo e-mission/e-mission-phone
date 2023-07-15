@@ -1,5 +1,5 @@
 import { getAngularService } from "../angular-react-helper";
-import { getFormattedDate, getFormattedDateAbbr, isMultiDay } from "./diaryHelper";
+import { getFormattedDate, getFormattedDateAbbr, getFormattedTimeRange, isMultiDay } from "./diaryHelper";
 
 /**
  * @description Unpacks composite trips into a Map object of timeline items, by id.
@@ -37,20 +37,19 @@ let DiaryHelper;
  */
 export function populateBasicClasses(tlEntry) {
   DiaryHelper = DiaryHelper || getAngularService('DiaryHelper');
-  const beginTs = tlEntry.start_ts || tlEntry.enter_ts;
-  const endTs = tlEntry.end_ts || tlEntry.exit_ts;
+  const beginFmt = tlEntry.start_fmt_time || tlEntry.enter_fmt_time;
+  const endFmt = tlEntry.end_fmt_time || tlEntry.exit_fmt_time;
   const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
   const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
-  const tlEntryIsMultiDay = isMultiDay(beginTs, endTs);
-  tlEntry.display_date = getFormattedDate(beginTs, endTs);
+  const tlEntryIsMultiDay = isMultiDay(beginFmt, endFmt);
+  tlEntry.display_date = getFormattedDate(beginFmt, endFmt);
   tlEntry.display_start_time = DiaryHelper.getLocalTimeString(beginDt);
   tlEntry.display_end_time = DiaryHelper.getLocalTimeString(endDt);
   if (tlEntryIsMultiDay) {
-    tlEntry.display_start_date_abbr = getFormattedDateAbbr(beginTs);
-    tlEntry.display_end_date_abbr = getFormattedDateAbbr(endTs);
+    tlEntry.display_start_date_abbr = getFormattedDateAbbr(beginFmt);
+    tlEntry.display_end_date_abbr = getFormattedDateAbbr(endFmt);
   }
-  tlEntry.display_duration = DiaryHelper.getFormattedDuration(beginTs, endTs);
-  tlEntry.display_time = DiaryHelper.getFormattedTimeRange(beginTs, endTs);
+  tlEntry.display_time = getFormattedTimeRange(beginFmt, endFmt);
   tlEntry.percentages = DiaryHelper.getPercentages(tlEntry);
   // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
   tlEntry.start_display_name = "\xa0";
