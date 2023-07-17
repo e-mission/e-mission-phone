@@ -122,13 +122,13 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    $scope.updatePrefReminderTime = (storeNewVal=true) => {
-        const m = moment($scope.settings.notification.prefReminderTimeVal);
-        $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
-        if (storeNewVal)
-            NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
-        $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
-    }
+    // $scope.updatePrefReminderTime = (storeNewVal=true) => {
+    //     const m = moment($scope.settings.notification.prefReminderTimeVal);
+    //     $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
+    //     if (storeNewVal)
+    //         NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
+    //     $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
+    // }
 
     //called in ProfileSettings on the AppStatus row
     $scope.fixAppStatus = function() {
@@ -310,26 +310,26 @@ angular.module('emission.main.control',['emission.services',
         console.log("Refreshing screen");
         $scope.settings = {};
         $scope.settings.sync = {};
-        $scope.settings.notification = {};
+        // $scope.settings.notification = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
         $scope.getSyncSettings();
         $scope.getOPCode();
-        if ($scope.ui_config.reminderSchemes) {
-            NotificationScheduler.getReminderPrefs().then((prefs) => {
-                $scope.$apply(() => {
-                    const m = moment(prefs.reminder_time_of_day, 'HH:mm');
-                    // defining data used to populate the upcoming display
-                    
-                    $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
-                    $scope.settings.notification.prefReminderTimeVal = m.toDate();
-                    $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-                    $scope.updatePrefReminderTime(false); // update the displayed time
-                });
-            });
-        }
+        // if ($scope.ui_config.reminderSchemes) {
+        //     NotificationScheduler.getReminderPrefs().then((prefs) => {
+        //         $scope.$apply(() => {
+        //             const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+        //             // defining data used to populate the upcoming display
+        //             $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
+        //             $scope.settings.notification.prefReminderTimeVal = m.toDate();
+        //             $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
+        //             console.log("notifications", settings.notification.prefReminderTimeVal);
+        //             $scope.updatePrefReminderTime(false); // update the displayed time
+        //         });
+        //     });
+        // }
         $scope.getUserData();
     };
 

@@ -27,7 +27,7 @@ const ProfileSettings = () => {
         fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
-        parseState, userDataSaved, userData } = settingsScope;
+        parseState, userDataSaved, userData, ui_config } = settingsScope;
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -37,6 +37,7 @@ const ProfileSettings = () => {
     const ControlSyncHelper = getAngularService('ControlSyncHelper');
     const CalorieCal = getAngularService('CalorieCal');
     const KVStore = getAngularService('KVStore');
+    const NotificationScheduler = getAngularService('NotificationScheduler');
 
     if (!controlUpdateCompleteListenerRegistered) {
         settingsScope.$on('control.update.complete', function() {
@@ -57,6 +58,8 @@ const ProfileSettings = () => {
     const [carbonDataVis, setCarbonDataVis] = useState(false);
     const [forceStateVis, setForceStateVis] = useState(false);
     const [collectSettings, setCollectSettings] = useState({});
+    const [notificationSettings, setNotificationSettings] = useState({});
+
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
     const stateActions = [{text: "Initialize", transition: "INITIALIZE"},
@@ -69,6 +72,7 @@ const ProfileSettings = () => {
     useEffect(() => {
         if (appConfig) {
             refreshCollectSettings();
+            refreshNotificationSettings();
         }
     }, [appConfig]);
 
@@ -96,6 +100,25 @@ const ProfileSettings = () => {
 
         setCollectSettings(newCollectSettings);
     }
+
+    async function refreshNotificationSettings() {
+        console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
+        const newNotificationSettings ={};
+
+        if (ui_config?.reminderSchemes) {
+            const prefs = await  NotificationScheduler.getReminderPrefs();
+            const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+            newNotificationSettings.prefReminderTimeVal = m.toDate();
+            const n = moment(newNotificationSettings.prefReminderTimeVal);
+            newNotificationSettings.prefReminderTime = n.format('LT');
+            newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
+            newNotificationSettings.scheduledNotifs = NotificationScheduler.scheduledNotifs;
+            updatePrefReminderTime(false);
+        }
+
+        console.log("notification settings before and after", notificationSettings, newNotificationSettings);
+        setNotificationSettings(newNotificationSettings);
+    }
     
     //methods that control the settings
     const uploadLog = function () {
@@ -106,6 +129,15 @@ const ProfileSettings = () => {
         // Passing true, we want to send logs
         EmailHelper.sendEmail("loggerDB")
     };
+
+    async function  updatePrefReminderTime(storeNewVal=true, newTime){
+        console.log(newTime);
+        if(storeNewVal){
+            const m = moment(newTime);
+            await NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
+            refreshNotificationSettings();
+        }
+    }
 
     async function userStartStopTracking() {
         const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
@@ -194,7 +226,7 @@ const ProfileSettings = () => {
                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
                {/* upcoming notifications seem to be undefined at time of render :( */}
                <SettingRow textKey="control.upcoming-notifications" iconName="bell-check" action={()=>console.log("")}></SettingRow>
-               <ControlDataTable controlData={settings?.notification?.scheduledNotifs}></ControlDataTable>
+               <ControlDataTable controlData={notificationSettings.scheduledNotifs}></ControlDataTable>
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
                <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
