@@ -203,7 +203,7 @@ const LabelTab = () => {
   };
 
   useEffect(() => {
-    if (!displayedEntries?.length) return;
+    if (!displayedEntries) return;
     invalidateMaps();
     setIsLoading(false);
   }, [displayedEntries]);
