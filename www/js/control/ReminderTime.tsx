@@ -23,6 +23,8 @@ const TimeSelect = ({ visible, setVisible, defaultTime, updateFunc }) => {
     );
 
     return (
+        <Modal visible={visible} onDismiss={() => setVisible(false)}
+        transparent={true}>
             <TimePickerModal
             visible={visible}
             onDismiss={onDismiss}
@@ -30,6 +32,7 @@ const TimeSelect = ({ visible, setVisible, defaultTime, updateFunc }) => {
             hours={defaultTime?.getHours()}
             minutes={defaultTime?.getMinutes()}
             />
+        </Modal>
     )
 }
 TimeSelect.prototypes = {
