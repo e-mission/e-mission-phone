@@ -8,6 +8,7 @@ import SettingRow from "./SettingRow";
 import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
 import PopOpCode from "./PopOpCode";
+import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
 
 let controlUpdateCompleteListenerRegistered = false;
@@ -207,6 +208,7 @@ const ProfileSettings = () => {
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
+           <ReminderTime rowText={"control.reminders-time-of-day"} timeVar={notificationSettings.prefReminderTime} defaultTime={notificationSettings.prefReminderTimeVal} updateFunc={updatePrefReminderTime}></ReminderTime>
            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
