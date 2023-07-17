@@ -77,18 +77,6 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    //these have been converted!!
-    // $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-
-    // $scope.uploadLog = function () {
-    //     UploadHelper.uploadFile("loggerDB")
-    // };
-
-    // $scope.emailLog = function () {
-    //     // Passing true, we want to send logs
-    //     EmailHelper.sendEmail("loggerDB")
-    // };
-
     //this function used in ProfileSettings to viewPrivacyPolicy
     $scope.viewPrivacyPolicy = function($event) {
         // button -> list element -> scroll
@@ -106,19 +94,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    //this function used in ProfileSettings to viewQRCode
-    // $scope.viewQRCode = function($event) {
-    //     $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.opcode;
-    //     if ($scope.qrp) {
-    //         $scope.qrp.show($event);
-    //     } else {
-    //         $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
-    //             $scope.qrp = q;
-    //             $scope.qrp.show($event);
-    //         }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
-    //     }
-    // }
-
     //this function used in ProfileSettings to send DummyNotification
     $scope.dummyNotification = () => {
         cordova.plugins.notification.local.addActions('dummy-actions', [
@@ -134,14 +109,6 @@ angular.module('emission.main.control',['emission.services',
         });
     }
 
-    $scope.updatePrefReminderTime = (storeNewVal=true) => {
-        const m = moment($scope.settings.notification.prefReminderTimeVal);
-        $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
-        if (storeNewVal)
-            NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
-        $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
-    }
-
     //called in ProfileSettings on the AppStatus row
     $scope.fixAppStatus = function() {
         $scope.$broadcast("recomputeAppStatus");
@@ -155,7 +122,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.appStatusModal.hide();
     }
 
-    // $scope.userData = []
+    $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
         $scope.rawUserData = userDataFromStorage;
@@ -170,7 +137,7 @@ angular.module('emission.main.control',['emission.services',
                 gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
             }
             for (var i in temp) {
-                $scope.userData.push({key: i, value: temp[i]});
+                $scope.userData.push({key: i, val: temp[i]}); //needs to be val for the data table!
             }
         }
         });
@@ -212,39 +179,6 @@ angular.module('emission.main.control',['emission.services',
             $scope.refreshScreen();
         });
     });
-    // $scope.getLowAccuracy = function() {
-    //     //  return true: toggle on; return false: toggle off.
-    //     var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
-    //     if (!angular.isDefined(isMediumAccuracy)) {
-    //         // config not loaded when loading ui, set default as false
-    //         // TODO: Read the value if it is not defined.
-    //         // Otherwise, don't we have a race with reading?
-    //         // we don't really $apply on this field...
-    //         return false;
-    //     } else {
-    //         $scope.settings.collect.lowAccuracy = isMediumAccuracy; //adding to scope to use w/ switches
-    //         return isMediumAccuracy;
-    //     }
-    // }
-
-    //this is the action called in ProfileSettings for the accuracy toggle
-    // $scope.toggleLowAccuracy = ControlCollectionHelper.toggleLowAccuracy;
-    
-    // $scope.getTracking = function() {
-    //     console.log("tracking on or off?", $scope.settings.collect.trackingOn);
-    //     //  return true: toggle on; return false: toggle off.
-    //     var isTracking = $scope.settings.collect.trackingOn;
-    //     if (!angular.isDefined(isTracking)) {
-    //         // config not loaded when loading ui, set default as false
-    //         // TODO: Read the value if it is not defined.
-    //         // Otherwise, don't we have a race with reading?
-    //         // we don't really $apply on this field...
-    //         return false;
-    //     } else {
-    //         console.log("tracking on or off?", $scope.settings.collect.trackingOn);
-    //         return $scope.settings.collect.trackingOn;
-    //     }
-    // }
 
     $scope.getConnectURL = function() {
         ControlHelper.getSettings().then(function(response) {
@@ -254,14 +188,6 @@ angular.module('emission.main.control',['emission.services',
             });
         }, function(error) {
             Logger.displayError("While getting connect url", error);
-        });
-    };
-
-    $scope.getCollectionSettings = function() {
-        ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
-            $scope.$apply(function() {
-                $scope.settings.collect.show_config = showConfig;
-            })
         });
     };
 
@@ -297,9 +223,10 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.getState = function() {
         return ControlCollectionHelper.getState().then(function(response) {
-            $scope.$apply(function() {
-                $scope.settings.collect.state = response;
-            });
+            /* collect state is now stored in ProfileSettings' collectSettings */
+            // $scope.$apply(function() {
+            //     $scope.settings.collect.state = response;
+            // });
             return response;
         }, function(error) {
             Logger.displayError("while getting current state", error);
@@ -321,26 +248,6 @@ angular.module('emission.main.control',['emission.services',
             }
         });
     }
-
-    //in ProfileSettings in DevZone
-    // $scope.nukeUserCache = function() {
-    //     var nukeChoiceActions = [{text: i18next.t('general-settings.nuke-ui-state-only'),
-    //                               action: KVStore.clearOnlyLocal},
-    //                              {text: i18next.t('general-settings.nuke-native-cache-only'),
-    //                               action: KVStore.clearOnlyNative},
-    //                              {text: i18next.t('general-settings.nuke-everything'),
-    //                               action: KVStore.clearAll}];
-
-    //     $ionicActionSheet.show({
-    //         titleText: i18next.t('general-settings.clear-data'),
-    //         cancelText: i18next.t('general-settings.cancel'),
-    //         buttons: nukeChoiceActions,
-    //         buttonClicked: function(index, button) {
-    //             button.action();
-    //             return true;
-    //         }
-    //     });
-    // }
 
     //in ProfileSettings in DevZone
     $scope.invalidateCache = function() {
@@ -381,45 +288,13 @@ angular.module('emission.main.control',['emission.services',
     $scope.refreshScreen = function() {
         console.log("Refreshing screen");
         $scope.settings = {};
-        $scope.settings.collect = {};
         $scope.settings.sync = {};
-        $scope.settings.notification = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
-        $scope.getCollectionSettings();
         $scope.getSyncSettings();
         $scope.getOPCode();
-        $scope.getState().then($scope.isTrackingOn).then(function(isTracking) {
-            $scope.$apply(function() {
-                console.log("Setting settings.collect.trackingOn = "+isTracking);
-                $scope.settings.collect.trackingOn = isTracking;
-            });
-        });
-        KVStore.get("OP_GEOFENCE_CFG").then(function(storedCfg) {
-            $scope.$apply(function() {
-                if (storedCfg == null) {
-                    console.log("Setting settings.collect.experimentalGeofenceOn = false");
-                    $scope.settings.collect.experimentalGeofenceOn = false;
-                } else {
-                    console.log("Setting settings.collect.experimentalGeofenceOn = true");
-                    $scope.settings.collect.experimentalGeofenceOn = true;
-                }
-            });
-        });
-        if ($scope.ui_config.reminderSchemes) {
-            NotificationScheduler.getReminderPrefs().then((prefs) => {
-                $scope.$apply(() => {
-                    const m = moment(prefs.reminder_time_of_day, 'HH:mm');
-                    // defining data used to populate the upcoming display
-                    $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
-                    $scope.settings.notification.prefReminderTimeVal = m.toDate();
-                    $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-                    $scope.updatePrefReminderTime(false); // update the displayed time
-                });
-            });
-        }
         $scope.getUserData();
     };
 
@@ -551,11 +426,6 @@ angular.module('emission.main.control',['emission.services',
         }).then($scope.forceSync);
     }
 
-    //migrated!
-    // $scope.forceState = ControlCollectionHelper.forceState;
-    // $scope.editCollectionConfig = ControlCollectionHelper.editConfig;
-    // $scope.editSyncConfig = ControlSyncHelper.editConfig;
-
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
     }
@@ -569,31 +439,6 @@ angular.module('emission.main.control',['emission.services',
     }).then(function(popover) {
         $scope.syncSettingsPopup = popover;
     });
-    $scope.isTrackingOn = function() {
-        return $ionicPlatform.ready().then(function() {
-            if($scope.isAndroid()){
-                return $scope.settings.collect.state != "local.state.tracking_stopped";
-            } else if ($scope.isIOS()) {
-                return $scope.settings.collect.state != "STATE_TRACKING_STOPPED";
-            }
-        });
-    };
-    //moved this into ProfileSettings :)
-    // $scope.userStartStopTracking = function() {
-    //     if ($scope.settings.collect.trackingOn){
-    //         return ControlCollectionHelper.forceTransition('STOP_TRACKING');
-    //     } else {
-    //         return ControlCollectionHelper.forceTransition('START_TRACKING');
-    //     }
-    // }
-
-    //using the react accordians now!
-    // $scope.getExpandButtonClass = function() {
-    //     return ($scope.expanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
-    // }
-    // $scope.getUserDataExpandButtonClass = function() {
-    //     return ($scope.dataExpanded)? "icon ion-ios-arrow-up" : "icon ion-ios-arrow-down";
-    // }
 
     //in ProfileSettings in UserData
     $scope.eraseUserData = function() {
@@ -625,33 +470,6 @@ angular.module('emission.main.control',['emission.services',
     //       }
     //     });
     // };
-    //this was eliminated in coversion because the React accordians handle their state
-
-    // $scope.expandDeveloperZone = function() {
-    //     if ($scope.collectionExpanded()) {
-    //         $scope.expanded = false;
-    //         $ionicScrollDelegate.resize();
-    //         $ionicScrollDelegate.scrollTo(0, 0, true);
-
-    //     } else {
-    //         $scope.expanded = true;
-    //         $ionicScrollDelegate.resize();
-    //         $ionicScrollDelegate.scrollTo(0, 1000, true);
-    //     }
-    // }
-    // $scope.toggleUserData = function() {
-    //     if ($scope.dataExpanded) {
-    //         $scope.dataExpanded = false;
-    //     } else {
-    //         $scope.dataExpanded = true;
-    //     }
-    // }
-    // $scope.collectionExpanded = function() {
-    //     return $scope.expanded;
-    // }
-    // $scope.userDataExpanded = function() {
-    //     return $scope.dataExpanded && $scope.userDataSaved();
-    // }
 
     var handleNoConsent = function(resultDoc) {
         $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})
@@ -693,36 +511,5 @@ angular.module('emission.main.control',['emission.services',
             Logger.displayError("Error reading consent document from cache", error)
         });
     }
-
-    var prepopulateMessage = {
-        message: i18next.t('general-settings.share-message'), // not supported on some apps (Facebook, Instagram)
-        subject: i18next.t('general-settings.share-subject'), // fi. for email
-        url: i18next.t('general-settings.share-url')
-    }
-
-    // //in ProfileSettings above is a helper var!
-    // $scope.share = function() {
-    //     window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
-    //         console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-    //         console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-    //     }, function(msg) {
-    //         console.log("Sharing failed with message: " + msg);
-    //     });
-    // }
-
-    // $scope.shareQR = function() {
-    //     var prepopulateQRMessage = {};  
-    //     const c = document.getElementsByClassName('qrcode-link');
-    //     const cbase64 = c[0].getAttribute('href');
-    //     prepopulateQRMessage.files = [cbase64];
-    //     prepopulateQRMessage.url = $scope.settings.auth.opcode;
-
-    //     window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-    //         console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-    //         console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-    //     }, function(msg) {
-    //         console.log("Sharing failed with message: " + msg);
-    //     });
-    // }
 
 });

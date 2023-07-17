@@ -1,32 +1,34 @@
-import React, {useEffect} from "react";
-import { Platform, Modal } from "react-native";
-import { Dialog, Button } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { Modal, StyleSheet } from "react-native";
+import { Dialog, Button, useTheme } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
-import { object } from "prop-types";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
 import ControlDataTable from "./ControlDataTable";
 import DemographicsSettingRow from "./DemographicsSettingRow";
-import PopOpCode from "./popOpCode";
+import PopOpCode from "./PopOpCode";
+import ReminderTime from "./ReminderTime"
+import useAppConfig from "../useAppConfig";
+
+let controlUpdateCompleteListenerRegistered = false;
 
 //any pure functions can go outside
-const ProfileSettings = ({ settingsScope, settingsObject }) => {
+const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
-    const { t } = useTranslation(); 
+    const { t } = useTranslation();
+    const { appConfig, loading } = useAppConfig();
+    const { colors } = useTheme();
 
-    //settingsScope is the $scope of general-settings.js
-    //grab any variables or functions you need from it like this:
-    //why is settings not defined but everything else is fine?
-    const { logOut, viewPrivacyPolicy, 
+    // get the scope of the general-settings.js file
+    const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
+    const settingsScope = angular.element(mainControlEl).scope();
+    // grab any variables or functions we need from it like this:
+    const { settings, logOut, viewPrivacyPolicy,
         fixAppStatus, forceSync, openDatePicker,
         eraseUserData, refreshScreen, endForceSync, checkConsent, 
         dummyNotification, invalidateCache, showLog, showSensed,
-        parseState, ui_config } = settingsScope;
-
-    console.log("settings?", settingsObject);
-    let settings = settingsObject;
-    console.log("settings", settings);
+        parseState, userDataSaved, userData, ui_config } = settingsScope;
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -36,36 +38,88 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     const ControlSyncHelper = getAngularService('ControlSyncHelper');
     const CalorieCal = getAngularService('CalorieCal');
     const KVStore = getAngularService('KVStore');
+    const NotificationScheduler = getAngularService('NotificationScheduler');
+
+    if (!controlUpdateCompleteListenerRegistered) {
+        settingsScope.$on('control.update.complete', function() {
+            console.debug("Received control.update.complete event, refreshing screen");
+            refreshScreen();
+            refreshCollectSettings();
+        });
+        controlUpdateCompleteListenerRegistered = true;
+    }
 
     //functions that come directly from an Angular service
-    const forceState = ControlCollectionHelper.forceState;
     const editCollectionConfig = ControlCollectionHelper.editConfig;
     const editSyncConfig = ControlSyncHelper.editConfig;
 
     //states and variables used to control/create the settings
-    var profileSettings = {};
-    const [nukeSetVis, setNukeVis] = React.useState(false);
-    const [carbonDataVis, setCarbonDataVis] = React.useState(false);
-    const [collectSettings, setCollectSettings] = React.useState({});
+    const [opCodeVis, setOpCodeVis] = useState(false);
+    const [nukeSetVis, setNukeVis] = useState(false);
+    const [carbonDataVis, setCarbonDataVis] = useState(false);
+    const [forceStateVis, setForceStateVis] = useState(false);
+    const [collectSettings, setCollectSettings] = useState({});
+    const [notificationSettings, setNotificationSettings] = useState({});
+
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
+    const stateActions = [{text: "Initialize", transition: "INITIALIZE"},
+    {text: 'Start trip', transition: "EXITED_GEOFENCE"},
+    {text: 'End trip', transition: "STOPPED_MOVING"},
+    {text: 'Visit ended', transition: "VISIT_ENDED"},
+    {text: 'Visit started', transition: "VISIT_STARTED"},
+    {text: 'Remote push', transition: "RECEIVED_SILENT_PUSH"}]
 
-    //watch for changes settings workaround
     useEffect(() => {
-        var defined;
-        if(settings.collect?.trackingOn){
-            defined = true;
+        if (appConfig) {
+            refreshCollectSettings();
+            refreshNotificationSettings();
         }
-        else{
-           return;
+    }, [appConfig]);
+
+    async function refreshCollectSettings() {
+        console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
+        const newCollectSettings = {};
+
+        // refresh collect plugin configuration
+        const collectionPluginConfig = await ControlCollectionHelper.getCollectionSettings();
+        newCollectSettings.config = collectionPluginConfig;
+        
+        const collectionPluginState = await ControlCollectionHelper.getState();
+        newCollectSettings.state = collectionPluginState;
+        newCollectSettings.trackingOn = collectionPluginState != "local.state.tracking_stopped"
+                                        && collectionPluginState != "STATE_TRACKING_STOPPED";
+
+        // I am not sure that this is actually needed anymore since https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7
+        const geofenceConfig = await KVStore.get("OP_GEOFENCE_CFG");
+        newCollectSettings.experimentalGeofenceOn = geofenceConfig != null;
+
+        const isLowAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        if (typeof isLowAccuracy != 'undefined') {
+            newCollectSettings.lowAccuracy = isLowAccuracy;
         }
-        //if empty or undefined, do nothing
-        if(!defined){
-            return;
+
+        setCollectSettings(newCollectSettings);
+    }
+
+    async function refreshNotificationSettings() {
+        console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
+        const newNotificationSettings ={};
+
+        if (ui_config?.reminderSchemes) {
+            const prefs = await  NotificationScheduler.getReminderPrefs();
+            const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+            newNotificationSettings.prefReminderTimeVal = m.toDate();
+            const n = moment(newNotificationSettings.prefReminderTimeVal);
+            newNotificationSettings.prefReminderTime = n.format('LT');
+            newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
+            newNotificationSettings.scheduledNotifs = NotificationScheduler.scheduledNotifs;
+            updatePrefReminderTime(false);
         }
-        //else update
-        setCollectSettings(settings.collect);
-      }, [settings.collect]);
+
+        console.log("notification settings before and after", notificationSettings, newNotificationSettings);
+        setNotificationSettings(newNotificationSettings);
+    }
     
     //methods that control the settings
     const uploadLog = function () {
@@ -77,57 +131,33 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
         EmailHelper.sendEmail("loggerDB")
     };
 
-    const isAndroid = function() {
-        return Platform.OS == "android";
-    }
-
-    const isIOS = function() {
-        return Platform.OS == "ios";
-    }
-
-    const userStartStopTracking = function() {
-        //note the dependency on the settings object (still passed in)
-        if (collectSettings.trackingOn){
-            return ControlCollectionHelper.forceTransition('STOP_TRACKING');
-        } else {
-            return ControlCollectionHelper.forceTransition('START_TRACKING');
+    async function  updatePrefReminderTime(storeNewVal=true, newTime){
+        console.log(newTime);
+        if(storeNewVal){
+            const m = moment(newTime);
+            await NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
+            refreshNotificationSettings();
         }
     }
 
-    const getLowAccuracy = function() {
-        var isMediumAccuracy = ControlCollectionHelper.isMediumAccuracy();
-        if(typeof isMediumAccuracy == 'undefined') {
-            return false;
-        }
-        else{
-            settings.collect.lowAccuracy = isMediumAccuracy;
-            return isMediumAccuracy;
-        }
+    async function userStartStopTracking() {
+        const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
+        ControlCollectionHelper.forceTransition(transitionToForce);
+        /* the ControlCollectionHelper.forceTransition call above will trigger a
+            'control.update.complete' event when it's done, which will trigger refreshCollectSettings.
+          So we don't need to call refreshCollectSettings here. */
     }
 
     const toggleLowAccuracy = function() {
-        console.log("change attempt in ProfileSettigns");
-        //the function below is broken?
         ControlCollectionHelper.toggleLowAccuracy();
-        getLowAccuracy();
+        refreshCollectSettings();
     }
 
-    // const getCollectionSettings = function() {
-    //     ControlCollectionHelper.getCollectionSettings().then(function(showConfig) {
-    //         profileSettings.collect.show_config = showConfig;
-    //         console.log("settings", showConfig);
-    //         return showConfig;
-    //     });
-    // };
-
-    var userData = [];
-    var rawUserData;
     const shareQR = function() {
         var prepopulateQRMessage = {};  
-        const c = document.getElementsByClassName('qrcode-link');
-        const cbase64 = c[0].getAttribute('href');
-        prepopulateQRMessage.files = [cbase64];
-        prepopulateQRMessage.url = $scope.settings.auth.opcode;
+        var qrAddress = "emission://login_token?token="+settings?.auth?.opcode;
+        prepopulateQRMessage.files = [qrAddress];
+        prepopulateQRMessage.url = settings.auth.opcode;
 
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
@@ -138,43 +168,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
     }
 
     const viewQRCode = function(e) {
-        // tokenURL = "emission://login_token?token="+settings.auth.opcode;
         setOpCodeVis(true);
-    }
-
-    const getUserData = function() {
-        return CalorieCal.get().then(function(userDataFromStorage) {
-            rawUserData = userDataFromStorage;
-            if(userDataSaved()) {
-                userData = []
-                var height = userDataFromStorage.height.toString();
-                var weight = userDataFromStorage.weight.toString();
-                var temp  =  {
-                    age: userDataFromStorage.age,
-                    height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-                    weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                    gender: userDataFromStorage.gender == 1? t('gender-male') : t('gender-female')
-                }
-                for (var i in temp) {
-                    userData.push({key: i, val: temp[i]}); //changed from value to val! watch for rammifications!
-                }
-            }
-        });
-    }
-    const userDataSaved = function() {
-        console.log(rawUserData);
-        var defined;
-        if(rawUserData){
-            defined = true;
-        }
-        else{
-            defined = false;
-        }
-        if (defined && rawUserData != null) {
-            return rawUserData.userDataSaved;
-        } else{
-            return false;
-        }
     }
 
     var prepopulateMessage = {
@@ -192,7 +186,7 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
             });
     }
 
-    //conditional creation of the user dropdown
+    //conditional creation of setting sections
     let userDataSection;
     if(userDataSaved())
     {
@@ -202,11 +196,9 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                         </ExpansionSection>;
     }
 
-    //show the upload log dependent on config -- still importing the ui_config the workaround way
     let logUploadSection;
-    console.log("ui config thing", ui_config.profile_controls.support_upload);
-    if(ui_config.profile_controls.support_upload == true)
-    {
+    console.debug("appConfg: support_upload:", appConfig?.profile_controls?.support_upload);
+    if (appConfig?.profile_controls?.support_upload) {
         logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
     }
 
@@ -216,16 +208,14 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
-           {/* this toggle only kinda works */}
+           <ReminderTime rowText={"control.reminders-time-of-day"} timeVar={notificationSettings.prefReminderTime} defaultTime={notificationSettings.prefReminderTimeVal} updateFunc={updatePrefReminderTime}></ReminderTime>
            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
-           {/* this switch is also fussy */}
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
            <SettingRow textKey="control.download-json-dump" iconName="calendar" action={openDatePicker}></SettingRow>
-           {/* this row missing condition!!! Should only show iff ui_config.profile_controls.support_upload == true */}
            {logUploadSection}
            <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
 
@@ -238,26 +228,25 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
                {/* upcoming notifications seem to be undefined at time of render :( */}
                <SettingRow textKey="control.upcoming-notifications" iconName="bell-check" action={()=>console.log("")}></SettingRow>
-               <ControlDataTable controlData={settings?.notification?.scheduledNotifs}></ControlDataTable>
+               <ControlDataTable controlData={notificationSettings.scheduledNotifs}></ControlDataTable>
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
-               <SettingRow textKey={parseState(settings?.collect?.state)} iconName="pencil" action={forceState}></SettingRow>
+               <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
                <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
-               <ControlDataTable controlData={settings?.collect?.show_config}></ControlDataTable>
+               <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                <ControlDataTable controlData={settings?.sync?.show_config}></ControlDataTable>
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
 
-        {/* menu for "nuke data"  -- elevation not really working?? */}
+        {/* menu for "nuke data" */}
             <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
-            elevated={true}
-            transparent={true}
-            style={{ elevation: 3 }}>
+            transparent={true}>
                 <Dialog visible={nukeSetVis}
-                onDismiss={() => setNukeVis(false)}>
+                onDismiss={() => setNukeVis(false)}
+                style={styles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
                         <Button onPress={() => {KVStore.clearOnlyLocal;
@@ -281,11 +270,10 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
 
         {/* menu for "set carbon dataset - only somewhat working" */}
             <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
-                elevated={true}
-                style={{ elevation: 3 }}
-                transparent={true}>
+            transparent={true}>
                 <Dialog visible={carbonDataVis}
-                    onDismiss={() => setCarbonDataVis(false)}>
+                    onDismiss={() => setCarbonDataVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
                     <Dialog.Content>
                         {carbonOptions.map((e) =>
@@ -308,14 +296,43 @@ const ProfileSettings = ({ settingsScope, settingsObject }) => {
                 </Dialog>
             </Modal>
 
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings.auth.opcode} action={shareQR}></PopOpCode>
+            {/* force state sheet */}
+            <Modal visible={forceStateVis} onDismiss={() => setForceStateVis(false)}
+            transparent={true}>
+                <Dialog visible={forceStateVis}
+                    onDismiss={() => setForceStateVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{"Force State"}</Dialog.Title>
+                    <Dialog.Content>
+                        {stateActions.map((e) =>
+                            <Button key={e.text}
+                            onPress={() =>  {
+                                console.log("changeCarbonDataset(): chose locale " + e.text);
+                                ControlCollectionHelper.forceTransition(e.transition); 
+                                setForceStateVis(false);
+                                }}
+                            >
+                                {e.text}
+                            </Button>
+                        )}
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setForceStateVis(false)}>{t('general-settings.cancel')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
+            {/* opcode viewing popup */}
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings?.auth?.opcode} action={shareQR}></PopOpCode>
         </>
     );
-    };
-  ProfileSettings.propTypes = {
-      settingsScope: object,
-      settingsObject: object
-    }
+};
+const styles = StyleSheet.create({
+    dialog: (surfaceColor) => ({
+        backgroundColor: surfaceColor,
+        margin: 1,
+    }),
+  });
    
   angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;
