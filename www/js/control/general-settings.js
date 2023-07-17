@@ -94,19 +94,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    //this function used in ProfileSettings to viewQRCode
-    // $scope.viewQRCode = function($event) {
-    //     $scope.tokenURL = "emission://login_token?token="+$scope.settings.auth.opcode;
-    //     if ($scope.qrp) {
-    //         $scope.qrp.show($event);
-    //     } else {
-    //         $ionicPopover.fromTemplateUrl("templates/control/qrc.html", {scope: $scope}).then((q) => {
-    //             $scope.qrp = q;
-    //             $scope.qrp.show($event);
-    //         }).catch((err) => Logger.displayError("Error while displaying QR Code", err));
-    //     }
-    // }
-
     //this function used in ProfileSettings to send DummyNotification
     $scope.dummyNotification = () => {
         cordova.plugins.notification.local.addActions('dummy-actions', [
@@ -121,14 +108,6 @@ angular.module('emission.main.control',['emission.services',
             trigger: {at: new Date(new Date().getTime() + 5000)},
         });
     }
-
-    // $scope.updatePrefReminderTime = (storeNewVal=true) => {
-    //     const m = moment($scope.settings.notification.prefReminderTimeVal);
-    //     $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
-    //     if (storeNewVal)
-    //         NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
-    //     $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
-    // }
 
     //called in ProfileSettings on the AppStatus row
     $scope.fixAppStatus = function() {
@@ -310,26 +289,12 @@ angular.module('emission.main.control',['emission.services',
         console.log("Refreshing screen");
         $scope.settings = {};
         $scope.settings.sync = {};
-        // $scope.settings.notification = {};
         $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
         $scope.getSyncSettings();
         $scope.getOPCode();
-        // if ($scope.ui_config.reminderSchemes) {
-        //     NotificationScheduler.getReminderPrefs().then((prefs) => {
-        //         $scope.$apply(() => {
-        //             const m = moment(prefs.reminder_time_of_day, 'HH:mm');
-        //             // defining data used to populate the upcoming display
-        //             $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
-        //             $scope.settings.notification.prefReminderTimeVal = m.toDate();
-        //             $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-        //             console.log("notifications", settings.notification.prefReminderTimeVal);
-        //             $scope.updatePrefReminderTime(false); // update the displayed time
-        //         });
-        //     });
-        // }
         $scope.getUserData();
     };
 
@@ -505,7 +470,6 @@ angular.module('emission.main.control',['emission.services',
     //       }
     //     });
     // };
-    //this was eliminated in coversion because the React accordians handle their state
 
     var handleNoConsent = function(resultDoc) {
         $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})

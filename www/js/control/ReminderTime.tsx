@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { angularize} from "../angular-react-helper";
 import { Modal, StyleSheet } from 'react-native';
-import { Text, List, useTheme } from 'react-native-paper';
+import { List, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { string, object, bool, func } from "prop-types";
 import { TimePickerModal } from 'react-native-paper-dates';

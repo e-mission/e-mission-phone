@@ -1,7 +1,7 @@
 import React from "react";
 import { angularize} from "../angular-react-helper";
 import { StyleSheet } from 'react-native';
-import { List, Switch, useTheme} from 'react-native-paper';
+import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { string, func, bool} from "prop-types";
 
@@ -13,9 +13,6 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
     if (iconName) {
         rightComponent = <List.Icon icon={iconName}/>;
     } else {
-        //when toggled from OFF to ON, the switch display does not update
-        //update takes when screen is "refreshed" - by tabbing btwn screens, showing policy...
-        //works just fine when going from ON to OFF
         rightComponent = <Switch value={switchValue} />;
     }
     let descriptionText;
