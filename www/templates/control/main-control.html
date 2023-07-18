@@ -3,18 +3,5 @@
     
     <profile-settings></profile-settings>
 
-    <!-- reminder time -- leaving for now -->
-    <div ng-if="settings.notification.prefReminderTime" class="control-list-item">
-      <div class="control-list-text">
-        {{'control.reminders-time-of-day' | i18next: {time: settings.notification.prefReminderTime} }}
-      </div>
-      <div class="control-icon-button" style="position: relative">
-        <i class="ion-clock"></i>
-        <input type="time" name="timeOfDay" value="{{settings.notification.prefReminderTimeOnLoad}}"
-          ng-model="settings.notification.prefReminderTimeVal" ng-change="updatePrefReminderTime()" ng-blur="updatePrefReminderTime()"
-          style="position: absolute; height: 100%; inset: 0; display: flex; opacity: 0;">
-      </div>
-    </div>
-    
   </ion-content>
 </ion-view>
