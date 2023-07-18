@@ -47,7 +47,7 @@ const ReminderTime = ({ rowText, timeVar, defaultTime, updateFunc }) => {
         <List.Item 
         style={styles.item(colors.surface)}
         title={t(rowText, {time: timeVar})}
-        titleStyle={styles.title}
+        titleStyle={rowStyles.title}
         onPress={(e) => setPickTimeVis(true)}
         right={() => rightComponent}
         />
@@ -64,10 +64,6 @@ const styles = StyleSheet.create({
         backgroundColor: surfaceColor,
         margin: 1,
     }),
-    title: {
-        fontSize: 14,
-        marginVertical: 2,
-    },
   });
 
 export default ReminderTime;

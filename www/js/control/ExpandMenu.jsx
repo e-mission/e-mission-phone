@@ -15,7 +15,7 @@ const ExpansionSection = (props) => {
     <List.Accordion
       style={styles.section(colors.surface)}
       title={t(props.sectionTitle)}
-      titleStyle={styles.title}
+      titleStyle={rowStyles.title}
       expanded={expanded}
       onPress={handlePress}>
         {props.children}
@@ -28,10 +28,6 @@ const styles = StyleSheet.create({
       backgroundColor: surfaceColor,
       margin: 1,
   }),
-  title: {
-      fontSize: 14,
-      marginVertical: 2,
-  },
 });
 
 export default ExpansionSection;

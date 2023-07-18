@@ -33,7 +33,7 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue, descStyle=und
         />
     );
 };
-const styles = StyleSheet.create({
+export const styles = StyleSheet.create({
     item: (surfaceColor) => ({
         justifyContent: 'space-between',
         alignContent: 'center',
