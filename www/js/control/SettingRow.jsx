@@ -5,7 +5,7 @@ import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { string, func, bool} from "prop-types";
 
-const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
+const SettingRow = ({textKey, iconName, action, desc, switchValue, descStyle=undefined}) => {
     const { t } = useTranslation(); //this accesses the translations
     const { colors } = useTheme(); // use this to get the theme colors instead of hardcoded #hex colors
 
@@ -28,6 +28,8 @@ const SettingRow = ({textKey, iconName, action, desc, switchValue}) => {
         title={t(textKey)}
         titleStyle={styles.title}
         description={desc}
+        descriptionStyle={descStyle ? descStyle : styles.description}
+        descriptionNumberOfLines={4}
         onPress={(e) => action(e)}
         right={() => rightComponent}
         />
@@ -41,8 +43,11 @@ const styles = StyleSheet.create({
         margin: 1,
     }),
     title: {
-        fontSize: 16,
+        fontSize: 14,
         marginVertical: 2,
+    },
+    description: {
+        fontSize: 12,
     },
   });
 SettingRow.propTypes = {

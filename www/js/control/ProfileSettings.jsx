@@ -204,7 +204,7 @@ const ProfileSettings = () => {
 
     return (
         <>
-           <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode}></SettingRow>
+           <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode} descStyle={styles.monoDesc}></SettingRow>
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
@@ -332,6 +332,10 @@ const styles = StyleSheet.create({
         backgroundColor: surfaceColor,
         margin: 1,
     }),
+    monoDesc: {
+        fontSize: 12,
+        fontFamily: "monospace",
+    }
   });
    
   angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 

@@ -30,7 +30,7 @@ const styles = StyleSheet.create({
       margin: 1,
   }),
   title: {
-      fontSize: 16,
+      fontSize: 14,
       marginVertical: 2,
   },
 });
