@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import { angularize} from "../angular-react-helper";
 import { Modal, StyleSheet } from 'react-native';
 import { List, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import { string, object, bool, func } from "prop-types";
 import { TimePickerModal } from 'react-native-paper-dates';
+import { styles as rowStyles } from './SettingRow';
 
 const TimeSelect = ({ visible, setVisible, defaultTime, updateFunc }) => {
 
@@ -34,12 +33,6 @@ const TimeSelect = ({ visible, setVisible, defaultTime, updateFunc }) => {
             />
         </Modal>
     )
-}
-TimeSelect.prototypes = {
-    visible: bool,
-    setVisible:func,
-    defaultTime: object,
-    updateFunc: func
 }
 
 const ReminderTime = ({ rowText, timeVar, defaultTime, updateFunc }) => {
@@ -76,12 +69,5 @@ const styles = StyleSheet.create({
         marginVertical: 2,
     },
   });
-ReminderTime.propTypes = {
-    rowText: string,
-    timeVar: string,
-    defaultTime: object,
-    updateFunc: func
-}
 
-angularize(ReminderTime, 'reminderTime', 'emission.main.control.reminderTime'); 
 export default ReminderTime;

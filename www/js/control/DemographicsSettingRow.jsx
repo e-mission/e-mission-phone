@@ -1,5 +1,4 @@
 import React from "react";
-import { angularize } from "../angular-react-helper";
 import { getAngularService } from "../angular-react-helper";
 import SettingRow from "./SettingRow";
 
@@ -27,5 +26,4 @@ const DemographicsSettingRow = ({ }) => {
           textKey="control.edit-demographics" isToggle={false} />
 };
 
-angularize(DemographicsSettingRow, 'DemographicsSettingRow','emission.main.control.demographicsSettingRow');
 export default DemographicsSettingRow;

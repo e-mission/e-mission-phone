@@ -1,9 +1,7 @@
 import React from "react";
-import { angularize} from "../angular-react-helper";
 import { StyleSheet } from 'react-native';
 import { List, Switch, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import { string, func, bool} from "prop-types";
 
 const SettingRow = ({textKey, iconName, action, desc, switchValue, descStyle=undefined}) => {
     const { t } = useTranslation(); //this accesses the translations
@@ -50,13 +48,5 @@ const styles = StyleSheet.create({
         fontSize: 12,
     },
   });
-SettingRow.propTypes = {
-    textKey: string,
-    iconName: string,
-    action: func,
-    desc: string,
-    switchValue: bool
-}
 
-angularize(SettingRow, 'SettingRow', 'emission.main.control.settingRow'); 
 export default SettingRow;

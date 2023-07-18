@@ -1,9 +1,7 @@
 import React from "react";
-import { angularize} from "../angular-react-helper";
 import { Modal, StyleSheet } from 'react-native';
 import { Button, Text, IconButton, Dialog, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import { bool, string, func } from "prop-types";
 import QrCode from "../components/QrCode";
 
 const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
@@ -47,12 +45,5 @@ const styles = StyleSheet.create({
         margin: 'auto',
     }
   });
-PopOpCode.prototypes = {
-    visibilityValue: bool,
-    tokenURL: string,
-    action: func,
-    setVis: func
-}
 
-angularize(PopOpCode, '"popOpCode"', 'emission.main.control.popOpCode'); 
 export default PopOpCode;

@@ -1,9 +1,6 @@
 import React from "react";
-import { angularize} from "../angular-react-helper";
-import { StyleSheet } from 'react-native';
 import { Modal, Snackbar} from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import { string, func, bool} from "prop-types";
 
 const AlertBar = ({visible, setVisible, messageKey}) => {
     const { t } = useTranslation(); 
@@ -25,10 +22,5 @@ const AlertBar = ({visible, setVisible, messageKey}) => {
     </Modal>
     );
   };
-AlertBar.prototypes = {
-    visible: bool,
-    setVisible: func,
-    messageKey: string
-}
   
 export default AlertBar;
