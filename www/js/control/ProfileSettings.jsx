@@ -113,7 +113,7 @@ const ProfileSettings = () => {
             const n = moment(newNotificationSettings.prefReminderTimeVal);
             newNotificationSettings.prefReminderTime = n.format('LT');
             newNotificationSettings.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
-            newNotificationSettings.scheduledNotifs = NotificationScheduler.scheduledNotifs;
+            newNotificationSettings.scheduledNotifs = await NotificationScheduler.getScheduledNotifs();
             updatePrefReminderTime(false);
         }
 
@@ -135,8 +135,10 @@ const ProfileSettings = () => {
         console.log(newTime);
         if(storeNewVal){
             const m = moment(newTime);
-            await NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
-            refreshNotificationSettings();
+            // store in HH:mm
+            NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }).then(() => {
+                refreshNotificationSettings();
+            }); 
         }
     }
 
