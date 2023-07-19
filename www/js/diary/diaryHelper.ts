@@ -5,28 +5,39 @@ import i18next from "i18next";
 import moment from "moment";
 import { DateTime } from "luxon";
 
+const modeColors = {
+  red: '#b9003d',         // oklch(50% 0.37 15)     // car
+  orange: '#b25200',      // oklch(55% 0.37 50)     // air, hsr
+  green: '#007e46',       // oklch(52% 0.37 155)    // bike
+  blue: '#0068a5',        // oklch(50% 0.37 245)    // walk
+  periwinkle: '#5e45cd',  // oklch(50% 0.2 285)     // light rail, train, tram, subway
+  magenta: '#8e35a1',     // oklch(50% 0.18 320)    // bus
+  grey: '#484848',        // oklch(40% 0 0)         // unprocessed / unknown
+  taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, nonstandard modes
+}
+
 type MotionType = {
   name: string,
   icon: string,
   color: string
 }
 const MotionTypes: {[k: string]: MotionType} = {
-  IN_VEHICLE: { name: "IN_VEHICLE", icon: "speedometer", color: "purple" },
-  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: "brown" },
-  BICYCLING: { name: "BICYCLING", icon: "bike", color: "green" },
-  UNKNOWN: { name: "UNKNOWN", icon: "help", color: "orange" },
-  WALKING: { name: "WALKING", icon: "walk", color: "brown" },
-  CAR: { name: "CAR", icon: "car", color: "red" },
-  AIR_OR_HSR: { name: "AIR_OR_HSR", icon: "airplane", color: "red" },
+  IN_VEHICLE: { name: "IN_VEHICLE", icon: "speedometer", color: modeColors.red },
+  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: modeColors.blue },
+  BICYCLING: { name: "BICYCLING", icon: "bike", color: modeColors.green },
+  UNKNOWN: { name: "UNKNOWN", icon: "help", color: modeColors.grey },
+  WALKING: { name: "WALKING", icon: "walk", color: modeColors.blue },
+  CAR: { name: "CAR", icon: "car", color: modeColors.red },
+  AIR_OR_HSR: { name: "AIR_OR_HSR", icon: "airplane", color: modeColors.orange },
   // based on OSM routes/tags:
-  BUS: { name: "BUS", icon: "bus-side", color: "red" },
-  LIGHT_RAIL: { name: "LIGHT_RAIL", icon: "train-car-passenger", color: "red" },
-  TRAIN: { name: "TRAIN", icon: "train-car-passenger", color: "red" },
-  TRAM: { name: "TRAM", icon: "fas fa-tram", color: "red" },
-  SUBWAY: { name: "SUBWAY", icon: "subway-variant", color: "red" },
-  FERRY: { name: "FERRY", icon: "ferry", color: "red" },
-  TROLLEYBUS: { name: "TROLLEYBUS", icon: "bus-side", color: "red" },
-  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: "orange" }
+  BUS: { name: "BUS", icon: "bus-side", color: modeColors.magenta },
+  LIGHT_RAIL: { name: "LIGHT_RAIL", icon: "train-car-passenger", color: modeColors.periwinkle },
+  TRAIN: { name: "TRAIN", icon: "train-car-passenger", color: modeColors.periwinkle },
+  TRAM: { name: "TRAM", icon: "fas fa-tram", color: modeColors.periwinkle },
+  SUBWAY: { name: "SUBWAY", icon: "subway-variant", color: modeColors.periwinkle },
+  FERRY: { name: "FERRY", icon: "ferry", color: modeColors.taupe },
+  TROLLEYBUS: { name: "TROLLEYBUS", icon: "bus-side", color: modeColors.taupe },
+  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey }
 }
 
 type MotionTypeKey = keyof typeof MotionTypes;
