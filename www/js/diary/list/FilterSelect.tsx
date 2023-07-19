@@ -1,7 +1,10 @@
-/* A component wrapped around a <select> element that allows the user to pick a filter,
-    used in the Label screen.
-  This is a temporary solution; this component includes HTML and we will need to be rewritten
-    when we have fully migrated to React Native.
+/* This button launches a modal with radio buttons to select a filter, which can be
+    chosen to show a subset of the travel items in the Label screen.
+  The button itself is a NavBarButton, which shows the currently selected filter,
+    the number of travel items displayed / total number of travel items, and
+    a "down chevron" icon.
+  The modal is a Dialog from react-native-paper with a RadioButton.Group, which
+    shows the available filters and allows the user to select one.
 */
 
 import React, { useState, useMemo } from "react";

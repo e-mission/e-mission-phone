@@ -1,7 +1,9 @@
-/* A component wrapped around an <input> element that allows the user to pick a date,
-    used in the Label screen.
-  This is a temporary solution; this component includes HTML and we will need to be rewritten
-    when we have fully migrated to React Native.
+/* This button launches a modal to select a date, which determines which week of
+    travel should be displayed in the Label screen.
+  The button itself is a NavBarButton, which shows the currently selected date range,
+    a calendar icon, and launches the modal when clicked.
+  The modal is a DatePickerModal from react-native-paper-dates, which shows a calendar
+    and allows the user to select a date.
 */
 
 import React, { useEffect, useState, useMemo, useContext } from "react";
