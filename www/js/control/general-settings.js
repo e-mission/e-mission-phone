@@ -1,8 +1,6 @@
 'use strict';
 
 import angular from 'angular';
-import ControlDataTable from './ControlDataTable';
-import QrCode from '../components/QrCode';
 import ProfileSettings from './ProfileSettings';
 
 angular.module('emission.main.control',['emission.services',
@@ -21,8 +19,6 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
-                                        QrCode.module,
-                                        ControlDataTable.module,
                                         ProfileSettings.module])
 
 .controller('ControlCtrl', function($scope, $window,
