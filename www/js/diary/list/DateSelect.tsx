@@ -5,14 +5,14 @@
 */
 
 import React, { useEffect, useState, useMemo, useContext } from "react";
-import { View, Text } from "react-native";
+import { Text, StyleSheet } from "react-native";
 import moment from "moment";
-import color from "color";
 import { LabelTabContext } from "../LabelTab";
 import { DatePickerModal } from "react-native-paper-dates";
-import { Divider, Button, IconButton, useTheme } from "react-native-paper";
+import { Divider, useTheme } from "react-native-paper";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
+import NavBarButton from "../../components/NavBarButton";
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
 
@@ -56,25 +56,12 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
     },
     [setOpen, loadSpecificWeekFn]
   );
-
-  const buttonColor = color(colors.onBackground).alpha(.07).rgb().string();
-  const outlineColor = color(colors.onBackground).alpha(.2).rgb().string();
-
   return (<>
-    <Button mode="outlined" buttonColor={buttonColor} textColor={colors.onBackground}
-            contentStyle={{flexDirection: 'row', height: 36}}
-            style={{borderRadius: 10, borderColor: outlineColor }}
-            labelStyle={{margin: 0, display: 'flex', fontSize: 12.5, fontWeight: '400', height: '100%'}} onPress={() => setOpen(true)}>
-      <View style={{lineHeight: '100%', marginHorizontal: 5, justifyContent: 'space-evenly'}}>
-        <Text>{dateRange[0]}</Text>
-        <Divider horizontalInset={true} style={{backgroundColor: colors.onBackground, width: '3ch', marginHorizontal: 'auto'}} />
-        <Text>{dateRange[1]}</Text>
-      </View>
-      <View>
-        <IconButton icon="calendar" color="black" size={20}
-          style={{width: 24, height: 24, margin: 'auto'}} />
-      </View>
-    </Button>
+    <NavBarButton icon="calendar" onPressAction={() => setOpen(true)}>
+      <Text>{dateRange[0]}</Text>
+      <Divider horizontalInset={true} style={[s.divider, { backgroundColor: colors.onBackground }]} />
+      <Text>{dateRange[1]}</Text>
+    </NavBarButton>
     <DatePickerModal locale={i18next.resolvedLanguage || 'en'}
       animationType="slide"
       mode="single"
@@ -85,5 +72,12 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
       onChange={onChoose} />
   </>);
 };
+
+export const s = StyleSheet.create({
+  divider: {
+    width: '3ch',
+    marginHorizontal: 'auto',
+  }
+});
 
 export default DateSelect;
