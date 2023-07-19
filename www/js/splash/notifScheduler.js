@@ -250,7 +250,7 @@ angular.module('emission.splash.notifscheduler',
             return;
         }
         setUpActions();
-        update();
+        update.then();
     });
 
     return scheduler;
