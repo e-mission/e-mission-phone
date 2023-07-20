@@ -205,9 +205,12 @@ const ProfileSettings = () => {
     }
 
     let timePicker;
+    let notifSchedule;
     if (appConfig?.reminderSchemes)
     {
         timePicker = <ReminderTime rowText={"control.reminders-time-of-day"} timeVar={notificationSettings.prefReminderTime} defaultTime={notificationSettings.prefReminderTimeVal} updateFunc={updatePrefReminderTime}></ReminderTime>;
+        notifSchedule = <><SettingRow textKey="control.upcoming-notifications" iconName="bell-check" action={()=>console.log("")}></SettingRow>
+                          <ControlDataTable controlData={notificationSettings.scheduledNotifs}></ControlDataTable></>
     }
 
     return (
@@ -234,9 +237,7 @@ const ProfileSettings = () => {
                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
                <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
-               {/* upcoming notifications seem to be undefined at time of render :( */}
-               <SettingRow textKey="control.upcoming-notifications" iconName="bell-check" action={()=>console.log("")}></SettingRow>
-               <ControlDataTable controlData={notificationSettings.scheduledNotifs}></ControlDataTable>
+               {notifSchedule}
                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
                <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
