@@ -664,18 +664,33 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.shareQR = function() {
-        var prepopulateQRMessage = {};  
-        const c = document.getElementsByClassName('qrcode-link');
-        const cbase64 = c[0].getAttribute('href');
-        prepopulateQRMessage.files = [cbase64];
-        prepopulateQRMessage.url = $scope.settings.auth.opcode;
+        /*code adapted from demo of react-qr-code
+        selector below gets svg element out of angularized QRCode 
+        this will change upon later migration*/
+        const svg = document.querySelector("qr-code svg");
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const img = new Image();
 
-        window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-        }, function(msg) {
-            console.log("Sharing failed with message: " + msg);
-        });
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const pngFile = canvas.toDataURL("image/png");
+
+            var prepopulateQRMessage = {}; 
+            prepopulateQRMessage.files = [pngFile];
+            prepopulateQRMessage.url = $scope.settings.auth.opcode;
+    
+            window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+            }, function(msg) {
+                console.log("Sharing failed with message: " + msg);
+            });
+        }
+        img.src =  `data:image/svg+xml;base64,${btoa(svgData)}`;
     }
 
 });
