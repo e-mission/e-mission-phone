@@ -80,23 +80,50 @@ angular.module('emission.splash.notifscheduler',
     }
 
     //new method to fetch notifications
-    scheduler.getScheduledNotifs = async() => {
-        if(isScheduling)
-        {
-            console.log("ERROR: fetching while still actively scheduling"); //often even still scheduling
-        }
-        const notifs = await getNotifs();
-        const schedule = await createSchedule(notifs);
-        return schedule;
+    scheduler.getScheduledNotifs = function() {
+        return new Promise((resolve, reject) => {
+            /* if the notifications are still in active scheduling it causes problems
+            anywhere from 0-n of the scheduled notifs are displayed 
+            if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
+            */
+            if(isScheduling) 
+            {
+                console.log("requesting fetch while still actively scheduling, waiting on scheduledPromise");
+                scheduledPromise.then(() => {
+                    getNotifs().then((notifs) => {
+                        console.log("done scheduling notifs", notifs);
+                        resolve(notifs);
+                    })
+                })
+            }
+            else{
+                getNotifs().then((notifs) => {
+                    resolve(notifs);
+                })
+            }
+        })
     }
 
-    //get scheduled notifications from cordova plugin
+    //get scheduled notifications from cordova plugin and format them
     const getNotifs = function() {
         return new Promise((resolve, reject) => {
             cordova.plugins.notification.local.getScheduled((notifs) => {
-                if (!notifs?.length)
+                if (!notifs?.length){
                     console.log("there are no notifications");
-                resolve(notifs);
+                    resolve([]); //if none, return empty array
+                }
+                
+                const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
+                let scheduledNotifs = [];
+                scheduledNotifs = notifSubset.map((n) => {
+                    const time = moment(n.trigger.at).format('LT');
+                    const date = moment(n.trigger.at).format('LL');
+                    return {
+                        key: date,
+                        val: time
+                    }
+                });
+                resolve(scheduledNotifs);
              });
         })
     }
