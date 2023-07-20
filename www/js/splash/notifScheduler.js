@@ -128,20 +128,6 @@ angular.module('emission.splash.notifscheduler',
         })
     }
 
-    //create schedule (formatted for display) from notifications
-    const createSchedule = function(notifs) {
-        let scheduledNotifs = [];
-        scheduledNotifs = notifs.map((n) => {
-            const time = moment(n.trigger.at).format('LT');
-            const date = moment(n.trigger.at).format('LL');
-            return {
-                key: date,
-                val: time
-            }
-        });
-        return scheduledNotifs;
-    }
-
     // schedules the notifications using the cordova plugin
     const scheduleNotifs = (scheme, notifTimes) => {
         return new Promise((rs) => {
