@@ -16,7 +16,7 @@ const LabelListScreen = () => {
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
       <FilterSelect filters={filterInputs}
         setFilters={setFilterInputs}
-        numListDisplayed={displayedEntries.length}
+        numListDisplayed={displayedEntries?.length}
         numListTotal={timelineMap?.size} />
       <DateSelect tsRange={{ oldestTs: queriedRange?.start_ts, latestTs: queriedRange?.end_ts }}
         loadSpecificWeekFn={loadSpecificWeek} />

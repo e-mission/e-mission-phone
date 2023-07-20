@@ -44,7 +44,7 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
 
   if (isLoading=='replace') {
     return bigSpinner;
-  } else if (listEntries?.length == 0) {
+  } else if (listEntries && listEntries.length == 0) {
     return (
       <Banner visible={true} icon={
         ({size}) => <IconButton size={size} icon='alert-circle'
