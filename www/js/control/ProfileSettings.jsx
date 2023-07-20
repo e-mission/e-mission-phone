@@ -204,13 +204,19 @@ const ProfileSettings = () => {
         logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
     }
 
+    let timePicker;
+    if (appConfig?.reminderSchemes)
+    {
+        timePicker = <ReminderTime rowText={"control.reminders-time-of-day"} timeVar={notificationSettings.prefReminderTime} defaultTime={notificationSettings.prefReminderTimeVal} updateFunc={updatePrefReminderTime}></ReminderTime>;
+    }
+
     return (
         <>
            <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode} descStyle={styles.monoDesc}></SettingRow>
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
-           <ReminderTime rowText={"control.reminders-time-of-day"} timeVar={notificationSettings.prefReminderTime} defaultTime={notificationSettings.prefReminderTimeVal} updateFunc={updatePrefReminderTime}></ReminderTime>
+           {timePicker}
            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
            <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
