@@ -156,13 +156,15 @@ $ cp www/json/startupConfig.json.sample www/json/startupConfig.json
 $ cp ..... www/json/connectionConfig.json
 ```
 
-### Activation (after install, and in every new shell)
+### Following steps are required to be run in every new instance
+
+### Activation 
 
 ```
 $ source setup/activate_native.sh
 ```
 
-### Activation (after install, and in every new shell)
+### Activation 
 
 If connecting to a development server over http, make sure to turn on http support on android
 
@@ -172,7 +174,7 @@ If connecting to a development server over http, make sure to turn on http suppo
     </edit-config>
 ```
 
-### Run in the emulator
+### To run the Emulator 
 
 ```
 $ npx cordova emulate ios
@@ -201,6 +203,11 @@ Troubleshooting
 - Another workaround is to delete the local environment and recreate it
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
+- Confirm PATH -> ANDROID_SDK and ANDROID_HOME 
+    - Expected PATH: /Users/<NAME>/Library/Android/sdk
+- export JAVA_HOME=$JAVA_HOME_11_X64 might return nothing 
+    - /usr/libexec/java_home/ returns the PATH -> add the PATH to java_home
+- Installation of Homebrew for Macs not running the latest MacOS
 
 Beta-testing debugging
 ---
@@ -223,7 +230,7 @@ Contributing
 
 Add the main repo as upstream
 
-    $ git remote add upstream https://github.com/covid19database/phone-app.git
+    $ git remote add upstream <local repository link> (Example: https://github.com/covid19database/phone-app.git)
 
 Create a new branch (IMPORTANT). Please do not submit pull requests from master
 
