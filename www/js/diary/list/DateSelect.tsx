@@ -22,12 +22,15 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [dateRange, setDateRange] = useState(['-', '-']);
+  const [dateRange, setDateRange] = useState([null, null]);
   const [selDate, setSelDate] = useState(null);
-  const minMaxDates = useMemo(() => ({
-    startDate: new Date(pipelineRange?.start_ts * 1000),
-    endDate: new Date(pipelineRange?.end_ts * 1000),
-  }), [pipelineRange]);
+  const minMaxDates = useMemo(() => {
+    if (!pipelineRange) return { startDate: new Date(), endDate: new Date() };
+    return {
+      startDate: new Date(pipelineRange?.start_ts * 1000),
+      endDate: new Date(pipelineRange?.end_ts * 1000),
+    };
+  }, [pipelineRange]);
 
   useEffect(() => {
     if (!tsRange.oldestTs) return;
@@ -37,8 +40,6 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
     let displayEndDate;
     if (tsRange.latestTs < pipelineRange.end_ts) {
       displayEndDate = moment.unix(tsRange.latestTs).format('L');
-    } else {
-      displayEndDate = t('diary.today');
     }
     setDateRange([displayStartDate, displayEndDate]);
 
@@ -60,9 +61,11 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   );
   return (<>
     <NavBarButton icon="calendar" onPressAction={() => setOpen(true)}>
-      <Text>{dateRange[0]}</Text>
-      <Divider horizontalInset={true} style={[s.divider, { backgroundColor: colors.onBackground }]} />
-      <Text>{dateRange[1]}</Text>
+      {dateRange[0] && (<>
+        <Text>{dateRange[0]}</Text>
+        <Divider horizontalInset={true} style={[s.divider, { backgroundColor: colors.onBackground }]} />
+      </>)}
+    <Text>{dateRange[1] || t('diary.today')}</Text>
     </NavBarButton>
     <DatePickerModal locale={i18next.resolvedLanguage || 'en'}
       animationType="slide"
