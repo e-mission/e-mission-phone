@@ -58,15 +58,18 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           white-space: nowrap;
           z-index: 9;
         }
+        .leaflet-div-icon-start, .leaflet-div-icon-stop {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
         .leaflet-div-icon-start::after {
           font-family: MaterialCommunityIcons;
-          content: "󱘈";
-          padding-left: 1.2px;
+          content: "󱘈"; ${/* glyph for 'map-marker-star' from https://pictogrammers.com/library/mdi/icon/map-marker-star/*/''}
         }
         .leaflet-div-icon-stop::after {
           font-family: MaterialCommunityIcons;
-          content: "󰈻";
-          padding-left: 1.3px;
+          content: "󰈻"; ${/* glyph for 'flag' from https://pictogrammers.com/library/mdi/icon/flag/ */''}
         }
       `}</style>
       <div id="map" ref={mapElRef} data-tap-disabled="true"

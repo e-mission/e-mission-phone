@@ -87,7 +87,7 @@ a.item-content {
   background-color: transparent !important;
 }
 .leaflet-div-icon-start {
-  color: var(--accent-light);
+  color: white;
   background-color: var(--accent);
   border: 2px solid var(--accent);
   border-radius: 100%;
