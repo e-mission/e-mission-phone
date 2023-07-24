@@ -86,40 +86,18 @@ a.item-content {
   padding: 0 !important;
   background-color: transparent !important;
 }
-.leaflet-div-icon {
-  background-color: white;
-  width: 6px;
-  height: 6px;
-  border-radius: 3px;
-  margin-left: 3px;
-  margin-top: 3px;
-  border-color: white;  
-}
 .leaflet-div-icon-start {
-  background-color: var(--accent-light);
+  fill: var(--accent-light);
+  background-color: var(--accent);
   border: 2px solid var(--accent);
   border-radius: 100%;
 }
 .leaflet-div-icon-stop {
-  background-color: var(--accent);
+  fill: var(--accent);
+  background-color: white;
+  border: 2px solid var(--accent);
   border-radius: 100%;
   font-size: 15px;
-}
-.leaflet-div-ionicon {
-  background: transparent; 
-  color: white;
-  font-size: 100%;
-  justify-content: center; 
-  display: flex;
-  line-height: 14px;
-}
-.leaflet-div-ionicon-start {
-  color: white;
-}
-.leaflet-div-ionicon-stop {
-  color: white;
-  margin-top: 1px;
-  margin-left: 2px;
 }
 .inner-icon {
   background-color: white;
