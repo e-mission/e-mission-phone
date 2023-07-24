@@ -58,6 +58,16 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           white-space: nowrap;
           z-index: 9;
         }
+        .leaflet-div-icon-start::after {
+          font-family: MaterialCommunityIcons;
+          content: "󱘈";
+          padding-left: 1.2px;
+        }
+        .leaflet-div-icon-stop::after {
+          font-family: MaterialCommunityIcons;
+          content: "󰈻";
+          padding-left: 1.3px;
+        }
       `}</style>
       <div id="map" ref={mapElRef} data-tap-disabled="true"
             style={{width: '100%', height: '100%', zIndex: 0}}></div>
@@ -65,10 +75,8 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   );
 };
 
-const startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], 
-  html: '<svg class="div-icon-start" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2C8.1 2 5 5.1 5 9C5 14.2 12 22 12 22S19 14.2 19 9C19 5.1 15.9 2 12 2M14.5 13L12 11.5L9.5 13L10.2 10.2L8 8.3L10.9 8.1L12 5.4L13.1 8L16 8.3L13.8 10.2L14.5 13Z" /></svg>'});
-const stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], 
-  html: '<svg class="div-icon-stop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M14.4,6L14,4H5V21H7V14H12.6L13,16H20V6H14.4Z" /></svg>'});
+const startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18]});
+const stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18]});
 
   const pointToLayer = (feature, latlng) => {
   switch(feature.properties.feature_type) {

@@ -87,17 +87,16 @@ a.item-content {
   background-color: transparent !important;
 }
 .leaflet-div-icon-start {
-  fill: var(--accent-light);
+  color: var(--accent-light);
   background-color: var(--accent);
   border: 2px solid var(--accent);
   border-radius: 100%;
 }
 .leaflet-div-icon-stop {
-  fill: var(--accent);
+  color: var(--accent);
   background-color: white;
   border: 2px solid var(--accent);
   border-radius: 100%;
-  font-size: 15px;
 }
 .inner-icon {
   background-color: white;
