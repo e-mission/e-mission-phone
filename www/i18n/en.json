@@ -196,6 +196,8 @@
         "no-more-travel": "No more travel to show",
         "show-more-travel": "Show More Travel",
         "show-older-travel": "Show Older Travel",
+        "no-travel": "No travel to show",
+        "no-travel-hint": "To see more, change the filters above or go record some travel!",
         "no-trips-today": "No trips recorded on this day"
     },
 

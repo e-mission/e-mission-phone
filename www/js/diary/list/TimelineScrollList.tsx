@@ -42,20 +42,24 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
                       { reachedPipelineEnd ? t('diary.no-more-travel') : t('diary.show-more-travel')}
                   </LoadMoreButton>;
 
-  if (isLoading=='replace') {
+  const noTravelBanner = (
+    <Banner visible={true} icon={
+      ({ size }) => <IconButton size={size} icon='alert-circle'
+        style={{ width: size, height: size, marginVertical: 3 }} />
+    }>
+      <View style={{ width: '100%' }}>
+        <Text variant='titleMedium'>{t('diary.no-travel')}</Text>
+        <Text variant='bodySmall'>{t('diary.no-travel-hint')}</Text>
+      </View>
+    </Banner>
+  );
+
+  if (!pipelineRange) { // nothing has been processed for this user yet
+    return noTravelBanner;
+  } else if (isLoading=='replace') {
     return bigSpinner;
   } else if (listEntries && listEntries.length == 0) {
-    return (
-      <Banner visible={true} icon={
-        ({size}) => <IconButton size={size} icon='alert-circle'
-                    style={{width: size, height: size, marginVertical: 3}} />
-        }>
-        <View style={{width: '100%'}}>
-          <Text variant="titleMedium">{"No travel to show"}</Text>
-          <Text>{"Check back after you've taken a few trips"}</Text>
-        </View>
-      </Banner>
-    );
+    return noTravelBanner;
   } else {
     return (
       <FlashList inverted
