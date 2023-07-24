@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { angularize } from "../angular-react-helper";
 import { object, string } from "prop-types";
 import { View } from "react-native";
+import { useTheme } from "react-native-paper";
 
 const mapSet = new Set();
 export function invalidateMaps() {
@@ -13,6 +14,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   const mapElRef = useRef(null);
   const leafletMapRef = useRef(null);
   const geoJsonIdRef = useRef(null);
+  const { colors } = useTheme();
 
   function initMap(map) {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -59,9 +61,19 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           z-index: 9;
         }
         .leaflet-div-icon-start, .leaflet-div-icon-stop {
+          border: 2px solid ${colors.primary};
+          border-radius: 100%;
           display: flex;
           justify-content: center;
           align-items: center;
+        }
+        .leaflet-div-icon-start {
+          color: ${colors.onPrimary};
+          background-color: ${colors.primary};
+        }
+        .leaflet-div-icon-stop {
+          color: ${colors.primary};
+          background-color: ${colors.onPrimary};
         }
         .leaflet-div-icon-start::after {
           font-family: MaterialCommunityIcons;
