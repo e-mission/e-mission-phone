@@ -46,7 +46,7 @@ const TripCard = ({ trip }) => {
     navigation.navigate("label.details", { tripId: trip._id.$oid });
   }
 
-  const mapOpts = { zoomControl: false, dragging: false };
+  const mapOpts = { minZoom: 4, maxZoom: 17, dragging: false };
   const showAddNoteButton = appConfig?.survey_info?.buttons?.['trip-notes'];
   const mapStyle = showAddNoteButton ? s.shortenedMap : s.fullHeightMap;
   return (
