@@ -14,7 +14,7 @@ const AppTheme = {
     secondaryContainer: '#ffb39e', // lch(80% 45 40)
     background: '#f2f2f2', // lch(95% 0 0)
     surface: '#fafdff', // lch(99% 30 250)
-    surfaceVariant: '#e0f0ff', // lch(94% 50 250)
+    surfaceVariant: '#e4e9ed', // lch(92% 30 250) -- blueish gray used as background on label screen (was same as level 4)
     elevation: {
       level0: 'transparent',
       level1: '#fafdff', // lch(99% 30 250)
