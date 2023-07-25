@@ -46,6 +46,9 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
     initMap(leafletMapRef.current);
   }
 
+  // non-alphanumeric characters are not safe for element IDs
+  const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
+
   return (
     <View {...otherProps}>
       <style>{`
@@ -60,31 +63,31 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           white-space: nowrap;
           z-index: 9;
         }
-        .leaflet-div-icon-start, .leaflet-div-icon-stop {
+        #${mapElId} .leaflet-div-icon-start, #${mapElId} .leaflet-div-icon-stop {
           border: 2px solid ${colors.primary};
           border-radius: 100%;
           display: flex;
           justify-content: center;
           align-items: center;
         }
-        .leaflet-div-icon-start {
+        #${mapElId} .leaflet-div-icon-start {
           color: ${colors.onPrimary};
           background-color: ${colors.primary};
         }
-        .leaflet-div-icon-stop {
+        #${mapElId} .leaflet-div-icon-stop {
           color: ${colors.primary};
           background-color: ${colors.onPrimary};
         }
-        .leaflet-div-icon-start::after {
+        #${mapElId} .leaflet-div-icon-start::after {
           font-family: MaterialCommunityIcons;
           content: "󱘈"; ${/* glyph for 'map-marker-star' from https://pictogrammers.com/library/mdi/icon/map-marker-star/*/''}
         }
-        .leaflet-div-icon-stop::after {
+        #${mapElId} .leaflet-div-icon-stop::after {
           font-family: MaterialCommunityIcons;
           content: "󰈻"; ${/* glyph for 'flag' from https://pictogrammers.com/library/mdi/icon/flag/ */''}
         }
       `}</style>
-      <div id="map" ref={mapElRef} data-tap-disabled="true"
+      <div id={mapElId} ref={mapElRef} data-tap-disabled="true"
             style={{width: '100%', height: '100%', zIndex: 0}}></div>
     </View>
   );
