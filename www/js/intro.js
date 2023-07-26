@@ -133,6 +133,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       } else {
         CommHelper.registerUser(function(successResult) {
           $scope.currentToken = token;
+          $scope.qrToken = "emission://login_token?token=" + token;
           $scope.next();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);
