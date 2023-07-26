@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { angularize } from "../angular-react-helper";
 import { object, string } from "prop-types";
 import { View } from "react-native";
+import { useTheme } from "react-native-paper";
 
 const mapSet = new Set();
 export function invalidateMaps() {
@@ -13,6 +14,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   const mapElRef = useRef(null);
   const leafletMapRef = useRef(null);
   const geoJsonIdRef = useRef(null);
+  const { colors } = useTheme();
 
   function initMap(map) {
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -40,10 +42,12 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
     (happens because of FlashList's view recycling on the trip cards:
       https://shopify.github.io/flash-list/docs/recycling) */
   if (geoJsonIdRef.current && geoJsonIdRef.current !== geojson.data.id) {
-    console.debug('leafletMapRef changed, invalidating map', geoJsonIdRef.current, geojson.data.id);
     leafletMapRef.current.eachLayer(layer => leafletMapRef.current.removeLayer(layer));
     initMap(leafletMapRef.current);
   }
+
+  // non-alphanumeric characters are not safe for element IDs
+  const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   return (
     <View {...otherProps}>
@@ -59,16 +63,40 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           white-space: nowrap;
           z-index: 9;
         }
+        #${mapElId} .leaflet-div-icon-start, #${mapElId} .leaflet-div-icon-stop {
+          border: 2px solid ${colors.primary};
+          border-radius: 100%;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+        }
+        #${mapElId} .leaflet-div-icon-start {
+          color: ${colors.onPrimary};
+          background-color: ${colors.primary};
+        }
+        #${mapElId} .leaflet-div-icon-stop {
+          color: ${colors.primary};
+          background-color: ${colors.onPrimary};
+        }
+        #${mapElId} .leaflet-div-icon-start::after {
+          font-family: MaterialCommunityIcons;
+          content: "󱘈"; ${/* glyph for 'map-marker-star' from https://pictogrammers.com/library/mdi/icon/map-marker-star/*/''}
+        }
+        #${mapElId} .leaflet-div-icon-stop::after {
+          font-family: MaterialCommunityIcons;
+          content: "󰈻"; ${/* glyph for 'flag' from https://pictogrammers.com/library/mdi/icon/flag/ */''}
+        }
       `}</style>
-      <div id="map" ref={mapElRef} data-tap-disabled="true"
+      <div id={mapElId} ref={mapElRef} data-tap-disabled="true"
             style={{width: '100%', height: '100%', zIndex: 0}}></div>
     </View>
   );
 };
 
-const startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-start">★</div>'});
-const stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18], html: '<div class="leaflet-div-ionicon leaflet-div-ionicon-stop">⚑</div>'});
-const pointToLayer = (feature, latlng) => {
+const startIcon = L.divIcon({className: 'leaflet-div-icon-start', iconSize: [18, 18]});
+const stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 18]});
+
+  const pointToLayer = (feature, latlng) => {
   switch(feature.properties.feature_type) {
     case "start_place": return L.marker(latlng, {icon: startIcon});
     case "end_place": return L.marker(latlng, {icon: stopIcon});

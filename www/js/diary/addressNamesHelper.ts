@@ -158,7 +158,6 @@ export function useAddressNames(tlEntry) {
     } else if (startLocData && endLocData) {
       const startLoc = typeof startLocData === 'string' ? JSON.parse(startLocData) : startLocData;
       const endLoc = typeof endLocData === 'string' ? JSON.parse(endLocData) : endLocData;
-      console.debug('useAddressNames: startLocData = ', startLoc, 'endLocData = ', endLoc);
       setAddressNames([toAddressName(startLoc), toAddressName(endLoc)]);
     }
   }, [locData, startLocData, endLocData]);

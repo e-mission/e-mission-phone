@@ -500,8 +500,9 @@ ion-header-bar {
 ion-nav-view {
   z-index: 10;
 }
+/* this controls bacground color of dashboard and profile - label screen now styled in react*/
 .pane {
-  background-color: #eee !important;
+  background-color: #e4e9ed !important;
 }
 .tabs-custom > .tabs,
 .tabs.tabs-custom {

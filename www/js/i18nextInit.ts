@@ -51,12 +51,13 @@ const langs = {
 
 const locales = navigator?.languages?.length ? navigator.languages : [navigator.language];
 let detectedLang;
-locales.forEach(locale => {
+for (const locale of locales) {
   const lang = locale.trim().split(/-|_/)[0];
   if (Object.keys(langs).includes(lang)) {
     detectedLang = lang;
+    break; // once we find a supported language, stop looking
   }
-});
+}
 
 i18next.use(initReactI18next)
   .init({
