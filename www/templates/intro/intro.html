@@ -13,7 +13,7 @@
         <ng-include src="'templates/intro/saveTokenFile.html'"></ng-include>
       </ion-slide>
       <ion-slide>
-        <ng-include ng-if="currentToken" src="surveyFile"></ng-include>
+        <ng-include ng-if="currentToken && slideIndex>3" src="surveyFile"></ng-include>
       </ion-slide>
     </ion-slide-box>
 </ion-view>
