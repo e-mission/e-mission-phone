@@ -502,7 +502,7 @@ ion-nav-view {
 }
 /* this controls bacground color of dashboard and profile - label screen now styled in react*/
 .pane {
-  background-color: #e4e9ed !important;
+  background-color: #edf1f6 !important;
 }
 .tabs-custom > .tabs,
 .tabs.tabs-custom {

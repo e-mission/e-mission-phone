@@ -12,9 +12,9 @@ const AppTheme = {
     onPrimaryContainer: '#001e30', // lch(10% 50 250)
     secondary: '#f2795c', // lch(65% 60 40)
     secondaryContainer: '#ffb39e', // lch(80% 45 40)
-    background: '#f2f2f2', // lch(95% 0 0)
+    background: '#edf1f6', // lch(95% 3 250) - background of label screen, other screens still have this as CSS .pane
     surface: '#fafdff', // lch(99% 30 250)
-    surfaceVariant: '#e4e9ed', // lch(92% 30 250) -- blueish gray used as background on label screen (was same as level 4)
+    surfaceVariant: '#e0f0ff', // lch(94% 50 250) - background of DataTable
     elevation: {
       level0: 'transparent',
       level1: '#fafdff', // lch(99% 30 250)
