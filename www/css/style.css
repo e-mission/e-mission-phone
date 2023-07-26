@@ -11,14 +11,6 @@
 /* nvd3 styles */
 @import 'nvd3/build/nv.d3.css';
 
-/* Annoyingly, React Native Web applies `white-space: nowrap`
-    on Text elements and doesn't give us a way to change it in the style prop,
-    effectively preventing multiline text.
-  This is a workaround to override that style. */
-div[class*='css-text'] {
-  white-space: normal;
-}
-
 .fill-container {
   display: block;
   position: relative;
