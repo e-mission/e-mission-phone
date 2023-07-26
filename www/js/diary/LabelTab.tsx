@@ -105,14 +105,14 @@ const LabelTab = () => {
         labelsResultMap = manualResultMap;
         notesResultMap = enbsResultMap;
         console.log("After reading in the label controller, manualResultMap " + JSON.stringify(manualResultMap), manualResultMap);
-        setPipelineRange(pipelineRange);
       }
+      setPipelineRange(pipelineRange);
     });
   }
 
   // once pipelineRange is set, load the most recent week of data
   useEffect(() => {
-    if (pipelineRange) {
+    if (pipelineRange && pipelineRange.end_ts) {
       loadAnotherWeek('past');
     }
   }, [pipelineRange]);
