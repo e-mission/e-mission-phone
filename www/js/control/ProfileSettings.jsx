@@ -60,6 +60,7 @@ const ProfileSettings = () => {
     const [carbonDataVis, setCarbonDataVis] = useState(false);
     const [forceStateVis, setForceStateVis] = useState(false);
     const [permitVis, setPermitVis] = useState(false);
+    const [logoutVis, setLogoutVis] = useState(false);
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
@@ -248,7 +249,7 @@ const ProfileSettings = () => {
 
     return (
         <>
-           <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
+           <SettingRow textKey="control.profile" iconName='logout' action={() => setLogoutVis(true)} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
@@ -385,6 +386,31 @@ const ProfileSettings = () => {
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
+
+            {/* logout menu */}
+            <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
+                <Dialog visible={logoutVis} 
+                        onDismiss={() => setLogoutVis(false)} 
+                        style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('general-settings.are-you-sure')}</Dialog.Title>
+                    <Dialog.Content>
+                        <Text variant="">{t('general-settings.log-out-warning')}</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={()=>setLogoutVis(false)}>
+                            {t('general-settings.cancel')}
+                        </Button>
+                        <Button onPress={() => {
+                           const CONFIG_PHONE_UI="config/app_ui_config";
+                           window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
+                               .then(window.location.reload(true));
+                        }}>
+                            {t('general-settings.confirm')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
         </>
     );
 };

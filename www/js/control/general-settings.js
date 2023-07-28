@@ -286,14 +286,14 @@ angular.module('emission.main.control',['emission.services',
     // }  
 
     //used in ProfileSettings at the profile/logout/opcode row
-    $scope.logOut = function() {
-        $ionicPopup.confirm({
-            title: i18next.t('general-settings.are-you-sure'),
-            template: i18next.t('general-settings.log-out-warning'),
-            cancelText: i18next.t('general-settings.cancel'),
-            okText: i18next.t('general-settings.confirm')
-        }).then(function(res) {
-            if (!res) return; // user cancelled
+    // $scope.logOut = function() {
+    //     $ionicPopup.confirm({
+    //         title: i18next.t('general-settings.are-you-sure'),
+    //         template: i18next.t('general-settings.log-out-warning'),
+    //         cancelText: i18next.t('general-settings.cancel'),
+    //         okText: i18next.t('general-settings.confirm')
+    //     }).then(function(res) {
+    //         if (!res) return; // user cancelled
             
             // reset the saved config, then trigger a hard refresh
             const CONFIG_PHONE_UI="config/app_ui_config";
