@@ -1,69 +1,27 @@
 {
     "loading" : "Loading...",
-    "map-refresh": "Refresh",
-    "map-fixmap": "Fix Map",
     "pull-to-refresh": "Pull to refresh",
 
     "weekdays-all": "All",
     "weekdays-select": "Select day of the week",
 
-    "post-trip-prompt":{
-        "notification-option-mute": "Mute",
-        "notification-option-snooze": "Snooze",
-        "notification-option-choose": "Choose",
-        "notification-title": "How and why did you come here?",
-        "choose-mode": "Choose Mode",
-        "skip": "Skip",
-        "snoozed-reminder": "Snoozed reminder",
-        "snoozed-reapper-message": "Will reappear in 30 mins",
-        "platform-specific-message-ios": "Swipe left or tap to add information about this trip.",
-        "platform-specific-message-android": "See options or tap to add information about this trip.",
-        "platform-specific-message-other": "Tap to add information about this trip.",
-        "notifications-muted": "Notifications for TRIP_END incident report muted",
-        "notifications-reenabled": "Can be re-enabled from the Profile -> Developer Zone screen. Select to re-enable now, clear to ignore",
-        "muted": "Muted",
-        "unmute": "Unmute",
-        "keep-muted": "Keep muted"
-    },
-
-    "post-trip-map-display-tour-incident": "Zoom in as much as possible to the location where the incident occurred and click on the blue line of the trip to mark a ☻ or ☹ incident",
-
-    "tour-next": "Next",
-    "tour-previous": "Previous",
-    "tour-finish": "Finish",
-
     "trip-confirm": {
-        "recenttrip": "Recent trip from: {{startTime}} → to: {{endTime}}",
-        "continue": "Continue",
-        "done": "Done",
         "services-please-fill-in": "Please fill in the {{text}} not listed.",
         "services-cancel": "Cancel",
         "services-save": "Save"
     },
 
-    "place-common-place": "Common place",
-    "place-successor-trips": "Successor trips",
-    "place-trips-to": "{{trips}} trips to",
-    "place-usually-starts": "Usually starts at: {{hour}}:00",
-    "place-usually-takes": "Usually takes: {{duration}}",
-
-    "trip-start-hours": "Start hours",
-    "trip-start-duration": "Duration",
-
     "control":{
         "profile": "Profile",
         "edit-demographics": "Edit Demographics",
-        "username": "Username {{usernamedata}}",
         "tracking": "Tracking",
         "app-status": "App Status",
         "incorrect-app-status": "Please update permissions",
         "fix-app-status": "Click to view and fix app status",
         "fix": "Fix",
         "medium-accuracy": "Medium accuracy",
-        "dark-theme": "Dark theme",
         "force-sync": "Force sync",
         "share": "Share",
-        "check-ui-updates": "Check for UI updates",
         "download-json-dump": "Download json dump",
         "email-log": "Email log",
         "upload-log": "Upload log",
@@ -77,13 +35,10 @@
         "invalidate-cached-docs": "Invalidate cached docs",
         "nuke-all": "Nuke all buffers and cache",
         "test-notification": "Test local notification",
-        "set-ui-channel": "Set UI channel",
         "check-log": "Check log",
         "check-sensed-data": "Check sensed data",
-        "check-map": "Check map",
         "collection": "Collection",
         "sync": "Sync",
-        "transition-notify": "Transition Notify",
         "button-accept": "I accept",
         "view-qrc": "My OPcode",
         "app-version": "App Version",
@@ -114,9 +69,7 @@
         "share-subject": "Emission - UC Berkeley Research Project",
         "share-url": "https://bic2cal.eecs.berkeley.edu/#download",
         "qrcode": "My OPcode",
-        "qrcode-share-title": "You can save your OPcode to login easily in the future!",
-        "qrcode-share-message": "Save this OPcode or send to a new device to scan and login! \n[OpenPath] My OPcode: ",
-        "qrcode-share-subject": "My OPcode - OpenPATH"
+        "qrcode-share-title": "You can save your OPcode to login easily in the future!"
     },
 
     "metrics":{
@@ -150,24 +103,14 @@
         "less-than": " less than ",
         "less": " less ",
         "week-before": "vs. week before",
-        "calorie-data-change-increase": " increase over a week",
-        "calorie-data-change-decrease": " decrease over a week",
         "pick-a-date": "Pick a date",
         "trips": "trips",
         "hours": "hours",
         "custom": "Custom"
     },
-
+    
     "diary": {
-        "current-trip": "Current Trip",
-        "current-yesterday": "Yesterday",
-        "current-weekago": "Week ago",
-        "history": "History",
-        "began": "Began {{startTime}}",
-        "report-incident": "Report Incident",
-        "draft": "DRAFT",
         "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
-        "date-distance-in-time": "{{date}}: {{distance}} {{distsuffix}} in {{time}}",
         "distance": "Distance",
         "time": "Time",
         "mode": "Mode",
@@ -180,10 +123,6 @@
         "to-label": "To Label",
         "show-all": "All Trips",
         "no-trips-found": "No trips found",
-        "for-current-filter": "for current filter. Show All to remove filters",
-        "scroll-to-load-more": "Scroll to load more",
-        "filter-display-status": "Displaying {{displayTripsLength}} / {{allTripsLength}} trips",
-        "filter-display-range": "{{currentEnd | date}} to {{currentStart | date:'medium' }}",
         "choose-mode": "Mode 📝 ",
         "choose-replaced-mode": "Replaces 📝",
         "choose-purpose": "Purpose 📝",
@@ -191,29 +130,12 @@
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
-        "list-pick-a-date": "Pick a date",
         "today": "Today",
         "no-more-travel": "No more travel to show",
         "show-more-travel": "Show More Travel",
         "show-older-travel": "Show Older Travel",
         "no-travel": "No travel to show",
-        "no-travel-hint": "To see more, change the filters above or go record some travel!",
-        "no-trips-today": "No trips recorded on this day"
-    },
-
-    "new_label_tour": {
-        "0": "This is the new Label user interface. Label trips here instead of on the Diary page. Trips take longer to appear here, but when they do they will be more accurate and you will be able to use our new features to label them faster.",
-        "1": "This is the To Label tab. On this tab, only the trips you need to label will appear; when you label them, they will automatically disappear after a few seconds.",
-        "2": "Some of your trips do not appear in To Label because an algorithm labeled them for you. If you're  curious, you can see these in the other tabs, but you only need to label trips on the To Label tab.",
-        "3": "Trips now appear with the newest trip at the bottom.",
-        "4": "To load older trips, scroll up and press the load button.",
-        "5": "Labels are now red if we couldn't predict them, yellow if we could predict them, and green if you entered or confirmed them yourself.",
-        "6": "If you see yellow labels on the To Label tab, this means you need to confirm or correct them.",
-        "7": "If all of a trip's yellow labels are correct, you can click the checkmark button, which will turn them green (the checkmark button doesn't do anything to red or green labels.",
-        "8": "If certain yellow labels are incorrect, you can correct them just like you'd enter a label normally.",
-        "9": "When there are no more trips in To Label, you're done labeling for the day.",
-        "10": "The more you label your trips, the better the algorithm gets at predicting your trips for you, so keeping up-to-date with your labeling will save you work in the long run!",
-        "11": "Click the ‘?’ button whenever you'd like to view this tour again."
+        "no-travel-hint": "To see more, change the filters above or go record some travel!"
     },
 
     "user-gender": "Gender",
@@ -269,55 +191,23 @@
         "equals-bananas_other": "Equals at least {{count}} bananas"
     },
 
-    "main-diary" : "Diary",
-
     "main-inf-scroll" : {
         "tab": "Label"
     },
 
-    "main-heatmap":{
-        "title": "Heatmap",
-        "counts" : "Counts",
-        "stress" : "Stress",
-        "from" : "From:",
-        "to" : "To:",
-        "get" : "Get!",
-        "all": "ALL",
-        "none": "NONE",
-        "bicycling": "BICYCLING",
-        "walking": "WALKING",
-        "in-vehicle": "IN_VEHICLE",
-        "select-travel-mode" : "Select travel mode",
-        "cancel": "Cancel",
-        "tour-datepicker": "This heatmap shows the aggregate data for all E-mission users. Select the dates you want to see, and filter by hours of the day (24h format) and days of the week. For example, if you enter 16 and 19 in the last field, and select Monday and Friday, you'll see the Heatmap filtered to show the traffic on weekdays between 4pm and 7pm.",
-        "tour-mode": "Click here to filter your results by mode of transportation. The default is to show all modes.",
-        "tour-get": "Click here to generate the heatmap."
-    },
-
     "details":{
         "speed": "Speed",
-        "time": "Time",
-        "tour-detail-content": "To report an incident, zoom in as much as possible to the location where the incident occurred and click on the trip to mark a ☻ or ☹ incident",
-        "tour-sectionList-content": "Trip sections, along with times and modes",
-        "tour-sectionPct-content": "% of time spent in each mode for this trip"
+        "time": "Time"
     },
 
-    "list-explainDraft-alert": "This trip has not yet been analysed. If it stays in this state, please ask your sysadmin to check what is wrong.",
     "list-datepicker-today": "Today",
     "list-datepicker-close": "Close",
     "list-datepicker-set": "Set",
-    "list-tour-datepicker-button" : "Use this to select the day you want to see.",
-    "list-tour-diary-entry" : "Click on the map to see more details about each trip.",
-    "list-tour-map-fix-button" : "Use this to fix the map tiles if they have not loaded properly.",
 
     "service":{
         "reading-server": "Reading from server...",
-        "reading-cache": "Reading from cache...",
         "reading-unprocessed-data": "Reading unprocessed data..."
     },
-
-
-    "post-trip-manual-incident-time" : "Choose incident time",
 
     "email-service":{
         "email-account-not-configured": "Email account is not configured, cannot send email",
@@ -338,7 +228,6 @@
         "upload-database": "Uploading database {{db}}",
         "upload-from-dir": "from directory {{parentDir}}",
         "upload-to-server": "to servers {{serverURL}}",
-        "going-to-email": "Going to email database from {{parentDir}}",
         "please-fill-in-what-is-wrong": "please fill in what is wrong",
         "upload-success": "Upload successful",
         "upload-progress": "Sending {{filesizemb | number}} MB to {{serverURL}}",
@@ -384,10 +273,8 @@
             "overall-notification-description": "We need to use notifications to inform you if the settings are incorrect. We also use hourly invisible push notifications to wake up the app and allow it to upload data and check app status. We also use notifications to remind you to label your trips.",
             "notificationperms": {
                 "app-enabled-name": "App Notifications",
-                "not-paused-name": "Not Paused",
                 "description": {
                     "android-enable": "On the app settings page, ensure that all notifications and channels are enabled.",
-                    "android-unpause": "On the app settings page, ensure that all notifications are enabled. If this doesn't fix the problem, ask for help from your admin",
                     "ios-enable": "Please allow, on the popup or the app settings page if necessary"
                 }
             },
@@ -410,10 +297,6 @@
             }
         },
         "permissions": {
-            "locationPermExplanation-android-lt-6": "you accepted the permission during installation. You don't need to do anything now.",
-            "locationPermExplanation-android-6-9": "please select 'allow'",
-            "locationPermExplanation-android-10": "please select 'Allow all the time'",
-            "locationPermExplanation-android-gte-11": "please select 'Allow all the time' for location permissions on the app page",
             "locationPermExplanation-ios-lt-13": "please select 'Always allow'. This allows us to understand your travel even when you are not actively using the app",
             "locationPermExplanation-ios-gte-13": "please select 'always' and 'precise' in the app settings page and return here to continue"
         }
@@ -425,14 +308,6 @@
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
-    "updatecheck":{
-        "downloading-update": "Downloading UI-only update",
-        "extracting-update": "Extracting UI-only update",
-        "done": "Update done, reloading...",
-        "download-new-ui": "Download new UI-only update to build {{build}}?",
-        "download-not-now": "Not now",
-        "download-apply": "Apply"
-    },
     "login":{
         "make-sure-save-your-opcode":"Make sure to save your OPcode!",
         "cannot-retrieve":"NREL cannot retrieve it for you later!",
@@ -441,10 +316,6 @@
         "enter-existing-token": "Enter the existing token that you have",
         "button-accept": "OK",
         "button-decline": "Cancel"
-    },
-    "sensor_explanation":{
-        "button-accept": "OK",
-        "button-decline": "Stop"
     },
     "survey": {
         "loading-prior-survey": "Loading prior survey responses...",
@@ -487,9 +358,7 @@
         "no-nrelop-start": "OPcode {{token}} does not start with 'nrelop'",
         "not-enough-parts": "OPcode {{token}} does not have at least three '_' characters",
         "invalid-subgroup": "Invalid OPcode {{token}}, subgroup {{subgroup}} not found in list {{config_subgroups}}",
-        "invalid-subgroup-no-default": "Invalid OPcode {{token}}, no subgroups, expected 'default' subgroup",
         "unable-download-config": "Unable to download study config",
-        "invalid-opcode-format": "Invalid OPcode format",
-        "error-loading-config-app-start": "Error loading config on app start"
+        "invalid-opcode-format": "Invalid OPcode format"
     }
 }
