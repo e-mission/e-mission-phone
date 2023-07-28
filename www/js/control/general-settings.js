@@ -91,19 +91,19 @@ angular.module('emission.main.control',['emission.services',
     }
 
     //this function used in ProfileSettings to send DummyNotification
-    $scope.dummyNotification = () => {
-        cordova.plugins.notification.local.addActions('dummy-actions', [
-            { id: 'action', title: 'Yes' },
-            { id: 'cancel', title: 'No' }
-        ]);
-        cordova.plugins.notification.local.schedule({
-            id: new Date().getTime(),
-            title: 'Dummy Title',
-            text: 'Dummy text',
-            actions: 'dummy-actions',
-            trigger: {at: new Date(new Date().getTime() + 5000)},
-        });
-    }
+    // $scope.dummyNotification = () => {
+    //     cordova.plugins.notification.local.addActions('dummy-actions', [
+    //         { id: 'action', title: 'Yes' },
+    //         { id: 'cancel', title: 'No' }
+    //     ]);
+    //     cordova.plugins.notification.local.schedule({
+    //         id: new Date().getTime(),
+    //         title: 'Dummy Title',
+    //         text: 'Dummy text',
+    //         actions: 'dummy-actions',
+    //         trigger: {at: new Date(new Date().getTime() + 5000)},
+    //     });
+    // }
 
     //called in ProfileSettings on the AppStatus row
     $scope.fixAppStatus = function() {
