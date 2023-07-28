@@ -90,34 +90,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    //this function used in ProfileSettings to send DummyNotification
-    // $scope.dummyNotification = () => {
-    //     cordova.plugins.notification.local.addActions('dummy-actions', [
-    //         { id: 'action', title: 'Yes' },
-    //         { id: 'cancel', title: 'No' }
-    //     ]);
-    //     cordova.plugins.notification.local.schedule({
-    //         id: new Date().getTime(),
-    //         title: 'Dummy Title',
-    //         text: 'Dummy text',
-    //         actions: 'dummy-actions',
-    //         trigger: {at: new Date(new Date().getTime() + 5000)},
-    //     });
-    // }
-
-    //called in ProfileSettings on the AppStatus row
-    // $scope.fixAppStatus = function() {
-    //     $scope.$broadcast("recomputeAppStatus");
-    //     $scope.appStatusModal.show();
-    // }
-
-    // $scope.appStatusChecked = function() {
-    //     // Hardcoded value so we can publish the hacky version today and then debug/fix the
-    //     // infinite loop around waiting_for_trip_start -> tracking_error
-    //     $window.cordova.plugins.notification.local.clearAll();
-    //     $scope.appStatusModal.hide();
-    // }
-
     $scope.userData = []
     $scope.getUserData = function() {
         return CalorieCal.get().then(function(userDataFromStorage) {
@@ -285,32 +257,6 @@ angular.module('emission.main.control',['emission.services',
     //     });
     // }  
 
-    //used in ProfileSettings at the profile/logout/opcode row
-    // $scope.logOut = function() {
-    //     $ionicPopup.confirm({
-    //         title: i18next.t('general-settings.are-you-sure'),
-    //         template: i18next.t('general-settings.log-out-warning'),
-    //         cancelText: i18next.t('general-settings.cancel'),
-    //         okText: i18next.t('general-settings.confirm')
-    //     }).then(function(res) {
-    //         if (!res) return; // user cancelled
-            
-    //         // reset the saved config, then trigger a hard refresh
-    //         const CONFIG_PHONE_UI="config/app_ui_config";
-    //         $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
-    //             .then($window.location.reload(true));
-    //     });
-    // };
-
-    // var getStartTransitionKey = function() {
-    //     if($scope.isAndroid()) {
-    //         return "local.transition.exited_geofence";
-    //     }
-    //     else if($scope.isIOS()) {
-    //         return "T_EXITED_GEOFENCE";
-    //     }
-    // }
-
     var getEndTransitionKey = function() {
         if($scope.isAndroid()) {
             return "local.transition.stopped_moving";
@@ -319,15 +265,6 @@ angular.module('emission.main.control',['emission.services',
             return "T_TRIP_ENDED";
         }
     }
-
-    // var getOngoingTransitionState = function() {
-    //     if($scope.isAndroid()) {
-    //         return "local.state.ongoing_trip";
-    //     }
-    //     else if($scope.isIOS()) {
-    //         return "STATE_ONGOING_TRIP";
-    //     }
-    // }
 
     $scope.forceSync = function() {
         ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
@@ -378,33 +315,6 @@ angular.module('emission.main.control',['emission.services',
             Logger.displayError("Error while forcing sync", error);
         });
     };
-
-    // var getTransition = function(transKey) {
-    //     var entry_data = {};
-    //     return $scope.getState().then(function(curr_state) {
-    //         entry_data.curr_state = curr_state;
-    //         if (transKey == getEndTransitionKey()) {
-    //             entry_data.curr_state = getOngoingTransitionState();
-    //         }
-    //         entry_data.transition = transKey;
-    //         entry_data.ts = moment().unix();
-    //         return entry_data;
-    //     })
-    // }
-
-    //in ProfileSettings in DevZone
-    // $scope.endForceSync = function() {
-    //     /* First, quickly start and end the trip. Let's listen to the promise
-    //      * result for start so that we ensure ordering */
-    //     var sensorKey = "statemachine/transition";
-    //     return getTransition(getStartTransitionKey()).then(function(entry_data) {
-    //         return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-    //     }).then(function() {
-    //             return getTransition(getEndTransitionKey()).then(function(entry_data) {
-    //                 return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-    //             })
-    //     }).then($scope.forceSync);
-    // }
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();

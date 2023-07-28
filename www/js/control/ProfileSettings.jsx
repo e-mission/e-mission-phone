@@ -337,7 +337,7 @@ const ProfileSettings = () => {
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
 
-        {/* menu for "nuke data" */}
+            {/* menu for "nuke data" */}
             <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
             transparent={true}>
                 <Dialog visible={nukeSetVis}
@@ -364,7 +364,7 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
-        {/* menu for "set carbon dataset - only somewhat working" */}
+            {/* menu for "set carbon dataset - only somewhat working" */}
             <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
             transparent={true}>
                 <Dialog visible={carbonDataVis}
