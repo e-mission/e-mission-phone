@@ -195,20 +195,6 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getOPCode = function() {
-        ControlHelper.getOPCode().then(function(opcode) {
-           console.log("opcode = "+opcode);
-            $scope.$apply(function() {
-                if (opcode == null) {
-                  $scope.settings.auth.opcode = "Not logged in";
-                } else {
-                  $scope.settings.auth.opcode = opcode;
-                }
-            });
-        }, function(error) {
-            Logger.displayError("while getting opcode, ",error);
-        });
-    };
     //in ProfileSettings in DevZone
     $scope.showLog = function() {
         $state.go("root.main.log");
@@ -285,12 +271,10 @@ angular.module('emission.main.control',['emission.services',
         console.log("Refreshing screen");
         $scope.settings = {};
         $scope.settings.sync = {};
-        $scope.settings.auth = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
         $scope.getSyncSettings();
-        $scope.getOPCode();
         $scope.getUserData();
     };
 

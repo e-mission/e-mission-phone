@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, StyleSheet } from "react-native";
-import { Dialog, Button, useTheme } from "react-native-paper";
+import { Dialog, Button, useTheme, Text } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -24,11 +24,11 @@ const ProfileSettings = () => {
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
-    const { settings, logOut, viewPrivacyPolicy,
-        fixAppStatus, forceSync, openDatePicker,
-        eraseUserData, refreshScreen, endForceSync, checkConsent, 
-        dummyNotification, invalidateCache, showLog, showSensed,
-        parseState, userDataSaved, userData, ui_config } = settingsScope;
+    const { settings, logOut, viewPrivacyPolicy, forceSync, openDatePicker,
+        eraseUserData, refreshScreen, endForceSync, checkConsent, invalidateCache, showLog, showSensed,
+        parseState, userDataSaved, userData, ui_config, overallAppStatus } = settingsScope;
+
+    console.log("app status", overallAppStatus);
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -39,6 +39,7 @@ const ProfileSettings = () => {
     const CalorieCal = getAngularService('CalorieCal');
     const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
+    const ControlHelper = getAngularService('ControlHelper');
 
     if (!controlUpdateCompleteListenerRegistered) {
         settingsScope.$on('control.update.complete', function() {
@@ -58,8 +59,10 @@ const ProfileSettings = () => {
     const [nukeSetVis, setNukeVis] = useState(false);
     const [carbonDataVis, setCarbonDataVis] = useState(false);
     const [forceStateVis, setForceStateVis] = useState(false);
+    const [permitVis, setPermitVis] = useState(false);
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
+    const [authSettings, setAuthSettings] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -74,6 +77,7 @@ const ProfileSettings = () => {
         if (appConfig) {
             refreshCollectSettings();
             refreshNotificationSettings();
+            getOPCode();
         }
     }, [appConfig]);
 
@@ -120,6 +124,17 @@ const ProfileSettings = () => {
         console.log("notification settings before and after", notificationSettings, newNotificationSettings);
         setNotificationSettings(newNotificationSettings);
     }
+
+    async function getOPCode() {
+        const newAuthSettings = {};
+        const opcode = await ControlHelper.getOPCode();
+        if(opcode == null){
+            newAuthSettings.opcode = "Not logged in";
+        } else {
+            newAuthSettings.opcode = opcode;
+        }
+        setAuthSettings(newAuthSettings);
+    };
     
     //methods that control the settings
     const uploadLog = function () {
@@ -140,6 +155,20 @@ const ProfileSettings = () => {
                 refreshNotificationSettings();
             }); 
         }
+    }
+
+    function dummyNotification() {
+        cordova.plugins.notification.local.addActions('dummy-actions', [
+            { id: 'action', title: 'Yes' },
+            { id: 'cancel', title: 'No' }
+        ]);
+        cordova.plugins.notification.local.schedule({
+            id: new Date().getTime(),
+            title: 'Dummy Title',
+            text: 'Dummy text',
+            actions: 'dummy-actions',
+            trigger: {at: new Date(new Date().getTime() + 5000)},
+        });
     }
 
     async function userStartStopTracking() {
@@ -187,6 +216,10 @@ const ProfileSettings = () => {
                 console.log("Sharing failed with message: " + msg);
             });
     }
+    
+    const clearNotifications = function() {
+        window.cordova.plugins.notification.local.clearAll();
+    }
 
     //conditional creation of setting sections
     let userDataSection;
@@ -215,13 +248,13 @@ const ProfileSettings = () => {
 
     return (
         <>
-           <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={settings?.auth?.opcode} descStyle={styles.monoDesc}></SettingRow>
+           <SettingRow textKey="control.profile" iconName='logout' action={logOut} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
            <DemographicsSettingRow></DemographicsSettingRow>
            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
            {timePicker}
            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
-           <SettingRow textKey="control.app-status" iconName="check" action={fixAppStatus}></SettingRow>
+           <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
@@ -300,7 +333,8 @@ const ProfileSettings = () => {
                         )}
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setCarbonDataVis(false)}>{t('general-settings.cancel')}</Button>
+                        <Button onPress={() => {setCarbonDataVis(false);
+                                                clearNotifications(); }}>{t('general-settings.cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
@@ -333,6 +367,24 @@ const ProfileSettings = () => {
 
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings?.auth?.opcode} action={shareQR}></PopOpCode>
+
+            {/* {view permissions} 
+                need to add in the permissions here? its own element?? */}
+            <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
+                <Dialog visible={permitVis} 
+                        onDismiss={() => setPermitVis(false)} 
+                        style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
+                    <Dialog.Content>
+                        <Text variant="">{t('intro.appstatus.overall-description')}</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setPermitVis(false)} /*disabled={!overallAppStatus} something to figure out here*/>{
+                        t('control.button-accept')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
         </>
     );
 };
