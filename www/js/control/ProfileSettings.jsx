@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, StyleSheet } from "react-native";
+import { Modal, StyleSheet, Platform } from "react-native";
 import { Dialog, Button, useTheme, Text } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
@@ -24,8 +24,8 @@ const ProfileSettings = () => {
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
-    const { settings, logOut, viewPrivacyPolicy, forceSync, openDatePicker,
-        eraseUserData, refreshScreen, endForceSync, checkConsent, invalidateCache, showLog, showSensed,
+    const { settings, viewPrivacyPolicy, forceSync, openDatePicker,
+        eraseUserData, refreshScreen, checkConsent, invalidateCache, showLog, showSensed,
         parseState, userDataSaved, userData, ui_config, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
@@ -220,6 +220,59 @@ const ProfileSettings = () => {
     
     const clearNotifications = function() {
         window.cordova.plugins.notification.local.clearAll();
+    }
+
+    // helper functions for endForceSync
+    const getStartTransitionKey = function() {
+        if(Platform.OS == 'android') {
+            return "local.transition.exited_geofence";
+        }
+        else if(Platform.OS == 'ios') {
+            return "T_EXITED_GEOFENCE";
+        }
+    }
+
+    const getEndTransitionKey = function() {
+        if(Platform.OS == 'android') {
+            return "local.transition.stopped_moving";
+        }
+        else if(Platform.OS == 'ios') {
+            return "T_TRIP_ENDED";
+        }
+    }
+
+    const getOngoingTransitionState = function() {
+        if(Platform.OS == 'android') {
+            return "local.state.ongoing_trip";
+        }
+        else if(Platform.OS == 'ios') {
+            return "STATE_ONGOING_TRIP";
+        }
+    }
+
+    async function getTransition(transKey) {
+        var entry_data = {};
+        const curr_state = await ControlCollectionHelper.getState();
+        entry_data.curr_state = curr_state;
+        if (transKey == getEndTransitionKey()) {
+            entry_data.curr_state = getOngoingTransitionState();
+        }
+        entry_data.transition = transKey;
+        entry_data.ts = moment().unix();
+        return entry_data;
+    }
+
+    async function endForceSync() {
+        /* First, quickly start and end the trip. Let's listen to the promise
+         * result for start so that we ensure ordering */
+        var sensorKey = "statemachine/transition";
+        return getTransition(getStartTransitionKey()).then(function(entry_data) {
+            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        }).then(function() {
+                return getTransition(getEndTransitionKey()).then(function(entry_data) {
+                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+                })
+        }).then(forceSync);
     }
 
     //conditional creation of setting sections
