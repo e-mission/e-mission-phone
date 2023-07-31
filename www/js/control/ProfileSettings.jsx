@@ -26,8 +26,7 @@ const ProfileSettings = () => {
     const settingsScope = angular.element(mainControlEl).scope();
     
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, openDatePicker, checkConsent, 
-        showLog, showSensed, ui_config, overallAppStatus } = settingsScope;
+    const { settings, viewPrivacyPolicy, openDatePicker, checkConsent, showLog, showSensed, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -77,6 +76,7 @@ const ProfileSettings = () => {
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
     const [appVersion, setAppVersion] = useState({});
+    const [uiConfig, setUiConfig] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -88,8 +88,9 @@ const ProfileSettings = () => {
     {text: 'Remote push', transition: "RECEIVED_SILENT_PUSH"}]
 
     useEffect(() => {
-        if (appConfig) {
-            refreshScreen();
+        //added appConfig.name needed to be defined because appConfig was defined but empty
+        if (appConfig && (appConfig.name)) {
+            whenReady(appConfig);
         }
     }, [appConfig]);
 
@@ -101,6 +102,35 @@ const ProfileSettings = () => {
         getSyncSettings();
         getConnectURL();
         setAppVersion(ClientStats.getAppVersion());
+    }
+
+    const whenReady = function(newAppConfig){
+        var tempUiConfig = newAppConfig;
+
+         // backwards compat hack to fill in the raw_data_use for programs that don't have it
+         const default_raw_data_use = {
+            "en": `to monitor the ${tempUiConfig.intro.program_or_study}, send personalized surveys or provide recommendations to participants`,
+            "es": `para monitorear el ${tempUiConfig.intro.program_or_study}, enviar encuestas personalizadas o proporcionar recomendaciones a los participantes`
+        }
+        Object.entries(tempUiConfig.intro.translated_text).forEach(([lang, val]) => {
+            val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
+        });
+
+        // Backwards compat hack to fill in the `app_required` based on the
+        // old-style "program_or_study"
+        // remove this at the end of 2023 when all programs have been migrated over
+        if (tempUiConfig.intro.app_required == undefined) {
+            tempUiConfig.intro.app_required = tempUiConfig?.intro.program_or_study == 'program';
+        }
+        tempUiConfig.opcode = tempUiConfig.opcode || {};
+        if (tempUiConfig.opcode.autogen == undefined) {
+            tempUiConfig.opcode.autogen = tempUiConfig?.intro.program_or_study == 'study';
+        }
+        
+        // setTemplateText(tempUiConfig.intro.translated_text);
+        // console.log("translated text is??", templateText);
+        setUiConfig(tempUiConfig);
+        refreshScreen();
     }
 
     async function refreshCollectSettings() {
@@ -132,7 +162,7 @@ const ProfileSettings = () => {
         console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
         const newNotificationSettings ={};
 
-        if (ui_config?.reminderSchemes) {
+        if (uiConfig?.reminderSchemes) {
             const prefs = await  NotificationScheduler.getReminderPrefs();
             const m = moment(prefs.reminder_time_of_day, 'HH:mm');
             newNotificationSettings.prefReminderTimeVal = m.toDate();
