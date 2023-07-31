@@ -73,6 +73,7 @@ const ProfileSettings = () => {
     const [authSettings, setAuthSettings] = useState({});
     const [userData, setUserData] = useState([]);
     const [rawUserData, setRawUserData] = useState({});
+    const [syncSettings, setSyncSettings] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -89,6 +90,7 @@ const ProfileSettings = () => {
             refreshNotificationSettings();
             getOPCode();
             getUserData();
+            getSyncSettings();
         }
     }, [appConfig]);
 
@@ -97,6 +99,7 @@ const ProfileSettings = () => {
         refreshNotificationSettings();
         getOPCode();
         getUserData(); //loading slow "one step behind" -- hoping further migration works it out
+        getSyncSettings();
         refreshScreen();
     }
 
@@ -164,6 +167,16 @@ const ProfileSettings = () => {
         }
         });
     }
+
+    async function getSyncSettings() {
+        console.log("getting sync settings");
+        var newSyncSettings = {};
+        ControlSyncHelper.getSyncSettings().then(function(showConfig) {
+            newSyncSettings.show_config = showConfig;
+            setSyncSettings(newSyncSettings);
+            console.log("sync settings are ", syncSettings);
+        });
+    };
 
     const userDataSaved = function() {
         if (rawUserData && rawUserData != null) {
@@ -439,7 +452,7 @@ const ProfileSettings = () => {
                <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
                <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
-               <ControlDataTable controlData={settings?.sync?.show_config}></ControlDataTable>
+               <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
            </ExpansionSection>
 

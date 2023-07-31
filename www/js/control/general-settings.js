@@ -159,13 +159,13 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    $scope.getSyncSettings = function() {
-        ControlSyncHelper.getSyncSettings().then(function(showConfig) {
-            $scope.$apply(function() {
-                $scope.settings.sync.show_config = showConfig;
-            })
-        });
-    };
+    // $scope.getSyncSettings = function() {
+    //     ControlSyncHelper.getSyncSettings().then(function(showConfig) {
+    //         $scope.$apply(function() {
+    //             $scope.settings.sync.show_config = showConfig;
+    //         })
+    //     });
+    // };
 
     //in ProfileSettings in DevZone
     $scope.showLog = function() {
@@ -242,12 +242,12 @@ angular.module('emission.main.control',['emission.services',
     $scope.refreshScreen = function() {
         console.log("Refreshing screen");
         $scope.settings = {};
-        $scope.settings.sync = {};
+        // $scope.settings.sync = {};
         $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
-        $scope.getSyncSettings();
         // $scope.getUserData();
+        // $scope.getSyncSettings();
     };
 
     //this feature has been eliminated (as of right now)
