@@ -148,16 +148,16 @@ angular.module('emission.main.control',['emission.services',
         });
     });
 
-    $scope.getConnectURL = function() {
-        ControlHelper.getSettings().then(function(response) {
-            $scope.$apply(function() {
-                $scope.settings.connect.url = response.connectUrl;
-                console.log(response);
-            });
-        }, function(error) {
-            Logger.displayError("While getting connect url", error);
-        });
-    };
+    // $scope.getConnectURL = function() {
+    //     ControlHelper.getSettings().then(function(response) {
+    //         $scope.$apply(function() {
+    //             $scope.settings.connect.url = response.connectUrl;
+    //             console.log(response);
+    //         });
+    //     }, function(error) {
+    //         Logger.displayError("While getting connect url", error);
+    //     });
+    // };
 
     // $scope.getSyncSettings = function() {
     //     ControlSyncHelper.getSyncSettings().then(function(showConfig) {
@@ -243,10 +243,10 @@ angular.module('emission.main.control',['emission.services',
         console.log("Refreshing screen");
         $scope.settings = {};
         // $scope.settings.sync = {};
-        $scope.settings.connect = {};
+        // $scope.settings.connect = {};
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
-        $scope.getConnectURL();
         // $scope.getUserData();
+        // $scope.getConnectURL();
         // $scope.getSyncSettings();
     };
 

@@ -75,6 +75,7 @@ const ProfileSettings = () => {
     const [rawUserData, setRawUserData] = useState({});
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
+    const [connectSettings, setConnectSettings] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -101,6 +102,7 @@ const ProfileSettings = () => {
         getOPCode();
         getUserData(); //loading slow "one step behind" -- hoping further migration works it out
         getSyncSettings();
+        getConnectURL();
         refreshScreen();
     }
 
@@ -179,6 +181,17 @@ const ProfileSettings = () => {
         });
     };
 
+    async function getConnectURL() {
+        ControlHelper.getSettings().then(function(response) {
+            var newConnectSettings ={}
+            newConnectSettings.url = response.connectUrl;
+            console.log(response);
+            setConnectSettings(newConnectSettings);
+        }, function(error) {
+            Logger.displayError("While getting connect url", error);
+        });
+    }
+    
     const userDataSaved = function() {
         if (rawUserData && rawUserData != null) {
             return rawUserData.userDataSaved;
