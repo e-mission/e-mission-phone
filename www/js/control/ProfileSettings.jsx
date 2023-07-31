@@ -300,30 +300,33 @@ const ProfileSettings = () => {
         window.cordova.plugins.notification.local.clearAll();
     }
 
+    //Platform.OS returns "web" now, but could be used once it's fully a Native app
+    //for now, use window.cordova.platformId
+
     // helper functions for endForceSync
     const getStartTransitionKey = function() {
-        if(Platform.OS == 'android') {
+        if(window.cordova.platformId == 'android') {
             return "local.transition.exited_geofence";
         }
-        else if(Platform.OS == 'ios') {
+        else if(window.cordova.platformId == 'ios') {
             return "T_EXITED_GEOFENCE";
         }
     }
 
     const getEndTransitionKey = function() {
-        if(Platform.OS == 'android') {
+        if(window.cordova.platformId == 'android') {
             return "local.transition.stopped_moving";
         }
-        else if(Platform.OS == 'ios') {
+        else if(window.cordova.platformId == 'ios') {
             return "T_TRIP_ENDED";
         }
     }
 
     const getOngoingTransitionState = function() {
-        if(Platform.OS == 'android') {
+        if(window.cordova.platformId == 'android') {
             return "local.state.ongoing_trip";
         }
-        else if(Platform.OS == 'ios') {
+        else if(window.cordova.platformId == 'ios') {
             return "STATE_ONGOING_TRIP";
         }
     }
