@@ -25,7 +25,7 @@ const ProfileSettings = () => {
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, openDatePicker, refreshScreen, checkConsent, 
+    const { settings, viewPrivacyPolicy, openDatePicker, checkConsent, 
         showLog, showSensed, parseState, ui_config, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
@@ -76,6 +76,7 @@ const ProfileSettings = () => {
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
+    const [appVersion, setAppVersion] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -88,22 +89,18 @@ const ProfileSettings = () => {
 
     useEffect(() => {
         if (appConfig) {
-            refreshCollectSettings();
-            refreshNotificationSettings();
-            getOPCode();
-            getUserData();
-            getSyncSettings();
+            refreshScreen();
         }
     }, [appConfig]);
 
-    const newRefreshScreen = function() {
+    const refreshScreen = function() {
         refreshCollectSettings();
         refreshNotificationSettings();
         getOPCode();
         getUserData(); //loading slow "one step behind" -- hoping further migration works it out
         getSyncSettings();
         getConnectURL();
-        refreshScreen();
+        setAppVersion(ClientStats.getAppVersion());
     }
 
     async function refreshCollectSettings() {
@@ -477,7 +474,7 @@ const ProfileSettings = () => {
                <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
-               <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={settings?.clientAppVer}></SettingRow>
+               <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
            </ExpansionSection>
 
             {/* menu for "nuke data" */}

@@ -239,16 +239,11 @@ angular.module('emission.main.control',['emission.services',
     });
 
     //in ProfileSettings in DevZone
-    $scope.refreshScreen = function() {
-        console.log("Refreshing screen");
-        $scope.settings = {};
-        // $scope.settings.sync = {};
-        // $scope.settings.connect = {};
-        $scope.settings.clientAppVer = ClientStats.getAppVersion();
-        // $scope.getUserData();
-        // $scope.getConnectURL();
-        // $scope.getSyncSettings();
-    };
+    // $scope.refreshScreen = function() {
+    //     console.log("Refreshing screen");
+    //     $scope.settings = {};
+    //     $scope.settings.clientAppVer = ClientStats.getAppVersion();
+    // };
 
     //this feature has been eliminated (as of right now)
     // $scope.copyToClipboard = (textToCopy) => {
