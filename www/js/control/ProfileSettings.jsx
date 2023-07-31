@@ -26,7 +26,7 @@ const ProfileSettings = () => {
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
     const { settings, viewPrivacyPolicy, openDatePicker, checkConsent, 
-        showLog, showSensed, parseState, ui_config, overallAppStatus } = settingsScope;
+        showLog, showSensed, ui_config, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -338,6 +338,21 @@ const ProfileSettings = () => {
         entry_data.transition = transKey;
         entry_data.ts = moment().unix();
         return entry_data;
+    }
+
+    const parseState = function(state) {
+        console.log("state in parse state is", state);
+        if (state) {
+            console.log("state in parse state exists", window.cordova.platformId);
+            if(window.cordova.platformId == 'android') {
+                console.log("ANDROID state in parse state is", state.substring(12));
+                return state.substring(12);
+            }
+            else if(window.cordova.platformId == 'ios') {
+                console.log("IOS state in parse state is", state.substring(6));
+                return state.substring(6);
+            }
+        }
     }
 
     async function endForceSync() {
