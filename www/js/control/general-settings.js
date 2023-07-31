@@ -90,34 +90,34 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    $scope.userData = []
-    $scope.getUserData = function() {
-        return CalorieCal.get().then(function(userDataFromStorage) {
-        $scope.rawUserData = userDataFromStorage;
-        if ($scope.userDataSaved()) {
-            $scope.userData = []
-            var height = userDataFromStorage.height.toString();
-            var weight = userDataFromStorage.weight.toString();
-            var temp  =  {
-                age: userDataFromStorage.age,
-                height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-                weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
-            }
-            for (var i in temp) {
-                $scope.userData.push({key: i, val: temp[i]}); //needs to be val for the data table!
-            }
-        }
-        });
-    }
+    // $scope.userData = []
+    // $scope.getUserData = function() {
+    //     return CalorieCal.get().then(function(userDataFromStorage) {
+    //     $scope.rawUserData = userDataFromStorage;
+    //     if ($scope.userDataSaved()) {
+    //         $scope.userData = []
+    //         var height = userDataFromStorage.height.toString();
+    //         var weight = userDataFromStorage.weight.toString();
+    //         var temp  =  {
+    //             age: userDataFromStorage.age,
+    //             height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+    //             weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+    //             gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
+    //         }
+    //         for (var i in temp) {
+    //             $scope.userData.push({key: i, val: temp[i]}); //needs to be val for the data table!
+    //         }
+    //     }
+    //     });
+    // }
 
-    $scope.userDataSaved = function() {
-        if (angular.isDefined($scope.rawUserData) && $scope.rawUserData != null) {
-            return $scope.rawUserData.userDataSaved;
-        } else {
-            return false;
-        }
-    }
+    // $scope.userDataSaved = function() {
+    //     if (angular.isDefined($scope.rawUserData) && $scope.rawUserData != null) {
+    //         return $scope.rawUserData.userDataSaved;
+    //     } else {
+    //         return false;
+    //     }
+    // }
     $ionicPlatform.ready().then(function() {
         DynamicConfig.configReady().then(function(newConfig) {
             $scope.ui_config = newConfig;
@@ -247,7 +247,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.clientAppVer = ClientStats.getAppVersion();
         $scope.getConnectURL();
         $scope.getSyncSettings();
-        $scope.getUserData();
+        // $scope.getUserData();
     };
 
     //this feature has been eliminated (as of right now)
@@ -332,11 +332,11 @@ angular.module('emission.main.control',['emission.services',
     });
 
     //in ProfileSettings in UserData
-    $scope.eraseUserData = function() {
-        CalorieCal.delete().then(function() {
-            $ionicPopup.alert({template: i18next.t('general-settings.user-data-erased')});
-        });
-    }
+    // $scope.eraseUserData = function() {
+    //     CalorieCal.delete().then(function() {
+    //         $ionicPopup.alert({template: i18next.t('general-settings.user-data-erased')});
+    //     });
+    // }
     //in ProfileSettings in DevZone -- part of force/edit state
     $scope.parseState = function(state) {
         if (state) {

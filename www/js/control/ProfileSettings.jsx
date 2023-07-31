@@ -26,8 +26,8 @@ const ProfileSettings = () => {
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
     const { settings, viewPrivacyPolicy, openDatePicker,
-        eraseUserData, refreshScreen, checkConsent, invalidateCache, showLog, showSensed,
-        parseState, userDataSaved, userData, ui_config, overallAppStatus } = settingsScope;
+        refreshScreen, checkConsent, invalidateCache, showLog, showSensed,
+        parseState, ui_config, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -65,11 +65,14 @@ const ProfileSettings = () => {
     const [logoutVis, setLogoutVis] = useState(false);
     const [dataPendingVis, setDataPendingVis] = useState(false);
     const [dataPushedVis, setDataPushedVis] = useState(false);
+    const [userDataVis, setUserDataVis] = useState(false);
 
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
+    const [userData, setUserData] = useState([]);
+    const [rawUserData, setRawUserData] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -85,8 +88,17 @@ const ProfileSettings = () => {
             refreshCollectSettings();
             refreshNotificationSettings();
             getOPCode();
+            getUserData();
         }
     }, [appConfig]);
+
+    const newRefreshScreen = function() {
+        refreshCollectSettings();
+        refreshNotificationSettings();
+        getOPCode();
+        getUserData(); //loading slow "one step behind" -- hoping further migration works it out
+        refreshScreen();
+    }
 
     async function refreshCollectSettings() {
         console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
@@ -130,6 +142,42 @@ const ProfileSettings = () => {
 
         console.log("notification settings before and after", notificationSettings, newNotificationSettings);
         setNotificationSettings(newNotificationSettings);
+    }
+
+    async function getUserData() {
+        return CalorieCal.get().then(function(userDataFromStorage) {
+        setRawUserData(userDataFromStorage);
+        if (userDataSaved()) {
+            var newUserData = []
+            var height = userDataFromStorage.height.toString();
+            var weight = userDataFromStorage.weight.toString();
+            var temp  =  {
+                age: userDataFromStorage.age,
+                height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
+                weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
+                gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
+            }
+            for (var i in temp) {
+                newUserData.push({key: i, val: temp[i]}); //needs to be val for the data table!
+            }
+            setUserData(newUserData);
+        }
+        });
+    }
+
+    const userDataSaved = function() {
+        if (rawUserData && rawUserData != null) {
+            return rawUserData.userDataSaved;
+        } else {
+            return false;
+        }
+    }
+
+    async function eraseUserData() {
+        CalorieCal.delete().then(function() {
+           setUserDataVis(true);
+        });
+        newRefreshScreen();
     }
 
     async function getOPCode() {
@@ -378,7 +426,7 @@ const ProfileSettings = () => {
             {userDataSection}
            
            <ExpansionSection sectionTitle="control.dev-zone">
-               <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
+               <SettingRow textKey="control.refresh" iconName="refresh" action={newRefreshScreen}></SettingRow>
                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
                <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
@@ -524,6 +572,7 @@ const ProfileSettings = () => {
 
             <AlertBar visible={dataPendingVis} setVisible={setDataPendingVis} messageKey="data pending for push"></AlertBar>
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
+            <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
         </>
     );
 };
