@@ -25,9 +25,8 @@ const ProfileSettings = () => {
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, openDatePicker,
-        refreshScreen, checkConsent, invalidateCache, showLog, showSensed,
-        parseState, ui_config, overallAppStatus } = settingsScope;
+    const { settings, viewPrivacyPolicy, openDatePicker, refreshScreen, checkConsent, 
+        showLog, showSensed, parseState, ui_config, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -67,6 +66,7 @@ const ProfileSettings = () => {
     const [dataPushedVis, setDataPushedVis] = useState(false);
     const [userDataVis, setUserDataVis] = useState(false);
 
+    const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
@@ -74,6 +74,7 @@ const ProfileSettings = () => {
     const [userData, setUserData] = useState([]);
     const [rawUserData, setRawUserData] = useState({});
     const [syncSettings, setSyncSettings] = useState({});
+    const [cacheResult, setCacheResult] = useState("");
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -394,6 +395,16 @@ const ProfileSettings = () => {
         });
     };
 
+    async function invalidateCache() {
+        window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
+            console.log("invalidate result", result);
+            setCacheResult(result);
+            setInvalidateSuccessVis(true);
+        }, function(error) {
+            Logger.displayError("while invalidating cache, error->", error);
+        });
+    }
+
     //conditional creation of setting sections
     let userDataSection;
     if(userDataSaved())
@@ -586,6 +597,7 @@ const ProfileSettings = () => {
             <AlertBar visible={dataPendingVis} setVisible={setDataPendingVis} messageKey="data pending for push"></AlertBar>
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
+            <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
         </>
     );
 };

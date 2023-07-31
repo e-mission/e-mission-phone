@@ -2,9 +2,17 @@ import React from "react";
 import { Modal, Snackbar} from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 
-const AlertBar = ({visible, setVisible, messageKey}) => {
+const AlertBar = ({visible, setVisible, messageKey, messageAddition}) => {
     const { t } = useTranslation(); 
     const onDismissSnackBar = () => setVisible(false);
+
+    let text = "";
+    if(messageAddition){
+      text = t(messageKey) + messageAddition;
+    }
+    else {
+      text = t(messageKey);
+    }
   
     return (
       <Modal visible={visible} onDismiss={() => setVisible(false)}>
@@ -17,7 +25,7 @@ const AlertBar = ({visible, setVisible, messageKey}) => {
               onDismissSnackBar()
             },
         }}>
-          {t(messageKey)}
+          {text}
         </Snackbar>
     </Modal>
     );
