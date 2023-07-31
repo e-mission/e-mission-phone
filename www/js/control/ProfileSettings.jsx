@@ -604,7 +604,27 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
-            <AlertBar visible={dataPendingVis} setVisible={setDataPendingVis} messageKey="data pending for push"></AlertBar>
+            {/* dataPending */}
+            <Modal visible={dataPendingVis} onDismiss={()=>setDataPendingVis(false)} transparent={true}>
+                <Dialog visible={dataPendingVis} 
+                        onDismiss={()=>setDataPendingVis(false)} 
+                        style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('data pending for push')}</Dialog.Title>
+                    <Dialog.Actions>
+                        <Button onPress={()=>{
+                            setDataPendingVis(false);
+                            Logger.log("user refused to re-sync")}}>
+                                {t('general-settings.cancel')}
+                        </Button>
+                        <Button onPress={()=>{
+                            setDataPendingVis(false);
+                            forceSync();}}>
+                                {t('general-settings.confirm')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
