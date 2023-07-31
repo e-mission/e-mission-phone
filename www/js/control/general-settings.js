@@ -90,34 +90,6 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    // $scope.userData = []
-    // $scope.getUserData = function() {
-    //     return CalorieCal.get().then(function(userDataFromStorage) {
-    //     $scope.rawUserData = userDataFromStorage;
-    //     if ($scope.userDataSaved()) {
-    //         $scope.userData = []
-    //         var height = userDataFromStorage.height.toString();
-    //         var weight = userDataFromStorage.weight.toString();
-    //         var temp  =  {
-    //             age: userDataFromStorage.age,
-    //             height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-    //             weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-    //             gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
-    //         }
-    //         for (var i in temp) {
-    //             $scope.userData.push({key: i, val: temp[i]}); //needs to be val for the data table!
-    //         }
-    //     }
-    //     });
-    // }
-
-    // $scope.userDataSaved = function() {
-    //     if (angular.isDefined($scope.rawUserData) && $scope.rawUserData != null) {
-    //         return $scope.rawUserData.userDataSaved;
-    //     } else {
-    //         return false;
-    //     }
-    // }
     $ionicPlatform.ready().then(function() {
         DynamicConfig.configReady().then(function(newConfig) {
             $scope.ui_config = newConfig;
@@ -148,25 +120,6 @@ angular.module('emission.main.control',['emission.services',
         });
     });
 
-    // $scope.getConnectURL = function() {
-    //     ControlHelper.getSettings().then(function(response) {
-    //         $scope.$apply(function() {
-    //             $scope.settings.connect.url = response.connectUrl;
-    //             console.log(response);
-    //         });
-    //     }, function(error) {
-    //         Logger.displayError("While getting connect url", error);
-    //     });
-    // };
-
-    // $scope.getSyncSettings = function() {
-    //     ControlSyncHelper.getSyncSettings().then(function(showConfig) {
-    //         $scope.$apply(function() {
-    //             $scope.settings.sync.show_config = showConfig;
-    //         })
-    //     });
-    // };
-
     //in ProfileSettings in DevZone
     $scope.showLog = function() {
         $state.go("root.main.log");
@@ -174,44 +127,6 @@ angular.module('emission.main.control',['emission.services',
     //inProfileSettings in DevZone
     $scope.showSensed = function() {
         $state.go("root.main.sensed");
-    }
-    $scope.getState = function() {
-        return ControlCollectionHelper.getState().then(function(response) {
-            /* collect state is now stored in ProfileSettings' collectSettings */
-            // $scope.$apply(function() {
-            //     $scope.settings.collect.state = response;
-            // });
-            return response;
-        }, function(error) {
-            Logger.displayError("while getting current state", error);
-        });
-    };
-
-    // var clearUsercache = function() {
-    //     $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
-    //     .then(function(result) {
-    //         if (result) {
-    //             window.cordova.plugins.BEMUserCache.clearAll()
-    //             .then(function(result) {
-    //                 $scope.$apply(function() {
-    //                     $ionicPopup.alert({template: 'success -> '+result});
-    //                 });
-    //             }, function(error) {
-    //                 Logger.displayError("while clearing user cache, error ->", error);
-    //            });
-    //         }
-    //     });
-    // }
-
-    //in ProfileSettings in DevZone
-    $scope.invalidateCache = function() {
-        window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
-            $scope.$apply(function() {
-                $ionicPopup.alert({template: 'success -> '+result});
-            });
-        }, function(error) {
-            Logger.displayError("while invalidating cache, error->", error);
-        });
     }
 
     $scope.$on('$ionicView.afterEnter', function() {
@@ -238,80 +153,6 @@ angular.module('emission.main.control',['emission.services',
         $scope.refreshScreen();
     });
 
-    //in ProfileSettings in DevZone
-    // $scope.refreshScreen = function() {
-    //     console.log("Refreshing screen");
-    //     $scope.settings = {};
-    //     $scope.settings.clientAppVer = ClientStats.getAppVersion();
-    // };
-
-    //this feature has been eliminated (as of right now)
-    // $scope.copyToClipboard = (textToCopy) => {
-    //     navigator.clipboard.writeText(textToCopy).then(() => {
-    //         ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
-    //     });
-    // }  
-
-    // var getEndTransitionKey = function() {
-    //     if($scope.isAndroid()) {
-    //         return "local.transition.stopped_moving";
-    //     }
-    //     else if($scope.isIOS()) {
-    //         return "T_TRIP_ENDED";
-    //     }
-    // }
-
-    //mostly migrated -- might need to change the syncing "consent" popup
-    // $scope.forceSync = function() {
-    //     ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
-    //         function() {
-    //             console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
-    //         });
-    //     ControlSyncHelper.forceSync().then(function() {
-    //         /*
-    //          * Change to sensorKey to "background/location" after fixing issues
-    //          * with getLastSensorData and getLastMessages in the usercache
-    //          * See https://github.com/e-mission/e-mission-phone/issues/279 for details
-    //          */
-    //         var sensorKey = "statemachine/transition";
-    //         return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
-    //     }).then(function(sensorDataList) {
-    //         Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
-    //         // If everything has been pushed, we should
-    //         // only have one entry for the battery, which is the one that was
-    //         // inserted on the last successful push.
-    //         var isTripEnd = function(entry) {
-    //             if (entry.metadata.key == getEndTransitionKey()) {
-    //                 return true;
-    //             } else {
-    //                 return false;
-    //             }
-    //         };
-    //         var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
-    //         var syncPending = (syncLaunchedCalls.length > 0);
-    //         Logger.log("sensorDataList.length = "+sensorDataList.length+
-    //                    ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
-    //                    ", syncPending? = "+syncPending);
-    //         return syncPending;
-    //     }).then(function(syncPending) {
-    //         Logger.log("sync launched = "+syncPending);
-    //         if (syncPending) {
-    //             Logger.log("data is pending, showing confirm dialog");
-    //             $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
-    //                 if (res) {
-    //                     $scope.forceSync();
-    //                 } else {
-    //                     Logger.log("user refused to re-sync");
-    //                 }
-    //             });
-    //         } else {
-    //             $ionicPopup.alert({template: 'all data pushed!'});
-    //         }
-    //     }).catch(function(error) {
-    //         Logger.displayError("Error while forcing sync", error);
-    //     });
-    // };
-
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
     }
@@ -325,37 +166,6 @@ angular.module('emission.main.control',['emission.services',
     }).then(function(popover) {
         $scope.syncSettingsPopup = popover;
     });
-
-    //in ProfileSettings in UserData
-    // $scope.eraseUserData = function() {
-    //     CalorieCal.delete().then(function() {
-    //         $ionicPopup.alert({template: i18next.t('general-settings.user-data-erased')});
-    //     });
-    // }
-    //in ProfileSettings in DevZone -- part of force/edit state
-    $scope.parseState = function(state) {
-        if (state) {
-            if($scope.isAndroid()){
-                return state.substring(12);
-            } else if ($scope.isIOS()) {
-                return state.substring(6);
-            }
-        }
-    }
-    // //in ProfileSettings change carbon set
-    // $scope.changeCarbonDataset = function() {
-    //     $ionicActionSheet.show({
-    //       buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
-    //       titleText: i18next.t('general-settings.choose-dataset'),
-    //       cancelText: i18next.t('general-settings.cancel'),
-    //       buttonClicked: function(index, button) {
-    //         console.log("changeCarbonDataset(): chose locale " + button.value);
-    //         CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
-    //         $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-    //         return true;
-    //       }
-    //     });
-    // };
 
     var handleNoConsent = function(resultDoc) {
         $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})
@@ -397,5 +207,28 @@ angular.module('emission.main.control',['emission.services',
             Logger.displayError("Error reading consent document from cache", error)
         });
     }
+
+    // //in ProfileSettings change carbon set
+    // $scope.changeCarbonDataset = function() {
+    //     $ionicActionSheet.show({
+    //       buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
+    //       titleText: i18next.t('general-settings.choose-dataset'),
+    //       cancelText: i18next.t('general-settings.cancel'),
+    //       buttonClicked: function(index, button) {
+    //         console.log("changeCarbonDataset(): chose locale " + button.value);
+    //         CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
+    //         $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    //         return true;
+    //       }
+    //     });
+    // };
+
+    //this feature has been eliminated (as of right now)
+    // $scope.copyToClipboard = (textToCopy) => {
+    //     navigator.clipboard.writeText(textToCopy).then(() => {
+    //         ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
+    //     });
+    // }  
+
 
 });

@@ -24,6 +24,7 @@ const ProfileSettings = () => {
     // get the scope of the general-settings.js file
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
+    
     // grab any variables or functions we need from it like this:
     const { settings, viewPrivacyPolicy, openDatePicker, checkConsent, 
         showLog, showSensed, ui_config, overallAppStatus } = settingsScope;
@@ -65,7 +66,6 @@ const ProfileSettings = () => {
     const [dataPendingVis, setDataPendingVis] = useState(false);
     const [dataPushedVis, setDataPushedVis] = useState(false);
     const [userDataVis, setUserDataVis] = useState(false);
-
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
@@ -188,7 +188,7 @@ const ProfileSettings = () => {
             Logger.displayError("While getting connect url", error);
         });
     }
-    
+
     const userDataSaved = function() {
         if (rawUserData && rawUserData != null) {
             return rawUserData.userDataSaved;
@@ -371,6 +371,7 @@ const ProfileSettings = () => {
         }).then(forceSync);
     }
 
+    //showing up in an odd space on the screen!!
     async function forceSync() {
         ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
             function() {
@@ -406,15 +407,7 @@ const ProfileSettings = () => {
             Logger.log("sync launched = "+syncPending);
             if (syncPending) {
                 Logger.log("data is pending, showing confirm dialog");
-                setDataPendingVis(true); //it previously asked for permission here? Do we want to do that? would need to return something... or have another param...
-                forceSync();
-                // $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
-                //     if (res) {
-                //         forceSync();
-                //     } else {
-                //         Logger.log("user refused to re-sync");
-                //     }
-                // });
+                setDataPendingVis(true); //consent handling in modal
             } else {
                 setDataPushedVis(true);
             }
@@ -478,7 +471,7 @@ const ProfileSettings = () => {
             {userDataSection}
            
            <ExpansionSection sectionTitle="control.dev-zone">
-               <SettingRow textKey="control.refresh" iconName="refresh" action={newRefreshScreen}></SettingRow>
+               <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
                <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
@@ -646,6 +639,7 @@ const ProfileSettings = () => {
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
+
         </>
     );
 };
