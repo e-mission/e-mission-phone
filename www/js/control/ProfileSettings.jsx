@@ -10,6 +10,7 @@ import DemographicsSettingRow from "./DemographicsSettingRow";
 import PopOpCode from "./PopOpCode";
 import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
+import AlertBar from "./AlertBar";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -24,7 +25,7 @@ const ProfileSettings = () => {
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, forceSync, openDatePicker,
+    const { settings, viewPrivacyPolicy, openDatePicker,
         eraseUserData, refreshScreen, checkConsent, invalidateCache, showLog, showSensed,
         parseState, userDataSaved, userData, ui_config, overallAppStatus } = settingsScope;
 
@@ -40,6 +41,7 @@ const ProfileSettings = () => {
     const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
+    const ClientStats = getAngularService('ClientStats');
 
     if (!controlUpdateCompleteListenerRegistered) {
         settingsScope.$on('control.update.complete', function() {
@@ -61,6 +63,10 @@ const ProfileSettings = () => {
     const [forceStateVis, setForceStateVis] = useState(false);
     const [permitVis, setPermitVis] = useState(false);
     const [logoutVis, setLogoutVis] = useState(false);
+    const [dataPendingVis, setDataPendingVis] = useState(false);
+    const [dataPushedVis, setDataPushedVis] = useState(false);
+
+
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
@@ -275,6 +281,58 @@ const ProfileSettings = () => {
         }).then(forceSync);
     }
 
+    async function forceSync() {
+        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
+            function() {
+                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+            });
+        ControlSyncHelper.forceSync().then(function() {
+            /*
+             * Change to sensorKey to "background/location" after fixing issues
+             * with getLastSensorData and getLastMessages in the usercache
+             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+             */
+            var sensorKey = "statemachine/transition";
+            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+        }).then(function(sensorDataList) {
+            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+            // If everything has been pushed, we should
+            // only have one entry for the battery, which is the one that was
+            // inserted on the last successful push.
+            var isTripEnd = function(entry) {
+                if (entry.metadata.key == getEndTransitionKey()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+            var syncPending = (syncLaunchedCalls.length > 0);
+            Logger.log("sensorDataList.length = "+sensorDataList.length+
+                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+                       ", syncPending? = "+syncPending);
+            return syncPending;
+        }).then(function(syncPending) {
+            Logger.log("sync launched = "+syncPending);
+            if (syncPending) {
+                Logger.log("data is pending, showing confirm dialog");
+                setDataPendingVis(true); //it previously asked for permission here? Do we want to do that? would need to return something... or have another param...
+                forceSync();
+                // $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
+                //     if (res) {
+                //         forceSync();
+                //     } else {
+                //         Logger.log("user refused to re-sync");
+                //     }
+                // });
+            } else {
+                setDataPushedVis(true);
+            }
+        }).catch(function(error) {
+            Logger.displayError("Error while forcing sync", error);
+        });
+    };
+
     //conditional creation of setting sections
     let userDataSection;
     if(userDataSaved())
@@ -464,6 +522,8 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
+            <AlertBar visible={dataPendingVis} setVisible={setDataPendingVis} messageKey="data pending for push"></AlertBar>
+            <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
         </>
     );
 };

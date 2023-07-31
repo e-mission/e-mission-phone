@@ -187,21 +187,21 @@ angular.module('emission.main.control',['emission.services',
         });
     };
 
-    var clearUsercache = function() {
-        $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
-        .then(function(result) {
-            if (result) {
-                window.cordova.plugins.BEMUserCache.clearAll()
-                .then(function(result) {
-                    $scope.$apply(function() {
-                        $ionicPopup.alert({template: 'success -> '+result});
-                    });
-                }, function(error) {
-                    Logger.displayError("while clearing user cache, error ->", error);
-               });
-            }
-        });
-    }
+    // var clearUsercache = function() {
+    //     $ionicPopup.alert({template: "WATCH OUT! If there is unsynced data, you may lose it. If you want to keep the data, use 'Force Sync' before doing this"})
+    //     .then(function(result) {
+    //         if (result) {
+    //             window.cordova.plugins.BEMUserCache.clearAll()
+    //             .then(function(result) {
+    //                 $scope.$apply(function() {
+    //                     $ionicPopup.alert({template: 'success -> '+result});
+    //                 });
+    //             }, function(error) {
+    //                 Logger.displayError("while clearing user cache, error ->", error);
+    //            });
+    //         }
+    //     });
+    // }
 
     //in ProfileSettings in DevZone
     $scope.invalidateCache = function() {
@@ -257,64 +257,65 @@ angular.module('emission.main.control',['emission.services',
     //     });
     // }  
 
-    var getEndTransitionKey = function() {
-        if($scope.isAndroid()) {
-            return "local.transition.stopped_moving";
-        }
-        else if($scope.isIOS()) {
-            return "T_TRIP_ENDED";
-        }
-    }
+    // var getEndTransitionKey = function() {
+    //     if($scope.isAndroid()) {
+    //         return "local.transition.stopped_moving";
+    //     }
+    //     else if($scope.isIOS()) {
+    //         return "T_TRIP_ENDED";
+    //     }
+    // }
 
-    $scope.forceSync = function() {
-        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
-            function() {
-                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
-            });
-        ControlSyncHelper.forceSync().then(function() {
-            /*
-             * Change to sensorKey to "background/location" after fixing issues
-             * with getLastSensorData and getLastMessages in the usercache
-             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
-             */
-            var sensorKey = "statemachine/transition";
-            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
-        }).then(function(sensorDataList) {
-            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
-            // If everything has been pushed, we should
-            // only have one entry for the battery, which is the one that was
-            // inserted on the last successful push.
-            var isTripEnd = function(entry) {
-                if (entry.metadata.key == getEndTransitionKey()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
-            var syncPending = (syncLaunchedCalls.length > 0);
-            Logger.log("sensorDataList.length = "+sensorDataList.length+
-                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
-                       ", syncPending? = "+syncPending);
-            return syncPending;
-        }).then(function(syncPending) {
-            Logger.log("sync launched = "+syncPending);
-            if (syncPending) {
-                Logger.log("data is pending, showing confirm dialog");
-                $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
-                    if (res) {
-                        $scope.forceSync();
-                    } else {
-                        Logger.log("user refused to re-sync");
-                    }
-                });
-            } else {
-                $ionicPopup.alert({template: 'all data pushed!'});
-            }
-        }).catch(function(error) {
-            Logger.displayError("Error while forcing sync", error);
-        });
-    };
+    //mostly migrated -- might need to change the syncing "consent" popup
+    // $scope.forceSync = function() {
+    //     ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
+    //         function() {
+    //             console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+    //         });
+    //     ControlSyncHelper.forceSync().then(function() {
+    //         /*
+    //          * Change to sensorKey to "background/location" after fixing issues
+    //          * with getLastSensorData and getLastMessages in the usercache
+    //          * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+    //          */
+    //         var sensorKey = "statemachine/transition";
+    //         return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+    //     }).then(function(sensorDataList) {
+    //         Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+    //         // If everything has been pushed, we should
+    //         // only have one entry for the battery, which is the one that was
+    //         // inserted on the last successful push.
+    //         var isTripEnd = function(entry) {
+    //             if (entry.metadata.key == getEndTransitionKey()) {
+    //                 return true;
+    //             } else {
+    //                 return false;
+    //             }
+    //         };
+    //         var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+    //         var syncPending = (syncLaunchedCalls.length > 0);
+    //         Logger.log("sensorDataList.length = "+sensorDataList.length+
+    //                    ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+    //                    ", syncPending? = "+syncPending);
+    //         return syncPending;
+    //     }).then(function(syncPending) {
+    //         Logger.log("sync launched = "+syncPending);
+    //         if (syncPending) {
+    //             Logger.log("data is pending, showing confirm dialog");
+    //             $ionicPopup.confirm({template: 'data pending for push'}).then(function(res) {
+    //                 if (res) {
+    //                     $scope.forceSync();
+    //                 } else {
+    //                     Logger.log("user refused to re-sync");
+    //                 }
+    //             });
+    //         } else {
+    //             $ionicPopup.alert({template: 'all data pushed!'});
+    //         }
+    //     }).catch(function(error) {
+    //         Logger.displayError("Error while forcing sync", error);
+    //     });
+    // };
 
     $scope.isAndroid = function() {
         return ionic.Platform.isAndroid();
