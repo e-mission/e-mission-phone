@@ -11,6 +11,7 @@ import PopOpCode from "./PopOpCode";
 import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
 import AlertBar from "./AlertBar";
+import DataDatePicker from "./DataDatePicker";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -26,7 +27,7 @@ const ProfileSettings = () => {
     const settingsScope = angular.element(mainControlEl).scope();
     
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, openDatePicker, showLog, showSensed, overallAppStatus } = settingsScope;
+    const { settings, viewPrivacyPolicy, showLog, showSensed, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -70,6 +71,7 @@ const ProfileSettings = () => {
     const [noConsentVis, setNoConsentVis] = useState(false);
     const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
     const [consentVis, setConsentVis] = useState(false);
+    const [dateDumpVis, setDateDumpVis] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
@@ -82,6 +84,7 @@ const ProfileSettings = () => {
     const [appVersion, setAppVersion] = useState({});
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
+    const [dumpDate, setDumpDate] = useState(new Date());
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -513,9 +516,9 @@ const ProfileSettings = () => {
            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
-           <SettingRow textKey="control.download-json-dump" iconName="calendar" action={openDatePicker}></SettingRow>
            {logUploadSection}
            <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
+            <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
 
             {userDataSection}
            
@@ -723,6 +726,8 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
+            <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
+            
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>

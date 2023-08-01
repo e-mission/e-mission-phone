@@ -34,28 +34,28 @@ angular.module('emission.main.control',['emission.services',
 
     console.log("controller ControlCtrl called without params");
 
-    var datepickerObject = {
-      todayLabel: i18next.t('list-datepicker-today'),  //Optional
-      closeLabel: i18next.t('list-datepicker-close'),  //Optional
-      setLabel: i18next.t('list-datepicker-set'),  //Optional
-      monthsList: moment.monthsShort(),
-      weeksList: moment.weekdaysMin(),
-      titleLabel: i18next.t('general-settings.choose-date'),
-      setButtonType : 'button-positive',  //Optional
-      todayButtonType : 'button-stable',  //Optional
-      closeButtonType : 'button-stable',  //Optional
-      inputDate: moment().subtract(1, 'week').toDate(),  //Optional
-      from: new Date(2015, 1, 1),
-      to: new Date(),
-      mondayFirst: true,  //Optional
-      templateType: 'popup', //Optional
-      showTodayButton: 'true', //Optional
-      modalHeaderColor: 'bar-positive', //Optional
-      modalFooterColor: 'bar-positive', //Optional
-      callback: ControlHelper.getMyData, //Mandatory
-      dateFormat: 'dd MMM yyyy', //Optional
-      closeOnSelect: true //Optional
-    }
+    // var datepickerObject = {
+    //   todayLabel: i18next.t('list-datepicker-today'),  //Optional
+    //   closeLabel: i18next.t('list-datepicker-close'),  //Optional
+    //   setLabel: i18next.t('list-datepicker-set'),  //Optional
+    //   monthsList: moment.monthsShort(),
+    //   weeksList: moment.weekdaysMin(),
+    //   titleLabel: i18next.t('general-settings.choose-date'),
+    //   setButtonType : 'button-positive',  //Optional
+    //   todayButtonType : 'button-stable',  //Optional
+    //   closeButtonType : 'button-stable',  //Optional
+    //   inputDate: moment().subtract(1, 'week').toDate(),  //Optional
+    //   from: new Date(2015, 1, 1),
+    //   to: new Date(),
+    //   mondayFirst: true,  //Optional
+    //   templateType: 'popup', //Optional
+    //   showTodayButton: 'true', //Optional
+    //   modalHeaderColor: 'bar-positive', //Optional
+    //   modalFooterColor: 'bar-positive', //Optional
+    //   callback: ControlHelper.getMyData, //Mandatory
+    //   dateFormat: 'dd MMM yyyy', //Optional
+    //   closeOnSelect: true //Optional
+    // }
 
     $scope.overallAppStatus = false;
 
@@ -69,9 +69,9 @@ angular.module('emission.main.control',['emission.services',
         }
     });
 
-    $scope.openDatePicker = function(){
-      ionicDatePicker.openDatePicker(datepickerObject);
-    };
+    // $scope.openDatePicker = function(){
+    //   ionicDatePicker.openDatePicker(datepickerObject);
+    // };
 
     //this function used in ProfileSettings to viewPrivacyPolicy
     $scope.viewPrivacyPolicy = function($event) {
