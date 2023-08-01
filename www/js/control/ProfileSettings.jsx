@@ -12,6 +12,7 @@ import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
 import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
+import AppStatusModal from "./AppStatusModal";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -625,23 +626,8 @@ const ProfileSettings = () => {
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings?.auth?.opcode} action={shareQR}></PopOpCode>
 
-            {/* {view permissions} 
-                need to add in the permissions here? its own element?? */}
-            <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
-                <Dialog visible={permitVis} 
-                        onDismiss={() => setPermitVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
-                    <Dialog.Content>
-                        <Text variant="">{t('intro.appstatus.overall-description')}</Text>
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={() => setPermitVis(false)} /*disabled={!overallAppStatus} something to figure out here*/>{
-                        t('control.button-accept')}
-                        </Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
+            {/* {view permissions} */}
+            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
 
             {/* logout menu */}
             <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
