@@ -27,7 +27,7 @@ const ProfileSettings = () => {
     const settingsScope = angular.element(mainControlEl).scope();
     
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, showLog, showSensed, overallAppStatus } = settingsScope;
+    const { viewPrivacyPolicy, showLog, showSensed, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -303,9 +303,9 @@ const ProfileSettings = () => {
 
     const shareQR = function() {
         var prepopulateQRMessage = {};  
-        var qrAddress = "emission://login_token?token="+settings?.auth?.opcode;
+        var qrAddress = "emission://login_token?token="+authSettings.opcode;
         prepopulateQRMessage.files = [qrAddress];
-        prepopulateQRMessage.url = settings.auth.opcode;
+        prepopulateQRMessage.url = authSettings.opcode;
 
         window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
             console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
