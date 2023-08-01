@@ -168,45 +168,46 @@ angular.module('emission.main.control',['emission.services',
     });
 
     var handleNoConsent = function(resultDoc) {
-        $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})
-        .then(function(res){
-            if (res) {
-               $state.go("root.reconsent");
-            } else {
-               $ionicPopup.alert({
-                template: i18next.t('general-settings.no-consent-message')});
-            }
-        });
-    }
+    // var handleNoConsent = function(resultDoc) {
+    //     $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})
+    //     .then(function(res){
+    //         if (res) {
+    //            $state.go("root.reconsent");
+    //         } else {
+    //            $ionicPopup.alert({
+    //             template: i18next.t('general-settings.no-consent-message')});
+    //         }
+    //     });
+    // }
 
-    var handleConsent = function(resultDoc) {
-        $scope.consentDoc = resultDoc;
-        $ionicPopup.confirm({
-            template: i18next.t('general-settings.consented-to',{protocol_id: $scope.consentDoc.protocol_id,approval_date: $scope.consentDoc.approval_date}),
-            scope: $scope,
-            title: i18next.t('general-settings.consent-found'),
-            buttons: [
-            // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
-            //  type: 'button-calm'},
-            {text: "<b>"+ i18next.t('general-settings.consented-ok') +"</b>",
-             type: 'button-positive'} ]
-        }).finally(function(res) {
-            $scope.consentDoc = null;
-        });
-    }
+    // var handleConsent = function(resultDoc) {
+    //     $scope.consentDoc = resultDoc;
+    //     $ionicPopup.confirm({
+    //         template: i18next.t('general-settings.consented-to',{protocol_id: $scope.consentDoc.protocol_id,approval_date: $scope.consentDoc.approval_date}),
+    //         scope: $scope,
+    //         title: i18next.t('general-settings.consent-found'),
+    //         buttons: [
+    //         // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
+    //         //  type: 'button-calm'},
+    //         {text: "<b>"+ i18next.t('general-settings.consented-ok') +"</b>",
+    //          type: 'button-positive'} ]
+    //     }).finally(function(res) {
+    //         $scope.consentDoc = null;
+    //     });
+    // }
 
-    //in ProfileSettings in DevZone (above two functions are helpers)
-    $scope.checkConsent = function() {
-        StartPrefs.getConsentDocument().then(function(resultDoc){
-            if (resultDoc == null) {
-                handleNoConsent(resultDoc);
-            } else {
-                handleConsent(resultDoc);
-            }
-        }, function(error) {
-            Logger.displayError("Error reading consent document from cache", error)
-        });
-    }
+    // //in ProfileSettings in DevZone (above two functions are helpers)
+    // $scope.checkConsent = function() {
+    //     StartPrefs.getConsentDocument().then(function(resultDoc){
+    //         if (resultDoc == null) {
+    //             handleNoConsent(resultDoc);
+    //         } else {
+    //             handleConsent(resultDoc);
+    //         }
+    //     }, function(error) {
+    //         Logger.displayError("Error reading consent document from cache", error)
+    //     });
+    // }
 
     // //in ProfileSettings change carbon set
     // $scope.changeCarbonDataset = function() {

@@ -26,7 +26,7 @@ const ProfileSettings = () => {
     const settingsScope = angular.element(mainControlEl).scope();
     
     // grab any variables or functions we need from it like this:
-    const { settings, viewPrivacyPolicy, openDatePicker, checkConsent, showLog, showSensed, overallAppStatus } = settingsScope;
+    const { settings, viewPrivacyPolicy, openDatePicker, showLog, showSensed, overallAppStatus } = settingsScope;
 
     console.log("app status", overallAppStatus);
 
@@ -41,6 +41,7 @@ const ProfileSettings = () => {
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
     const ClientStats = getAngularService('ClientStats');
+    const StartPrefs = getAngularService('StartPrefs');
 
     if (!controlUpdateCompleteListenerRegistered) {
         settingsScope.$on('control.update.complete', function() {
@@ -66,6 +67,9 @@ const ProfileSettings = () => {
     const [dataPushedVis, setDataPushedVis] = useState(false);
     const [userDataVis, setUserDataVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
+    const [noConsentVis, setNoConsentVis] = useState(false);
+    const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
+    const [consentVis, setConsentVis] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
@@ -77,6 +81,7 @@ const ProfileSettings = () => {
     const [connectSettings, setConnectSettings] = useState({});
     const [appVersion, setAppVersion] = useState({});
     const [uiConfig, setUiConfig] = useState({});
+    const [consentDoc, setConsentDoc] = useState({});
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -456,6 +461,20 @@ const ProfileSettings = () => {
         });
     }
 
+    //in ProfileSettings in DevZone (above two functions are helpers)
+    async function checkConsent() {
+        StartPrefs.getConsentDocument().then(function(resultDoc){
+            setConsentDoc(resultDoc);
+            if (resultDoc == null) {
+                setNoConsentVis(true);
+            } else {
+                setConsentVis(true);
+            }
+        }, function(error) {
+            Logger.displayError("Error reading consent document from cache", error)
+        });
+    }
+
     //conditional creation of setting sections
     let userDataSection;
     if(userDataSaved())
@@ -666,10 +685,48 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
+            {/* handle no consent */}
+            <Modal visible={noConsentVis} onDismiss={()=>setNoConsentVis(false)} transparent={true}>
+                <Dialog visible={noConsentVis} 
+                        onDismiss={()=>setNoConsentVis(false)} 
+                        style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
+                    <Dialog.Actions>
+                        <Button onPress={()=>{
+                            setNoConsentVis(false);
+                            setNoConsentMessageVis(true)}}>
+                                {t('general-settings.cancel')}
+                        </Button>
+                        <Button onPress={()=>{
+                            setNoConsentVis(false);
+                            // $state.go("root.reconsent"); //don't know how to do this yet
+                            }}>
+                                {t('general-settings.confirm')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
+            {/* handle consent */}
+            <Modal visible={consentVis} onDismiss={()=>setConsentVis(false)} transparent={true}>
+                <Dialog visible={consentVis} 
+                        onDismiss={()=>setConsentVis(false)} 
+                        style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('general-settings.consented-to', {protocol_id: consentDoc.protocol_id, approval_date: consentDoc.approval_date})}</Dialog.Title>
+                    <Dialog.Actions>
+                        <Button onPress={()=>{
+                            setConsentDoc({});
+                            setConsentVis(false);}}>
+                                {t('general-settings.consented-ok')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
-
+            <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
         </>
     );
 };
