@@ -6,7 +6,7 @@ import { Modal } from "react-native";
 import { Dialog, Button, Text } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 
-const AppStatusModal = ({permitVis, setPermitVis, dialogStyle}) => {
+const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const { t } = useTranslation();
 
     return (
@@ -20,8 +20,10 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle}) => {
                         {/* <permissioncheck overallstatus="overallAppStatus"></permissioncheck> */}
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => setPermitVis(false)} /*disabled={!overallAppStatus} something to figure out here*/>{
-                        t('control.button-accept')}
+                        <Button 
+                            onPress={() => setPermitVis(false)}
+                            disabled={status}>
+                            {t('control.button-accept')}
                         </Button>
                     </Dialog.Actions>
                 </Dialog>

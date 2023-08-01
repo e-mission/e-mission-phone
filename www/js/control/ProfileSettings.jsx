@@ -627,7 +627,7 @@ const ProfileSettings = () => {
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
 
             {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
+            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} status={overallAppStatus} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
 
             {/* logout menu */}
             <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
