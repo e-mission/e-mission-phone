@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, StyleSheet, Platform } from "react-native";
+import { Modal, StyleSheet } from "react-native";
 import { Dialog, Button, useTheme, Text } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
@@ -506,40 +506,40 @@ const ProfileSettings = () => {
 
     return (
         <>
-           <SettingRow textKey="control.profile" iconName='logout' action={() => setLogoutVis(true)} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
-           <DemographicsSettingRow></DemographicsSettingRow>
-           <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
-           <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
-           {timePicker}
-           <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
-           <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
-           <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
-           <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
-           <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
-           <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
-           {logUploadSection}
-           <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
+            <SettingRow textKey="control.profile" iconName='logout' action={() => setLogoutVis(true)} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
+            <DemographicsSettingRow></DemographicsSettingRow>
+            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
+            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
+            {timePicker}
+            <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
+            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
+            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
+            <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
+            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
+            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
+            {logUploadSection}
+            <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
 
             {userDataSection}
            
-           <ExpansionSection sectionTitle="control.dev-zone">
-               <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
-               <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
-               <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
-               <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
-               {notifSchedule}
-               <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
-               <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
-               <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
-               <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
-               <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
-               <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
-               <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
-               <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
-               <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
-               <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
-           </ExpansionSection>
+            <ExpansionSection sectionTitle="control.dev-zone">
+                <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
+                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
+                <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
+                <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
+                {notifSchedule}
+                <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
+                <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
+                <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
+                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
+                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
+                <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
+                <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
+                <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
+                <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
+                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
+            </ExpansionSection>
 
             {/* menu for "nuke data" */}
             <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
@@ -624,7 +624,7 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* opcode viewing popup */}
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+settings?.auth?.opcode} action={shareQR}></PopOpCode>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
 
             {/* {view permissions} */}
             <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
@@ -713,7 +713,7 @@ const ProfileSettings = () => {
             </Modal>
 
             <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
-            
+
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
