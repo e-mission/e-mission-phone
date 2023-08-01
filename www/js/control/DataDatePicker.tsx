@@ -9,6 +9,7 @@ import { getAngularService } from "../angular-react-helper";
 const DataDatePicker = ({date, setDate, open, setOpen}) => {
   const { t } = useTranslation();
   const ControlHelper = getAngularService("ControlHelper");
+  const { i18n } = useTranslation('general-settings.choose-date'); //able to pull lang from this
 
   const onDismiss = React.useCallback(() => {
     setOpen(false);
@@ -29,7 +30,7 @@ const DataDatePicker = ({date, setDate, open, setOpen}) => {
   return (
     <>
         <DatePickerModal
-          locale="en" //need to somehow fetch this rather than always EN
+          locale={i18n.language}
           mode="single"
           visible={open}
           onDismiss={onDismiss}
