@@ -97,6 +97,7 @@ angular.module('emission.survey.enketo.add-note-button',
    */
   enbs.populateInput = function(timelineEntryField, inputType, userInputEntry) {
     if (angular.isDefined(userInputEntry)) {
+      timelineEntryField.length = 0;
           userInputEntry.forEach(ta => {
             timelineEntryField.push(ta);
           });

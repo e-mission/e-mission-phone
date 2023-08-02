@@ -34,7 +34,7 @@ const LabelTab = () => {
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
   const [timelineMap, setTimelineMap] = useState(null);
-  const [displayedEntries, setDisplayedEntries] = useState([]);
+  const [displayedEntries, setDisplayedEntries] = useState(null);
   const [refreshTime, setRefreshTime] = useState(null);
   const [isLoading, setIsLoading] = useState<string|false>('replace');
 
@@ -76,7 +76,7 @@ const LabelTab = () => {
   // whenever timelineMap is updated, update the displayedEntries
   // according to the active filter
   useEffect(() => {
-    if (!timelineMap) return setDisplayedEntries([]);
+    if (!timelineMap) return setDisplayedEntries(null);
     const allEntries = Array.from<any>(timelineMap.values());
     const activeFilter = filterInputs?.find((f) => f.state == true);
     let entriesToDisplay = allEntries;
@@ -105,14 +105,14 @@ const LabelTab = () => {
         labelsResultMap = manualResultMap;
         notesResultMap = enbsResultMap;
         console.log("After reading in the label controller, manualResultMap " + JSON.stringify(manualResultMap), manualResultMap);
-        setPipelineRange(pipelineRange);
       }
+      setPipelineRange(pipelineRange);
     });
   }
 
   // once pipelineRange is set, load the most recent week of data
   useEffect(() => {
-    if (pipelineRange) {
+    if (pipelineRange && pipelineRange.end_ts) {
       loadAnotherWeek('past');
     }
   }, [pipelineRange]);
@@ -203,7 +203,7 @@ const LabelTab = () => {
   };
 
   useEffect(() => {
-    if (!displayedEntries?.length) return;
+    if (!displayedEntries) return;
     invalidateMaps();
     setIsLoading(false);
   }, [displayedEntries]);

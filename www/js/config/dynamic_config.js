@@ -2,12 +2,14 @@
 
 import angular from 'angular';
 
-angular.module('emission.config.dynamic', ['emission.plugin.logger'])
+angular.module('emission.config.dynamic', ['emission.plugin.logger',
+    'emission.plugin.kvstore'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
-        $window, $state, $rootScope, $timeout, Logger) {
+        $window, $state, $rootScope, $timeout, KVStore, Logger) {
     // also used in the startprefs class
     // but without importing this
     const CONFIG_PHONE_UI="config/app_ui_config";
+    const CONFIG_PHONE_UI_KVSTORE ="CONFIG_PHONE_UI";
     const LOAD_TIMEOUT = 6000; // 6000 ms = 6 seconds
 
     var dc = {};
@@ -60,10 +62,28 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         });
     }
 
-    var loadSavedConfig = function() {
+    dc.loadSavedConfig = function() {
         const nativePlugin = $window.cordova.plugins.BEMUserCache;
-        return nativePlugin.getDocument(CONFIG_PHONE_UI, false)
-            .then((savedConfig) => {
+        const rwDocRead = nativePlugin.getDocument(CONFIG_PHONE_UI, false);
+        const kvDocRead = KVStore.get(CONFIG_PHONE_UI_KVSTORE);
+        return Promise.all([rwDocRead, kvDocRead])
+            .then(([rwConfig, kvStoreConfig]) => {
+                const savedConfig = kvStoreConfig? kvStoreConfig : rwConfig;
+                Logger.log("DYNAMIC CONFIG: kvStoreConfig key length = "+ Object.keys(kvStoreConfig || {}).length
+                    +" rwConfig key length = "+ Object.keys(rwConfig || {}).length
+                    +" using kvStoreConfig? "+(kvStoreConfig? true: false));
+                if (!kvStoreConfig && rwConfig) {
+                    // Backwards compat, can remove at the end of 2023
+                    Logger.log("DYNAMIC CONFIG: rwConfig found, kvStoreConfig not found, setting to fix backwards compat");
+                    KVStore.set(CONFIG_PHONE_UI_KVSTORE, rwConfig);
+                }
+                if ((Object.keys(kvStoreConfig || {}).length > 0)
+                    && (Object.keys(rwConfig || {}).length == 0)) {
+                    // Might as well sync the RW config if it doesn't exist and
+                    // have triple-redundancy for this
+                    nativePlugin.putRWDocument(CONFIG_PHONE_UI, kvStoreConfig);
+                }
+                Logger.log("DYNAMIC CONFIG: final selected config = "+JSON.stringify(savedConfig));
                 if (nativePlugin.isEmptyDoc(savedConfig)) {
                     Logger.log("Found empty saved ui config, returning null");
                     return undefined;
@@ -75,6 +95,13 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 }
             })
             .catch((err) => Logger.displayError(i18next.t('config.unable-read-saved-config'), err));
+    }
+
+    dc.resetConfigAndRefresh = function() {
+        const resetNativePromise = $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {});
+        const resetKVStorePromise = KVStore.set(CONFIG_PHONE_UI_KVSTORE, {});
+        Promise.all([resetNativePromise, resetKVStorePromise])
+            .then($window.location.reload(true));
     }
 
     /**
@@ -99,9 +126,11 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 {joined: {opcode: dc.scannedToken, study_name: newStudyLabel, subgroup: subgroup}});
             const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
                 CONFIG_PHONE_UI, toSaveConfig);
+            const storeInKVStorePromise = KVStore.set(CONFIG_PHONE_UI_KVSTORE, toSaveConfig);
             const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
             // loaded new config, so it is both ready and changed
-            return storeConfigPromise.then((result) => {
+            return Promise.all([storeConfigPromise, storeInKVStorePromise]).then(
+            ([result, kvStoreResult]) => {
                 logSuccess(result);
                 dc.saveAndNotifyConfigChanged(downloadedConfig);
                 dc.saveAndNotifyConfigReady(downloadedConfig);
@@ -245,7 +274,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         }
     };
     dc.initAtLaunch = function () {
-        loadSavedConfig().then((existingConfig) => {
+        dc.loadSavedConfig().then((existingConfig) => {
             if (!existingConfig) {
                 return Logger.log("UI_CONFIG: No existing config, skipping");
             }
