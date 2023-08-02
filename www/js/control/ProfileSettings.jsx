@@ -44,6 +44,7 @@ const ProfileSettings = () => {
     const ControlHelper = getAngularService('ControlHelper');
     const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
+    const DynamicConfig = getAngularService('DynamicConfig');
 
     if (!controlUpdateCompleteListenerRegistered) {
         settingsScope.$on('control.update.complete', function() {
@@ -643,9 +644,7 @@ const ProfileSettings = () => {
                             {t('general-settings.cancel')}
                         </Button>
                         <Button onPress={() => {
-                           const CONFIG_PHONE_UI="config/app_ui_config";
-                           window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
-                               .then(window.location.reload(true));
+                           DynamicConfig.resetConfigAndRefresh();
                         }}>
                             {t('general-settings.confirm')}
                         </Button>

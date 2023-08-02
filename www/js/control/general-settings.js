@@ -14,6 +14,7 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.stats.clientstats',
                                         'emission.plugin.kvstore',
                                         'emission.plugin.logger',
+                                        'emission.config.dynamic',
                                         ProfileSettings.module])
 
 .controller('ControlCtrl', function($scope, $ionicPlatform,
@@ -22,7 +23,7 @@ angular.module('emission.main.control',['emission.services',
                KVStore, CalorieCal, ClientStats,
                StartPrefs, ControlHelper, EmailHelper, UploadHelper,
                ControlCollectionHelper, ControlSyncHelper,
-               CarbonDatasetHelper, NotificationScheduler) {
+               CarbonDatasetHelper, NotificationScheduler, DynamicConfig) {
 
     console.log("controller ControlCtrl called without params");
 
