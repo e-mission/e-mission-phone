@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import { motionTypeOf } from './diaryHelper';
+import { getFormattedTimeRange, motionTypeOf } from './diaryHelper';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
@@ -50,7 +50,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   dh.getFormattedSectionProperties = (trip, ImperialConfig) => {
     return trip.sections?.map((s) => ({
       fmt_time: dh.getLocalTimeString(s.start_local_dt),
-      fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
+      fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
       fmt_distance_suffix: ImperialConfig.distanceSuffix,
       icon: motionTypeOf(s.sensed_mode_str)?.icon,
@@ -64,17 +64,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     let mdt = angular.copy(dt)
     mdt.month = mdt.month - 1
     return moment(mdt).format("LT");
-  };
-
-  dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
-    if (isNaN(end_ts_in_secs) || isNaN(start_ts_in_secs)) return;
-    var startMoment = moment(start_ts_in_secs * 1000);
-    var endMoment = moment(end_ts_in_secs * 1000);
-    return endMoment.to(startMoment, true);
-  };
-  dh.getFormattedDuration = function(duration_in_secs) {
-    if (isNaN(duration_in_secs)) return;
-    return moment.duration(duration_in_secs * 1000).humanize()
   };
 
   /* this function was formerly 'CommonGraph.getDisplayName()',
@@ -350,14 +339,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         distance: dists.reduce((a, b) => a + b, 0),
         duration: endPoint.data.ts - startPoint.data.ts,
         end_fmt_time: endMoment.format(),
-        end_local_dt: moment2localdate(endMoment),
+        end_local_dt: moment2localdate(endMoment, endPoint.metadata.time_zone),
         end_ts: endPoint.data.ts,
         expectation: {to_label: true},
         inferred_labels: [],
         locations: locations,
         source: "unprocessed",
         start_fmt_time: startMoment.format(),
-        start_local_dt: moment2localdate(startMoment),
+        start_local_dt: moment2localdate(startMoment, startPoint.metadata.time_zone),
         start_ts: startPoint.data.ts,
         user_input: {},
       }

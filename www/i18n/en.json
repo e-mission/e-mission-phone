@@ -196,6 +196,8 @@
         "no-more-travel": "No more travel to show",
         "show-more-travel": "Show More Travel",
         "show-older-travel": "Show Older Travel",
+        "no-travel": "No travel to show",
+        "no-travel-hint": "To see more, change the filters above or go record some travel!",
         "no-trips-today": "No trips recorded on this day"
     },
 
@@ -345,6 +347,8 @@
 
     "intro": {
         "appstatus": {
+            "fix": "Fix",
+            "refresh":"Refresh",
             "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
             "overall-loc-name": "Location",
             "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
@@ -420,6 +424,7 @@
         "samsung": "Disable 'Medium power saving mode'"
     },
     "consent":{
+        "permissions" : "Permissions",
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
@@ -476,7 +481,8 @@
         "all-green-status": "Make sure that all status checks are green",
         "dont-force-kill": "Do not force kill the app",
         "background-restrictions": "On Samsung and Huwaei phones, make sure that background restrictions are turned off",
-        "close": "Close"
+        "close": "Close",
+        "tips-title": "Tip(s) for correct operation:"
     },
     "config": {
         "unable-read-saved-config": "Unable to read saved config",

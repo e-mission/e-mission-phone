@@ -5,7 +5,7 @@ import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
 import { View } from 'react-native';
-import { ActivityIndicator } from 'react-native-paper';
+import { ActivityIndicator, Banner, IconButton, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
 
@@ -42,10 +42,28 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
                       { reachedPipelineEnd ? t('diary.no-more-travel') : t('diary.show-more-travel')}
                   </LoadMoreButton>;
 
-  if (isLoading=='replace') {
+  const noTravelBanner = (
+    <Banner visible={true} icon={
+      ({ size }) => <IconButton size={size} icon='alert-circle'
+        style={{ width: size, height: size, marginVertical: 3 }} />
+    }>
+      <View style={{ width: '100%' }}>
+        <Text variant='titleMedium'>{t('diary.no-travel')}</Text>
+        <Text variant='bodySmall'>{t('diary.no-travel-hint')}</Text>
+      </View>
+    </Banner>
+  );
+
+  if (pipelineRange && !pipelineRange.end_ts && !listEntries?.length) {
+    /* Condition: pipelineRange has been fetched but has no defined end, meaning nothing has been
+      processed for this OPCode yet, and there are no unprocessed trips either. Show 'no travel'. */
+    return noTravelBanner;
+  } else if (isLoading=='replace') {
+    /* Condition: we're loading an entirely new batch of trips, so show a big spinner */
     return bigSpinner;
-  } else if (listEntries?.length == 0) {
-    return "No travel to show";
+  } else if (listEntries && listEntries.length == 0) {
+    /* Condition: we've loaded all travel and set `listEntries`, but it's empty. Show 'no travel'. */
+    return noTravelBanner;
   } else {
     return (
       <FlashList inverted

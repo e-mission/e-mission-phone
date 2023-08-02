@@ -9,7 +9,9 @@
   },
   "scripts": {
     "build": "npx webpack --config webpack.prod.js && npx cordova build",
-    "build-dev": "npx webpack --config webpack.dev.js && npx cordova build"
+    "build-dev": "npx webpack --config webpack.dev.js && npx cordova build",
+    "build-dev-android": "npx webpack --config webpack.dev.js && npx cordova build android",
+    "build-dev-ios": "npx webpack --config webpack.dev.js && npx cordova build ios"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
@@ -20,6 +22,7 @@
     "@babel/preset-react": "^7.18.6",
     "@babel/preset-typescript": "^7.21.4",
     "@ionic/cli": "6.20.8",
+    "@types/luxon": "^3.3.0",
     "babel-loader": "^9.1.2",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "babel-plugin-optional-require": "^0.3.1",
@@ -120,12 +123,12 @@
     "cordova-plugin-customurlscheme": "5.0.2",
     "cordova-plugin-device": "2.1.0",
     "cordova-plugin-em-datacollection": "git+https://github.com/e-mission/e-mission-data-collection.git#v1.7.8",
-    "cordova-plugin-em-opcodeauth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.7.1",
-    "cordova-plugin-em-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.5",
-    "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.3.1",
+    "cordova-plugin-em-opcodeauth": "git+https://github.com/e-mission/cordova-jwt-auth.git#v1.7.2",
+    "cordova-plugin-em-server-communication": "git+https://github.com/e-mission/cordova-server-communication.git#v1.2.6",
+    "cordova-plugin-em-serversync": "git+https://github.com/e-mission/cordova-server-sync.git#v1.3.2",
     "cordova-plugin-em-settings": "git+https://github.com/e-mission/cordova-connection-settings.git#v1.2.3",
     "cordova-plugin-em-unifiedlogger": "git+https://github.com/e-mission/cordova-unified-logger.git#v1.3.6",
-    "cordova-plugin-em-usercache": "git+https://github.com/e-mission/cordova-usercache.git#v1.1.5",
+    "cordova-plugin-em-usercache": "git+https://github.com/e-mission/cordova-usercache.git#v1.1.6",
     "cordova-plugin-email-composer": "git+https://github.com/katzer/cordova-plugin-email-composer.git#0.10.1",
     "cordova-plugin-file": "7.0.0",
     "cordova-plugin-inappbrowser": "5.0.0",

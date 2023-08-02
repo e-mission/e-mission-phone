@@ -25,6 +25,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { tripId } = route.params;
   const trip = timelineMap.get(tripId);
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
+  const mapOpts = {minZoom: 3, maxZoom: 17};
 
   const DiaryHelper = getAngularService('DiaryHelper');
   const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
@@ -59,7 +60,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
     </Surface>
     <ScrollView style={{ paddingBottom: 30}}>
       <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, marginVertical: 18 }}>
-        <LeafletView geojson={trip.geojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} />
+        <LeafletView geojson={trip.geojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} opts={mapOpts} />
         <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginVertical: 5}}>
           <View style={{justifyContent: 'center'}}>
             <Text style={{fontSize: 15}}>

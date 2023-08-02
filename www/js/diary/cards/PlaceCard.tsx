@@ -41,7 +41,7 @@ const PlaceCard = ({ place }) => {
             </Text>
           </View>
         </View>
-        <View style={{width: 150, margin: 'auto'}}>{/*  add note button */}
+        <View style={{margin: 'auto'}}>{/*  add note button */}
           <View style={s.notesButton}>
             <AddNoteButton timelineEntry={place}
               notesConfig={appConfig?.survey_info?.buttons?.['place-notes']}
@@ -59,7 +59,7 @@ const PlaceCard = ({ place }) => {
 const s = StyleSheet.create({
   notesButton: {
     paddingHorizontal: 8,
-    width: 150,
+    minWidth: 150,
     margin: 'auto',
   },
   locationText: {

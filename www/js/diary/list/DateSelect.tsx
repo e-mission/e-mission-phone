@@ -1,18 +1,20 @@
-/* A component wrapped around an <input> element that allows the user to pick a date,
-    used in the Label screen.
-  This is a temporary solution; this component includes HTML and we will need to be rewritten
-    when we have fully migrated to React Native.
+/* This button launches a modal to select a date, which determines which week of
+    travel should be displayed in the Label screen.
+  The button itself is a NavBarButton, which shows the currently selected date range,
+    a calendar icon, and launches the modal when clicked.
+  The modal is a DatePickerModal from react-native-paper-dates, which shows a calendar
+    and allows the user to select a date.
 */
 
 import React, { useEffect, useState, useMemo, useContext } from "react";
-import { View, Text } from "react-native";
+import { Text, StyleSheet } from "react-native";
 import moment from "moment";
-import color from "color";
 import { LabelTabContext } from "../LabelTab";
 import { DatePickerModal } from "react-native-paper-dates";
-import { Divider, Button, IconButton, useTheme } from "react-native-paper";
+import { Divider, useTheme } from "react-native-paper";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
+import NavBarButton from "../../components/NavBarButton";
 
 const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
 
@@ -20,12 +22,15 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
   const { t } = useTranslation();
   const { colors } = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [dateRange, setDateRange] = useState(['-', '-']);
+  const [dateRange, setDateRange] = useState([null, null]);
   const [selDate, setSelDate] = useState(null);
-  const minMaxDates = useMemo(() => ({
-    startDate: new Date(pipelineRange?.start_ts * 1000),
-    endDate: new Date(pipelineRange?.end_ts * 1000),
-  }), [pipelineRange]);
+  const minMaxDates = useMemo(() => {
+    if (!pipelineRange) return { startDate: new Date(), endDate: new Date() };
+    return {
+      startDate: new Date(pipelineRange?.start_ts * 1000),
+      endDate: new Date(pipelineRange?.end_ts * 1000),
+    };
+  }, [pipelineRange]);
 
   useEffect(() => {
     if (!tsRange.oldestTs) return;
@@ -35,8 +40,6 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
     let displayEndDate;
     if (tsRange.latestTs < pipelineRange.end_ts) {
       displayEndDate = moment.unix(tsRange.latestTs).format('L');
-    } else {
-      displayEndDate = t('diary.today');
     }
     setDateRange([displayStartDate, displayEndDate]);
 
@@ -56,25 +59,14 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
     },
     [setOpen, loadSpecificWeekFn]
   );
-
-  const buttonColor = color(colors.onBackground).alpha(.07).rgb().string();
-  const outlineColor = color(colors.onBackground).alpha(.2).rgb().string();
-
   return (<>
-    <Button mode="outlined" buttonColor={buttonColor} textColor={colors.onBackground}
-            contentStyle={{flexDirection: 'row', height: 36}}
-            style={{borderRadius: 10, borderColor: outlineColor }}
-            labelStyle={{margin: 0, display: 'flex', fontSize: 12.5, fontWeight: '400', height: '100%'}} onPress={() => setOpen(true)}>
-      <View style={{lineHeight: '100%', marginHorizontal: 5, justifyContent: 'space-evenly'}}>
+    <NavBarButton icon="calendar" onPressAction={() => setOpen(true)}>
+      {dateRange[0] && (<>
         <Text>{dateRange[0]}</Text>
-        <Divider horizontalInset={true} style={{backgroundColor: colors.onBackground, width: '3ch', marginHorizontal: 'auto'}} />
-        <Text>{dateRange[1]}</Text>
-      </View>
-      <View>
-        <IconButton icon="calendar" color="black" size={20}
-          style={{width: 24, height: 24, margin: 'auto'}} />
-      </View>
-    </Button>
+        <Divider horizontalInset={true} style={[s.divider, { backgroundColor: colors.onBackground }]} />
+      </>)}
+    <Text>{dateRange[1] || t('diary.today')}</Text>
+    </NavBarButton>
     <DatePickerModal locale={i18next.resolvedLanguage || 'en'}
       animationType="slide"
       mode="single"
@@ -85,5 +77,12 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
       onChange={onChoose} />
   </>);
 };
+
+export const s = StyleSheet.create({
+  divider: {
+    width: '3ch',
+    marginHorizontal: 'auto',
+  }
+});
 
 export default DateSelect;
