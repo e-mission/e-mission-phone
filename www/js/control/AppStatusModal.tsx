@@ -1,16 +1,18 @@
 //this comes up for checkAppStatus, and when needed?
 //currently lacking the parts that actually show permissions
 //will probably change when we update introduction
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal } from "react-native";
 import { Dialog, Button, Text, List } from 'react-native-paper';
 import { angularize } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import { getAngularService } from "../angular-react-helper";
 import PermissionItem from "../appstatus/PermissionItem";
+import useAppConfig from "../useAppConfig";
 
 const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const { t } = useTranslation();
+    const { appConfig, loading } = useAppConfig();
 
     const [locExpanded, setLocExpanded] = React.useState(false);
     const locPress = () => setLocExpanded(!locExpanded);
@@ -20,8 +22,6 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const notifPress = () => setNotifExpanded(!notifExpanded);
     const [backgroundExpanded, setBackgroundExpanded] = React.useState(false);
     const backgroundPress = () => setBackgroundExpanded(!backgroundExpanded);
-
-    const $ionicPlatform = getAngularService('$ionicPlatform');
 
     const [osver, setOsver] = useState(0);
     const [platform, setPlatform] = useState("");
@@ -53,6 +53,14 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const [overallNotifStatusClass, setOverallNotifStatusClass] = useState("");
     const [overallBackgroundRestrictionStatusIcon, setOverallBackgroundRestrictionStatusIcon] = useState("");
     const [overallBackgroundRestrictionStatusClass, setOverallBackgroundRestrictionStatusClass] = useState("");
+
+    //load when ready
+    useEffect(() => {
+        if (appConfig) {
+            console.log("setting up permissions");
+            setUpPermissions();
+        }
+    }, [appConfig]);
 
     function setupLocChecks() {
         if(platform.toLowerCase() == "android") {
@@ -425,16 +433,16 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         console.log("About to see if location services are enabled");
     }
 
-    // $ionicPlatform.ready().then(function() {
-    //     console.log("app is launched, should refresh");
-    //     setPlatform(window.device.platform);
-    //     setOsver(window.device.version.split(".")[0]);
-    //     setupPermissionText();
-    //     setupLocChecks();
-    //     setupFitnessChecks();
-    //     setupNotificationChecks();
-    //     setupBackgroundRestrictionChecks();
-    // });
+    function setUpPermissions() {
+        console.log("app is launched, should refresh");
+        setPlatform(window.device.platform);
+        setOsver(window.device.version.split(".")[0]);
+        setupPermissionText();
+        setupLocChecks();
+        setupFitnessChecks();
+        setupNotificationChecks();
+        setupBackgroundRestrictionChecks();
+    };
 
     // $ionicPlatform.on("resume", function() {
     //     console.log("PERMISSION CHECK: app has resumed, should refresh");
@@ -472,7 +480,7 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
                             description={t('intro.appstatus.overall-loc-description')}
                             left={() => <List.Icon icon={overallLocStatusIcon} />}
                             expanded={locExpanded}
-                            onPress={locPress}>
+                            onPress={locPress} >
                             {locChecks?.map((lc) => 
                                 <PermissionItem 
                                     name={lc.name}
