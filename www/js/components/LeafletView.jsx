@@ -50,7 +50,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   return (
-    <View {...otherProps}>
+    <View {...otherProps} accessibilityRole='img' aria-label='Map'>
       <style>{`
         .leaflet-bottom {
           max-width: 100%;
@@ -87,7 +87,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
           content: "󰈻"; ${/* glyph for 'flag' from https://pictogrammers.com/library/mdi/icon/flag/ */''}
         }
       `}</style>
-      <div id={mapElId} ref={mapElRef} data-tap-disabled="true"
+      <div id={mapElId} ref={mapElRef} data-tap-disabled="true" aria-hidden={true}
             style={{width: '100%', height: '100%', zIndex: 0}}></div>
     </View>
   );
