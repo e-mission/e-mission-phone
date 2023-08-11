@@ -68,7 +68,7 @@ const ProfileSettings = () => {
     const [logoutVis, setLogoutVis] = useState(false);
     const [dataPendingVis, setDataPendingVis] = useState(false);
     const [dataPushedVis, setDataPushedVis] = useState(false);
-    const [userDataVis, setUserDataVis] = useState(false);
+    // const [userDataVis, setUserDataVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
     const [noConsentVis, setNoConsentVis] = useState(false);
     const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
@@ -78,7 +78,7 @@ const ProfileSettings = () => {
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
-    const [userData, setUserData] = useState([]);
+    // const [userData, setUserData] = useState([]);
     const [rawUserData, setRawUserData] = useState({});
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
@@ -108,7 +108,6 @@ const ProfileSettings = () => {
         refreshCollectSettings();
         refreshNotificationSettings();
         getOPCode();
-        getUserData(); //loading slow "one step behind" -- hoping further migration works it out
         getSyncSettings();
         getConnectURL();
         setAppVersion(ClientStats.getAppVersion());
@@ -187,27 +186,6 @@ const ProfileSettings = () => {
         setNotificationSettings(newNotificationSettings);
     }
 
-    async function getUserData() {
-        return CalorieCal.get().then(function(userDataFromStorage) {
-        setRawUserData(userDataFromStorage);
-        if (userDataSaved()) {
-            var newUserData = []
-            var height = userDataFromStorage.height.toString();
-            var weight = userDataFromStorage.weight.toString();
-            var temp  =  {
-                age: userDataFromStorage.age,
-                height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
-                weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
-            }
-            for (var i in temp) {
-                newUserData.push({key: i, val: temp[i]}); //needs to be val for the data table!
-            }
-            setUserData(newUserData);
-        }
-        });
-    }
-
     async function getSyncSettings() {
         console.log("getting sync settings");
         var newSyncSettings = {};
@@ -228,22 +206,7 @@ const ProfileSettings = () => {
             Logger.displayError("While getting connect url", error);
         });
     }
-
-    const userDataSaved = function() {
-        if (rawUserData && rawUserData != null) {
-            return rawUserData.userDataSaved;
-        } else {
-            return false;
-        }
-    }
-
-    async function eraseUserData() {
-        CalorieCal.delete().then(function() {
-           setUserDataVis(true);
-        });
-        newRefreshScreen();
-    }
-
+    
     async function getOPCode() {
         const newAuthSettings = {};
         const opcode = await ControlHelper.getOPCode();
@@ -481,14 +444,6 @@ const ProfileSettings = () => {
     }
 
     //conditional creation of setting sections
-    let userDataSection;
-    if(userDataSaved())
-    {
-        userDataSection = <ExpansionSection sectionTitle="control.user-data">
-                            <SettingRow textKey="control.erase-data" iconName="delete-forever" action={eraseUserData}></SettingRow>
-                            <ControlDataTable controlData={userData}></ControlDataTable>
-                        </ExpansionSection>;
-    }
 
     let logUploadSection;
     console.debug("appConfg: support_upload:", appConfig?.profile_controls?.support_upload);
@@ -521,8 +476,6 @@ const ProfileSettings = () => {
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
             {logUploadSection}
             <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
-
-            {userDataSection}
            
             <ExpansionSection sectionTitle="control.dev-zone">
                 <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
@@ -714,7 +667,6 @@ const ProfileSettings = () => {
             <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
 
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
-            <AlertBar visible={userDataVis} setVisible={setUserDataVis} messageKey='general-settings.user-data-erased'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
         </>
