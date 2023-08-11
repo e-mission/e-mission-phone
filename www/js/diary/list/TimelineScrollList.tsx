@@ -5,9 +5,10 @@ import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
 import { View } from 'react-native';
-import { ActivityIndicator, Banner, IconButton, Text } from 'react-native-paper';
+import { ActivityIndicator, Banner, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '../../components/Icon';
 
 const renderCard = ({ item: listEntry }) => {
   if (listEntry.origin_key.includes('trip')) {
@@ -44,8 +45,7 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
 
   const noTravelBanner = (
     <Banner visible={true} icon={
-      ({ size }) => <IconButton size={size} icon='alert-circle'
-        style={{ width: size, height: size, marginVertical: 3 }} />
+      ({ size }) => <Icon size={size} icon='alert-circle' style={{ marginVertical: 3 }} />
     }>
       <View style={{ width: '100%' }}>
         <Text variant='titleMedium'>{t('diary.no-travel')}</Text>

@@ -7,9 +7,10 @@ import { angularize, createScopeWithVars, getAngularService } from "../../angula
 import { array, object } from "prop-types";
 import moment from "moment";
 import { Text } from "react-native"
-import { DataTable, IconButton } from "react-native-paper";
+import { DataTable } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
+import { Icon } from "../../components/Icon";
 
 const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
@@ -109,7 +110,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
             </DataTable.Cell>
             <DataTable.Cell onPress={() => confirmDeleteEntry(entry)}
                             style={[styles.cell, {flex: 1}]}>
-              <IconButton icon="delete" size={18} />
+              <Icon icon="delete" size={18} />
             </DataTable.Cell>
           </DataTable.Row>
         )

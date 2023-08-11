@@ -9,12 +9,13 @@
 
 import React from "react";
 import { View, StyleSheet } from 'react-native';
-import { Divider, IconButton, Text } from 'react-native-paper';
+import { Divider, Text } from 'react-native-paper';
 import { object } from "prop-types";
 import { getTheme } from "../../appTheme";
 import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
+import { Icon } from "../../components/Icon";
 
 const UntrackedTimeCard = ({ triplike }) => {
   const { t } = useTranslation();
@@ -37,16 +38,16 @@ const UntrackedTimeCard = ({ triplike }) => {
         </View>
         <View>{/*  start and end locations */}
           <View style={cardStyles.location}>
-            <IconButton icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer} size={18}
-              style={cardStyles.locationIcon} />
+            <Icon icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer}
+              size={18} style={cardStyles.locationIcon} />
             <Text style={s.locationText}>
               {triplikeStartDisplayName}
             </Text>
           </View>
           <Divider style={{ marginVertical: 2 }} />
           <View style={cardStyles.location}>
-            <IconButton icon='flag' iconColor={flavoredTheme.colors.primary} size={18}
-              style={cardStyles.locationIcon} />
+            <Icon icon='flag' iconColor={flavoredTheme.colors.primary}
+              size={18} style={cardStyles.locationIcon} />
             <Text style={s.locationText}>
               {triplikeEndDisplayName}
             </Text>

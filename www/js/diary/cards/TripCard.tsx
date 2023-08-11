@@ -7,7 +7,7 @@
 import React, { useEffect, useState } from "react";
 import { getAngularService } from "../../angular-react-helper";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
-import { Divider, IconButton, Text } from 'react-native-paper';
+import { Divider, Text, IconButton } from 'react-native-paper';
 import { object } from "prop-types";
 import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
@@ -21,6 +21,7 @@ import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
 import { useImperialConfig } from "../../config/useImperialConfig";
 import { useAddressNames } from "../addressNamesHelper";
+import { Icon } from "../../components/Icon";
 
 const TripCard = ({ trip }) => {
 
@@ -88,17 +89,19 @@ const TripCard = ({ trip }) => {
           </View>
           <View style={cardStyles.panelSection}>{/* start and end locations */}
             <View style={[cardStyles.location, {justifyContent: 'flex-start'}]}>
-              <IconButton icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer} size={18}
-                          style={cardStyles.locationIcon} />
-              <Text numberOfLines={2} style={s.locationText}>
+              <Icon icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer}
+                size={18} style={cardStyles.locationIcon} />
+              <Text numberOfLines={2} style={s.locationText}
+                    accessibilityLabel={`Start Location: ${tripStartDisplayName}`}>
                 {tripStartDisplayName}
               </Text>
             </View>
             <Divider style={{marginVertical: 4}} />
             <View style={[cardStyles.location, {justifyContent: 'flex-start'}]}>
-              <IconButton icon='flag' iconColor={flavoredTheme.colors.primary} size={18}
-                          style={cardStyles.locationIcon} />
-              <Text numberOfLines={2} style={s.locationText}>
+              <Icon icon='flag' iconColor={flavoredTheme.colors.primary}
+                size={18} style={cardStyles.locationIcon} />
+              <Text numberOfLines={2} style={s.locationText}
+                    accessibilityLabel={`End Location: ${tripEndDisplayName}`}>
                 {tripEndDisplayName}
               </Text>
             </View>
