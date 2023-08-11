@@ -3,7 +3,7 @@
   Navigated to from the main LabelListScreen by clicking a trip card. */
 
 import React, { useContext } from "react";
-import { View, ScrollView, StyleSheet, useWindowDimensions } from "react-native";
+import { View, Modal, ScrollView, useWindowDimensions } from "react-native";
 import { Appbar, Divider, Surface, Text, useTheme } from "react-native-paper";
 import { LabelTabContext } from "./LabelTab";
 import { cardStyles } from "./cards/DiaryCard";
@@ -31,7 +31,8 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const DiaryHelper = getAngularService('DiaryHelper');
   const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
   
-  return (<>
+  return (
+    <Modal visible={true}>
       <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
         <Appbar.BackAction onPress={() => { navigation.goBack() }} />
         <Appbar.Content title={trip.display_date} />
@@ -124,7 +125,8 @@ const LabelScreenDetails = ({ route, navigation }) => {
 
         </Surface>
       </ScrollView>
-  </>)
+    </Modal>
+  )
 }
 
 export default LabelScreenDetails;
