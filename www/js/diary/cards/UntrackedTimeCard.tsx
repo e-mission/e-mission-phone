@@ -25,8 +25,9 @@ const UntrackedTimeCard = ({ triplike }) => {
 
   return (
     <DiaryCard timelineEntry={triplike} flavoredTheme={flavoredTheme}>
-      <View style={[cardStyles.cardContent, {marginVertical: 12}]}>
-        <View>{/*  date and distance */}
+      <View style={[cardStyles.cardContent, {marginVertical: 12}]} focusable={true}
+          accessibilityLabel={`Untracked time from ${triplike.display_start_time} to ${triplike.display_end_time}`}>
+          <View>{/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
             <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{triplike.display_date}</Text>
           </Text>

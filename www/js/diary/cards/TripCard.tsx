@@ -52,32 +52,12 @@ const TripCard = ({ trip }) => {
   const mapStyle = showAddNoteButton ? s.shortenedMap : s.fullHeightMap;
   return (
     <DiaryCard timelineEntry={trip} flavoredTheme={flavoredTheme} onPress={() => showDetail()}>
-      <View style={[cardStyles.cardContent, {flexDirection: 'row'}]}>
-        <IconButton icon='dots-horizontal' size={28}
+      <View style={[cardStyles.cardContent, {flexDirection: 'row-reverse'}]}
+        accessibilityLabel={`Trip from ${trip.display_start_time} to ${trip.display_end_time}`}>
+        <IconButton icon='dots-horizontal' size={24}
+          accessibilityLabel="View trip details" onPress={() => showDetail()}
           style={{position: 'absolute', right: 0, top: 0, height: 16, width: 32,
                   justifyContent: 'center', margin: 4}} />
-        <View style={{flex: 1}}>{/* left panel */}
-          <LeafletView geojson={trip.geojson} opts={mapOpts}
-                        /* the map should be at least as tall as it is wide
-                          so it doesn't look squished */
-                        style={[{minHeight: windowWidth / 2}, mapStyle]} />
-          <View style={s.modePercents}>
-            {trip.percentages?.map?.((pct, i) => (
-              <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
-                <IconButton icon={pct.icon} size={15} iconColor={pct.color}
-                            style={{width: 15, height: 15, margin: 0, marginRight: 2}} />
-                <Text style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>
-              </View>
-            ))}
-          </View>
-          {showAddNoteButton && 
-            <View style={s.notesButton}>
-              <AddNoteButton timelineEntry={trip}
-                              notesConfig={appConfig?.survey_info?.buttons?.['trip-notes']}
-                              storeKey={'manual/trip_addition_input'} />
-            </View>
-          }
-        </View>
         <View style={s.rightPanel}>{/* right panel */}
           <View style={[cardStyles.panelSection, {marginTop: 0}]}>{/* date and distance */}
             <Text style={{fontSize: 14, textAlign: 'center'}}>
@@ -106,12 +86,33 @@ const TripCard = ({ trip }) => {
               </Text>
             </View>
           </View>
-          <View style={cardStyles.panelSection}>{/* mode and purpose buttons / survey button */}
+          <View style={[cardStyles.panelSection, {marginBottom: 0}]}>{/* mode and purpose buttons / survey button */}
             {surveyOpt?.elementTag == 'multilabel' &&
                 <MultilabelButtonGroup trip={trip} />}
             {surveyOpt?.elementTag == 'enketo-trip-button'
                 && <UserInputButton timelineEntry={trip} />}
           </View>
+        </View>
+        <View style={{flex: 1, paddingBottom: showAddNoteButton ? 8 : 0}}>{/* left panel */}
+          <LeafletView geojson={trip.geojson} opts={mapOpts}
+                        /* the map should be at least as tall as it is wide
+                          so it doesn't look squished */
+                        style={[{minHeight: windowWidth / 2}, mapStyle]} />
+          <View style={s.modePercents}>
+            {trip.percentages?.map?.((pct, i) => (
+              <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
+                <Icon icon={pct.icon} iconColor={pct.color} size={15} />
+                <Text accessibilityLabel={`Sensed mode: ${pct.icon}, ${pct.pct}%`} style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>
+              </View>
+            ))}
+          </View>
+          {showAddNoteButton && 
+            <View style={s.notesButton}>
+              <AddNoteButton timelineEntry={trip}
+                              notesConfig={appConfig?.survey_info?.buttons?.['trip-notes']}
+                              storeKey={'manual/trip_addition_input'} />
+            </View>
+          }
         </View>
       </View>
       {trip.additionsList?.length != 0 &&
@@ -147,14 +148,14 @@ const s = StyleSheet.create({
   },
   notesButton: {
     paddingHorizontal: 8,
-    paddingVertical: 12,
+    paddingVertical: 8,
     minWidth: 150,
     margin: 'auto',
   },
   rightPanel: {
     flex: 1,
     paddingHorizontal: 5,
-    paddingVertical: 12,
+    paddingVertical: 8,
   },
   locationText: {
     fontSize: 12,

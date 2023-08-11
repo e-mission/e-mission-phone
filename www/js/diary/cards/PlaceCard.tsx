@@ -27,7 +27,8 @@ const PlaceCard = ({ place }) => {
 
   return (
     <DiaryCard timelineEntry={place} flavoredTheme={flavoredTheme}>
-      <View style={[cardStyles.cardContent, {marginVertical: 12}]}>
+      <View style={[cardStyles.cardContent, s.placeCardContent]} focusable={true}
+          accessibilityLabel={`Place from ${place.display_start_time} to ${place.display_end_time}`}>
         <View>{/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
             <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{place.display_date}</Text>
@@ -57,6 +58,10 @@ const PlaceCard = ({ place }) => {
 };
 
 const s = StyleSheet.create({
+  placeCardContent: {
+    marginTop: 12,
+    marginBottom: 6,
+  },
   notesButton: {
     paddingHorizontal: 8,
     minWidth: 150,
