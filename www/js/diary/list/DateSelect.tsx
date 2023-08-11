@@ -59,15 +59,19 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
     },
     [setOpen, loadSpecificWeekFn]
   );
+  const dateRangeEnd = dateRange[1] || t('diary.today');
   return (<>
-    <NavBarButton icon="calendar" onPressAction={() => setOpen(true)}>
+    <NavBarButton icon="calendar"
+                  accessibilityLabel={'Date range: '+(dateRange[0] ? (dateRange[0]+' to ') : '') + dateRangeEnd}
+                  onPressAction={() => setOpen(true)}>
       {dateRange[0] && (<>
         <Text>{dateRange[0]}</Text>
         <Divider horizontalInset={true} style={[s.divider, { backgroundColor: colors.onBackground }]} />
       </>)}
-    <Text>{dateRange[1] || t('diary.today')}</Text>
+      <Text>{dateRangeEnd}</Text>
     </NavBarButton>
     <DatePickerModal locale={i18next.resolvedLanguage || 'en'}
+      accessibilityLabel="Select a date"
       animationType="slide"
       mode="single"
       visible={open}
