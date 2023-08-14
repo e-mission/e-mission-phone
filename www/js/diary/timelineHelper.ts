@@ -1,3 +1,4 @@
+import moment from "moment";
 import { getAngularService } from "../angular-react-helper";
 import { getFormattedDate, getFormattedDateAbbr, getFormattedTimeRange, isMultiDay } from "./diaryHelper";
 
@@ -78,5 +79,41 @@ export function populateCompositeTrips(ctList, showPlaces, labelsFactory, labels
     populateBasicClasses(ct);
     labelsFactory.populateInputsAndInferences(ct, labelsResultMap);
     notesFactory.populateInputsAndInferences(ct, notesResultMap);
+  });
+}
+
+/**
+ * @description Gets inputs (labels or Enketo responses) that were recorded after the given
+ * pipeline range and have not yet been processed on the server.
+ * @param pipelineRange an object with start_ts and end_ts representing the range of time
+ *     for which travel data has been processed through the pipeline on the server
+ * @param labelsFactory the Angular factory for processing labels (MultilabelService or
+ *     EnketoTripButtonService)
+ * @param notesFactory the Angular factory for processing notes (EnketoNotesButtonService)
+ * @returns Promise an array with 1) results for labels and 2) results for notes
+ */
+export function getUnprocessedInputs(pipelineRange, labelsFactory, notesFactory) {
+  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
+  const pendingLabelQuery = {
+    key: "write_ts",
+    startTs: pipelineRange.end_ts - 10,
+    endTs: moment().unix() + 10
+  };
+  const manualPromises = labelsFactory.MANUAL_KEYS.map(function(inp_key) {
+    return UnifiedDataLoader.getUnifiedMessagesForInterval(
+      inp_key, pendingLabelQuery).then(labelsFactory.extractResult);
+  });
+  const enbsPromises = notesFactory.MANUAL_KEYS.map(function (inp_key) {
+    return UnifiedDataLoader.getUnifiedMessagesForInterval(
+      inp_key, pendingLabelQuery).then(notesFactory.extractResult);
+  });
+  const manualConfirmResults = {};
+  const enbsConfirmResults = {};
+  return Promise.all([...manualPromises, ...enbsPromises]).then((comboResults) => {
+    const manualResults = comboResults.slice(0, manualPromises.length);
+    const enbsResults = comboResults.slice(manualPromises.length);
+    labelsFactory.processManualInputs(manualResults, manualConfirmResults);
+    notesFactory.processManualInputs(enbsResults, enbsConfirmResults);
+    return [manualConfirmResults, enbsConfirmResults];
   });
 }
