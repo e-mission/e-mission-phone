@@ -17,7 +17,7 @@ import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, getUnprocessedInputs, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
+import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
@@ -103,7 +103,7 @@ const LabelTab = () => {
   async function loadTimelineEntries() {
     try {
       const pipelineRange = await CommHelper.getPipelineRangeTs();
-      [labelsResultMap, notesResultMap] = await getUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
+      [labelsResultMap, notesResultMap] = await getAllUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
       Logger.log("After reading unprocessedInputs, labelsResultMap =" + JSON.stringify(labelsResultMap)
                                                 + "; notesResultMap = " + JSON.stringify(notesResultMap));
       setPipelineRange(pipelineRange);
@@ -235,7 +235,7 @@ const LabelTab = () => {
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
-    const [newLabels, newNotes] = await getUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
+    const [newLabels, newNotes] = await getLocalUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
     const repopTime = new Date().getTime();
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
     populateBasicClasses(newEntry);
