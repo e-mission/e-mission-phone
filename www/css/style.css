@@ -2,6 +2,15 @@
 /* if we don't contain them here, they will leak into the rest of the app */
 .enketo-plugin {
   @import 'enketo-core/src/sass/formhub/formhub.scss';
+  .question.non-select {
+    display: inline-block;
+  }
+  .question input[name*="_date"],
+  .question input[name*="_time"] {
+    width: calc(40vw - 10px);
+    margin-right: 5px;
+    display: flex;
+  }
 }
 
 .enketo-plugin .form-header {
@@ -1470,17 +1479,4 @@ svg {
   margin: 0;
   width: 3ch;
   left: calc(8px + 2.5ch);
-}
-
-.enketo-plugin .question.inline-datetime > input[name*="_date"],
-.enketo-plugin .question.inline-datetime > input[name*="_time"] {
-  display: flex;
-  width: auto;
-  min-width: 65%;
-  max-width: 85%;
-}
-
-.enketo-plugin .question.inline-datetime {
-  display: inline-grid;
-  width: 50%;
 }
