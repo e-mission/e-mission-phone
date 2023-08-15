@@ -50,6 +50,6 @@ import './js/control/collect-settings.js';
 import './js/control/sync-settings.js';
 import './js/metrics-factory.js';
 import './js/metrics-mappings.js';
-import './js/plugin/logger.js';
+import './js/plugin/logger.ts';
 import './js/plugin/storage.js';
 import './js/appstatus/permissioncheck.js';
