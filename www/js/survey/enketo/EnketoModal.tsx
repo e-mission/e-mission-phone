@@ -6,6 +6,7 @@ import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
 import { getAngularService } from '../../angular-react-helper';
+import { fetchUrlCached } from '../../commHelper';
 import { displayError, displayErrorMsg } from '../../plugin/logger';
 // import { transform } from 'enketo-transformer/web';
 
@@ -26,10 +27,11 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   const { appConfig, loading } = useAppConfig();
 
   async function fetchSurveyJson(url) {
-    const res = await fetch(url);
-    if (url.toUpperCase().endsWith('.JSON')) {
-      return await res.json();
-    } else {
+    const responseText = await fetchUrlCached(url);
+    try {
+      return JSON.parse(responseText);
+    } catch ({name, message}) {
+      // not JSON, so it must be XML
       return Promise.reject('downloaded survey was not JSON; enketo-transformer is not available yet');
       /* uncomment once enketo-transformer is available */
       // if `response` is not JSON, it is an XML string and needs transformation to JSON
