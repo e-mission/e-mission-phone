@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, StyleSheet } from "react-native";
+import { View, Modal, StyleSheet } from "react-native";
 import { Dialog, Button, useTheme, Text } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
@@ -26,6 +26,7 @@ const ProfileSettings = () => {
     // get the scope of the general-settings.js file
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
+    console.log("settings scope", settingsScope);
     
     // grab any variables or functions we need from it like this:
     const { viewPrivacyPolicy, showLog, showSensed, overallAppStatus } = settingsScope;
@@ -461,7 +462,7 @@ const ProfileSettings = () => {
     }
 
     return (
-        <>
+        <View>
             <SettingRow textKey="control.profile" iconName='logout' action={() => setLogoutVis(true)} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
             <DemographicsSettingRow></DemographicsSettingRow>
             <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
@@ -669,7 +670,7 @@ const ProfileSettings = () => {
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
-        </>
+        </View>
     );
 };
 const styles = StyleSheet.create({
