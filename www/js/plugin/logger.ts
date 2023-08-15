@@ -3,7 +3,7 @@ import angular from 'angular';
 angular.module('emission.plugin.logger', [])
 
 .factory('Logger', function($window, $ionicPopup) {
-    var loggerJs = {}
+    var loggerJs: any = {};
     loggerJs.log = function(message) {
         $window.Logger.log($window.Logger.LEVEL_DEBUG, message);
     }
@@ -22,3 +22,23 @@ angular.module('emission.plugin.logger', [])
     }
     return loggerJs;
 });
+
+export function log(message) {
+  window['Logger'].log(window['Logger'].LEVEL_DEBUG, message);
+}
+
+export function displayError(error, title?) {
+  const errorMsg = error.message ? error.message + '\n' + error.stack : JSON.stringify(error);
+  displayErrorMsg(errorMsg, title);
+}
+
+export function displayErrorMsg(errorMsg, title?) {
+  // Check for OPcode 'Does Not Exist' errors and prepend the title with "Invalid OPcode"
+  if (errorMsg.includes?.("403")) {
+    title = "Invalid OPcode: " + (title || '');
+  }
+  const displayMsg = title ? title + '\n' + errorMsg : errorMsg;
+  window.alert(displayMsg);
+  console.error(displayMsg);
+  window['Logger'].log(window['Logger'].LEVEL_ERROR, displayMsg);
+}

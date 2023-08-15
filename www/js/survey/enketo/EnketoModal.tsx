@@ -6,6 +6,7 @@ import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
 import { getAngularService } from '../../angular-react-helper';
+import { displayError, displayErrorMsg } from '../../plugin/logger';
 // import { transform } from 'enketo-transformer/web';
 
 type Props = ModalProps & {
@@ -38,16 +39,13 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   }
 
   async function validateAndSave() {
-    const $ionicPopup = getAngularService('$ionicPopup');
     const valid = await enketoForm.current.validate();
     if (!valid) return false;
     const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
     if (!result) { // validation failed
-      window.alert(t('survey.enketo-form-errors'));
-      console.error(t('survey.enketo-form-errors'));
+      displayErrorMsg(t('survey.enketo-form-errors'));
     } else if (result instanceof Error) { // error thrown in saveResponse
-      window.alert(result.message);
-      console.error(result);
+      displayError(result);
     } else { // success
       rest.onDismiss();
       onResponseSaved(result);
