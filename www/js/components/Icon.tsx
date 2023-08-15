@@ -7,12 +7,11 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { IconButton } from 'react-native-paper';
-import { Props } from 'react-native-paper/lib/typescript/src/components/IconButton/IconButton'
+import { Props as IconButtonProps } from 'react-native-paper/lib/typescript/src/components/IconButton/IconButton'
 
-export const Icon = (props: Props) => {
+export const Icon = ({style, ...rest}: IconButtonProps) => {
   return (
-    <IconButton icon={props.icon} iconColor={props.iconColor}
-      size={props.size} style={[s.icon, props.style]}
+    <IconButton style={[s.icon, style]} {...rest}
       role='none' focusable={false} accessibilityHidden={true} />
   );
 }
