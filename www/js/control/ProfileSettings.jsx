@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { View, Modal, StyleSheet } from "react-native";
-import { Dialog, Button, useTheme, Text } from "react-native-paper";
+import { Modal, StyleSheet, ScrollView } from "react-native";
+import { Dialog, Button, useTheme, Text, Snackbar, Portal } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -462,7 +462,8 @@ const ProfileSettings = () => {
     }
 
     return (
-        <View>
+        <>
+        <ScrollView>
             <SettingRow textKey="control.profile" iconName='logout' action={() => setLogoutVis(true)} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
             <DemographicsSettingRow></DemographicsSettingRow>
             <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
@@ -495,6 +496,7 @@ const ProfileSettings = () => {
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
                 <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
             </ExpansionSection>
+        </ScrollView>
 
             {/* menu for "nuke data" */}
             <Modal visible={nukeSetVis} onDismiss={() => setNukeVis(false)}
@@ -667,10 +669,50 @@ const ProfileSettings = () => {
 
             <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
 
-            <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey="all data pushed!"></AlertBar>
-            <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
-            <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
-        </View>
+            <Modal visible={dataPushedVis} onDismiss={() => setDataPushedVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
+                <Snackbar
+                visible={dataPushedVis}
+                onDismiss={() => setDataPushedVis(false)}
+                action={{
+                    label: t("join.close"),
+                    onPress: () => {() => setDataPushedVis(false)},
+                }}>
+                {t('all data pushed!')}
+                </Snackbar>
+            </Modal>
+
+            <Modal visible={invalidateSuccessVis} onDismiss={() => setInvalidateSuccessVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
+                <Snackbar
+                visible={invalidateSuccessVis}
+                onDismiss={() => setInvalidateSuccessVis(false)}
+                action={{
+                    label: t("join.close"),
+                    onPress: () => {() => setInvalidateSuccessVis(false)},
+                }}>
+                {t('success -> ') + cacheResult}
+                </Snackbar>
+            </Modal>
+
+            <Modal visible={noConsentMessageVis} onDismiss={() => setNoConsentMessageVis(false)}
+                    style={styles.dialog(colors.elevation.level3)}>
+                <Snackbar
+                visible={noConsentMessageVis}
+                onDismiss={() => setNoConsentMessageVis(false)}
+                action={{
+                    label: t("join.close"),
+                    onPress: () => {() => setNoConsentMessageVis(false)},
+                }}>
+                {t('general-settings.no-consent-message')}
+                </Snackbar>
+            </Modal>
+
+            {/* <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar> */}
+            {/* <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar> */}
+            {/* <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar>  */}
+        
+        </>
     );
 };
 const styles = StyleSheet.create({
