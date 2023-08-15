@@ -1,23 +1,20 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { Form } from 'enketo-core';
-import { Modal, ScrollView, SafeAreaView, Pressable } from 'react-native';
+import { StyleSheet, Modal, ScrollView, SafeAreaView, Pressable } from 'react-native';
 import { Appbar, ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
+import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
+import { getAngularService } from '../../angular-react-helper';
 // import { transform } from 'enketo-transformer/web';
 
 type Props = ModalProps & {
   surveyName: string,
-  opts?: {
-    timelineEntry?: any;
-    instanceStr?: string;
-    prefilledSurveyResponse?: string;
-    prefillFields?: {[key: string]: string};
-    dataKey?: string;
-  }
+  onResponseSaved: (response: any) => void,
+  opts?: SurveyOptions,
 }
 
-const EnketoModal = ({ surveyName, opts, ...rest } : Props) => {
+const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => {
 
   const { t, i18n } = useTranslation();
   const headerEl = useRef(null);
@@ -34,41 +31,56 @@ const EnketoModal = ({ surveyName, opts, ...rest } : Props) => {
     } else {
       return Promise.reject('downloaded survey was not JSON; enketo-transformer is not available yet');
       /* uncomment once enketo-transformer is available */
-      // if `response` is not JSON, so it is an XML string and needs transformation to JSON
+      // if `response` is not JSON, it is an XML string and needs transformation to JSON
       // const xmlText = await res.text();
       // return await transform({xform: xmlText});
     }
   }
 
-  function validateAndSave() {
-
+  async function validateAndSave() {
+    const $ionicPopup = getAngularService('$ionicPopup');
+    const valid = await enketoForm.current.validate();
+    if (!valid) return false;
+    const result = await saveResponse(surveyName, enketoForm.current, appConfig, opts);
+    if (!result) { // validation failed
+      window.alert(t('survey.enketo-form-errors'));
+      console.error(t('survey.enketo-form-errors'));
+    } else if (result instanceof Error) { // error thrown in saveResponse
+      window.alert(result.message);
+      console.error(result);
+    } else { // success
+      rest.onDismiss();
+      onResponseSaved(result);
+      return;
+    }
   }
 
   // init logic: retrieve form -> inject into DOM -> initialize Enketo -> show modal 
-  useEffect(() => {
-    if (!rest.visible) return;
-    if (!appConfig || loading) return console.error('App config not loaded yet');
+  function initSurvey() {
     console.debug('Loading survey', surveyName);
     const formPath = appConfig.survey_info?.surveys?.[surveyName]?.formPath;
     if (!formPath) return console.error('No form path found for survey', surveyName);
 
     fetchSurveyJson(formPath).then(({ form, model }) => {
       surveyJson.current = { form, model };
-      headerEl?.current.insertAdjacentHTML('afterend', form);
+      headerEl?.current.insertAdjacentHTML('afterend', form); // inject form into DOM
       const formEl = document.querySelector('form.or');
       const data = {
-        // required string of the default instance defined in the XForm
-        modelStr: model,
-        // optional string of an existing instance to be edited
-        instanceStr: opts.instanceStr || null,
-        submitted: opts.submitted || false,
-        external: opts.external || [],
-        session: opts.session || {}
+        modelStr: model, // the XML model for this form
+        instanceStr: getInstanceStr(model, opts), // existing XML instance (if any), may be a previous response or a pre-filled model
+        /* There are a few other opts that can be passed to Enketo Core.
+          We don't use these now, but we may want them later: https://github.com/enketo/enketo-core#usage-as-a-library */
       };
       const currLang = i18n.resolvedLanguage || 'en';
       enketoForm.current = new Form(formEl, data, { language: currLang });
       enketoForm.current.init();
     });
+  }
+
+  useEffect(() => {
+    if (!rest.visible) return;
+    if (!appConfig || loading) return console.error('App config not loaded yet');
+    initSurvey();
   }, [appConfig, loading, rest.visible]);
 
   const enketoContent = (
@@ -94,7 +106,11 @@ const EnketoModal = ({ surveyName, opts, ...rest } : Props) => {
           {/* Used some quick-and-dirty inline CSS styles here because the form-footer should be styled in the
           mother application. The HTML markup can be changed as well. */}
           <a href="#" className="previous-page disabled" style={{ position: 'absolute', left: 10, bottom: 40 }}>{t('survey.back')}</a>
-          <button id="validate-form" className="btn btn-primary" onPress={validateAndSave()} style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>{t('survey.save')}</button>
+          <Pressable onPress={() => validateAndSave()}>
+            <button id="validate-form" className="btn btn-primary" style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
+              {t('survey.save')}
+            </button>
+          </Pressable>
           <a href="#survey-paper" className="btn btn-primary next-page disabled" style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>{t('survey.next')}</a>
 
           <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
@@ -111,9 +127,10 @@ const EnketoModal = ({ surveyName, opts, ...rest } : Props) => {
   return (
     <Modal {...rest} animationType='slide'>
       <SafeAreaView style={{flex: 1}}>
-        <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
-          <Appbar.BackAction onPress={() => { rest.onDismiss() }} />
-          <Appbar.Content title={t('survey.survey')} />
+        <Appbar.Header statusBarHeight={0} elevated={true} style={s.appBar}>
+          <Appbar.BackAction onPress={() => { rest.onDismiss() }} style={{margin: 0}} />
+          <Appbar.Content title={t('survey.dismiss')} titleStyle={{fontSize: 18}}
+            onPress={() => rest.onDismiss()} />
         </Appbar.Header>
         <ScrollView>
           <Pressable>
@@ -126,5 +143,18 @@ const EnketoModal = ({ surveyName, opts, ...rest } : Props) => {
     </Modal>
   );
 }
+
+const s = StyleSheet.create({
+  appBar: {
+    height: 40,
+    backgroundColor: 'white',
+    elevation: 3,
+    position: 'absolute',
+    paddingRight: 12,
+    border: '1px solid rgba(0,0,0,.2)',
+    borderTopWidth: 0,
+    borderBottomRightRadius: 10,
+  }
+});
 
 export default EnketoModal;

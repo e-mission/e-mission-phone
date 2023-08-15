@@ -14,14 +14,12 @@ import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { LabelTabContext } from "../../diary/LabelTab";
+import EnketoModal from "./EnketoModal";
 
 const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
   const { t, i18n } = useTranslation();
   const [displayLabel, setDisplayLabel] = useState('');
   const { repopulateTimelineEntry } = useContext(LabelTabContext)
-
-  const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
-  const $rootScope = getAngularService("$rootScope");
 
   useEffect(() => {
     let newLabel: string;
@@ -76,21 +74,35 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
   function launchAddNoteSurvey() {
     const surveyName = notesConfig.surveyName;
     console.log('About to launch survey ', surveyName);
-    const prefillFields = getPrefillTimes();
-
-    return EnketoSurveyLaunch
-      .launch($rootScope, surveyName, { timelineEntry, prefillFields, dataKey: storeKey })
-      .then(result => {
-        if (!result) return;
-        repopulateTimelineEntry(timelineEntry._id.$oid);
-      });
+    setPrefillTimes(getPrefillTimes());
+    setModalVisible(true);
   };
 
-  return (
+  function onResponseSaved(result) {
+    if (result) {
+      console.log('AddNoteButton: response was saved, about to repopulateTimelineEntry; result=', result);
+      repopulateTimelineEntry(timelineEntry._id.$oid);
+    } else {
+      console.error('AddNoteButton: response was not saved, result=', result);
+    }
+  }
+
+  const [prefillTimes, setPrefillTimes] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  return (<>
     <DiaryButton text={displayLabel}
                   icon={'plus-thick'}
                   onPress={() => launchAddNoteSurvey()} />
-  );
+    <EnketoModal visible={modalVisible}
+      onDismiss={() => setModalVisible(false)}
+      onResponseSaved={onResponseSaved}
+      surveyName={notesConfig?.surveyName}
+      opts={{ timelineEntry,
+              dataKey: storeKey,
+              prefillFields: prefillTimes
+      }} />
+  </>);
 };
 
 AddNoteButton.propTypes = {
