@@ -1,11 +1,10 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { Form } from 'enketo-core';
 import { StyleSheet, Modal, ScrollView, SafeAreaView, Pressable } from 'react-native';
-import { Appbar, ModalProps } from 'react-native-paper';
+import { ModalProps } from 'react-native-paper';
 import useAppConfig from '../../useAppConfig';
 import { useTranslation } from 'react-i18next';
 import { SurveyOptions, getInstanceStr, saveResponse } from './enketoHelper';
-import { getAngularService } from '../../angular-react-helper';
 import { fetchUrlCached } from '../../commHelper';
 import { displayError, displayErrorMsg } from '../../plugin/logger';
 // import { transform } from 'enketo-transformer/web';
@@ -21,8 +20,6 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   const { t, i18n } = useTranslation();
   const headerEl = useRef(null);
   const surveyJson = useRef(null);
-  // const loadedForm = useRef(null);
-  // const loadedModel = useRef(null);
   const enketoForm = useRef<Form | null>(null);
   const { appConfig, loading } = useAppConfig();
 
@@ -90,6 +87,13 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
         will be appended by Enketo Core. */}
         <header ref={headerEl} className="form-header clearfix">
+          <Pressable style={s.dismissBtn} onPress={() => rest.onDismiss()} accessibilityRole={'button'}>
+            <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>
+              {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
+              󰁍
+            </span>
+            <span>{t('survey.dismiss')}</span>
+          </Pressable>
           <span className="form-language-selector hide"><span>Choose Language</span></span>
           <nav className="pages-toc hide" role="navigation">
             <label htmlFor="toc-toggle"></label>
@@ -106,8 +110,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
           {/* Used some quick-and-dirty inline CSS styles here because the form-footer should be styled in the
           mother application. The HTML markup can be changed as well. */}
           <a href="#" className="previous-page disabled" style={{ position: 'absolute', left: 10, bottom: 40 }}>{t('survey.back')}</a>
-          <Pressable onPress={() => validateAndSave()}>
-            <button id="validate-form" className="btn btn-primary" style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
+          <Pressable onPress={() => validateAndSave()} accessibilityRole='button' style={{margin: 'auto'}}>
+            <button id="validate-form" className="btn btn-primary" accessibilityRole='none'
+                style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
               {t('survey.save')}
             </button>
           </Pressable>
@@ -127,11 +132,6 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   return (
     <Modal {...rest} animationType='slide'>
       <SafeAreaView style={{flex: 1}}>
-        <Appbar.Header statusBarHeight={0} elevated={true} style={s.appBar}>
-          <Appbar.BackAction onPress={() => { rest.onDismiss() }} style={{margin: 0}} />
-          <Appbar.Content title={t('survey.dismiss')} titleStyle={{fontSize: 18}}
-            onPress={() => rest.onDismiss()} />
-        </Appbar.Header>
         <ScrollView>
           <Pressable>
             <div className="enketo-plugin">
@@ -145,15 +145,11 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
 }
 
 const s = StyleSheet.create({
-  appBar: {
-    height: 40,
-    backgroundColor: 'white',
-    elevation: 3,
-    position: 'absolute',
-    paddingRight: 12,
-    border: '1px solid rgba(0,0,0,.2)',
-    borderTopWidth: 0,
-    borderBottomRightRadius: 10,
+  dismissBtn: {
+    height: 38,
+    fontSize: 11,
+    color: '#222',
+    marginRight: 'auto',
   }
 });
 
