@@ -14,6 +14,8 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const { t } = useTranslation();
     const { appConfig, loading } = useAppConfig();
 
+    const $ionicPlatform = getAngularService("$ionicPlatform");
+
     const [locExpanded, setLocExpanded] = React.useState(false);
     const locPress = () => setLocExpanded(!locExpanded);
     const [fitExpanded, setFitExpanded] = React.useState(false);
@@ -45,14 +47,18 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const [fitnessChecks, setFitnessChecks] = useState([]);
     const [notificationChecks, setNotificationChecks] = useState([]);
 
-    const [overallLocStatusIcon, setOverallLocStatusIcon] = useState("");
-    const [overallLocStatusClass, setOverallLocStatusClass] = useState("");
-    const [overallFitnessStatusIcon, setOverallFitnessStatusIcon] = useState("");
-    const [overallFitnessStatusClass, setOverallFitnessStatusClass] = useState("");
-    const [overallNotifStatusIcon, setOverallNotifStatusIcon] = useState("");
-    const [overallNotifStatusClass, setOverallNotifStatusClass] = useState("");
-    const [overallBackgroundRestrictionStatusIcon, setOverallBackgroundRestrictionStatusIcon] = useState("");
-    const [overallBackgroundRestrictionStatusClass, setOverallBackgroundRestrictionStatusClass] = useState("");
+    const [overallLocStatusIcon, setOverallLocStatusIcon] = useState("alpha-x-circle-outline");
+    const [overallLocStatusClass, setOverallLocStatusClass] = useState("status-red");
+    const [overallFitnessStatusIcon, setOverallFitnessStatusIcon] = useState("alpha-x-circle-outline");
+    const [overallFitnessStatusClass, setOverallFitnessStatusClass] = useState("status-red");
+    const [overallNotifStatusIcon, setOverallNotifStatusIcon] = useState("alpha-x-circle-outline");
+    const [overallNotifStatusClass, setOverallNotifStatusClass] = useState("status-red");
+    const [overallBackgroundRestrictionStatusIcon, setOverallBackgroundRestrictionStatusIcon] = useState("alpha-x-circle-outline");
+    const [overallBackgroundRestrictionStatusClass, setOverallBackgroundRestrictionStatusClass] = useState("status-red");
+
+    const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
+    const settingsScope = angular.element(mainControlEl).scope();
+    console.log("settings scope", settingsScope);
 
     //load when ready
     useEffect(() => {
@@ -100,7 +106,17 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         }
     }
 
-    let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
+    function iconMap(statusState) {
+        if(statusState){
+            console.log("setting check because", statusState);
+            return "check-circle-outline";
+        } else
+        {
+            console.log("setting x because", statusState);
+            return "alpha-x-circle-outline";
+        }
+    }
+    // let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
     let classMap = (statusState) => statusState ? "status-green" : "status-red";
 
     function recomputeOverallStatus() {
@@ -280,22 +296,24 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             iOSPermDescTag = 'intro.appstatus.locperms.description.ios-lt-13';
         }
         console.log("description tags are "+iOSSettingsDescTag+" "+iOSPermDescTag);
+        //lower part of this code is not running??
         // location settings
-        let locSettingsCheck = {
+        const locSettingsCheck = {
             name: t("intro.appstatus.locsettings.name"),
             desc: t(iOSSettingsDescTag),
             statusState: false,
             fix: fixSettings,
             refresh: checkSettings
-        }
-        let locPermissionsCheck = {
+        };
+        const locPermissionsCheck = {
             name: t("intro.appstatus.locperms.name"),
             desc: t(iOSPermDescTag),
             statusState: false,
             fix: fixPerms,
             refresh: checkPerms
-        }
+        };
         setLocChecks([locSettingsCheck, locPermissionsCheck]);
+        console.log("loc check set to", locChecks);
         refreshChecks(locChecks, recomputeLocStatus);
     }
 
@@ -436,36 +454,39 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     function setUpPermissions() {
         console.log("app is launched, should refresh");
         setPlatform(window.device.platform);
+        console.log("window device", window.device.version.split(".")[0]);
         setOsver(window.device.version.split(".")[0]);
         setupPermissionText();
         setupLocChecks();
         setupFitnessChecks();
         setupNotificationChecks();
         setupBackgroundRestrictionChecks();
+        console.log("done setting up, icons are", overallLocStatusIcon, overallFitnessStatusIcon, overallNotifStatusIcon, overallBackgroundRestrictionStatusIcon);
     };
 
-    // $ionicPlatform.on("resume", function() {
-    //     console.log("PERMISSION CHECK: app has resumed, should refresh");
-    //     refreshChecks(locChecks, recomputeLocStatus);
-    //     refreshChecks(fitnessChecks, recomputeFitnessStatus);
-    //     refreshChecks(notificationChecks, recomputeNotificationStatus);
-    //     refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus);
-    // });
+    $ionicPlatform.on("resume", function() {
+        console.log("PERMISSION CHECK: app has resumed, should refresh");
+        refreshChecks(locChecks, recomputeLocStatus);
+        refreshChecks(fitnessChecks, recomputeFitnessStatus);
+        refreshChecks(notificationChecks, recomputeNotificationStatus);
+        refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus);
+        console.log("setting checks are", locChecks, fitnessChecks, notificationChecks, backgroundRestrictionChecks);
+    });
 
 
     //how to do this?
-    // $scope.$on("recomputeAppStatus", function(e, callback) {
-    //     console.log("PERMISSION CHECK: recomputing state");
-    //     Promise.all([
-    //         refreshChecks(locChecks, recomputeLocStatus),
-    //         refreshChecks(fitnessChecks, recomputeFitnessStatus),
-    //         refreshChecks(notificationChecks, recomputeNotificationStatus),
-    //         refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus)
-    //     ]).then( () => {
-    //         callback(overallStatus)
-    //     }
-    //     );
-    // });
+    settingsScope.$on("recomputeAppStatus", function() {
+        console.log("PERMISSION CHECK: recomputing state");
+        Promise.all([
+            refreshChecks(locChecks, recomputeLocStatus),
+            refreshChecks(fitnessChecks, recomputeFitnessStatus),
+            refreshChecks(notificationChecks, recomputeNotificationStatus),
+            refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus)
+        ]).then( () => {
+            console.log("overall status is", overallStatus);
+        }
+        );
+    });
 
     return (
         <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
