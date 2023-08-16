@@ -2,7 +2,11 @@ import angular from 'angular';
 import LabelTab from './diary/LabelTab';
 
 angular.module('emission.main.diary',['emission.main.diary.services',
-                                      'emission.survey',
+                                      'emission.survey.external.launch',
+                                      'emission.survey.multilabel.buttons',
+                                      'emission.survey.multilabel.infscrollfilters',
+                                      'emission.survey.enketo.add-note-button',
+                                      'emission.survey.enketo.trip.infscrollfilters',
                                       'emission.plugin.logger',
                                       LabelTab.module])
 
