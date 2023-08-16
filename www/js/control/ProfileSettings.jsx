@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
-import { Dialog, Button, useTheme, Text, Snackbar, Portal } from "react-native-paper";
+import { Dialog, Button, useTheme, Text } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -69,7 +69,6 @@ const ProfileSettings = () => {
     const [logoutVis, setLogoutVis] = useState(false);
     const [dataPendingVis, setDataPendingVis] = useState(false);
     const [dataPushedVis, setDataPushedVis] = useState(false);
-    // const [userDataVis, setUserDataVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
     const [noConsentVis, setNoConsentVis] = useState(false);
     const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
@@ -79,8 +78,6 @@ const ProfileSettings = () => {
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
-    // const [userData, setUserData] = useState([]);
-    const [rawUserData, setRawUserData] = useState({});
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
