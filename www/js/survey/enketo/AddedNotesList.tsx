@@ -11,15 +11,15 @@ import { DataTable } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
+import EnketoModal from "./EnketoModal";
 
 const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
-  const [rerender, setRerender] = useState(false);
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
+  const [rerender, setRerender] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
 
-  const DiaryHelper = getAngularService("DiaryHelper");
-  const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
-  const $rootScope = getAngularService("$rootScope");
   const $ionicPopup = getAngularService("$ionicPopup");
 
   function setDisplayDt(entry) {
@@ -78,20 +78,24 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
   }
 
   function editEntry(entry) {
-    const prevResponse = entry.data.xmlResponse;
-    const dataKey = entry.key || entry.metadata.key;
-    const surveyName = entry.data.name;
-    return EnketoSurveyLaunch
-      .launch($rootScope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey, timelineEntry })
-      .then(result => {
-        if (!result) return;
-        repopulateTimelineEntry(timelineEntry._id.$oid);
-        deleteEntry(entry);
-      });
+    setEditingEntry(entry);
+    setModalVisible(true);
+  }
+
+  async function onEditedResponse(response) {
+    if (!response) return;
+    await deleteEntry(editingEntry);
+    setEditingEntry(null);
+    repopulateTimelineEntry(timelineEntry._id.$oid);
+  }
+
+  function onModalDismiss() {
+    setEditingEntry(null);
+    setModalVisible(false);
   }
 
   const sortedEntries = additionEntries?.sort((a, b) => a.data.start_ts - b.data.start_ts);
-  return (
+  return (<>
     <DataTable>
       {sortedEntries?.map((entry, index) => {
         const isLastRow = (index == additionEntries.length - 1);
@@ -116,7 +120,14 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
         )
       })}
     </DataTable>
-  );
+    <EnketoModal visible={modalVisible} onDismiss={onModalDismiss}
+      onResponseSaved={onEditedResponse} surveyName={editingEntry?.data.name}
+      opts={{
+        timelineEntry,
+        prefilledSurveyResponse: editingEntry?.data.xmlResponse,
+        dataKey: editingEntry?.key || editingEntry?.metadata?.key,
+      }} />
+  </>);
 };
 
 const styles:any = {
