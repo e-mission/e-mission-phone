@@ -1,5 +1,4 @@
 //this comes up for checkAppStatus, and when needed?
-//currently lacking the parts that actually show permissions
 //will probably change when we update introduction
 import React, { useState, useEffect } from "react";
 import { Modal } from "react-native";
@@ -33,28 +32,12 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState([]);
 
     const [overallStatus, setOverallStatus] = useState(false);
-    const [overallLocStatus, setOverallLocStatus] = useState(false);
-    const [overallFitnessStatus, setOverallFitnessStatus] = useState(false);
-    const [overallNotificationStatus, setOverallNotificationStatus] = useState(false);
-    const [overallBackgroundRestrictionStatus, setOverallBackgroundRestrictionStatus] = useState(false);
 
     const [fitnessPermNeeded, setFitnessPermNeeded] = useState(false);
     const [overallFitnessName, setOverallFitnessName] = useState("");
     const [locationPermExplanation, setLocationPermExplanation] = useState("");
 
-    const [backgroundRestrictionChecks, setBackgroundRestrictionChecks] = useState([]);
-    const [locChecks, setLocChecks] = useState([]);
-    const [fitnessChecks, setFitnessChecks] = useState([]);
-    const [notificationChecks, setNotificationChecks] = useState([]);
-
-    const [overallLocStatusIcon, setOverallLocStatusIcon] = useState("alpha-x-circle-outline");
-    const [overallLocStatusClass, setOverallLocStatusClass] = useState("status-red");
-    const [overallFitnessStatusIcon, setOverallFitnessStatusIcon] = useState("alpha-x-circle-outline");
-    const [overallFitnessStatusClass, setOverallFitnessStatusClass] = useState("status-red");
-    const [overallNotifStatusIcon, setOverallNotifStatusIcon] = useState("alpha-x-circle-outline");
-    const [overallNotifStatusClass, setOverallNotifStatusClass] = useState("status-red");
-    const [overallBackgroundRestrictionStatusIcon, setOverallBackgroundRestrictionStatusIcon] = useState("alpha-x-circle-outline");
-    const [overallBackgroundRestrictionStatusClass, setOverallBackgroundRestrictionStatusClass] = useState("status-red");
+    const [checkList, setCheckList] = useState([]);
 
     const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
     const settingsScope = angular.element(mainControlEl).scope();
@@ -68,119 +51,41 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         }
     }, [appConfig]);
 
-    function setupLocChecks() {
+    function createChecklist(){
         if(platform.toLowerCase() == "android") {
-            return setupAndroidLocChecks();
-        } else if (platform.toLowerCase == "ios") {
-            return setupIOSLocChecks();
-        } else {
-            console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
-        }
-    }
-
-    function setupFitnessChecks() {
-        if (platform.toLowerCase() == "android") {
-            return setupAndroidFitnessChecks();
+            setupAndroidLocChecks();
+            setupAndroidFitnessChecks();
+            setupAndroidNotificationChecks();
+            setupAndroidBackgroundRestrictionChecks();
         } else if (platform.toLowerCase() == "ios") {
-            return setupIOSFitnessChecks();
+            setupIOSLocChecks();
+            setupIOSFitnessChecks();
+            setupAndroidNotificationChecks();
         } else {
             console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
         }
+        refreshAllChecks();
     }
 
-    function setupNotificationChecks() {
-       return setupAndroidNotificationChecks();
-    }
-
-    function setupBackgroundRestrictionChecks() {
-        if (platform.toLowerCase() == "android") {
-            setBackgroundUnrestrictionsNeeded(true);
-            return setupAndroidBackgroundRestrictionChecks();
-        } else if (platform.toLowerCase() == "ios") {
-            setBackgroundUnrestrictionsNeeded(false);
-            setOverallBackgroundRestrictionStatus(true);
-            setBackgroundRestrictionChecks([]);
-            return true;
-        } else {
-            console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
-        }
-    }
-
-    function iconMap(statusState) {
-        if(statusState){
-            console.log("setting check because", statusState);
-            return "check-circle-outline";
-        } else
-        {
-            console.log("setting x because", statusState);
-            return "alpha-x-circle-outline";
-        }
-    }
-    // let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
+    let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
     let classMap = (statusState) => statusState ? "status-green" : "status-red";
 
     function recomputeOverallStatus() {
-        setOverallStatus(overallLocStatus
-            && overallFitnessStatus
-            && overallNotificationStatus
-            && overallBackgroundRestrictionStatus);
+        let status = true;
+        checkList.forEach((lc) => {
+            if(!lc.statusState){
+                status = false;
+            }
+        })
+        setOverallStatus(status);
     }
 
-    function recomputeLocStatus() {
-        locChecks.forEach((lc) => {
-            lc.statusIcon = iconMap(lc.statusState);
-            lc.statusClass = classMap(lc.statusState)
-        });
-        setOverallLocStatus(locChecks.map((lc) => lc.statusState).reduce((pv, cv) => pv && cv));
-        console.log("overallLocStatus = "+overallLocStatus+" from ", locChecks);
-        setOverallLocStatusIcon(iconMap(overallLocStatus));
-        setOverallLocStatusClass(classMap(overallLocStatus));
-        recomputeOverallStatus();
-    }
-
-    function recomputeFitnessStatus() {
-        fitnessChecks.forEach((fc) => {
-            fc.statusIcon = iconMap(fc.statusState);
-            fc.statusClass = classMap(fc.statusState)
-        });
-        setOverallFitnessStatus(fitnessChecks.map((fc) => fc.statusState).reduce((pv, cv) => pv && cv));
-        console.log("overallFitnessStatus = "+overallFitnessStatus+" from ", fitnessChecks);
-        setOverallFitnessStatusIcon(iconMap(overallFitnessStatus));
-        setOverallFitnessStatusClass(classMap(overallFitnessStatus));
-        recomputeOverallStatus();
-    }
-
-    function recomputeNotificationStatus() {
-        notificationChecks.forEach((nc) => {
-            nc.statusIcon = iconMap(nc.statusState);
-            nc.statusClass = classMap(nc.statusState)
-        });
-        setOverallNotificationStatus(notificationChecks.map((nc) => nc.statusState).reduce((pv, cv) => pv && cv));
-        console.log("overallNotificationStatus = "+overallNotificationStatus+" from ", notificationChecks);
-        setOverallNotifStatusIcon(iconMap(overallNotificationStatus));
-        setOverallNotifStatusClass(classMap(overallNotificationStatus));
-        recomputeOverallStatus();
-    }
-
-    function recomputeBackgroundRestrictionStatus() {
-        if (!backgroundRestrictionChecks) return;
-        backgroundRestrictionChecks.forEach((brc) => {
-            brc.statusIcon = iconMap(brc.statusState);
-            brc.statusClass = classMap(brc.statusState)
-        });
-        setOverallBackgroundRestrictionStatus(backgroundRestrictionChecks.map((nc) => nc.statusState).reduce((pv, cv) => pv && cv));
-        console.log("overallBackgroundRestrictionStatus = "+overallBackgroundRestrictionStatus+" from ", backgroundRestrictionChecks);
-        setOverallBackgroundRestrictionStatusIcon(iconMap(overallBackgroundRestrictionStatus));
-        setOverallBackgroundRestrictionStatusClass(classMap(overallBackgroundRestrictionStatus));
-        recomputeOverallStatus();
-    }
-
-    function checkOrFix(checkObj, nativeFn, recomputeFn, showError=true) {
+    function checkOrFix(checkObj, nativeFn, showError=true) {
         return nativeFn()
             .then((status) => {
                 console.log("availability ", status)
                 checkObj.statusState = true;
-                recomputeFn();
+                recomputeAllChecks();
                 return status;
             }).catch((error) => {
                 console.log("Error", error)
@@ -193,47 +98,28 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
                     // });
                 };
                 checkObj.statusState = false;
-                recomputeFn();
+                recomputeAllChecks();
                 return error;
             });
-    }
-
-    function refreshChecks(checksList, recomputeFn) {
-        // without this, even if the checksList is []
-        // the reduce in the recomputeFn fails because it is called on a zero
-        // length array without a default value
-        // we should be able to also specify a default value of True
-        // but I don't want to mess with that at this last minute
-        if (!checksList || checksList.length == 0) {
-            return Promise.resolve(true);
-        }
-        let checkPromises = checksList?.map((lc) => lc.refresh());
-        console.log(checkPromises);
-        return Promise.all(checkPromises)
-            .then((result) => recomputeFn())
-            .catch((error) => recomputeFn())
     }
 
     function setupAndroidLocChecks() {
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
-            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.fixLocationSettings,
-                recomputeLocStatus, true);
+            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.fixLocationSettings, true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
-            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationSettings,
-                recomputeLocStatus, false);
+            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationSettings, false);
         };
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
-                recomputeLocStatus, true).then((error) => locPermissionsCheck.desc = error);
+                true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
-            return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationPermissions,
-                recomputeLocStatus, false);
+            return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationPermissions, false);
         };
         var androidSettingsDescTag = "intro.appstatus.locsettings.description.android-gte-9";
         if (osver < 9) {
@@ -265,30 +151,31 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             fix: fixPerms,
             refresh: checkPerms
         }
-        setLocChecks([locSettingsCheck, locPermissionsCheck]);
-        refreshChecks(locChecks, recomputeLocStatus);
+        let tempChecks = checkList;
+        tempChecks.push(locSettingsCheck, locPermissionsCheck);
+        setCheckList(tempChecks);
     }
 
     function setupIOSLocChecks() {
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
             return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.fixLocationSettings,
-                recomputeLocStatus, true);
+                true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
             return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationSettings,
-                recomputeLocStatus, false);
+                false);
         };
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
-                recomputeLocStatus, true).then((error) => locPermissionsCheck.desc = error);
+                true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationPermissions,
-                recomputeLocStatus, false);
+                false);
         };
         var iOSSettingsDescTag = "intro.appstatus.locsettings.description.ios";
         var iOSPermDescTag = "intro.appstatus.locperms.description.ios-gte-13";
@@ -302,7 +189,6 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             name: t("intro.appstatus.locsettings.name"),
             desc: t(iOSSettingsDescTag),
             statusState: false,
-            fix: fixSettings,
             refresh: checkSettings
         };
         const locPermissionsCheck = {
@@ -312,9 +198,9 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             fix: fixPerms,
             refresh: checkPerms
         };
-        setLocChecks([locSettingsCheck, locPermissionsCheck]);
-        console.log("loc check set to", locChecks);
-        refreshChecks(locChecks, recomputeLocStatus);
+        let tempChecks = checkList;
+        tempChecks.push(locSettingsCheck, locPermissionsCheck);
+        setCheckList(tempChecks);
     }
 
     function setupAndroidFitnessChecks() {
@@ -323,12 +209,12 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
-                recomputeFitnessStatus, true).then((error) => fitnessPermissionsCheck.desc = error);
+                true).then((error) => fitnessPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidFitnessPermissions,
-                recomputeFitnessStatus, false);
+                false);
         };
   
         let fitnessPermissionsCheck = {
@@ -337,9 +223,9 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             fix: fixPerms,
             refresh: checkPerms
         }
-        setOverallFitnessName(t("intro.appstatus.overall-fitness-name-android"));
-        setFitnessChecks([fitnessPermissionsCheck]);
-        refreshChecks(fitnessChecks, recomputeFitnessStatus);
+        let tempChecks = checkList;
+        tempChecks.push(fitnessPermissionsCheck);
+        setCheckList(tempChecks);
     }
 
     function setupIOSFitnessChecks() {
@@ -348,12 +234,12 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
-                recomputeFitnessStatus, true).then((error) => fitnessPermissionsCheck.desc = error);
+                true).then((error) => fitnessPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidFitnessPermissions,
-                recomputeFitnessStatus, false);
+                false);
         };
   
         let fitnessPermissionsCheck = {
@@ -362,21 +248,21 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             fix: fixPerms,
             refresh: checkPerms
         }
-        setOverallFitnessName(t("intro.appstatus.overall-fitness-name-ios"));
-        setFitnessChecks([fitnessPermissionsCheck]);
-        refreshChecks(fitnessChecks, recomputeFitnessStatus);
+        let tempChecks = checkList;
+        tempChecks.push(fitnessPermissionsCheck);
+        setCheckList(tempChecks);
     }
 
     function setupAndroidNotificationChecks() {
         let fixPerms = function() {
             console.log("fix and refresh notification permissions");
             return checkOrFix(appAndChannelNotificationsCheck, window.cordova.plugins.BEMDataCollection.fixShowNotifications,
-                recomputeNotificationStatus, true);
+                true);
         };
         let checkPerms = function() {
             console.log("fix and refresh notification permissions");
             return checkOrFix(appAndChannelNotificationsCheck, window.cordova.plugins.BEMDataCollection.isValidShowNotifications,
-                recomputeNotificationStatus, false);
+                false);
         };
         let appAndChannelNotificationsCheck = {
             name: t("intro.appstatus.notificationperms.app-enabled-name"),
@@ -384,30 +270,31 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             fix: fixPerms,
             refresh: checkPerms
         }
-        setNotificationChecks([appAndChannelNotificationsCheck]);
-        refreshChecks(notificationChecks, recomputeNotificationStatus);
+        let tempChecks = checkList;
+        tempChecks.push(appAndChannelNotificationsCheck);
+        setCheckList(tempChecks);
     }
 
     function setupAndroidBackgroundRestrictionChecks() {
         let fixPerms = function() {
             console.log("fix and refresh backgroundRestriction permissions");
             return checkOrFix(unusedAppsUnrestrictedCheck, window.cordova.plugins.BEMDataCollection.fixUnusedAppRestrictions,
-                recomputeBackgroundRestrictionStatus, true);
+                true);
         };
         let checkPerms = function() {
             console.log("fix and refresh backgroundRestriction permissions");
             return checkOrFix(unusedAppsUnrestrictedCheck, window.cordova.plugins.BEMDataCollection.isUnusedAppUnrestricted,
-                recomputeBackgroundRestrictionStatus, false);
+                false);
         };
         let fixBatteryOpt = function() {
             console.log("fix and refresh battery optimization permissions");
             return checkOrFix(ignoreBatteryOptCheck, window.cordova.plugins.BEMDataCollection.fixIgnoreBatteryOptimizations,
-                recomputeBackgroundRestrictionStatus, true);
+                true);
         };
         let checkBatteryOpt = function() {
             console.log("fix and refresh battery optimization permissions");
             return checkOrFix(ignoreBatteryOptCheck, window.cordova.plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
-                recomputeBackgroundRestrictionStatus, false);
+                false);
         };
         var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-12";
         if (osver < 12) {
@@ -425,8 +312,9 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             fix: fixBatteryOpt,
             refresh: checkBatteryOpt
         }
-        setBackgroundRestrictionChecks([unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck]);
-        refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus);
+        let tempChecks = checkList;
+        tempChecks.push(unusedAppsUnrestrictedCheck, ignoreBatteryOptCheck);
+        setCheckList(tempChecks);
     }
 
     function setupPermissionText() {
@@ -457,35 +345,36 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         console.log("window device", window.device.version.split(".")[0]);
         setOsver(window.device.version.split(".")[0]);
         setupPermissionText();
-        setupLocChecks();
-        setupFitnessChecks();
-        setupNotificationChecks();
-        setupBackgroundRestrictionChecks();
-        console.log("done setting up, icons are", overallLocStatusIcon, overallFitnessStatusIcon, overallNotifStatusIcon, overallBackgroundRestrictionStatusIcon);
+        createChecklist();
     };
+
+    function refreshAllChecks() {
+        //refresh each check
+        checkList.forEach((lc) => {
+            lc.refresh();
+        });
+        console.log("setting checks are", checkList);
+        recomputeOverallStatus();
+    }
+     function recomputeAllChecks() {
+        //recompute each check
+        checkList.forEach((lc) => {
+            lc.statusIcon = iconMap(lc.statusState);
+            lc.statusClass = classMap(lc.statusState)
+        });
+        console.log("setting checks are", checkList);
+     }
 
     $ionicPlatform.on("resume", function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
-        refreshChecks(locChecks, recomputeLocStatus);
-        refreshChecks(fitnessChecks, recomputeFitnessStatus);
-        refreshChecks(notificationChecks, recomputeNotificationStatus);
-        refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus);
-        console.log("setting checks are", locChecks, fitnessChecks, notificationChecks, backgroundRestrictionChecks);
+        refreshAllChecks();
     });
 
 
     //how to do this?
     settingsScope.$on("recomputeAppStatus", function() {
         console.log("PERMISSION CHECK: recomputing state");
-        Promise.all([
-            refreshChecks(locChecks, recomputeLocStatus),
-            refreshChecks(fitnessChecks, recomputeFitnessStatus),
-            refreshChecks(notificationChecks, recomputeNotificationStatus),
-            refreshChecks(backgroundRestrictionChecks, recomputeBackgroundRestrictionStatus)
-        ]).then( () => {
-            console.log("overall status is", overallStatus);
-        }
-        );
+        refreshAllChecks();
     });
 
     return (
@@ -496,48 +385,26 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
                     <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
                     <Dialog.Content>
                         <Text>{t('intro.appstatus.overall-description')}</Text>
-                        <List.Accordion
-                            title={t('intro.appstatus.overall-loc-name')}
-                            description={t('intro.appstatus.overall-loc-description')}
-                            left={() => <List.Icon icon={overallLocStatusIcon} />}
-                            expanded={locExpanded}
-                            onPress={locPress} >
-                            {locChecks?.map((lc) => 
+                        {checkList?.map((lc) => 
                                 <PermissionItem 
+                                    key={lc.name}
                                     name={lc.name}
+                                    description={lc.desc}
                                     statusIcon={lc.statusIcon}
                                     fixAction={lc.fix}
-                                    refreshAction={lc.refresh}
+                                    // refreshAction={lc.refresh}
                                 >
                                 </PermissionItem>
                             )}
-                        </List.Accordion>
-                        <List.Accordion
-                            title={overallFitnessName}
-                            description={t('intro.appstatus.overall-fitness-description')}
-                            left={() => <List.Icon icon={overallFitnessStatusIcon} />}
-                            expanded={fitExpanded}
-                            onPress={fitPress}>
-                        </List.Accordion>
-                        <List.Accordion
-                            title={t('intro.appstatus.overall-notification-name')}
-                            description={t('intro.appstatus.overall-notification-description')}
-                            left={() => <List.Icon icon={overallNotifStatusIcon} />}
-                            expanded={notifExpanded}
-                            onPress={notifPress}>
-                        </List.Accordion>
-                        <List.Accordion
-                            title={t('intro.appstatus.overall-background-restrictions-name')}
-                            description={t('intro.appstatus.overall-background-restrictions-description')}
-                            left={() => <List.Icon icon={overallBackgroundRestrictionStatusIcon} />}
-                            expanded={backgroundExpanded}
-                            onPress={backgroundPress}>
-                        </List.Accordion>
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button 
+                            onPress={() => refreshAllChecks()}>
+                            {t('intro.appstatus.refresh')}
+                        </Button>
+                        <Button 
                             onPress={() => setPermitVis(false)}
-                            disabled={status}>
+                            disabled={!overallStatus}>
                             {t('control.button-accept')}
                         </Button>
                     </Dialog.Actions>

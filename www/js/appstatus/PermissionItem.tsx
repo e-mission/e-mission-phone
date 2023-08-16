@@ -2,7 +2,7 @@ import React from "react";
 import { List, Button } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 
-const PermissionItem = ({name, fixAction, refreshAction, statusIcon }) => {
+const PermissionItem = ({name, description, fixAction, statusIcon }) => {
     const { t } = useTranslation(); 
 
   
@@ -10,15 +10,12 @@ const PermissionItem = ({name, fixAction, refreshAction, statusIcon }) => {
         <>
             <List.Item 
                 title={t(name)}
-                description="Item description"
+                description={t(description)}
                 left={() => <List.Icon icon={statusIcon}/>} 
+                right={() => <Button onPress={()=>fixAction()}>
+                                {t('intro.appstatus.fix')}
+                            </Button>}
             />
-            <Button onPress={()=>fixAction()}>
-                {t('intro.appstatus.fix')}
-            </Button>
-            <Button onPress={()=>refreshAction()}>
-                {t('intro.appstatus.refresh')}
-            </Button>
         </>
     );
 };
