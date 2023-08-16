@@ -362,6 +362,7 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             lc.statusIcon = iconMap(lc.statusState);
             lc.statusClass = classMap(lc.statusState)
         });
+        recomputeOverallStatus();
         console.log("setting checks are", checkList);
      }
 
