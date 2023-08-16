@@ -1,6 +1,5 @@
 import React from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { array, func, object, oneOfType, bool, string } from 'prop-types';
 import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
@@ -24,7 +23,14 @@ const separator = () => <View style={{ height: 8 }} />
 const bigSpinner = <ActivityIndicator size="large" style={{margin: 15}} />
 const smallSpinner = <ActivityIndicator size="small" style={{margin: 5}} />
 
-const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMoreFn, isLoading }) => {
+type Props = {
+  listEntries: any[],
+  queriedRange: any,
+  pipelineRange: any,
+  loadMoreFn: (direction: string) => void,
+  isLoading: boolean | string
+}
+const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMoreFn, isLoading }: Props) => {
 
   const { t } = useTranslation();
 
@@ -82,13 +88,5 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
     );
   }
 }
-
-TimelineScrollList.propTypes = {
-  listEntries: array,
-  queriedRange: object,
-  pipelineRange: object,
-  loadMoreFn: func,
-  isLoading: oneOfType([bool, string])
-};
 
 export default TimelineScrollList;

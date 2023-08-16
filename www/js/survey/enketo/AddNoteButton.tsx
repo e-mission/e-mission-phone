@@ -8,15 +8,18 @@
 */
 
 import React, { useEffect, useState, useContext } from "react";
-import { angularize, getAngularService } from "../../angular-react-helper";
-import { object, string } from "prop-types";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { LabelTabContext } from "../../diary/LabelTab";
 import EnketoModal from "./EnketoModal";
 
-const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
+type Props = {
+  timelineEntry: any,
+  notesConfig: any,
+  storeKey: string,
+}
+const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const { t, i18n } = useTranslation();
   const [displayLabel, setDisplayLabel] = useState('');
   const { repopulateTimelineEntry } = useContext(LabelTabContext)
@@ -104,11 +107,5 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }) => {
       }} />
   </>);
 };
-
-AddNoteButton.propTypes = {
-  timelineEntry: object,
-  notesConfig: object,
-  storeKey: string,
-}
 
 export default AddNoteButton;

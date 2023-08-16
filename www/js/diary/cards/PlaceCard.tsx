@@ -9,7 +9,6 @@
 import React from "react";
 import { View, StyleSheet } from 'react-native';
 import { Text } from 'react-native-paper';
-import { object } from "prop-types";
 import useAppConfig from "../../useAppConfig";
 import AddNoteButton from "../../survey/enketo/AddNoteButton";
 import AddedNotesList from "../../survey/enketo/AddedNotesList";
@@ -18,7 +17,8 @@ import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 
-const PlaceCard = ({ place }) => {
+type Props = { place: {[key: string]: any} };
+const PlaceCard = ({ place }: Props) => {
 
   const { appConfig, loading } = useAppConfig();
   let [ placeDisplayName ] = useAddressNames(place);
@@ -74,9 +74,5 @@ const s = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-PlaceCard.propTypes = {
-  place: object,
-}
 
 export default PlaceCard;

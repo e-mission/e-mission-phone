@@ -9,15 +9,17 @@
 */
 
 import React, { useEffect, useState } from "react";
-import { angularize, getAngularService } from "../../angular-react-helper";
-import { object } from "prop-types";
+import { getAngularService } from "../../angular-react-helper";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "react-native-paper";
 import { logDebug } from "../../plugin/logger";
 import EnketoModal from "./EnketoModal";
 
-const UserInputButton = ({ timelineEntry }) => {
+type Props = {
+  timelineEntry: any,
+}
+const UserInputButton = ({ timelineEntry }: Props) => {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
 
@@ -72,10 +74,4 @@ const UserInputButton = ({ timelineEntry }) => {
   </>);
 };
 
-UserInputButton.propTypes = {
-  timelineEntry: object,
-  notesConfig: object,
-}
-
-angularize(UserInputButton, 'UserInputButton', 'emission.survey.userinputbutton');
 export default UserInputButton;

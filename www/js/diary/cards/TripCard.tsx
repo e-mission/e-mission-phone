@@ -7,7 +7,6 @@
 import React, { useContext } from "react";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Divider, Text, IconButton } from 'react-native-paper';
-import { object } from "prop-types";
 import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
@@ -23,7 +22,8 @@ import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 import { LabelTabContext } from "../LabelTab";
 
-const TripCard = ({ trip }) => {
+type Props = { trip: {[key: string]: any}};
+const TripCard = ({ trip }: Props) => {
 
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
@@ -155,9 +155,5 @@ const s = StyleSheet.create({
     lineHeight: 12,
   },
 });
-
-TripCard.propTypes = {
-  trip: object,
-}
 
 export default TripCard;

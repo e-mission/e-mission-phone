@@ -10,14 +10,14 @@
 import React from "react";
 import { View, StyleSheet } from 'react-native';
 import { Divider, Text } from 'react-native-paper';
-import { object } from "prop-types";
 import { getTheme } from "../../appTheme";
 import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 
-const UntrackedTimeCard = ({ triplike }) => {
+type Props = { triplike: {[key: string]: any}};
+const UntrackedTimeCard = ({ triplike }: Props) => {
   const { t } = useTranslation();
   const [ triplikeStartDisplayName, triplikeEndDisplayName ] = useAddressNames(triplike);
 
@@ -71,9 +71,5 @@ const s = StyleSheet.create({
     lineHeight: 12,
   },
 });
-
-UntrackedTimeCard.propTypes = {
-  triplike: object,
-}
 
 export default UntrackedTimeCard;

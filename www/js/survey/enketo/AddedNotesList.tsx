@@ -3,7 +3,6 @@
 */
 
 import React, { useContext, useState } from "react";
-import { array, object } from "prop-types";
 import moment from "moment";
 import { Text, Modal } from "react-native"
 import { Button, DataTable, Dialog } from "react-native-paper";
@@ -12,7 +11,11 @@ import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
 import EnketoModal from "./EnketoModal";
 
-const AddedNotesList = ({ timelineEntry, additionEntries }) => {
+type Props = {
+  timelineEntry: any,
+  additionEntries: any[],
+}
+const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
 
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
@@ -122,7 +125,8 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
         <Dialog.Title>Are you sure you wish to delete this entry?</Dialog.Title>
         <Dialog.Content>
           <Text style={{fontWeight: 'bold'}}>{editingEntry?.data?.label}</Text>
-          <Text>{editingEntry?.displayTime}</Text>
+          <Text>{editingEntry?.displayDt?.date}</Text>
+          <Text>{editingEntry?.displayDt?.time}</Text>
         </Dialog.Content>
         <Dialog.Actions>
           <Button onPress={() => deleteEntry(editingEntry)}>Delete</Button>
@@ -145,10 +149,5 @@ const styles:any = {
     pointerEvents: 'auto',
   },
 }
-
-AddedNotesList.propTypes = {
-  timelineEntry: object,
-  additionEntries: array,
-};
 
 export default AddedNotesList;
