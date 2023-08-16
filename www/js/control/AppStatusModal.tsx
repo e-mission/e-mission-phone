@@ -1,9 +1,8 @@
 //this comes up for checkAppStatus, and when needed?
 //will probably change when we update introduction
 import React, { useState, useEffect } from "react";
-import { Modal } from "react-native";
-import { Dialog, Button, Text, List } from 'react-native-paper';
-import { angularize } from "../angular-react-helper";
+import { Modal,  useWindowDimensions, ScrollView } from "react-native";
+import { Dialog, Button, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { getAngularService } from "../angular-react-helper";
 import PermissionItem from "../appstatus/PermissionItem";
@@ -14,6 +13,7 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const { appConfig, loading } = useAppConfig();
 
     const $ionicPlatform = getAngularService("$ionicPlatform");
+    const { height: windowHeight } = useWindowDimensions();
 
     const [locExpanded, setLocExpanded] = React.useState(false);
     const locPress = () => setLocExpanded(!locExpanded);
@@ -384,19 +384,25 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
                         onDismiss={() => setPermitVis(false)} 
                         style={dialogStyle}>
                     <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
-                    <Dialog.Content>
-                        <Text>{t('intro.appstatus.overall-description')}</Text>
-                        {checkList?.map((lc) => 
-                                <PermissionItem 
-                                    key={lc.name}
-                                    name={lc.name}
-                                    description={lc.desc}
-                                    statusIcon={lc.statusIcon}
-                                    fixAction={lc.fix}
-                                    // refreshAction={lc.refresh}
-                                >
-                                </PermissionItem>
-                            )}
+                    <Dialog.Content  style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
+                        <ScrollView persistentScrollbar={true}>
+                            <Text>{t('intro.appstatus.overall-description')}</Text>
+                            <Button 
+                                onPress={() => setExplainVis(true)}>
+                                {"What are these used for?"}
+                            </Button>
+                            <ExplainPermissions explanationList={explanationList} visible={explainVis} setVisible={setExplainVis}></ExplainPermissions>
+                            {checkList?.map((lc) => 
+                                    <PermissionItem 
+                                        key={lc.name}
+                                        name={lc.name}
+                                        description={lc.desc}
+                                        statusIcon={lc.statusIcon}
+                                        fixAction={lc.fix}
+                                    >
+                                    </PermissionItem>
+                                )}
+                        </ScrollView>
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button 
