@@ -80,6 +80,8 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
     initSurvey();
   }, [appConfig, loading, rest.visible]);
 
+  /* adapted from the template given by enketo-core:
+    https://github.com/enketo/enketo-core/blob/master/src/index.html */
   const enketoContent = (
     <div className="main" id="survey-paper">
       <article className="paper" data-tap-disabled="true">
@@ -87,13 +89,11 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
         will be appended by Enketo Core. */}
         <header ref={headerEl} className="form-header clearfix">
-          <Pressable style={s.dismissBtn} onPress={() => rest.onDismiss()} accessibilityRole={'button'}>
-            <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>
-              {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
-              󰁍
-            </span>
+          <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
+            {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
+            <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>󰁍</span>
             <span>{t('survey.dismiss')}</span>
-          </Pressable>
+          </button>
           <span className="form-language-selector hide"><span>Choose Language</span></span>
           <nav className="pages-toc hide" role="navigation">
             <label htmlFor="toc-toggle"></label>
@@ -110,14 +110,11 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
           {/* Used some quick-and-dirty inline CSS styles here because the form-footer should be styled in the
           mother application. The HTML markup can be changed as well. */}
           <a href="#" className="previous-page disabled" style={{ position: 'absolute', left: 10, bottom: 40 }}>{t('survey.back')}</a>
-          <Pressable onPress={() => validateAndSave()} accessibilityRole='button' style={{margin: 'auto'}}>
-            <button id="validate-form" className="btn btn-primary" accessibilityRole='none'
-                style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
-              {t('survey.save')}
-            </button>
-          </Pressable>
+          <button id="validate-form" className="btn btn-primary" onClick={() => validateAndSave()}
+              style={{ width: 200, marginLeft: 'calc(50% - 100px)' }}>
+            {t('survey.save')}
+          </button>
           <a href="#survey-paper" className="btn btn-primary next-page disabled" style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>{t('survey.next')}</a>
-
           <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
           <div className="form-footer__jump-nav" style={{ display: 'flex', flexDirection: 'row' }}>
             <a href="#" className="btn btn-default disabled first-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.return-to-beginning')}</a>
@@ -150,6 +147,9 @@ const s = StyleSheet.create({
     fontSize: 11,
     color: '#222',
     marginRight: 'auto',
+    display: 'flex',
+    alignItems: 'center',
+    padding: 0,
   }
 });
 
