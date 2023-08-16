@@ -11,20 +11,14 @@ import ExplainPermissions from "../appstatus/ExplainPermissions";
 
 const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const { t } = useTranslation();
+    //const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
 
-    const $ionicPlatform = getAngularService("$ionicPlatform");
     const { height: windowHeight } = useWindowDimensions();
 
-    const [locExpanded, setLocExpanded] = React.useState(false);
-    const locPress = () => setLocExpanded(!locExpanded);
-    const [fitExpanded, setFitExpanded] = React.useState(false);
-    const fitPress = () => setFitExpanded(!fitExpanded);
-    const [notifExpanded, setNotifExpanded] = React.useState(false);
-    const notifPress = () => setNotifExpanded(!notifExpanded);
-    const [backgroundExpanded, setBackgroundExpanded] = React.useState(false);
-    const backgroundPress = () => setBackgroundExpanded(!backgroundExpanded);
     const [explainVis, setExplainVis] = useState(false);
+
+    const $ionicPlatform = getAngularService("$ionicPlatform");
 
     const [osver, setOsver] = useState(0);
     const [platform, setPlatform] = useState("");
@@ -36,8 +30,6 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const [overallStatus, setOverallStatus] = useState(false);
 
     const [fitnessPermNeeded, setFitnessPermNeeded] = useState(false);
-    const [overallFitnessName, setOverallFitnessName] = useState("");
-    const [locationPermExplanation, setLocationPermExplanation] = useState("");
 
     const [checkList, setCheckList] = useState([]);
     const [explanationList, setExplanationList] = useState([]);
@@ -50,8 +42,8 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     //load when ready
     useEffect(() => {
         if (appConfig) {
-            setPlatform(window.device.platform.toLowerCase());
-            setOsver(window.device.version.split(".")[0]);
+            setPlatform(window['device'].platform.toLowerCase());
+            setOsver(window['device'].version.split(".")[0]);
 
             if(!haveSetText)
             {
@@ -65,18 +57,19 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     }, [appConfig]);
 
     function createChecklist(){
-        if(platform.toLowerCase() == "android") {
+        if(platform == "android") {
             setupAndroidLocChecks();
             setupAndroidFitnessChecks();
             setupAndroidNotificationChecks();
             setupAndroidBackgroundRestrictionChecks();
-        } else if (platform.toLowerCase() == "ios") {
+        } else if (platform == "ios") {
             setupIOSLocChecks();
             setupIOSFitnessChecks();
             setupAndroidNotificationChecks();
         } else {
             console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
         }
+        
         refreshAllChecks();
     }
 
@@ -119,20 +112,20 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     function setupAndroidLocChecks() {
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
-            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.fixLocationSettings, true);
+            return checkOrFix(locSettingsCheck, window['cordova'].plugins.BEMDataCollection.fixLocationSettings, true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
-            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationSettings, false);
+            return checkOrFix(locSettingsCheck, window['cordova'].plugins.BEMDataCollection.isValidLocationSettings, false);
         };
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
-            return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
+            return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixLocationPermissions,
                 true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
-            return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationPermissions, false);
+            return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.isValidLocationPermissions, false);
         };
         var androidSettingsDescTag = "intro.appstatus.locsettings.description.android-gte-9";
         if (osver < 9) {
@@ -172,22 +165,22 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     function setupIOSLocChecks() {
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
-            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.fixLocationSettings,
+            return checkOrFix(locSettingsCheck, window['cordova'].plugins.BEMDataCollection.fixLocationSettings,
                 true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
-            return checkOrFix(locSettingsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationSettings,
+            return checkOrFix(locSettingsCheck, window['cordova'].plugins.BEMDataCollection.isValidLocationSettings,
                 false);
         };
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
-            return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
+            return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixLocationPermissions,
                 true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
-            return checkOrFix(locPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidLocationPermissions,
+            return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.isValidLocationPermissions,
                 false);
         };
         var iOSSettingsDescTag = "intro.appstatus.locsettings.description.ios";
@@ -202,6 +195,7 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
             name: t("intro.appstatus.locsettings.name"),
             desc: t(iOSSettingsDescTag),
             statusState: false,
+            fix: fixSettings,
             refresh: checkSettings
         };
         const locPermissionsCheck = {
@@ -217,41 +211,39 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     }
 
     function setupAndroidFitnessChecks() {
-        setFitnessPermNeeded(osver >= 10);
-
-        let fixPerms = function() {
+        if(osver >= 10){
+            let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
-            return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
+            return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixFitnessPermissions,
                 true).then((error) => fitnessPermissionsCheck.desc = error);
-        };
-        let checkPerms = function() {
-            console.log("fix and refresh fitness permissions");
-            return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidFitnessPermissions,
-                false);
-        };
-  
-        let fitnessPermissionsCheck = {
-            name: t("intro.appstatus.fitnessperms.name"),
-            desc: t("intro.appstatus.fitnessperms.description.android"),
-            fix: fixPerms,
-            refresh: checkPerms
+            };
+            let checkPerms = function() {
+                console.log("fix and refresh fitness permissions");
+                return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.isValidFitnessPermissions,
+                    false);
+            };
+    
+            let fitnessPermissionsCheck = {
+                name: t("intro.appstatus.fitnessperms.name"),
+                desc: t("intro.appstatus.fitnessperms.description.android"),
+                fix: fixPerms,
+                refresh: checkPerms
+            }
+            let tempChecks = checkList;
+            tempChecks.push(fitnessPermissionsCheck);
+            setCheckList(tempChecks);
         }
-        let tempChecks = checkList;
-        tempChecks.push(fitnessPermissionsCheck);
-        setCheckList(tempChecks);
     }
 
     function setupIOSFitnessChecks() {
-        setFitnessPermNeeded(true);
-
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
-            return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
+            return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixFitnessPermissions,
                 true).then((error) => fitnessPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
-            return checkOrFix(fitnessPermissionsCheck, window.cordova.plugins.BEMDataCollection.isValidFitnessPermissions,
+            return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.isValidFitnessPermissions,
                 false);
         };
   
@@ -269,12 +261,12 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     function setupAndroidNotificationChecks() {
         let fixPerms = function() {
             console.log("fix and refresh notification permissions");
-            return checkOrFix(appAndChannelNotificationsCheck, window.cordova.plugins.BEMDataCollection.fixShowNotifications,
+            return checkOrFix(appAndChannelNotificationsCheck, window['cordova'].plugins.BEMDataCollection.fixShowNotifications,
                 true);
         };
         let checkPerms = function() {
             console.log("fix and refresh notification permissions");
-            return checkOrFix(appAndChannelNotificationsCheck, window.cordova.plugins.BEMDataCollection.isValidShowNotifications,
+            return checkOrFix(appAndChannelNotificationsCheck, window['cordova'].plugins.BEMDataCollection.isValidShowNotifications,
                 false);
         };
         let appAndChannelNotificationsCheck = {
@@ -291,22 +283,22 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     function setupAndroidBackgroundRestrictionChecks() {
         let fixPerms = function() {
             console.log("fix and refresh backgroundRestriction permissions");
-            return checkOrFix(unusedAppsUnrestrictedCheck, window.cordova.plugins.BEMDataCollection.fixUnusedAppRestrictions,
+            return checkOrFix(unusedAppsUnrestrictedCheck, window['cordova'].plugins.BEMDataCollection.fixUnusedAppRestrictions,
                 true);
         };
         let checkPerms = function() {
             console.log("fix and refresh backgroundRestriction permissions");
-            return checkOrFix(unusedAppsUnrestrictedCheck, window.cordova.plugins.BEMDataCollection.isUnusedAppUnrestricted,
+            return checkOrFix(unusedAppsUnrestrictedCheck, window['cordova'].plugins.BEMDataCollection.isUnusedAppUnrestricted,
                 false);
         };
         let fixBatteryOpt = function() {
             console.log("fix and refresh battery optimization permissions");
-            return checkOrFix(ignoreBatteryOptCheck, window.cordova.plugins.BEMDataCollection.fixIgnoreBatteryOptimizations,
+            return checkOrFix(ignoreBatteryOptCheck, window['cordova'].plugins.BEMDataCollection.fixIgnoreBatteryOptimizations,
                 true);
         };
         let checkBatteryOpt = function() {
             console.log("fix and refresh battery optimization permissions");
-            return checkOrFix(ignoreBatteryOptCheck, window.cordova.plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
+            return checkOrFix(ignoreBatteryOptCheck, window['cordova'].plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
                 false);
         };
         var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-12";
@@ -350,27 +342,17 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
 
         setExplanationList(tempExplanations);
   
+        //I don't see this applied anywhere pre-migration
+        //message is about medium accuracy settings
+        //should there be a check set up for this??
         setBackgroundRestricted(false);
-        if(window.device.manufacturer.toLowerCase() == "samsung") {
+        if(window['device'].manufacturer.toLowerCase() == "samsung") {
           setBackgroundRestricted(true);
           setAllowBackgroundInstructions(t("intro.allow_background.samsung"));
         }
   
         console.log("Explanation = "+explanationList);
     }
-
-    function checkLocationServicesEnabled() {
-        console.log("About to see if location services are enabled");
-    }
-
-    function setUpPermissions() {
-        console.log("app is launched, should refresh");
-        setPlatform(window.device.platform);
-        console.log("window device", window.device.version.split(".")[0]);
-        setOsver(window.device.version.split(".")[0]);
-        setupPermissionText();
-        createChecklist();
-    };
 
     function refreshAllChecks() {
         //refresh each check
@@ -395,8 +377,8 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         refreshAllChecks();
     });
 
-
     //how to do this?
+    //recomputeAppStatus comes from the plugins?
     settingsScope.$on("recomputeAppStatus", function() {
         console.log("PERMISSION CHECK: recomputing state");
         refreshAllChecks();
@@ -444,5 +426,4 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     )
 }
 
-angularize(AppStatusModal, 'AppStatus', 'emission.main.control.appStatusModal'); 
 export default AppStatusModal;
