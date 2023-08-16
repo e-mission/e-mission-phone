@@ -2,6 +2,7 @@
 /* if we don't contain them here, they will leak into the rest of the app */
 .enketo-plugin {
   @import 'enketo-core/src/sass/formhub/formhub.scss';
+  flex: 1;
   .question.non-select {
     display: inline-block;
   }

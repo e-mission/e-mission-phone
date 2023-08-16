@@ -129,8 +129,8 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   return (
     <Modal {...rest} animationType='slide'>
       <SafeAreaView style={{flex: 1}}>
-        <ScrollView>
-          <Pressable>
+        <ScrollView style={{flex: 1}} contentContainerStyle={{flex: 1}}>
+          <Pressable style={{flex: 1}}>
             <div className="enketo-plugin">
               {enketoContent}
             </div>
