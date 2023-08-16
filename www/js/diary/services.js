@@ -130,39 +130,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       });
     });
 
-    timeline.getUnprocessedLabels = function(manualFactory, enbs) {
-        /*
-         Because with the confirmed trips, all prior labels have been
-         incorporated into the trip.
-         */
-        return CommHelper.getPipelineRangeTs().then(function(result) {
-            const pendingLabelQuery = {key: "write_ts",
-                startTs: result.end_ts - 10,
-                endTs: moment().unix() + 10
-            }
-            var manualPromises = manualFactory.MANUAL_KEYS.map(function(inp_key) {
-              return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(manualFactory.extractResult);
-            });
-            var enbsPromises = enbs.MANUAL_KEYS.map(function(inp_key) {
-              return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(enbs.extractResult);
-            });
-            const manualConfirmResults = {};
-            const enbsConfirmResults = {};
-            return Promise.all([...manualPromises, ...enbsPromises]).then((comboResults) => {
-                const manualResults = comboResults.slice(0, manualPromises.length);
-                const enbsResults = comboResults.slice(manualPromises.length);
-                manualFactory.processManualInputs(manualResults, manualConfirmResults);
-                enbs.processManualInputs(enbsResults, enbsConfirmResults);
-                return [result, manualConfirmResults, enbsConfirmResults];
-            });
-        }).catch((err) => {
-            Logger.displayError("while reading confirmed trips", err);
-            return [{}, {}];
-        });
-    };
-
     // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
     // This function returns a shallow copy of the obj, which flattens the
     // 'data' field into the top level, while also including '_id' and 'metadata.key'
