@@ -401,10 +401,7 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
                             {checkList?.map((lc) => 
                                     <PermissionItem 
                                         key={lc.name}
-                                        name={lc.name}
-                                        description={lc.desc}
-                                        statusIcon={lc.statusIcon}
-                                        fixAction={lc.fix}
+                                        check = {lc}
                                     >
                                     </PermissionItem>
                                 )}

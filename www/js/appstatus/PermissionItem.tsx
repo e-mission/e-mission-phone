@@ -2,16 +2,16 @@ import React from "react";
 import { List, Button } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 
-const PermissionItem = ({name, description, fixAction, statusIcon }) => {
+const PermissionItem = ({ check }) => {
     const { t } = useTranslation(); 
 
     return (
         <List.Item 
-            title={t(name)}
-            description={t(description)}
+            title={t(check.name)}
+            description={t(check.desc)}
             descriptionNumberOfLines={5}
-            left={() => <List.Icon icon={statusIcon}/>} 
-            right={() => <Button onPress={()=>fixAction()}>
+            left={() => <List.Icon icon={check.statusIcon}/>} 
+            right={() => <Button onPress={()=>check.fix()}>
                 {t('intro.appstatus.fix')}
                 </Button>}
         />
