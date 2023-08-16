@@ -14,6 +14,8 @@ import { object } from "prop-types";
 import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "react-native-paper";
+import { logDebug } from "../../plugin/logger";
+import EnketoModal from "./EnketoModal";
 
 const UserInputButton = ({ timelineEntry }) => {
   const { colors } = useTheme();
@@ -22,10 +24,10 @@ const UserInputButton = ({ timelineEntry }) => {
   // initial label "Add Trip Details"; will be filled after a survey response is recorded
   const [displayLabel, setDisplayLabel] = useState(t('diary.choose-survey'));
   const [isFilled, setIsFilled] = useState(false);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
   const EnketoTripButtonService = getAngularService("EnketoTripButtonService");
-  const $rootScope = getAngularService("$rootScope");
   const etbsSingleKey = EnketoTripButtonService.SINGLE_KEY;
 
   useEffect(() => {
@@ -37,34 +39,37 @@ const UserInputButton = ({ timelineEntry }) => {
   }, []);
 
   function launchUserInputSurvey() {
-    const surveyName = 'TripConfirmSurvey'; /* As of now, the survey name is hardcoded.
-                                              In the future, if we ever implement something like
-                                              a "Place Details" survey, we may want to make this
-                                              configurable. */
-    console.log('About to launch survey ', surveyName);
-
+    logDebug('UserInputButton: About to launch survey');
     const prevResponse = timelineEntry.userInput?.[etbsSingleKey];
-    const prefilledSurveyResponse = prevResponse?.data?.xmlResponse;
-    return EnketoSurveyLaunch
-      .launch($rootScope, surveyName, { timelineEntry, prefilledSurveyResponse })
-      .then(result => {
-        if (!result) {
-          return;
-        }
-        timelineEntry.userInput[etbsSingleKey] = {
-          data: result,
-          write_ts: Date.now()
-        }
-        setDisplayLabel(result.label);
-        setIsFilled(true);
-      });
-  };
+    setPrevSurveyResponse(prevResponse?.data?.xmlResponse);
+    setModalVisible(true);
+  }
 
-  return (
+  function onResponseSaved(result) {
+    if (!result) return;
+    timelineEntry.userInput[etbsSingleKey] = {
+      data: result,
+      write_ts: Date.now()
+    }
+    setDisplayLabel(result.label);
+    setIsFilled(true);
+  }
+
+  return (<>
     <DiaryButton text={displayLabel}
                   fillColor={isFilled && colors.primary}
                   onPress={() => launchUserInputSurvey()} />
-  );
+    <EnketoModal visible={modalVisible}
+      onDismiss={() => setModalVisible(false)}
+      onResponseSaved={onResponseSaved}
+      surveyName={'TripConfirmSurvey'} /* As of now, the survey name is hardcoded.
+                                        In the future, if we ever implement something like
+                                        a "Place Details" survey, we may want to make this
+                                        configurable. */
+      opts={{ timelineEntry,
+              prefilledSurveyResponse: prevSurveyResponse
+      }} />
+  </>);
 };
 
 UserInputButton.propTypes = {
