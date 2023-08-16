@@ -3,11 +3,10 @@
 */
 
 import React, { useContext, useState } from "react";
-import { angularize, createScopeWithVars, getAngularService } from "../../angular-react-helper";
 import { array, object } from "prop-types";
 import moment from "moment";
-import { Text } from "react-native"
-import { DataTable } from "react-native-paper";
+import { Text, Modal } from "react-native"
+import { Button, DataTable, Dialog } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
@@ -16,11 +15,9 @@ import EnketoModal from "./EnketoModal";
 const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
-  const [rerender, setRerender] = useState(false);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
+  const [surveyModalVisible, setSurveyModalVisible] = useState(false);
   const [editingEntry, setEditingEntry] = useState(null);
-
-  const $ionicPopup = getAngularService("$ionicPopup");
 
   function setDisplayDt(entry) {
     const timezone = timelineEntry.start_local_dt?.timezone
@@ -55,31 +52,24 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
       .putMessage(dataKey, data)
       .then(() => {
         additionEntries.splice(index, 1);
-        setRerender(!rerender); // force rerender
+        setConfirmDeleteModalVisible(false);
+        setEditingEntry(null);
       });
   }
 
   function confirmDeleteEntry(entry) {
-    const currEntry = entry;
-    const scope = createScopeWithVars({currEntry});
-    $ionicPopup.show({
-      title: 'Delete entry',
-      templateUrl: `templates/survey/enketo/delete-entry.html`,
-      scope,
-      buttons: [{
-        text: 'Delete', // TODO i18n
-        type: 'button-cancel',
-        onTap: () => deleteEntry(entry)
-      }, {
-        text: 'Cancel', // TODO i18n
-        type: 'button-stable',
-      }]
-    });
+    setEditingEntry(entry);
+    setConfirmDeleteModalVisible(true);
+  }
+
+  function dismissConfirmDelete() {
+    setEditingEntry(null);
+    setConfirmDeleteModalVisible(false);
   }
 
   function editEntry(entry) {
     setEditingEntry(entry);
-    setModalVisible(true);
+    setSurveyModalVisible(true);
   }
 
   async function onEditedResponse(response) {
@@ -91,7 +81,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
 
   function onModalDismiss() {
     setEditingEntry(null);
-    setModalVisible(false);
+    setSurveyModalVisible(false);
   }
 
   const sortedEntries = additionEntries?.sort((a, b) => a.data.start_ts - b.data.start_ts);
@@ -120,13 +110,26 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
         )
       })}
     </DataTable>
-    <EnketoModal visible={modalVisible} onDismiss={onModalDismiss}
+    <EnketoModal visible={surveyModalVisible} onDismiss={onModalDismiss}
       onResponseSaved={onEditedResponse} surveyName={editingEntry?.data.name}
       opts={{
         timelineEntry,
         prefilledSurveyResponse: editingEntry?.data.xmlResponse,
         dataKey: editingEntry?.key || editingEntry?.metadata?.key,
       }} />
+    <Modal visible={confirmDeleteModalVisible} transparent={true} onDismiss={dismissConfirmDelete}>
+      <Dialog visible={confirmDeleteModalVisible} onDismiss={dismissConfirmDelete}>
+        <Dialog.Title>Are you sure you wish to delete this entry?</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{fontWeight: 'bold'}}>{editingEntry?.data?.label}</Text>
+          <Text>{editingEntry?.displayTime}</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => deleteEntry(editingEntry)}>Delete</Button>
+          <Button onPress={() => dismissConfirmDelete()}>Cancel</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Modal>
   </>);
 };
 
