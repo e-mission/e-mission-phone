@@ -669,48 +669,9 @@ const ProfileSettings = () => {
 
             <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
 
-            <Modal visible={dataPushedVis} onDismiss={() => setDataPushedVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                <Snackbar
-                visible={dataPushedVis}
-                onDismiss={() => setDataPushedVis(false)}
-                action={{
-                    label: t("join.close"),
-                    onPress: () => {() => setDataPushedVis(false)},
-                }}>
-                {t('all data pushed!')}
-                </Snackbar>
-            </Modal>
-
-            <Modal visible={invalidateSuccessVis} onDismiss={() => setInvalidateSuccessVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                <Snackbar
-                visible={invalidateSuccessVis}
-                onDismiss={() => setInvalidateSuccessVis(false)}
-                action={{
-                    label: t("join.close"),
-                    onPress: () => {() => setInvalidateSuccessVis(false)},
-                }}>
-                {t('success -> ') + cacheResult}
-                </Snackbar>
-            </Modal>
-
-            <Modal visible={noConsentMessageVis} onDismiss={() => setNoConsentMessageVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                <Snackbar
-                visible={noConsentMessageVis}
-                onDismiss={() => setNoConsentMessageVis(false)}
-                action={{
-                    label: t("join.close"),
-                    onPress: () => {() => setNoConsentMessageVis(false)},
-                }}>
-                {t('general-settings.no-consent-message')}
-                </Snackbar>
-            </Modal>
-
-            {/* <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar> */}
-            {/* <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar> */}
-            {/* <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar>  */}
+            <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
+            <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
+            <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
         
         </>
     );
