@@ -2,7 +2,6 @@
 
 import angular from 'angular';
 
-import MultilabelButtonGroup from './multilabel/MultiLabelButtonGroup';
 import UserInputButton from './enketo/UserInputButton';
 
 angular.module('emission.survey', [
@@ -11,7 +10,6 @@ angular.module('emission.survey', [
                     "emission.survey.multilabel.infscrollfilters",
                     "emission.survey.enketo.add-note-button",
                     "emission.survey.enketo.trip.infscrollfilters",
-                    MultilabelButtonGroup.module,
                     UserInputButton.module,
                     ])
 
