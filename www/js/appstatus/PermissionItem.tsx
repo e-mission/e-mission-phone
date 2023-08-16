@@ -5,18 +5,16 @@ import { useTranslation } from "react-i18next";
 const PermissionItem = ({name, description, fixAction, statusIcon }) => {
     const { t } = useTranslation(); 
 
-  
     return (
-        <>
-            <List.Item 
-                title={t(name)}
-                description={t(description)}
-                left={() => <List.Icon icon={statusIcon}/>} 
-                right={() => <Button onPress={()=>fixAction()}>
-                                {t('intro.appstatus.fix')}
-                            </Button>}
-            />
-        </>
+        <List.Item 
+            title={t(name)}
+            description={t(description)}
+            descriptionNumberOfLines={5}
+            left={() => <List.Icon icon={statusIcon}/>} 
+            right={() => <Button onPress={()=>fixAction()}>
+                {t('intro.appstatus.fix')}
+                </Button>}
+        />
     );
 };
   
