@@ -10,7 +10,7 @@ const PermissionItem = ({ check }) => {
             title={t(check.name)}
             description={t(check.desc)}
             descriptionNumberOfLines={5}
-            left={() => <List.Icon icon={check.statusIcon}/>} 
+            left={() => <List.Icon icon={check.statusIcon} color={check.statusColor}/>} 
             right={() => <Button onPress={()=>check.fix()}>
                 {t('intro.appstatus.fix')}
                 </Button>}

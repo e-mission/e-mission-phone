@@ -11,7 +11,7 @@ import ExplainPermissions from "../appstatus/ExplainPermissions";
 
 const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
     const { t } = useTranslation();
-    //const { colors } = useTheme();
+    const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
 
     const { height: windowHeight } = useWindowDimensions();
@@ -73,8 +73,11 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         refreshAllChecks();
     }
 
+    var red = colors.danger;
+    var green = colors.success;
+
     let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
-    let classMap = (statusState) => statusState ? "status-green" : "status-red";
+    let colorMap = (statusState) => statusState ? green : red;
 
     function recomputeOverallStatus() {
         let status = true;
@@ -366,7 +369,7 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         //recompute each check
         checkList.forEach((lc) => {
             lc.statusIcon = iconMap(lc.statusState);
-            lc.statusClass = classMap(lc.statusState)
+            lc.statusColor = colorMap(lc.statusState)
         });
         recomputeOverallStatus();
         console.log("setting checks are", checkList);
