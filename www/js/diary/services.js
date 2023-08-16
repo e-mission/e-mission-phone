@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import { getFormattedTimeRange, motionTypeOf } from './diaryHelper';
+import { SurveyOptions } from '../survey/survey';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
@@ -110,7 +111,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
   return dh;
 })
-.factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
+.factory('Timeline', function(CommHelper, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, UnifiedDataLoader, Logger, $injector) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current

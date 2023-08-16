@@ -26,7 +26,6 @@ import './js/services.js';
 import './js/i18n-utils.js';
 import './js/intro.js';
 import './js/main.js';
-import './js/survey/survey.js';
 import './js/survey/input-matcher.js';
 import './js/survey/multilabel/infinite_scroll_filters.js';
 import './js/survey/multilabel/trip-confirm-services.js';

@@ -19,6 +19,7 @@ import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
+import { SurveyOptions } from "../survey/survey";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -43,7 +44,6 @@ const LabelTab = () => {
   const $ionicPopup = getAngularService('$ionicPopup');
   const Timeline = getAngularService('Timeline');
   const DiaryHelper = getAngularService('DiaryHelper');
-  const SurveyOptions = getAngularService('SurveyOptions');
   const enbs = getAngularService('EnketoNotesButtonService');
 
   // initialization, once the appConfig is loaded

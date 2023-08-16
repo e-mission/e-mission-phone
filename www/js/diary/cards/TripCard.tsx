@@ -4,8 +4,7 @@
     will used the greenish/greyish 'draft' theme flavor.
 */
 
-import React, { useEffect, useState } from "react";
-import { getAngularService } from "../../angular-react-helper";
+import React, { useContext } from "react";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Divider, Text, IconButton } from 'react-native-paper';
 import { object } from "prop-types";
@@ -22,6 +21,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useImperialConfig } from "../../config/useImperialConfig";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
+import { LabelTabContext } from "../LabelTab";
 
 const TripCard = ({ trip }) => {
 
@@ -31,17 +31,10 @@ const TripCard = ({ trip }) => {
   const { getFormattedDistance, distanceSuffix } = useImperialConfig();
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-
-  const SurveyOptions = getAngularService('SurveyOptions');
-  const [surveyOpt, setSurveyOpt] = useState(null);
+  const { surveyOpt } = useContext(LabelTabContext);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
-
-  useEffect(() => {
-    const surveyOptKey = appConfig?.survey_info?.['trip-labels'];
-    setSurveyOpt(SurveyOptions[surveyOptKey]);
-  }, [appConfig, loading]);
 
   function showDetail() {
     navigation.navigate("label.details", { tripId: trip._id.$oid });
