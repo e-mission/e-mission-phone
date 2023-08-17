@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal, ScrollView, useWindowDimensions } from "react-native";
+import { Modal, ScrollView, useWindowDimensions, View } from "react-native";
 import { Button, Dialog, Text } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 
@@ -16,14 +16,14 @@ const ExplainPermissions = ({ explanationList, visible, setVisible }) => {
                 <Dialog.Content style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
                     <ScrollView>
                         {explanationList?.map((li) => 
-                            <>
+                            <View key={li.name}>
                                 <Text variant="headlineSmall" key={li.name}>
                                     {li.name}
                                 </Text>
                                 <Text variant="bodyMedium">
                                     {li.desc}
                                 </Text>
-                            </>
+                            </View>
                         )}
                     </ScrollView>
                 </Dialog.Content>
