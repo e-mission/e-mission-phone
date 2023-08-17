@@ -89,12 +89,25 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         setOverallStatus(status);
     }
 
-    function checkOrFix(checkObj, nativeFn, showError=true) {
+    function updateCheck(newObject) {
+        var tempList = [...checkList]; //make a copy rather than mutate
+        tempList.forEach((item, i) => {
+            if(item.name == newObject.name){
+                tempList[i] = newObject;
+            }
+        });
+        setCheckList(tempList);
+    }
+
+    async function checkOrFix(checkObj, nativeFn, showError=true) {
+        console.log("checking object", checkObj.name, checkObj);
+        let newCheck = checkObj;
         return nativeFn()
             .then((status) => {
                 console.log("availability ", status)
-                checkObj.statusState = true;
-                recomputeAllChecks();
+                newCheck.statusState = true;
+                updateCheck(newCheck);
+                console.log("after checking object", checkObj.name, checkList);
                 return status;
             }).catch((error) => {
                 console.log("Error", error)
@@ -106,8 +119,9 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
                     //     okText: "Please fix again"
                     // });
                 };
-                checkObj.statusState = false;
-                recomputeAllChecks();
+                newCheck.statusState = false;
+                updateCheck(newCheck);
+                console.log("after checking object", checkObj.name, checkList);
                 return error;
             });
     }
