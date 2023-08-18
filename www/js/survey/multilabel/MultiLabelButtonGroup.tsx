@@ -10,6 +10,7 @@ import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
+import { getLabelInputDetails, getLabelInputs, getLabelOptions } from "./confirmHelper";
 
 const MultilabelButtonGroup = ({ trip }) => {
   const { colors } = useTheme();
@@ -26,16 +27,14 @@ const MultilabelButtonGroup = ({ trip }) => {
     return trip.userInput[modalVisibleFor]?.value
   }, [modalVisibleFor, otherLabel]);
 
-  const ConfirmHelper = getAngularService("ConfirmHelper");
-
   useEffect(() => {
     console.log("During initialization, trip is ", trip);
-    ConfirmHelper.inputParamsPromise.then((ip) => setInputParams(ip));
+    getLabelOptions().then((ip) => setInputParams(ip));
   }, []);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
-    for (const inputType of ConfirmHelper.INPUTS) {
+    for (const inputType of getLabelInputs()) {
       const inferred = trip.finalInference[inputType];
       // TODO: figure out what to do with "other". For now, do not verify.
       if (inferred?.value && !trip.userInput[inputType] && inferred.value != "other")
@@ -70,7 +69,7 @@ const MultilabelButtonGroup = ({ trip }) => {
       "label": chosenLabel,
     };
 
-    const storageKey = ConfirmHelper.inputDetails[inputType].key;
+    const storageKey = getLabelInputDetails()[inputType].key;
     window['cordova'].plugins.BEMUserCache.putMessage(storageKey, inputDataToStore).then(() => {
       dismiss();
       repopulateTimelineEntry(trip._id.$oid);
@@ -121,7 +120,7 @@ const MultilabelButtonGroup = ({ trip }) => {
           <Dialog.Content style={{maxHeight: windowHeight/2, paddingBottom: 0}}>
             <ScrollView style={{paddingBottom: 24}}>
               <RadioButton.Group onValueChange={val => onChooseLabel(val)} value={chosenLabel}>
-                {inputParams[modalVisibleFor]?.options?.map((o, i) => (
+                {inputParams?.[modalVisibleFor]?.map((o, i) => (
                   // @ts-ignore
                   <RadioButton.Item key={i} label={t(o.text)} value={o.value} style={{paddingVertical: 2}} />
                 ))}
