@@ -1,5 +1,9 @@
 'use strict';
 
+import angular from 'angular';
+import ControlDataTable from './ControlDataTable';
+import QrCode from '../components/QrCode';
+
 angular.module('emission.main.control',['emission.services',
                                         'emission.i18n.utils',
                                         'emission.main.control.collection',
@@ -16,7 +20,8 @@ angular.module('emission.main.control',['emission.services',
                                         'emission.survey.enketo.demographics',
                                         'emission.plugin.logger',
                                         'emission.config.dynamic',
-                                        'monospaced.qrcode'])
+                                        QrCode.module,
+                                        ControlDataTable.module])
 
 .controller('ControlCtrl', function($scope, $window,
                $ionicScrollDelegate, $ionicPlatform,
@@ -27,18 +32,17 @@ angular.module('emission.main.control',['emission.services',
                ControlCollectionHelper, ControlSyncHelper,
                CarbonDatasetHelper, NotificationScheduler, LocalNotify,
                i18nUtils,
-               CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig,
-               $translate) {
+               CalorieCal, ClientStats, CommHelper, Logger, DynamicConfig) {
 
     console.log("controller ControlCtrl called without params");
 
     var datepickerObject = {
-      todayLabel: $translate.instant('list-datepicker-today'),  //Optional
-      closeLabel: $translate.instant('list-datepicker-close'),  //Optional
-      setLabel: $translate.instant('list-datepicker-set'),  //Optional
+      todayLabel: i18next.t('list-datepicker-today'),  //Optional
+      closeLabel: i18next.t('list-datepicker-close'),  //Optional
+      setLabel: i18next.t('list-datepicker-set'),  //Optional
       monthsList: moment.monthsShort(),
       weeksList: moment.weekdaysMin(),
-      titleLabel: $translate.instant('general-settings.choose-date'),
+      titleLabel: i18next.t('general-settings.choose-date'),
       setButtonType : 'button-positive',  //Optional
       todayButtonType : 'button-stable',  //Optional
       closeButtonType : 'button-stable',  //Optional
@@ -71,7 +75,7 @@ angular.module('emission.main.control',['emission.services',
       ionicDatePicker.openDatePicker(datepickerObject);
     };
 
-    $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
 
     $scope.uploadLog = function () {
         UploadHelper.uploadFile("loggerDB")
@@ -129,6 +133,7 @@ angular.module('emission.main.control',['emission.services',
         $scope.settings.notification.prefReminderTime = m.format('LT'); // display in user's locale
         if (storeNewVal)
             NotificationScheduler.setReminderPrefs({ reminder_time_of_day: m.format('HH:mm') }); // store in HH:mm
+        $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
     }
 
     $scope.fixAppStatus = function() {
@@ -155,7 +160,7 @@ angular.module('emission.main.control',['emission.services',
                 age: userDataFromStorage.age,
                 height: height + (userDataFromStorage.heightUnit == 1? ' cm' : ' ft'),
                 weight: weight + (userDataFromStorage.weightUnit == 1? ' kg' : ' lb'),
-                gender: userDataFromStorage.gender == 1? $translate.instant('gender-male') : $translate.instant('gender-female')
+                gender: userDataFromStorage.gender == 1? i18next.t('gender-male') : i18next.t('gender-female')
             }
             for (var i in temp) {
                 $scope.userData.push({key: i, value: temp[i]});
@@ -262,9 +267,6 @@ angular.module('emission.main.control',['emission.services',
     $scope.showSensed = function() {
         $state.go("root.main.sensed");
     }
-    $scope.showMap = function() {
-        $state.go("root.main.map");
-    }
     $scope.getState = function() {
         return ControlCollectionHelper.getState().then(function(response) {
             $scope.$apply(function() {
@@ -293,16 +295,16 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.nukeUserCache = function() {
-        var nukeChoiceActions = [{text: $translate.instant('general-settings.nuke-ui-state-only'),
+        var nukeChoiceActions = [{text: i18next.t('general-settings.nuke-ui-state-only'),
                                   action: KVStore.clearOnlyLocal},
-                                 {text: $translate.instant('general-settings.nuke-native-cache-only'),
+                                 {text: i18next.t('general-settings.nuke-native-cache-only'),
                                   action: KVStore.clearOnlyNative},
-                                 {text: $translate.instant('general-settings.nuke-everything'),
+                                 {text: i18next.t('general-settings.nuke-everything'),
                                   action: KVStore.clearAll}];
 
         $ionicActionSheet.show({
-            titleText: $translate.instant('general-settings.clear-data'),
-            cancelText: $translate.instant('general-settings.cancel'),
+            titleText: i18next.t('general-settings.clear-data'),
+            cancelText: i18next.t('general-settings.cancel'),
             buttons: nukeChoiceActions,
             buttonClicked: function(index, button) {
                 button.action();
@@ -379,6 +381,8 @@ angular.module('emission.main.control',['emission.services',
             NotificationScheduler.getReminderPrefs().then((prefs) => {
                 $scope.$apply(() => {
                     const m = moment(prefs.reminder_time_of_day, 'HH:mm');
+                    // defining data used to populate the upcoming display
+                    $scope.settings.notification.scheduledNotifs = NotificationScheduler.scheduledNotifs;
                     $scope.settings.notification.prefReminderTimeVal = m.toDate();
                     $scope.settings.notification.prefReminderTimeOnLoad = prefs.reminder_time_of_day;
                     $scope.updatePrefReminderTime(false); // update the displayed time
@@ -396,17 +400,15 @@ angular.module('emission.main.control',['emission.services',
 
     $scope.logOut = function() {
         $ionicPopup.confirm({
-            title: $translate.instant('general-settings.are-you-sure'),
-            template: $translate.instant('general-settings.log-out-warning'),
-            cancelText: $translate.instant('general-settings.cancel'),
-            okText: $translate.instant('general-settings.confirm')
+            title: i18next.t('general-settings.are-you-sure'),
+            template: i18next.t('general-settings.log-out-warning'),
+            cancelText: i18next.t('general-settings.cancel'),
+            okText: i18next.t('general-settings.confirm')
         }).then(function(res) {
             if (!res) return; // user cancelled
             
             // reset the saved config, then trigger a hard refresh
-            const CONFIG_PHONE_UI="config/app_ui_config";
-            $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {})
-                .then($window.location.reload(true));
+            DynamicConfig.resetConfigAndRefresh();
         });
     };
 
@@ -555,7 +557,7 @@ angular.module('emission.main.control',['emission.services',
     }
     $scope.eraseUserData = function() {
         CalorieCal.delete().then(function() {
-            $ionicPopup.alert({template: $translate.instant('general-settings.user-data-erased')});
+            $ionicPopup.alert({template: i18next.t('general-settings.user-data-erased')});
         });
     }
     $scope.parseState = function(state) {
@@ -570,12 +572,12 @@ angular.module('emission.main.control',['emission.services',
     $scope.changeCarbonDataset = function() {
         $ionicActionSheet.show({
           buttons: CarbonDatasetHelper.getCarbonDatasetOptions(),
-          titleText: $translate.instant('general-settings.choose-dataset'),
-          cancelText: $translate.instant('general-settings.cancel'),
+          titleText: i18next.t('general-settings.choose-dataset'),
+          cancelText: i18next.t('general-settings.cancel'),
           buttonClicked: function(index, button) {
             console.log("changeCarbonDataset(): chose locale " + button.value);
             CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(button.value);
-            $scope.carbonDatasetString = $translate.instant('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+            $scope.carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
             return true;
           }
         });
@@ -607,13 +609,13 @@ angular.module('emission.main.control',['emission.services',
     }
 
     var handleNoConsent = function(resultDoc) {
-        $ionicPopup.confirm({template: $translate.instant('general-settings.consent-not-found')})
+        $ionicPopup.confirm({template: i18next.t('general-settings.consent-not-found')})
         .then(function(res){
             if (res) {
                $state.go("root.reconsent");
             } else {
                $ionicPopup.alert({
-                template: $translate.instant('general-settings.no-consent-message')});
+                template: i18next.t('general-settings.no-consent-message')});
             }
         });
     }
@@ -621,13 +623,13 @@ angular.module('emission.main.control',['emission.services',
     var handleConsent = function(resultDoc) {
         $scope.consentDoc = resultDoc;
         $ionicPopup.confirm({
-            template: $translate.instant('general-settings.consented-to',{protocol_id: $scope.consentDoc.protocol_id,approval_date: $scope.consentDoc.approval_date}),
+            template: i18next.t('general-settings.consented-to',{protocol_id: $scope.consentDoc.protocol_id,approval_date: $scope.consentDoc.approval_date}),
             scope: $scope,
-            title: $translate.instant('general-settings.consent-found'),
+            title: i18next.t('general-settings.consent-found'),
             buttons: [
             // {text: "<a href='https://e-mission.eecs.berkeley.edu/consent'>View</a>",
             //  type: 'button-calm'},
-            {text: "<b>"+ $translate.instant('general-settings.consented-ok') +"</b>",
+            {text: "<b>"+ i18next.t('general-settings.consented-ok') +"</b>",
              type: 'button-positive'} ]
         }).finally(function(res) {
             $scope.consentDoc = null;
@@ -647,9 +649,9 @@ angular.module('emission.main.control',['emission.services',
     }
 
     var prepopulateMessage = {
-        message: $translate.instant('general-settings.share-message'), // not supported on some apps (Facebook, Instagram)
-        subject: $translate.instant('general-settings.share-subject'), // fi. for email
-        url: $translate.instant('general-settings.share-url')
+        message: i18next.t('general-settings.share-message'), // not supported on some apps (Facebook, Instagram)
+        subject: i18next.t('general-settings.share-subject'), // fi. for email
+        url: i18next.t('general-settings.share-url')
     }
 
     $scope.share = function() {
@@ -662,18 +664,33 @@ angular.module('emission.main.control',['emission.services',
     }
 
     $scope.shareQR = function() {
-        var prepopulateQRMessage = {};  
-        const c = document.getElementsByClassName('qrcode-link');
-        const cbase64 = c[0].getAttribute('href');
-        prepopulateQRMessage.files = [cbase64];
-        prepopulateQRMessage.url = $scope.settings.auth.opcode;
+        /*code adapted from demo of react-qr-code
+        selector below gets svg element out of angularized QRCode 
+        this will change upon later migration*/
+        const svg = document.querySelector("qr-code svg");
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const img = new Image();
 
-        window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-        }, function(msg) {
-            console.log("Sharing failed with message: " + msg);
-        });
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const pngFile = canvas.toDataURL("image/png");
+
+            var prepopulateQRMessage = {}; 
+            prepopulateQRMessage.files = [pngFile];
+            prepopulateQRMessage.url = $scope.settings.auth.opcode;
+    
+            window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+            }, function(msg) {
+                console.log("Sharing failed with message: " + msg);
+            });
+        }
+        img.src =  `data:image/svg+xml;base64,${btoa(svgData)}`;
     }
 
 });

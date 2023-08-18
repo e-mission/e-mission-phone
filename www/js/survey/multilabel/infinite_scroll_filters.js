@@ -8,11 +8,13 @@
  * All UI elements should only use $scope variables.
  */
 
+import angular from 'angular';
+
 angular.module('emission.survey.multilabel.infscrollfilters',[
     'emission.survey.multilabel.services',
     'emission.plugin.logger'
   ])
-.factory('MultiLabelInfScrollFilters', function(Logger, ConfirmHelper, $translate){
+.factory('MultiLabelInfScrollFilters', function(Logger, ConfirmHelper){
     var sf = {};
     var unlabeledCheck = function(t) {
        return t.INPUTS
@@ -40,20 +42,20 @@ angular.module('emission.survey.multilabel.infscrollfilters',[
 
     sf.UNLABELED = {
         key: "unlabeled",
-        text: $translate.instant(".unlabeled"),
+        text: i18next.t("diary.unlabeled"),
         filter: unlabeledCheck,
         width: "col-50"
     }
 
     sf.INVALID_EBIKE = {
         key: "invalid_ebike",
-        text: $translate.instant(".invalid-ebike"),
+        text: i18next.t("diary.invalid-ebike"),
         filter: invalidCheck
     }
 
     sf.TO_LABEL = {
         key: "to_label",
-        text: $translate.instant(".to-label"),
+        text: i18next.t("diary.to-label"),
         filter: toLabelCheck,
         width: "col-50"
     }

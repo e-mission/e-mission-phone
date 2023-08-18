@@ -2,6 +2,8 @@
  * Directive to enable the permissions required for the app to function properly.
  */
 
+import angular from 'angular';
+
 angular.module('emission.appstatus.permissioncheck',
     [])
 .directive('permissioncheck', function() {
@@ -14,7 +16,7 @@ angular.module('emission.appstatus.permissioncheck',
     };
 }).
 controller("PermissionCheckControl", function($scope, $element, $attrs,
-        $ionicPlatform, $ionicPopup, $window, $translate) {
+        $ionicPlatform, $ionicPopup, $window) {
     console.log("PermissionCheckControl initialized with status "+$scope.overallstatus);
 
     $scope.setupLocChecks = function(platform, version) {
@@ -160,22 +162,22 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
             return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationSettings,
-                $scope.recomputeLocStatus, showError=true);
+                $scope.recomputeLocStatus, true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
             return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.isValidLocationSettings,
-                $scope.recomputeLocStatus, showError=false);
+                $scope.recomputeLocStatus, false);
         };
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
-                $scope.recomputeLocStatus, showError=true).then((error) => locPermissionsCheck.desc = error);
+                $scope.recomputeLocStatus, true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.isValidLocationPermissions,
-                $scope.recomputeLocStatus, showError=false);
+                $scope.recomputeLocStatus, false);
         };
         var androidSettingsDescTag = "intro.appstatus.locsettings.description.android-gte-9";
         if (version < 9) {
@@ -194,15 +196,15 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("description tags are "+androidSettingsDescTag+" "+androidPermDescTag);
         // location settings
         let locSettingsCheck = {
-            name: $translate.instant("intro.appstatus.locsettings.name"),
-            desc: $translate.instant(androidSettingsDescTag),
+            name: i18next.t("intro.appstatus.locsettings.name"),
+            desc: i18next.t(androidSettingsDescTag),
             statusState: false,
             fix: fixSettings,
             refresh: checkSettings
         }
         let locPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.locperms.name"),
-            desc: $translate.instant(androidPermDescTag),
+            name: i18next.t("intro.appstatus.locperms.name"),
+            desc: i18next.t(androidPermDescTag),
             statusState: false,
             fix: fixPerms,
             refresh: checkPerms
@@ -215,22 +217,22 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixSettings = function() {
             console.log("Fix and refresh location settings");
             return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationSettings,
-                $scope.recomputeLocStatus, showError=true);
+                $scope.recomputeLocStatus, true);
         };
         let checkSettings = function() {
             console.log("Refresh location settings");
             return checkOrFix(locSettingsCheck, $window.cordova.plugins.BEMDataCollection.isValidLocationSettings,
-                $scope.recomputeLocStatus, showError=false);
+                $scope.recomputeLocStatus, false);
         };
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixLocationPermissions,
-                $scope.recomputeLocStatus, showError=true).then((error) => locPermissionsCheck.desc = error);
+                $scope.recomputeLocStatus, true).then((error) => locPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, $window.cordova.plugins.BEMDataCollection.isValidLocationPermissions,
-                $scope.recomputeLocStatus, showError=false);
+                $scope.recomputeLocStatus, false);
         };
         var iOSSettingsDescTag = "intro.appstatus.locsettings.description.ios";
         var iOSPermDescTag = "intro.appstatus.locperms.description.ios-gte-13";
@@ -240,15 +242,15 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         console.log("description tags are "+iOSSettingsDescTag+" "+iOSPermDescTag);
         // location settings
         let locSettingsCheck = {
-            name: $translate.instant("intro.appstatus.locsettings.name"),
-            desc: $translate.instant(iOSSettingsDescTag),
+            name: i18next.t("intro.appstatus.locsettings.name"),
+            desc: i18next.t(iOSSettingsDescTag),
             statusState: false,
             fix: fixSettings,
             refresh: checkSettings
         }
         let locPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.locperms.name"),
-            desc: $translate.instant(iOSPermDescTag),
+            name: i18next.t("intro.appstatus.locperms.name"),
+            desc: i18next.t(iOSPermDescTag),
             statusState: false,
             fix: fixPerms,
             refresh: checkPerms
@@ -263,21 +265,21 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
-                $scope.recomputeFitnessStatus, showError=true).then((error) => fitnessPermissionsCheck.desc = error);
+                $scope.recomputeFitnessStatus, true).then((error) => fitnessPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, $window.cordova.plugins.BEMDataCollection.isValidFitnessPermissions,
-                $scope.recomputeFitnessStatus, showError=false);
+                $scope.recomputeFitnessStatus, false);
         };
   
         let fitnessPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.fitnessperms.name"),
-            desc: $translate.instant("intro.appstatus.fitnessperms.description.android"),
+            name: i18next.t("intro.appstatus.fitnessperms.name"),
+            desc: i18next.t("intro.appstatus.fitnessperms.description.android"),
             fix: fixPerms,
             refresh: checkPerms
         }
-        $scope.overallFitnessName = $translate.instant("intro.appstatus.overall-fitness-name-android");
+        $scope.overallFitnessName = i18next.t("intro.appstatus.overall-fitness-name-android");
         $scope.fitnessChecks = [fitnessPermissionsCheck];
         refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
     }
@@ -288,21 +290,21 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, $window.cordova.plugins.BEMDataCollection.fixFitnessPermissions,
-                $scope.recomputeFitnessStatus, showError=true).then((error) => fitnessPermissionsCheck.desc = error);
+                $scope.recomputeFitnessStatus, true).then((error) => fitnessPermissionsCheck.desc = error);
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, $window.cordova.plugins.BEMDataCollection.isValidFitnessPermissions,
-                $scope.recomputeFitnessStatus, showError=false);
+                $scope.recomputeFitnessStatus, false);
         };
   
         let fitnessPermissionsCheck = {
-            name: $translate.instant("intro.appstatus.fitnessperms.name"),
-            desc: $translate.instant("intro.appstatus.fitnessperms.description.ios"),
+            name: i18next.t("intro.appstatus.fitnessperms.name"),
+            desc: i18next.t("intro.appstatus.fitnessperms.description.ios"),
             fix: fixPerms,
             refresh: checkPerms
         }
-        $scope.overallFitnessName = $translate.instant("intro.appstatus.overall-fitness-name-ios");
+        $scope.overallFitnessName = i18next.t("intro.appstatus.overall-fitness-name-ios");
         $scope.fitnessChecks = [fitnessPermissionsCheck];
         refreshChecks($scope.fitnessChecks, $scope.recomputeFitnessStatus);
     }
@@ -311,16 +313,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixPerms = function() {
             console.log("fix and refresh notification permissions");
             return checkOrFix(appAndChannelNotificationsCheck, $window.cordova.plugins.BEMDataCollection.fixShowNotifications,
-                $scope.recomputeNotificationStatus, showError=true);
+                $scope.recomputeNotificationStatus, true);
         };
         let checkPerms = function() {
             console.log("fix and refresh notification permissions");
             return checkOrFix(appAndChannelNotificationsCheck, $window.cordova.plugins.BEMDataCollection.isValidShowNotifications,
-                $scope.recomputeNotificationStatus, showError=false);
+                $scope.recomputeNotificationStatus, false);
         };
         let appAndChannelNotificationsCheck = {
-            name: $translate.instant("intro.appstatus.notificationperms.app-enabled-name"),
-            desc: $translate.instant("intro.appstatus.notificationperms.description.android-enable"),
+            name: i18next.t("intro.appstatus.notificationperms.app-enabled-name"),
+            desc: i18next.t("intro.appstatus.notificationperms.description.android-enable"),
             fix: fixPerms,
             refresh: checkPerms
         }
@@ -332,36 +334,36 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
         let fixPerms = function() {
             console.log("fix and refresh backgroundRestriction permissions");
             return checkOrFix(unusedAppsUnrestrictedCheck, $window.cordova.plugins.BEMDataCollection.fixUnusedAppRestrictions,
-                $scope.recomputeBackgroundRestrictionStatus, showError=true);
+                $scope.recomputeBackgroundRestrictionStatus, true);
         };
         let checkPerms = function() {
             console.log("fix and refresh backgroundRestriction permissions");
             return checkOrFix(unusedAppsUnrestrictedCheck, $window.cordova.plugins.BEMDataCollection.isUnusedAppUnrestricted,
-                $scope.recomputeBackgroundRestrictionStatus, showError=false);
+                $scope.recomputeBackgroundRestrictionStatus, false);
         };
         let fixBatteryOpt = function() {
             console.log("fix and refresh battery optimization permissions");
             return checkOrFix(ignoreBatteryOptCheck, $window.cordova.plugins.BEMDataCollection.fixIgnoreBatteryOptimizations,
-                $scope.recomputeBackgroundRestrictionStatus, showError=true);
+                $scope.recomputeBackgroundRestrictionStatus, true);
         };
         let checkBatteryOpt = function() {
             console.log("fix and refresh battery optimization permissions");
             return checkOrFix(ignoreBatteryOptCheck, $window.cordova.plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
-                $scope.recomputeBackgroundRestrictionStatus, showError=false);
+                $scope.recomputeBackgroundRestrictionStatus, false);
         };
         var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-12";
         if ($scope.osver < 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
         }
         let unusedAppsUnrestrictedCheck = {
-            name: $translate.instant("intro.appstatus.unusedapprestrict.name"),
-            desc: $translate.instant(androidUnusedDescTag),
+            name: i18next.t("intro.appstatus.unusedapprestrict.name"),
+            desc: i18next.t(androidUnusedDescTag),
             fix: fixPerms,
             refresh: checkPerms
         }
         let ignoreBatteryOptCheck = {
-            name: $translate.instant("intro.appstatus.ignorebatteryopt.name"),
-            desc: $translate.instant("intro.appstatus.ignorebatteryopt.description.android-disable"),
+            name: i18next.t("intro.appstatus.ignorebatteryopt.name"),
+            desc: i18next.t("intro.appstatus.ignorebatteryopt.description.android-disable"),
             fix: fixBatteryOpt,
             refresh: checkBatteryOpt
         }
@@ -372,16 +374,16 @@ controller("PermissionCheckControl", function($scope, $element, $attrs,
     $scope.setupPermissionText = function() {
         if($scope.platform.toLowerCase() == "ios") {
           if($scope.osver < 13) {
-              $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-lt-13");
+              $scope.locationPermExplanation = i18next.t("intro.permissions.locationPermExplanation-ios-lt-13");
           } else {
-              $scope.locationPermExplanation = $translate.instant("intro.permissions.locationPermExplanation-ios-gte-13");
+              $scope.locationPermExplanation = i18next.t("intro.permissions.locationPermExplanation-ios-gte-13");
           }
         }
   
         $scope.backgroundRestricted = false;
         if($window.device.manufacturer.toLowerCase() == "samsung") {
           $scope.backgroundRestricted = true;
-          $scope.allowBackgroundInstructions = $translate.instant("intro.allow_background.samsung");
+          $scope.allowBackgroundInstructions = i18next.t("intro.allow_background.samsung");
         }
   
         console.log("Explanation = "+$scope.locationPermExplanation);

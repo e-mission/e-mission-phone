@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.config.server_conn',
     ['emission.plugin.logger', 'emission.config.dynamic'])
 .factory('ServerConnConfig', function($rootScope, DynamicConfig, $ionicPlatform) {

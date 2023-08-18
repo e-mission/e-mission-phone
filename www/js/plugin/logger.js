@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.plugin.logger', [])
 
 .factory('Logger', function($window, $ionicPopup) {

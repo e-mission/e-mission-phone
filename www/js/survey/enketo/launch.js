@@ -1,13 +1,13 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.launch', [
   'emission.services',
   'emission.survey.enketo.service',
   'emission.plugin.logger',
 ])
-.factory('EnketoSurveyLaunch', function(
-  $ionicPopup, EnketoSurvey, $ionicModal, $translate
-) {
+.factory('EnketoSurveyLaunch', function($ionicPopup, EnketoSurvey, $ionicModal) {
   /**
    * @typedef EnketoSurveyLaunchState
    * @type {{
@@ -132,7 +132,7 @@ angular.module('emission.survey.enketo.launch', [
     return EnketoSurvey.validateAndSave()
     .then(result => {
       if (!result) {
-        $ionicPopup.alert({template: $translate.instant('survey.enketo-form-errors')});
+        $ionicPopup.alert({template: i18next.t('survey.enketo-form-errors')});
       } else if (result instanceof Error) {
         $ionicPopup.alert({template: result.message});
         console.error(result);

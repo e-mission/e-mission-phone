@@ -1,5 +1,7 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.survey.external.launch', ['emission.services',
                     'emission.plugin.logger',
                     'emission.stats.clientstats'])

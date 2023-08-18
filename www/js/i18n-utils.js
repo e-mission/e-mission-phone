@@ -1,7 +1,9 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.i18n.utils', [])
-.factory("i18nUtils", function($http, $translate, Logger) {
+.factory("i18nUtils", function($http, Logger) {
   var iu = {};
   // copy-pasted from ngCordova, and updated to promises
   iu.checkFile = function(fn) {
@@ -17,7 +19,7 @@ angular.module('emission.i18n.utils', [])
   // The language comes in between the first and second part
   // the default path should end with a "/"
   iu.geti18nFileName = function (defaultPath, fpFirstPart, fpSecondPart) {
-    const lang = $translate.use();
+    const lang = i18next.resolvedLanguage;
     const i18nPath = "i18n/";
     var defaultVal = defaultPath + fpFirstPart + fpSecondPart;
     if (lang != 'en') {

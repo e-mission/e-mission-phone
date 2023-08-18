@@ -1,13 +1,15 @@
+import angular from 'angular';
+
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
-                                              'emission.plugin.kvstore'])
+                                              'emission.plugin.kvstore',
+                                              'emission.config.dynamic'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, KVStore, storage, $http, Logger, ReferralHandler) {
+      $ionicPopup, KVStore, $http, Logger, ReferralHandler, DynamicConfig) {
     var logger = Logger;
     var nTimesCalled = 0;
     var startprefs = {};
-    var DEFAULT_THEME_KEY = 'curr_theme';
      // Boolean: represents that the "intro" - the one page summary
      // and the login are done
     var INTRO_DONE_KEY = 'intro_done';
@@ -16,18 +18,9 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     var DATA_COLLECTION_CONSENTED_PROTOCOL = 'data_collection_consented_protocol';
 
     var CONSENTED_KEY = "config/consent";
-    var CONFIGURED_KEY = "config/app_ui_config";
 
     startprefs.CONSENTED_EVENT = "data_collection_consented";
     startprefs.INTRO_DONE_EVENT = "intro_done";
-
-    startprefs.setDefaultTheme = function(new_theme) {
-      storage.set(DEFAULT_THEME_KEY, new_theme);
-    }
-
-    startprefs.getDefaultTheme = function() {
-      return storage.get(DEFAULT_THEME_KEY);
-    }
 
     var writeConsentToNative = function() {
       return $window.cordova.plugins.BEMDataCollection.markConsented($rootScope.req_consent);
@@ -102,17 +95,13 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     }
 
     startprefs.readConfig = function() {
-      const nativePlugin = $window.cordova.plugins.BEMUserCache;
-      return nativePlugin.getDocument(CONFIGURED_KEY, false).then((read_val) => {
-          logger.log("in readConfig, read_val = "+JSON.stringify(read_val));
-          $rootScope.app_ui_label = read_val;
-      });
+        return DynamicConfig.loadSavedConfig().then((savedConfig) => $rootScope.app_ui_label = savedConfig);
     }
 
     startprefs.hasConfig = function() {
-      const nativePlugin = $window.cordova.plugins.BEMUserCache;
-      if ($rootScope.app_ui_label == null || $rootScope.app_ui_label == ""
-        || nativePlugin.isEmptyDoc($rootScope.app_ui_label)) {
+      if ($rootScope.app_ui_label == undefined ||
+          $rootScope.app_ui_label == null ||
+          $rootScope.app_ui_label == "") {
         logger.log("Config not downloaded, need to show join screen");
         $rootScope.has_config = false;
         return false;
@@ -193,13 +182,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     startprefs.getNextState = function() {
       return startprefs.getPendingOnboardingState().then(function(result){
         if (result == null) {
-          var temp = ReferralHandler.getReferralNavigation();
-          if (temp == 'goals') {
-            return {state: 'root.main.goals', params: {}};
-          } else if ($rootScope.displayingIncident) {
-            logger.log("Showing tripconfirm from startprefs");
-            return {state: 'root.main.diary'};
-          } else if (angular.isDefined($rootScope.redirectTo)) {
+          if (angular.isDefined($rootScope.redirectTo)) {
             var redirState = $rootScope.redirectTo;
             var redirParams = $rootScope.redirectParams;
             $rootScope.redirectTo = undefined;

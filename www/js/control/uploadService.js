@@ -1,8 +1,10 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.services.upload', ['emission.plugin.logger'])
 
-    .service('UploadHelper', function ($window, $translate, $http, $rootScope, $ionicPopup, Logger) {
+    .service('UploadHelper', function ($window, $http, $rootScope, $ionicPopup, Logger) {
         const getUploadConfig = function () {
             return new Promise(function (resolve, reject) {
                 Logger.log(Logger.LEVEL_INFO, "About to get email config");
@@ -91,13 +93,13 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
 
             const newScope = $rootScope.$new();
             newScope.data = {};
-            newScope.fromDirText = $translate.instant('upload-service.upload-from-dir',  {parentDir: parentDir});
-            newScope.toServerText = $translate.instant('upload-service.upload-to-server',  {serverURL: uploadConfig});
+            newScope.fromDirText = i18next.t('upload-service.upload-from-dir',  {parentDir: parentDir});
+            newScope.toServerText = i18next.t('upload-service.upload-to-server',  {serverURL: uploadConfig});
 
             var didCancel = true;
 
             const detailsPopup = $ionicPopup.show({
-                title: $translate.instant("upload-service.upload-database", { db: database }),
+                title: i18next.t("upload-service.upload-database", { db: database }),
                 template: newScope.toServerText
                     + '<input type="text" ng-model="data.reason"'
                     +' placeholder="{{ \'upload-service.please-fill-in-what-is-wrong \' | translate}}">',
@@ -140,9 +142,9 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                 }
                 uploadConfig.forEach((url) => {
                     const progressPopup = $ionicPopup.show({
-                        title: $translate.instant("upload-service.upload-database",
+                        title: i18next.t("upload-service.upload-database",
                             {db: database}),
-                        template: $translate.instant("upload-service.upload-progress",
+                        template: i18next.t("upload-service.upload-progress",
                             {filesizemb: binString.byteLength / (1000 * 1000),
                              serverURL: uploadConfig})
                             + '<center><ion-spinner></ion-spinner></center>',
@@ -155,8 +157,8 @@ angular.module('emission.services.upload', ['emission.plugin.logger'])
                         console.log(response);
                         progressPopup.close();
                         const successPopup = $ionicPopup.alert({
-                            title: $translate.instant("upload-service.upload-success"),
-                            template: $translate.instant("upload-service.upload-details",
+                            title: i18next.t("upload-service.upload-success"),
+                            template: i18next.t("upload-service.upload-details",
                                 {filesizemb: binString.byteLength / (1000 * 1000),
                                  serverURL: uploadConfig})
                         });

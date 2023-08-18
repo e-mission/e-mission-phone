@@ -1,10 +1,11 @@
+import angular from 'angular';
+import MessageFormat from 'messageformat';
+
 angular.module('emission.survey.enketo.answer', [
   'ionic',
   'emission.config.dynamic',
 ])
-.factory('EnketoSurveyAnswer', function(
-  $http, DynamicConfig, $translate, $translateMessageFormatInterpolation
-) {
+.factory('EnketoSurveyAnswer', function($http, DynamicConfig,) {
   /**
    * @typedef EnketoAnswerData
    * @type {object}
@@ -42,7 +43,7 @@ angular.module('emission.survey.enketo.answer', [
       return _lazyLoadConfig().then(configSurveys => {
 
         const config = configSurveys[name]; // config for this survey
-        const lang = $translate.use();
+        const lang = i18next.resolvedLanguage;
         const labelTemplate = config.labelTemplate?.[lang];
 
         if (!labelTemplate) return "Answered"; // no template given in config
@@ -51,7 +52,7 @@ angular.module('emission.survey.enketo.answer', [
 
         // gather vars that will be interpolated into the template according to the survey config
         const labelVars = {}
-        for (lblVar in config.labelVars) {
+        for (let lblVar in config.labelVars) {
           const fieldName = config.labelVars[lblVar].key;
           let fieldStr = _getAnswerByTagName(xmlDoc, fieldName);
           if (fieldStr == '<null>') fieldStr = null;
@@ -63,7 +64,9 @@ angular.module('emission.survey.enketo.answer', [
           }
         }
 
-        const label = $translateMessageFormatInterpolation.interpolate(labelTemplate, labelVars);
+        // use MessageFormat interpolate the label template with the label vars
+        const mf = new MessageFormat(lang);
+        const label = mf.compile(labelTemplate)(labelVars);
         return label.replace(/^[ ,]+|[ ,]+$/g, ''); // trim leading and trailing spaces and commas
       })
     }
@@ -144,15 +147,23 @@ angular.module('emission.survey.enketo.answer', [
   function resolveTimestamps(xmlDoc, timelineEntry) {
     // check for Date and Time fields
     const startDate = xmlDoc.getElementsByTagName('Start_date')?.[0]?.innerHTML;
-    const startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
+    let startTime = xmlDoc.getElementsByTagName('Start_time')?.[0]?.innerHTML;
     const endDate = xmlDoc.getElementsByTagName('End_date')?.[0]?.innerHTML;
-    const endTime = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
+    let endTime = xmlDoc.getElementsByTagName('End_time')?.[0]?.innerHTML;
 
     // if any of the fields are missing, return null
     if (!startDate || !startTime || !endDate || !endTime) return null; 
 
-    let additionStartTs = moment(startDate + 'T' + startTime).unix();
-    let additionEndTs = moment(endDate + 'T' + endTime).unix();
+    const timezone = timelineEntry.start_local_dt?.timezone
+                    || timelineEntry.enter_local_dt?.timezone
+                    || timelineEntry.end_local_dt?.timezone
+                    || timelineEntry.exit_local_dt?.timezone;
+    // split by + or - to get time without offset
+    startTime = startTime.split(/\-|\+/)[0];
+    endTime = endTime.split(/\-|\+/)[0];
+
+    let additionStartTs = moment.tz(startDate+'T'+startTime, timezone).unix();
+    let additionEndTs = moment.tz(endDate+'T'+endTime, timezone).unix();
 
     if (additionStartTs > additionEndTs) {
       return undefined; // if the start time is after the end time, this is an invalid response

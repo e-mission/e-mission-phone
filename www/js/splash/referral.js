@@ -1,3 +1,5 @@
+import angular from 'angular';
+
 angular.module('emission.splash.referral', ['emission.plugin.kvstore'])
 
 .factory('ReferralHandler', function($window, KVStore) {
@@ -9,7 +11,7 @@ angular.module('emission.splash.referral', ['emission.plugin.kvstore'])
     var REFERRED_USER_ID = 'referred_user_id';
 
     referralHandler.getReferralNavigation = function() {
-      toReturn = KVStore.getDirect(REFERRAL_NAVIGATION_KEY);
+      const toReturn = KVStore.getDirect(REFERRAL_NAVIGATION_KEY);
       KVStore.remove(REFERRAL_NAVIGATION_KEY);
       return toReturn;
     }

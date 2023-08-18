@@ -5,6 +5,8 @@
  * factory to make that easier.
  */
 
+import angular from 'angular';
+
 angular.module('emission.splash.localnotify', ['emission.plugin.logger',
                                               'emission.splash.startprefs',
                                               'ionic-toast'])

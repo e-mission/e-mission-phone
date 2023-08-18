@@ -1,11 +1,15 @@
 'use strict';
 
-angular.module('emission.config.dynamic', ['emission.plugin.logger'])
+import angular from 'angular';
+
+angular.module('emission.config.dynamic', ['emission.plugin.logger',
+    'emission.plugin.kvstore'])
 .factory('DynamicConfig', function($http, $ionicPlatform,
-        $window, $state, $rootScope, $timeout, Logger, $translate) {
+        $window, $state, $rootScope, $timeout, KVStore, Logger) {
     // also used in the startprefs class
     // but without importing this
     const CONFIG_PHONE_UI="config/app_ui_config";
+    const CONFIG_PHONE_UI_KVSTORE ="CONFIG_PHONE_UI";
     const LOAD_TIMEOUT = 6000; // 6000 ms = 6 seconds
 
     var dc = {};
@@ -42,7 +46,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     var readConfigFromServer = function(label) {
         Logger.log("Received request to join "+label);
         // The URL prefix from which config files will be downloaded and read.
-        // Change this if you supply your own config files. TODO: on merge, change this from sebastianbarry's branch to the master e-mission branch
+        // Change this if you supply your own config files.
         const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
         Logger.log("Downloading data from "+downloadURL);
         return $http.get(downloadURL).then((result) => {
@@ -58,10 +62,28 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         });
     }
 
-    var loadSavedConfig = function() {
+    dc.loadSavedConfig = function() {
         const nativePlugin = $window.cordova.plugins.BEMUserCache;
-        return nativePlugin.getDocument(CONFIG_PHONE_UI, false)
-            .then((savedConfig) => {
+        const rwDocRead = nativePlugin.getDocument(CONFIG_PHONE_UI, false);
+        const kvDocRead = KVStore.get(CONFIG_PHONE_UI_KVSTORE);
+        return Promise.all([rwDocRead, kvDocRead])
+            .then(([rwConfig, kvStoreConfig]) => {
+                const savedConfig = kvStoreConfig? kvStoreConfig : rwConfig;
+                Logger.log("DYNAMIC CONFIG: kvStoreConfig key length = "+ Object.keys(kvStoreConfig || {}).length
+                    +" rwConfig key length = "+ Object.keys(rwConfig || {}).length
+                    +" using kvStoreConfig? "+(kvStoreConfig? true: false));
+                if (!kvStoreConfig && rwConfig) {
+                    // Backwards compat, can remove at the end of 2023
+                    Logger.log("DYNAMIC CONFIG: rwConfig found, kvStoreConfig not found, setting to fix backwards compat");
+                    KVStore.set(CONFIG_PHONE_UI_KVSTORE, rwConfig);
+                }
+                if ((Object.keys(kvStoreConfig || {}).length > 0)
+                    && (Object.keys(rwConfig || {}).length == 0)) {
+                    // Might as well sync the RW config if it doesn't exist and
+                    // have triple-redundancy for this
+                    nativePlugin.putRWDocument(CONFIG_PHONE_UI, kvStoreConfig);
+                }
+                Logger.log("DYNAMIC CONFIG: final selected config = "+JSON.stringify(savedConfig));
                 if (nativePlugin.isEmptyDoc(savedConfig)) {
                     Logger.log("Found empty saved ui config, returning null");
                     return undefined;
@@ -72,7 +94,14 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     return savedConfig;
                 }
             })
-            .catch((err) => Logger.displayError($translate.instant('config.unable-read-saved-config'), err));
+            .catch((err) => Logger.displayError(i18next.t('config.unable-read-saved-config'), err));
+    }
+
+    dc.resetConfigAndRefresh = function() {
+        const resetNativePromise = $window.cordova.plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {});
+        const resetKVStorePromise = KVStore.set(CONFIG_PHONE_UI_KVSTORE, {});
+        Promise.all([resetNativePromise, resetKVStorePromise])
+            .then($window.location.reload(true));
     }
 
     /**
@@ -97,9 +126,11 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 {joined: {opcode: dc.scannedToken, study_name: newStudyLabel, subgroup: subgroup}});
             const storeConfigPromise = $window.cordova.plugins.BEMUserCache.putRWDocument(
                 CONFIG_PHONE_UI, toSaveConfig);
+            const storeInKVStorePromise = KVStore.set(CONFIG_PHONE_UI_KVSTORE, toSaveConfig);
             const logSuccess = (storeResults) => Logger.log("UI_CONFIG: Stored dynamic config successfully, result = "+JSON.stringify(storeResults));
             // loaded new config, so it is both ready and changed
-            return storeConfigPromise.then((result) => {
+            return Promise.all([storeConfigPromise, storeInKVStorePromise]).then(
+            ([result, kvStoreResult]) => {
                 logSuccess(result);
                 dc.saveAndNotifyConfigChanged(downloadedConfig);
                 dc.saveAndNotifyConfigReady(downloadedConfig);
@@ -107,7 +138,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                     $state.go("root.intro");
                 return true;
             }).catch((storeError) =>
-                Logger.displayError($translate.instant('config.unable-to-store-config'), storeError));
+                Logger.displayError(i18next.t('config.unable-to-store-config'), storeError));
         });
     }
 
@@ -126,13 +157,13 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
     }
 
     const _getStudyName = function(connectUrl) {
-      const orig_host = new URL(connectUrl).hostname;
-      const first_domain = orig_host.split(".")[0];
-      if (first_domain == "openpath-stage") { return "stage"; }
-      const openpath_index = first_domain.search("-openpath");
-      if (openpath_index == -1) { return undefined; }
-      const study_name = first_domain.substr(0,openpath_index);
-      return study_name;
+        const orig_host = new URL(connectUrl).hostname;
+        const first_domain = orig_host.split(".")[0];
+        if (first_domain == "openpath-stage") { return "stage"; }
+        const openpath_index = first_domain.search("-openpath");
+        if (openpath_index == -1) { return undefined; }
+        const study_name = first_domain.substr(0,openpath_index);
+        return study_name;
     }
 
     const _fillStudyName = function(config) {
@@ -181,10 +212,10 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
         const tokenParts = token.split("_");
         if (tokenParts.length < 3) {
           // all tokens must have at least nrelop_[study name]_...
-          throw new Error($translate.instant('config.not-enough-parts-old-style', {"token": token}));
+          throw new Error(i18next.t('config.not-enough-parts-old-style', {"token": token}));
         }
         if (tokenParts[0] != "nrelop") {
-          throw new Error($translate.instant('config.no-nrelop-start', {token: token}));
+          throw new Error(i18next.t('config.no-nrelop-start', {token: token}));
         }
         return tokenParts[1];
     }
@@ -194,12 +225,12 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             // new style study, expects token with sub-group
             const tokenParts = token.split("_");
             if (tokenParts.length <= 3) { // no subpart defined
-                throw new Error($translate.instant('config.not-enough-parts', {token: token}));
+                throw new Error(i18next.t('config.not-enough-parts', {token: token}));
             }
             if (config.opcode.subgroups) {
                 if (config.opcode.subgroups.indexOf(tokenParts[2]) == -1) {
                 // subpart not in config list
-                    throw new Error($translate.instant('config.invalid-subgroup', {token: token, subgroup: tokenParts[2], config_subgroups: config.opcode.subgroups}));
+                    throw new Error(i18next.t('config.invalid-subgroup', {token: token, subgroup: tokenParts[2], config_subgroups: config.opcode.subgroups}));
                 } else {
                     console.log("subgroup "+tokenParts[2]+" found in list "+config.opcode.subgroups);
                     return tokenParts[2];
@@ -207,7 +238,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
             } else {
                 if (tokenParts[2] != "default") {
                     // subpart not in config list
-                    throw new Error($translate.instant('config.invalid-subgroup', {token: token}));
+                    throw new Error(i18next.t('config.invalid-subgroup', {token: token}));
                 } else {
                     console.log("no subgroups in config, 'default' subgroup found in token ");
                     return tokenParts[2];
@@ -235,15 +266,15 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 // on successful download, cache the token in the rootScope
                 .then((wasUpdated) => {$rootScope.scannedToken = dc.scannedToken})
                 .catch((fetchErr) => {
-                    Logger.displayError($translate.instant('config.unable-download-config'), fetchErr);
+                    Logger.displayError(i18next.t('config.unable-download-config'), fetchErr);
                 });
         } catch (error) {
-            Logger.displayError($translate.instant('config.invalid-opcode-format'), error);
+            Logger.displayError(i18next.t('config.invalid-opcode-format'), error);
             return Promise.reject(error);
         }
     };
     dc.initAtLaunch = function () {
-        loadSavedConfig().then((existingConfig) => {
+        dc.loadSavedConfig().then((existingConfig) => {
             if (!existingConfig) {
                 return Logger.log("UI_CONFIG: No existing config, skipping");
             }
@@ -265,7 +296,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger'])
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
         }).catch((err) => {
-            Logger.displayError($translate('config.error-loading-config-app-start'), err)
+            Logger.displayError(i18next.t('config.loading-config-app-start', err))
         });
     };
     $ionicPlatform.ready().then(function() {

@@ -1,12 +1,16 @@
 'use strict';
 
+import angular from 'angular';
+import QrCode from './components/QrCode';
+
 angular.module('emission.intro', ['emission.splash.startprefs',
                                   'emission.survey.enketo.demographics',
                                   'emission.appstatus.permissioncheck',
                                   'emission.i18n.utils',
                                   'emission.config.dynamic',
+                                  'emission.plugin.kvstore',
                                   'ionic-toast',
-                                  'monospaced.qrcode'])
+                                  QrCode.module])
 
 .config(function($stateProvider) {
   $stateProvider
@@ -25,7 +29,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
 .controller('IntroCtrl', function($scope, $rootScope, $state, $window,
     $ionicPlatform, $ionicSlideBoxDelegate,
-    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, SurveyLaunch, DynamicConfig, i18nUtils, $translate) {
+    $ionicPopup, $ionicHistory, ionicToast, $timeout, CommHelper, StartPrefs, KVStore, SurveyLaunch, DynamicConfig, i18nUtils) {
 
   /*
    * Move all the state that is currently in the controller body into the init
@@ -75,8 +79,10 @@ angular.module('emission.intro', ['emission.splash.startprefs',
 
   $scope.overallStatus = false;
 
+  /* If the user does not consent, we boot them back out to the join screen */
   $scope.disagree = function() {
-    $state.go('root.main.heatmap');
+    // reset the saved config, then trigger a hard refresh
+    DynamicConfig.resetConfigAndRefresh();
   };
 
   $scope.agree = function() {
@@ -116,7 +122,9 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   }
 
   $scope.login = function(token) {
-    window.cordova.plugins.OPCodeAuth.setOPCode(token).then(function(opcode) {
+    const EXPECTED_METHOD = "prompted-auth";
+    const dbStorageObject = {"token": token};
+    KVStore.set(EXPECTED_METHOD, dbStorageObject).then(function(opcode) {
       // ionicToast.show(message, position, stick, time);
       // $scope.next();
       ionicToast.show(opcode, 'middle', false, 2500);
@@ -125,6 +133,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       } else {
         CommHelper.registerUser(function(successResult) {
           $scope.currentToken = token;
+          $scope.qrToken = "emission://login_token?token=" + token;
           $scope.next();
         }, function(errorResult) {
           $scope.alertError('User registration error', errorResult);
@@ -137,19 +146,34 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   };
 
   $scope.shareQR = function() {
-    var prepopulateQRMessage = {};
-    const c = document.getElementsByClassName('qrcode-link');
-    const cbase64 = c[0].getAttribute('href');
-    prepopulateQRMessage.files = [cbase64];
-    prepopulateQRMessage.url = $scope.currentToken;
+    /*code adapted from demo of react-qr-code
+    selector below gets svg element out of angularized QRCode 
+    this will change upon later migration*/
+    const svg = document.querySelector("qr-code svg");
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const img = new Image();
 
-    window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-      console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-      console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-    }, function(msg) {
-      console.log("Sharing failed with message: " + msg);
-    });
-  };
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      ctx.drawImage(img, 0, 0);
+      const pngFile = canvas.toDataURL("image/png");
+        
+      var prepopulateQRMessage = {}; 
+      prepopulateQRMessage.files = [pngFile];
+      prepopulateQRMessage.url = $scope.currentToken;
+        
+      window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+        console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+        console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+      }, function(msg) {
+        console.log("Sharing failed with message: " + msg);
+      });
+    }
+    img.src =  `data:image/svg+xml;base64,${btoa(svgData)}`;
+  }
 
   // Called each time the slide changes
   $scope.slideChanged = function(index) {
@@ -186,7 +210,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
   $ionicPlatform.ready().then(() => {
       DynamicConfig.configReady().then((newConfig) => {
         Logger.log("Resolved UI_CONFIG_READY promise in intro.js, filling in templates");
-        $scope.lang = $translate.use();
+        $scope.lang = i18next.resolvedLanguage;
         $scope.ui_config = newConfig;
 
         // backwards compat hack to fill in the raw_data_use for programs that don't have it
@@ -197,7 +221,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
         Object.entries(newConfig.intro.translated_text).forEach(([lang, val]) => {
             val.raw_data_use = val.raw_data_use || default_raw_data_use[lang];
         });
-        // TODO: we should be able to use $translate for this, right?
+        // TODO: we should be able to use i18n for this, right?
         $scope.template_text = newConfig.intro.translated_text[$scope.lang];
         if (!$scope.template_text) {
             $scope.template_text = newConfig.intro.translated_text["en"]

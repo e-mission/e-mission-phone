@@ -1,12 +1,14 @@
 'use strict';
 
+import angular from 'angular';
+
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
                     'emission.plugin.logger',
                     'emission.stats.clientstats',
                     'emission.config.dynamic'])
 
-.factory('NotificationScheduler', function($http, $window, $ionicPlatform, $translate,
+.factory('NotificationScheduler', function($http, $window, $ionicPlatform,
                                             ClientStats, DynamicConfig, CommHelper, Logger) {
 
     const scheduler = {};
@@ -63,7 +65,17 @@ angular.module('emission.splash.notifscheduler',
             if (!notifs?.length)
                 return Logger.log(`${prefix}, there are no scheduled notifications`);
             const time = moment(notifs?.[0].trigger.at).format('HH:mm');
-            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time}`);
+            //was in plugin, changed to scheduler
+            scheduler.scheduledNotifs = notifs.map((n) => {
+                const time = moment(n.trigger.at).format('LT');
+                const date = moment(n.trigger.at).format('LL');
+                return {
+                    key: date,
+                    val: time
+                }
+            });
+            //have the list of scheduled show up in this log
+            Logger.log(`${prefix}, there are ${notifs.length} scheduled notifications at ${time} first is ${scheduler.scheduledNotifs[0].key} at ${scheduler.scheduledNotifs[0].val}`);
         });
     }
 
@@ -71,7 +83,7 @@ angular.module('emission.splash.notifscheduler',
     const scheduleNotifs = (scheme, notifTimes) => {
         return new Promise((rs) => {
             isScheduling = true;
-            const localeCode = $translate.use();
+            const localeCode = i18next.resolvedLanguage;
             const nots = notifTimes.map((n) => {
                 const nDate = n.toDate();
                 const seconds = nDate.getTime() / 1000;

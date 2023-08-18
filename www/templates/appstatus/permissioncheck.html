@@ -1,8 +1,8 @@
-{{'intro.appstatus.overall-description' | translate }}
+{{'intro.appstatus.overall-description' | i18next }}
 
 <details>
-<summary><h4 ng-class="overallLocStatusClass"> {{ 'intro.appstatus.overall-loc-name' | translate }} {{overallLocStatusIcon}} </h4></summary>
-{{'intro.appstatus.overall-loc-description' | translate }}
+<summary><h4 ng-class="overallLocStatusClass"> {{ 'intro.appstatus.overall-loc-name' | i18next }} {{overallLocStatusIcon}} </h4></summary>
+{{'intro.appstatus.overall-loc-description' | i18next }}
 
 <ion-list>
 <ion-item ng-repeat="locCheck in locChecks">
@@ -12,8 +12,8 @@
     </div>
     <div class="row item-text-wrap">{{locCheck.desc}}</div>
     <div class="row">
-        <button class="button button-assertive button-outline" ng-click="locCheck.fix()">Fix</button>
-        <button class="button button-royal button-outline" ng-click="locCheck.refresh()">Refresh</button>
+        <button class="button button-assertive button-outline" ng-click="locCheck.fix()"><span ng-i18next>{{'intro.appstatus.fix' }}</span></button>
+        <button class="button button-royal button-outline" ng-click="locCheck.refresh()"><span ng-i18next>{{'intro.appstatus.refresh' }}</span></button>
     </div>
 </ion-item>
 </ion-list>
@@ -22,7 +22,7 @@
 <div ng-if="fitnessPermNeeded">
 <details>
 <summary><h4 ng-class="overallFitnessStatusClass"> {{ overallFitnessName }} {{overallFitnessStatusIcon}} </h4></summary>
-{{'intro.appstatus.overall-fitness-description' | translate }}
+{{'intro.appstatus.overall-fitness-description' | i18next }}
 
 <ion-list>
 <ion-item ng-repeat="fitnessCheck in fitnessChecks">
@@ -32,8 +32,8 @@
     </div>
     <div class="row item-text-wrap">{{fitnessCheck.desc}}</div>
     <div class="row">
-        <button class="button button-assertive button-outline" ng-click="fitnessCheck.fix()">Fix</button>
-        <button class="button button-royal button-outline" ng-click="fitnessCheck.refresh()">Refresh</button>
+        <button class="button button-assertive button-outline" ng-click="fitnessCheck.fix()"><span ng-i18next>{{'intro.appstatus.fix' }}</span></button>
+        <button class="button button-royal button-outline" ng-click="fitnessCheck.refresh()"><span ng-i18next>{{'intro.appstatus.refresh' }}</span></button>
     </div>
 </ion-item>
 </ion-list>
@@ -41,8 +41,8 @@
 </div>
 
 <details>
-<summary><h4 ng-class="overallNotificationStatusClass"> {{ 'intro.appstatus.overall-notification-name' | translate }} {{overallNotificationStatusIcon}}</h4></summary>
-{{'intro.appstatus.overall-notification-description' | translate }}
+<summary><h4 ng-class="overallNotificationStatusClass"> {{ 'intro.appstatus.overall-notification-name' | i18next }} {{overallNotificationStatusIcon}}</h4></summary>
+{{'intro.appstatus.overall-notification-description' | i18next }}
 <ion-list>
 <ion-item ng-repeat="notificationCheck in notificationChecks">
     <div class="row">
@@ -51,8 +51,8 @@
     </div>
     <div class="row item-text-wrap">{{notificationCheck.desc}}</div>
     <div class="row">
-        <button class="button button-assertive button-outline" ng-click="notificationCheck.fix()">Fix</button>
-        <button class="button button-royal button-outline" ng-click="notificationCheck.refresh()">Refresh</button>
+        <button class="button button-assertive button-outline" ng-click="notificationCheck.fix()"><span ng-i18next>{{'intro.appstatus.fix' }}</span></button>
+        <button class="button button-royal button-outline" ng-click="notificationCheck.refresh()"><span ng-i18next>{{'intro.appstatus.refresh' }}</span></button>
     </div>
 </ion-item>
 </ion-list>
@@ -60,8 +60,8 @@
 
 <div ng-if="backgroundUnrestrictionsNeeded">
 <details>
-<summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> {{ 'intro.appstatus.overall-background-restrictions-name' | translate }} {{overallBackgroundRestrictionStatusIcon}} </h3> </summary>
-{{'intro.appstatus.overall-background-restrictions-description' | translate }}
+<summary><h4 ng-class="overallBackgroundRestrictionStatusClass"> {{ 'intro.appstatus.overall-background-restrictions-name' | i18next }} {{overallBackgroundRestrictionStatusIcon}} </h3> </summary>
+{{'intro.appstatus.overall-background-restrictions-description' | i18next }}
 
 <ion-list>
 <ion-item ng-repeat="backgroundRestrictionCheck in backgroundRestrictionChecks">
@@ -71,8 +71,8 @@
     </div>
     <div class="row item-text-wrap">{{backgroundRestrictionCheck.desc}}</div>
     <div class="row">
-        <button class="button button-assertive button-outline" ng-click="backgroundRestrictionCheck.fix()">Fix</button>
-        <button class="button button-royal button-outline" ng-click="backgroundRestrictionCheck.refresh()">Refresh</button>
+        <button class="button button-assertive button-outline" ng-click="backgroundRestrictionCheck.fix()"><span ng-i18next>{{'intro.appstatus.fix' }}</span></button>
+        <button class="button button-royal button-outline" ng-click="backgroundRestrictionCheck.refresh()"><span ng-i18next>{{'intro.appstatus.refresh' }}</span></button>
     </div>
 </ion-item>
 </ion-list>

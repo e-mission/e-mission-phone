@@ -3,7 +3,7 @@
  * Assumptions:
  * - The directive is embedded within an ion-view
  * - The controller for the ion-view has a function called
- *      'recomputeDisplayTimelineEntries` which modifies the *list* of trips and places
+ *      'recomputeListEntries` which modifies the *list* of trips and places
  *      as necessary. An example with the label view is removing the labeled trips from
  *      the "toLabel" filter. Function can be a no-op (for example, in the diary view)
  * - The view is associated with a state which we can record in the client stats.
@@ -11,137 +11,13 @@
  *      other components.
  */
 
+import angular from 'angular';
+
 angular.module('emission.survey.enketo.trip.button',
     ['emission.stats.clientstats',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.inputmatcher'])
-.directive('enketoTripButton', function() {
-  return {
-    scope: {
-        timelineEntry: "=",
-        recomputedelay: "@",
-    },
-    controller: "EnketoTripButtonCtrl",
-    templateUrl: 'templates/survey/enketo/summary-trip-button.html'
-  };
-})
-.controller("EnketoTripButtonCtrl", function($scope, $element, $attrs,
-    EnketoSurveyLaunch, $ionicPopover, $window, ClientStats,
-    EnketoTripButtonService) {
-  console.log("Invoked enketo directive controller for labels "+EnketoTripButtonService.SINGLE_KEY);
-
-  var findViewElement = function() {
-      // console.log("$element is ", $element);
-      // console.log("parent row is", $element.parents("ion-item"));
-      let rowElement = $element.parents("ion-view")
-      // console.log("row Element is", rowElement);
-      return angular.element(rowElement);
-  }
-
-  var findViewState = function() {
-      let viewState = findViewElement().attr("state")
-      // console.log("view state is ", viewState);
-      return viewState;
-  }
-
-  var findViewScope = function() {
-      let viewScope = findViewElement().scope();
-      // console.log("view scope is ", viewScope);
-      return viewScope;
-  }
-
-  /**
-   * BEGIN: Required external interface for all label directives
-   * These methods will be invoked by the verifycheck directive
-   * For more details on cooperating directives in this situation, please see:
-   * e-mission/e-mission-docs#674 (comment)
-   * to
-   * e-mission/e-mission-docs#674 (comment)
-   *
-   * Input: none
-   * Side effect: verifies the trip (partially if needed) and updates the trip
-   * verifiability status.
-   */
-
-    /**
-     * verifyTrip turns all of a given trip's yellow labels green
-     */
-    $scope.verifyTrip = function() {
-      console.log("About to verify trip "+$scope.timelineEntry.start_ts
-        +" -> "+$scope.timelineEntry.end_ts+" with current visibility"
-        + $scope.timelineEntry.verifiability);
-      // Return early since we don't want to support trip verification yet
-      return;
-      if ($scope.timelineEntry.verifiability != "can-verify") {
-        ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
-            {"verifiable": false, "currView": $scope.currentViewState});
-        return;
-      }
-      ClientStats.addReading(ClientStats.getStatKeys().VERIFY_TRIP,
-            {"verifiable": true,
-             "currView": $scope.currentViewState,
-             "userInput": angular.toJson($scope.timelineEntry.userInput),
-             "finalInference": angular.toJson($scope.timelineEntry.finalInference)});
-
-      $scope.draftInput = {
-        "start_ts": $scope.timelineEntry.start_ts,
-        "end_ts": $scope.timelineEntry.end_ts
-      };
-      $scope.editingTrip = $scope.timelineEntry;
-
-      const inferred = $scope.timelineEntry.finalInference[EnketoTripButtonService.SINGLE_KEY];
-      // TODO: figure out what to do with "other". For now, do not verify.
-      if (inferred && !$scope.timelineEntry.userInput[EnketoTripButtonService.SINGLE_KEY] && inferred != "other") $scope.store(inputType, inferred, false);
-    }
-
-  /*
-   * END: Required external interface for all label directives
-   */
-
-  if ($scope.recomputedelay == "") {
-    let THIRTY_SECS = 30 * 1000;
-    $scope.recomputedelay = THIRTY_SECS;
-  } else {
-    $scope.recomputedelay = $scope.recomputedelay * 1000;
-  }
-
-  EnketoTripButtonService.setRecomputeDelay($scope.recomputedelay);
-
-  $scope.openPopover = function ($event, trip, inputType) {
-    const prevResponse = trip.userInput?.[EnketoTripButtonService.SINGLE_KEY];
-    return EnketoSurveyLaunch
-      .launch($scope, 'TripConfirmSurvey', { timelineEntry: trip, prefilledSurveyResponse: prevResponse?.data?.xmlResponse })
-      .then(result => {
-        if (!result) {
-          return;
-        }
-        $scope.$apply(() => trip.userInput[EnketoTripButtonService.SINGLE_KEY] = {
-            data: result,
-            write_ts: Date.now()
-        });
-        // store is commented out since the enketo survey launch currently
-        // stores the value as well
-        // $scope.store(inputType, result, false);
-      });
-  };
-
-
-  $scope.store = function (inputType, input, isOther) {
-    // This used to be in `$scope.store` in the multi-label-ui 
-    // but the enketo libraries store the values internally now, so we move
-    // this here
-    let viewScope = findViewScope();
-    EnketoTripButtonService.updateTripProperties(tripToUpdate, viewScope);  // Redo our inferences, filters, etc. based on this new information
-  };
-
-  $scope.init = function() {
-      console.log("During initialization, trip is ", $scope.timelineEntry);
-      $scope.currViewState = findViewState();
-  }
-
-  $scope.init();
-})
 .factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
@@ -207,23 +83,6 @@ angular.module('emission.survey.enketo.trip.button',
     }
   }
 
-  /*
-   * This is a HACK to work around the issue that the label screen and diary
-   * screen are not unified. We should remove this, and the timestamp in the
-   * userInput field when we do.
-   */
-  etbs.copyInputIfNewer = function(potentiallyModifiedTrip, originalTrip) {
-    let pmInput = potentiallyModifiedTrip.userInput;
-    let origInput = originalTrip.userInput;
-    if (((pmInput[etbs.SINGLE_KEY] || {}).write_ts || 0) > ((origInput[etbs.SINGLE_KEY] || {}).write_ts || 0)) {
-        origInput[etbs.SINGLE_KEY] = pmInput[etbs.SINGLE_KEY];
-    }
-  }
-
-  etbs.updateTripProperties = function(trip, viewScope) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-  }
   /**
    * Given the list of possible label tuples we've been sent and what the user has already input for the trip, choose the best labels to actually present to the user.
    * The algorithm below operationalizes these principles:
@@ -244,49 +103,11 @@ angular.module('emission.survey.enketo.trip.button',
     return etbs.key.split("/")[1];
   }
 
-  /**
-   * For a given trip, compute how the "verify" button should behave.
-   * If the trip has at least one yellow label, the button should be clickable.
-   * If the trip has all green labels, the button should be disabled because everything has already been verified.
-   * If the trip has all red labels or a mix of red and green, the button should be disabled because we need more detailed user input.
-   */
-
-  etbs.setRecomputeDelay = function(rd) {
-    etbs.recomputedelay = rd;
-  }
-
   etbs.updateVerifiability = function(trip) {
     // currently a NOP since we don't have any other trip properties
     trip.verifiability = "cannot-verify";
     return;
   }
 
-  /*
-   * Embody the logic for delayed update:
-   * the recompute logic already keeps trips that are waitingForModification
-   * even if they would be filtered otherwise.
-   * so here:
-   * - set the trip as waiting for potential modifications
-   * - create a one minute timeout that will remove the wait and recompute
-   * - clear the existing timeout (if any)
-   */
-  etbs.updateVisibilityAfterDelay = function(trip, viewScope) {
-    // currently a NOP since we don't have any other trip properties
-    return;
-    // We have just edited this trip, and are now waiting to see if the user
-    // is going to modify it further
-    trip.waitingForMod = true;
-    let currTimeoutPromise = trip.timeoutPromise;
-    Logger.log("trip starting at "+trip.start_fmt_time+": creating new timeout of "+etbs.recomputedelay);
-    trip.timeoutPromise = $timeout(function() {
-      Logger.log("trip starting at "+trip.start_fmt_time+": executing recompute");
-      trip.waitingForMod = false;
-      trip.timeoutPromise = undefined;
-      console.log("Recomputing display trips on ", viewScope);
-      viewScope.recomputeDisplayTimelineEntries();
-    }, etbs.recomputedelay);
-    Logger.log("trip starting at "+trip.start_fmt_time+": cancelling existing timeout "+currTimeoutPromise);
-    $timeout.cancel(currTimeoutPromise);
-  }
   return etbs;
 });
