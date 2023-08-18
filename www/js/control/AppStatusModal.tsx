@@ -93,7 +93,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixLocationPermissions,
-                true).then((error) => locPermissionsCheck.desc = error);
+                true).then((error) => {if(error){locPermissionsCheck.desc = error}});
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
@@ -148,7 +148,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         let fixPerms = function() {
             console.log("fix and refresh location permissions");
             return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixLocationPermissions,
-                true).then((error) => locPermissionsCheck.desc = error);
+                true).then((error) => {if(error){locPermissionsCheck.desc = error}});
         };
         let checkPerms = function() {
             console.log("fix and refresh location permissions");
@@ -187,7 +187,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixFitnessPermissions,
-                true).then((error) => fitnessPermissionsCheck.desc = error);
+                true).then((error) => {if(error){fitnessPermissionsCheck.desc = error}});
             };
             let checkPerms = function() {
                 console.log("fix and refresh fitness permissions");
@@ -211,7 +211,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixFitnessPermissions,
-                true).then((error) => fitnessPermissionsCheck.desc = error);
+                true).then((error) => {if(error){fitnessPermissionsCheck.desc = error}});
         };
         let checkPerms = function() {
             console.log("fix and refresh fitness permissions");
