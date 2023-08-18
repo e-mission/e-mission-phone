@@ -7,6 +7,7 @@ import { useTranslation } from "react-i18next";
 import { getAngularService } from "../angular-react-helper";
 import PermissionItem from "../appstatus/PermissionItem";
 import useAppConfig from "../useAppConfig";
+import useAppStateChange from "../useAppStateChange";
 import ExplainPermissions from "../appstatus/ExplainPermissions";
 
 const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
@@ -389,7 +390,8 @@ const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
         console.log("setting checks are", checkList);
      }
 
-    $ionicPlatform.on("resume", function() {
+    //custom hook executes function on app resuming foreground
+   useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
         refreshAllChecks();
     });
