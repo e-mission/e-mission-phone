@@ -166,12 +166,12 @@ angular.module('emission.survey.multilabel.buttons',
     const inputValue = trip.userInput["MODE"]? trip.userInput["MODE"].value : undefined;
     console.log("Experimenting with expanding inputs for mode "+inputValue);
     if (mls.ui_config.intro.program_or_study == 'program') {
-        if (inputValue == ui_config.intro.mode_studied) {
-            Logger.log("Found "+ui_config.intro.mode_studied+" mode in a program, displaying full details");
+        if (inputValue == mls.ui_config.intro.mode_studied) {
+            Logger.log("Found "+mls.ui_config.intro.mode_studied+" mode in a program, displaying full details");
             trip.inputDetails = getLabelInputDetails();
             trip.INPUTS = getLabelInputs();
         } else {
-            Logger.log("Found non "+ui_config.intro.mode_studied+" mode in a program, displaying base details");
+            Logger.log("Found non "+mls.ui_config.intro.mode_studied+" mode in a program, displaying base details");
             trip.inputDetails = baseLabelInputDetails;
             trip.INPUTS = getBaseLabelInputs();
         }
