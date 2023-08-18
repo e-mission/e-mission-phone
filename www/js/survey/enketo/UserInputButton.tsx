@@ -58,9 +58,11 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   }
 
   return (<>
-    <DiaryButton text={displayLabel}
-                  fillColor={isFilled && colors.primary}
-                  onPress={() => launchUserInputSurvey()} />
+    <DiaryButton fillColor={isFilled && colors.primary}
+      onPress={() => launchUserInputSurvey()}>
+      {displayLabel}
+    </DiaryButton>
+
     <EnketoModal visible={modalVisible}
       onDismiss={() => setModalVisible(false)}
       onResponseSaved={onResponseSaved}

@@ -94,9 +94,9 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
   const [modalVisible, setModalVisible] = useState(false);
 
   return (<>
-    <DiaryButton text={displayLabel}
-                  icon={'plus-thick'}
-                  onPress={() => launchAddNoteSurvey()} />
+    <DiaryButton icon={'plus-thick'} onPress={() => launchAddNoteSurvey()}>
+      {displayLabel}
+    </DiaryButton>
     <EnketoModal visible={modalVisible}
       onDismiss={() => setModalVisible(false)}
       onResponseSaved={onResponseSaved}

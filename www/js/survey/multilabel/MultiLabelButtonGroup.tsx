@@ -96,9 +96,10 @@ const MultilabelButtonGroup = ({ trip }) => {
           return (
             <View key={i}>
               <Text>{t(input.labeltext)}</Text>
-              <DiaryButton text={t(btnText)}
-                onPress={(e) => setModalVisibleFor(input.name)}
-                fillColor={fillColor} />
+              <DiaryButton fillColor={fillColor}
+                onPress={(e) => setModalVisibleFor(input.name)}>
+                { t(btnText) }
+              </DiaryButton>
             </View>
           )
         })}
