@@ -1,10 +1,8 @@
-//this comes up for checkAppStatus, and when needed?
-//will probably change when we update introduction
+//component to view and manage permission settings
 import React, { useState, useEffect } from "react";
 import { Modal,  useWindowDimensions, ScrollView } from "react-native";
 import { Dialog, Button, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import { getAngularService } from "../angular-react-helper";
 import PermissionItem from "../appstatus/PermissionItem";
 import useAppConfig from "../useAppConfig";
 import useAppStateChange from "../useAppStateChange";
@@ -15,70 +13,24 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
     const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
 
+    console.log("settings scope in app status modal", settingsScope);
+
     const { height: windowHeight } = useWindowDimensions();
-
-    const [explainVis, setExplainVis] = useState(false);
-
-    const $ionicPlatform = getAngularService("$ionicPlatform");
-
     const [osver, setOsver] = useState(0);
     const [platform, setPlatform] = useState("");
 
-    const [backgroundUnrestrictionsNeeded, setBackgroundUnrestrictionsNeeded] = useState(false);
+    const [explainVis, setExplainVis] = useState(false);
+
     const [backgroundRestricted, setBackgroundRestricted] = useState(false);
     const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState([]);
 
-    const [overallStatus, setOverallStatus] = useState(false);
-
-    const [fitnessPermNeeded, setFitnessPermNeeded] = useState(false);
-
     const [checkList, setCheckList] = useState([]);
+    const [overallStatus, setOverallStatus] = useState(false);
     const [explanationList, setExplanationList] = useState([]);
     const [haveSetText, setHaveSetText] = useState(false);
 
-    const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
-    const settingsScope = angular.element(mainControlEl).scope();
-    console.log("settings scope", settingsScope);
-
-    //load when ready
-    useEffect(() => {
-        if (appConfig) {
-            setPlatform(window['device'].platform.toLowerCase());
-            setOsver(window['device'].version.split(".")[0]);
-
-            if(!haveSetText)
-            {
-                setupPermissionText();
-                setHaveSetText(true);
-            }
-
-            console.log("setting up permissions");
-            createChecklist();
-        }
-    }, [appConfig]);
-
-    function createChecklist(){
-        if(platform == "android") {
-            setupAndroidLocChecks();
-            setupAndroidFitnessChecks();
-            setupAndroidNotificationChecks();
-            setupAndroidBackgroundRestrictionChecks();
-        } else if (platform == "ios") {
-            setupIOSLocChecks();
-            setupIOSFitnessChecks();
-            setupAndroidNotificationChecks();
-        } else {
-            console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
-        }
-        
-        refreshAllChecks();
-    }
-
-    var red = colors.danger;
-    var green = colors.success;
-
     let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
-    let colorMap = (statusState) => statusState ? green : red;
+    let colorMap = (statusState) => statusState ? colors.success : colors.danger;
 
     function recomputeOverallStatus() {
         let status = true;
@@ -90,6 +42,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         setOverallStatus(status);
     }
 
+    //using this function to update checks rather than mutate
+    //this cues React to update UI
     function updateCheck(newObject) {
         var tempList = [...checkList]; //make a copy rather than mutate
         tempList.forEach((item, i) => {
@@ -372,6 +326,24 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         console.log("Explanation = "+explanationList);
     }
 
+    function createChecklist(){
+        if(platform == "android") {
+            setupAndroidLocChecks();
+            setupAndroidFitnessChecks();
+            setupAndroidNotificationChecks();
+            setupAndroidBackgroundRestrictionChecks();
+        } else if (platform == "ios") {
+            setupIOSLocChecks();
+            setupIOSFitnessChecks();
+            setupAndroidNotificationChecks();
+        } else {
+            console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
+        }
+        
+        refreshAllChecks();
+    }
+
+    //refreshing checks with the plugins to update the check's statusState
     function refreshAllChecks() {
         //refresh each check
         checkList.forEach((lc) => {
@@ -380,28 +352,51 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         console.log("setting checks are", checkList);
         recomputeOverallStatus();
     }
-     function recomputeAllChecks() {
-        //recompute each check
+
+    //recomputing checks updates the visual cues of their status
+    function recomputeAllChecks() {
+        console.log("recomputing checks", checkList);
         checkList.forEach((lc) => {
             lc.statusIcon = iconMap(lc.statusState);
             lc.statusColor = colorMap(lc.statusState)
         });
         recomputeOverallStatus();
-        console.log("setting checks are", checkList);
-     }
+    }
 
     //custom hook executes function on app resuming foreground
-   useAppStateChange( function() {
+    useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
         refreshAllChecks();
     });
 
-    //how to do this?
-    //recomputeAppStatus comes from the plugins?
+    //refresh when recompute message is broadcast
     settingsScope.$on("recomputeAppStatus", function() {
         console.log("PERMISSION CHECK: recomputing state");
         refreshAllChecks();
     });
+
+     //load when ready
+     useEffect(() => {
+        if (appConfig) {
+            setPlatform(window['device'].platform.toLowerCase());
+            setOsver(window['device'].version.split(".")[0]);
+
+            if(!haveSetText)
+            {
+                setupPermissionText();
+                setHaveSetText(true);
+            }
+
+            console.log("setting up permissions");
+            createChecklist();
+        }
+    }, [appConfig]);
+
+    //anytime the checks change (mostly when refreshed), recompute the visual pieces
+    useEffect(() => {
+        console.log("checklist changed, updating", checkList);
+        recomputeAllChecks();
+    }, [checkList])
 
     return (
         <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
