@@ -39,9 +39,11 @@ export async function getLabelOptions(appConfigParam?) {
       according to the current language */
     const lang = i18next.language;
     for (const opt in labelOptions) {
-      const translationKey = labelOptions[opt].key;
-      const translation = labelOptions.translations[lang][translationKey];
-      labelOptions[opt].text = translation;
+      labelOptions[opt].forEach((o, i) => {
+        const translationKey = o.key;
+        const translation = labelOptions.translations[lang][translationKey];
+        labelOptions[opt][i].text = translation;
+      });
     }
   } else {
     // backwards compat: if dynamic config doesn't have label_options, use the old way
