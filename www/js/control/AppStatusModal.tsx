@@ -10,7 +10,7 @@ import useAppConfig from "../useAppConfig";
 import useAppStateChange from "../useAppStateChange";
 import ExplainPermissions from "../appstatus/ExplainPermissions";
 
-const AppStatusModal = ({permitVis, setPermitVis, status, dialogStyle}) => {
+const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
