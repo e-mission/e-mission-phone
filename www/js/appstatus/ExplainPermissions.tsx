@@ -12,7 +12,7 @@ const ExplainPermissions = ({ explanationList, visible, setVisible }) => {
             onDismiss={() => setVisible(false)} >
             <Dialog visible={visible} 
                     onDismiss={() => setVisible(false)} >
-                <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
+                <Dialog.Title>{t('intro.appstatus.explanation-title')}</Dialog.Title>
                 <Dialog.Content style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
                     <ScrollView>
                         {explanationList?.map((li) => 

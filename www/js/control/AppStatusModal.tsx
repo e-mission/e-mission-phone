@@ -409,7 +409,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
                             <Text>{t('intro.appstatus.overall-description')}</Text>
                             <Button 
                                 onPress={() => setExplainVis(true)}>
-                                {"What are these used for?"}
+                                {t('intro.appstatus.explanation-title')}
                             </Button>
                             <ExplainPermissions explanationList={explanationList} visible={explainVis} setVisible={setExplainVis}></ExplainPermissions>
                             {checkList?.map((lc) => 
