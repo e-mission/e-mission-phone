@@ -1,6 +1,8 @@
 'use strict';
 
 import angular from 'angular';
+import { displayError } from '../plugin/logger';
+import i18next from 'i18next';
 
 angular.module('emission.config.dynamic', ['emission.plugin.logger',
     'emission.plugin.kvstore'])
@@ -43,23 +45,36 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
         }
     }
 
-    var readConfigFromServer = function(label) {
+    const readConfigFromServer = async (label) => {
+        const config = await fetchConfig(label);
+        Logger.log("Successfully found config, result is " + JSON.stringify(config).substring(0,10));
+        const connectionURL = config.server? config.server.connectUrl : "dev defaults";
+        _fillStudyName(config);
+        _backwardsCompatSurveyFill(config);
+        Logger.log("Successfully downloaded config with version "+config.version
+            +" for "+config.intro.translated_text.en.deployment_name
+            +" and data collection URL "+connectionURL);
+        return config;
+    }
+
+    const fetchConfig = async (label, alreadyTriedLocal=false) => {
         Logger.log("Received request to join "+label);
-        // The URL prefix from which config files will be downloaded and read.
-        // Change this if you supply your own config files.
-        const downloadURL = "https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/"+label+".nrel-op.json"
-        Logger.log("Downloading data from "+downloadURL);
-        return $http.get(downloadURL).then((result) => {
-            Logger.log("Successfully found the "+downloadURL+", result is " + JSON.stringify(result.data).substring(0,10));
-            const parsedConfig = result.data;
-            const connectionURL = parsedConfig.server? parsedConfig.server.connectUrl : "dev defaults";
-            _fillStudyName(parsedConfig);
-            _backwardsCompatSurveyFill(parsedConfig);
-            Logger.log("Successfully downloaded config with version "+parsedConfig.version
-                +" for "+parsedConfig.intro.translated_text.en.deployment_name
-                +" and data collection URL "+connectionURL);
-            return parsedConfig;
-        });
+        const downloadURL = `https://raw.githubusercontent.com/e-mission/nrel-openpath-deploy-configs/main/configs/${label}.nrel-op.json`;
+        if (!__DEV__ || alreadyTriedLocal) {
+            Logger.log("Fetching config from github");
+            const r = await fetch(downloadURL);
+            if (!r.ok) throw new Error('Unable to fetch config from github');
+            return r.json();
+        }
+        else {
+            Logger.log("Running in dev environment, checking for locally hosted config");
+            const r = await fetch('http://localhost:9090/configs/'+label+'.nrel-op.json');
+            if (!r.ok) {
+                Logger.log("Local config not found");
+                return fetchConfig(label, true);
+            }
+            return r.json();
+        }
     }
 
     dc.loadSavedConfig = function() {
@@ -139,6 +154,8 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
                 return true;
             }).catch((storeError) =>
                 Logger.displayError(i18next.t('config.unable-to-store-config'), storeError));
+        }).catch((fetchErr) => {
+            displayError(fetchErr, i18next.t('config.unable-download-config'));
         });
     }
 
