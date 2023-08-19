@@ -153,10 +153,6 @@ const ProfileSettings = () => {
         newCollectSettings.trackingOn = collectionPluginState != "local.state.tracking_stopped"
                                         && collectionPluginState != "STATE_TRACKING_STOPPED";
 
-        // I am not sure that this is actually needed anymore since https://github.com/e-mission/e-mission-data-collection/commit/92f41145e58c49e3145a9222a78d1ccacd16d2a7
-        const geofenceConfig = await KVStore.get("OP_GEOFENCE_CFG");
-        newCollectSettings.experimentalGeofenceOn = geofenceConfig != null;
-
         const isLowAccuracy = ControlCollectionHelper.isMediumAccuracy();
         if (typeof isLowAccuracy != 'undefined') {
             newCollectSettings.lowAccuracy = isLowAccuracy;
