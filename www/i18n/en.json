@@ -290,6 +290,7 @@
         "samsung": "Disable 'Medium power saving mode'"
     },
     "consent":{
+        "permissions" : "Permissions",
         "button-accept": "I accept",
         "button-decline": "I refuse"
     },
