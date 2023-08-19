@@ -84,7 +84,7 @@ angular.module('emission.survey.enketo.demographics',
                 console.log("demographic survey result ", result);
               }).catch(e => console.trace(e));
         }
-    }, 10); // wait for 10 ms to load to ensure that the form is in place
+    }, 50); // wait for 50 ms to load to ensure that the form is in place
   }
 
   $scope.initForm = function() {

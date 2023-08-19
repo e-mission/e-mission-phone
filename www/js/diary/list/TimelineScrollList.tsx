@@ -54,13 +54,18 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
     </Banner>
   );
 
-  if (!pipelineRange) { // nothing has been processed for this user yet
+  if (pipelineRange && !pipelineRange.end_ts && !listEntries?.length) {
+    /* Condition: pipelineRange has been fetched but has no defined end, meaning nothing has been
+      processed for this OPCode yet, and there are no unprocessed trips either. Show 'no travel'. */
     return noTravelBanner;
   } else if (isLoading=='replace') {
+    /* Condition: we're loading an entirely new batch of trips, so show a big spinner */
     return bigSpinner;
   } else if (listEntries && listEntries.length == 0) {
+    /* Condition: we've loaded all travel and set `listEntries`, but it's empty. Show 'no travel'. */
     return noTravelBanner;
-  } else {
+  } else if (listEntries) {
+    /* Condition: we've successfully loaded and set `listEntries`, so show the list */
     return (
       <FlashList inverted
         data={reversedListEntries}

@@ -129,39 +129,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       });
     });
 
-    timeline.getUnprocessedLabels = function(manualFactory, enbs) {
-        /*
-         Because with the confirmed trips, all prior labels have been
-         incorporated into the trip.
-         */
-        return CommHelper.getPipelineRangeTs().then(function(result) {
-            const pendingLabelQuery = {key: "write_ts",
-                startTs: result.end_ts - 10,
-                endTs: moment().unix() + 10
-            }
-            var manualPromises = manualFactory.MANUAL_KEYS.map(function(inp_key) {
-              return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(manualFactory.extractResult);
-            });
-            var enbsPromises = enbs.MANUAL_KEYS.map(function(inp_key) {
-              return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(enbs.extractResult);
-            });
-            const manualConfirmResults = {};
-            const enbsConfirmResults = {};
-            return Promise.all([...manualPromises, ...enbsPromises]).then((comboResults) => {
-                const manualResults = comboResults.slice(0, manualPromises.length);
-                const enbsResults = comboResults.slice(manualPromises.length);
-                manualFactory.processManualInputs(manualResults, manualConfirmResults);
-                enbs.processManualInputs(enbsResults, enbsConfirmResults);
-                return [result, manualConfirmResults, enbsConfirmResults];
-            });
-        }).catch((err) => {
-            Logger.displayError("while reading confirmed trips", err);
-            return [{}, {}];
-        });
-    };
-
     // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
     // This function returns a shallow copy of the obj, which flattens the
     // 'data' field into the top level, while also including '_id' and 'metadata.key'
@@ -339,14 +306,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         distance: dists.reduce((a, b) => a + b, 0),
         duration: endPoint.data.ts - startPoint.data.ts,
         end_fmt_time: endMoment.format(),
-        end_local_dt: moment2localdate(endMoment),
+        end_local_dt: moment2localdate(endMoment, endPoint.metadata.time_zone),
         end_ts: endPoint.data.ts,
         expectation: {to_label: true},
         inferred_labels: [],
         locations: locations,
         source: "unprocessed",
         start_fmt_time: startMoment.format(),
-        start_local_dt: moment2localdate(startMoment),
+        start_local_dt: moment2localdate(startMoment, startPoint.metadata.time_zone),
         start_ts: startPoint.data.ts,
         user_input: {},
       }

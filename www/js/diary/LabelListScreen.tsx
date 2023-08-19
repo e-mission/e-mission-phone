@@ -24,7 +24,7 @@ const LabelListScreen = () => {
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()}
         style={{marginLeft: 'auto'}} />
     </Appbar.Header>
-    <View style={{ flex: 1, backgroundColor: colors.surfaceVariant }}>
+    <View style={{ flex: 1, backgroundColor: colors.background }}>
       <TimelineScrollList
         listEntries={displayedEntries}
         queriedRange={queriedRange}
