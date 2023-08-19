@@ -344,6 +344,7 @@
         "not-enough-parts": "OPcode {{token}} does not have at least three '_' characters",
         "invalid-subgroup": "Invalid OPcode {{token}}, subgroup {{subgroup}} not found in list {{config_subgroups}}",
         "unable-download-config": "Unable to download study config",
-        "invalid-opcode-format": "Invalid OPcode format"
+        "invalid-opcode-format": "Invalid OPcode format",
+        "error-loading-config-app-start": "Error loading config on app start"
     }
 }
