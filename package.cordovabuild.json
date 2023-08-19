@@ -11,7 +11,10 @@
     "build": "npx webpack --config webpack.prod.js && npx cordova build",
     "build-dev": "npx webpack --config webpack.dev.js && npx cordova build",
     "build-dev-android": "npx webpack --config webpack.dev.js && npx cordova build android",
-    "build-dev-ios": "npx webpack --config webpack.dev.js && npx cordova build ios"
+    "build-dev-ios": "npx webpack --config webpack.dev.js && npx cordova build ios",
+    "build-prod-android": "npx webpack --config webpack.prod.js && npx cordova build android",
+    "build-prod-ios": "npx webpack --config webpack.prod.js && npx cordova build ios",
+    "build-prod-android-release": "npx webpack --config webpack.prod.js && npx cordova build android --release"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
