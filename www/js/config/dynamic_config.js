@@ -238,7 +238,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
             } else {
                 if (tokenParts[2] != "default") {
                     // subpart not in config list
-                    throw new Error(i18next.t('config.invalid-subgroup', {token: token}));
+                    throw new Error(i18next.t('config.invalid-subgroup-no-default', {token: token}));
                 } else {
                     console.log("no subgroups in config, 'default' subgroup found in token ");
                     return tokenParts[2];
