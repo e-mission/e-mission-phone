@@ -79,6 +79,55 @@ angular.module('emission.splash.notifscheduler',
         });
     }
 
+    //new method to fetch notifications
+    scheduler.getScheduledNotifs = function() {
+        return new Promise((resolve, reject) => {
+            /* if the notifications are still in active scheduling it causes problems
+            anywhere from 0-n of the scheduled notifs are displayed 
+            if actively scheduling, wait for the scheduledPromise to resolve before fetching prevents such errors
+            */
+            if(isScheduling) 
+            {
+                console.log("requesting fetch while still actively scheduling, waiting on scheduledPromise");
+                scheduledPromise.then(() => {
+                    getNotifs().then((notifs) => {
+                        console.log("done scheduling notifs", notifs);
+                        resolve(notifs);
+                    })
+                })
+            }
+            else{
+                getNotifs().then((notifs) => {
+                    resolve(notifs);
+                })
+            }
+        })
+    }
+
+    //get scheduled notifications from cordova plugin and format them
+    const getNotifs = function() {
+        return new Promise((resolve, reject) => {
+            cordova.plugins.notification.local.getScheduled((notifs) => {
+                if (!notifs?.length){
+                    console.log("there are no notifications");
+                    resolve([]); //if none, return empty array
+                }
+                
+                const notifSubset = notifs.slice(0, 5); //prevent near-infinite listing
+                let scheduledNotifs = [];
+                scheduledNotifs = notifSubset.map((n) => {
+                    const time = moment(n.trigger.at).format('LT');
+                    const date = moment(n.trigger.at).format('LL');
+                    return {
+                        key: date,
+                        val: time
+                    }
+                });
+                resolve(scheduledNotifs);
+             });
+        })
+    }
+
     // schedules the notifications using the cordova plugin
     const scheduleNotifs = (scheme, notifTimes) => {
         return new Promise((rs) => {
@@ -108,7 +157,7 @@ angular.module('emission.splash.notifscheduler',
                 cordova.plugins.notification.local.schedule(nots, () => {
                     debugGetScheduled("After scheduling");
                     isScheduling = false;
-                    rs();
+                    rs(); //scheduling promise resolved here
                 });
             });
         });
@@ -121,20 +170,27 @@ angular.module('emission.splash.notifscheduler',
                 reminder_time_of_day} = await scheduler.getReminderPrefs();
         const scheme = _config.reminderSchemes[reminder_assignment];
         const notifTimes = calcNotifTimes(scheme, reminder_join_date, reminder_time_of_day);
-        cordova.plugins.notification.local.getScheduled((notifs) => {
-            if (areAlreadyScheduled(notifs, notifTimes)) {
-                Logger.log("Already scheduled, not scheduling again");
-            } else {
-                // to ensure we don't overlap with the last scheduling() request,
-                // we'll wait for the previous one to finish before scheduling again
-                scheduledPromise.then(() => {
-                    if (isScheduling) {
-                        console.log("ERROR: Already scheduling notifications, not scheduling again")
-                    } else {
-                        scheduledPromise = scheduleNotifs(scheme, notifTimes);
-                    }
-                });
-            }
+
+        return new Promise((resolve, reject) => {
+            cordova.plugins.notification.local.getScheduled((notifs) => {
+                if (areAlreadyScheduled(notifs, notifTimes)) {
+                    Logger.log("Already scheduled, not scheduling again");
+                } else {
+                    // to ensure we don't overlap with the last scheduling() request,
+                    // we'll wait for the previous one to finish before scheduling again
+                    scheduledPromise.then(() => {
+                        if (isScheduling) {
+                            console.log("ERROR: Already scheduling notifications, not scheduling again")
+                        } else {
+                            scheduledPromise = scheduleNotifs(scheme, notifTimes);
+                            //enforcing end of scheduling to conisder update through
+                            scheduledPromise.then(() => {
+                                resolve();
+                            })
+                        }
+                    });
+                }
+            });
         });
     }
 
@@ -175,9 +231,14 @@ angular.module('emission.splash.notifscheduler',
     }
 
     scheduler.setReminderPrefs = async (newPrefs) => {
-        await CommHelper.updateUser(newPrefs);
-        update();
-        
+        await CommHelper.updateUser(newPrefs)
+        const updatePromise = new Promise((resolve, reject) => {
+            //enforcing update before moving on
+            update().then(() => {
+                resolve();
+            });
+        });
+
         // record the new prefs in client stats
         scheduler.getReminderPrefs().then((prefs) => {
             // extract only the relevant fields from the prefs,
@@ -191,6 +252,8 @@ angular.module('emission.splash.notifscheduler',
                 reminder_time_of_day
             }).then(Logger.log("Added reminder prefs to client stats"));
         });
+
+        return updatePromise;
     }
 
     $ionicPlatform.ready().then(async () => {
