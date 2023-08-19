@@ -222,7 +222,7 @@
     "intro": {
         "appstatus": {
             "fix": "Fix",
-            "refresh": "Refresh",
+            "refresh":"Refresh",
             "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
             "overall-loc-name": "Location",
             "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
