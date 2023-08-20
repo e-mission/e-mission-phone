@@ -22,6 +22,7 @@ import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 import { LabelTabContext } from "../LabelTab";
 import useDerivedProperties from "../useDerivedProperties";
+import StartEndLocations from "../StartEndLocations";
 
 type Props = { trip: {[key: string]: any}};
 const TripCard = ({ trip }: Props) => {
@@ -63,23 +64,8 @@ const TripCard = ({ trip }: Props) => {
             </Text>
           </View>
           <View style={cardStyles.panelSection}>{/* start and end locations */}
-            <View style={[cardStyles.location, {justifyContent: 'flex-start'}]}>
-              <Icon icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer}
-                size={18} style={cardStyles.locationIcon} />
-              <Text numberOfLines={2} style={s.locationText}
-                    accessibilityLabel={`Start Location: ${tripStartDisplayName}`}>
-                {tripStartDisplayName}
-              </Text>
-            </View>
-            <Divider style={{marginVertical: 4}} />
-            <View style={[cardStyles.location, {justifyContent: 'flex-start'}]}>
-              <Icon icon='flag' iconColor={flavoredTheme.colors.primary}
-                size={18} style={cardStyles.locationIcon} />
-              <Text numberOfLines={2} style={s.locationText}
-                    accessibilityLabel={`End Location: ${tripEndDisplayName}`}>
-                {tripEndDisplayName}
-              </Text>
-            </View>
+            <StartEndLocations displayStartName={tripStartDisplayName}
+              displayEndName={tripEndDisplayName} />
           </View>
           <View style={[cardStyles.panelSection, {marginBottom: 0}]}>{/* mode and purpose buttons / survey button */}
             {surveyOpt?.elementTag == 'multilabel' &&

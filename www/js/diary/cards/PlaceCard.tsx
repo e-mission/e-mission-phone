@@ -17,6 +17,7 @@ import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 import useDerivedProperties from "../useDerivedProperties";
+import StartEndLocations from "../StartEndLocations";
 
 type Props = { place: {[key: string]: any} };
 const PlaceCard = ({ place }: Props) => {
@@ -37,12 +38,8 @@ const PlaceCard = ({ place }: Props) => {
           </Text>
         </View>
         <View style={cardStyles.panelSection}>{/*  place name */}
-          <View style={[cardStyles.location, {paddingHorizontal: 10}]}>
-            <Icon icon='map-marker-star' size={18} style={cardStyles.locationIcon} />
-            <Text style={s.locationText} accessibilityLabel={`Location: ${placeDisplayName}`}>
-              {placeDisplayName}
-            </Text>
-          </View>
+          <StartEndLocations centered={true}
+            displayStartName={placeDisplayName} />
         </View>
         <View style={{margin: 'auto'}}>{/*  add note button */}
           <View style={s.notesButton}>

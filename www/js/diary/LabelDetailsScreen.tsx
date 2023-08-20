@@ -15,6 +15,7 @@ import { useAddressNames } from "./addressNamesHelper";
 import { Icon } from "../components/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useDerivedProperties from "./useDerivedProperties";
+import StartEndLocations from "./StartEndLocations";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -37,27 +38,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
           <Appbar.Content title={displayDate} titleStyle={{fontSize: 17}} />
         </Appbar.Header>
         <Surface mode='elevated' style={{ paddingVertical: 4, paddingHorizontal: 10, zIndex: 1 }}>
-          <View style={[cardStyles.location, { justifyContent: 'flex-start' }]}>
-            <Text style={{padding: 10, minWidth: 'fit-content'}}>
-              {displayStartTime}
-            </Text>
-              <Icon icon='map-marker-star' iconColor={colors.primaryContainer} size={18}
-                style={cardStyles.locationIcon} />
-              <Text numberOfLines={2}>
-                {tripStartDisplayName}
-              </Text>
-          </View>
-          <Divider style={{ marginVertical: 4 }} />
-          <View style={[cardStyles.location, { justifyContent: 'flex-start' }]}>
-            <Text style={{padding: 10, minWidth: 'fit-content'}}>
-              {displayEndTime}
-            </Text>
-              <Icon icon='flag' iconColor={colors.primary} size={18}
-                style={cardStyles.locationIcon} />
-              <Text numberOfLines={2}>
-                {tripEndDisplayName}
-              </Text>
-          </View>
+          <StartEndLocations fontSize={14}
+            displayStartTime={displayStartTime} displayEndTime={displayEndTime}
+            displayStartName={tripStartDisplayName} displayEndName={tripEndDisplayName} />
         </Surface>
         <ScrollView style={{ paddingBottom: 30}}>
           <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, marginVertical: 18 }}>

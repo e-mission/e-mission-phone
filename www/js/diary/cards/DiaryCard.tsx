@@ -53,17 +53,6 @@ export const cardStyles = StyleSheet.create({
     paddingHorizontal: 4,
     marginVertical: 'auto',
   },
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  locationIcon: {
-    width: 18,
-    height: 24,
-    margin: 0,
-    marginRight: 5,
-  },
   cardFooter: {
     width: '100%',
     paddingBottom: 10,

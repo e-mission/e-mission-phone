@@ -16,6 +16,7 @@ import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 import useDerivedProperties from "../useDerivedProperties";
+import StartEndLocations from "../StartEndLocations";
 
 type Props = { triplike: {[key: string]: any}};
 const UntrackedTimeCard = ({ triplike }: Props) => {
@@ -39,22 +40,10 @@ const UntrackedTimeCard = ({ triplike }: Props) => {
             {t('diary.untracked-time-range', { start: displayStartTime, end: displayEndTime })}
           </Text>
         </View>
-        <View>{/*  start and end locations */}
-          <View style={cardStyles.location}>
-            <Icon icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer}
-              size={18} style={cardStyles.locationIcon} />
-            <Text style={s.locationText}>
-              {triplikeStartDisplayName}
-            </Text>
-          </View>
-          <Divider style={{ marginVertical: 2 }} />
-          <View style={cardStyles.location}>
-            <Icon icon='flag' iconColor={flavoredTheme.colors.primary}
-              size={18} style={cardStyles.locationIcon} />
-            <Text style={s.locationText}>
-              {triplikeEndDisplayName}
-            </Text>
-          </View>
+        <View>{/* start and end locations */}
+          <StartEndLocations centered={true}
+            displayStartName={triplikeStartDisplayName}
+            displayEndName={triplikeEndDisplayName} />
         </View>
       </View>
     </DiaryCard>
