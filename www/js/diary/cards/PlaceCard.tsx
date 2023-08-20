@@ -16,11 +16,13 @@ import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
+import useDerivedProperties from "../useDerivedProperties";
 
 type Props = { place: {[key: string]: any} };
 const PlaceCard = ({ place }: Props) => {
 
   const { appConfig, loading } = useAppConfig();
+  const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
   let [ placeDisplayName ] = useAddressNames(place);
 
   const flavoredTheme = getTheme('place');
@@ -28,10 +30,10 @@ const PlaceCard = ({ place }: Props) => {
   return (
     <DiaryCard timelineEntry={place} flavoredTheme={flavoredTheme}>
       <View style={[cardStyles.cardContent, s.placeCardContent]} focusable={true}
-          accessibilityLabel={`Place from ${place.display_start_time} to ${place.display_end_time}`}>
+          accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
         <View>{/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
-            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{place.display_date}</Text>
+            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{displayDate}</Text>
           </Text>
         </View>
         <View style={cardStyles.panelSection}>{/*  place name */}

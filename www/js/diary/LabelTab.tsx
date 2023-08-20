@@ -17,7 +17,7 @@ import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
+import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
 
@@ -238,7 +238,6 @@ const LabelTab = () => {
     const [newLabels, newNotes] = await getLocalUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
     const repopTime = new Date().getTime();
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
-    populateBasicClasses(newEntry);
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);

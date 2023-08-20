@@ -15,10 +15,12 @@ import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
+import useDerivedProperties from "../useDerivedProperties";
 
 type Props = { triplike: {[key: string]: any}};
 const UntrackedTimeCard = ({ triplike }: Props) => {
   const { t } = useTranslation();
+  const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(triplike);
   const [ triplikeStartDisplayName, triplikeEndDisplayName ] = useAddressNames(triplike);
 
   const flavoredTheme = getTheme('untracked');
@@ -26,15 +28,15 @@ const UntrackedTimeCard = ({ triplike }: Props) => {
   return (
     <DiaryCard timelineEntry={triplike} flavoredTheme={flavoredTheme}>
       <View style={[cardStyles.cardContent, {marginVertical: 12}]} focusable={true}
-          accessibilityLabel={`Untracked time from ${triplike.display_start_time} to ${triplike.display_end_time}`}>
+          accessibilityLabel={`Untracked time from ${displayStartTime} to ${displayEndTime}`}>
           <View>{/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
-            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{triplike.display_date}</Text>
+            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{displayDate}</Text>
           </Text>
         </View>
         <View style={[cardStyles.panelSection, {margin: 'auto'}]}>
           <Text style={[s.untrackedText, {backgroundColor: flavoredTheme.colors.primary, color: flavoredTheme.colors.onPrimary}]}>
-            {t('diary.untracked-time-range', { start: triplike.display_start_time, end: triplike.display_end_time })}
+            {t('diary.untracked-time-range', { start: displayStartTime, end: displayEndTime })}
           </Text>
         </View>
         <View>{/*  start and end locations */}

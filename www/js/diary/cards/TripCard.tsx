@@ -21,6 +21,7 @@ import { useImperialConfig } from "../../config/useImperialConfig";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 import { LabelTabContext } from "../LabelTab";
+import useDerivedProperties from "../useDerivedProperties";
 
 type Props = { trip: {[key: string]: any}};
 const TripCard = ({ trip }: Props) => {
@@ -28,7 +29,8 @@ const TripCard = ({ trip }: Props) => {
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
-  const { getFormattedDistance, distanceSuffix } = useImperialConfig();
+  const { displayStartTime, displayEndTime, displayDate, formattedDistance,
+    distanceSuffix, displayTime, percentages } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
   const { surveyOpt } = useContext(LabelTabContext);
@@ -46,7 +48,7 @@ const TripCard = ({ trip }: Props) => {
   return (
     <DiaryCard timelineEntry={trip} flavoredTheme={flavoredTheme} onPress={() => showDetail()}>
       <View style={[cardStyles.cardContent, {flexDirection: 'row-reverse'}]}
-        accessibilityLabel={`Trip from ${trip.display_start_time} to ${trip.display_end_time}`}>
+        accessibilityLabel={`Trip from ${displayStartTime} to ${displayEndTime}`}>
         <IconButton icon='dots-horizontal' size={24}
           accessibilityLabel="View trip details" onPress={() => showDetail()}
           style={{position: 'absolute', right: 0, top: 0, height: 16, width: 32,
@@ -54,10 +56,10 @@ const TripCard = ({ trip }: Props) => {
         <View style={s.rightPanel}>{/* right panel */}
           <View style={[cardStyles.panelSection, {marginTop: 0}]}>{/* date and distance */}
             <Text style={{fontSize: 14, textAlign: 'center'}}>
-              <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>{trip.display_date}</Text>
+              <Text style={{fontWeight: 'bold', textDecorationLine: 'underline'}}>{displayDate}</Text>
             </Text>
             <Text style={{fontSize: 13, textAlign: 'center'}}>
-              {t('diary.distance-in-time', {distance: getFormattedDistance(trip.distance), distsuffix: distanceSuffix, time: trip.display_time})}
+              {t('diary.distance-in-time', {distance: formattedDistance, distsuffix: distanceSuffix, time: displayTime})}
             </Text>
           </View>
           <View style={cardStyles.panelSection}>{/* start and end locations */}
@@ -92,7 +94,7 @@ const TripCard = ({ trip }: Props) => {
                           so it doesn't look squished */
                         style={[{minHeight: windowWidth / 2}, mapStyle]} />
           <View style={s.modePercents}>
-            {trip.percentages?.map?.((pct, i) => (
+            {percentages?.map?.((pct, i) => (
               <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
                 <Icon icon={pct.icon} iconColor={pct.color} size={15} />
                 <Text accessibilityLabel={`Sensed mode: ${pct.icon}, ${pct.pct}%`} style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>

@@ -11,38 +11,35 @@ import LeafletView from "../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";
 import UserInputButton from "../survey/enketo/UserInputButton";
-import { getAngularService } from "../angular-react-helper";
-import { useImperialConfig } from "../config/useImperialConfig";
 import { useAddressNames } from "./addressNamesHelper";
 import { Icon } from "../components/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { getFormattedSectionProperties } from "./diaryHelper";
+import useDerivedProperties from "./useDerivedProperties";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
   const { surveyOpt, timelineMap } = useContext(LabelTabContext);
-  const { getFormattedDistance, distanceSuffix } = useImperialConfig();
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const { colors } = useTheme();
-  const { tripId } = route.params;
-  const trip = timelineMap.get(tripId);
+  const trip = timelineMap.get(route.params.tripId);
+  const { displayDate, displayStartTime, displayEndTime,
+          displayTime, formattedDistance, formattedSectionProperties,
+          distanceSuffix, percentages } = useDerivedProperties(trip);
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const mapOpts = {minZoom: 3, maxZoom: 17};
-
-  const sectionsFormatted = getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
   
   return (
     <Modal visible={true}>
       <SafeAreaView style={{flex: 1}}>
         <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
           <Appbar.BackAction onPress={() => { navigation.goBack() }} />
-          <Appbar.Content title={trip.display_date} titleStyle={{fontSize: 17}} />
+          <Appbar.Content title={displayDate} titleStyle={{fontSize: 17}} />
         </Appbar.Header>
         <Surface mode='elevated' style={{ paddingVertical: 4, paddingHorizontal: 10, zIndex: 1 }}>
           <View style={[cardStyles.location, { justifyContent: 'flex-start' }]}>
             <Text style={{padding: 10, minWidth: 'fit-content'}}>
-              {trip.display_start_time}
+              {displayStartTime}
             </Text>
               <Icon icon='map-marker-star' iconColor={colors.primaryContainer} size={18}
                 style={cardStyles.locationIcon} />
@@ -53,7 +50,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
           <Divider style={{ marginVertical: 4 }} />
           <View style={[cardStyles.location, { justifyContent: 'flex-start' }]}>
             <Text style={{padding: 10, minWidth: 'fit-content'}}>
-              {trip.display_end_time}
+              {displayEndTime}
             </Text>
               <Icon icon='flag' iconColor={colors.primary} size={18}
                 style={cardStyles.locationIcon} />
@@ -71,7 +68,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
                   {t('diary.distance')}
                 </Text>
                 <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-                  {`${getFormattedDistance(trip.distance)} ${distanceSuffix}`}
+                  {`${formattedDistance} ${distanceSuffix}`}
                 </Text>
               </View>
               <View style={{justifyContent: 'center'}}>
@@ -79,11 +76,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
                   {t('diary.time')}
                 </Text>
                 <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-                  {trip.display_time}
+                  {displayTime}
                 </Text>
               </View>
               <View style={{justifyContent: 'center'}}>
-                {trip.percentages?.map?.((pct, i) => (
+                {percentages?.map?.((pct, i) => (
                   <View key={i} style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Icon icon={pct.icon} size={16} iconColor={pct.color} />
                     <Text style={{fontSize: 13, fontWeight: 'bold'}}>
@@ -100,9 +97,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
                   && <UserInputButton timelineEntry={trip} />}
             </View>
             {/* for multi-section trips, show a list of sections */}
-            {sectionsFormatted?.length > 1 &&
+            {formattedSectionProperties?.length > 1 &&
               <View style={{marginTop: 15}}>
-                {sectionsFormatted.map((section, i) => (
+                {formattedSectionProperties.map((section, i) => (
                   <View key={i} style={{marginVertical: 4, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
                     <View>
                       <Text style={{fontSize: 15}}> {section.fmt_time_range} </Text>
