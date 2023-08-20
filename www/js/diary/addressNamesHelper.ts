@@ -144,7 +144,7 @@ export function fillLocationNamesOfTrip(trip) {
 
 // a React hook that takes a trip or place and returns an array of its address names
 export function useAddressNames(tlEntry) {
-  const [addressNames, setAddressNames] = useState([]);
+  const [addressNames, setAddressNames] = useState(['', '']);
   // if a place is passed in, it will need just one address name
   const [locData] = useLocalStorage(tlEntry.location?.coordinates?.toString(), null);
   // if a trip is passed in, it needs two address names (start and end locations)
