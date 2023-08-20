@@ -67,48 +67,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     return moment(mdt).format("LT");
   };
 
-  /* this function was formerly 'CommonGraph.getDisplayName()',
-      located in 'common/services.js' */
-  dh.getNominatimLocName = function(loc_geojson) {
-    console.log(new Date().toTimeString()+" Getting display name for ", loc_geojson);
-    const address2Name = function(data) {
-      const address = data["address"];
-      var name = "";
-      if (angular.isDefined(address)) {
-          if (address["road"]) {
-            name = address["road"];
-          //sometimes it occurs that we cannot display street name because they are pedestrian or suburb places so we added them.
-          } else if (address["pedestrian"]) {
-          name = address["pedestrian"]
-          } else if (address["suburb"]) {
-          name = address["suburb"]
-          } else if (address["neighbourhood"]) {
-            name = address["neighbourhood"];
-          }
-          if (address["city"]) {
-            name = name + ", " + address["city"];
-          } else if (address["town"]) {
-            name = name + ", " + address["town"];
-          } else if (address["county"]) {
-            name = name + ", " + address["county"];
-          }
-      }
-      console.log(new Date().toTimeString()+"got response, setting display name to "+name);
-      return name;
-    }
-    var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + loc_geojson.coordinates[1] + "&lon=" + loc_geojson.coordinates[0];
-    return $http.get(url).then((response) => {
-      console.log(new Date().toTimeString()+"while reading data from nominatim, status = "+response.status
-        +" data = "+JSON.stringify(response.data));
-      return address2Name(response.data);
-    }).catch((error) => {
-      if (!dh.nominatimError) {
-        dh.nominatimError = error;
-        Logger.displayError("while reading address data ",error);
-      }
-    });
-  };
-
   return dh;
 })
 .factory('Timeline', function(CommHelper, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
