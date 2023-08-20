@@ -6,69 +6,6 @@ import { SurveyOptions } from '../survey/survey';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
-.factory('DiaryHelper', function($http){
-  var dh = {};
-
-  // Temporary function to avoid repear in getPercentages ret val.
-  var filterRunning = function(mode) {
-    if (mode == 'MotionTypes.RUNNING') {
-      return 'MotionTypes.WALKING';
-    } else {
-      return mode;
-    }
-  }
-  dh.getPercentages = function(trip) {
-    if (!trip.sections?.length) return {};
-    // we use a Map here to make it easier to work with the for loop below
-    let dists = {};
-
-    var totalDist = 0;
-    for (var i=0; i<trip.sections.length; i++) {
-      let filteredMode = filterRunning(trip.sections[i].sensed_mode_str);
-      if (filteredMode in dists) {
-        dists[filteredMode] += trip.sections[i].distance;
-        totalDist += trip.sections[i].distance;
-      } else {
-        dists[filteredMode] = trip.sections[i].distance;
-        totalDist += trip.sections[i].distance;
-      }
-    }
-    // sort modes by the distance traveled (descending)
-    const sortedKeys = Object.entries(dists).sort((a, b) => b[1] - a[1]).map(e => e[0]);
-    let sectionPcts = sortedKeys.map(function(mode) {
-        const fract = dists[mode] / totalDist;
-        return {
-            mode: mode,
-            icon: motionTypeOf(mode)?.icon,
-            color: motionTypeOf(mode)?.color || 'black',
-            pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
-        };
-    });
-
-    return sectionPcts;
-  }
-
-  dh.getFormattedSectionProperties = (trip, ImperialConfig) => {
-    return trip.sections?.map((s) => ({
-      fmt_time: dh.getLocalTimeString(s.start_local_dt),
-      fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
-      fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-      fmt_distance_suffix: ImperialConfig.distanceSuffix,
-      icon: motionTypeOf(s.sensed_mode_str)?.icon,
-      color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
-    }));
-  };
-
-  dh.getLocalTimeString = function (dt) {
-    if (!dt) return;
-    //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
-    let mdt = angular.copy(dt)
-    mdt.month = mdt.month - 1
-    return moment(mdt).format("LT");
-  };
-
-  return dh;
-})
 .factory('Timeline', function(CommHelper, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, UnifiedDataLoader, Logger, $injector) {
     var timeline = {};

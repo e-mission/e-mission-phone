@@ -1,6 +1,6 @@
 import moment from "moment";
 import { getAngularService } from "../angular-react-helper";
-import { getFormattedDate, getFormattedDateAbbr, getFormattedTimeRange, isMultiDay } from "./diaryHelper";
+import { getFormattedDate, getFormattedDateAbbr, getFormattedTimeRange, getLocalTimeString, getPercentages, isMultiDay } from "./diaryHelper";
 
 /**
  * @description Unpacks composite trips into a Map object of timeline items, by id.
@@ -31,27 +31,25 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
 }
 
 
-let DiaryHelper;
 /**
  * @description Fills in 'display' fields for trips and places, such as display_date, display_start_time, etc.
  * @param tlEntry A timeline entry, either a trip or a place
  */
 export function populateBasicClasses(tlEntry) {
-  DiaryHelper = DiaryHelper || getAngularService('DiaryHelper');
   const beginFmt = tlEntry.start_fmt_time || tlEntry.enter_fmt_time;
   const endFmt = tlEntry.end_fmt_time || tlEntry.exit_fmt_time;
   const beginDt = tlEntry.start_local_dt || tlEntry.enter_local_dt;
   const endDt = tlEntry.end_local_dt || tlEntry.exit_local_dt;
   const tlEntryIsMultiDay = isMultiDay(beginFmt, endFmt);
   tlEntry.display_date = getFormattedDate(beginFmt, endFmt);
-  tlEntry.display_start_time = DiaryHelper.getLocalTimeString(beginDt);
-  tlEntry.display_end_time = DiaryHelper.getLocalTimeString(endDt);
+  tlEntry.display_start_time = getLocalTimeString(beginDt);
+  tlEntry.display_end_time = getLocalTimeString(endDt);
   if (tlEntryIsMultiDay) {
     tlEntry.display_start_date_abbr = getFormattedDateAbbr(beginFmt);
     tlEntry.display_end_date_abbr = getFormattedDateAbbr(endFmt);
   }
   tlEntry.display_time = getFormattedTimeRange(beginFmt, endFmt);
-  tlEntry.percentages = DiaryHelper.getPercentages(tlEntry);
+  tlEntry.percentages = getPercentages(tlEntry);
   // Pre-populate start and end names with &nbsp; so they take up the same amount of vertical space in the UI before they are populated with real data
   tlEntry.start_display_name = "\xa0";
   tlEntry.end_display_name = "\xa0";

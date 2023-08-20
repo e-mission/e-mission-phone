@@ -16,6 +16,7 @@ import { useImperialConfig } from "../config/useImperialConfig";
 import { useAddressNames } from "./addressNamesHelper";
 import { Icon } from "../components/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { getFormattedSectionProperties } from "./diaryHelper";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -29,8 +30,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const mapOpts = {minZoom: 3, maxZoom: 17};
 
-  const DiaryHelper = getAngularService('DiaryHelper');
-  const sectionsFormatted = DiaryHelper.getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
+  const sectionsFormatted = getFormattedSectionProperties(trip, {getFormattedDistance, distanceSuffix});
   
   return (
     <Modal visible={true}>
