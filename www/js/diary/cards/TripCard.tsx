@@ -1,7 +1,7 @@
 /* TripCard displays a card with information about a trip, including a map of the trip route,
     plus buttons for labeling trips and/or surveying the user about the trip.
   If the trip has not been processed on the server yet, this is a draft trip, and it
-    will used the greenish/greyish 'draft' theme flavor.
+    will used the greyish 'draft' theme flavor.
 */
 
 import React, { useContext } from "react";
