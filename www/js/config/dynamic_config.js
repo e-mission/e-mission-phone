@@ -1,8 +1,9 @@
 'use strict';
 
 import angular from 'angular';
-import { displayError } from '../plugin/logger';
+import { displayError, logDebug } from '../plugin/logger';
 import i18next from 'i18next';
+import { fetchUrlCached } from '../commHelper';
 
 angular.module('emission.config.dynamic', ['emission.plugin.logger',
     'emission.plugin.kvstore'])
@@ -45,16 +46,38 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
         }
     }
 
+    /* Fetch and cache any surveys resources that are referenced by URL in the config,
+      as well as the label_options config if it is present.
+      This way they will be available when the user needs them, and we won't have to
+      fetch them again unless local storage is cleared. */
+    const cacheResourcesFromConfig = (config) => {
+      if (config.survey_info?.surveys) {
+        Object.values(config.survey_info.surveys).forEach((survey) => {
+          if (!survey?.formPath)
+            throw new Error('while fetching resources in config, survey_info.surveys has a survey without a formPath');
+          fetchUrlCached(survey.formPath);
+        });
+      }
+      if (config.label_options) {
+        fetchUrlCached(config.label_options);
+      }
+    }
+
     const readConfigFromServer = async (label) => {
-        const config = await fetchConfig(label);
-        Logger.log("Successfully found config, result is " + JSON.stringify(config).substring(0,10));
-        const connectionURL = config.server? config.server.connectUrl : "dev defaults";
-        _fillStudyName(config);
-        _backwardsCompatSurveyFill(config);
-        Logger.log("Successfully downloaded config with version "+config.version
-            +" for "+config.intro.translated_text.en.deployment_name
-            +" and data collection URL "+connectionURL);
-        return config;
+      const config = await fetchConfig(label);
+      Logger.log("Successfully found config, result is " + JSON.stringify(config).substring(0, 10));
+
+      // fetch + cache any resources referenced in the config, but don't 'await' them so we don't block
+      // the config loading process
+      cacheResourcesFromConfig(config);
+
+      const connectionURL = config.server ? config.server.connectUrl : "dev defaults";
+      _fillStudyName(config);
+      _backwardsCompatSurveyFill(config);
+      Logger.log("Successfully downloaded config with version " + config.version
+        + " for " + config.intro.translated_text.en.deployment_name
+        + " and data collection URL " + connectionURL);
+      return config;
     }
 
     const fetchConfig = async (label, alreadyTriedLocal=false) => {
