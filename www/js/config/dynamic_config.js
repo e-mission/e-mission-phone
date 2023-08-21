@@ -91,12 +91,14 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
         }
         else {
             Logger.log("Running in dev environment, checking for locally hosted config");
-            const r = await fetch('http://localhost:9090/configs/'+label+'.nrel-op.json');
-            if (!r.ok) {
+            try {
+                const r = await fetch('http://localhost:9090/configs/'+label+'.nrel-op.json');
+                if (!r.ok) throw new Error('Local config not found');
+                return r.json();
+            } catch (err) {
                 Logger.log("Local config not found");
                 return fetchConfig(label, true);
             }
-            return r.json();
         }
     }
 
