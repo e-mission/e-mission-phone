@@ -238,7 +238,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
             } else {
                 if (tokenParts[2] != "default") {
                     // subpart not in config list
-                    throw new Error(i18next.t('config.invalid-subgroup', {token: token}));
+                    throw new Error(i18next.t('config.invalid-subgroup-no-default', {token: token}));
                 } else {
                     console.log("no subgroups in config, 'default' subgroup found in token ");
                     return tokenParts[2];
@@ -296,7 +296,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
                 $rootScope.$apply(() => dc.saveAndNotifyConfigReady(existingConfig));
             }
         }).catch((err) => {
-            Logger.displayError(i18next.t('config.loading-config-app-start', err))
+            Logger.displayError(i18next.t('config.error-loading-config-app-start', err))
         });
     };
     $ionicPlatform.ready().then(function() {

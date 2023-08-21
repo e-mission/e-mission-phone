@@ -17,7 +17,7 @@ import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
+import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
@@ -41,8 +41,9 @@ const LabelTab = () => {
   const $rootScope = getAngularService('$rootScope');
   const $state = getAngularService('$state');
   const $ionicPopup = getAngularService('$ionicPopup');
+  const Logger = getAngularService('Logger');
   const Timeline = getAngularService('Timeline');
-  const DiaryHelper = getAngularService('DiaryHelper');
+  const CommHelper = getAngularService('CommHelper');
   const SurveyOptions = getAngularService('SurveyOptions');
   const enbs = getAngularService('EnketoNotesButtonService');
 
@@ -99,15 +100,17 @@ const LabelTab = () => {
     setDisplayedEntries(entriesToDisplay);
   }, [timelineMap, filterInputs]);
 
-  function loadTimelineEntries() {
-    Timeline.getUnprocessedLabels(labelPopulateFactory, enbs).then(([pipelineRange, manualResultMap, enbsResultMap]) => {
-      if (pipelineRange.end_ts) {
-        labelsResultMap = manualResultMap;
-        notesResultMap = enbsResultMap;
-        console.log("After reading in the label controller, manualResultMap " + JSON.stringify(manualResultMap), manualResultMap);
-      }
+  async function loadTimelineEntries() {
+    try {
+      const pipelineRange = await CommHelper.getPipelineRangeTs();
+      [labelsResultMap, notesResultMap] = await getAllUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
+      Logger.log("After reading unprocessedInputs, labelsResultMap =" + JSON.stringify(labelsResultMap)
+                                                + "; notesResultMap = " + JSON.stringify(notesResultMap));
       setPipelineRange(pipelineRange);
-    });
+    } catch (error) {
+      Logger.displayError("Error while loading pipeline range", error);
+      setIsLoading(false);
+    }
   }
 
   // once pipelineRange is set, load the most recent week of data
@@ -232,7 +235,7 @@ const LabelTab = () => {
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
-    const [_, newLabels, newNotes] = await Timeline.getUnprocessedLabels(labelPopulateFactory, enbs);
+    const [newLabels, newNotes] = await getLocalUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
     const repopTime = new Date().getTime();
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
     populateBasicClasses(newEntry);

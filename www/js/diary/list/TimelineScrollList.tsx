@@ -64,7 +64,8 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
   } else if (listEntries && listEntries.length == 0) {
     /* Condition: we've loaded all travel and set `listEntries`, but it's empty. Show 'no travel'. */
     return noTravelBanner;
-  } else {
+  } else if (listEntries) {
+    /* Condition: we've successfully loaded and set `listEntries`, so show the list */
     return (
       <FlashList inverted
         data={reversedListEntries}
