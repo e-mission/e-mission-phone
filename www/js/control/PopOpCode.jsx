@@ -20,9 +20,9 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
             style={styles.dialog(colors.elevation.level3)}>
                 <Dialog.Title>{t("general-settings.qrcode")}</Dialog.Title>
                 <Dialog.Content style={styles.content}>
+                    <Text style={styles.opcode}>{opcode}</Text>
                     <QrCode value={tokenURL}></QrCode>
                     <Text>{t("general-settings.qrcode-share-title")}</Text>
-                    <Text style={styles.opcode}>{opcode}</Text>
                     <IconButton icon="share" onPress={() => action()} style={styles.button}/>
                 </Dialog.Content>
                 <Dialog.Actions>
