@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
-import { Dialog, Button, useTheme, Text } from "react-native-paper";
+import { Dialog, Button, useTheme, Text, Appbar } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -470,11 +470,15 @@ const ProfileSettings = () => {
 
     return (
         <>
+        <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+            <Appbar.Content title={t("control.profile")} />
+            <Appbar.Action icon="logout" onPress={() => setLogoutVis(true)} />
+        </Appbar.Header>
+        
         <ScrollView>
-            <SettingRow textKey="control.profile" iconName='logout' action={() => setLogoutVis(true)} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
+            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
             <DemographicsSettingRow></DemographicsSettingRow>
             <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
-            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode}></SettingRow>
             {timePicker}
             <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
             <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
