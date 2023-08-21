@@ -30,7 +30,8 @@ const buttonStyles = StyleSheet.create({
     height: 25,
   },
   label: {
-    marginHorizontal: 4,
+    marginLeft: 24,
+    marginRight: 16,
     fontSize: 13,
     fontWeight: '500',
     flex: 1,

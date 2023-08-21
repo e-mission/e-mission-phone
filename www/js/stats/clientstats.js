@@ -25,7 +25,8 @@ angular.module('emission.stats.clientstats', [])
       SELECT_LABEL: "select_label",
       EXPANDED_TRIP: "expanded_trip",
       NOTIFICATION_OPEN: "notification_open",
-      REMINDER_PREFS: "reminder_time_prefs"
+      REMINDER_PREFS: "reminder_time_prefs",
+      MISSING_KEYS: "missing_keys"
     };
   }
 

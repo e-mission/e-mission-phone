@@ -1,9 +1,11 @@
 import angular from 'angular';
 
 angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
-                                           'LocalStorageModule'])
+                                           'LocalStorageModule',
+                                           'emission.stats.clientstats'])
 
-.factory('KVStore', function($window, Logger, localStorageService, $ionicPopup) {
+.factory('KVStore', function($window, Logger, localStorageService, $ionicPopup,
+        $ionicPlatform, ClientStats) {
     var logger = Logger;
     var kvstoreJs = {}
     /*
@@ -46,7 +48,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
     var getUnifiedValue = function(key) {
         var ls_stored_val = localStorageService.get(key, undefined);
         return getNativePlugin().getLocalStorage(key, false).then(function(uc_stored_val) {
-            logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+" ls_stored_val = "+JSON.stringify(ls_stored_val));
+            logger.log("for key "+key+" uc_stored_val = "+JSON.stringify(uc_stored_val)+" ls_stored_val = "+JSON.stringify(ls_stored_val));
             if (angular.equals(ls_stored_val, uc_stored_val)) {
                 logger.log("local and native values match, already synced");
                 return uc_stored_val;
@@ -54,7 +56,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                 // the values are different
                 if (ls_stored_val == null) {
                     console.assert(uc_stored_val != null, "uc_stored_val should be non-null");
-                    logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
+                    logger.log("for key "+key+"uc_stored_val = "+JSON.stringify(uc_stored_val)+
                                 " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                                 " copying native "+key+" to local...");
                     localStorageService.set(key, uc_stored_val);
@@ -70,7 +72,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                     ls_stored_val = mungeValue(key, ls_stored_val);
                     $ionicPopup.alert({template: "Local "+key+" found, native "
                         +key+" missing, writing "+key+" to native"})
-                    logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
+                    logger.log("for key "+key+"uc_stored_val = "+JSON.stringify(uc_stored_val)+
                                 " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                                 " copying local "+key+" to native...");
                     return getNativePlugin().putLocalStorage(key, ls_stored_val).then(function() {
@@ -83,7 +85,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
                 "uc_stored_val ="+JSON.stringify(uc_stored_val));
                 $ionicPopup.alert({template: "Local "+key+" found, native "
                     +key+" found, but different, writing "+key+" to local"})
-                logger.log("uc_stored_val = "+JSON.stringify(uc_stored_val)+
+                logger.log("for key "+key+"uc_stored_val = "+JSON.stringify(uc_stored_val)+
                             " ls_stored_val = "+JSON.stringify(ls_stored_val)+
                             " copying native "+key+" to local...");
                 localStorageService.set(key, uc_stored_val);
@@ -139,10 +141,9 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
     }
 
     /* 
-     * TODO: remove these two functions after we have confirmed that native
-     * storage is never deleted weirdly, and returned to only native storage.
-     * In that case, there will be only one clear - of native storage - which
-     * will be covered using clearAll.
+     * Unfortunately, there is weird deletion of native
+     * https://github.com/e-mission/e-mission-docs/issues/930
+     * So we cannot remove this if/until we switch to react native
      */
     kvstoreJs.clearOnlyLocal = function() {
         return localStorageService.clearAll();
@@ -151,6 +152,70 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
     kvstoreJs.clearOnlyNative = function() {
         return getNativePlugin().clearAll();
     }
+
+    let findMissing = function(fromKeys, toKeys) {
+        const foundKeys = [];
+        const missingKeys = [];
+        fromKeys.forEach((fk) => {
+            if (toKeys.includes(fk)) {
+                foundKeys.push(fk);
+            } else {
+                missingKeys.push(fk);
+            }
+        });
+        return [foundKeys, missingKeys];
+    }
+
+    let syncAllWebAndNativeValues = function() {
+        console.log("STORAGE_PLUGIN: Called syncAllWebAndNativeValues ");
+        const syncKeys = getNativePlugin().listAllLocalStorageKeys().then((nativeKeys) => {
+            console.log("STORAGE_PLUGIN: native plugin returned");
+            const webKeys = localStorageService.keys();
+            // I thought about iterating through the lists and copying over
+            // only missing values, etc but `getUnifiedValue` already does
+            // that, and we don't need to copy it
+            // so let's just find all the missing values and read them
+            logger.log("STORAGE_PLUGIN: Comparing web keys "+webKeys+" with "+nativeKeys);
+            let [foundNative, missingNative] = findMissing(webKeys, nativeKeys);
+            let [foundWeb, missingWeb] = findMissing(nativeKeys, webKeys);
+            logger.log("STORAGE_PLUGIN: Found native keys "+foundNative+" missing native keys "+missingNative);
+            logger.log("STORAGE_PLUGIN: Found web keys "+foundWeb+" missing web keys "+missingWeb);
+            const allMissing = missingNative.concat(missingWeb);
+            logger.log("STORAGE_PLUGIN: Syncing all missing keys "+allMissing);
+            allMissing.forEach(getUnifiedValue);
+            if (allMissing.length != 0) {
+                ClientStats.addReading(ClientStats.getStatKeys().MISSING_KEYS, {
+                    "type": "local_storage_mismatch",
+                    "allMissingLength": allMissing.length,
+                    "missingWebLength": missingWeb.length,
+                    "missingNativeLength": missingNative.length,
+                    "foundWebLength": foundWeb.length,
+                    "foundNativeLength": foundNative.length,
+                    "allMissing": allMissing,
+                }).then(Logger.log("Logged missing keys to client stats"));
+            }
+        });
+        const listAllKeys = getNativePlugin().listAllUniqueKeys().then((nativeKeys) => {
+            logger.log("STORAGE_PLUGIN: For the record, all unique native keys are "+nativeKeys);
+            if (nativeKeys.length == 0) {
+                ClientStats.addReading(ClientStats.getStatKeys().MISSING_KEYS, {
+                    "type": "all_native",
+                }).then(Logger.log("Logged all missing native keys to client stats"));
+            }
+        });
+
+        return Promise.all([syncKeys, listAllKeys]);
+    }
+
+    $ionicPlatform.ready().then(function() {
+        Logger.log("STORAGE_PLUGIN: app launched, checking storage sync");
+        syncAllWebAndNativeValues();
+    });
+
+    $ionicPlatform.on("resume", function() {
+        Logger.log("STORAGE_PLUGIN: app has resumed, checking storage sync");
+        syncAllWebAndNativeValues();
+    });
 
     return kvstoreJs;
 });

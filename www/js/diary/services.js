@@ -1,72 +1,12 @@
 'use strict';
 
-const MotionTypes = {
-  IN_VEHICLE: {name: "IN_VEHICLE", icon: "speedometer", color: "purple"},
-  ON_FOOT: {name: "ON_FOOT", icon: "walk", color: "brown"},
-  BICYCLING: {name: "BICYCLING", icon: "bike", color: "green"},
-  UNKNOWN: {name: "UNKNOWN", icon: "help", color: "orange"},
-  WALKING: {name: "WALKING", icon: "walk", color: "brown"},
-  RUNNING: {name: "RUNNING", icon: "walk", color: "brown"}, // TODO: do we need this or is it always converted to WALKING?
-  CAR: {name: "CAR", icon: "car", color: "red"},
-  AIR_OR_HSR: {name: "AIR_OR_HSR", icon: "airplane", color: "red"},
-  // based on OSM routes/tags:
-  BUS: {name: "BUS", icon: "bus", color: "red"},
-  LIGHT_RAIL: {name: "LIGHT_RAIL", icon: "train-car-passenger", color: "red"},
-  TRAIN: {name: "TRAIN", icon: "train-car-passenger", color: "red"},
-  TRAM: {name: "TRAM", icon: "fas fa-tram", color: "red"},
-  SUBWAY: {name: "SUBWAY", icon: "subway-variant", color: "red"},
-  FERRY: {name: "FERRY", icon: "ferry", color: "red"},
-  TROLLEYBUS: {name: "TROLLEYBUS", icon: "bus-side", color: "red"},
-  UNPROCESSED: {name: "UNPROCESSED", icon: "help", color: "orange"}
-}
-const motionTypeOf = (motionName) => {
-  let key = ('' + motionName).toUpperCase();
-  key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return MotionTypes[motionName] || MotionTypes.UNKNOWN;
-}
-
 import angular from 'angular';
+import { getFormattedTimeRange, motionTypeOf } from './diaryHelper';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
 .factory('DiaryHelper', function($http){
   var dh = {};
-
-  dh.isMultiDay = function(beginTs, endTs) {
-    if (!beginTs || !endTs) return false;
-    return moment(beginTs * 1000).format('YYYYMMDD') != moment(endTs * 1000).format('YYYYMMDD');
-  }
-
-  /* returns a formatted range if both params are defined, 
-    one formatted date if only one is defined */
-  dh.getFormattedDate = function(beginTs, endTs=null) {
-    if (!beginTs && !endTs) return;
-    if (dh.isMultiDay(beginTs, endTs)) {
-      return `${dh.getFormattedDate(beginTs)} - ${dh.getFormattedDate(endTs)}`;
-    }
-    let t = beginTs || endTs;    // whichever is defined. may be timestamp or dt object
-    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
-    if (!t._isAMomentObject) t = moment(t);
-   // We use ddd LL to get Wed, May 3, 2023 or equivalent
-   // LL only has the date, month and year
-   // LLLL has the day of the week, but also the time
-    return t.format('ddd LL');
-  }
-
-  /* returns a formatted range if both params are defined, 
-    one formatted date if only one is defined */
-  dh.getFormattedDateAbbr = function(beginTs, endTs=null) {
-    if (!beginTs && !endTs) return;
-    if (dh.isMultiDay(beginTs, endTs)) {
-      return `${dh.getFormattedDateAbbr(beginTs)} - ${dh.getFormattedDateAbbr(endTs)}`;
-    }
-    let t = beginTs || endTs;    // whichever is defined. may be timestamp or object
-    if (typeof t == 'number') t = t*1000; // if timestamp, convert to ms
-    if (!t._isAMomentObject) t = moment(t);
-    const opts = { weekday: 'short', month: 'short', day: 'numeric' };
-    return Intl.DateTimeFormat(i18next.resolvedLanguage, opts)
-      .format(new Date(t));
-  }
 
   // Temporary function to avoid repear in getPercentages ret val.
   var filterRunning = function(mode) {
@@ -110,9 +50,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
   dh.getFormattedSectionProperties = (trip, ImperialConfig) => {
     return trip.sections?.map((s) => ({
       fmt_time: dh.getLocalTimeString(s.start_local_dt),
-      fmt_time_range: dh.getFormattedTimeRange(s.end_ts, s.start_ts),
+      fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
       fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-      fmt_distance_suffix: ImperialConfig.getDistanceSuffix,
+      fmt_distance_suffix: ImperialConfig.distanceSuffix,
       icon: motionTypeOf(s.sensed_mode_str)?.icon,
       color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
     }));
@@ -124,17 +64,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     let mdt = angular.copy(dt)
     mdt.month = mdt.month - 1
     return moment(mdt).format("LT");
-  };
-
-  dh.getFormattedTimeRange = function(end_ts_in_secs, start_ts_in_secs) {
-    if (isNaN(end_ts_in_secs) || isNaN(start_ts_in_secs)) return;
-    var startMoment = moment(start_ts_in_secs * 1000);
-    var endMoment = moment(end_ts_in_secs * 1000);
-    return endMoment.to(startMoment, true);
-  };
-  dh.getFormattedDuration = function(duration_in_secs) {
-    if (isNaN(duration_in_secs)) return;
-    return moment.duration(duration_in_secs * 1000).humanize()
   };
 
   /* this function was formerly 'CommonGraph.getDisplayName()',
@@ -199,39 +128,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         manualInputFactory = $injector.get(surveyOpt.service);
       });
     });
-
-    timeline.getUnprocessedLabels = function(manualFactory, enbs) {
-        /*
-         Because with the confirmed trips, all prior labels have been
-         incorporated into the trip.
-         */
-        return CommHelper.getPipelineRangeTs().then(function(result) {
-            const pendingLabelQuery = {key: "write_ts",
-                startTs: result.end_ts - 10,
-                endTs: moment().unix() + 10
-            }
-            var manualPromises = manualFactory.MANUAL_KEYS.map(function(inp_key) {
-              return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(manualFactory.extractResult);
-            });
-            var enbsPromises = enbs.MANUAL_KEYS.map(function(inp_key) {
-              return UnifiedDataLoader.getUnifiedMessagesForInterval(
-                  inp_key, pendingLabelQuery).then(enbs.extractResult);
-            });
-            const manualConfirmResults = {};
-            const enbsConfirmResults = {};
-            return Promise.all([...manualPromises, ...enbsPromises]).then((comboResults) => {
-                const manualResults = comboResults.slice(0, manualPromises.length);
-                const enbsResults = comboResults.slice(manualPromises.length);
-                manualFactory.processManualInputs(manualResults, manualConfirmResults);
-                enbs.processManualInputs(enbsResults, enbsConfirmResults);
-                return [result, manualConfirmResults, enbsConfirmResults];
-            });
-        }).catch((err) => {
-            Logger.displayError("while reading confirmed trips", err);
-            return [{}, {}];
-        });
-    };
 
     // DB entries retrieved from the server have '_id', 'metadata', and 'data' fields.
     // This function returns a shallow copy of the obj, which flattens the
@@ -410,14 +306,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         distance: dists.reduce((a, b) => a + b, 0),
         duration: endPoint.data.ts - startPoint.data.ts,
         end_fmt_time: endMoment.format(),
-        end_local_dt: moment2localdate(endMoment),
+        end_local_dt: moment2localdate(endMoment, endPoint.metadata.time_zone),
         end_ts: endPoint.data.ts,
         expectation: {to_label: true},
         inferred_labels: [],
         locations: locations,
         source: "unprocessed",
         start_fmt_time: startMoment.format(),
-        start_local_dt: moment2localdate(startMoment),
+        start_local_dt: moment2localdate(startMoment, startPoint.metadata.time_zone),
         start_ts: startPoint.data.ts,
         user_input: {},
       }
@@ -556,7 +452,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         trip2.enter_ts = trip1.exit_ts;
     }
 
-    timeline.readUnprocessedTrips = function(startTs, endTs, processedTripList) {
+    timeline.readUnprocessedTrips = function(startTs, endTs, lastProcessedTrip) {
         $ionicLoading.show({
           template: i18next.t('service.reading-unprocessed-data')
         });
@@ -605,11 +501,10 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
                 }
                 Logger.log("finished linking trips for list of size "+trip_gj_list.length);
-                if (processedTripList.length != 0 && trip_gj_list.length != 0) {
+                if (lastProcessedTrip && trip_gj_list.length != 0) {
                     // Need to link the entire chain above to the processed data
                     Logger.log("linking unprocessed and processed trip chains");
-                    var last_processed_trip = processedTripList.slice(-1);
-                    linkTrips(last_processed_trip, trip_gj_list[0]);
+                    linkTrips(lastProcessedTrip, trip_gj_list[0]);
                 }
                 $ionicLoading.hide();
                 Logger.log("Returning final list of size "+trip_gj_list.length);
