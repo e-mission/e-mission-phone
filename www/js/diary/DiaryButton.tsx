@@ -32,16 +32,15 @@ const s = StyleSheet.create({
     height: 25,
   },
   label: {
-    marginHorizontal: 4,
+    marginHorizontal: 5,
+    marginVertical: 0,
     fontSize: 13,
     fontWeight: '500',
-    display: 'flex',
-    justifyContent: 'center',
-    placeItems: 'center',
     whiteSpace: 'nowrap',
   },
   icon: {
     marginRight: 4,
+    verticalAlign: 'middle',
   }
 });
 
