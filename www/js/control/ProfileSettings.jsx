@@ -272,6 +272,7 @@ const ProfileSettings = () => {
         }, function(msg) {
             console.log("Sharing failed with message: " + msg);
         });
+            prepopulateQRMessage.message = authSettings.opcode; //text saved to files with image!
     }
 
     const viewQRCode = function(e) {

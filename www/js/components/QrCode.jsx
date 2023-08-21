@@ -8,7 +8,7 @@ import { string } from "prop-types";
 import QRCode from "react-qr-code";
 
 const QrCode = ({ value }) => {
-  return <QRCode value={value} style={{ width: '100%', height: '100%' }} />;
+  return <QRCode className="qr-code" value={value} style={{ width: '100%', height: '100%' }} />;
 };
 
 QrCode.propTypes = {

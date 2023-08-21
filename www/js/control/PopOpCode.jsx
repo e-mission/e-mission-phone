@@ -7,6 +7,10 @@ import QrCode from "../components/QrCode";
 const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
+
+    const opcodeList = tokenURL.split("=");
+    const opcode = opcodeList[opcodeList.length - 1];
+    console.log("is this an opcode", opcodeList, opcode);
     
     return (
         <Modal visible={visibilityValue} onDismiss={() => setVis(false)}
@@ -18,6 +22,7 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
                 <Dialog.Content style={styles.content}>
                     <QrCode value={tokenURL}></QrCode>
                     <Text>{t("general-settings.qrcode-share-title")}</Text>
+                    <Text style={styles.opcode}>{opcode}</Text>
                     <IconButton icon="share" onPress={() => action()} style={styles.button}/>
                 </Dialog.Content>
                 <Dialog.Actions>
@@ -43,6 +48,9 @@ const styles = StyleSheet.create({
     },
     button: {
         margin: 'auto',
+    },
+    opcode: {
+        fontWeight: 'bold'
     }
   });
 
