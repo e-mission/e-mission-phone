@@ -3,7 +3,7 @@
 import angular from 'angular';
 import 'nvd3';
 import BarChart from './components/BarChart';
-import MetricsCard from './components/MetricsCard';
+import MetricsCard from './metrics/MetricsCard';
 angular.module('emission.main.metrics',['emission.services',
                                         'ionic-datepicker',
                                         'emission.config.imperial',

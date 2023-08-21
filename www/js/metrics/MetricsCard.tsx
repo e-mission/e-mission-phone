@@ -3,10 +3,8 @@ import React, { useState } from 'react';
 import { array, } from 'prop-types';
 import { angularize } from '../angular-react-helper';
 import { Card, IconButton, Surface} from 'react-native-paper';
-import BarChart from './BarChart';
+import BarChart from '../components/BarChart';
 import MetricsDetails from './MetricDetails';
-import { StyleSheet } from 'react-native';
-
 
 const MetricsCard = ({chartData, axisTitle}) => {
   
