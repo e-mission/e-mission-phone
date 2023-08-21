@@ -7,6 +7,7 @@ import PermissionItem from "../appstatus/PermissionItem";
 import useAppConfig from "../useAppConfig";
 import useAppStateChange from "../useAppStateChange";
 import ExplainPermissions from "../appstatus/ExplainPermissions";
+import AlertBar from "./AlertBar";
 
 const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) => {
     const { t } = useTranslation();
@@ -20,6 +21,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
     const [platform, setPlatform] = useState("");
 
     const [explainVis, setExplainVis] = useState(false);
+    const [error, setError] = useState<string>("");
+    const [errorVis, setErrorVis] = useState<boolean>(false);
 
     const [backgroundRestricted, setBackgroundRestricted] = useState(false);
     const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState([]);
@@ -68,11 +71,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
                 console.log("Error", error)
                 if (showError) {
                     console.log("please fix again");
-                    // $ionicPopup.alert({
-                    //     title: "Error",
-                    //     template: "<div class='item-text-wrap'>"+error+"</div>",
-                    //     okText: "Please fix again"
-                    // });
+                    setError(error);
+                    setErrorVis(true);
                 };
                 newCheck.statusState = false;
                 updateCheck(newCheck);
@@ -337,6 +337,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             setupIOSFitnessChecks();
             setupAndroidNotificationChecks();
         } else {
+            setError("Alert! unknownplatform, no tracking");
+            setErrorVis(true);
             console.log("Alert! unknownplatform, no tracking"); //need an alert, can use AlertBar?
         }
         
@@ -386,9 +388,11 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
                 setupPermissionText();
                 setHaveSetText(true);
             }
+            else{
+                console.log("setting up permissions");
+                createChecklist();
+            }
 
-            console.log("setting up permissions");
-            createChecklist();
         }
     }, [appConfig]);
 
@@ -399,7 +403,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
     }, [checkList])
 
     return (
-        <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
+        <>
+            <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
                 <Dialog visible={permitVis} 
                         onDismiss={() => setPermitVis(false)} 
                         style={dialogStyle}>
@@ -434,6 +439,9 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
+
+            <AlertBar visible={errorVis} setVisible={setErrorVis} messageKey={"Error"} messageAddition={error}></AlertBar>
+        </>
     )
 }
 
