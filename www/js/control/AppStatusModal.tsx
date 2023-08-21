@@ -18,19 +18,20 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
     const { height: windowHeight } = useWindowDimensions();
     const [osver, setOsver] = useState(0);
-    const [platform, setPlatform] = useState("");
+    const [platform, setPlatform] = useState<string>("");
 
-    const [explainVis, setExplainVis] = useState(false);
     const [error, setError] = useState<string>("");
     const [errorVis, setErrorVis] = useState<boolean>(false);
 
-    const [backgroundRestricted, setBackgroundRestricted] = useState(false);
-    const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState([]);
+    const [explainVis, setExplainVis] = useState<boolean>(false);
+
+    const [backgroundRestricted, setBackgroundRestricted] = useState<boolean>(false);
+    const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState<Array<any>>([]);
 
     const [checkList, setCheckList] = useState([]);
-    const [overallStatus, setOverallStatus] = useState(false);
-    const [explanationList, setExplanationList] = useState([]);
-    const [haveSetText, setHaveSetText] = useState(false);
+    const [overallStatus, setOverallStatus] = useState<boolean>(false);
+    const [explanationList, setExplanationList] = useState<Array<any>>([]);
+    const [haveSetText, setHaveSetText] = useState<boolean>(false);
 
     let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
     let colorMap = (statusState) => statusState ? colors.success : colors.danger;
@@ -161,8 +162,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             iOSPermDescTag = 'intro.appstatus.locperms.description.ios-lt-13';
         }
         console.log("description tags are "+iOSSettingsDescTag+" "+iOSPermDescTag);
-        //lower part of this code is not running??
-        // location settings
+
         const locSettingsCheck = {
             name: t("intro.appstatus.locsettings.name"),
             desc: t(iOSSettingsDescTag),
@@ -444,7 +444,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
                 </Dialog>
             </Modal>
 
-            <AlertBar visible={errorVis} setVisible={setErrorVis} messageKey={"Error"} messageAddition={error}></AlertBar>
+            <AlertBar visible={errorVis} setVisible={setErrorVis} messageKey={"Error "} messageAddition={error}></AlertBar>
         </>
     )
 }
