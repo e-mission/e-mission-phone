@@ -261,18 +261,32 @@ const ProfileSettings = () => {
     }
 
     const shareQR = function() {
-        var prepopulateQRMessage = {};  
-        var qrAddress = "emission://login_token?token="+authSettings.opcode;
-        prepopulateQRMessage.files = [qrAddress];
-        prepopulateQRMessage.url = authSettings.opcode;
+       /*code adapted from demo of react-qr-code*/
+        const svg = document.querySelector(".qr-code");
+        const svgData = new XMLSerializer().serializeToString(svg);
+        const img = new Image();
 
-        window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-            console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-            console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-        }, function(msg) {
-            console.log("Sharing failed with message: " + msg);
-        });
+        img.onload = () => {
+            const canvas = document.createElement("canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            ctx.drawImage(img, 0, 0);
+            const pngFile = canvas.toDataURL("image/png");
+                
+            var prepopulateQRMessage = {}; 
+            prepopulateQRMessage.files = [pngFile];
+            prepopulateQRMessage.url = authSettings.opcode;
             prepopulateQRMessage.message = authSettings.opcode; //text saved to files with image!
+                
+            window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
+                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
+                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
+            }, function(msg) {
+                console.log("Sharing failed with message: " + msg);
+            });
+        }
+        img.src =  `data:image/svg+xml;base64,${btoa(svgData)}`;
     }
 
     const viewQRCode = function(e) {
