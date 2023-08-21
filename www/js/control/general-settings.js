@@ -27,35 +27,11 @@ angular.module('emission.main.control',['emission.services',
 
     console.log("controller ControlCtrl called without params");
 
-    //There is an appStatusModal in ProfileSettings, but this is called upon entering the view
-    //might have to migrate later when at a point where it's not React inside of Angular
-    //stateParams must relate to the overall app? afterEnter called when you open the view!
-    $scope.overallAppStatus = false;
-
-    $ionicModal.fromTemplateUrl('templates/control/app-status-modal.html', {
-        scope: $scope
-    }).then(function(modal) {
-        $scope.appStatusModal = modal;
-        if ($stateParams.launchAppStatusModal == true) {
-            $scope.$broadcast("recomputeAppStatus");
-            $scope.appStatusModal.show();
-        }
-    });
-
-    $scope.$on('$ionicView.afterEnter', function() {
-        console.log("afterEnter called with stateparams", $stateParams);
-        $ionicPlatform.ready().then(function() {
-            $scope.refreshScreen();
-            if ($stateParams.launchAppStatusModal == true) {
-                $scope.$broadcast("recomputeAppStatus");
-                $scope.appStatusModal.show();
-                $stateParams.launchAppStatusModal = false;
-            }
-            if ($stateParams.openTimeOfDayPicker) {
-                $('input[name=timeOfDay]').focus();
-            }
-        });
-    })
+    //used to have on "afterEnter" that checked for 2 things
+        //modal launch -> migrated into AppStatusModal w/ use of custom hook!
+        //stateParams.openTimeOfDayPicker -> functionality lost for now
+            //to change reminder time if accessing profile by specific android notification flow
+            //would open the date picker
 
     //this function used in ProfileSettings to viewPrivacyPolicy
     //make sure to refresh on exit when migrated!
@@ -75,12 +51,10 @@ angular.module('emission.main.control',['emission.services',
         }
     }
 
-    //these change the page within the app, still need to find the React equivalent
-    //in ProfileSettings in DevZone
+    //TODO create React pages and use React routing
     $scope.showLog = function() {
         $state.go("root.main.log");
     }
-    //inProfileSettings in DevZone
     $scope.showSensed = function() {
         $state.go("root.main.sensed");
     }

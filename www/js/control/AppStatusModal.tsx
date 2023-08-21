@@ -369,6 +369,10 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
     useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
         refreshAllChecks();
+        if(overallStatus == false) //show Modal if action required
+        {
+            setPermitVis(true);
+        }
     });
 
     //refresh when recompute message is broadcast
