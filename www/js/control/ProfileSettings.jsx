@@ -13,6 +13,7 @@ import useAppConfig from "../useAppConfig";
 import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
 import AppStatusModal from "./AppStatusModal";
+import PrivacyPolicyModal from "./PrivacyPolicyModal";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -73,6 +74,7 @@ const ProfileSettings = () => {
     const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
     const [consentVis, setConsentVis] = useState(false);
     const [dateDumpVis, setDateDumpVis] = useState(false);
+    const [privacyVis, setPrivacyVis] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
@@ -478,7 +480,7 @@ const ProfileSettings = () => {
         <ScrollView>
             <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
             <DemographicsSettingRow></DemographicsSettingRow>
-            <SettingRow textKey='control.view-privacy' iconName='eye' action={viewPrivacyPolicy}></SettingRow>
+            <SettingRow textKey='control.view-privacy' iconName='eye' action={() => setPrivacyVis(true)}></SettingRow>
             {timePicker}
             <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
             <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
@@ -596,6 +598,8 @@ const ProfileSettings = () => {
 
             {/* {view permissions} */}
             <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
+
+            <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis} dialogStyle={styles.dialog(colors.elevation.level3)}></PrivacyPolicyModal>
 
             {/* logout menu */}
             <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
