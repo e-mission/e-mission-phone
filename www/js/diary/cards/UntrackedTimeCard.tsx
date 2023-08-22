@@ -9,48 +9,41 @@
 
 import React from "react";
 import { View, StyleSheet } from 'react-native';
-import { Divider, IconButton, Text } from 'react-native-paper';
-import { object } from "prop-types";
+import { Divider, Text } from 'react-native-paper';
 import { getTheme } from "../../appTheme";
 import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
+import { Icon } from "../../components/Icon";
+import useDerivedProperties from "../useDerivedProperties";
+import StartEndLocations from "../StartEndLocations";
 
-const UntrackedTimeCard = ({ triplike }) => {
+type Props = { triplike: {[key: string]: any}};
+const UntrackedTimeCard = ({ triplike }: Props) => {
   const { t } = useTranslation();
+  const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(triplike);
   const [ triplikeStartDisplayName, triplikeEndDisplayName ] = useAddressNames(triplike);
 
   const flavoredTheme = getTheme('untracked');
 
   return (
     <DiaryCard timelineEntry={triplike} flavoredTheme={flavoredTheme}>
-      <View style={[cardStyles.cardContent, {marginVertical: 12}]}>
-        <View>{/*  date and distance */}
+      <View style={[cardStyles.cardContent, {marginVertical: 12}]} focusable={true}
+          accessibilityLabel={`Untracked time from ${displayStartTime} to ${displayEndTime}`}>
+          <View>{/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
-            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{triplike.display_date}</Text>
+            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{displayDate}</Text>
           </Text>
         </View>
         <View style={[cardStyles.panelSection, {margin: 'auto'}]}>
           <Text style={[s.untrackedText, {backgroundColor: flavoredTheme.colors.primary, color: flavoredTheme.colors.onPrimary}]}>
-            {t('diary.untracked-time-range', { start: triplike.display_start_time, end: triplike.display_end_time })}
+            {t('diary.untracked-time-range', { start: displayStartTime, end: displayEndTime })}
           </Text>
         </View>
-        <View>{/*  start and end locations */}
-          <View style={cardStyles.location}>
-            <IconButton icon='map-marker-star' iconColor={flavoredTheme.colors.primaryContainer} size={18}
-              style={cardStyles.locationIcon} />
-            <Text style={s.locationText}>
-              {triplikeStartDisplayName}
-            </Text>
-          </View>
-          <Divider style={{ marginVertical: 2 }} />
-          <View style={cardStyles.location}>
-            <IconButton icon='flag' iconColor={flavoredTheme.colors.primary} size={18}
-              style={cardStyles.locationIcon} />
-            <Text style={s.locationText}>
-              {triplikeEndDisplayName}
-            </Text>
-          </View>
+        <View>{/* start and end locations */}
+          <StartEndLocations centered={true}
+            displayStartName={triplikeStartDisplayName}
+            displayEndName={triplikeEndDisplayName} />
         </View>
       </View>
     </DiaryCard>
@@ -69,9 +62,5 @@ const s = StyleSheet.create({
     lineHeight: 12,
   },
 });
-
-UntrackedTimeCard.propTypes = {
-  triplike: object,
-}
 
 export default UntrackedTimeCard;

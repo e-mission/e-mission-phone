@@ -109,4 +109,52 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   return endMoment.to(beginMoment, true);
 };
 
-// the rest is TODO, still in services.js
+// Temporary function to avoid repear in getPercentages ret val.
+const filterRunning = (mode) =>
+  (mode == 'MotionTypes.RUNNING') ? 'MotionTypes.WALKING' : mode;
+
+export function getPercentages(trip) {
+  if (!trip.sections?.length) return {};
+
+  // sum up the distances for each mode, as well as the total distance
+  let totalDist = 0;
+  const dists: Record<string, number> = {};
+  trip.sections.forEach((section) => {
+    const filteredMode = filterRunning(section.sensed_mode_str);
+    dists[filteredMode] = (dists[filteredMode] || 0) + section.distance;
+    totalDist += section.distance;
+  });
+
+  // sort modes by the distance traveled (descending)
+  const sortedKeys = Object.entries(dists).sort((a, b) => b[1] - a[1]).map(e => e[0]);
+  let sectionPcts = sortedKeys.map(function (mode) {
+    const fract = dists[mode] / totalDist;
+    return {
+      mode: mode,
+      icon: motionTypeOf(mode)?.icon,
+      color: motionTypeOf(mode)?.color || 'black',
+      pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
+    };
+  });
+
+  return sectionPcts;
+}
+
+export function getFormattedSectionProperties(trip, ImperialConfig) {
+  return trip.sections?.map((s) => ({
+    fmt_time: getLocalTimeString(s.start_local_dt),
+    fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
+    fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
+    fmt_distance_suffix: ImperialConfig.distanceSuffix,
+    icon: motionTypeOf(s.sensed_mode_str)?.icon,
+    color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
+  }));
+}
+
+export function getLocalTimeString(dt) {
+  if (!dt) return;
+  /* correcting the date of the processed trips knowing that local_dt months are from 1 -> 12
+    and for the moment function they need to be between 0 -> 11 */
+  const mdt = { ...dt, month: dt.month-1 };
+  return moment(mdt).format("LT");
+}

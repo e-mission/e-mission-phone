@@ -2,11 +2,15 @@
   Used in the label screen, on the trip, place, and/or untracked cards */
 
 import React from "react";
-import { angularize } from "../../angular-react-helper";
 import { bool, string } from "prop-types";
 import { Badge, Text, useTheme } from "react-native-paper";
 
-const TimestampBadge = ({ lightBg, time, date=null, ...otherProps }) => {
+type Props = {
+  lightBg: boolean,
+  time: string,
+  date?: string,
+};
+const TimestampBadge = ({ lightBg, time, date, ...otherProps }: Props) => {
   const { colors } = useTheme();
   const bgColor = lightBg ? colors.primaryContainer : colors.primary;
   const textColor = lightBg ? 'black' : 'white';
