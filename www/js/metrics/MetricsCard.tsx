@@ -1,46 +1,75 @@
 
-import React, { useState } from 'react';
-import { array, } from 'prop-types';
-import { angularize } from '../angular-react-helper';
-import { Card, IconButton, Surface} from 'react-native-paper';
+import React, { useMemo, useState } from 'react';
+import { Card, CardProps, SegmentedButtons, useTheme} from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import MetricsDetails from './MetricDetails';
+import { DayOfMetricData } from './metricsTypes';
+import { getUniqueLabelsForDays } from './metricsHelper';
 
-const MetricsCard = ({chartData, axisTitle}) => {
+type Props = CardProps & {
+  cardTitle: string,
+  metricDataDays: DayOfMetricData[],
+  axisUnits: string,
+}
+const MetricsCard = ({cardTitle, metricDataDays, axisUnits, ...rest}: Props) => {
+
+  const { colors } = useTheme();
   
-  const [state, setState] = useState({detailsView : false})
-  return (
-    <Card style={{width:"90%", alignSelf:"center", height:"280px" }}>
-      <Surface style={{backgroundColor: 'rgba(0, 136, 206, 1)', height: "60px"}}>
-        <Card.Title 
-          titleStyle={{textAlign:"center", color:"white", fontSize:"20px"}}
-          title="My Distance"
-          right={state.detailsView ?
-            (()=><IconButton icon="chart-bar" mode="contained" onPress={()=> setState({detailsView : false})}/>
-            ):
-            (
-             ()=> <IconButton icon="abacus" mode="contained" onPress={()=> setState({detailsView : true})}/>
-            )}
-        />
-        </Surface>
-      
-      {state.detailsView ? (
-        <>
-          <Card.Content>
-            <MetricsDetails chartData={chartData}/>
-          </Card.Content>
-       </>
+  const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
+  const chartData = useMemo(() => {
+    if (!metricDataDays) return [];
+    const uniqueLabels = getUniqueLabelsForDays(metricDataDays);
 
-      ) : (
-        <>
-          <Card.Content>
-            <BarChart chartData={chartData} axisTitle={axisTitle} isHorizontal={true}/>
-          </Card.Content>
-        </>
-      )
+    // for each label, format data for chart, with a record for each day with that label
+    return uniqueLabels.map((label, i) => {
+      const daysWithThisLabel = metricDataDays.filter(e => e[`label_${label}`]);
+      return {
+        label: label,
+        records: daysWithThisLabel.map(e => ({
+          x: e[`label_${label}`],
+          y: e.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
+        }))
       }
-      
-      
+    });
+  }, [metricDataDays]);
+
+  return (
+    <Card {...rest} style={[rest.style, {overflow: 'hidden', minHeight: 300}]}>
+      <Card.Title 
+        title={cardTitle}
+        titleVariant='titleLarge'
+        titleStyle={{color: colors.onPrimary, fontWeight: '500', textAlign: 'center'}}
+        titleNumberOfLines={2}
+        right={() =>
+          <SegmentedButtons value={viewMode} onValueChange={(v) => setViewMode(v)}
+            density='medium'
+            buttons={[{
+              icon: 'abacus', value: 'details',
+              uncheckedColor: colors.onSurfaceDisabled,
+              style: {
+                minWidth: 0,
+                backgroundColor: viewMode == 'details' ? colors.elevation.level2 : colors.surfaceDisabled
+              },
+              showSelectedCheck: true
+            }, {
+              icon: 'chart-bar',
+              uncheckedColor: colors.onSurfaceDisabled,
+              value: 'graph',
+              style: {
+                minWidth: 0,
+                backgroundColor: viewMode == 'graph' ? colors.elevation.level2 : colors.surfaceDisabled
+              },
+              showSelectedCheck: true
+            }]} />
+        }
+        style={{backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60}} />
+      <Card.Content>
+        {viewMode=='details' ?
+          <MetricsDetails metricDataDays={metricDataDays} style={{ marginTop: 12 }} />
+        :
+          <BarChart chartData={chartData} axisTitle={axisUnits} isHorizontal={true}/>
+        }
+      </Card.Content>
     </Card>
   )
 }
