@@ -45,9 +45,4 @@ const MetricsCard = ({chartData, axisTitle}) => {
   )
 }
 
-MetricsCard.propTypes = {
-  chartData: array,
-};
-
-angularize(MetricsCard, 'MetricsCard', 'emission.main.metricscard');
 export default MetricsCard;
