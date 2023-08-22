@@ -2,7 +2,8 @@ import angular from 'angular';
 
 angular.module('emission.plugin.logger', [])
 
-.factory('Logger', function($window, $ionicPopup) {
+// explicit annotations needed in .ts files - Babel does not fix them (see webpack.prod.js)
+.factory('Logger', ['$window', '$ionicPopup', function($window, $ionicPopup) {
     var loggerJs: any = {};
     loggerJs.log = function(message) {
         $window.Logger.log($window.Logger.LEVEL_DEBUG, message);
@@ -21,7 +22,7 @@ angular.module('emission.plugin.logger', [])
       $window.Logger.log($window.Logger.LEVEL_ERROR, title + display_msg);
     }
     return loggerJs;
-});
+}]);
 
 export const logDebug = (message: string) =>
   window['Logger'].log(window['Logger'].LEVEL_DEBUG, message);
