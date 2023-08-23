@@ -5,6 +5,7 @@ import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import { useImperialConfig } from '../config/useImperialConfig';
+import { secondsToMinutes } from './metricsHelper';
 
 const ACTIVE_MODES = ['walk', 'bike'];
 
@@ -13,14 +14,14 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
 
   const { colors } = useTheme();
   
-  // number of seconds for each of [walk, bike]
+  // number of minutes for each of [walk, bike]
   const activeModesDurations = useMemo(() => {
     if (!userMetrics?.duration) return [];
     return ACTIVE_MODES.map(mode => {
       const sum = userMetrics.duration.reduce((acc, day) => (
         acc + (day[`label_${mode}`] || 0)
       ), 0);
-      return sum;
+      return secondsToMinutes(sum);
     });
   }, [userMetrics?.duration]);
 
@@ -36,7 +37,7 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
         { activeModesDurations.map((mode, i) => (
           <View style={{ width: '50%', paddingHorizontal: 8 }}>
             <Text variant='titleSmall'>{ACTIVE_MODES[i]}</Text>
-            <Text>{Math.round(activeModesDurations[i] / 60) + ' minutes'}</Text>{/* TODO i18n*/}
+            <Text>{`${activeModesDurations[i]} minutes`}</Text>{/* TODO i18n*/}
           </View>
         ))}
       </Card.Content>

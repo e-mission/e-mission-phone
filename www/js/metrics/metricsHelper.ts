@@ -12,3 +12,6 @@ export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   });
   return uniqueLabels;
 }
+
+export const secondsToMinutes = (seconds: number) =>
+  Math.round(seconds / 60);
