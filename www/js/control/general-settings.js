@@ -58,11 +58,5 @@ angular.module('emission.main.control',['emission.services',
     $scope.showSensed = function() {
         $state.go("root.main.sensed");
     }
-
-    //this feature has been eliminated (as of right now)
-    // $scope.copyToClipboard = (textToCopy) => {
-    //     navigator.clipboard.writeText(textToCopy).then(() => {
-    //         ionicToast.show('{Copied to clipboard!}', 'bottom', false, 2000);
-    //     });
-    // }  
+    
 });
