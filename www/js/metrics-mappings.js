@@ -329,7 +329,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
     cdh.populateCustomMETs = function() {
         let standardMETs = METDatasetHelper.getStandardMETs();
-        let modeOptions = cdh.inputParams["MODE"].options;
+        let modeOptions = cdh.inputParams["MODE"];
         let modeMETEntries = modeOptions.map((opt) => {
             if (opt.met_equivalent) {
                 let currMET = standardMETs[opt.met_equivalent];
@@ -358,7 +358,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     };
 
     cdh.populateCustomFootprints = function() {
-        let modeOptions = cdh.inputParams["MODE"].options;
+        let modeOptions = cdh.inputParams["MODE"];
         let modeCO2PerMeter = modeOptions.map((opt) => {
             if (opt.range_limit_km) {
                 if (cdh.range_limited_motorized) {
