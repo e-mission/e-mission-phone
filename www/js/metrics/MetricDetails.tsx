@@ -23,9 +23,9 @@ const MetricsDetails = ({ metricDataDays, style }: Props) => {
   }, [metricDataDays]);
 
   return (
-    <View style={[{display: 'flex', flexWrap: 'wrap'}, style]}>
+    <View style={[{flexDirection: 'row', flexWrap: 'wrap'}, style]}>
       { Object.keys(metricValues).map((label, i) =>
-        <View style={{ width: '50%' }}>
+        <View style={{ width: '50%', paddingHorizontal: 8 }}>
           <Text variant='titleSmall'>{label}</Text>
           <Text>{metricValues[label]}</Text>
         </View>

@@ -65,7 +65,7 @@ const BarChart = ({ chartData, axisTitle, lineAnnotations=null, isHorizontal=fal
   }
 
   return (
-    <View style={[getChartHeight(), {padding: 12}]}>
+    <View style={[getChartHeight()]}>
       <Bar ref={barChartRef}
         data={{
           datasets: chartData.map((d, i) => ({

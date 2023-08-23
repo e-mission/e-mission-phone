@@ -63,7 +63,7 @@ const MetricsCard = ({cardTitle, metricDataDays, axisUnits, ...rest}: Props) => 
             }]} />
         }
         style={{backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60}} />
-      <Card.Content>
+      <Card.Content style={{paddingHorizontal: 8}}>
         {viewMode=='details' ?
           <MetricsDetails metricDataDays={metricDataDays} style={{ marginTop: 12 }} />
         :
