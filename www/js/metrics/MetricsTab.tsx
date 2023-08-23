@@ -9,6 +9,7 @@ import { UserMetrics } from "./metricsTypes";
 import MetricsCard from "./MetricsCard";
 import { useImperialConfig } from "../config/useImperialConfig";
 import MetricsDateSelect from "./MetricsDateSelect";
+import ActiveMinutesCard from "./ActiveMinutesCard";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -76,6 +77,7 @@ const MetricsTab = () => {
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <ScrollView>
+      <ActiveMinutesCard userMetrics={userMetrics} />
       <ScrollView horizontal={true}
           decelerationRate={0}
           snapToInterval={cardWidth + cardMargin*2}
@@ -115,6 +117,16 @@ const s = {
     scrollSnapStop: 'always',
   }),
 };
+export const cardStyles: any = {
+  title: (colors) => ({
+    backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60
+  }),
+  titleText: (colors) => ({
+    color: colors.onPrimary,
+    fontWeight: '500',
+    textAlign: 'center'
+  }),
+}
 
 angularize(MetricsTab, 'MetricsTab', 'emission.main.metricstab');
 export default MetricsTab;
