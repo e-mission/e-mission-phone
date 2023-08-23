@@ -1,17 +1,18 @@
 
 import React, { useMemo, useState } from 'react';
-import { Card, CardProps, SegmentedButtons, useTheme} from 'react-native-paper';
+import { Card, SegmentedButtons, useTheme} from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import MetricsDetails from './MetricDetails';
 import { DayOfMetricData } from './metricsTypes';
 import { getUniqueLabelsForDays } from './metricsHelper';
 
-type Props = CardProps & {
+type Props = {
+  style: any,
   cardTitle: string,
   metricDataDays: DayOfMetricData[],
   axisUnits: string,
 }
-const MetricsCard = ({cardTitle, metricDataDays, axisUnits, ...rest}: Props) => {
+const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
 
   const { colors } = useTheme();
   
@@ -34,7 +35,7 @@ const MetricsCard = ({cardTitle, metricDataDays, axisUnits, ...rest}: Props) => 
   }, [metricDataDays]);
 
   return (
-    <Card {...rest} style={[rest.style, {overflow: 'hidden', minHeight: 300}]}>
+    <Card style={{...style, overflow: 'hidden', minHeight: 300}}>
       <Card.Title 
         title={cardTitle}
         titleVariant='titleLarge'
