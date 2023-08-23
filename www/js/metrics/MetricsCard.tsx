@@ -1,8 +1,8 @@
 
 import React, { useMemo, useState } from 'react';
-import { Card, SegmentedButtons, useTheme} from 'react-native-paper';
+import { View } from 'react-native';
+import { Card, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
-import MetricsDetails from './MetricDetails';
 import { DayOfMetricData } from './metricsTypes';
 import { getUniqueLabelsForDays } from './metricsHelper';
 
@@ -14,14 +14,14 @@ type Props = {
 }
 const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
 
-  const { colors } = useTheme();
-  
+  const { colors } = useTheme();  
   const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
+
+  // for each label, format data for chart, with a record for each day with that label
   const chartData = useMemo(() => {
-    if (!metricDataDays) return [];
+    if (!metricDataDays || viewMode != 'graph') return [];
     const uniqueLabels = getUniqueLabelsForDays(metricDataDays);
 
-    // for each label, format data for chart, with a record for each day with that label
     return uniqueLabels.map((label, i) => {
       const daysWithThisLabel = metricDataDays.filter(e => e[`label_${label}`]);
       return {
@@ -32,6 +32,21 @@ const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
         }))
       }
     });
+  }, [metricDataDays, viewMode]);
+
+  // for each label, sum up cumulative values across all days
+  const metricSumValues = useMemo(() => {
+    if (!metricDataDays || viewMode != 'details') return [];
+    const uniqueLabels = getUniqueLabelsForDays(metricDataDays);
+
+    // for each label, sum up cumulative values across all days
+    const vals = {};
+    uniqueLabels.forEach(label => {
+      vals[label] = metricDataDays.reduce((acc, day) => (
+        acc + (day[`label_${label}`] || 0)
+      ), 0);
+    });
+    return vals;
   }, [metricDataDays]);
 
   return (
@@ -65,9 +80,16 @@ const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
         }
         style={{backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60}} />
       <Card.Content style={{paddingHorizontal: 8}}>
-        {viewMode=='details' ?
-          <MetricsDetails metricDataDays={metricDataDays} style={{ marginTop: 12 }} />
-        :
+        {viewMode=='details' &&
+          <View style={{marginTop: 12, flexDirection: 'row', flexWrap: 'wrap'}}>
+            { Object.keys(metricSumValues).map((label, i) =>
+              <View style={{ width: '50%', paddingHorizontal: 8 }}>
+                <Text variant='titleSmall'>{label}</Text>
+                <Text>{metricSumValues[label]}</Text>
+              </View>
+            )}
+          </View>
+        } {viewMode=='graph' &&
           <BarChart chartData={chartData} axisTitle={axisUnits} isHorizontal={true}/>
         }
       </Card.Content>
