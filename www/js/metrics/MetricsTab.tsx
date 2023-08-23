@@ -8,8 +8,23 @@ import { DateTime } from "luxon";
 import { UserMetrics } from "./metricsTypes";
 import MetricsCard from "./MetricsCard";
 import { useImperialConfig } from "../config/useImperialConfig";
+import MetricsDateSelect from "./MetricsDateSelect";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
+
+async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: [DateTime, DateTime]) {
+  const CommHelper = getAngularService('CommHelper');
+  const query = {
+    freq: 'D',
+    start_time: dateRange[0].toSeconds(),
+    end_time: dateRange[1].toSeconds(),
+    metric_list: METRIC_LIST,
+    is_return_aggregate: (type == 'aggregate'),
+  }
+  if (type == 'user')
+    return CommHelper.getMetrics('timestamp', query);
+  return CommHelper.getAggregateData("result/metrics/timestamp", query);
+}
 
 const MetricsTab = () => {
 
@@ -17,36 +32,34 @@ const MetricsTab = () => {
   const { distanceSuffix, speedSuffix } = useImperialConfig();
   const CommHelper = getAngularService('CommHelper');
 
-  const [userMetrics, setUserMetrics] = useState<UserMetrics>(null);
-  // const [aggMetrics, setAggMetrics] = useState({});
-
-  const tsRange = useMemo(() => {
+  const [dateRange, setDateRange] = useState<[DateTime, DateTime]>(() => {
     const now = DateTime.utc().startOf('day');
     const start = now.minus({ days: 14 });
     const end = now.minus({ days: 1 });
-    return {
-      start_time: start.toSeconds(),
-      end_time: end.toSeconds()
-    }
-  }, [])
+    return [start, end];
+  });
+  const [metricsPopulation, setMetricsPopulation] = useState<'user'|'aggregate'>('user');
+  const [aggMetrics, setAggMetrics] = useState<UserMetrics>(null);
+  const [userMetrics, setUserMetrics] = useState<UserMetrics>(null);
 
   useEffect(() => {
-    fetchMetricsFromServer();
-  }, []);
+    loadMetricsForPopulation('user', dateRange);
+    loadMetricsForPopulation('aggregate', dateRange);
+  }, [dateRange]);
 
-  async function fetchMetricsFromServer() {
-    const serverResponse = await CommHelper.getMetrics('timestamp', {
-      freq: 'D',
-      ...tsRange,
-      metric_list: METRIC_LIST,
-      is_return_aggregate: false
-    });
+  async function loadMetricsForPopulation(population: 'user'|'aggregate', dateRange: [DateTime, DateTime]) {
+    const serverResponse = await fetchMetricsFromServer(population, dateRange);
     console.debug("Got metrics = ", serverResponse);
-    const userMetrics = {};
+    const metrics = {};
+    const dataKey = (population == 'user') ? 'user_metrics' : 'aggregate_metrics';
     METRIC_LIST.forEach((metricName, i) => {
-      userMetrics[metricName] = serverResponse['user_metrics'][i];
+      metrics[metricName] = serverResponse[dataKey][i];
     });
-    setUserMetrics(userMetrics as UserMetrics);
+    if (population == 'user') {
+      setUserMetrics(metrics as UserMetrics);
+    } else {
+      setAggMetrics(metrics as UserMetrics);
+    }
   }
 
   function refresh() {
@@ -59,9 +72,7 @@ const MetricsTab = () => {
   return (<>
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
       <Appbar.Content title={t("main-metrics.dashboard")} />
-      <NavBarButton icon='calendar' onPressAction={()=>{}}>
-        Date
-      </NavBarButton>
+      <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <ScrollView>
