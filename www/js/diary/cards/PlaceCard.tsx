@@ -8,38 +8,38 @@
 
 import React from "react";
 import { View, StyleSheet } from 'react-native';
-import { IconButton, Text } from 'react-native-paper';
-import { object } from "prop-types";
+import { Text } from 'react-native-paper';
 import useAppConfig from "../../useAppConfig";
 import AddNoteButton from "../../survey/enketo/AddNoteButton";
 import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
+import { Icon } from "../../components/Icon";
+import useDerivedProperties from "../useDerivedProperties";
+import StartEndLocations from "../StartEndLocations";
 
-const PlaceCard = ({ place }) => {
+type Props = { place: {[key: string]: any} };
+const PlaceCard = ({ place }: Props) => {
 
   const { appConfig, loading } = useAppConfig();
+  const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
   let [ placeDisplayName ] = useAddressNames(place);
 
   const flavoredTheme = getTheme('place');
 
   return (
     <DiaryCard timelineEntry={place} flavoredTheme={flavoredTheme}>
-      <View style={[cardStyles.cardContent, {marginVertical: 12}]}>
+      <View style={[cardStyles.cardContent, s.placeCardContent]} focusable={true}
+          accessibilityLabel={`Place from ${displayStartTime} to ${displayEndTime}`}>
         <View>{/*  date and distance */}
           <Text style={{ fontSize: 14, textAlign: 'center' }}>
-            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{place.display_date}</Text>
+            <Text style={{ fontWeight: 'bold', textDecorationLine: 'underline' }}>{displayDate}</Text>
           </Text>
         </View>
         <View style={cardStyles.panelSection}>{/*  place name */}
-          <View style={[cardStyles.location, {paddingHorizontal: 10}]}>
-            <IconButton icon='map-marker-star' size={18}
-              style={cardStyles.locationIcon} />
-            <Text style={s.locationText}>
-              {placeDisplayName}
-            </Text>
-          </View>
+          <StartEndLocations centered={true}
+            displayStartName={placeDisplayName} />
         </View>
         <View style={{margin: 'auto'}}>{/*  add note button */}
           <View style={s.notesButton}>
@@ -57,6 +57,10 @@ const PlaceCard = ({ place }) => {
 };
 
 const s = StyleSheet.create({
+  placeCardContent: {
+    marginTop: 12,
+    marginBottom: 6,
+  },
   notesButton: {
     paddingHorizontal: 8,
     minWidth: 150,
@@ -69,9 +73,5 @@ const s = StyleSheet.create({
     textAlign: 'center',
   },
 });
-
-PlaceCard.propTypes = {
-  place: object,
-}
 
 export default PlaceCard;

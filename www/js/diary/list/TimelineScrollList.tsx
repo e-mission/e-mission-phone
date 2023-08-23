@@ -1,13 +1,13 @@
 import React from 'react';
 import { FlashList } from '@shopify/flash-list';
-import { array, func, object, oneOfType, bool, string } from 'prop-types';
 import TripCard from '../cards/TripCard';
 import PlaceCard from '../cards/PlaceCard';
 import UntrackedTimeCard from '../cards/UntrackedTimeCard';
 import { View } from 'react-native';
-import { ActivityIndicator, Banner, IconButton, Text } from 'react-native-paper';
+import { ActivityIndicator, Banner, Text } from 'react-native-paper';
 import LoadMoreButton from './LoadMoreButton';
 import { useTranslation } from 'react-i18next';
+import { Icon } from '../../components/Icon';
 
 const renderCard = ({ item: listEntry }) => {
   if (listEntry.origin_key.includes('trip')) {
@@ -23,7 +23,14 @@ const separator = () => <View style={{ height: 8 }} />
 const bigSpinner = <ActivityIndicator size="large" style={{margin: 15}} />
 const smallSpinner = <ActivityIndicator size="small" style={{margin: 5}} />
 
-const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMoreFn, isLoading }) => {
+type Props = {
+  listEntries: any[],
+  queriedRange: any,
+  pipelineRange: any,
+  loadMoreFn: (direction: string) => void,
+  isLoading: boolean | string
+}
+const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMoreFn, isLoading }: Props) => {
 
   const { t } = useTranslation();
 
@@ -44,8 +51,7 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
 
   const noTravelBanner = (
     <Banner visible={true} icon={
-      ({ size }) => <IconButton size={size} icon='alert-circle'
-        style={{ width: size, height: size, marginVertical: 3 }} />
+      ({ size }) => <Icon size={size} icon='alert-circle' style={{ marginVertical: 3 }} />
     }>
       <View style={{ width: '100%' }}>
         <Text variant='titleMedium'>{t('diary.no-travel')}</Text>
@@ -82,13 +88,5 @@ const TimelineScrollList = ({ listEntries, queriedRange, pipelineRange, loadMore
     );
   }
 }
-
-TimelineScrollList.propTypes = {
-  listEntries: array,
-  queriedRange: object,
-  pipelineRange: object,
-  loadMoreFn: func,
-  isLoading: oneOfType([bool, string])
-};
 
 export default TimelineScrollList;

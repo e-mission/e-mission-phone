@@ -1,17 +1,18 @@
 import angular from 'angular';
+import { baseLabelInputDetails, getBaseLabelInputs, getFakeEntry, getLabelInputDetails, getLabelInputs, getLabelOptions } from './confirmHelper';
 
 angular.module('emission.survey.multilabel.buttons',
-    ['emission.survey.multilabel.services',
-        'emission.stats.clientstats',
+    ['emission.stats.clientstats',
         'emission.survey.inputmatcher'])
 
-.factory("MultiLabelService", function($rootScope, ConfirmHelper, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
+.factory("MultiLabelService", function($rootScope, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
-  mls.init = function() {
+  mls.init = function(config) {
       Logger.log("About to initialize the MultiLabelService");
-      ConfirmHelper.inputParamsPromise.then((inputParams) => mls.inputParams = inputParams);
-      mls.MANUAL_KEYS = ConfirmHelper.INPUTS.map((inp) => ConfirmHelper.inputDetails[inp].key);
+      mls.ui_config = config;
+      getLabelOptions(config).then((inputParams) => mls.inputParams = inputParams);
+      mls.MANUAL_KEYS = Object.values(getLabelInputDetails(config)).map((inp) => inp.key);
       Logger.log("finished initializing the MultiLabelService");
   };
 
@@ -31,11 +32,11 @@ angular.module('emission.survey.multilabel.buttons',
    mls.processManualInputs = function(manualResults, resultMap) {
      var mrString = 'unprocessed manual inputs '
           + manualResults.map(function(item, index) {
-              return ` ${item.length} ${ConfirmHelper.INPUTS[index]}`;
+              return ` ${item.length} ${getLabelInputs()[index]}`;
           });
       console.log(mrString);
       manualResults.forEach(function(mr, index) {
-        resultMap[ConfirmHelper.INPUTS[index]] = mr;
+        resultMap[getLabelInputs()[index]] = mr;
       });
   }
 
@@ -44,7 +45,7 @@ angular.module('emission.survey.multilabel.buttons',
         // console.log("Expectation: "+JSON.stringify(trip.expectation));
         // console.log("Inferred labels from server: "+JSON.stringify(trip.inferred_labels));
         trip.userInput = {};
-        ConfirmHelper.INPUTS.forEach(function(item, index) {
+        getLabelInputs().forEach(function(item, index) {
             mls.populateManualInputs(trip, trip.nextTrip, item,
                 manualResultMap[item]);
         });
@@ -81,11 +82,10 @@ angular.module('emission.survey.multilabel.buttons',
   mls.populateInput = function(tripField, inputType, userInputLabel) {
     if (angular.isDefined(userInputLabel)) {
         console.log("populateInput: looking in map of "+inputType+" for userInputLabel"+userInputLabel);
-        var userInputEntry = mls.inputParams[inputType].value2entry[userInputLabel];
+        var userInputEntry = mls.inputParams[inputType].find(o => o.value == userInputLabel);
         if (!angular.isDefined(userInputEntry)) {
-          userInputEntry = ConfirmHelper.getFakeEntry(userInputLabel);
-          mls.inputParams[inputType].options.push(userInputEntry);
-          mls.inputParams[inputType].value2entry[userInputLabel] = userInputEntry;
+          userInputEntry = getFakeEntry(userInputLabel);
+          mls.inputParams[inputType].push(userInputEntry);
         }
         console.log("Mapped label "+userInputLabel+" to entry "+JSON.stringify(userInputEntry));
         tripField[inputType] = userInputEntry;
@@ -111,7 +111,7 @@ angular.module('emission.survey.multilabel.buttons',
     const totalCertainty = labelsList.map(item => item.p).reduce(((item, rest) => item + rest), 0);
 
     // Filter out the tuples that are inconsistent with existing green labels
-    for (const inputType of ConfirmHelper.INPUTS) {
+    for (const inputType of getLabelInputs()) {
       const userInput = trip.userInput[inputType];
       if (userInput) {
         const retKey = mls.inputType2retKey(inputType);
@@ -121,14 +121,14 @@ angular.module('emission.survey.multilabel.buttons',
 
     // Red labels if we have no possibilities left
     if (labelsList.length == 0) {
-      for (const inputType of ConfirmHelper.INPUTS) mls.populateInput(trip.finalInference, inputType, undefined);
+      for (const inputType of getLabelInputs()) mls.populateInput(trip.finalInference, inputType, undefined);
     }
     else {
       // Normalize probabilities to previous level of certainty
       const certaintyScalar = totalCertainty/labelsList.map(item => item.p).reduce((item, rest) => item + rest);
       labelsList.forEach(item => item.p*=certaintyScalar);
 
-      for (const inputType of ConfirmHelper.INPUTS) {
+      for (const inputType of getLabelInputs()) {
         // For each label type, find the most probable value by binning by label value and summing
         const retKey = mls.inputType2retKey(inputType);
         let valueProbs = new Map();
@@ -165,20 +165,20 @@ angular.module('emission.survey.multilabel.buttons',
     console.log("Reading expanding inputs for ", trip);
     const inputValue = trip.userInput["MODE"]? trip.userInput["MODE"].value : undefined;
     console.log("Experimenting with expanding inputs for mode "+inputValue);
-    if (ConfirmHelper.isProgram) {
-        if (inputValue == ConfirmHelper.mode_studied) {
-            Logger.log("Found "+ConfirmHelper.mode_studied+" mode in a program, displaying full details");
-            trip.inputDetails = ConfirmHelper.inputDetails;
-            trip.INPUTS = ConfirmHelper.INPUTS;
+    if (mls.ui_config.intro.program_or_study == 'program') {
+        if (inputValue == mls.ui_config.intro.mode_studied) {
+            Logger.log("Found "+mls.ui_config.intro.mode_studied+" mode in a program, displaying full details");
+            trip.inputDetails = getLabelInputDetails();
+            trip.INPUTS = getLabelInputs();
         } else {
-            Logger.log("Found non "+ConfirmHelper.mode_studied+" mode in a program, displaying base details");
-            trip.inputDetails = ConfirmHelper.baseInputDetails;
-            trip.INPUTS = ConfirmHelper.BASE_INPUTS;
+            Logger.log("Found non "+mls.ui_config.intro.mode_studied+" mode in a program, displaying base details");
+            trip.inputDetails = baseLabelInputDetails;
+            trip.INPUTS = getBaseLabelInputs();
         }
     } else {
         Logger.log("study, not program, displaying full details");
-        trip.INPUTS = ConfirmHelper.INPUTS;
-        trip.inputDetails = ConfirmHelper.inputDetails;
+        trip.INPUTS = getLabelInputs();
+        trip.inputDetails = getLabelInputDetails();
     }
   }
 
@@ -186,7 +186,7 @@ angular.module('emission.survey.multilabel.buttons',
    * MODE (becomes manual/mode_confirm) becomes mode_confirm
    */
   mls.inputType2retKey = function(inputType) {
-    return ConfirmHelper.inputDetails[inputType].key.split("/")[1];
+    return getLabelInputDetails()[inputType].key.split("/")[1];
   }
 
   mls.updateVerifiability = function(trip) {

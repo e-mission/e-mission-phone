@@ -1,7 +1,7 @@
 import angular from 'angular';
+import { getLabelOptions } from './survey/multilabel/confirmHelper';
 
 angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
-                                     'emission.survey.multilabel.services',
                                      'emission.plugin.kvstore',
                                      "emission.config.dynamic"])
 
@@ -314,7 +314,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     return standardMETs;
   }
 })
-.factory('CustomDatasetHelper', function(ConfirmHelper, METDatasetHelper, Logger, $ionicPlatform, DynamicConfig) {
+.factory('CustomDatasetHelper', function(METDatasetHelper, Logger, $ionicPlatform, DynamicConfig) {
     var cdh = {};
 
     cdh.getCustomMETs = function() {
@@ -329,7 +329,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
     cdh.populateCustomMETs = function() {
         let standardMETs = METDatasetHelper.getStandardMETs();
-        let modeOptions = cdh.inputParams["MODE"].options;
+        let modeOptions = cdh.inputParams["MODE"];
         let modeMETEntries = modeOptions.map((opt) => {
             if (opt.met_equivalent) {
                 let currMET = standardMETs[opt.met_equivalent];
@@ -358,7 +358,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     };
 
     cdh.populateCustomFootprints = function() {
-        let modeOptions = cdh.inputParams["MODE"].options;
+        let modeOptions = cdh.inputParams["MODE"];
         let modeCO2PerMeter = modeOptions.map((opt) => {
             if (opt.range_limit_km) {
                 if (cdh.range_limited_motorized) {
@@ -380,7 +380,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
     cdh.init = function(newConfig) {
       try {
-        ConfirmHelper.inputParamsPromise.then((inputParams) => {
+        getLabelOptions(newConfig).then((inputParams) => {
           console.log("Input params = ", inputParams);
           cdh.inputParams = inputParams;
           cdh.populateCustomMETs();

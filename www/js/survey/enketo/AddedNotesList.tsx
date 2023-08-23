@@ -3,23 +3,24 @@
 */
 
 import React, { useContext, useState } from "react";
-import { angularize, createScopeWithVars, getAngularService } from "../../angular-react-helper";
-import { array, object } from "prop-types";
 import moment from "moment";
-import { Text } from "react-native"
-import { DataTable, IconButton } from "react-native-paper";
+import { Text, Modal } from "react-native"
+import { Button, DataTable, Dialog } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
+import { Icon } from "../../components/Icon";
+import EnketoModal from "./EnketoModal";
 
-const AddedNotesList = ({ timelineEntry, additionEntries }) => {
+type Props = {
+  timelineEntry: any,
+  additionEntries: any[],
+}
+const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
 
-  const [rerender, setRerender] = useState(false);
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
-
-  const DiaryHelper = getAngularService("DiaryHelper");
-  const EnketoSurveyLaunch = getAngularService("EnketoSurveyLaunch");
-  const $rootScope = getAngularService("$rootScope");
-  const $ionicPopup = getAngularService("$ionicPopup");
+  const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
+  const [surveyModalVisible, setSurveyModalVisible] = useState(false);
+  const [editingEntry, setEditingEntry] = useState(null);
 
   function setDisplayDt(entry) {
     const timezone = timelineEntry.start_local_dt?.timezone
@@ -54,43 +55,40 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
       .putMessage(dataKey, data)
       .then(() => {
         additionEntries.splice(index, 1);
-        setRerender(!rerender); // force rerender
+        setConfirmDeleteModalVisible(false);
+        setEditingEntry(null);
       });
   }
 
   function confirmDeleteEntry(entry) {
-    const currEntry = entry;
-    const scope = createScopeWithVars({currEntry});
-    $ionicPopup.show({
-      title: 'Delete entry',
-      templateUrl: `templates/survey/enketo/delete-entry.html`,
-      scope,
-      buttons: [{
-        text: 'Delete', // TODO i18n
-        type: 'button-cancel',
-        onTap: () => deleteEntry(entry)
-      }, {
-        text: 'Cancel', // TODO i18n
-        type: 'button-stable',
-      }]
-    });
+    setEditingEntry(entry);
+    setConfirmDeleteModalVisible(true);
+  }
+
+  function dismissConfirmDelete() {
+    setEditingEntry(null);
+    setConfirmDeleteModalVisible(false);
   }
 
   function editEntry(entry) {
-    const prevResponse = entry.data.xmlResponse;
-    const dataKey = entry.key || entry.metadata.key;
-    const surveyName = entry.data.name;
-    return EnketoSurveyLaunch
-      .launch($rootScope, surveyName, { prefilledSurveyResponse: prevResponse, dataKey, timelineEntry })
-      .then(result => {
-        if (!result) return;
-        repopulateTimelineEntry(timelineEntry._id.$oid);
-        deleteEntry(entry);
-      });
+    setEditingEntry(entry);
+    setSurveyModalVisible(true);
+  }
+
+  async function onEditedResponse(response) {
+    if (!response) return;
+    await deleteEntry(editingEntry);
+    setEditingEntry(null);
+    repopulateTimelineEntry(timelineEntry._id.$oid);
+  }
+
+  function onModalDismiss() {
+    setEditingEntry(null);
+    setSurveyModalVisible(false);
   }
 
   const sortedEntries = additionEntries?.sort((a, b) => a.data.start_ts - b.data.start_ts);
-  return (
+  return (<>
     <DataTable>
       {sortedEntries?.map((entry, index) => {
         const isLastRow = (index == additionEntries.length - 1);
@@ -109,13 +107,34 @@ const AddedNotesList = ({ timelineEntry, additionEntries }) => {
             </DataTable.Cell>
             <DataTable.Cell onPress={() => confirmDeleteEntry(entry)}
                             style={[styles.cell, {flex: 1}]}>
-              <IconButton icon="delete" size={18} />
+              <Icon icon="delete" size={18} />
             </DataTable.Cell>
           </DataTable.Row>
         )
       })}
     </DataTable>
-  );
+    <EnketoModal visible={surveyModalVisible} onDismiss={onModalDismiss}
+      onResponseSaved={onEditedResponse} surveyName={editingEntry?.data.name}
+      opts={{
+        timelineEntry,
+        prefilledSurveyResponse: editingEntry?.data.xmlResponse,
+        dataKey: editingEntry?.key || editingEntry?.metadata?.key,
+      }} />
+    <Modal visible={confirmDeleteModalVisible} transparent={true} onDismiss={dismissConfirmDelete}>
+      <Dialog visible={confirmDeleteModalVisible} onDismiss={dismissConfirmDelete}>
+        <Dialog.Title>Are you sure you wish to delete this entry?</Dialog.Title>
+        <Dialog.Content>
+          <Text style={{fontWeight: 'bold'}}>{editingEntry?.data?.label}</Text>
+          <Text>{editingEntry?.displayDt?.date}</Text>
+          <Text>{editingEntry?.displayDt?.time}</Text>
+        </Dialog.Content>
+        <Dialog.Actions>
+          <Button onPress={() => deleteEntry(editingEntry)}>Delete</Button>
+          <Button onPress={() => dismissConfirmDelete()}>Cancel</Button>
+        </Dialog.Actions>
+      </Dialog>
+    </Modal>
+  </>);
 };
 
 const styles:any = {
@@ -130,10 +149,5 @@ const styles:any = {
     pointerEvents: 'auto',
   },
 }
-
-AddedNotesList.propTypes = {
-  timelineEntry: object,
-  additionEntries: array,
-};
 
 export default AddedNotesList;

@@ -11,22 +11,25 @@ import React from "react";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
 import { Card, PaperProvider, useTheme } from 'react-native-paper';
 import TimestampBadge from "./TimestampBadge";
+import useDerivedProperties from "../useDerivedProperties";
 
 export const DiaryCard = ({ timelineEntry, children, flavoredTheme, ...otherProps }) => {
-  const { height, width } = useWindowDimensions();
+  const { width: windowWidth } = useWindowDimensions();
+  const { displayStartTime, displayEndTime,
+          displayStartDateAbbr, displayEndDateAbbr } = useDerivedProperties(timelineEntry);
   const theme = flavoredTheme || useTheme();
 
   return (
     <PaperProvider theme={theme}>
-      <Card style={[cardStyles.card, { width: width * .9 }]}
+      <Card style={[cardStyles.card, { width: windowWidth * .9 }]}
         contentStyle={{ alignItems: 'center' }} {...otherProps}>
-        <View style={{ position: 'absolute', left: 0, right: 0, top: -10, justifyContent: 'center', zIndex: 999 }}>
-          <TimestampBadge time={timelineEntry.display_start_time} date={timelineEntry.display_start_date_abbr}
+        <View accessibilityHidden={true} style={{ position: 'absolute', left: 0, right: 0, top: -10, justifyContent: 'center', zIndex: 999 }}>
+          <TimestampBadge time={displayStartTime} date={displayStartDateAbbr}
             lightBg={true} />
         </View>
         {children}
-        <View style={{ position: 'absolute', left: 0, right: 0, bottom: -10, justifyContent: 'center', zIndex: 999 }}>
-          <TimestampBadge time={timelineEntry.display_end_time} date={timelineEntry.display_end_date_abbr}
+        <View accessibilityHidden={true} style={{ position: 'absolute', left: 0, right: 0, bottom: -10, justifyContent: 'center', zIndex: 999 }}>
+          <TimestampBadge time={displayEndTime} date={displayEndDateAbbr}
             lightBg={false} />
         </View>
       </Card>
@@ -49,17 +52,6 @@ export const cardStyles = StyleSheet.create({
     paddingVertical: 8,
     paddingHorizontal: 4,
     marginVertical: 'auto',
-  },
-  location: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  locationIcon: {
-    width: 18,
-    height: 24,
-    margin: 0,
-    marginRight: 5,
   },
   cardFooter: {
     width: '100%',
