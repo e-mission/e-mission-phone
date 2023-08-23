@@ -9,6 +9,6 @@ export type DayOfMetricData = LabelProps & {
   local_dt: {[k: string]: any}, // TODO type datetime obj
 }
 
-export type UserMetrics = {
+export type MetricsData = {
   [key in MetricName]: DayOfMetricData[]
 }

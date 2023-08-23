@@ -5,7 +5,7 @@ import { Appbar } from "react-native-paper";
 import NavBarButton from "../components/NavBarButton";
 import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
-import { UserMetrics } from "./metricsTypes";
+import { MetricsData } from "./metricsTypes";
 import MetricsCard from "./MetricsCard";
 import { useImperialConfig } from "../config/useImperialConfig";
 import MetricsDateSelect from "./MetricsDateSelect";
@@ -39,9 +39,8 @@ const MetricsTab = () => {
     const end = now.minus({ days: 1 });
     return [start, end];
   });
-  const [metricsPopulation, setMetricsPopulation] = useState<'user'|'aggregate'>('user');
-  const [aggMetrics, setAggMetrics] = useState<UserMetrics>(null);
-  const [userMetrics, setUserMetrics] = useState<UserMetrics>(null);
+  const [aggMetrics, setAggMetrics] = useState<MetricsData>(null);
+  const [userMetrics, setUserMetrics] = useState<MetricsData>(null);
 
   useEffect(() => {
     loadMetricsForPopulation('user', dateRange);
@@ -57,9 +56,9 @@ const MetricsTab = () => {
       metrics[metricName] = serverResponse[dataKey][i];
     });
     if (population == 'user') {
-      setUserMetrics(metrics as UserMetrics);
+      setUserMetrics(metrics as MetricsData);
     } else {
-      setAggMetrics(metrics as UserMetrics);
+      setAggMetrics(metrics as MetricsData);
     }
   }
 
