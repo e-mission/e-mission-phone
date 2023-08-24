@@ -11,8 +11,10 @@ type Props = {
   cardTitle: string,
   metricDataDays: DayOfMetricData[],
   axisUnits: string,
+  unitFormatFn?: (val: number) => string|number,
+  style: any,
 }
-const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
+const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, unitFormatFn, style}: Props) => {
 
   const { colors } = useTheme();  
   const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
@@ -42,9 +44,10 @@ const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
     // for each label, sum up cumulative values across all days
     const vals = {};
     uniqueLabels.forEach(label => {
-      vals[label] = metricDataDays.reduce((acc, day) => (
+      const sum = metricDataDays.reduce((acc, day) => (
         acc + (day[`label_${label}`] || 0)
       ), 0);
+      vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
     });
     return vals;
   }, [metricDataDays]);
@@ -85,7 +88,7 @@ const MetricsCard = ({cardTitle, metricDataDays, axisUnits, style}: Props) => {
             { Object.keys(metricSumValues).map((label, i) =>
               <View style={{ width: '50%', paddingHorizontal: 8 }}>
                 <Text variant='titleSmall'>{label}</Text>
-                <Text>{metricSumValues[label]}</Text>
+                <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
               </View>
             )}
           </View>

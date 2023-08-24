@@ -7,9 +7,10 @@ import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 import { MetricsData } from "./metricsTypes";
 import MetricsCard from "./MetricsCard";
-import { useImperialConfig } from "../config/useImperialConfig";
+import { formatForDisplay, useImperialConfig } from "../config/useImperialConfig";
 import MetricsDateSelect from "./MetricsDateSelect";
 import ActiveMinutesCard from "./ActiveMinutesCard";
+import { secondsToHours, secondsToMinutes } from "./metricsHelper";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -30,8 +31,8 @@ async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: [Date
 const MetricsTab = () => {
 
   const { t } = useTranslation();
-  const { distanceSuffix, speedSuffix } = useImperialConfig();
-  const CommHelper = getAngularService('CommHelper');
+  const { getFormattedSpeed, speedSuffix,
+          getFormattedDistance, distanceSuffix } = useImperialConfig();
 
   const [dateRange, setDateRange] = useState<[DateTime, DateTime]>(() => {
     const now = DateTime.utc().startOf('day');
@@ -86,18 +87,22 @@ const MetricsTab = () => {
         <MetricsCard cardTitle={t('main-metrics.distance')}
           metricDataDays={userMetrics?.distance}
           axisUnits={distanceSuffix}
+          unitFormatFn={getFormattedDistance}
           style={s.card(cardWidth)} />
         <MetricsCard cardTitle={t('main-metrics.trips')}
           metricDataDays={userMetrics?.count}
-          axisUnits={t('main-metrics.trips')}
+          axisUnits={t('metrics.trips')}
+          unitFormatFn={formatForDisplay}
           style={s.card(cardWidth)} />
         <MetricsCard cardTitle={t('main-metrics.duration')}
           metricDataDays={userMetrics?.duration}
-          axisUnits={t('main-metrics.duration')}
+          axisUnits={t('metrics.hours')}
+          unitFormatFn={secondsToHours}
           style={s.card(cardWidth)} />
         <MetricsCard cardTitle={t('main-metrics.mean-speed')}
           metricDataDays={userMetrics?.mean_speed}
           axisUnits={speedSuffix}
+          unitFormatFn={getFormattedSpeed}
           style={s.card(cardWidth)} />
       </ScrollView>
     </ScrollView>

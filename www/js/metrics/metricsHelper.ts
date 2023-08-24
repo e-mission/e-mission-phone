@@ -1,3 +1,4 @@
+import { formatForDisplay } from "../config/useImperialConfig";
 import { DayOfMetricData } from "./metricsTypes";
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
@@ -14,4 +15,7 @@ export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
 }
 
 export const secondsToMinutes = (seconds: number) =>
-  Math.round(seconds / 60);
+  formatForDisplay(seconds / 60);
+
+export const secondsToHours = (seconds: number) =>
+  formatForDisplay(seconds / 3600);
