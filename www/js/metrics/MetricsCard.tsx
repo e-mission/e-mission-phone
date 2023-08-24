@@ -4,7 +4,7 @@ import { View } from 'react-native';
 import { Card, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
-import { getUniqueLabelsForDays } from './metricsHelper';
+import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from './ToggleSwitch';
 
 type Props = {
@@ -24,21 +24,21 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
     populationMode == 'user' ? userMetricsDays : aggMetricsDays
   ), [populationMode, userMetricsDays, aggMetricsDays]);
 
-  // for each label, format data for chart, with a record for each day with that label
+  // for each label on each day, create a record for the chart
   const chartData = useMemo(() => {
     if (!metricDataDays || viewMode != 'graph') return [];
-    const uniqueLabels = getUniqueLabelsForDays(metricDataDays);
-
-    return uniqueLabels.map((label, i) => {
-      const daysWithThisLabel = metricDataDays.filter(e => e[`label_${label}`]);
-      return {
+    const records: {label: string, x: string|number, y: string|number}[] = [];
+    metricDataDays.forEach(day => {
+      const labels = getLabelsForDay(day);
+      labels.forEach(label => {
+        records.push({
         label: label,
-        records: daysWithThisLabel.map(e => ({
-          x: e[`label_${label}`],
-          y: e.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
-        }))
-      }
+          x: day[`label_${label}`],
+          y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
+        });
+      });
     });
+    return records;
   }, [metricDataDays, viewMode]);
 
   // for each label, sum up cumulative values across all days
@@ -84,7 +84,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
             )}
           </View>
         } {viewMode=='graph' &&
-          <BarChart chartData={chartData} axisTitle={axisUnits} isHorizontal={true}/>
+          <BarChart records={chartData} axisTitle={axisUnits} isHorizontal={true} timeAxis={true} />
         }
       </Card.Content>
     </Card>
