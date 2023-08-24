@@ -28,7 +28,7 @@ angular.module('emission.main', ['emission.main.diary',
     views: {
       'main-metrics': {
         // templateUrl: 'templates/main-metrics.html',
-        template: "<metrics-tab></metrics-tab>",
+        template: `<metrics-tab class="fill-container"></metrics-tab>`,
         controller: 'MetricsCtrl'
       }
     }

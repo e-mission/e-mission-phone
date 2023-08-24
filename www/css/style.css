@@ -26,7 +26,7 @@
   position: relative;
 }
 
-.fill-container div[class*='css-'] {
+.fill-container > div[class*='css-'] {
   height: 100%;
   width: 100%;
   position: absolute;
