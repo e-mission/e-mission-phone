@@ -5,11 +5,12 @@ import { Card, SegmentedButtons, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
 import { getUniqueLabelsForDays } from './metricsHelper';
+import ToggleSwitch from './ToggleSwitch';
 
 type Props = {
-  style: any,
   cardTitle: string,
-  metricDataDays: DayOfMetricData[],
+  userMetricsDays: DayOfMetricData[],
+  aggMetricsDays: DayOfMetricData[],
   axisUnits: string,
   unitFormatFn?: (val: number) => string|number,
   style: any,
@@ -18,6 +19,10 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
 
   const { colors } = useTheme();  
   const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
+  const [populationMode, setPopulationMode] = useState<'user'|'aggregate'>('user');
+  const metricDataDays = useMemo(() => (
+    populationMode == 'user' ? userMetricsDays : aggMetricsDays
+  ), [populationMode, userMetricsDays, aggMetricsDays]);
 
   // for each label, format data for chart, with a record for each day with that label
   const chartData = useMemo(() => {
@@ -60,26 +65,12 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         titleStyle={{color: colors.onPrimary, fontWeight: '500', textAlign: 'center'}}
         titleNumberOfLines={2}
         right={() =>
-          <SegmentedButtons value={viewMode} onValueChange={(v) => setViewMode(v)}
-            density='medium'
-            buttons={[{
-              icon: 'abacus', value: 'details',
-              uncheckedColor: colors.onSurfaceDisabled,
-              style: {
-                minWidth: 0,
-                backgroundColor: viewMode == 'details' ? colors.elevation.level2 : colors.surfaceDisabled
-              },
-              showSelectedCheck: true
-            }, {
-              icon: 'chart-bar',
-              uncheckedColor: colors.onSurfaceDisabled,
-              value: 'graph',
-              style: {
-                minWidth: 0,
-                backgroundColor: viewMode == 'graph' ? colors.elevation.level2 : colors.surfaceDisabled
-              },
-              showSelectedCheck: true
-            }]} />
+          <View style={{gap: 5}}>
+            <ToggleSwitch value={viewMode} setValue={setViewMode}
+              options={[{ icon: 'abacus', value: 'details' }, { icon: 'chart-bar', value: 'graph' }]} />
+            <ToggleSwitch value={populationMode} setValue={setPopulationMode}
+              options={[{ icon: 'account', value: 'user' }, { icon: 'account-group', value: 'aggregate' }]} />
+          </View>
         }
         style={{backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60}} />
       <Card.Content style={{paddingHorizontal: 8}}>
