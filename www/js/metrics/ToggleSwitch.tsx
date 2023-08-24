@@ -21,7 +21,9 @@ const ToggleSwitch = ({ value, setValue, options }) => {
         showSelectedCheck: true,
         style: {
           minWidth: 0,
-          backgroundColor: value == o.value ? colors.elevation.level2 : colors.surfaceDisabled
+          borderTopWidth: 0,
+          borderBottomWidth: 0,
+          backgroundColor: value == o.value ? colors.elevation.level2 : colors.surfaceDisabled,
         },
       }))} />
   )

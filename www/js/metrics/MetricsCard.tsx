@@ -6,6 +6,7 @@ import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
 import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from './ToggleSwitch';
+import { cardStyles } from './MetricsTab';
 
 type Props = {
   cardTitle: string,
@@ -32,7 +33,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
       const labels = getLabelsForDay(day);
       labels.forEach(label => {
         records.push({
-        label: label,
+          label: label,
           x: day[`label_${label}`],
           y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
         });
@@ -65,17 +66,17 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         titleStyle={{color: colors.onPrimary, fontWeight: '500', textAlign: 'center'}}
         titleNumberOfLines={2}
         right={() =>
-          <View style={{gap: 5}}>
+          <View style={{gap: 3}}>
             <ToggleSwitch value={viewMode} setValue={setViewMode}
               options={[{ icon: 'abacus', value: 'details' }, { icon: 'chart-bar', value: 'graph' }]} />
             <ToggleSwitch value={populationMode} setValue={setPopulationMode}
               options={[{ icon: 'account', value: 'user' }, { icon: 'account-group', value: 'aggregate' }]} />
           </View>
         }
-        style={{backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60}} />
-      <Card.Content style={{paddingHorizontal: 8}}>
+        style={cardStyles.title(colors)} />
+      <Card.Content style={cardStyles.content}>
         {viewMode=='details' &&
-          <View style={{marginTop: 12, flexDirection: 'row', flexWrap: 'wrap'}}>
+          <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             { Object.keys(metricSumValues).map((label, i) =>
               <View style={{ width: '50%', paddingHorizontal: 8 }}>
                 <Text variant='titleSmall'>{label}</Text>

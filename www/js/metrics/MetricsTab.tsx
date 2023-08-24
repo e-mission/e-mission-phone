@@ -76,14 +76,15 @@ const MetricsTab = () => {
       <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
-    <ScrollView>
+    <ScrollView style={{paddingVertical: 12}}>
       <ActiveMinutesCard userMetrics={userMetrics} />
       <ScrollView horizontal={true}
           decelerationRate={0}
           snapToInterval={cardWidth + cardMargin*2}
           snapToAlignment={"center"}
           // @ts-ignore, RN doesn't recognize `scrollSnapType`, but it does work on RN Web
-          style={{scrollSnapType: 'x mandatory', paddingVertical: 10}}>
+          style={{scrollSnapType: 'x mandatory', paddingVertical: 10}}
+          contentContainerStyle={{alignItems: 'flex-start'}}>
         <MetricsCard cardTitle={t('main-metrics.distance')}
           userMetricsDays={userMetrics?.distance}
           aggMetricsDays={aggMetrics?.distance}
@@ -113,7 +114,7 @@ const MetricsTab = () => {
   </>);
 }
 
-const cardMargin = 8;
+export const cardMargin = 8;
 const s = {
   scroll: {
     scrollSnapType: 'x mandatory',
@@ -127,13 +128,19 @@ const s = {
 };
 export const cardStyles: any = {
   title: (colors) => ({
-    backgroundColor: colors.primary, paddingHorizontal: 8, minHeight: 60
+    backgroundColor: colors.primary,
+    paddingHorizontal: 8,
+    minHeight: 52,
   }),
   titleText: (colors) => ({
     color: colors.onPrimary,
     fontWeight: '500',
     textAlign: 'center'
   }),
+  content: {
+    padding: 8,
+    paddingBottom: 12,
+  }
 }
 
 angularize(MetricsTab, 'MetricsTab', 'emission.main.metricstab');
