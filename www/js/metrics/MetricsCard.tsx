@@ -55,7 +55,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
       vals[label] = unitFormatFn ? unitFormatFn(sum) : sum;
     });
     return vals;
-  }, [metricDataDays]);
+  }, [metricDataDays, viewMode]);
 
   return (
     <Card style={{...style, overflow: 'hidden', minHeight: 300}}>
