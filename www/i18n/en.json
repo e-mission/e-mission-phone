@@ -65,9 +65,6 @@
         "consent-found": "Consent found!",
         "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
         "consented-ok": "OK",
-        "share-message": "Join me in making transportation greener and healthier \nDownload the NREL OpenPATH app:",
-        "share-subject": "OpenPATH - NREL Research Application",
-        "share-url": "https://www.nrel.gov/transportation/openpath.html",
         "qrcode": "My OPcode",
         "qrcode-share-title": "You can save your OPcode to login easily in the future!"
     },

@@ -293,21 +293,6 @@ const ProfileSettings = () => {
     const viewQRCode = function(e) {
         setOpCodeVis(true);
     }
-
-    var prepopulateMessage = {
-        message: t('general-settings.share-message'),
-        subject: t('general-settings.share-subject'),
-        url: t('general-settings.share-url')
-    }
-
-    const share = function() {
-        window.plugins.socialsharing.shareWithOptions(prepopulateMessage, function(result) {
-                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-            }, function(msg) {
-                console.log("Sharing failed with message: " + msg);
-            });
-    }
     
     const clearNotifications = function() {
         window.cordova.plugins.notification.local.clearAll();
@@ -487,7 +472,6 @@ const ProfileSettings = () => {
             <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
             <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
-            <SettingRow textKey="control.share" iconName="share" action={share}></SettingRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
             {logUploadSection}
             <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
