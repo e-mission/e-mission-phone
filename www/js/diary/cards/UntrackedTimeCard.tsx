@@ -9,12 +9,11 @@
 
 import React from "react";
 import { View, StyleSheet } from 'react-native';
-import { Divider, Text } from 'react-native-paper';
+import { Text } from 'react-native-paper';
 import { getTheme } from "../../appTheme";
 import { useTranslation } from "react-i18next";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
-import { Icon } from "../../components/Icon";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../StartEndLocations";
 

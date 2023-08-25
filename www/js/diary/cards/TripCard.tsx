@@ -6,7 +6,7 @@
 
 import React, { useContext } from "react";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
-import { Divider, Text, IconButton } from 'react-native-paper';
+import { Text, IconButton } from 'react-native-paper';
 import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
@@ -17,7 +17,6 @@ import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
-import { useImperialConfig } from "../../config/useImperialConfig";
 import { useAddressNames } from "../addressNamesHelper";
 import { Icon } from "../../components/Icon";
 import { LabelTabContext } from "../LabelTab";

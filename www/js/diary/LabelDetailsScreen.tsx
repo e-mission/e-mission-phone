@@ -4,9 +4,8 @@
 
 import React, { useContext } from "react";
 import { View, Modal, ScrollView, useWindowDimensions } from "react-native";
-import { Appbar, Divider, Surface, Text, useTheme } from "react-native-paper";
+import { Appbar, Surface, Text, useTheme } from "react-native-paper";
 import { LabelTabContext } from "./LabelTab";
-import { cardStyles } from "./cards/DiaryCard";
 import LeafletView from "../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";

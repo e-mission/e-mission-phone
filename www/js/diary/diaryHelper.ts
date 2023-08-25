@@ -1,7 +1,6 @@
 // here we have some helper functions used throughout the label tab
 // these functions are being gradually migrated out of services.js
 
-import i18next from "i18next";
 import moment from "moment";
 import { DateTime } from "luxon";
 
@@ -114,7 +113,7 @@ const filterRunning = (mode) =>
   (mode == 'MotionTypes.RUNNING') ? 'MotionTypes.WALKING' : mode;
 
 export function getPercentages(trip) {
-  if (!trip.sections?.length) return {};
+  if (!trip.sections?.length) return [];
 
   // sum up the distances for each mode, as well as the total distance
   let totalDist = 0;

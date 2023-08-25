@@ -1,6 +1,5 @@
 import moment from "moment";
 import { getAngularService } from "../angular-react-helper";
-import { getFormattedDate, getFormattedDateAbbr, getFormattedTimeRange, getLocalTimeString, getPercentages, isMultiDay } from "./diaryHelper";
 
 /**
  * @description Unpacks composite trips into a Map object of timeline items, by id.

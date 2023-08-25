@@ -4,8 +4,8 @@
 
 import React, { useContext, useState } from "react";
 import moment from "moment";
-import { Text, Modal } from "react-native"
-import { Button, DataTable, Dialog } from "react-native-paper";
+import { Modal } from "react-native"
+import { Text, Button, DataTable, Dialog } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
@@ -33,7 +33,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
     if (isMultiDay(beginTs, stopTs)) {
       const beginTsZoned = moment.parseZone(beginTs*1000).tz(timezone);
       const stopTsZoned = moment.parseZone(stopTs*1000).tz(timezone);
-      d = getFormattedDateAbbr(beginTsZoned.unix(), stopTsZoned.unix());
+      d = getFormattedDateAbbr(beginTsZoned.toISOString(), stopTsZoned.toISOString());
     }
     const begin = moment.parseZone(beginTs*1000).tz(timezone).format('LT');
     const stop = moment.parseZone(stopTs*1000).tz(timezone).format('LT');

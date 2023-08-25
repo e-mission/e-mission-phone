@@ -110,8 +110,8 @@ const MultilabelButtonGroup = ({ trip }) => {
                     style={{width: 20, height: 20, margin: 3}}/>
       </View>
     </View>
-    <Modal visible={modalVisibleFor} transparent={true} onDismiss={() => dismiss()}>
-      <Dialog visible={modalVisibleFor} onDismiss={() => dismiss()}>
+    <Modal visible={modalVisibleFor != null} transparent={true} onDismiss={() => dismiss()}>
+      <Dialog visible={modalVisibleFor != null} onDismiss={() => dismiss()}>
         <Pressable>
           <Dialog.Title style={{elevation: 2}}>
             {(modalVisibleFor == 'MODE') && t('diary.select-mode-scroll') ||

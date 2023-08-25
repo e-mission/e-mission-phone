@@ -11,7 +11,6 @@ import { angularize, getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "../components/LeafletView";
-import Bottleneck from "bottleneck";
 import moment from "moment";
 import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
