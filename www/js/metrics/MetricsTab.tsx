@@ -140,6 +140,7 @@ export const cardStyles: any = {
   content: {
     padding: 8,
     paddingBottom: 12,
+    flex: 1,
   }
 }
 

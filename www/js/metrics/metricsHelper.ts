@@ -28,3 +28,13 @@ export const secondsToMinutes = (seconds: number) =>
 
 export const secondsToHours = (seconds: number) =>
   formatForDisplay(seconds / 3600);
+
+// segments metricsDays into weeks, with the most recent week first
+export function filterToRecentWeeks(metricsDays: DayOfMetricData[]) {
+  const weeks: DayOfMetricData[][] = [];
+  if (metricsDays?.length >= 7)
+    weeks.push(metricsDays.slice(-7));
+  if (metricsDays?.length >= 14)
+    weeks.push(metricsDays.slice(-14, -7));
+  return weeks;
+}

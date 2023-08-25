@@ -174,7 +174,8 @@
         "equals-icecream_one": "Equals at least {{count}} half cup vanilla ice cream",
         "equals-icecream_other": "Equals at least {{count}} half cups vanilla ice cream",
         "equals-bananas_one": "Equals at least {{count}} banana",
-        "equals-bananas_other": "Equals at least {{count}} bananas"
+        "equals-bananas_other": "Equals at least {{count}} bananas",
+        "active-minutes": "My Active Minutes"
     },
 
     "main-inf-scroll" : {

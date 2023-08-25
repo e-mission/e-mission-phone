@@ -79,7 +79,8 @@ const BarChart = ({ records, axisTitle, lineAnnotations=null, isHorizontal=false
       // return whichever is greater
       return { height: Math.max(idealChartHeight, minChartHeight) };
     }
-    return {};
+    // vertical charts should just fill the available space in the parent container
+    return { flex: 1 };
   }
 
   return (
