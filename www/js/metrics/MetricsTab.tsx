@@ -11,6 +11,7 @@ import { formatForDisplay, useImperialConfig } from "../config/useImperialConfig
 import MetricsDateSelect from "./MetricsDateSelect";
 import ActiveMinutesCard from "./ActiveMinutesCard";
 import { secondsToHours, secondsToMinutes } from "./metricsHelper";
+import CarbonFootprintCard from "./CarbonFootprintCard";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -77,6 +78,7 @@ const MetricsTab = () => {
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <ScrollView style={{paddingVertical: 12}}>
+      <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics}></CarbonFootprintCard>
       <ActiveMinutesCard userMetrics={userMetrics} />
       <ScrollView horizontal={true}
           decelerationRate={0}
