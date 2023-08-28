@@ -15,9 +15,8 @@ type Props = {
   aggMetricsDays: DayOfMetricData[],
   axisUnits: string,
   unitFormatFn?: (val: number) => string|number,
-  style: any,
 }
-const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, unitFormatFn, style}: Props) => {
+const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, unitFormatFn}: Props) => {
 
   const { colors } = useTheme();  
   const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
@@ -62,7 +61,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
   }, [metricDataDays, viewMode]);
 
   return (
-    <Card style={{...style, overflow: 'hidden', minHeight: 300}}>
+    <Card style={{overflow: 'hidden', minHeight: 300}}>
       <Card.Title 
         title={cardTitle}
         titleVariant='titleLarge'

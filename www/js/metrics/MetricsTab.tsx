@@ -12,6 +12,7 @@ import MetricsDateSelect from "./MetricsDateSelect";
 import ActiveMinutesCard from "./ActiveMinutesCard";
 import { secondsToHours, secondsToMinutes } from "./metricsHelper";
 import CarbonFootprintCard from "./CarbonFootprintCard";
+import Carousel from "../components/Carousel";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -80,54 +81,32 @@ const MetricsTab = () => {
     <ScrollView style={{paddingVertical: 12}}>
       <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics}></CarbonFootprintCard>
       <ActiveMinutesCard userMetrics={userMetrics} />
-      <ScrollView horizontal={true}
-          decelerationRate={0}
-          snapToInterval={cardWidth + cardMargin*2}
-          snapToAlignment={"center"}
-          // @ts-ignore, RN doesn't recognize `scrollSnapType`, but it does work on RN Web
-          style={{scrollSnapType: 'x mandatory', paddingVertical: 10}}
-          contentContainerStyle={{alignItems: 'flex-start'}}>
+      <Carousel cardWidth={cardWidth} cardMargin={8}>
         <MetricsCard cardTitle={t('main-metrics.distance')}
           userMetricsDays={userMetrics?.distance}
           aggMetricsDays={aggMetrics?.distance}
           axisUnits={distanceSuffix}
-          unitFormatFn={getFormattedDistance}
-          style={s.card(cardWidth)} />
+          unitFormatFn={getFormattedDistance} />
         <MetricsCard cardTitle={t('main-metrics.trips')}
           userMetricsDays={userMetrics?.count}
           aggMetricsDays={aggMetrics?.count}
           axisUnits={t('metrics.trips')}
-          unitFormatFn={formatForDisplay}
-          style={s.card(cardWidth)} />
+          unitFormatFn={formatForDisplay} />
         <MetricsCard cardTitle={t('main-metrics.duration')}
           userMetricsDays={userMetrics?.duration}
           aggMetricsDays={aggMetrics?.duration}
           axisUnits={t('metrics.hours')}
-          unitFormatFn={secondsToHours}
-          style={s.card(cardWidth)} />
+          unitFormatFn={secondsToHours} />
         <MetricsCard cardTitle={t('main-metrics.mean-speed')}
           userMetricsDays={userMetrics?.mean_speed}
           aggMetricsDays={aggMetrics?.mean_speed}
           axisUnits={speedSuffix}
-          unitFormatFn={getFormattedSpeed}
-          style={s.card(cardWidth)} />
-      </ScrollView>
+          unitFormatFn={getFormattedSpeed} />
+      </Carousel>
     </ScrollView>
   </>);
 }
 
-export const cardMargin = 8;
-const s = {
-  scroll: {
-    scrollSnapType: 'x mandatory',
-  },
-  card: (cardWidth) => ({
-    margin: cardMargin,
-    width: cardWidth,
-    scrollSnapAlign: 'center',
-    scrollSnapStop: 'always',
-  }),
-};
 export const cardStyles: any = {
   title: (colors) => ({
     backgroundColor: colors.primary,
