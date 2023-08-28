@@ -5,7 +5,7 @@ import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardMargin, cardStyles, METRIC_LIST } from './MetricsTab';
 import { formatForDisplay } from '../config/useImperialConfig';
-import { filterToRecentWeeks, secondsToMinutes } from './metricsHelper';
+import { filterToRecentWeeks, formatDateRangeOfDays } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { getAngularService } from '../angular-react-helper';
@@ -22,7 +22,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
     console.log("metrics in carbon", userMetrics, aggMetrics);
 
-    const [userCarbonData, setUserCarbonData] = useState([]);
+    const [emissionsChange, setEmissionsChange] = useState();
+    const [graphRecords, setGraphRecords] = useState([]);
 
     /*
      * metric2val is a function that takes a metric entry and a field and returns
@@ -168,6 +169,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             
             //setting up data to be displayed //TODO i18n for labels
             let tempUserCarbon = [];
+            let graphRecords = [];
 
             //calculate low-high and format range for past week
             let userPastWeek = {
@@ -176,6 +178,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             };
             let valueArray = createOrCollapseRange(userPastWeek.low, userPastWeek.high);
             let value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
+            graphRecords.push({label: 'certain', x: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`, y: valueArray[0]});
+            graphRecords.push({label: "uncertain",  x: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`, y: userPastWeek.high - userPastWeek.low})
             tempUserCarbon.push({label: "past week", value: value});
            
             //calculate low-high and format range for prev week, if exists
@@ -186,6 +190,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 };
                 valueArray = createOrCollapseRange(userPrevWeek.low, userPrevWeek.high);
                 value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
+                graphRecords.push({label: 'certain', x: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`, y: valueArray[0]});
+                graphRecords.push({label: "uncertain",  x: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`, y: userPrevWeek.high - userPrevWeek.low})
                 tempUserCarbon.push({label: "previous week", value: value});
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
@@ -196,13 +202,17 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
             
+            graphRecords.push({label: 'certain', x: 'if all taxi', y: worstCarbon});
             tempUserCarbon.push({label: "if all taxi", value: worstCarbon});
 
             //push in goals
+            graphRecords.push({label: 'certain', x: 'US 2030 goal', y: 54});
+            graphRecords.push({label: 'certain', x: 'US 2050 goal', y: 14});
             tempUserCarbon.push({label: "US 2030 goal", value: 54});
             tempUserCarbon.push({label: "US 2050 goal", value: 14});
 
             console.log("testing, the data is: ", tempUserCarbon);
+            setGraphRecords(graphRecords);
             
             return tempUserCarbon;
         }
@@ -226,12 +236,17 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             titleNumberOfLines={2}
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
-        { userCarbonRecords?.map((dataPoint) => (
-          <View style={{ width: '50%', paddingHorizontal: 8 }}>
-            <Text variant='titleSmall'>{dataPoint.label}</Text>
-            <Text>{`${formatForDisplay(dataPoint.value)} ${t("kg Co2")}`}</Text>
+           { graphRecords.length ?
+          <BarChart records={graphRecords} axisTitle={t('Emissions (kg Co2')}
+            isHorizontal={false} stacked={true} timeAxis={false}/>
+        :
+          <View style={{flex: 1, justifyContent: 'center'}}>
+            <Text variant='labelMedium' style={{textAlign: 'center'}}>
+              {t('metrics.chart-no-data')}
+            </Text>
           </View>
-        ))}
+        }
+            {changeSection}
         </Card.Content>
         </Card>
     )

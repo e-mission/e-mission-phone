@@ -133,7 +133,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                 } : {},
                 ticks: {
                   callback: timeAxis ? undefined : (value, i) => {
-                    const label = chartData[i].data[i].x;
+                    const label = chartData[0].data[i].x;
                     if (typeof label == 'string' && label.includes('\n'))
                       return label.split('\n');
                     return label;
