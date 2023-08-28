@@ -7,6 +7,7 @@ import { DayOfMetricData } from './metricsTypes';
 import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from './ToggleSwitch';
 import { cardStyles } from './MetricsTab';
+import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
 
 type Props = {
   cardTitle: string,
@@ -34,7 +35,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
       const labels = getLabelsForDay(day);
       labels.forEach(label => {
         records.push({
-          label: label,
+          label: labelKeyToReadable(label),
           x: day[`label_${label}`],
           y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
         });
@@ -80,7 +81,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
           <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             { Object.keys(metricSumValues).map((label, i) =>
               <View style={{ width: '50%', paddingHorizontal: 8 }}>
-                <Text variant='titleSmall'>{label}</Text>
+                <Text variant='titleSmall'>{labelKeyToReadable(label)}</Text>
                 <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
               </View>
             )}

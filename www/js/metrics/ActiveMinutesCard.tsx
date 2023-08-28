@@ -8,6 +8,7 @@ import { useImperialConfig } from '../config/useImperialConfig';
 import { filterToRecentWeeks, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
+import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
 
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = typeof ACTIVE_MODES[number];
@@ -43,14 +44,14 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
       ), 0);
       if (recentSum) {
         const xLabel = `Past Week\n(${formatDateRangeOfDays(recentWeek)})`; // TODO: i18n
-        records.push({label: mode, x: xLabel, y: recentSum / 60});
+        records.push({label: labelKeyToReadable(mode), x: xLabel, y: recentSum / 60});
       }
       const prevSum = prevWeek?.reduce((acc, day) => (
         acc + (day[`label_${mode}`] || 0)
       ), 0);
       if (prevSum) {
         const xLabel = `Previous Week\n(${formatDateRangeOfDays(prevWeek)})`; // TODO: i18n
-        records.push({label: mode, x: xLabel, y: prevSum / 60});
+        records.push({label: labelKeyToReadable(mode), x: xLabel, y: prevSum / 60});
       }
     });
     return records as {label: ActiveMode, x: string, y: number}[];
@@ -68,7 +69,7 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
       <Card.Content style={cardStyles.content}>
         { activeModesDurations.map((mode, i) => (
           <View style={{ width: '50%', paddingHorizontal: 8 }}>
-            <Text variant='titleSmall'>{ACTIVE_MODES[i]}</Text>
+            <Text variant='titleSmall'>{labelKeyToReadable(ACTIVE_MODES[i])}</Text>
             <Text>{`${mode} ${t('metrics.minutes')}`}</Text>
           </View>
         ))}
