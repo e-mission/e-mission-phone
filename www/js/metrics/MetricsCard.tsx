@@ -34,9 +34,10 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
     metricDataDays.forEach(day => {
       const labels = getLabelsForDay(day);
       labels.forEach(label => {
+        const rawVal = day[`label_${label}`];
         records.push({
           label: labelKeyToReadable(label),
-          x: day[`label_${label}`],
+          x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
           y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
         });
       });
