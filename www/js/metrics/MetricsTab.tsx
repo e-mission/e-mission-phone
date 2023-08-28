@@ -38,7 +38,7 @@ const MetricsTab = () => {
 
   const [dateRange, setDateRange] = useState<[DateTime, DateTime]>(() => {
     const now = DateTime.utc().startOf('day');
-    const start = now.minus({ days: 14 });
+    const start = now.minus({ days: 15 });
     const end = now.minus({ days: 1 });
     return [start, end];
   });
