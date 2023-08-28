@@ -131,6 +131,14 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                   unit: 'day',
                   tooltipFormat: 'DDD', // Luxon "localized date with full month": e.g. August 6, 2014
                 } : {},
+                ticks: {
+                  callback: timeAxis ? undefined : (value, i) => {
+                    const label = chartData[i].data[i].x;
+                    if (typeof label == 'string' && label.includes('\n'))
+                      return label.split('\n');
+                    return label;
+                  },
+                },
                 stacked,
               },
               y: {

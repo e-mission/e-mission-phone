@@ -5,7 +5,7 @@ import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardMargin, cardStyles } from './MetricsTab';
 import { useImperialConfig } from '../config/useImperialConfig';
-import { filterToRecentWeeks, secondsToMinutes } from './metricsHelper';
+import { filterToRecentWeeks, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 
@@ -17,6 +17,11 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
 
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  userMetrics?.duration.forEach(day => {
+    day.label_walk = day.label_walk || 400 + (Math.random() * 300);
+    day.label_bike = day.label_bike || 200 + (Math.random() * 300);
+  });
   
   // number of minutes for each of [walk, bike]
   const activeModesDurations = useMemo(() => {
@@ -37,13 +42,15 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
         acc + (day[`label_${mode}`] || 0)
       ), 0);
       if (recentSum) {
-        records.push({label: mode, x: 'Past Week', y: recentSum / 60}); // TODO: i18n
+        const xLabel = `Past Week\n(${formatDateRangeOfDays(recentWeek)})`; // TODO: i18n
+        records.push({label: mode, x: xLabel, y: recentSum / 60});
       }
       const prevSum = prevWeek?.reduce((acc, day) => (
         acc + (day[`label_${mode}`] || 0)
       ), 0);
       if (prevSum) {
-        records.push({label: mode, x: 'Previous Week', y: prevSum / 60}); // TODO: i18n
+        const xLabel = `Previous Week\n(${formatDateRangeOfDays(prevWeek)})`; // TODO: i18n
+        records.push({label: mode, x: xLabel, y: prevSum / 60});
       }
     });
     return records as {label: ActiveMode, x: string, y: number}[];

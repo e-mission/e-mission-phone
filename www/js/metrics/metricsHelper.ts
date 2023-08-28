@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import { formatForDisplay } from "../config/useImperialConfig";
 import { DayOfMetricData } from "./metricsTypes";
 
@@ -37,4 +38,12 @@ export function filterToRecentWeeks(metricsDays: DayOfMetricData[]) {
   if (metricsDays?.length >= 14)
     weeks.push(metricsDays.slice(-14, -7));
   return weeks;
+}
+
+export function formatDateRangeOfDays(days: DayOfMetricData[]) {
+  const firstDayDt = DateTime.fromISO(days[0].fmt_time, { zone: 'utc' });
+  const lastDayDt = DateTime.fromISO(days[days.length - 1].fmt_time, { zone: 'utc' });
+  const firstDay = firstDayDt.toLocaleString({...DateTime.DATE_SHORT, year: undefined});
+  const lastDay = lastDayDt.toLocaleString({...DateTime.DATE_SHORT, year: undefined});
+  return `${firstDay} - ${lastDay}`;
 }
