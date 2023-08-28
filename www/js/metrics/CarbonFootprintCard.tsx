@@ -126,6 +126,14 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         return summaryMap;
     }
 
+    const calculatePercentChange = function(pastWeekRange, previousWeekRange) {
+       let greaterLesserPct = {
+            low: (pastWeekRange.low/previousWeekRange.low) * 100 - 100,
+            high: (pastWeekRange.high/previousWeekRange.high) * 100 - 100,
+        }
+        return greaterLesserPct;
+    }
+
     const createOrCollapseRange = function(low, high) {
         let range = [];
         if(high == low) {
@@ -179,6 +187,10 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 valueArray = createOrCollapseRange(userPrevWeek.low, userPrevWeek.high);
                 value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
                 tempUserCarbon.push({label: "previous week", value: value});
+
+                let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
+                let changeRange = createOrCollapseRange(pctChange.low, pctChange.high);
+                setEmissionsChange(changeRange[1] ? changeRange[0] + '-' + changeRange[1] : changeRange[0]);
             }
             
             //calculate worst-case carbon footprint
@@ -195,6 +207,14 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             return tempUserCarbon;
         }
     }, [userMetrics?.distance])
+
+    let changeSection;
+    if(emissionsChange) {
+        changeSection = <View style={{ width: '50%', paddingHorizontal: 8 }}>
+            <Text variant='titleSmall'>{"change in emissions"}</Text>
+            <Text>{`${formatForDisplay(emissionsChange)} ${t("% this week")}`}</Text>
+        </View>;
+    }
 
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
