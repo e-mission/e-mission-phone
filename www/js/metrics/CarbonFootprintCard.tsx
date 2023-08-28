@@ -1,10 +1,10 @@
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardMargin, cardStyles, METRIC_LIST } from './MetricsTab';
-import { useImperialConfig } from '../config/useImperialConfig';
+import { formatForDisplay } from '../config/useImperialConfig';
 import { filterToRecentWeeks, secondsToMinutes } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
@@ -126,23 +126,75 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         return summaryMap;
     }
 
-    useEffect(() => {
-        if(userMetrics) {
-            let userModeMap = {};
-            let userSummaryMap = {};
-
-            METRIC_LIST.forEach((m) =>
-                userModeMap[m] = parseDataFromMetrics(userMetrics[m], 'user'));
-            
-            METRIC_LIST.forEach((m) =>
-                userSummaryMap[m] = generateSummaryFromData(userModeMap[m], m));
-
-            let tempUserCarbon = [];
-            tempUserCarbon.push({label: "low estimate", value: FootprintHelper.getFootprintForMetrics(userSummaryMap.distance, 0)});
-            tempUserCarbon.push({label: "high estimate", value:FootprintHelper.getFootprintForMetrics(userSummaryMap.distance, FootprintHelper.getHighestFootprint())});
-            setUserCarbonData(tempUserCarbon);
+    const createOrCollapseRange = function(low, high) {
+        let range = [];
+        if(high == low) {
+            range.push(low);
         }
-    }, [userMetrics])
+        else {
+            range.push(low);
+            range.push(high);
+        }
+        return range;
+    }
+
+    const userCarbonRecords = useMemo(() => {
+        if(userMetrics) {
+            console.log("before testing metrics", userMetrics);
+
+            let thisWeekDistance = filterToRecentWeeks(userMetrics?.distance)[0];
+            let lastWeekDistance = filterToRecentWeeks(userMetrics?.distance)[1];
+            let userThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'user');
+            let userThisWeekSummaryMap = generateSummaryFromData(userThisWeekModeMap, 'distance');
+            let worstDistance = userThisWeekSummaryMap.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
+
+            let userLastWeekModeMap = {};
+            let userLastWeekSummaryMap = {};
+            if(lastWeekDistance) {
+                userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
+                userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
+
+                console.log("testing metric map here",  userThisWeekModeMap, userLastWeekModeMap);
+                console.log("testing summary data!!", userThisWeekSummaryMap, userLastWeekSummaryMap);
+            }
+            
+            //setting up data to be displayed //TODO i18n for labels
+            let tempUserCarbon = [];
+
+            //calculate low-high and format range for past week
+            let userPastWeek = {
+                low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
+                high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 
+            };
+            let valueArray = createOrCollapseRange(userPastWeek.low, userPastWeek.high);
+            let value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
+            tempUserCarbon.push({label: "past week", value: value});
+           
+            //calculate low-high and format range for prev week, if exists
+            if(userLastWeekSummaryMap[0]) {
+                let userPrevWeek = {
+                    low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
+                    high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
+                };
+                valueArray = createOrCollapseRange(userPrevWeek.low, userPrevWeek.high);
+                value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
+                tempUserCarbon.push({label: "previous week", value: value});
+            }
+            
+            //calculate worst-case carbon footprint
+            let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
+            
+            tempUserCarbon.push({label: "if all taxi", value: worstCarbon});
+
+            //push in goals
+            tempUserCarbon.push({label: "US 2030 goal", value: 54});
+            tempUserCarbon.push({label: "US 2050 goal", value: 14});
+
+            console.log("testing, the data is: ", tempUserCarbon);
+            
+            return tempUserCarbon;
+        }
+    }, [userMetrics?.distance])
 
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
@@ -154,10 +206,10 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             titleNumberOfLines={2}
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
-        { userCarbonData.map((dataPoint) => (
+        { userCarbonRecords?.map((dataPoint) => (
           <View style={{ width: '50%', paddingHorizontal: 8 }}>
             <Text variant='titleSmall'>{dataPoint.label}</Text>
-            <Text>{`${dataPoint.value} ${t("kg Co2")}`}</Text>
+            <Text>{`${formatForDisplay(dataPoint.value)} ${t("kg Co2")}`}</Text>
           </View>
         ))}
         </Card.Content>
