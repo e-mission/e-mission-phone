@@ -81,7 +81,7 @@ const MetricsTab = () => {
     <ScrollView style={{paddingVertical: 12}}>
       <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics}></CarbonFootprintCard>
       <ActiveMinutesCard userMetrics={userMetrics} />
-      <Carousel cardWidth={cardWidth} cardMargin={8}>
+      <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <MetricsCard cardTitle={t('main-metrics.distance')}
           userMetricsDays={userMetrics?.distance}
           aggMetricsDays={aggMetrics?.distance}
@@ -107,7 +107,13 @@ const MetricsTab = () => {
   </>);
 }
 
+export const cardMargin = 8;
+
 export const cardStyles: any = {
+  card: {
+    overflow: 'hidden',
+    minHeight: 300,
+  },
   title: (colors) => ({
     backgroundColor: colors.primary,
     paddingHorizontal: 8,

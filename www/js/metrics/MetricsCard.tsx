@@ -61,11 +61,11 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
   }, [metricDataDays, viewMode]);
 
   return (
-    <Card style={{overflow: 'hidden', minHeight: 300}}>
+    <Card style={cardStyles.card}>
       <Card.Title 
         title={cardTitle}
         titleVariant='titleLarge'
-        titleStyle={{color: colors.onPrimary, fontWeight: '500', textAlign: 'center'}}
+        titleStyle={cardStyles.titleText(colors)}
         titleNumberOfLines={2}
         right={() =>
           <View style={{gap: 3}}>
