@@ -226,6 +226,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         </View>;
     }
 
+    //hardcoded here, could be read from config at later customization?
+    let carbonGoals = [{label:"US 2030", value: 54}, {label:"US 2050", value: 14}];
+
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
         contentStyle={{flex: 1}}>
@@ -237,8 +240,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
            { graphRecords.length ?
-          <BarChart records={graphRecords} axisTitle={t('Emissions (kg Co2')}
-            isHorizontal={false} stacked={true} timeAxis={false}/>
+          <BarChart records={graphRecords} axisTitle={t('Emissions (kg Co2)')}
+            isHorizontal={false} stacked={true} timeAxis={false} lineAnnotations={carbonGoals}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
