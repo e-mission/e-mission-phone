@@ -97,11 +97,11 @@ const MetricsTab = () => {
           aggMetricsDays={aggMetrics?.duration}
           axisUnits={t('metrics.hours')}
           unitFormatFn={secondsToHours} />
-        <MetricsCard cardTitle={t('main-metrics.mean-speed')}
+        {/* <MetricsCard cardTitle={t('main-metrics.mean-speed')}
           userMetricsDays={userMetrics?.mean_speed}
           aggMetricsDays={aggMetrics?.mean_speed}
           axisUnits={speedSuffix}
-          unitFormatFn={getFormattedSpeed} />
+          unitFormatFn={getFormattedSpeed} /> */}
       </Carousel>
     </ScrollView>
   </>);
