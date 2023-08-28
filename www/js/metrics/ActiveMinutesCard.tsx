@@ -66,7 +66,8 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
           </View>
         ))}
         { weeklyActiveMinutesRecords.length ?
-          <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')} isHorizontal={false} />
+          <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
+            isHorizontal={false} stacked={true} />
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>

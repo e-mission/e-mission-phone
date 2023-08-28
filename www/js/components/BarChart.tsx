@@ -29,8 +29,9 @@ type Props = {
   lineAnnotations?: { value: number, label: string }[],
   isHorizontal?: boolean,
   timeAxis?: boolean,
+  stacked?: boolean,
 }
-const BarChart = ({ records, axisTitle, lineAnnotations=null, isHorizontal=false, timeAxis }: Props) => {
+const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked }: Props) => {
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
@@ -70,7 +71,8 @@ const BarChart = ({ records, axisTitle, lineAnnotations=null, isHorizontal=false
         if (!uniqueIndexVals.includes(r[indexAxis])) uniqueIndexVals.push(r[indexAxis]);
       }));
       const numIndexVals = uniqueIndexVals.length;
-      const idealChartHeight = numVisibleDatasets * numIndexVals * 8;
+      const heightPerIndexVal = stacked ? 36 : numVisibleDatasets * 8;
+      const idealChartHeight = heightPerIndexVal * numIndexVals;
 
       /* each index val should be at least 20px tall for visibility,
         and the graph itself should be at least 250px tall */
@@ -112,9 +114,11 @@ const BarChart = ({ records, axisTitle, lineAnnotations=null, isHorizontal=false
                   setNumVisibleDatasets(axis.chart.getVisibleDatasetCount())
                 },
                 reverse: true,
+                stacked,
               },
               x: {
                 title: { display: true, text: axisTitle },
+                stacked,
               },
             } : {
               x: {
@@ -127,9 +131,11 @@ const BarChart = ({ records, axisTitle, lineAnnotations=null, isHorizontal=false
                   unit: 'day',
                   tooltipFormat: 'DDD', // Luxon "localized date with full month": e.g. August 6, 2014
                 } : {},
+                stacked,
               },
               y: {
                 title: { display: true, text: axisTitle },
+                stacked,
               },
             }),
           },

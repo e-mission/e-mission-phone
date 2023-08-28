@@ -1,7 +1,7 @@
 
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
-import { Card, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
 import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
@@ -21,6 +21,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
   const { colors } = useTheme();  
   const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
   const [populationMode, setPopulationMode] = useState<'user'|'aggregate'>('user');
+  const [graphIsStacked, setGraphIsStacked] = useState(true);
   const metricDataDays = useMemo(() => (
     populationMode == 'user' ? userMetricsDays : aggMetricsDays
   ), [populationMode, userMetricsDays, aggMetricsDays]);
@@ -84,9 +85,16 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
               </View>
             )}
           </View>
-        } {viewMode=='graph' &&
-          <BarChart records={chartData} axisTitle={axisUnits} isHorizontal={true} timeAxis={true} />
-        }
+        } {viewMode=='graph' && <>
+          <BarChart records={chartData} axisTitle={axisUnits}
+            isHorizontal={true} timeAxis={true} stacked={graphIsStacked} />
+          <View style={{flexDirection: 'row', height: 10, alignItems: 'center', justifyContent: 'flex-end'}}>
+            <Text variant='labelMedium'>Stack bars:</Text>
+            <Checkbox 
+              status={graphIsStacked ? 'checked' : 'unchecked'}
+              onPress={() => setGraphIsStacked(!graphIsStacked)} />
+          </View>
+        </>}
       </Card.Content>
     </Card>
   )
