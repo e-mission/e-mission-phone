@@ -3,7 +3,7 @@ import { View, StyleSheet } from 'react-native';
 import color from "color";
 import { LabelTabContext } from '../LabelTab';
 import { logDebug } from '../../plugin/logger';
-import { baseModeOf } from '../diaryHelper';
+import { getBaseModeOfLabeledTrip } from '../diaryHelper';
 import { Icon } from '../../components/Icon';
 import { Text, useTheme } from 'react-native-paper';
 
@@ -21,9 +21,7 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
 
   let modeViews;
   if (trip.userInput.MODE) {
-    const modeKey = trip.userInput.MODE.value;
-    const modeOption = labelOptions.MODE.find(opt => opt.value == modeKey);
-    const baseMode = baseModeOf(modeOption?.baseMode || "OTHER");
+    const baseMode = getBaseModeOfLabeledTrip(trip, labelOptions);
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
     modeViews = (

@@ -57,10 +57,17 @@ type BaseModeKey = keyof typeof BaseModes;
  * @param motionName A string like "WALKING" or "MotionTypes.WALKING"
  * @returns A BaseMode object containing the name, icon, and color of the motion type
  */
-export function baseModeOf(motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
+export function getBaseModeByKey(motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
   let key = ('' + motionName).toUpperCase();
   key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
   return BaseModes[motionName] || BaseModes.UNKNOWN;
+}
+
+export function getBaseModeOfLabeledTrip(trip, labelOptions) {
+  const modeKey = trip?.userInput?.MODE?.value;
+  if (!modeKey) return null; // trip has no MODE label
+  const modeOption = labelOptions?.MODE?.find(opt => opt.value == modeKey);
+  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
 }
 
 /**
@@ -143,8 +150,8 @@ export function getDetectedModes(trip) {
     const fract = dists[mode] / totalDist;
     return {
       mode: mode,
-      icon: baseModeOf(mode)?.icon,
-      color: baseModeOf(mode)?.color || 'black',
+      icon: getBaseModeByKey(mode)?.icon,
+      color: getBaseModeByKey(mode)?.color || 'black',
       pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
     };
   });
@@ -158,8 +165,8 @@ export function getFormattedSectionProperties(trip, ImperialConfig) {
     fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
     fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
     fmt_distance_suffix: ImperialConfig.distanceSuffix,
-    icon: baseModeOf(s.sensed_mode_str)?.icon,
-    color: baseModeOf(s.sensed_mode_str)?.color || "#333",
+    icon: getBaseModeByKey(s.sensed_mode_str)?.icon,
+    color: getBaseModeByKey(s.sensed_mode_str)?.color || "#333",
   }));
 }
 

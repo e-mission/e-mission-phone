@@ -171,7 +171,7 @@ const LabelTab = () => {
     populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
     // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
-      trip.geojson = Timeline.compositeTrip2Geojson(trip);
+      trip.geojson = Timeline.compositeTrip2Geojson(trip, labelOptions);
       fillLocationNamesOfTrip(trip);
     });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
