@@ -15,20 +15,26 @@ const modeColors = {
   taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, nonstandard modes
 }
 
-type MotionType = {
+type BaseMode = {
   name: string,
   icon: string,
   color: string
 }
-const MotionTypes: {[k: string]: MotionType} = {
+
+// parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
+type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | 'UNKNOWN' | 'TILTING'
+                  | 'WALKING' | 'RUNNING' | 'NONE' | 'STOPPED_WHILE_IN_VEHICLE' | 'AIR_OR_HSR';
+
+const BaseModes: {[k: string]: BaseMode} = {
+  // BEGIN MotionTypes
   IN_VEHICLE: { name: "IN_VEHICLE", icon: "speedometer", color: modeColors.red },
-  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: modeColors.blue },
   BICYCLING: { name: "BICYCLING", icon: "bike", color: modeColors.green },
+  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: modeColors.blue },
   UNKNOWN: { name: "UNKNOWN", icon: "help", color: modeColors.grey },
   WALKING: { name: "WALKING", icon: "walk", color: modeColors.blue },
-  CAR: { name: "CAR", icon: "car", color: modeColors.red },
   AIR_OR_HSR: { name: "AIR_OR_HSR", icon: "airplane", color: modeColors.orange },
-  // based on OSM routes/tags:
+  // END MotionTypes
+  CAR: { name: "CAR", icon: "car", color: modeColors.red },
   BUS: { name: "BUS", icon: "bus-side", color: modeColors.magenta },
   LIGHT_RAIL: { name: "LIGHT_RAIL", icon: "train-car-passenger", color: modeColors.periwinkle },
   TRAIN: { name: "TRAIN", icon: "train-car-passenger", color: modeColors.periwinkle },
@@ -37,17 +43,17 @@ const MotionTypes: {[k: string]: MotionType} = {
   FERRY: { name: "FERRY", icon: "ferry", color: modeColors.taupe },
   TROLLEYBUS: { name: "TROLLEYBUS", icon: "bus-side", color: modeColors.taupe },
   UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey }
-}
+};
 
-type MotionTypeKey = keyof typeof MotionTypes;
+type BaseModeKey = keyof typeof BaseModes;
 /**
  * @param motionName A string like "WALKING" or "MotionTypes.WALKING"
- * @returns A MotionType object containing the name, icon, and color of the motion type
+ * @returns A BaseMode object containing the name, icon, and color of the motion type
  */
-export function motionTypeOf(motionName: MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
+export function baseModeOf(motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
   let key = ('' + motionName).toUpperCase();
   key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return MotionTypes[motionName] || MotionTypes.UNKNOWN;
+  return BaseModes[motionName] || BaseModes.UNKNOWN;
 }
 
 /**
@@ -130,8 +136,8 @@ export function getPercentages(trip) {
     const fract = dists[mode] / totalDist;
     return {
       mode: mode,
-      icon: motionTypeOf(mode)?.icon,
-      color: motionTypeOf(mode)?.color || 'black',
+      icon: baseModeOf(mode)?.icon,
+      color: baseModeOf(mode)?.color || 'black',
       pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
     };
   });
@@ -145,8 +151,8 @@ export function getFormattedSectionProperties(trip, ImperialConfig) {
     fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
     fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
     fmt_distance_suffix: ImperialConfig.distanceSuffix,
-    icon: motionTypeOf(s.sensed_mode_str)?.icon,
-    color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
+    icon: baseModeOf(s.sensed_mode_str)?.icon,
+    color: baseModeOf(s.sensed_mode_str)?.color || "#333",
   }));
 }
 

@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import { getFormattedTimeRange, motionTypeOf } from './diaryHelper';
+import { getFormattedTimeRange, baseModeOf } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
@@ -252,7 +252,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
             coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
           },
           style: {
-            color: motionTypeOf(section?.sensed_mode_str)?.color || "#333",
+            color: baseModeOf(section?.sensed_mode_str)?.color || "#333",
           }
         }
       });
