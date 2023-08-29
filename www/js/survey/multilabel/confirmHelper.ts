@@ -18,7 +18,7 @@ type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
     key: string,
     met?: {range: any[], mets: number}
     met_equivalent: string,
-    co2PerMeter: number,
+    kgCo2PerKm: number,
   }
 } & { translations: {
   [lang: string]: { [translationKey: string]: string }
@@ -50,12 +50,12 @@ export async function getLabelOptions(appConfigParam?) {
     const i18nUtils = getAngularService("i18nUtils");
     const optionFileName = await i18nUtils.geti18nFileName("json/", "trip_confirm_options", ".json");
     try {
-      const optionFile = await fetchUrlCached(optionFileName);
-      labelOptions = JSON.parse(optionFile) as LabelOptions;
+      const optionJson = await fetch(optionFileName).then(r => r.json());
+      labelOptions = optionJson as LabelOptions;
     } catch (e) {
       logDebug("error "+JSON.stringify(e)+" while reading confirm options, reverting to defaults");
-      const optionFile = await fetchUrlCached("json/trip_confirm_options.json.sample");
-      labelOptions = JSON.parse(optionFile) as LabelOptions;
+      const optionJson = await fetch("json/trip_confirm_options.json.sample").then(r => r.json());
+      labelOptions = optionJson as LabelOptions;
     }
   }
   return labelOptions;
