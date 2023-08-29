@@ -9,6 +9,7 @@ import { filterToRecentWeeks, formatDateRangeOfDays } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { getAngularService } from '../angular-react-helper';
+import ChangeIndicator from './ChangeIndicator';
 
 //modes considered on foot for carbon calculation, expandable as needed
 const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
@@ -22,7 +23,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
     console.log("metrics in carbon", userMetrics, aggMetrics);
 
-    const [emissionsChange, setEmissionsChange] = useState();
+    const [emissionsChange, setEmissionsChange] = useState([]);
     const [graphRecords, setGraphRecords] = useState([]);
 
     /*
@@ -196,7 +197,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 let changeRange = createOrCollapseRange(pctChange.low, pctChange.high);
-                setEmissionsChange(changeRange[1] ? changeRange[0] + '-' + changeRange[1] : changeRange[0]);
+                setEmissionsChange(changeRange);
             }
             
             //calculate worst-case carbon footprint
@@ -218,14 +219,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         }
     }, [userMetrics?.distance])
 
-    let changeSection;
-    if(emissionsChange) {
-        changeSection = <View style={{ width: '50%', paddingHorizontal: 8 }}>
-            <Text variant='titleSmall'>{"change in emissions"}</Text>
-            <Text>{`${formatForDisplay(emissionsChange)} ${t("% this week")}`}</Text>
-        </View>;
-    }
-
     //hardcoded here, could be read from config at later customization?
     let carbonGoals = [{label:"US 2030", value: 54}, {label:"US 2050", value: 14}];
 
@@ -237,6 +230,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             titleVariant='titleLarge'
             titleStyle={cardStyles.titleText(colors)}
             titleNumberOfLines={2}
+            right={(props) => <ChangeIndicator change={emissionsChange}></ChangeIndicator>}
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
            { graphRecords.length ?
@@ -249,7 +243,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             </Text>
           </View>
         }
-            {changeSection}
         </Card.Content>
         </Card>
     )
