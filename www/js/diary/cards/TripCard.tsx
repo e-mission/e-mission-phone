@@ -30,7 +30,7 @@ const TripCard = ({ trip }: Props) => {
   const { width: windowWidth } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
   const { displayStartTime, displayEndTime, displayDate, formattedDistance,
-    distanceSuffix, displayTime, percentages } = useDerivedProperties(trip);
+    distanceSuffix, displayTime, detectedModes } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
   const { surveyOpt } = useContext(LabelTabContext);
@@ -79,7 +79,7 @@ const TripCard = ({ trip }: Props) => {
                           so it doesn't look squished */
                         style={[{minHeight: windowWidth / 2}, mapStyle]} />
           <View style={s.modePercents}>
-            {percentages?.map?.((pct, i) => (
+            {detectedModes?.map?.((pct, i) => (
               <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
                 <Icon icon={pct.icon} iconColor={pct.color} size={15} />
                 <Text accessibilityLabel={`Sensed mode: ${pct.icon}, ${pct.pct}%`} style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>

@@ -25,7 +25,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const trip = timelineMap.get(route.params.tripId);
   const { displayDate, displayStartTime, displayEndTime,
           displayTime, formattedDistance, formattedSectionProperties,
-          distanceSuffix, percentages } = useDerivedProperties(trip);
+          distanceSuffix, detectedModes } = useDerivedProperties(trip);
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const mapOpts = {minZoom: 3, maxZoom: 17};
   
@@ -62,7 +62,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
                 </Text>
               </View>
               <View style={{justifyContent: 'center'}}>
-                {percentages?.map?.((pct, i) => (
+                {detectedModes?.map?.((pct, i) => (
                   <View key={i} style={{flexDirection: 'row', alignItems: 'center'}}>
                     <Icon icon={pct.icon} size={16} iconColor={pct.color} />
                     <Text style={{fontSize: 13, fontWeight: 'bold'}}>

@@ -114,11 +114,11 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   return endMoment.to(beginMoment, true);
 };
 
-// Temporary function to avoid repear in getPercentages ret val.
+// Temporary function to avoid repear in getDetectedModes ret val.
 const filterRunning = (mode) =>
   (mode == 'MotionTypes.RUNNING') ? 'MotionTypes.WALKING' : mode;
 
-export function getPercentages(trip) {
+export function getDetectedModes(trip) {
   if (!trip.sections?.length) return [];
 
   // sum up the distances for each mode, as well as the total distance
