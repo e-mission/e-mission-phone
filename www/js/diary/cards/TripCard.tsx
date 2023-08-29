@@ -18,10 +18,10 @@ import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
 import { useAddressNames } from "../addressNamesHelper";
-import { Icon } from "../../components/Icon";
 import { LabelTabContext } from "../LabelTab";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../StartEndLocations";
+import ModesIndicator from "./ModesIndicator";
 
 type Props = { trip: {[key: string]: any}};
 const TripCard = ({ trip }: Props) => {
@@ -78,14 +78,7 @@ const TripCard = ({ trip }: Props) => {
                         /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
                         style={[{minHeight: windowWidth / 2}, mapStyle]} />
-          <View style={s.modePercents}>
-            {detectedModes?.map?.((pct, i) => (
-              <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
-                <Icon icon={pct.icon} iconColor={pct.color} size={15} />
-                <Text accessibilityLabel={`Sensed mode: ${pct.icon}, ${pct.pct}%`} style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>
-              </View>
-            ))}
-          </View>
+          <ModesIndicator trip={trip} detectedModes={detectedModes} />
           {showAddNoteButton && 
             <View style={s.notesButton}>
               <AddNoteButton timelineEntry={trip}
@@ -116,15 +109,6 @@ const s = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: 15,
     borderBottomRightRadius: 15,
-  },
-  modePercents: {
-    position: 'absolute',
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 50,
-    left: '50%',
-    transform: 'translate(-50%)',
-    marginVertical: 5,
   },
   notesButton: {
     paddingHorizontal: 8,
