@@ -19,6 +19,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
+import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -30,6 +31,7 @@ const LabelTab = () => {
   const { t } = useTranslation();
 
   const [surveyOpt, setSurveyOpt] = useState(null);
+  const [labelOptions, setLabelOptions] = useState(null);
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
@@ -53,6 +55,7 @@ const LabelTab = () => {
     const surveyOpt = SurveyOptions[surveyOptKey];
     setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
+    getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
     labelPopulateFactory = getAngularService(surveyOpt.service);
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
     const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;
@@ -257,6 +260,7 @@ const LabelTab = () => {
 
   const contextVals = {
     surveyOpt,
+    labelOptions,
     timelineMap,
     displayedEntries,
     filterInputs,

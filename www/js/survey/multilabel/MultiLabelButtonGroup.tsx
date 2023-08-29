@@ -10,15 +10,14 @@ import DiaryButton from "../../diary/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
-import { getLabelInputDetails, getLabelInputs, getLabelOptions } from "./confirmHelper";
+import { getLabelInputDetails, getLabelInputs } from "./confirmHelper";
 
 const MultilabelButtonGroup = ({ trip }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
-  const { repopulateTimelineEntry } = useContext(LabelTabContext);
+  const { repopulateTimelineEntry, labelOptions } = useContext(LabelTabContext);
   const { height: windowHeight } = useWindowDimensions();
 
-  const [ inputParams, setInputParams ] = useState({});
   // modal visible for which input type? (mode or purpose or replaced_mode, null if not visible)
   const [ modalVisibleFor, setModalVisibleFor ] = useState<'MODE'|'PURPOSE'|'REPLACED_MODE'|null>(null);
   const [otherLabel, setOtherLabel] = useState<string|null>(null);
@@ -26,11 +25,6 @@ const MultilabelButtonGroup = ({ trip }) => {
     if (otherLabel != null) return 'other';
     return trip.userInput[modalVisibleFor]?.value
   }, [modalVisibleFor, otherLabel]);
-
-  useEffect(() => {
-    console.log("During initialization, trip is ", trip);
-    getLabelOptions().then((ip) => setInputParams(ip));
-  }, []);
 
   // to mark 'inferred' labels as 'confirmed'; turn yellow labels blue
   function verifyTrip() {
@@ -121,7 +115,7 @@ const MultilabelButtonGroup = ({ trip }) => {
           <Dialog.Content style={{maxHeight: windowHeight/2, paddingBottom: 0}}>
             <ScrollView style={{paddingBottom: 24}}>
               <RadioButton.Group onValueChange={val => onChooseLabel(val)} value={chosenLabel}>
-                {inputParams?.[modalVisibleFor]?.map((o, i) => (
+                {labelOptions?.[modalVisibleFor]?.map((o, i) => (
                   // @ts-ignore
                   <RadioButton.Item key={i} label={t(o.text)} value={o.value} style={{paddingVertical: 2}} />
                 ))}
