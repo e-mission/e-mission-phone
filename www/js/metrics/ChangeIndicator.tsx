@@ -3,7 +3,6 @@ import { View } from 'react-native';
 import { useTheme, Text } from "react-native-paper";
 import { useTranslation } from 'react-i18next';
 import { formatForDisplay } from '../config/useImperialConfig';
-import { Colors } from 'chart.js';
 
 type Props = {
     change: number[],
@@ -39,10 +38,10 @@ const ChangeIndicator = ({ change }) => {
         (change[0]) ?
         <View style={styles.view(change[0] > 0 ? colors.danger : colors.success)}>
             <Text style={styles.importantText(colors)}>
-                {`${changeText} \n`}
+                {`${changeText}% \n`}
             </Text>
             <Text style={styles.text(colors)}>
-                {`${t("% this week")}`}
+                {`${t("this week")}`}
             </Text>
         </View>
         :
@@ -64,12 +63,12 @@ const styles: any = {
     }),
     view: (color) => ({
         backgroundColor: color,
-        padding: 4,
+        padding: 2,
         borderStyle: 'solid',
+        borderColor: color,
         borderWidth: 2,
-        borderRadius: 5,
+        borderRadius: 10,
     }),
-
-  }
+}
   
 export default ChangeIndicator;
