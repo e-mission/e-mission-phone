@@ -162,7 +162,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
             }
             
-            //setting up data to be displayed //TODO i18n for labels
+            //setting up data to be displayed
             let graphRecords = [];
 
             //calculate low-high and format range for past week
@@ -172,8 +172,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             };
             let valueArray = createOrCollapseRange(userPastWeek.low, userPastWeek.high);
             let value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
-            graphRecords.push({label: 'certain', x: valueArray[0], y: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`});
-            graphRecords.push({label: "uncertain",  x: userPastWeek.high - userPastWeek.low, y: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`})
+            graphRecords.push({label: 'certain', x: valueArray[0], y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            graphRecords.push({label: "uncertain",  x: userPastWeek.high - userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
            
             //calculate low-high and format range for prev week, if exists
             if(userLastWeekSummaryMap[0]) {
@@ -183,8 +183,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 };
                 valueArray = createOrCollapseRange(userPrevWeek.low, userPrevWeek.high);
                 value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
-                graphRecords.push({label: 'certain', x: valueArray[0], y: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`});
-                graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`})
+                graphRecords.push({label: 'certain', x: valueArray[0], y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
+                graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 let changeRange = createOrCollapseRange(pctChange.low, pctChange.high);
@@ -193,14 +193,14 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
-            graphRecords.push({label: 'certain', x: worstCarbon, y: 'if all taxi'});
+            graphRecords.push({label: 'certain', x: worstCarbon, y: `${t('main-metrics.worst-case')}`});
 
             return graphRecords;
         }
     }, [userMetrics?.distance])
 
     //hardcoded here, could be read from config at later customization?
-    let carbonGoals = [{label:t('us-2030-goal'), value: 54}, {label:t('us-2050-goal'), value: 14}];
+    let carbonGoals = [{label: t('main-metrics.us-2030-goal'), value: 54}, {label: t('main-metrics.us-2050-goal'), value: 14}];
 
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
@@ -215,7 +215,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
            { userCarbonRecords?.length ?
-           <BarChart records={userCarbonRecords} axisTitle={t('Emissions (kg Co2)')}
+           <BarChart records={userCarbonRecords} axisTitle={t('main-metrics.footprint')+' (kg C02)'}
            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
