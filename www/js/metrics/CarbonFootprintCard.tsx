@@ -199,6 +199,42 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         }
     }, [userMetrics?.distance])
 
+    const groupCarbonRecords = useMemo(() => {
+        if(aggMetrics) 
+        {
+            //separate data into weeks
+            let thisWeekDistance = filterToRecentWeeks(aggMetrics?.distance)[0];
+            console.log("testing agg metrics" , aggMetrics, thisWeekDistance);
+            //let lastWeekDistance = filterToRecentWeeks(aggMetrics?.distance)[1];
+
+            let aggThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, "aggregate");
+            let aggThisWeekSummary = generateSummaryFromData(aggThisWeekModeMap, "distance");
+
+            // Issue 422:
+            // https://github.com/e-mission/e-mission-docs/issues/422
+            let aggCarbonData = [];
+            for (var i in aggThisWeekSummary) {
+                aggCarbonData.push(aggThisWeekSummary[i]);
+                if (isNaN(aggCarbonData[i].values)) {
+                    console.warn("WARNING in calculating groupCarbonRecords: value is NaN for mode " + aggCarbonData[i].key + ", changing to 0");
+                    aggCarbonData[i].values = 0;
+                } 
+            }
+
+            let aggCarbon = {
+                low: FootprintHelper.getFootprintForMetrics(aggCarbonData, 0),
+                high: FootprintHelper.getFootprintForMetrics(aggCarbonData, FootprintHelper.getHighestFootprint()),
+            }
+            let aggRange = createOrCollapseRange(aggCarbon.low, aggCarbon.high);
+
+            let groupRecords = [];
+            groupRecords.push({label: 'certain', x: aggRange[0], y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            groupRecords.push({label: "uncertain",  x: aggCarbon.high - aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
+
+            return groupRecords;
+        }
+    }, [aggMetrics])
+
     //hardcoded here, could be read from config at later customization?
     let carbonGoals = [{label: t('main-metrics.us-2030-goal'), value: 54}, {label: t('main-metrics.us-2050-goal'), value: 14}];
 
@@ -215,7 +251,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
            { userCarbonRecords?.length ?
-           <BarChart records={userCarbonRecords} axisTitle={t('main-metrics.footprint')+' (kg C02)'}
+           <BarChart records={userCarbonRecords.concat(groupCarbonRecords?.length ? groupCarbonRecords : [])} axisTitle={t('main-metrics.footprint')+' (kg C02)'}
            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
