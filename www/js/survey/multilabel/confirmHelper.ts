@@ -15,11 +15,12 @@ type InputDetails<T extends string> = {
 };
 type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
   [k in T]: {
-    key: string,
+    value: string,
+    baseMode: string,
     met?: {range: any[], mets: number}
-    met_equivalent: string,
+    met_equivalent?: string,
     kgCo2PerKm: number,
-  }
+  }[]
 } & { translations: {
   [lang: string]: { [translationKey: string]: string }
 }};
