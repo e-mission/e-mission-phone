@@ -23,7 +23,7 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
   if (trip.userInput.MODE) {
     const modeKey = trip.userInput.MODE.value;
     const modeOption = labelOptions.MODE.find(opt => opt.value == modeKey);
-    const baseMode = baseModeOf(modeOption.baseMode);
+    const baseMode = baseModeOf(modeOption?.baseMode || "OTHER");
     indicatorBorderColor = baseMode.color;
     logDebug(`TripCard: got baseMode = ${JSON.stringify(baseMode)}`);
     modeViews = (
