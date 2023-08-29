@@ -1,10 +1,9 @@
 
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useState, useMemo } from 'react';
 import { View } from 'react-native';
 import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
-import { cardMargin, cardStyles, METRIC_LIST } from './MetricsTab';
-import { formatForDisplay } from '../config/useImperialConfig';
+import { cardMargin, cardStyles } from './MetricsTab';
 import { filterToRecentWeeks, formatDateRangeOfDays } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
@@ -13,7 +12,6 @@ import ChangeIndicator from './ChangeIndicator';
 
 //modes considered on foot for carbon calculation, expandable as needed
 const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
-// type ActiveMode = typeof ACTIVE_MODES[number];
 
 type Props = { userMetrics: MetricsData, aggMetrics: MetricsData }
 const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
@@ -21,10 +19,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
 
-    console.log("metrics in carbon", userMetrics, aggMetrics);
-
     const [emissionsChange, setEmissionsChange] = useState([]);
-    const [graphRecords, setGraphRecords] = useState([]);
 
     /*
      * metric2val is a function that takes a metric entry and a field and returns
@@ -91,8 +86,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             }
         });
 
-        console.log("testing metrics mode bins", mode_bins);
-
         let return_val = [];
         for (let mode in mode_bins) {
             return_val.push({key: mode, values: mode_bins[mode]});
@@ -128,6 +121,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         return summaryMap;
     }
 
+    //from two weeks fo low and high values, calculates low and high change
     const calculatePercentChange = function(pastWeekRange, previousWeekRange) {
        let greaterLesserPct = {
             low: (pastWeekRange.low/previousWeekRange.low) * 100 - 100,
@@ -136,6 +130,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         return greaterLesserPct;
     }
 
+    //digests low - high values to an array of 1 or 2 items (detects 0 diff)
     const createOrCollapseRange = function(low, high) {
         let range = [];
         if(high == low) {
@@ -150,26 +145,24 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
     const userCarbonRecords = useMemo(() => {
         if(userMetrics) {
-            console.log("before testing metrics", userMetrics);
-
+            //separate data into weeks
             let thisWeekDistance = filterToRecentWeeks(userMetrics?.distance)[0];
             let lastWeekDistance = filterToRecentWeeks(userMetrics?.distance)[1];
+            
+            //formatted distance data from this week
             let userThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'user');
             let userThisWeekSummaryMap = generateSummaryFromData(userThisWeekModeMap, 'distance');
             let worstDistance = userThisWeekSummaryMap.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
 
+            //formatted data from last week
             let userLastWeekModeMap = {};
             let userLastWeekSummaryMap = {};
             if(lastWeekDistance) {
                 userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
                 userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
-
-                console.log("testing metric map here",  userThisWeekModeMap, userLastWeekModeMap);
-                console.log("testing summary data!!", userThisWeekSummaryMap, userLastWeekSummaryMap);
             }
             
             //setting up data to be displayed //TODO i18n for labels
-            let tempUserCarbon = [];
             let graphRecords = [];
 
             //calculate low-high and format range for past week
@@ -181,7 +174,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             let value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
             graphRecords.push({label: 'certain', x: valueArray[0], y: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`});
             graphRecords.push({label: "uncertain",  x: userPastWeek.high - userPastWeek.low, y: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`})
-            tempUserCarbon.push({label: "past week", value: value});
            
             //calculate low-high and format range for prev week, if exists
             if(userLastWeekSummaryMap[0]) {
@@ -193,7 +185,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
                 graphRecords.push({label: 'certain', x: valueArray[0], y: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`});
                 graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`})
-                tempUserCarbon.push({label: "previous week", value: value});
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 let changeRange = createOrCollapseRange(pctChange.low, pctChange.high);
@@ -202,20 +193,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
-            
             graphRecords.push({label: 'certain', x: worstCarbon, y: 'if all taxi'});
-            tempUserCarbon.push({label: "if all taxi", value: worstCarbon});
 
-            //push in goals
-            graphRecords.push({label: 'certain', x: 'US 2030 goal', y: 54});
-            graphRecords.push({label: 'certain', x: 'US 2050 goal', y: 14});
-            tempUserCarbon.push({label: "US 2030 goal", value: 54});
-            tempUserCarbon.push({label: "US 2050 goal", value: 14});
-
-            console.log("testing, the data is: ", tempUserCarbon);
-            setGraphRecords(graphRecords);
-            
-            return tempUserCarbon;
+            return graphRecords;
         }
     }, [userMetrics?.distance])
 
@@ -230,11 +210,12 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             titleVariant='titleLarge'
             titleStyle={cardStyles.titleText(colors)}
             titleNumberOfLines={2}
+            // {(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />}
             right={(props) => <ChangeIndicator change={emissionsChange}></ChangeIndicator>}
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
-           { graphRecords.length ?
-           <BarChart records={graphRecords} axisTitle={t('Emissions (kg Co2)')}
+           { userCarbonRecords?.length ?
+           <BarChart records={userCarbonRecords} axisTitle={t('Emissions (kg Co2)')}
            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
