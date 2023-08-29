@@ -113,6 +113,14 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                 beforeUpdate: (axis) => {
                   setNumVisibleDatasets(axis.chart.getVisibleDatasetCount())
                 },
+                ticks: {
+                  callback: timeAxis ? undefined : (value, i) => {
+                    const label = chartData[0].data[i].y;
+                    if (typeof label == 'string' && label.includes('\n'))
+                     return label.split('\n');
+                    return label;
+                  },
+                },
                 reverse: true,
                 stacked,
               },
