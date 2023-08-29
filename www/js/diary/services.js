@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import { getFormattedTimeRange, baseModeOf } from './diaryHelper';
+import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
@@ -231,7 +231,9 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       return place_gj;
     }
 
-    var confirmedPoints2Geojson = function(trip, locationList) {
+    var confirmedPoints2Geojson = function(trip, locationList, labelOptions) {
+      let labeledBaseMode = getBaseModeOfLabeledTrip(trip, labelOptions);
+
       let sectionsPoints;
       if (!trip.sections) {
         sectionsPoints = [locationList];
@@ -245,20 +247,21 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
       return sectionsPoints.map((sectionPoints, i) => {
         const section = trip.sections?.[i];
+        // if the trip is labeled, use the color for the labeled base mode
+        // otherwise, use the color for the sensed mode
+        const color = labeledBaseMode?.color || getBaseModeByKey(section?.sensed_mode_str)?.color || "#333";
         return {
           type: "Feature",
           geometry: {
             type: "LineString",
             coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
           },
-          style: {
-            color: baseModeOf(section?.sensed_mode_str)?.color || "#333",
-          }
+          style: { color },
         }
       });
     }
 
-    timeline.compositeTrip2Geojson = function(trip) {
+    timeline.compositeTrip2Geojson = function(trip, labelOptions) {
       if (trip == undefined) {
         return undefined;
       }
@@ -267,7 +270,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
       var features = [
         confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
         confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
-        ...confirmedPoints2Geojson(trip, trip.locations)
+        ...confirmedPoints2Geojson(trip, trip.locations, labelOptions)
       ];
 
       return {

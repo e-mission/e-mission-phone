@@ -242,6 +242,11 @@ const LabelTab = () => {
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
+    // if this is a trip that was just labeled, we need to recompute the geojson
+    // so that the new label's color is reflected in the map
+    if (newEntry.geojson && newEntry.userInput) {
+      newEntry.geojson = Timeline.compositeTrip2Geojson(newEntry, labelOptions);
+    }
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
     setTimelineMap(newTimelineMap);
 
