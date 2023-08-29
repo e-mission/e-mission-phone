@@ -179,8 +179,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             };
             let valueArray = createOrCollapseRange(userPastWeek.low, userPastWeek.high);
             let value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
-            graphRecords.push({label: 'certain', x: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`, y: valueArray[0]});
-            graphRecords.push({label: "uncertain",  x: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`, y: userPastWeek.high - userPastWeek.low})
+            graphRecords.push({label: 'certain', x: valueArray[0], y: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            graphRecords.push({label: "uncertain",  x: userPastWeek.high - userPastWeek.low, y: `Past Week\n(${formatDateRangeOfDays(thisWeekDistance)})`})
             tempUserCarbon.push({label: "past week", value: value});
            
             //calculate low-high and format range for prev week, if exists
@@ -191,8 +191,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 };
                 valueArray = createOrCollapseRange(userPrevWeek.low, userPrevWeek.high);
                 value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
-                graphRecords.push({label: 'certain', x: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`, y: valueArray[0]});
-                graphRecords.push({label: "uncertain",  x: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`, y: userPrevWeek.high - userPrevWeek.low})
+                graphRecords.push({label: 'certain', x: valueArray[0], y: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`});
+                graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `Previous Week\n(${formatDateRangeOfDays(lastWeekDistance)})`})
                 tempUserCarbon.push({label: "previous week", value: value});
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
@@ -203,7 +203,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
             
-            graphRecords.push({label: 'certain', x: 'if all taxi', y: worstCarbon});
+            graphRecords.push({label: 'certain', x: worstCarbon, y: 'if all taxi'});
             tempUserCarbon.push({label: "if all taxi", value: worstCarbon});
 
             //push in goals
@@ -220,7 +220,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     }, [userMetrics?.distance])
 
     //hardcoded here, could be read from config at later customization?
-    let carbonGoals = [{label:"US 2030", value: 54}, {label:"US 2050", value: 14}];
+    let carbonGoals = [{label:t('us-2030-goal'), value: 54}, {label:t('us-2050-goal'), value: 14}];
 
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
@@ -234,8 +234,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
            { graphRecords.length ?
-          <BarChart records={graphRecords} axisTitle={t('Emissions (kg Co2)')}
-            isHorizontal={false} stacked={true} timeAxis={false} lineAnnotations={carbonGoals}/>
+           <BarChart records={graphRecords} axisTitle={t('Emissions (kg Co2)')}
+           isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
