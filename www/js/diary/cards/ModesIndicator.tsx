@@ -67,7 +67,8 @@ const s = StyleSheet.create({
     borderRadius: 50,
     borderWidth: 1,
     flexDirection: 'row',
-    gap: 4,
+    flexWrap: 'wrap',
+    columnGap: 4,
   },
   mode: {
     flexDirection: 'row',
