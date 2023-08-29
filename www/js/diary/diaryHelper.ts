@@ -5,6 +5,7 @@ import moment from "moment";
 import { DateTime } from "luxon";
 
 const modeColors = {
+  pink: '#d43678',        // oklch(59% 0.2 0)       // e-car
   red: '#b9003d',         // oklch(50% 0.37 15)     // car
   orange: '#b25200',      // oklch(55% 0.37 50)     // air, hsr
   green: '#007e46',       // oklch(52% 0.37 155)    // bike
@@ -12,7 +13,7 @@ const modeColors = {
   periwinkle: '#5e45cd',  // oklch(50% 0.2 285)     // light rail, train, tram, subway
   magenta: '#8e35a1',     // oklch(50% 0.18 320)    // bus
   grey: '#484848',        // oklch(40% 0 0)         // unprocessed / unknown
-  taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, nonstandard modes
+  taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, user-defined modes
 }
 
 type BaseMode = {
@@ -35,14 +36,20 @@ const BaseModes: {[k: string]: BaseMode} = {
   AIR_OR_HSR: { name: "AIR_OR_HSR", icon: "airplane", color: modeColors.orange },
   // END MotionTypes
   CAR: { name: "CAR", icon: "car", color: modeColors.red },
+  E_CAR: { name: "E_CAR", icon: "car-electric", color: modeColors.pink },
+  E_BIKE: { name: "E_BIKE", icon: "bicycle-electric", color: modeColors.green },
+  E_SCOOTER: { name: "E_SCOOTER", icon: "scooter-electric", color: modeColors.periwinkle },
+  TAXI: { name: "TAXI", icon: "taxi", color: modeColors.red },
   BUS: { name: "BUS", icon: "bus-side", color: modeColors.magenta },
+  AIR: { name: "AIR", icon: "airplane", color: modeColors.orange },
   LIGHT_RAIL: { name: "LIGHT_RAIL", icon: "train-car-passenger", color: modeColors.periwinkle },
   TRAIN: { name: "TRAIN", icon: "train-car-passenger", color: modeColors.periwinkle },
   TRAM: { name: "TRAM", icon: "fas fa-tram", color: modeColors.periwinkle },
   SUBWAY: { name: "SUBWAY", icon: "subway-variant", color: modeColors.periwinkle },
   FERRY: { name: "FERRY", icon: "ferry", color: modeColors.taupe },
   TROLLEYBUS: { name: "TROLLEYBUS", icon: "bus-side", color: modeColors.taupe },
-  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey }
+  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey },
+  OTHER: { name: "OTHER", icon: "pencil-circle", color: modeColors.taupe },
 };
 
 type BaseModeKey = keyof typeof BaseModes;
