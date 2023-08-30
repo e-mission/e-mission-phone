@@ -25,10 +25,10 @@ const ChangeIndicator = ({ change }) => {
         if(change) {
             if(change.length == 1)
             {
-                let text = changeSign(change[0]) + formatForDisplay(change[0]);
+                let text = changeSign(change[0]) + formatForDisplay(Math.abs(change[0]));
                 return text;
             } else {
-                let text = changeSign(change[0]) + formatForDisplay(change[0]) + " / " + changeSign(change[1]) + formatForDisplay(change[1]);
+                let text = changeSign(change[0]) + formatForDisplay(Math.abs(change[0])) + " / " + changeSign(change[1]) + formatForDisplay(Math.abs(change[1]));
                 return text;
             }
         }
