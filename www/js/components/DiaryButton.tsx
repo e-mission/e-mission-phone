@@ -1,7 +1,7 @@
 import React from "react";
 import { StyleSheet } from 'react-native';
 import { Button, ButtonProps, useTheme } from 'react-native-paper';
-import { Icon } from "../components/Icon";
+import { Icon } from "./Icon";
 
 type Props = ButtonProps & { fillColor?: string };
 const DiaryButton = ({ children, fillColor, icon, ...rest } : Props) => {

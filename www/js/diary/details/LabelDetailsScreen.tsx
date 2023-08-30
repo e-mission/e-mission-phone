@@ -5,17 +5,17 @@
 import React, { useContext, useState } from "react";
 import { View, Modal, ScrollView, useWindowDimensions } from "react-native";
 import { Appbar, SegmentedButtons, Button, Surface, Text, useTheme } from "react-native-paper";
-import { LabelTabContext } from "./LabelTab";
-import LeafletView from "../components/LeafletView";
+import { LabelTabContext } from "../LabelTab";
+import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
-import MultilabelButtonGroup from "../survey/multilabel/MultiLabelButtonGroup";
-import UserInputButton from "../survey/enketo/UserInputButton";
-import { useAddressNames } from "./addressNamesHelper";
-import { Icon } from "../components/Icon";
+import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
+import UserInputButton from "../../survey/enketo/UserInputButton";
+import { useAddressNames } from "../addressNamesHelper";
+import { Icon } from "../../components/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
-import useDerivedProperties from "./useDerivedProperties";
-import StartEndLocations from "./StartEndLocations";
-import { useGeojsonForTrip } from "./timelineHelper";
+import useDerivedProperties from "../useDerivedProperties";
+import StartEndLocations from "../components/StartEndLocations";
+import { useGeojsonForTrip } from "../timelineHelper";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -88,12 +88,6 @@ const LabelScreenDetails = ({ route, navigation }) => {
                   </View>
                 ))}
               </View>
-            </View>
-            <View style={{marginVertical: 10, paddingHorizontal: '10%'}}>
-              {surveyOpt?.elementTag == 'multilabel' &&
-                  <MultilabelButtonGroup trip={trip} />}
-              {surveyOpt?.elementTag == 'enketo-trip-button'
-                  && <UserInputButton timelineEntry={trip} />}
             </View>
             {/* for multi-section trips, show a list of sections */}
             {formattedSectionProperties?.length > 1 &&

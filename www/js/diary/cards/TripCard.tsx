@@ -20,7 +20,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useAddressNames } from "../addressNamesHelper";
 import { LabelTabContext } from "../LabelTab";
 import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../StartEndLocations";
+import StartEndLocations from "../components/StartEndLocations";
 import ModesIndicator from "./ModesIndicator";
 import { useGeojsonForTrip } from "../timelineHelper";
 

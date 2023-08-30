@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, ViewProps } from 'react-native';
-import { Icon } from '../components/Icon';
+import { Icon } from '../../components/Icon';
 import { Text, Divider, useTheme } from 'react-native-paper';
 
 type Props = {

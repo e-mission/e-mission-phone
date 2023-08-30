@@ -6,7 +6,7 @@ import React, { useContext, useEffect, useState, useMemo } from "react";
 import { getAngularService } from "../../angular-react-helper";
 import { View, Modal, ScrollView, Pressable, useWindowDimensions } from "react-native";
 import { IconButton, Text, Dialog, useTheme, RadioButton, Button, TextInput } from "react-native-paper";
-import DiaryButton from "../../diary/DiaryButton";
+import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
