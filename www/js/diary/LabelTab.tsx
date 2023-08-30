@@ -169,9 +169,8 @@ const LabelTab = () => {
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
     populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
-    // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
+    // Fill place names on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
-      trip.geojson = Timeline.compositeTrip2Geojson(trip, labelOptions);
       fillLocationNamesOfTrip(trip);
     });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
@@ -242,11 +241,6 @@ const LabelTab = () => {
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
-    // if this is a trip that was just labeled, we need to recompute the geojson
-    // so that the new label's color is reflected in the map
-    if (newEntry.geojson && newEntry.userInput) {
-      newEntry.geojson = Timeline.compositeTrip2Geojson(newEntry, labelOptions);
-    }
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
     setTimelineMap(newTimelineMap);
 
