@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { formatForDisplay } from '../config/useImperialConfig';
 
 type Props = {
-    change: number[],
+    change: {low: number, high: number},
 }
 
 const ChangeIndicator = ({ change }) => {
@@ -21,11 +21,10 @@ const ChangeIndicator = ({ change }) => {
     };
 
     const changeText = useMemo(() => {
-        console.log("testing what change is", change);
         if(change) {
-            if(change.length == 1)
             let low = isNaN(change.low) ? '∞' : formatForDisplay(Math.abs(change.low));
             let high = isNaN(change.high) ? '∞' : formatForDisplay(Math.abs(change.high));
+            if(change.low == change.high)
             {
                 let text = changeSign(change.low) + low;
                 return text;
@@ -37,8 +36,8 @@ const ChangeIndicator = ({ change }) => {
     },[change])
   
     return (
-        (change[0]) ?
-        <View style={styles.view(change[0] > 0 ? colors.danger : colors.success)}>
+        (change.low) ?
+        <View style={styles.view(change.low > 0 ? colors.danger : colors.success)}>
             <Text style={styles.importantText(colors)}>
                 {`${changeText}% \n`}
             </Text>

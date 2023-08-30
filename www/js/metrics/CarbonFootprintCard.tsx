@@ -19,7 +19,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     const { colors } = useTheme();
     const { t } = useTranslation();
 
-    const [emissionsChange, setEmissionsChange] = useState([]);
+    const [emissionsChange, setEmissionsChange] = useState({});
 
     /*
      * metric2val is a function that takes a metric entry and a field and returns
@@ -123,24 +123,11 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
 
     //from two weeks fo low and high values, calculates low and high change
     const calculatePercentChange = function(pastWeekRange, previousWeekRange) {
-       let greaterLesserPct = {
+        let greaterLesserPct = {
             low: (pastWeekRange.low/previousWeekRange.low) * 100 - 100,
             high: (pastWeekRange.high/previousWeekRange.high) * 100 - 100,
         }
         return greaterLesserPct;
-    }
-
-    //digests low - high values to an array of 1 or 2 items (detects 0 diff)
-    const createOrCollapseRange = function(low, high) {
-        let range = [];
-        if(high == low) {
-            range.push(low);
-        }
-        else {
-            range.push(low);
-            range.push(high);
-        }
-        return range;
     }
 
     const userCarbonRecords = useMemo(() => {
@@ -170,10 +157,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
                 high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 
             };
-            let valueArray = createOrCollapseRange(userPastWeek.low, userPastWeek.high);
-            let value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
-            graphRecords.push({label: 'certain', x: valueArray[0], y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
             graphRecords.push({label: "uncertain",  x: userPastWeek.high - userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
+            graphRecords.push({label: 'certain', x: userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
            
             //calculate low-high and format range for prev week, if exists
             if(userLastWeekSummaryMap[0]) {
@@ -181,14 +166,10 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                     low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
                     high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
                 };
-                valueArray = createOrCollapseRange(userPrevWeek.low, userPrevWeek.high);
-                value = valueArray[1] ? valueArray[0] + '-' + valueArray[1] : valueArray[0];
-                graphRecords.push({label: 'certain', x: valueArray[0], y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
                 graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
-                let changeRange = createOrCollapseRange(pctChange.low, pctChange.high);
-                setEmissionsChange(changeRange);
+                setEmissionsChange(pctChange);
             } else {
                 setEmissionsChange({});
             }
@@ -220,7 +201,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 if (isNaN(aggCarbonData[i].values)) {
                     console.warn("WARNING in calculating groupCarbonRecords: value is NaN for mode " + aggCarbonData[i].key + ", changing to 0");
                     aggCarbonData[i].values = 0;
-                } 
+                }
             }
 
             let aggCarbon = {
