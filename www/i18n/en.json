@@ -369,7 +369,8 @@
             "demographics":"It will also request sociodemographic information such as your approximate age, gender, and household type. The sociodemographic factors can be used to understand the influence of lifestyle on travel behavior, as well as generalize the results to a broader population.",
             "open-source-data":"For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background at",
             "open-source-analysis":"the analysis pipeline at",
-            "open-source-dashboard":"and the dashboard metrics at"
+            "open-source-dashboard":"and the dashboard metrics at",
+            "on-nrel-site": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background, the analysis pipeline, and the dashboard metrics through links on the NREL OpenPATH website."
         },
         "opcode":{
             "header":"How we associate information with you",
@@ -387,7 +388,8 @@
             "and-in":"and in",
             "this-pub":" this publication ",
             "and":"and",
-            "fact-sheet":" fact sheet"
+            "fact-sheet":" fact sheet",
+            "on-nrel-site": " through links on the NREL OpenPATH website."
         },
         "rights":{
             "header":"Your rights",

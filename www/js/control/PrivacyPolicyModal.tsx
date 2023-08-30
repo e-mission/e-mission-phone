@@ -67,6 +67,8 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
                             <Text>{'\n'}</Text>
                             <Text style={styles.text}>{t('consent-text.what.demographics')}</Text>
                             <Text>{'\n'}</Text>
+                            <Text style={styles.text}>{t('consent-text.what.on-nrel-site')}</Text>
+                            {/* Linking is broken, look into enabling after migration
                             <Text style={styles.text}>
                                 {t('consent-text.what.open-source-data')}
                                 <Text
@@ -92,7 +94,7 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
                                     }}>
                                     {' '}https://github.com/e-mission/em-public-dashboard.git{' '}
                                 </Text>
-                            </Text>
+                            </Text> */}
                             <Text>{'\n'}</Text>
 
                             <Text style={styles.header}>{t('consent-text.opcode.header')}</Text>
@@ -110,6 +112,7 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
                             <Text style={styles.text}>{t('consent-text.who-sees.nrel-devs')}</Text>
                             <Text>{'\n'}</Text>                            
                             <Text style={styles.text}>{t('consent-text.who-sees.TSDC-info')}
+                                {/* Linking is broken, look into enabling after migration
                                 <Text
                                     style={styles.hyperlinkStyle(colors.primary)}
                                     onPress={() => {
@@ -132,7 +135,8 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
                                         Linking.openURL('https://www.nrel.gov/docs/fy18osti/70723.pdf');
                                     }}>
                                     {t('consent-text.who-sees.fact-sheet')}
-                                </Text>
+                                </Text> */}
+                                <Text style={styles.text}>{t('consent-text.who-sees.on-nrel-site')}</Text>
                             </Text>
                             <Text>{'\n'}</Text>  
 
@@ -140,13 +144,15 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
                             {yourRightsText}
                             <Text>{'\n'}</Text>
                             <Text style={styles.text}>{t('consent-text.rights.destroy-data-pt1')}
+                                {/* Linking is broken, look into enabling after migration
                                 <Text
                                     style={styles.hyperlinkStyle(colors.primary)}
                                     onPress={() => {
                                         Linking.openURL("mailto:k.shankari@nrel.gov");
                                     }}>
                                     k.shankari@nrel.gov
-                                </Text>
+                                </Text> */}
+                                <Text style={styles.text}>(k.shankari@nrel.gov)</Text>
                                 {t('consent-text.rights.destroy-data-pt2')}
                             </Text>
                             <Text>{'\n'}</Text>
