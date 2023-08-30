@@ -23,6 +23,7 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
       distance: formattedDistance,
       color: baseMode.color,
       icon: baseMode.icon,
+      text: trip.userInput.MODE.text,
     }];
   }
   return (
@@ -38,10 +39,15 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
               {`${section.distance} ${distanceSuffix}`}
             </Text>
           </View>
-          <View>
+          <View style={{maxWidth: 50, alignItems: 'center'}}>
             <Icon mode='contained' icon={section.icon}
               size={18} style={{ height: 32, width: 32 }}
               iconColor={colors.onPrimary} containerColor={section.color} />
+            {section.text &&
+              <Text variant='labelSmall' numberOfLines={2} style={{textAlign: 'center'}}>
+                {section.text}
+              </Text>
+            }
           </View>
         </View>
       ))}
