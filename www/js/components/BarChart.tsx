@@ -113,8 +113,8 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                 beforeUpdate: (axis) => {
                   setNumVisibleDatasets(axis.chart.getVisibleDatasetCount())
                 },
-                ticks: {
-                  callback: timeAxis ? undefined : (value, i) => {
+                ticks: timeAxis ? {} : {
+                  callback: (value, i) => {
                     const label = chartData[0].data[i].y;
                     if (typeof label == 'string' && label.includes('\n'))
                      return label.split('\n');
@@ -139,8 +139,9 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                   unit: 'day',
                   tooltipFormat: 'DDD', // Luxon "localized date with full month": e.g. August 6, 2014
                 } : {},
-                ticks: {
-                  callback: timeAxis ? undefined : (value, i) => {
+                ticks: timeAxis ? {} : {
+                  callback: (value, i) => {
+                    console.log("testing vertical", chartData, i);
                     const label = chartData[0].data[i].x;
                     if (typeof label == 'string' && label.includes('\n'))
                       return label.split('\n');
