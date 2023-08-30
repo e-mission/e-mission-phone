@@ -161,10 +161,10 @@ export function getDetectedModes(trip) {
 
 export function getFormattedSectionProperties(trip, ImperialConfig) {
   return trip.sections?.map((s) => ({
-    fmt_time: getLocalTimeString(s.start_local_dt),
-    fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
-    fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-    fmt_distance_suffix: ImperialConfig.distanceSuffix,
+    startTime: getLocalTimeString(s.start_local_dt),
+    duration: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
+    distance: ImperialConfig.getFormattedDistance(s.distance),
+    distanceSuffix: ImperialConfig.distanceSuffix,
     icon: getBaseModeByKey(s.sensed_mode_str)?.icon,
     color: getBaseModeByKey(s.sensed_mode_str)?.color || "#333",
   }));
