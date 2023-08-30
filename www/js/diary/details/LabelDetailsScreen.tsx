@@ -11,11 +11,12 @@ import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
 import UserInputButton from "../../survey/enketo/UserInputButton";
 import { useAddressNames } from "../addressNamesHelper";
-import { Icon } from "../../components/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../components/StartEndLocations";
 import { useGeojsonForTrip } from "../timelineHelper";
+import TripDescriptives from "./TripDescriptives";
+import TripSectionsDetails from "./TripSectionsDetails";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -24,9 +25,7 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { height: windowHeight } = useWindowDimensions();
   const { colors } = useTheme();
   const trip = timelineMap.get(route.params.tripId);
-  const { displayDate, displayStartTime, displayEndTime,
-          displayTime, formattedDistance, formattedSectionProperties,
-          distanceSuffix, detectedModes } = useDerivedProperties(trip);
+  const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
 
   const [ modesShown, setModesShown ] = useState<'labeled'|'detected'>('labeled');
@@ -51,70 +50,23 @@ const LabelScreenDetails = ({ route, navigation }) => {
             {trip?.userInput?.MODE?.value ?
               <SegmentedButtons onValueChange={v => setModesShown(v)} value={modesShown}
                 density='medium'
-                buttons={[
-                  {label: 'Labeled Mode', value: 'labeled'},
-                  {label: 'Detected Modes', value: 'detected'},
-                ]} />
+                buttons={[{label: 'Labeled Mode', value: 'labeled'},
+                          {label: 'Detected Modes', value: 'detected'}]} />
             :
               <Button mode='outlined' compact={true} textColor={colors.onBackground}
                 style={{height: 32}} contentStyle={{height:30}}>
                 Detected Modes
               </Button>
             }
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginVertical: 5}}>
-              <View style={{justifyContent: 'center'}}>
-                <Text style={{fontSize: 15}}>
-                  {t('diary.distance')}
-                </Text>
-                <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-                  {`${formattedDistance} ${distanceSuffix}`}
-                </Text>
-              </View>
-              <View style={{justifyContent: 'center'}}>
-                <Text style={{fontSize: 15}}>
-                  {t('diary.time')}
-                </Text>
-                <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-                  {displayTime}
-                </Text>
-              </View>
-              <View style={{justifyContent: 'center'}}>
-                {detectedModes?.map?.((pct, i) => (
-                  <View key={i} style={{flexDirection: 'row', alignItems: 'center'}}>
-                    <Icon icon={pct.icon} size={16} iconColor={pct.color} />
-                    <Text style={{fontSize: 13, fontWeight: 'bold'}}>
-                      {pct.pct}%
-                    </Text>
-                  </View>
-                ))}
-              </View>
+            <TripDescriptives trip={trip} />
+            <View style={{ marginVertical: 10, paddingHorizontal: '10%' }}>
+              {surveyOpt?.elementTag == 'multilabel' &&
+                <MultilabelButtonGroup trip={trip} />}
+              {surveyOpt?.elementTag == 'enketo-trip-button'
+                && <UserInputButton timelineEntry={trip} />}
             </View>
-            {/* for multi-section trips, show a list of sections */}
-            {formattedSectionProperties?.length > 1 &&
-              <View style={{marginTop: 15}}>
-                {formattedSectionProperties.map((section, i) => (
-                  <View key={i} style={{marginVertical: 4, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center'}}>
-                    <View>
-                      <Text style={{fontSize: 15}}> {section.fmt_time_range} </Text>
-                      <Text style={{fontSize: 13}}> {section.fmt_time} </Text>
-                    </View>
-                    <View>
-                      <Text style={{fontSize: 20}}>
-                        {`${section.fmt_distance} ${section.fmt_distance_suffix}`}
-                      </Text>
-                    </View>
-                    <View>
-                      <Icon mode='contained' icon={section.icon}
-                        size={18} style={{height: 32, width: 32}}
-                        iconColor={colors.onPrimary} containerColor={section.color} />
-                    </View>
-                  </View>
-                ))}
-              </View>
-            }
-
+            <TripSectionsDetails trip={trip} />
             {/* TODO: show speed graph here */}
-
           </Surface>
         </ScrollView>
       </SafeAreaView>
