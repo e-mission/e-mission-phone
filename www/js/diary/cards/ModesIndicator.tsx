@@ -9,10 +9,6 @@ import { Text, useTheme } from 'react-native-paper';
 
 const ModesIndicator = ({ trip, detectedModes, }) => {
 
-  // if there are no detected modes, or the only detected mode is UNKNOWN, return early
-  if (!detectedModes?.length) return;
-  if (detectedModes.length == 1 && detectedModes[0].mode == 'UNKNOWN') return;
-
   const { labelOptions } = useContext(LabelTabContext);
   const { colors } = useTheme();
 
@@ -33,7 +29,8 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
         </Text>
       </View>
     );
-  } else {
+  } else if (detectedModes?.length > 1 || detectedModes[0]?.mode != 'UNKNOWN') {
+    // show detected modes if there are more than one, or if there is only one and it's not UNKNOWN
     modeViews = (<>
       <Text style={{fontSize: 12, fontWeight: '500'}}>Detected:</Text>
       {detectedModes?.map?.((pct, i) => (
@@ -48,7 +45,7 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
     </>);
   }
 
-  return (
+  return modeViews && (
     <View style={{position: 'absolute', width: '100%'}}>
       <View style={[s.modesIndicator, {backgroundColor: indicatorBackgroundColor, borderColor: indicatorBorderColor}]}>
         {modeViews}
