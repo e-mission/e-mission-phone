@@ -2,9 +2,9 @@
     listed sections of the trip, and a graph of speed during the trip.
   Navigated to from the main LabelListScreen by clicking a trip card. */
 
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { View, Modal, ScrollView, useWindowDimensions } from "react-native";
-import { Appbar, Surface, Text, useTheme } from "react-native-paper";
+import { Appbar, SegmentedButtons, Button, Surface, Text, useTheme } from "react-native-paper";
 import { LabelTabContext } from "./LabelTab";
 import LeafletView from "../components/LeafletView";
 import { useTranslation } from "react-i18next";
@@ -15,10 +15,11 @@ import { Icon } from "../components/Icon";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useDerivedProperties from "./useDerivedProperties";
 import StartEndLocations from "./StartEndLocations";
+import { useGeojsonForTrip } from "./timelineHelper";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
-  const { surveyOpt, timelineMap } = useContext(LabelTabContext);
+  const { surveyOpt, timelineMap, labelOptions } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
   const { colors } = useTheme();
@@ -27,8 +28,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
           displayTime, formattedDistance, formattedSectionProperties,
           distanceSuffix, detectedModes } = useDerivedProperties(trip);
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
+
+  const [ modesShown, setModesShown ] = useState<'labeled'|'detected'>('labeled');
+  const tripGeojson = useGeojsonForTrip(trip, labelOptions, modesShown=='labeled' && trip?.userInput?.MODE?.value);
   const mapOpts = {minZoom: 3, maxZoom: 17};
-  
+
   return (
     <Modal visible={true}>
       <SafeAreaView style={{flex: 1}}>
@@ -43,7 +47,20 @@ const LabelScreenDetails = ({ route, navigation }) => {
         </Surface>
         <ScrollView style={{ paddingBottom: 30}}>
           <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, marginVertical: 18 }}>
-            <LeafletView geojson={trip.geojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} opts={mapOpts} />
+            <LeafletView geojson={tripGeojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} opts={mapOpts} />
+            {trip?.userInput?.MODE?.value ?
+              <SegmentedButtons onValueChange={v => setModesShown(v)} value={modesShown}
+                density='medium'
+                buttons={[
+                  {label: 'Labeled Mode', value: 'labeled'},
+                  {label: 'Detected Modes', value: 'detected'},
+                ]} />
+            :
+              <Button mode='outlined' compact={true} textColor={colors.onBackground}
+                style={{height: 32}} contentStyle={{height:30}}>
+                Detected Modes
+              </Button>
+            }
             <View style={{flexDirection: 'row', justifyContent: 'space-between', paddingHorizontal: 24, marginVertical: 5}}>
               <View style={{justifyContent: 'center'}}>
                 <Text style={{fontSize: 15}}>

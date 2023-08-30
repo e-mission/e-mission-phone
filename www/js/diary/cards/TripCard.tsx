@@ -22,6 +22,7 @@ import { LabelTabContext } from "../LabelTab";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../StartEndLocations";
 import ModesIndicator from "./ModesIndicator";
+import { useGeojsonForTrip } from "../timelineHelper";
 
 type Props = { trip: {[key: string]: any}};
 const TripCard = ({ trip }: Props) => {
@@ -33,7 +34,8 @@ const TripCard = ({ trip }: Props) => {
     distanceSuffix, displayTime, detectedModes } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { surveyOpt } = useContext(LabelTabContext);
+  const { surveyOpt, labelOptions } = useContext(LabelTabContext);
+  const tripGeojson = useGeojsonForTrip(trip, labelOptions, trip?.userInput?.MODE?.value);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -74,7 +76,7 @@ const TripCard = ({ trip }: Props) => {
           </View>
         </View>
         <View style={{flex: 1, paddingBottom: showAddNoteButton ? 8 : 0}}>{/* left panel */}
-          <LeafletView geojson={trip.geojson} opts={mapOpts}
+          <LeafletView geojson={tripGeojson} opts={mapOpts}
                         /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
                         style={[{minHeight: windowWidth / 2}, mapStyle]} />
