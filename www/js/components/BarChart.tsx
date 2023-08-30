@@ -26,12 +26,13 @@ type BarChartData = {
 type Props = {
   records: { label: string, x: number|string, y: number|string }[],
   axisTitle: string,
-  lineAnnotations?: { value: number, label: string }[],
+  lineAnnotations?: { value: number, label: string, color: string }[],
   isHorizontal?: boolean,
   timeAxis?: boolean,
   stacked?: boolean,
+  customPalette?: {},
 }
-const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked }: Props) => {
+const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked, customPalette }: Props) => {
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
@@ -91,7 +92,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
         data={{datasets: chartData.map((e, i) => ({
           ...e,
           // cycle through the default palette, repeat if necessary
-          backgroundColor: defaultPalette[i % defaultPalette.length],
+          backgroundColor: customPalette ? customPalette[chartData[i].label]: defaultPalette[i % defaultPalette.length],
         }))}}
         options={{
           indexAxis: indexAxis,
@@ -173,8 +174,8 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                   },
                   ...(isHorizontal ? { xMin: a.value, xMax: a.value }
                     : { yMin: a.value, yMax: a.value }),
-                  borderColor: colors.onBackground,
-                  borderWidth: 2,
+                  borderColor: a.color,
+                  borderWidth: 3,
                   borderDash: [3, 3],
                 } satisfies AnnotationOptions)),
               }

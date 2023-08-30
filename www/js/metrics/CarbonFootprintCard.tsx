@@ -167,6 +167,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                     high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
                 };
                 graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
+                graphRecords.push({label: 'certain', x: userPastWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 setEmissionsChange(pctChange);
@@ -188,7 +189,6 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             //separate data into weeks
             let thisWeekDistance = filterToRecentWeeks(aggMetrics?.distance)[0];
             console.log("testing agg metrics" , aggMetrics, thisWeekDistance);
-            //let lastWeekDistance = filterToRecentWeeks(aggMetrics?.distance)[1];
 
             let aggThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, "aggregate");
             let aggThisWeekSummary = generateSummaryFromData(aggThisWeekModeMap, "distance");
@@ -204,22 +204,37 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 }
             }
 
+            let groupRecords = [];
+
             let aggCarbon = {
                 low: FootprintHelper.getFootprintForMetrics(aggCarbonData, 0),
                 high: FootprintHelper.getFootprintForMetrics(aggCarbonData, FootprintHelper.getHighestFootprint()),
             }
-            let aggRange = createOrCollapseRange(aggCarbon.low, aggCarbon.high);
-
-            let groupRecords = [];
-            groupRecords.push({label: 'certain', x: aggRange[0], y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
-            groupRecords.push({label: "uncertain",  x: aggCarbon.high - aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
+            console.log("testing group past week", aggCarbon);
+            groupRecords.push({label: "uncertain",  x: aggCarbon.high - aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            groupRecords.push({label: 'certain', x: aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
 
             return groupRecords;
         }
     }, [aggMetrics])
 
+    const chartData = useMemo(() => {
+        let tempChartData = [];
+        if(userCarbonRecords?.length) {
+            tempChartData = tempChartData.concat(userCarbonRecords);
+        }
+        if(groupCarbonRecords?.length) {
+            tempChartData = tempChartData.concat(groupCarbonRecords);
+        }
+        tempChartData = tempChartData.reverse();
+        console.log("testing chart data", tempChartData);
+        return tempChartData;
+    }, [userCarbonRecords, groupCarbonRecords]);
+
     //hardcoded here, could be read from config at later customization?
-    let carbonGoals = [{label: t('main-metrics.us-2030-goal'), value: 54}, {label: t('main-metrics.us-2050-goal'), value: 14}];
+    let carbonGoals = [ {label: t('main-metrics.us-2030-goal'), value: 54, color: colors.danger}, 
+                        {label: t('main-metrics.us-2050-goal'), value: 14, color: colors.warn}];
+    let colorPalette = {certain: colors.primary, uncertain: colors.primaryContainer};
 
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
@@ -229,19 +244,18 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             titleVariant='titleLarge'
             titleStyle={cardStyles.titleText(colors)}
             titleNumberOfLines={2}
-            // {(props) => <IconButton {...props} icon="dots-vertical" onPress={() => {}} />}
             right={(props) => <ChangeIndicator change={emissionsChange}></ChangeIndicator>}
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
-           { userCarbonRecords?.length ?
-           <BarChart records={userCarbonRecords.concat(groupCarbonRecords?.length ? groupCarbonRecords : [])} axisTitle={t('main-metrics.footprint')+' (kg C02)'}
-           isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals}/>
-        :
-          <View style={{flex: 1, justifyContent: 'center'}}>
-            <Text variant='labelMedium' style={{textAlign: 'center'}}>
-              {t('metrics.chart-no-data')}
-            </Text>
-          </View>
+            { chartData?.length > 0 ?
+            <BarChart records={chartData} axisTitle={t('main-metrics.footprint')+' (kg C02)'}
+            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals} customPalette={colorPalette}/>
+            :
+            <View style={{flex: 1, justifyContent: 'center'}}>
+                <Text variant='labelMedium' style={{textAlign: 'center'}}>
+                {t('metrics.chart-no-data')}
+                </Text>
+            </View>
         }
         </Card.Content>
         </Card>
