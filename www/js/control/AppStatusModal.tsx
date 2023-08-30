@@ -383,7 +383,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
      //load when ready
      useEffect(() => {
-        if (appConfig) {
+        if (appConfig && window['device'].platform) {
             setPlatform(window['device'].platform.toLowerCase());
             setOsver(window['device'].version.split(".")[0]);
 
