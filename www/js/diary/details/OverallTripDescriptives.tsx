@@ -8,26 +8,20 @@ import { useTranslation } from 'react-i18next';
 const OverallTripDescriptives = ({ trip }) => {
 
   const { t } = useTranslation();
-  const { displayTime, formattedDistance, distanceSuffix, detectedModes } = useDerivedProperties(trip);
+  const { displayStartTime, displayEndTime, displayTime,
+          formattedDistance, distanceSuffix, detectedModes } = useDerivedProperties(trip);
 
   return (
     <View style={{ paddingHorizontal: 10, marginVertical: 5 }}>
-      <Text variant='titleMedium'>Overall</Text>
+      <Text variant='titleMedium' style={{textAlign: 'center'}}>Overall</Text>
       <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
         <View style={{ justifyContent: 'center' }}>
-          <Text style={{ fontSize: 15 }}>
-            {t('diary.distance')}
-          </Text>
-          <Text style={{ fontSize: 13, fontWeight: 'bold' }}>
-            {`${formattedDistance} ${distanceSuffix}`}
-          </Text>
+          <Text variant='labelLarge'> {displayTime} </Text>
+          <Text variant='bodyMedium'> {`${displayStartTime} - ${displayEndTime}`} </Text>
         </View>
         <View style={{ justifyContent: 'center' }}>
-          <Text style={{ fontSize: 15 }}>
-            {t('diary.time')}
-          </Text>
-          <Text style={{ fontSize: 13, fontWeight: 'bold' }}>
-            {displayTime}
+          <Text variant='bodyLarge'>
+            {`${formattedDistance} ${distanceSuffix}`}
           </Text>
         </View>
         <View style={{ justifyContent: 'center' }}>

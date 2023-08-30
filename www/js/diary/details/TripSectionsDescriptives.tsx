@@ -29,12 +29,12 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
     <View style={{ marginTop: 15 }}>
       {sections.map((section, i) => (
         <View key={i} style={{ marginVertical: 4, marginHorizontal: 10, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-          <View>
-            <Text style={{ fontSize: 15 }}> {section.duration} </Text>
-            <Text style={{ fontSize: 13 }}> {section.startTime} </Text>
+          <View style={{ flexBasis: 100 }}>
+            <Text variant='labelLarge'> {section.duration} </Text>
+            <Text variant='bodyMedium'> {section.startTime} </Text>
           </View>
           <View>
-            <Text style={{ fontSize: 20 }}>
+            <Text variant='bodyLarge'>
               {`${section.distance} ${distanceSuffix}`}
             </Text>
           </View>

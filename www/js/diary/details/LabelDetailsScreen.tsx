@@ -47,10 +47,12 @@ const LabelScreenDetails = ({ route, navigation }) => {
         <ScrollView style={{ paddingBottom: 30}}>
           <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, rowGap: 12 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
-            {surveyOpt?.elementTag == 'multilabel' &&
-              <MultilabelButtonGroup trip={trip} buttonsInline={true} />}
-            {surveyOpt?.elementTag == 'enketo-trip-button'
-              && <UserInputButton timelineEntry={trip} />}
+            <View style={{ paddingVertical: 10 }}>
+              {surveyOpt?.elementTag == 'multilabel' &&
+                <MultilabelButtonGroup trip={trip} buttonsInline={true} />}
+              {surveyOpt?.elementTag == 'enketo-trip-button'
+                && <UserInputButton timelineEntry={trip} />}
+            </View>
 
             {/* Full-size Leaflet map, with zoom controls */}
             <LeafletView geojson={tripGeojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} opts={mapOpts} />
