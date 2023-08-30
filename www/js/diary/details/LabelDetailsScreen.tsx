@@ -45,8 +45,18 @@ const LabelScreenDetails = ({ route, navigation }) => {
             displayStartName={tripStartDisplayName} displayEndName={tripEndDisplayName} />
         </Surface>
         <ScrollView style={{ paddingBottom: 30}}>
-          <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, marginVertical: 18 }}>
+          <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, rowGap: 12 }}>
+            {/* MultiLabel or UserInput button, inline on one row */}
+            {surveyOpt?.elementTag == 'multilabel' &&
+              <MultilabelButtonGroup trip={trip} buttonsInline={true} />}
+            {surveyOpt?.elementTag == 'enketo-trip-button'
+              && <UserInputButton timelineEntry={trip} />}
+
+            {/* Full-size Leaflet map, with zoom controls */}
             <LeafletView geojson={tripGeojson} style={{width: '100%', height: windowHeight/2, marginBottom: 10}} opts={mapOpts} />
+
+            {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
+              otherwise, just show "Detected" */}
             {trip?.userInput?.MODE?.value ?
               <SegmentedButtons onValueChange={v => setModesShown(v)} value={modesShown}
                 density='medium'
@@ -58,14 +68,15 @@ const LabelScreenDetails = ({ route, navigation }) => {
                 Detected Modes
               </Button>
             }
-            <TripDescriptives trip={trip} />
-            <View style={{ marginVertical: 10, paddingHorizontal: '10%' }}>
-              {surveyOpt?.elementTag == 'multilabel' &&
-                <MultilabelButtonGroup trip={trip} />}
-              {surveyOpt?.elementTag == 'enketo-trip-button'
-                && <UserInputButton timelineEntry={trip} />}
-            </View>
-            <TripSectionsDetails trip={trip} />
+
+            {/* section-by-section breakdown of duration, distance, and mode */}
+            <TripSectionsDetails trip={trip} showLabeledMode={modesShown=='labeled'} />
+            {/* Overall trip duration, distance, and modes.
+              Only show this when multiple sections are shown, and we are showing detected modes.
+              If we just showed the labeled mode or a single section, this would be redundant. */}
+            { modesShown == 'detected' && trip?.sections?.length > 1 &&
+              <TripDescriptives trip={trip} />
+            }
             {/* TODO: show speed graph here */}
           </Surface>
         </ScrollView>
