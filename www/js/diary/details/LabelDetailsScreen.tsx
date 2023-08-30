@@ -15,8 +15,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useDerivedProperties from "../useDerivedProperties";
 import StartEndLocations from "../components/StartEndLocations";
 import { useGeojsonForTrip } from "../timelineHelper";
-import TripDescriptives from "./TripDescriptives";
-import TripSectionsDetails from "./TripSectionsDetails";
+import TripSectionsDescriptives from "./TripSectionsDescriptives";
+import OverallTripDescriptives from "./OverallTripDescriptives";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -70,12 +70,12 @@ const LabelScreenDetails = ({ route, navigation }) => {
             }
 
             {/* section-by-section breakdown of duration, distance, and mode */}
-            <TripSectionsDetails trip={trip} showLabeledMode={modesShown=='labeled'} />
+            <TripSectionsDescriptives trip={trip} showLabeledMode={modesShown=='labeled'} />
             {/* Overall trip duration, distance, and modes.
               Only show this when multiple sections are shown, and we are showing detected modes.
               If we just showed the labeled mode or a single section, this would be redundant. */}
             { modesShown == 'detected' && trip?.sections?.length > 1 &&
-              <TripDescriptives trip={trip} />
+              <OverallTripDescriptives trip={trip} />
             }
             {/* TODO: show speed graph here */}
           </Surface>

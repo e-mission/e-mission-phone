@@ -5,7 +5,7 @@ import useDerivedProperties from '../useDerivedProperties';
 import { Icon } from '../../components/Icon';
 import { useTranslation } from 'react-i18next';
 
-const TripDescriptives = ({ trip }) => {
+const OverallTripDescriptives = ({ trip }) => {
 
   const { t } = useTranslation();
   const { displayTime, formattedDistance, distanceSuffix, detectedModes } = useDerivedProperties(trip);
@@ -42,4 +42,4 @@ const TripDescriptives = ({ trip }) => {
   );
 }
 
-export default TripDescriptives;
+export default OverallTripDescriptives;

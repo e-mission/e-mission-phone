@@ -6,7 +6,7 @@ import useDerivedProperties from '../useDerivedProperties';
 import { getBaseModeOfLabeledTrip } from '../diaryHelper';
 import { LabelTabContext } from '../LabelTab';
 
-const TripSectionsDetails = ({ trip, showLabeledMode=false }) => {
+const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
 
   const { labelOptions } = useContext(LabelTabContext);
   const { displayStartTime, displayTime, formattedDistance,
@@ -49,4 +49,4 @@ const TripSectionsDetails = ({ trip, showLabeledMode=false }) => {
   );
 }
 
-export default TripSectionsDetails;
+export default TripSectionsDescriptives;
