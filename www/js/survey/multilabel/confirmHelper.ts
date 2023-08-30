@@ -81,8 +81,9 @@ export function getLabelInputDetails(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (inputDetails) return inputDetails;
 
-  if (appConfig.intro.program_or_study != 'program') {
-    // if this is a study, just return the base input details
+  if (!appConfig.intro.mode_studied) {
+    /* If there is no mode of interest, we don't need REPLACED_MODE.
+      So just return the base input details. */
     return baseLabelInputDetails;
   }
   // else this is a program, so add the REPLACED_MODE
