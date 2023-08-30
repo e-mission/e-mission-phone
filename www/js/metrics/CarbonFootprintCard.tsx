@@ -189,6 +189,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 let changeRange = createOrCollapseRange(pctChange.low, pctChange.high);
                 setEmissionsChange(changeRange);
+            } else {
+                setEmissionsChange({});
             }
             
             //calculate worst-case carbon footprint

@@ -24,11 +24,13 @@ const ChangeIndicator = ({ change }) => {
         console.log("testing what change is", change);
         if(change) {
             if(change.length == 1)
+            let low = isNaN(change.low) ? '∞' : formatForDisplay(Math.abs(change.low));
+            let high = isNaN(change.high) ? '∞' : formatForDisplay(Math.abs(change.high));
             {
-                let text = changeSign(change[0]) + formatForDisplay(Math.abs(change[0]));
+                let text = changeSign(change.low) + low;
                 return text;
             } else {
-                let text = changeSign(change[0]) + formatForDisplay(Math.abs(change[0])) + " / " + changeSign(change[1]) + formatForDisplay(Math.abs(change[1]));
+                let text = changeSign(change.low) + low + " / " + changeSign(change.high) + high;
                 return text;
             }
         }
