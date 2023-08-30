@@ -314,9 +314,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
         setExplanationList(tempExplanations);
   
-        //I don't see this applied anywhere pre-migration
-        //message is about medium accuracy settings
-        //should there be a check set up for this??
+        //waiting on samsung feedback, need more information
         setBackgroundRestricted(false);
         if(window['device'].manufacturer.toLowerCase() == "samsung") {
           setBackgroundRestricted(true);
