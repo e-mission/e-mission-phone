@@ -12,7 +12,7 @@ import { LabelTabContext } from "../../diary/LabelTab";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
 import { getLabelInputDetails, getLabelInputs } from "./confirmHelper";
 
-const MultilabelButtonGroup = ({ trip }) => {
+const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const { repopulateTimelineEntry, labelOptions } = useContext(LabelTabContext);
@@ -74,7 +74,7 @@ const MultilabelButtonGroup = ({ trip }) => {
   const inputKeys = Object.keys(trip.inputDetails);
   return (<>
     <View style={{flexDirection: 'row', alignItems: 'center'}}>
-      <View style={{width: 'calc(100% - 20px)'}}>
+      <View style={{flex: 1, flexDirection: buttonsInline ? 'row' : 'column', columnGap: 8}}>
         {inputKeys.map((key, i) => {
           const input = trip.inputDetails[key];
           const inputIsConfirmed = trip.userInput[input.name];
@@ -88,7 +88,7 @@ const MultilabelButtonGroup = ({ trip }) => {
           const btnText = inputIsConfirmed?.text || inputIsInferred?.text || input.choosetext;
 
           return (
-            <View key={i}>
+            <View key={i} style={{flex: 1}}>
               <Text>{t(input.labeltext)}</Text>
               <DiaryButton fillColor={fillColor}
                 onPress={(e) => setModalVisibleFor(input.name)}>
