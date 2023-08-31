@@ -1,18 +1,13 @@
 import React from 'react';
 import { SegmentedButtons, SegmentedButtonsProps, useTheme } from "react-native-paper";
 
-type Props = Omit<SegmentedButtonsProps, 'buttons'|'value'|'multiSelect'> & {
-  onValueChange: (value: string) => void,
-  value: string,
-  options: { icon: string, value: string }[],
-}
-const ToggleSwitch = ({ options, onValueChange, value, ...rest }: Props) => {
+const ToggleSwitch = ({ value, buttons, ...rest}: SegmentedButtonsProps) => {
 
-  const { colors} = useTheme();
+  const { colors } = useTheme();
 
   return (
-    <SegmentedButtons onValueChange={onValueChange} value={value}
-      buttons={options.map(o => ({
+    <SegmentedButtons value={value as any} onValueChange={v => rest.onValueChange(v as any)}
+      buttons={buttons.map(o => ({
         value: o.value,
         icon: o.icon,
         uncheckedColor: colors.onSurfaceDisabled,
@@ -23,6 +18,7 @@ const ToggleSwitch = ({ options, onValueChange, value, ...rest }: Props) => {
           borderBottomWidth: rest.density == 'high' ? 0 : 1,
           backgroundColor: value == o.value ? colors.elevation.level2 : colors.surfaceDisabled,
         },
+        ...o
       }))} {...rest} />
   )
 }

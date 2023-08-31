@@ -70,9 +70,9 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         right={() =>
           <View style={{gap: 3}}>
             <ToggleSwitch density='high' value={viewMode} onValueChange={(v) => setViewMode(v as any)}
-              options={[{ icon: 'abacus', value: 'details' }, { icon: 'chart-bar', value: 'graph' }]} />
+              buttons={[{ icon: 'abacus', value: 'details' }, { icon: 'chart-bar', value: 'graph' }]} />
             <ToggleSwitch density='high' value={populationMode} onValueChange={(p) => setPopulationMode(p as any)}
-              options={[{ icon: 'account', value: 'user' }, { icon: 'account-group', value: 'aggregate' }]} />
+              buttons={[{ icon: 'account', value: 'user' }, { icon: 'account-group', value: 'aggregate' }]} />
           </View>
         }
         style={cardStyles.title(colors)} />
