@@ -5,7 +5,7 @@ import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
 import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
-import Annotation, { AnnotationOptions } from 'chartjs-plugin-annotation';
+import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
 
 Chart.register(
   CategoryScale,
@@ -26,7 +26,7 @@ type BarChartData = {
 type Props = {
   records: { label: string, x: number|string, y: number|string }[],
   axisTitle: string,
-  lineAnnotations?: { value: number, label: string }[],
+  lineAnnotations?: { value: number, label?: string, position?: LabelPosition }[],
   isHorizontal?: boolean,
   timeAxis?: boolean,
   stacked?: boolean,
@@ -168,7 +168,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                     backgroundColor: 'rgba(0,0,0,.7)',
                     color: 'rgba(255,255,255,1)',
                     font: { size: 10 },
-                    position: 'start',
+                    position: a.position || 'start',
                     content: a.label,
                   },
                   ...(isHorizontal ? { xMin: a.value, xMax: a.value }
