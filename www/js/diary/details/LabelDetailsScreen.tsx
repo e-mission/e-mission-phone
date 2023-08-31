@@ -17,6 +17,7 @@ import StartEndLocations from "../components/StartEndLocations";
 import { useGeojsonForTrip } from "../timelineHelper";
 import TripSectionsDescriptives from "./TripSectionsDescriptives";
 import OverallTripDescriptives from "./OverallTripDescriptives";
+import ToggleSwitch from "../../components/ToggleSwitch";
 
 const LabelScreenDetails = ({ route, navigation }) => {
 
@@ -60,10 +61,8 @@ const LabelScreenDetails = ({ route, navigation }) => {
             {/* If trip is labeled, show a toggle to switch between "Labeled Mode" and "Detected Modes"
               otherwise, just show "Detected" */}
             {trip?.userInput?.MODE?.value ?
-              <SegmentedButtons onValueChange={v => setModesShown(v)} value={modesShown}
-                density='medium'
-                buttons={[{label: 'Labeled Mode', value: 'labeled'},
-                          {label: 'Detected Modes', value: 'detected'}]} />
+              <ToggleSwitch onValueChange={v => setModesShown(v)} value={modesShown} density='medium'
+                buttons={[{label: 'Labeled Mode', value: 'labeled'}, {label: 'Detected Modes', value: 'detected'}]} />
             :
               <Button mode='outlined' compact={true} textColor={colors.onBackground}
                 style={{height: 32}} contentStyle={{height:30}}>

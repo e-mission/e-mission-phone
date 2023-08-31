@@ -15,6 +15,8 @@ const AppTheme = {
     background: '#edf1f6', // lch(95% 3 250) - background of label screen, other screens still have this as CSS .pane
     surface: '#fafdff', // lch(99% 30 250)
     surfaceVariant: '#e0f0ff', // lch(94% 50 250) - background of DataTable
+    surfaceDisabled: '#c7e0f7', // lch(88% 15 250)
+    onSurfaceDisabled: '#3a4955', // lch(30% 10 250)
     elevation: {
       level0: 'transparent',
       level1: '#fafdff', // lch(99% 30 250)
