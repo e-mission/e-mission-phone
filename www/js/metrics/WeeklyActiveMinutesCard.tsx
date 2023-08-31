@@ -14,15 +14,10 @@ const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = typeof ACTIVE_MODES[number];
 
 type Props = { userMetrics: MetricsData }
-const ActiveMinutesCard = ({ userMetrics }: Props) => {
+const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
 
   const { colors } = useTheme();
   const { t } = useTranslation();
-
-  userMetrics?.duration.forEach(day => {
-    day.label_walk = day.label_walk || 400 + (Math.random() * 300);
-    day.label_bike = day.label_bike || 200 + (Math.random() * 300);
-  });
   
   // number of minutes for each of [walk, bike]
   const activeModesDurations = useMemo(() => {
@@ -88,4 +83,4 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
   )
 }
 
-export default ActiveMinutesCard;
+export default WeeklyActiveMinutesCard;

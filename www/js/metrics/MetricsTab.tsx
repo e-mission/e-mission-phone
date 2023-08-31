@@ -9,7 +9,7 @@ import { MetricsData } from "./metricsTypes";
 import MetricsCard from "./MetricsCard";
 import { formatForDisplay, useImperialConfig } from "../config/useImperialConfig";
 import MetricsDateSelect from "./MetricsDateSelect";
-import ActiveMinutesCard from "./ActiveMinutesCard";
+import WeeklyActiveMinutesCard from "./WeeklyActiveMinutesCard";
 import { secondsToHours, secondsToMinutes } from "./metricsHelper";
 import CarbonFootprintCard from "./CarbonFootprintCard";
 import Carousel from "../components/Carousel";
@@ -69,6 +69,12 @@ const MetricsTab = () => {
     // TODO
   }
 
+  // fake data for testing active minutes - TODO: remove
+  userMetrics?.duration.forEach((day, i) => {
+    day.label_walk = day.label_walk || 65*i + (Math.random() * 600);
+    day.label_bike = day.label_bike || 25*i + (Math.random() * 400);
+  });
+
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * .85;
 
@@ -80,7 +86,9 @@ const MetricsTab = () => {
     </Appbar.Header>
     <ScrollView style={{paddingVertical: 12}}>
       <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics}></CarbonFootprintCard>
-      <ActiveMinutesCard userMetrics={userMetrics} />
+      <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+        <WeeklyActiveMinutesCard userMetrics={userMetrics} />
+      </Carousel>
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <MetricsCard cardTitle={t('main-metrics.distance')}
           userMetricsDays={userMetrics?.distance}
