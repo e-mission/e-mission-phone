@@ -163,8 +163,8 @@
         "worst-case": "If all 'taxi':",
         "label-to-squish": "Label trips to collapse the range into a single number",
         "lastweek": "My last week value:",
-        "us-2030-goal": "❗ US 2030 Goal",
-        "us-2050-goal": "⚠️ US 2050 Goal",
+        "us-2030-goal": "2030 Guideline",
+        "us-2050-goal": "2050 Guideline",
         "past-week" : "Past Week:", 
         "prev-week" : "Previous Week:",
         "calories": "My Calories",
@@ -177,7 +177,10 @@
         "equals-icecream_other": "Equals at least {{count}} half cups vanilla ice cream",
         "equals-bananas_one": "Equals at least {{count}} banana",
         "equals-bananas_other": "Equals at least {{count}} bananas",
-        "active-minutes": "My Active Minutes"
+        "active-minutes": "My Active Minutes",
+        "labeled": "Labeled",
+        "unlabeled": "Unlabeled",
+        "footprint-label": "Footprint (kg Co2)"
     },
 
     "main-inf-scroll" : {

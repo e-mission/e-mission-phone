@@ -30,9 +30,9 @@ type Props = {
   isHorizontal?: boolean,
   timeAxis?: boolean,
   stacked?: boolean,
-  customPalette?: {},
+  meter?: {high: number, middle: number, dash_key: string},
 }
-const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked, customPalette }: Props) => {
+const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked, meter }: Props) => {
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
@@ -86,19 +86,79 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
     return { flex: 1 };
   }
 
+  function getBarHeight(stacks) {
+    let totalHeight = 0;
+    console.log("ctx stacks", stacks.x);
+    for(let val in stacks.x) {
+      if(!val.startsWith('_')){
+        totalHeight += stacks.x[val];
+        console.log("ctx added ", val );
+      }
+    }
+    return totalHeight;
+  }
+
+  //fill pattern creation
+    //https://stackoverflow.com/questions/28569667/fill-chart-js-bar-chart-with-diagonal-stripes-or-other-patterns
+  function createDiagonalPattern(color = 'black') {
+    let shape = document.createElement('canvas')
+    shape.width = 10
+    shape.height = 10
+    let c = shape.getContext('2d')
+    c.strokeStyle = color
+    c.lineWidth = 2
+    c.beginPath()
+    c.moveTo(2, 0)
+    c.lineTo(10, 8)
+    c.stroke()
+    c.beginPath()
+    c.moveTo(0, 8)
+    c.lineTo(2, 10)
+    c.stroke()
+    return c.createPattern(shape, 'repeat')
+  }
+  
   return (
     <View style={[getChartHeight()]}>
       <Bar ref={barChartRef}
         data={{datasets: chartData.map((e, i) => ({
           ...e,
           // cycle through the default palette, repeat if necessary
-          backgroundColor: customPalette ? customPalette[chartData[i].label]: defaultPalette[i % defaultPalette.length],
+          backgroundColor: (ctx: any) => {
+            if(meter) {
+              let bar_height = getBarHeight(ctx.parsed._stacks);
+              console.debug("bar height for", ctx.raw.y," is ", bar_height, "which in chart is", chartData[i]);
+              //if "unlabeled", etc -> stripes
+              if(chartData[i].label == meter.dash_key) {
+                if (bar_height > meter.high) return createDiagonalPattern(colors.danger);
+                else if (bar_height > meter.middle) return createDiagonalPattern(colors.warn);
+                else return createDiagonalPattern(colors.success);
+              }
+              //if :labeled", etc -> solid
+              if (bar_height > 54) return colors.danger;
+              else if (bar_height > 14) return colors.warn;
+              else return colors.success;
+            }
+            return defaultPalette[i % defaultPalette.length];
+          },
+          borderColor: (ctx: any) => {
+            let bar_height = getBarHeight(ctx.parsed._stacks);
+            if(meter) {
+              if (bar_height > 54) return colors.danger;
+              else if (bar_height > 14) return colors.warn;
+              else return colors.success;
+          }}
         }))}}
         options={{
           indexAxis: indexAxis,
           responsive: true,
           maintainAspectRatio: false,
           resizeDelay: 1,
+          elements: {
+            bar: {
+              borderWidth: meter ? 2 : 0,
+            }
+          },
           scales: {
             ...(isHorizontal ? {
               y: {

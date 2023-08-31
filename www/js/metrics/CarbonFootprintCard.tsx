@@ -157,8 +157,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
                 high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 
             };
-            graphRecords.push({label: "uncertain",  x: userPastWeek.high - userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
-            graphRecords.push({label: 'certain', x: userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPastWeek.high - userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
+            graphRecords.push({label: t('main-metrics.labeled'), x: userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
            
             //calculate low-high and format range for prev week, if exists
             if(userLastWeekSummaryMap[0]) {
@@ -166,8 +166,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                     low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
                     high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
                 };
-                graphRecords.push({label: "uncertain",  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
-                graphRecords.push({label: 'certain', x: userPastWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
+                graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
+                graphRecords.push({label: t('main-metrics.labeled'), x: userPastWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 setEmissionsChange(pctChange);
@@ -177,7 +177,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
-            graphRecords.push({label: 'certain', x: worstCarbon, y: `${t('main-metrics.worst-case')}`});
+            graphRecords.push({label: t('main-metrics.labeled'), x: worstCarbon, y: `${t('main-metrics.worst-case')}`});
 
             return graphRecords;
         }
@@ -211,8 +211,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 high: FootprintHelper.getFootprintForMetrics(aggCarbonData, FootprintHelper.getHighestFootprint()),
             }
             console.log("testing group past week", aggCarbon);
-            groupRecords.push({label: "uncertain",  x: aggCarbon.high - aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
-            groupRecords.push({label: 'certain', x: aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            groupRecords.push({label: t('main-metrics.unlabeled'),  x: aggCarbon.high - aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            groupRecords.push({label: t('main-metrics.labeled'), x: aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
 
             return groupRecords;
         }
@@ -234,7 +234,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     //hardcoded here, could be read from config at later customization?
     let carbonGoals = [ {label: t('main-metrics.us-2030-goal'), value: 54, color: colors.danger}, 
                         {label: t('main-metrics.us-2050-goal'), value: 14, color: colors.warn}];
-    let colorPalette = {certain: colors.primary, uncertain: colors.primaryContainer};
+    let meter = { dash_key: t('main-metrics.unlabeled'), high: 54, middle: 14 };
 
     return (
         <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
@@ -248,8 +248,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
             { chartData?.length > 0 ?
-            <BarChart records={chartData} axisTitle={t('main-metrics.footprint')+' (kg C02)'}
-            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals} customPalette={colorPalette}/>
+            <BarChart records={chartData} axisTitle={t('main-metrics.footprint-label')}
+            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals} meter={meter} />
             :
             <View style={{flex: 1, justifyContent: 'center'}}>
                 <Text variant='labelMedium' style={{textAlign: 'center'}}>
