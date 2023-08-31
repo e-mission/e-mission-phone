@@ -13,6 +13,7 @@ import WeeklyActiveMinutesCard from "./WeeklyActiveMinutesCard";
 import { secondsToHours, secondsToMinutes } from "./metricsHelper";
 import CarbonFootprintCard from "./CarbonFootprintCard";
 import Carousel from "../components/Carousel";
+import DailyActiveMinutesCard from "./DailyActiveMinutesCard";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -88,6 +89,7 @@ const MetricsTab = () => {
       <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics}></CarbonFootprintCard>
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <WeeklyActiveMinutesCard userMetrics={userMetrics} />
+        <DailyActiveMinutesCard userMetrics={userMetrics} />
       </Carousel>
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <MetricsCard cardTitle={t('main-metrics.distance')}
