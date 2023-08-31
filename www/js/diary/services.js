@@ -2,115 +2,11 @@
 
 import angular from 'angular';
 import { getFormattedTimeRange, motionTypeOf } from './diaryHelper';
+import { SurveyOptions } from '../survey/survey';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
-.factory('DiaryHelper', function($http){
-  var dh = {};
-
-  // Temporary function to avoid repear in getPercentages ret val.
-  var filterRunning = function(mode) {
-    if (mode == 'MotionTypes.RUNNING') {
-      return 'MotionTypes.WALKING';
-    } else {
-      return mode;
-    }
-  }
-  dh.getPercentages = function(trip) {
-    if (!trip.sections?.length) return {};
-    // we use a Map here to make it easier to work with the for loop below
-    let dists = {};
-
-    var totalDist = 0;
-    for (var i=0; i<trip.sections.length; i++) {
-      let filteredMode = filterRunning(trip.sections[i].sensed_mode_str);
-      if (filteredMode in dists) {
-        dists[filteredMode] += trip.sections[i].distance;
-        totalDist += trip.sections[i].distance;
-      } else {
-        dists[filteredMode] = trip.sections[i].distance;
-        totalDist += trip.sections[i].distance;
-      }
-    }
-    // sort modes by the distance traveled (descending)
-    const sortedKeys = Object.entries(dists).sort((a, b) => b[1] - a[1]).map(e => e[0]);
-    let sectionPcts = sortedKeys.map(function(mode) {
-        const fract = dists[mode] / totalDist;
-        return {
-            mode: mode,
-            icon: motionTypeOf(mode)?.icon,
-            color: motionTypeOf(mode)?.color || 'black',
-            pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
-        };
-    });
-
-    return sectionPcts;
-  }
-
-  dh.getFormattedSectionProperties = (trip, ImperialConfig) => {
-    return trip.sections?.map((s) => ({
-      fmt_time: dh.getLocalTimeString(s.start_local_dt),
-      fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
-      fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-      fmt_distance_suffix: ImperialConfig.distanceSuffix,
-      icon: motionTypeOf(s.sensed_mode_str)?.icon,
-      color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
-    }));
-  };
-
-  dh.getLocalTimeString = function (dt) {
-    if (!dt) return;
-    //correcting the date of the processed trips knowing that local_dt months are from 1 -> 12 and for the moment function they need to be between 0 -> 11
-    let mdt = angular.copy(dt)
-    mdt.month = mdt.month - 1
-    return moment(mdt).format("LT");
-  };
-
-  /* this function was formerly 'CommonGraph.getDisplayName()',
-      located in 'common/services.js' */
-  dh.getNominatimLocName = function(loc_geojson) {
-    console.log(new Date().toTimeString()+" Getting display name for ", loc_geojson);
-    const address2Name = function(data) {
-      const address = data["address"];
-      var name = "";
-      if (angular.isDefined(address)) {
-          if (address["road"]) {
-            name = address["road"];
-          //sometimes it occurs that we cannot display street name because they are pedestrian or suburb places so we added them.
-          } else if (address["pedestrian"]) {
-          name = address["pedestrian"]
-          } else if (address["suburb"]) {
-          name = address["suburb"]
-          } else if (address["neighbourhood"]) {
-            name = address["neighbourhood"];
-          }
-          if (address["city"]) {
-            name = name + ", " + address["city"];
-          } else if (address["town"]) {
-            name = name + ", " + address["town"];
-          } else if (address["county"]) {
-            name = name + ", " + address["county"];
-          }
-      }
-      console.log(new Date().toTimeString()+"got response, setting display name to "+name);
-      return name;
-    }
-    var url = "https://nominatim.openstreetmap.org/reverse?format=json&lat=" + loc_geojson.coordinates[1] + "&lon=" + loc_geojson.coordinates[0];
-    return $http.get(url).then((response) => {
-      console.log(new Date().toTimeString()+"while reading data from nominatim, status = "+response.status
-        +" data = "+JSON.stringify(response.data));
-      return address2Name(response.data);
-    }).catch((error) => {
-      if (!dh.nominatimError) {
-        dh.nominatimError = error;
-        Logger.displayError("while reading address data ",error);
-      }
-    });
-  };
-
-  return dh;
-})
-.factory('Timeline', function(CommHelper, SurveyOptions, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
+.factory('Timeline', function(CommHelper, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, UnifiedDataLoader, Logger, $injector) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current

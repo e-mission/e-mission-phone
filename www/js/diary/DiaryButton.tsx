@@ -1,9 +1,10 @@
 import React from "react";
-import { angularize } from "../angular-react-helper";
 import { StyleSheet } from 'react-native';
-import { Button, useTheme } from 'react-native-paper';
+import { Button, ButtonProps, useTheme } from 'react-native-paper';
+import { Icon } from "../components/Icon";
 
-const DiaryButton = ({ text, fillColor, ...buttonProps } : Props) => {
+type Props = ButtonProps & { fillColor?: string };
+const DiaryButton = ({ children, fillColor, icon, ...rest } : Props) => {
 
   const { colors } = useTheme();
   const style = fillColor ? { color: colors.onPrimary }
@@ -12,31 +13,34 @@ const DiaryButton = ({ text, fillColor, ...buttonProps } : Props) => {
   return (
     <Button mode="elevated"
       buttonColor={fillColor || "white"} style={style}
-      labelStyle={fillColor ? {color: 'white', ...buttonStyles.label} : buttonStyles.label}
-      contentStyle={buttonStyles.buttonContent}
-      {...buttonProps}>
-      {text}
+      labelStyle={fillColor ? {color: 'white', ...s.label} : s.label}
+      contentStyle={s.buttonContent}
+      {...rest}>
+      <>
+        {icon &&
+          <Icon icon={icon} iconColor={fillColor ? 'white' : colors.primary}
+            size={18} style={s.icon} />
+        }
+        {children}
+      </>
     </Button>
   );
 };
-interface Props {
-  text: string,
-  fillColor?: string,
-  [key: string]: any,
-}
 
-const buttonStyles = StyleSheet.create({
+const s = StyleSheet.create({
   buttonContent: {
     height: 25,
   },
   label: {
-    marginLeft: 24,
-    marginRight: 16,
+    marginHorizontal: 5,
+    marginVertical: 0,
     fontSize: 13,
     fontWeight: '500',
-    flex: 1,
-    placeItems: 'center',
     whiteSpace: 'nowrap',
+  },
+  icon: {
+    marginRight: 4,
+    verticalAlign: 'middle',
   }
 });
 
