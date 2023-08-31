@@ -79,19 +79,21 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
           const input = trip.inputDetails[key];
           const inputIsConfirmed = trip.userInput[input.name];
           const inputIsInferred = trip.finalInference[input.name];
-          let fillColor;
+          let fillColor, textColor, borderColor;
           if (inputIsConfirmed) {
             fillColor = colors.primary;
           } else if (inputIsInferred) {
-            fillColor = colors.secondary;
+            fillColor = colors.secondaryContainer;
+            borderColor = colors.secondary;
+            textColor = colors.onSecondaryContainer;
           }
           const btnText = inputIsConfirmed?.text || inputIsInferred?.text || input.choosetext;
 
           return (
             <View key={i} style={{flex: 1}}>
               <Text>{t(input.labeltext)}</Text>
-              <DiaryButton fillColor={fillColor}
-                onPress={(e) => setModalVisibleFor(input.name)}>
+              <DiaryButton fillColor={fillColor} borderColor={borderColor}
+                textColor={textColor} onPress={(e) => setModalVisibleFor(input.name)}>
                 { t(btnText) }
               </DiaryButton>
             </View>

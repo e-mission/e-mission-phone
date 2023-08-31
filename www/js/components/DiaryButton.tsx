@@ -1,24 +1,31 @@
 import React from "react";
 import { StyleSheet } from 'react-native';
 import { Button, ButtonProps, useTheme } from 'react-native-paper';
+import color from 'color';
 import { Icon } from "./Icon";
 
-type Props = ButtonProps & { fillColor?: string };
-const DiaryButton = ({ children, fillColor, icon, ...rest } : Props) => {
+type Props = ButtonProps & { fillColor?: string, borderColor?: string };
+const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest } : Props) => {
 
   const { colors } = useTheme();
-  const style = fillColor ? { color: colors.onPrimary }
-                          : { borderColor: colors.primary, borderWidth: 1.5 };
+
+  const blackAlpha15 = color('black').alpha(0.15).rgb().string();
+  const style = {
+    borderColor: borderColor || (fillColor ? blackAlpha15 : colors.primary),
+    borderWidth: 1.5,
+  };
+  const textColor = rest.textColor || (fillColor ? colors.onPrimary : colors.primary);
 
   return (
     <Button mode="elevated"
-      buttonColor={fillColor || "white"} style={style}
-      labelStyle={fillColor ? {color: 'white', ...s.label} : s.label}
+      textColor={textColor}
+      buttonColor={fillColor || colors.onPrimary} style={style}
+      labelStyle={[s.label, {color: textColor}]}
       contentStyle={s.buttonContent}
       {...rest}>
       <>
         {icon &&
-          <Icon icon={icon} iconColor={fillColor ? 'white' : colors.primary}
+          <Icon icon={icon} iconColor={textColor}
             size={18} style={s.icon} />
         }
         {children}
