@@ -130,6 +130,10 @@
         "select-mode-scroll": "Mode (👇 for more)",
         "select-replaced-mode-scroll": "Replaces (👇 for more)",
         "select-purpose-scroll": "Purpose (👇 for more)",
+        "delete-entry-confirm": "Are you sure you wish to delete this entry?",
+        "detected": "Detected:",
+        "labeled-mode": "Labeled Mode",
+        "detected-modes": "Detected Modes",
         "today": "Today",
         "no-more-travel": "No more travel to show",
         "show-more-travel": "Show More Travel",
@@ -350,6 +354,7 @@
         "invalid-subgroup-no-default": "Invalid OPcode {{token}}, no subgroups, expected 'default' subgroup",
         "unable-download-config": "Unable to download study config",
         "invalid-opcode-format": "Invalid OPcode format",
-        "error-loading-config-app-start": "Error loading config on app start"
+        "error-loading-config-app-start": "Error loading config on app start",
+        "survey-missing-formpath": "Error while fetching resources in config: survey_info.surveys has a survey without a formPath"
     }
 }

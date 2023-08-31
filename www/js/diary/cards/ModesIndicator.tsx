@@ -6,9 +6,11 @@ import { logDebug } from '../../plugin/logger';
 import { getBaseModeOfLabeledTrip } from '../diaryHelper';
 import { Icon } from '../../components/Icon';
 import { Text, useTheme } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 const ModesIndicator = ({ trip, detectedModes, }) => {
 
+  const { t } = useTranslation();
   const { labelOptions } = useContext(LabelTabContext);
   const { colors } = useTheme();
 
@@ -32,7 +34,7 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
   } else if (detectedModes?.length > 1 || detectedModes[0]?.mode != 'UNKNOWN') {
     // show detected modes if there are more than one, or if there is only one and it's not UNKNOWN
     modeViews = (<>
-      <Text style={{fontSize: 12, fontWeight: '500'}}>Detected:</Text>
+      <Text style={{fontSize: 12, fontWeight: '500'}}>{t('diary.detected')}</Text>
       {detectedModes?.map?.((pct, i) => (
         <View key={i} style={s.mode}>
           <Icon icon={pct.icon} iconColor={pct.color} size={15} />

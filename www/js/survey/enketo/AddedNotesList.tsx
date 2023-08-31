@@ -10,6 +10,7 @@ import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
 import EnketoModal from "./EnketoModal";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   timelineEntry: any,
@@ -17,6 +18,7 @@ type Props = {
 }
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
 
+  const { t } = useTranslation();
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
@@ -122,7 +124,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       }} />
     <Modal visible={confirmDeleteModalVisible} transparent={true} onDismiss={dismissConfirmDelete}>
       <Dialog visible={confirmDeleteModalVisible} onDismiss={dismissConfirmDelete}>
-        <Dialog.Title>Are you sure you wish to delete this entry?</Dialog.Title>
+        <Dialog.Title>{ t('diary.delete-entry-confirm') }</Dialog.Title>
         <Dialog.Content>
           <Text style={{fontWeight: 'bold'}}>{editingEntry?.data?.label}</Text>
           <Text>{editingEntry?.displayDt?.date}</Text>

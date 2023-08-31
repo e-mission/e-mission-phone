@@ -62,11 +62,11 @@ const LabelScreenDetails = ({ route, navigation }) => {
               otherwise, just show "Detected" */}
             {trip?.userInput?.MODE?.value ?
               <ToggleSwitch onValueChange={v => setModesShown(v)} value={modesShown} density='medium'
-                buttons={[{label: 'Labeled Mode', value: 'labeled'}, {label: 'Detected Modes', value: 'detected'}]} />
+                buttons={[{label: t('diary.labeled-mode'), value: 'labeled'}, {label: t('diary.detected-modes'), value: 'detected'}]} />
             :
               <Button mode='outlined' compact={true} textColor={colors.onBackground}
                 style={{height: 32}} contentStyle={{height:30}}>
-                Detected Modes
+                { t('diary.detected-modes') }
               </Button>
             }
 
