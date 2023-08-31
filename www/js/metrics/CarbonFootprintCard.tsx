@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { getAngularService } from '../angular-react-helper';
 import ChangeIndicator from './ChangeIndicator';
+import color from "color";
 
 //modes considered on foot for carbon calculation, expandable as needed
 const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
