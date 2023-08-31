@@ -26,7 +26,7 @@ const ProfileSettings = () => {
 
     // get the scope of the general-settings.js file
     const mainControlEl = document.getElementById('main-control');
-    const settingsScope = angular.element(mainControlEl).scope();
+    const settingsScope = angular.element(mainControlEl.querySelector('profile-settings')).scope();
     console.log("settings scope", settingsScope);
     
     // grab any variables or functions we need from it like this:
