@@ -30,9 +30,9 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
   function verifyTrip() {
     for (const inputType of getLabelInputs()) {
       const inferred = trip.finalInference[inputType];
-      // TODO: figure out what to do with "other". For now, do not verify.
-      if (inferred?.value && !trip.userInput[inputType] && inferred.value != "other")
+      if (inferred?.value && !trip.userInput[inputType]) {
         store(inputType, inferred.value, false);
+      }
     }
   }
 
