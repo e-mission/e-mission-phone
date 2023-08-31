@@ -30,9 +30,7 @@ const ProfileSettings = () => {
     console.log("settings scope", settingsScope);
     
     // grab any variables or functions we need from it like this:
-    const { viewPrivacyPolicy, showLog, showSensed, overallAppStatus } = settingsScope;
-
-    console.log("app status", overallAppStatus);
+    const { showLog, showSensed } = settingsScope;
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
