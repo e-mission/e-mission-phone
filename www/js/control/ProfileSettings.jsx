@@ -25,7 +25,7 @@ const ProfileSettings = () => {
     const { colors } = useTheme();
 
     // get the scope of the general-settings.js file
-    const mainControlEl = document.getElementById('main-control').querySelector('ion-view');
+    const mainControlEl = document.getElementById('main-control');
     const settingsScope = angular.element(mainControlEl).scope();
     console.log("settings scope", settingsScope);
     
