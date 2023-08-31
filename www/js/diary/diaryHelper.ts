@@ -8,7 +8,7 @@ const modeColors = {
   pink: '#d43678',        // oklch(59% 0.2 0)       // e-car
   red: '#b9003d',         // oklch(50% 0.37 15)     // car
   orange: '#b25200',      // oklch(55% 0.37 50)     // air, hsr
-  green: '#007e46',       // oklch(52% 0.37 155)    // bike
+  green: '#007e46',       // oklch(52% 0.37 155)    // bike, e-biek, moped
   blue: '#0068a5',        // oklch(50% 0.37 245)    // walk
   periwinkle: '#5e45cd',  // oklch(50% 0.2 285)     // light rail, train, tram, subway
   magenta: '#8e35a1',     // oklch(50% 0.18 320)    // bus
@@ -39,6 +39,7 @@ const BaseModes: {[k: string]: BaseMode} = {
   E_CAR: { name: "E_CAR", icon: "car-electric", color: modeColors.pink },
   E_BIKE: { name: "E_BIKE", icon: "bicycle-electric", color: modeColors.green },
   E_SCOOTER: { name: "E_SCOOTER", icon: "scooter-electric", color: modeColors.periwinkle },
+  MOPED: { name: "MOPED", icon: "moped", color: modeColors.green },
   TAXI: { name: "TAXI", icon: "taxi", color: modeColors.red },
   BUS: { name: "BUS", icon: "bus-side", color: modeColors.magenta },
   AIR: { name: "AIR", icon: "airplane", color: modeColors.orange },
