@@ -64,7 +64,9 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
       <Card.Content style={cardStyles.content}>
         { weeklyActiveMinutesRecords.length ?
           <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
-            isHorizontal={false} stacked={true} />
+            isHorizontal={false} stacked={true}
+            // TODO i18n
+            lineAnnotations={[{ value: 150, label: 'Weekly Goal', position: 'center' }]}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
@@ -72,7 +74,7 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
             </Text>
           </View>
         }
-        {activeModesDurations?.length &&
+        {activeModesDurations?.length > 0 &&
           <View style={{marginTop: 10}}>
             <Text variant='bodyMedium' style={{textAlign: 'center'}}>
               {`Overall for ${formatDateRangeOfDays(userMetrics.duration)}:`}
