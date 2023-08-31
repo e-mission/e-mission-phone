@@ -5,7 +5,7 @@ import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
 import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
-import ToggleSwitch from './ToggleSwitch';
+import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
 
@@ -69,10 +69,10 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         titleNumberOfLines={2}
         right={() =>
           <View style={{gap: 3}}>
-            <ToggleSwitch value={viewMode} setValue={setViewMode}
-              options={[{ icon: 'abacus', value: 'details' }, { icon: 'chart-bar', value: 'graph' }]} />
-            <ToggleSwitch value={populationMode} setValue={setPopulationMode}
-              options={[{ icon: 'account', value: 'user' }, { icon: 'account-group', value: 'aggregate' }]} />
+            <ToggleSwitch density='high' value={viewMode} onValueChange={(v) => setViewMode(v as any)}
+              buttons={[{ icon: 'abacus', value: 'details' }, { icon: 'chart-bar', value: 'graph' }]} />
+            <ToggleSwitch density='high' value={populationMode} onValueChange={(p) => setPopulationMode(p as any)}
+              buttons={[{ icon: 'account', value: 'user' }, { icon: 'account-group', value: 'aggregate' }]} />
           </View>
         }
         style={cardStyles.title(colors)} />

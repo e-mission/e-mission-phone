@@ -14,15 +14,10 @@ const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = typeof ACTIVE_MODES[number];
 
 type Props = { userMetrics: MetricsData }
-const ActiveMinutesCard = ({ userMetrics }: Props) => {
+const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
 
   const { colors } = useTheme();
   const { t } = useTranslation();
-
-  userMetrics?.duration.forEach(day => {
-    day.label_walk = day.label_walk || 400 + (Math.random() * 300);
-    day.label_bike = day.label_bike || 200 + (Math.random() * 300);
-  });
   
   // number of minutes for each of [walk, bike]
   const activeModesDurations = useMemo(() => {
@@ -58,7 +53,7 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
   }, [userMetrics?.duration]);
 
   return (
-    <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
+    <Card style={cardStyles.card}
       contentStyle={{flex: 1}}>
       <Card.Title 
         title={t('main-metrics.active-minutes')}
@@ -67,15 +62,11 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
         titleNumberOfLines={2}
         style={cardStyles.title(colors)} />
       <Card.Content style={cardStyles.content}>
-        { activeModesDurations.map((mode, i) => (
-          <View style={{ width: '50%', paddingHorizontal: 8 }}>
-            <Text variant='titleSmall'>{labelKeyToReadable(ACTIVE_MODES[i])}</Text>
-            <Text>{`${mode} ${t('metrics.minutes')}`}</Text>
-          </View>
-        ))}
         { weeklyActiveMinutesRecords.length ?
           <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
-            isHorizontal={false} stacked={true} />
+            isHorizontal={false} stacked={true}
+            // TODO i18n
+            lineAnnotations={[{ value: 150, label: 'Weekly Goal', position: 'center' }]}/>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
@@ -83,9 +74,27 @@ const ActiveMinutesCard = ({ userMetrics }: Props) => {
             </Text>
           </View>
         }
+        {activeModesDurations?.length > 0 &&
+          <View style={{marginTop: 10}}>
+            <Text variant='bodyMedium' style={{textAlign: 'center'}}>
+              {`Overall for ${formatDateRangeOfDays(userMetrics.duration)}:`}
+            </Text>
+            <View style={{ paddingHorizontal: 8, flexDirection: 'row', justifyContent: 'space-around' }}>
+              {activeModesDurations.map((mode, i) =>
+                <Text key={i}>
+                  {labelKeyToReadable(ACTIVE_MODES[i])}
+                  {' - '}
+                  <Text variant='labelLarge'>
+                    {`${mode} ${t('metrics.minutes')}`}
+                  </Text>
+                </Text>
+              )}
+            </View>
+          </View>
+        }
       </Card.Content>
     </Card>
   )
 }
 
-export default ActiveMinutesCard;
+export default WeeklyActiveMinutesCard;
