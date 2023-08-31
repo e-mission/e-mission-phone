@@ -5,7 +5,7 @@ import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
 import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
-import ToggleSwitch from './ToggleSwitch';
+import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
 

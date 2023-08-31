@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { formatForDisplay } from "../config/useImperialConfig";
 import { DayOfMetricData } from "./metricsTypes";
+import { getAngularService } from "../angular-react-helper";
 
 export function getUniqueLabelsForDays(metricDataDays: DayOfMetricData[]) {
   const uniqueLabels: string[] = [];
@@ -46,4 +47,52 @@ export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   const firstDay = firstDayDt.toLocaleString({...DateTime.DATE_SHORT, year: undefined});
   const lastDay = lastDayDt.toLocaleString({...DateTime.DATE_SHORT, year: undefined});
   return `${firstDay} - ${lastDay}`;
+}
+
+/* for each mode label present in `days`, sum the cumulative distance and duration to get
+  the average speed for that mode */
+export function getAvgSpeedsForDays(days: DayOfMetricData[]) {
+  const avgSpeeds: { [key: string]: number } = {};
+  const sumDistances: { [key: string]: number } = {};
+  const sumDurations: { [key: string]: number } = {};
+  days.forEach(day => {
+    const labels = getLabelsForDay(day);
+    labels.forEach(label => {
+      sumDistances[label] = (sumDistances[label] || 0) + day[`distance_${label}`];
+      sumDurations[label] = (sumDurations[label] || 0) + day[`duration_${label}`];
+    });
+  });
+  Object.keys(sumDistances).forEach(label => {
+    avgSpeeds[label] = sumDistances[label] / sumDurations[label];
+  });
+  return avgSpeeds;
+}
+
+function getMETs() {
+  if (getAngularService('CalorieCal').useCustom == true) {
+    return getAngularService('CustomDatasetHelper').getCustomMETs();
+  }
+  return getAngularService('METDatasetHelper').getStandardMETs();
+}
+
+const MPS_TO_MPH = 2.23694;
+export function getMetForModeAndSpeed(mode: string, speed: number, defaultIfMissing = 0) {
+  if (mode == 'ON_FOOT') {
+    console.log("CalorieCal.getMet() converted 'ON_FOOT' to 'WALKING'");
+    mode = 'WALKING';
+  }
+  let currentMETs = getMETs();
+  if (!currentMETs[mode]) {
+    console.warn("CalorieCal.getMet() Illegal mode: " + mode);
+    return defaultIfMissing; //So the calorie sum does not break with wrong return type
+  }
+  for (var i in currentMETs[mode]) {
+    const speedMph = speed * MPS_TO_MPH;
+    if (speedMph > currentMETs[mode][i].range[0] && speedMph < currentMETs[mode][i].range[1]) {
+      return currentMETs[mode][i].mets;
+    } else if (speedMph < 0 ) {
+      console.log("CalorieCal.getMet() Negative speed: " + speedMph);
+      return 0;
+    }
+  }
 }
