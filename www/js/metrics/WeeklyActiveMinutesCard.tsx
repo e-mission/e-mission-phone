@@ -53,7 +53,7 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
   }, [userMetrics?.duration]);
 
   return (
-    <Card style={{overflow: 'hidden', minHeight: 300, margin: cardMargin}}
+    <Card style={cardStyles.card}
       contentStyle={{flex: 1}}>
       <Card.Title 
         title={t('main-metrics.active-minutes')}
@@ -62,12 +62,6 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
         titleNumberOfLines={2}
         style={cardStyles.title(colors)} />
       <Card.Content style={cardStyles.content}>
-        { activeModesDurations.map((mode, i) => (
-          <View style={{ width: '50%', paddingHorizontal: 8 }}>
-            <Text variant='titleSmall'>{labelKeyToReadable(ACTIVE_MODES[i])}</Text>
-            <Text>{`${mode} ${t('metrics.minutes')}`}</Text>
-          </View>
-        ))}
         { weeklyActiveMinutesRecords.length ?
           <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
             isHorizontal={false} stacked={true} />
@@ -76,6 +70,24 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
               {t('metrics.chart-no-data')}
             </Text>
+          </View>
+        }
+        {activeModesDurations?.length &&
+          <View style={{marginTop: 10}}>
+            <Text variant='bodyMedium' style={{textAlign: 'center'}}>
+              {`Overall for ${formatDateRangeOfDays(userMetrics.duration)}:`}
+            </Text>
+            <View style={{ paddingHorizontal: 8, flexDirection: 'row', justifyContent: 'space-around' }}>
+              {activeModesDurations.map((mode, i) =>
+                <Text key={i}>
+                  {labelKeyToReadable(ACTIVE_MODES[i])}
+                  {' - '}
+                  <Text variant='labelLarge'>
+                    {`${mode} ${t('metrics.minutes')}`}
+                  </Text>
+                </Text>
+              )}
+            </View>
           </View>
         }
       </Card.Content>
