@@ -249,8 +249,14 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>
             { chartData?.length > 0 ?
-            <BarChart records={chartData} axisTitle={t('main-metrics.footprint-label')}
-            isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals} meter={meter} />
+            <View>
+                <BarChart records={chartData} axisTitle={t('main-metrics.footprint-label')}
+                isHorizontal={true} timeAxis={false} stacked={true} lineAnnotations={carbonGoals} meter={meter} />
+                <Text variant='bodyMedium' style={{textAlign: 'center', marginTop: 10}}>
+                    {/* TODO i18n */}
+                    Dashed lines: US decarbonization goals scaled to per-capita travel-related emissions.
+                </Text>
+            </View>
             :
             <View style={{flex: 1, justifyContent: 'center'}}>
                 <Text variant='labelMedium' style={{textAlign: 'center'}}>
