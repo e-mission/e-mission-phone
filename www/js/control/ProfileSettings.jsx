@@ -582,6 +582,7 @@ const ProfileSettings = () => {
             {/* {view permissions} */}
             <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
 
+            {/* {view privacy} */}
             <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis} dialogStyle={styles.dialog(colors.elevation.level3)}></PrivacyPolicyModal>
 
             {/* logout menu */}
@@ -677,7 +678,9 @@ const ProfileSettings = () => {
 const styles = StyleSheet.create({
     dialog: (surfaceColor) => ({
         backgroundColor: surfaceColor,
-        margin: 1,
+        margin: 5,
+        marginLeft: 25,
+        marginRight: 25
     }),
     monoDesc: {
         fontSize: 12,
