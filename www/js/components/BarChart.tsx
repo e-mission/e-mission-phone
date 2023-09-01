@@ -1,13 +1,14 @@
 
-import React, { useRef, useState, useMemo } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { Chart, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ScriptableContext, ChartArea } from 'chart.js';
+import { Chart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
+import { defaultPalette, getChartHeight, getMeteredBackgroundColor } from './charting';
 
-Chart.register(
+ChartJS.register(
   CategoryScale,
   LinearScale,
   TimeScale,
@@ -18,9 +19,10 @@ Chart.register(
   Annotation,
 );
 
-type BarChartData = {
+type XYPair = { x: number|string, y: number|string };
+type ChartDatasets = {
   label: string,
-  data: { x: number|string, y: number|string }[],
+  data: XYPair[],
 }[];
 
 type Props = {
@@ -38,11 +40,24 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
 
   const indexAxis = isHorizontal ? 'y' : 'x';
-  const barChartRef = useRef<Chart>(null);
+  const barChartRef = useRef<ChartJS<'bar', XYPair[]>>(null);
+
+  const [chartDatasets, setChartDatasets] = useState<ChartDatasets>([]);
+  const chartData = useMemo<ChartData<'bar', XYPair[]>>(() => ({
+    datasets: chartDatasets.map((e, i) => ({
+      ...e,
+      backgroundColor: (barCtx) => 
+        meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors)
+              : defaultPalette[i % defaultPalette.length],
+      borderColor: (barCtx) => 
+        meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
+              : defaultPalette[i % defaultPalette.length],
+    })),
+  }), [chartDatasets, meter]);
 
   // group records by label (this is the format that Chart.js expects)
-  const chartData = useMemo(() => {
-    return records?.reduce((acc, record) => {
+  useEffect(() => {
+    const d = records?.reduce((acc, record) => {
       const existing = acc.find(e => e.label == record.label);
       if (!existing) {
         acc.push({
@@ -59,96 +74,14 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
         });
       }
       return acc;
-    }, [] as BarChartData);
+    }, [] as ChartDatasets);
+    setChartDatasets(d);
   }, [records]);
 
-  function getChartHeight() {
-    /* when horizontal charts have more data, they should get taller
-      so they don't look squished */
-    if (isHorizontal) {
-      // 'ideal' chart height is based on the number of datasets and number of unique index values
-      const uniqueIndexVals = [];
-      chartData.forEach(e => e.data.forEach(r => {
-        if (!uniqueIndexVals.includes(r[indexAxis])) uniqueIndexVals.push(r[indexAxis]);
-      }));
-      const numIndexVals = uniqueIndexVals.length;
-      const heightPerIndexVal = stacked ? 36 : numVisibleDatasets * 8;
-      const idealChartHeight = heightPerIndexVal * numIndexVals;
-
-      /* each index val should be at least 20px tall for visibility,
-        and the graph itself should be at least 250px tall */
-      const minChartHeight = Math.max(numIndexVals * 20, 250);
-
-      // return whichever is greater
-      return { height: Math.max(idealChartHeight, minChartHeight) };
-    }
-    // vertical charts should just fill the available space in the parent container
-    return { flex: 1 };
-  }
-
-  function getBarHeight(stacks) {
-    let totalHeight = 0;
-    console.log("ctx stacks", stacks.x);
-    for(let val in stacks.x) {
-      if(!val.startsWith('_')){
-        totalHeight += stacks.x[val];
-        console.log("ctx added ", val );
-      }
-    }
-    return totalHeight;
-  }
-
-  //fill pattern creation
-    //https://stackoverflow.com/questions/28569667/fill-chart-js-bar-chart-with-diagonal-stripes-or-other-patterns
-  function createDiagonalPattern(color = 'black') {
-    let shape = document.createElement('canvas')
-    shape.width = 10
-    shape.height = 10
-    let c = shape.getContext('2d')
-    c.strokeStyle = color
-    c.lineWidth = 2
-    c.beginPath()
-    c.moveTo(2, 0)
-    c.lineTo(10, 8)
-    c.stroke()
-    c.beginPath()
-    c.moveTo(0, 8)
-    c.lineTo(2, 10)
-    c.stroke()
-    return c.createPattern(shape, 'repeat')
-  }
-  
   return (
-    <View style={[getChartHeight()]}>
-      <Bar ref={barChartRef}
-        data={{datasets: chartData.map((e, i) => ({
-          ...e,
-          // cycle through the default palette, repeat if necessary
-          backgroundColor: (ctx: any) => {
-            if(meter) {
-              let bar_height = getBarHeight(ctx.parsed._stacks);
-              console.debug("bar height for", ctx.raw.y," is ", bar_height, "which in chart is", chartData[i]);
-              //if "unlabeled", etc -> stripes
-              if(chartData[i].label == meter.dash_key) {
-                if (bar_height > meter.high) return createDiagonalPattern(colors.danger);
-                else if (bar_height > meter.middle) return createDiagonalPattern(colors.warn);
-                else return createDiagonalPattern(colors.success);
-              }
-              //if :labeled", etc -> solid
-              if (bar_height > 54) return colors.danger;
-              else if (bar_height > 14) return colors.warn;
-              else return colors.success;
-            }
-            return defaultPalette[i % defaultPalette.length];
-          },
-          borderColor: (ctx: any) => {
-            let bar_height = getBarHeight(ctx.parsed._stacks);
-            if(meter) {
-              if (bar_height > 54) return colors.danger;
-              else if (bar_height > 14) return colors.warn;
-              else return colors.success;
-          }}
-        }))}}
+    <View style={getChartHeight(chartDatasets, numVisibleDatasets, indexAxis, isHorizontal, stacked)}>
+      <Chart type='bar' ref={barChartRef}
+        data={chartData}
         options={{
           indexAxis: indexAxis,
           responsive: true,
@@ -156,7 +89,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
           resizeDelay: 1,
           elements: {
             bar: {
-              borderWidth: meter ? 2 : 0,
+              borderWidth: meter ? 3 : 0,
             }
           },
           scales: {
@@ -176,7 +109,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                 },
                 ticks: timeAxis ? {} : {
                   callback: (value, i) => {
-                    const label = chartData[0].data[i].y;
+                    const label = chartDatasets[0].data[i].y;
                     if (typeof label == 'string' && label.includes('\n'))
                      return label.split('\n');
                     return label;
@@ -203,7 +136,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                 ticks: timeAxis ? {} : {
                   callback: (value, i) => {
                     console.log("testing vertical", chartData, i);
-                    const label = chartData[0].data[i].x;
+                    const label = chartDatasets[0].data[i].x;
                     if (typeof label == 'string' && label.includes('\n'))
                       return label.split('\n');
                     return label;
@@ -245,20 +178,5 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
     </View>
   )
 }
-
-const defaultPalette = [
-  '#c95465', // red oklch(60% 0.15 14)
-  '#4a71b1', // blue oklch(55% 0.11 260)
-  '#d2824e', // orange oklch(68% 0.12 52)
-  '#856b5d', // brown oklch(55% 0.04 50)
-  '#59894f', // green oklch(58% 0.1 140)
-  '#e0cc55', // yellow oklch(84% 0.14 100)
-  '#b273ac', // purple oklch(64% 0.11 330)
-  '#f09da6', // pink oklch(78% 0.1 12)
-  '#b3aca8', // grey oklch(75% 0.01 55)
-  '#80afad', // teal oklch(72% 0.05 192)
-];
-
-
 angularize(BarChart, 'BarChart', 'emission.main.barchart');
 export default BarChart;
