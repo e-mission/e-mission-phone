@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Modal, StyleSheet, ScrollView } from "react-native";
-import { Dialog, Button, useTheme, Text, Appbar } from "react-native-paper";
+import { Modal, StyleSheet, ScrollView, View } from "react-native";
+import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -457,7 +457,8 @@ const ProfileSettings = () => {
         <>
         <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
             <Appbar.Content title={t("control.profile")} />
-            <Appbar.Action icon="logout" onPress={() => setLogoutVis(true)} />
+            <Text>{t('control.log-out')}</Text>
+            <IconButton icon="logout" onPress={() => setLogoutVis(true)}></IconButton>
         </Appbar.Header>
         
         <ScrollView>

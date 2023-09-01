@@ -44,7 +44,8 @@
         "app-version": "App Version",
         "reminders-time-of-day": "Time of Day for Reminders ({{time}})",
         "upcoming-notifications": "Upcoming Notifications",
-        "dummy-notification" : "Dummy Notification in 5 Seconds"
+        "dummy-notification" : "Dummy Notification in 5 Seconds",
+        "log-out": "Log Out"
     },
 
     "general-settings":{
