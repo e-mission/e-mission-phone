@@ -1,9 +1,10 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
 import color from "color";
-import { Button, IconButton, useTheme } from "react-native-paper";
+import { Button, useTheme } from "react-native-paper";
+import { Icon } from "./Icon";
 
-const NavBarButton = ({ children, icon, onPressAction }) => {
+const NavBarButton = ({ children, icon, onPressAction, ...otherProps }) => {
 
   const { colors } = useTheme();
   const buttonColor = color(colors.onBackground).alpha(.07).rgb().string();
@@ -13,14 +14,14 @@ const NavBarButton = ({ children, icon, onPressAction }) => {
     <Button mode="outlined" buttonColor={buttonColor} textColor={colors.onBackground}
       contentStyle={{ flexDirection: 'row', height: 36 }}
       style={[s.btn, {borderColor: outlineColor}]}
-      labelStyle={s.label} onPress={() => onPressAction()}>
+      labelStyle={s.label} onPress={() => onPressAction()}
+      {...otherProps}>
       <View style={s.textWrapper}>
         {children}
       </View>
       {icon &&
         <View>
-          <IconButton icon={icon} color={colors.onBackground} size={20}
-            style={s.icon} />
+          <Icon icon={icon} color={colors.onBackground} size={20} style={{marginVertical: 'auto'}}/>
         </View>
       }
     </Button>

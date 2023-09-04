@@ -17,8 +17,9 @@ import LabelListScreen from "./LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
 import LabelScreenDetails from "./LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
-import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateBasicClasses, populateCompositeTrips } from "./timelineHelper";
+import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
+import { SurveyOptions } from "../survey/survey";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -44,7 +45,6 @@ const LabelTab = () => {
   const Logger = getAngularService('Logger');
   const Timeline = getAngularService('Timeline');
   const CommHelper = getAngularService('CommHelper');
-  const SurveyOptions = getAngularService('SurveyOptions');
   const enbs = getAngularService('EnketoNotesButtonService');
 
   // initialization, once the appConfig is loaded
@@ -238,7 +238,6 @@ const LabelTab = () => {
     const [newLabels, newNotes] = await getLocalUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
     const repopTime = new Date().getTime();
     const newEntry = {...timelineMap.get(oid), justRepopulated: repopTime};
-    populateBasicClasses(newEntry);
     labelPopulateFactory.populateInputsAndInferences(newEntry, newLabels);
     enbs.populateInputsAndInferences(newEntry, newNotes);
     const newTimelineMap = new Map(timelineMap).set(oid, newEntry);
