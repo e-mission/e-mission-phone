@@ -23,12 +23,12 @@ export const DiaryCard = ({ timelineEntry, children, flavoredTheme, ...otherProp
     <PaperProvider theme={theme}>
       <Card style={[cardStyles.card, { width: windowWidth * .9 }]}
         contentStyle={{ alignItems: 'center' }} {...otherProps}>
-        <View accessibilityHidden={true} style={{ position: 'absolute', left: 0, right: 0, top: -10, justifyContent: 'center', zIndex: 999 }}>
+        <View aria-hidden={true} style={{ position: 'absolute', left: 0, right: 0, top: -10, justifyContent: 'center', zIndex: 999 }}>
           <TimestampBadge time={displayStartTime} date={displayStartDateAbbr}
             lightBg={true} />
         </View>
         {children}
-        <View accessibilityHidden={true} style={{ position: 'absolute', left: 0, right: 0, bottom: -10, justifyContent: 'center', zIndex: 999 }}>
+        <View aria-hidden={true} style={{ position: 'absolute', left: 0, right: 0, bottom: -10, justifyContent: 'center', zIndex: 999 }}>
           <TimestampBadge time={displayEndTime} date={displayEndDateAbbr}
             lightBg={false} />
         </View>

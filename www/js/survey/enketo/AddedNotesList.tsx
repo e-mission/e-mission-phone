@@ -4,12 +4,13 @@
 
 import React, { useContext, useState } from "react";
 import moment from "moment";
-import { Text, Modal } from "react-native"
-import { Button, DataTable, Dialog } from "react-native-paper";
+import { Modal } from "react-native"
+import { Text, Button, DataTable, Dialog } from "react-native-paper";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { getFormattedDateAbbr, isMultiDay } from "../../diary/diaryHelper";
 import { Icon } from "../../components/Icon";
 import EnketoModal from "./EnketoModal";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   timelineEntry: any,
@@ -17,6 +18,7 @@ type Props = {
 }
 const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
 
+  const { t } = useTranslation();
   const { repopulateTimelineEntry } = useContext(LabelTabContext);
   const [confirmDeleteModalVisible, setConfirmDeleteModalVisible] = useState(false);
   const [surveyModalVisible, setSurveyModalVisible] = useState(false);
@@ -33,7 +35,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
     if (isMultiDay(beginTs, stopTs)) {
       const beginTsZoned = moment.parseZone(beginTs*1000).tz(timezone);
       const stopTsZoned = moment.parseZone(stopTs*1000).tz(timezone);
-      d = getFormattedDateAbbr(beginTsZoned.unix(), stopTsZoned.unix());
+      d = getFormattedDateAbbr(beginTsZoned.toISOString(), stopTsZoned.toISOString());
     }
     const begin = moment.parseZone(beginTs*1000).tz(timezone).format('LT');
     const stop = moment.parseZone(stopTs*1000).tz(timezone).format('LT');
@@ -122,7 +124,7 @@ const AddedNotesList = ({ timelineEntry, additionEntries }: Props) => {
       }} />
     <Modal visible={confirmDeleteModalVisible} transparent={true} onDismiss={dismissConfirmDelete}>
       <Dialog visible={confirmDeleteModalVisible} onDismiss={dismissConfirmDelete}>
-        <Dialog.Title>Are you sure you wish to delete this entry?</Dialog.Title>
+        <Dialog.Title>{ t('diary.delete-entry-confirm') }</Dialog.Title>
         <Dialog.Content>
           <Text style={{fontWeight: 'bold'}}>{editingEntry?.data?.label}</Text>
           <Text>{editingEntry?.displayDt?.date}</Text>

@@ -34,9 +34,14 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   }
 
   useEffect(() => {
+    // if a Leaflet map already exists (because we are re-rendering), remove it before creating a new one
+    if (leafletMapRef.current) {
+      leafletMapRef.current.remove();
+      mapSet.delete(leafletMapRef.current);
+    }
     const map = L.map(mapElRef.current, opts || {});
     initMap(map);
-  }, []);
+  }, [geojson]);
 
   /* If the geojson is different between renders, we need to recreate the map
     (happens because of FlashList's view recycling on the trip cards:
