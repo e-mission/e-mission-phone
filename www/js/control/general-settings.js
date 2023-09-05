@@ -33,24 +33,6 @@ angular.module('emission.main.control',['emission.services',
             //to change reminder time if accessing profile by specific android notification flow
             //would open the date picker
 
-    //this function used in ProfileSettings to viewPrivacyPolicy
-    //make sure to refresh on exit when migrated!
-    $scope.viewPrivacyPolicy = function($event) {
-        // button -> list element -> scroll
-        // const targetEl = $event.currentTarget.parentElement.parentElement;
-        if ($scope.ppp) {
-            $scope.ppp.show($event);
-        } else {
-            i18nUtils.geti18nFileName("templates/", "intro/consent-text", ".html").then((consentFileName) => {
-                $scope.consentTextFile = consentFileName;
-                $ionicPopover.fromTemplateUrl("templates/control/main-consent.html", {scope: $scope}).then((p) => {
-                    $scope.ppp = p;
-                    $scope.ppp.show($event);
-                });
-            }).catch((err) => Logger.displayError("Error while displaying privacy policy", err));
-        }
-    }
-
     //TODO create React pages and use React routing
     $scope.showLog = function() {
         $state.go("root.main.log");

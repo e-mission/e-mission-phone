@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Modal, StyleSheet, ScrollView, View } from "react-native";
+import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
