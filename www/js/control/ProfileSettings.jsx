@@ -84,6 +84,7 @@ const ProfileSettings = () => {
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
+    const [toggleTime, setToggleTime] = useState(new Date());
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -152,7 +153,7 @@ const ProfileSettings = () => {
         newCollectSettings.trackingOn = collectionPluginState != "local.state.tracking_stopped"
                                         && collectionPluginState != "STATE_TRACKING_STOPPED";
 
-        const isLowAccuracy = ControlCollectionHelper.isMediumAccuracy();
+        const isLowAccuracy = await ControlCollectionHelper.isMediumAccuracy();
         if (typeof isLowAccuracy != 'undefined') {
             newCollectSettings.lowAccuracy = isLowAccuracy;
         }
@@ -254,7 +255,23 @@ const ProfileSettings = () => {
           So we don't need to call refreshCollectSettings here. */
     }
 
-    const toggleLowAccuracy = function() {
+
+    const safeToggle = function() {
+        if(toggleTime){
+            const prevTime = toggleTime.getTime();
+            const currTime = new Date().getTime();
+            if(prevTime + 2000 < currTime ){
+                toggleLowAccuracy();
+                setToggleTime(new Date());
+            }
+        }
+        else {
+            toggleLowAccuracy();
+            setToggleTime(new Date());
+        }
+    }
+
+    async function toggleLowAccuracy() {
         ControlCollectionHelper.toggleLowAccuracy();
         refreshCollectSettings();
     }
@@ -468,7 +485,7 @@ const ProfileSettings = () => {
             {timePicker}
             <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
             <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
-            <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
+            <SettingRow textKey="control.medium-accuracy" action={safeToggle} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
             <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
