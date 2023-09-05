@@ -23,6 +23,7 @@
     "@babel/preset-typescript": "^7.21.4",
     "@ionic/cli": "6.20.8",
     "@types/luxon": "^3.3.0",
+    "@types/react": "^18.2.20",
     "babel-loader": "^9.1.2",
     "babel-plugin-angularjs-annotate": "^0.10.0",
     "babel-plugin-optional-require": "^0.3.1",

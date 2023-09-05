@@ -323,8 +323,8 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     };
 
     cdh.getCustomFootprint = function() {
-        console.log("Getting custom footprint", cdh.customPerMeterFootprint);
-        return cdh.customPerMeterFootprint;
+        console.log("Getting custom footprint", cdh.customPerKmFootprint);
+        return cdh.customPerKmFootprint;
     };
 
     cdh.populateCustomMETs = function() {
@@ -359,7 +359,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
     cdh.populateCustomFootprints = function() {
         let modeOptions = cdh.inputParams["MODE"];
-        let modeCO2PerMeter = modeOptions.map((opt) => {
+        let modeCO2PerKm = modeOptions.map((opt) => {
             if (opt.range_limit_km) {
                 if (cdh.range_limited_motorized) {
                     Logger.displayError("Found two range limited motorized options", {
@@ -368,14 +368,14 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
                 cdh.range_limited_motorized = opt;
                 console.log("Found range limited motorized mode", cdh.range_limited_motorized);
             }
-            if (angular.isDefined(opt.co2PerMeter)) {
-                return [opt.value, opt.co2PerMeter];
+            if (angular.isDefined(opt.kgCo2PerKm)) {
+                return [opt.value, opt.kgCo2PerKm];
             } else {
                 return undefined;
             }
         }).filter((modeCO2) => angular.isDefined(modeCO2));;
-        cdh.customPerMeterFootprint = Object.fromEntries(modeCO2PerMeter);
-        console.log("After populating, custom perMeterFootprint", cdh.customPerMeterFootprint);
+        cdh.customPerKmFootprint = Object.fromEntries(modeCO2PerKm);
+        console.log("After populating, custom perKmFootprint", cdh.customPerKmFootprint);
     }
 
     cdh.init = function(newConfig) {

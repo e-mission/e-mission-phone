@@ -54,7 +54,7 @@ angular.module('emission.config.dynamic', ['emission.plugin.logger',
       if (config.survey_info?.surveys) {
         Object.values(config.survey_info.surveys).forEach((survey) => {
           if (!survey?.formPath)
-            throw new Error('while fetching resources in config, survey_info.surveys has a survey without a formPath');
+            throw new Error(i18next.t('config.survey-missing-formpath'));
           fetchUrlCached(survey.formPath);
         });
       }

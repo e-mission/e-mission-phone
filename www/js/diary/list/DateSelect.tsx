@@ -7,11 +7,11 @@
 */
 
 import React, { useEffect, useState, useMemo, useContext } from "react";
-import { Text, StyleSheet } from "react-native";
+import { StyleSheet } from "react-native";
 import moment from "moment";
 import { LabelTabContext } from "../LabelTab";
 import { DatePickerModal } from "react-native-paper-dates";
-import { Divider, useTheme } from "react-native-paper";
+import { Text, Divider, useTheme } from "react-native-paper";
 import i18next from "i18next";
 import { useTranslation } from "react-i18next";
 import NavBarButton from "../../components/NavBarButton";
@@ -71,20 +71,20 @@ const DateSelect = ({ tsRange, loadSpecificWeekFn }) => {
       <Text>{dateRangeEnd}</Text>
     </NavBarButton>
     <DatePickerModal locale={i18next.resolvedLanguage || 'en'}
-      accessibilityLabel="Select a date"
       animationType="slide"
       mode="single"
       visible={open}
       date={selDate}
       validRange={minMaxDates}
       onDismiss={onDismissSingle}
-      onChange={onChoose} />
+      onChange={onChoose}
+      onConfirm={onDismissSingle} />
   </>);
 };
 
 export const s = StyleSheet.create({
   divider: {
-    width: '3ch',
+    width: 25,
     marginHorizontal: 'auto',
   }
 });
