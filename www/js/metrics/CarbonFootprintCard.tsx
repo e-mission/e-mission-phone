@@ -10,6 +10,7 @@ import BarChart from '../components/BarChart';
 import { getAngularService } from '../angular-react-helper';
 import ChangeIndicator from './ChangeIndicator';
 import color from "color";
+import moment from 'moment';
 
 //modes considered on foot for carbon calculation, expandable as needed
 const ON_FOOT_MODES = ['WALKING', 'RUNNING', 'ON_FOOT'] as const;
@@ -21,6 +22,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     const { t } = useTranslation();
 
     const [emissionsChange, setEmissionsChange] = useState({});
+    const [userText, setUserText] = useState([]);
+    const [groupText, setGroupText] = useState([]);
 
     /*
      * metric2val is a function that takes a metric entry and a field and returns
@@ -152,6 +155,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             
             //setting up data to be displayed
             let graphRecords = [];
+            let textList = [];
 
             //calculate low-high and format range for past week
             let userPastWeek = {
@@ -160,7 +164,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             };
             graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPastWeek.high - userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
             graphRecords.push({label: t('main-metrics.labeled'), x: userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
-           
+            textList.push({label: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`, 
+                            value: (userPastWeek.high - userPastWeek.low)==0 ? Math.round(userPastWeek.low) : Math.round(userPastWeek.low) + " - " + Math.round(userPastWeek.high)});
+
             //calculate low-high and format range for prev week, if exists
             if(userLastWeekSummaryMap[0]) {
                 let userPrevWeek = {
@@ -169,7 +175,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 };
                 graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
                 graphRecords.push({label: t('main-metrics.labeled'), x: userPastWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
-
+                textList.push({label: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`, 
+                            value: (userPrevWeek.high - userPrevWeek.low)==0 ? Math.round(userPrevWeek.low) : Math.round(userPrevWeek.low) + " - " + Math.round(userPrevWeek.high)});
+                
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 setEmissionsChange(pctChange);
             } else {
@@ -179,7 +187,9 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
             graphRecords.push({label: t('main-metrics.labeled'), x: worstCarbon, y: `${t('main-metrics.worst-case')}`});
+            textList.push({label:t('main-metrics.worst-case'), value: Math.round(worstCarbon)});
 
+            setUserText(textList);
             return graphRecords;
         }
     }, [userMetrics?.distance])
@@ -206,6 +216,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             }
 
             let groupRecords = [];
+            let groupText = [];
 
             let aggCarbon = {
                 low: FootprintHelper.getFootprintForMetrics(aggCarbonData, 0),
@@ -214,7 +225,10 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             console.log("testing group past week", aggCarbon);
             groupRecords.push({label: t('main-metrics.unlabeled'),  x: aggCarbon.high - aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
             groupRecords.push({label: t('main-metrics.labeled'), x: aggCarbon.low, y: `${t('main-metrics.average')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
+            groupText.push({label: t('main-metrics.average'), 
+                value: (aggCarbon.high - aggCarbon.low)==0 ? Math.round(aggCarbon.low) : Math.round(aggCarbon.low) + " - " + Math.round(aggCarbon.high)});
 
+            setGroupText(groupText);
             return groupRecords;
         }
     }, [aggMetrics])
@@ -232,8 +246,19 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         return tempChartData;
     }, [userCarbonRecords, groupCarbonRecords]);
 
+    const textEntries = useMemo(() => {
+        let tempText = []
+        if(userText?.length){
+            tempText = tempText.concat(userText);
+        }
+        if(groupText?.length) {
+            tempText = tempText.concat(groupText);
+        }
+        return tempText;
+    }, [userText, groupText]);
+
     //hardcoded here, could be read from config at later customization?
-    let carbonGoals = [ {label: t('main-metrics.us-2030-goal'), value: 54, color: color(colors.danger).darken(.25).rgb().toString()}, 
+    let carbonGoals = [ {label: t('main-metrics.us-2030-goal'), value: 54, color: color(colors.danger).darken(.25).rgb().toString()},
                         {label: t('main-metrics.us-2050-goal'), value: 14, color: color(colors.warn).darken(.25).rgb().toString()}];
     let meter = { dash_key: t('main-metrics.unlabeled'), high: 54, middle: 14 };
 
@@ -262,8 +287,17 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 <Text variant='labelMedium' style={{textAlign: 'center'}}>
                 {t('metrics.chart-no-data')}
                 </Text>
-            </View>
-        }
+            </View> }
+            { textEntries?.length > 0 &&
+                <View style={{paddingHorizontal: 8, flexDirection: 'row', marginTop: 10, flexWrap: 'wrap' }}>
+                { Object.keys(textEntries).map((i) =>
+                    <View style={{ width: '50%', paddingHorizontal: 8 }}>
+                        <Text variant='titleSmall'>{textEntries[i].label}</Text>
+                        <Text>{textEntries[i].value + ' ' + "kg Co2"}</Text>
+                    </View>
+                )}
+                </View>
+            }
         </Card.Content>
         </Card>
     )
