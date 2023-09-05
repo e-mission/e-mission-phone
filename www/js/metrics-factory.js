@@ -130,10 +130,10 @@ angular.module('emission.main.metrics.factory',
                 {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
         } else {
             console.log("Found range_limited_motorized mode", rlm);
-            const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(customFootprint, rlm.co2PerMeter);
+            const lowestMotorizedNonAir = getLowestMotorizedNonAirFootprint(customFootprint, rlm.kgCo2PerKm);
             return [
                 {low: 0, high: FIVE_KM, optimal: 0},
-                {low: FIVE_KM, high: rlm.range_limit_km * 1000, optimal: rlm.co2PerMeter},
+                {low: FIVE_KM, high: rlm.range_limit_km * 1000, optimal: rlm.kgCo2PerKm},
                 {low: rlm.range_limit_km * 1000, high: SIX_HUNDRED_KM, optimal: lowestMotorizedNonAir},
                 {low: SIX_HUNDRED_KM, high: Number.MAX_VALUE, optimal: airFootprint}];
         }

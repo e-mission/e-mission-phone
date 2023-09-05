@@ -1,7 +1,7 @@
 /* This is a temporary solution; localstorage is not a good long-term option and we should
   be looking to other key-value storage options in the React Native ecosystem. */
 
-import { useEffect, useState, useRef, useContext } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export type Listener<EventType> = (event: EventType) => void;
 

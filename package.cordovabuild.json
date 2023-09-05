@@ -8,6 +8,7 @@
     "url": "git+https://github.com/e-mission/e-mission-phone.git"
   },
   "scripts": {
+    "setup-native": "./bin/download_settings_controls.js",
     "build": "npx webpack --config webpack.prod.js && npx cordova build",
     "build-dev": "npx webpack --config webpack.dev.js && npx cordova build",
     "build-dev-android": "npx webpack --config webpack.dev.js && npx cordova build android",

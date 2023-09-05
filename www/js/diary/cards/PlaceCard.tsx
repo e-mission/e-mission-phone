@@ -15,9 +15,8 @@ import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useAddressNames } from "../addressNamesHelper";
-import { Icon } from "../../components/Icon";
 import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../StartEndLocations";
+import StartEndLocations from "../components/StartEndLocations";
 
 type Props = { place: {[key: string]: any} };
 const PlaceCard = ({ place }: Props) => {

@@ -10,13 +10,14 @@ const AppTheme = {
     primary: '#0080b9', // lch(50% 50 250)
     primaryContainer: '#90ceff', // lch(80% 40 250)
     onPrimaryContainer: '#001e30', // lch(10% 50 250)
-    secondary: '#f2795c', // lch(65% 60 40)
-    secondaryContainer: '#ffb39e', // lch(80% 45 40)
+    secondary: '#c08331', // lch(60% 55 70)
+    secondaryContainer: '#fcefda', // lch(95% 12 80)
+    onSecondaryContainer: '#45392e', // lch(25% 10 65)
     background: '#edf1f6', // lch(95% 3 250) - background of label screen, other screens still have this as CSS .pane
     surface: '#fafdff', // lch(99% 30 250)
     surfaceVariant: '#e0f0ff', // lch(94% 50 250) - background of DataTable
     surfaceDisabled: '#c7e0f7', // lch(88% 15 250)
-    onSurfaceDisabled: '#52606d', // lch(40% 10 250)
+    onSurfaceDisabled: '#3a4955', // lch(30% 10 250)
     elevation: {
       level0: 'transparent',
       level1: '#fafdff', // lch(99% 30 250)

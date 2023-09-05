@@ -11,15 +11,15 @@ import { angularize, getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "../components/LeafletView";
-import Bottleneck from "bottleneck";
 import moment from "moment";
-import LabelListScreen from "./LabelListScreen";
+import LabelListScreen from "./list/LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import LabelScreenDetails from "./LabelDetailsScreen";
+import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
+import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -31,6 +31,7 @@ const LabelTab = () => {
   const { t } = useTranslation();
 
   const [surveyOpt, setSurveyOpt] = useState(null);
+  const [labelOptions, setLabelOptions] = useState(null);
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
@@ -54,6 +55,7 @@ const LabelTab = () => {
     const surveyOpt = SurveyOptions[surveyOptKey];
     setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
+    getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
     labelPopulateFactory = getAngularService(surveyOpt.service);
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
     const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;
@@ -167,9 +169,8 @@ const LabelTab = () => {
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
     populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
-    // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
+    // Fill place names on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
-      trip.geojson = Timeline.compositeTrip2Geojson(trip);
       fillLocationNamesOfTrip(trip);
     });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
@@ -258,6 +259,7 @@ const LabelTab = () => {
 
   const contextVals = {
     surveyOpt,
+    labelOptions,
     timelineMap,
     displayedEntries,
     filterInputs,
