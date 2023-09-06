@@ -14,6 +14,7 @@ import { secondsToHours, secondsToMinutes } from "./metricsHelper";
 import CarbonFootprintCard from "./CarbonFootprintCard";
 import Carousel from "../components/Carousel";
 import DailyActiveMinutesCard from "./DailyActiveMinutesCard";
+import CarbonTextCard from "./CarbonTextCard";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -86,7 +87,10 @@ const MetricsTab = () => {
       <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
     </Appbar.Header>
     <ScrollView style={{paddingVertical: 12}}>
-      <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics}></CarbonFootprintCard>
+      <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
+        <CarbonFootprintCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
+        <CarbonTextCard userMetrics={userMetrics} aggMetrics={aggMetrics} />
+      </Carousel>
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <WeeklyActiveMinutesCard userMetrics={userMetrics} />
         <DailyActiveMinutesCard userMetrics={userMetrics} />
