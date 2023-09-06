@@ -2,6 +2,7 @@
 // return getGradient(barChartRef.current, meter, barCtx, chartDatasets[i], 1, .25);
 
 import color from 'color';
+import { getBaseModeByKey } from '../diary/diaryHelper';
 
 export const defaultPalette = [
   '#c95465', // red oklch(60% 0.15 14)
@@ -88,4 +89,59 @@ export function getMeteredBackgroundColor(meter, barCtx, currDataset, colors, da
   }
   //if :labeled", etc -> solid
   return meteredColor;
+}
+
+function darkenOrLighten(baseColor, change) {
+  let colorObj = color(baseColor);
+  if(change > 0) {
+    return colorObj.darken(Math.abs(change)).hex();
+  } else {
+    return colorObj.lighten(Math.abs(change)).hex();
+  }
+}
+
+export function deduplicateColor(modeColor, colorList) {
+  const options = [ -0.3, 0.3, -0.6, 0.6];
+  let newColor = modeColor;
+  let i = 0;
+
+  if(Object.values(colorList).includes(modeColor)){
+    for (let i=0; i< options.length; i++){
+      if(i >= options.length - 1){
+        newColor = modeColor; //just in case, if out of options, use original color
+      } else {
+        newColor = darkenOrLighten(modeColor, options[i]);
+        if(!(Object.values(colorList).includes(newColor))) {break;}
+      }
+    }
+  }
+  return newColor;
+}
+
+export function formatLabelForSearch(label) {
+  let formatted = "";
+  let splitLabel = label.split(" ");
+  for (let i = 0; i < splitLabel.length; i++){
+    formatted += splitLabel[i];
+    if(i < splitLabel.length -1){ 
+      formatted += "_"; //no '_' on the end!
+    }
+  }
+  return formatted;
+}
+
+export function makeColorMap(chartDatasets, labelOptions) {
+  let tempColorMap = {};
+  for(let i = 0; i < chartDatasets.length; i++) {
+    let modeColor = tempColorMap[chartDatasets[i]["label"]];
+    if(!modeColor){
+      const searchFormat = formatLabelForSearch(chartDatasets[i]["label"].toLowerCase());
+      const modeOption = labelOptions?.MODE?.find(opt => opt.value == searchFormat);
+      modeColor = getBaseModeByKey(modeOption?.baseMode || "OTHER").color;
+      modeColor = deduplicateColor(modeColor, tempColorMap);
+
+      tempColorMap[chartDatasets[i]["label"]] = modeColor;
+    }
+  }
+  return tempColorMap;
 }

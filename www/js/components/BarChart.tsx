@@ -6,7 +6,8 @@ import { useTheme } from 'react-native-paper';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ScriptableContext, ChartArea } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
-import { defaultPalette, getChartHeight, getMeteredBackgroundColor } from './charting';
+import { defaultPalette, getChartHeight, getMeteredBackgroundColor, makeColorMap } from './charting';
+import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 
 ChartJS.register(
   CategoryScale,
@@ -38,20 +39,28 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
+  const [labelOptions, setLabelOptions] = useState(null);
 
   const indexAxis = isHorizontal ? 'y' : 'x';
   const barChartRef = useRef<ChartJS<'bar', XYPair[]>>(null);
-
   const [chartDatasets, setChartDatasets] = useState<ChartDatasets>([]);
+  
+  const modeColors = useMemo(() => {
+    if(!meter){
+      getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
+      return makeColorMap(chartDatasets, labelOptions);
+    }
+  }, [chartDatasets])
+
   const chartData = useMemo<ChartData<'bar', XYPair[]>>(() => ({
     datasets: chartDatasets.map((e, i) => ({
       ...e,
       backgroundColor: (barCtx) => 
         meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors)
-              : defaultPalette[i % defaultPalette.length],
+              : modeColors[chartDatasets[i]["label"]],
       borderColor: (barCtx) => 
         meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
-              : defaultPalette[i % defaultPalette.length],
+              : modeColors[chartDatasets[i]["label"]],
     })),
   }), [chartDatasets, meter]);
 
