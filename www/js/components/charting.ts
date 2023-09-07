@@ -1,6 +1,3 @@
-// return getGradient(barChartRef.current, meter, barCtx, chartDatasets[i]);
-// return getGradient(barChartRef.current, meter, barCtx, chartDatasets[i], 1, .25);
-
 import color from 'color';
 import { getBaseModeByKey } from '../diary/diaryHelper';
 
