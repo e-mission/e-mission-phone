@@ -1,5 +1,5 @@
 //component to view and manage permission settings
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { Modal,  useWindowDimensions, ScrollView } from "react-native";
 import { Dialog, Button, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
@@ -29,22 +29,21 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
     const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState<Array<any>>([]);
 
     const [checkList, setCheckList] = useState([]);
-    const [overallStatus, setOverallStatus] = useState<boolean>(false);
     const [explanationList, setExplanationList] = useState<Array<any>>([]);
     const [haveSetText, setHaveSetText] = useState<boolean>(false);
 
     let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
     let colorMap = (statusState) => statusState ? colors.success : colors.danger;
 
-    function recomputeOverallStatus() {
+    const overallStatus = useMemo(() => {
         let status = true;
         checkList.forEach((lc) => {
             if(!lc.statusState){
                 status = false;
             }
         })
-        setOverallStatus(status);
-    }
+        return status;
+    }, [checkList])
 
     //using this function to update checks rather than mutate
     //this cues React to update UI
@@ -350,7 +349,6 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             lc.refresh();
         });
         console.log("setting checks are", checkList);
-        recomputeOverallStatus();
     }
 
     //recomputing checks updates the visual cues of their status
@@ -360,17 +358,19 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             lc.statusIcon = iconMap(lc.statusState);
             lc.statusColor = colorMap(lc.statusState)
         });
-        recomputeOverallStatus();
     }
+
+    //anytime the status changes, may need to show modal
+    useEffect(() => {
+        if(overallStatus == false && appConfig && haveSetText) { //trying to block early cases from throwing modal
+            setPermitVis(true);
+        }
+    }, [overallStatus])
 
     //custom hook executes function on app resuming foreground
     useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
         refreshAllChecks();
-        if(overallStatus == false) //show Modal if action required
-        {
-            setPermitVis(true);
-        }
     });
 
     //refresh when recompute message is broadcast
