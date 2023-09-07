@@ -41,7 +41,7 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
             low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
             high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 
         };
-        textList.push({label: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`, 
+        textList.push({label: `${t('main-metrics.past-week')} (${formatDateRangeOfDays(thisWeekDistance)})`, 
                         value: (userPastWeek.high - userPastWeek.low)==0 ? Math.round(userPastWeek.low) : Math.round(userPastWeek.low) + " - " + Math.round(userPastWeek.high)});
 
         //calculate low-high and format range for prev week, if exists
@@ -50,7 +50,7 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
                 low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
                 high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
             };
-            textList.push({label: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`, 
+            textList.push({label: `${t('main-metrics.prev-week')} (${formatDateRangeOfDays(lastWeekDistance)})`, 
                         value: (userPrevWeek.high - userPrevWeek.low)==0 ? Math.round(userPrevWeek.low) : Math.round(userPrevWeek.low) + " - " + Math.round(userPrevWeek.high)});
         } 
         
@@ -118,14 +118,12 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
         style={cardStyles.title(colors)} />
     <Card.Content style={cardStyles.content}>
     { textEntries?.length > 0 &&
-        <View style={{paddingHorizontal: 8, flexDirection: 'row', marginTop: 10, flexWrap: 'wrap' }}>
-        { Object.keys(textEntries).map((i) =>
-            <View key={textEntries[i].label} style={{ width: '50%', paddingHorizontal: 8 }}>
+        Object.keys(textEntries).map((i) =>
+            <View key={textEntries[i].label} style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text variant='titleSmall'>{textEntries[i].label}</Text>
                 <Text>{textEntries[i].value + ' ' + "kg Co2"}</Text>
             </View>
-        )}
-        </View>
+        )
     }
     </Card.Content>
     </Card>
