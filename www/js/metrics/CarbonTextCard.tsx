@@ -125,6 +125,11 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
             </View>
         )
     }
+        <Text variant='labelSmall' style={{textAlign: 'left', fontWeight: '400', marginTop: 'auto', paddingTop: 10}}>
+            {/* TODO i18n */}
+            {/* unlabeled means the mode is not labeled and the carbon footprint is uncertain, it may fall anywhere between 0 (best case) and 'taxi' (worst case) */}
+            ²The carbon footprint of unlabeled trips is uncertain. Estimates may fall anywhere within the shown range.
+        </Text>
     </Card.Content>
     </Card>
   )
