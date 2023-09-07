@@ -121,7 +121,7 @@ const MetricsTab = () => {
   </>);
 }
 
-export const cardMargin = 8;
+export const cardMargin = 10;
 
 export const cardStyles: any = {
   card: {
