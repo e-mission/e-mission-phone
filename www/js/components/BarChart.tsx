@@ -49,15 +49,15 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
     if (!labelOptions) return { datasets: [] };
     const modeColors = makeColorMap(chartDatasets, labelOptions);
     return {
-    datasets: chartDatasets.map((e, i) => ({
-      ...e,
-      backgroundColor: (barCtx) => 
-        meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors)
-              : modeColors[chartDatasets[i]["label"]],
-      borderColor: (barCtx) => 
-        meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
-              : modeColors[chartDatasets[i]["label"]],
-    })),
+      datasets: chartDatasets.map((e, i) => ({
+        ...e,
+        backgroundColor: (barCtx) => 
+          meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors)
+                : modeColors[chartDatasets[i]["label"]],
+        borderColor: (barCtx) => 
+          meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
+                : modeColors[chartDatasets[i]["label"]],
+      })),
     };
   }, [chartDatasets, meter, labelOptions]);
 
@@ -123,6 +123,7 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
                      return label.split('\n');
                     return label;
                   },
+                  font: { size: 11 }, // default is 12, we want a tad smaller
                 },
                 reverse: true,
                 stacked,
