@@ -45,14 +45,10 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
   const barChartRef = useRef<ChartJS<'bar', XYPair[]>>(null);
   const [chartDatasets, setChartDatasets] = useState<ChartDatasets>([]);
   
-  const modeColors = useMemo(() => {
-    if(!meter){
-      getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
-      return makeColorMap(chartDatasets, labelOptions);
-    }
-  }, [chartDatasets])
-
-  const chartData = useMemo<ChartData<'bar', XYPair[]>>(() => ({
+  const chartData = useMemo<ChartData<'bar', XYPair[]>>(() => {
+    if (!labelOptions) return { datasets: [] };
+    const modeColors = makeColorMap(chartDatasets, labelOptions);
+    return {
     datasets: chartDatasets.map((e, i) => ({
       ...e,
       backgroundColor: (barCtx) => 
@@ -62,10 +58,14 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
         meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
               : modeColors[chartDatasets[i]["label"]],
     })),
-  }), [chartDatasets, meter]);
+    };
+  }, [chartDatasets, meter, labelOptions]);
 
   // group records by label (this is the format that Chart.js expects)
   useEffect(() => {
+    if (!labelOptions) {
+      getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
+    }
     const d = records?.reduce((acc, record) => {
       const existing = acc.find(e => e.label == record.label);
       if (!existing) {
