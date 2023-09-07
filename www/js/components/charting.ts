@@ -1,5 +1,6 @@
 import color from 'color';
 import { getBaseModeByKey } from '../diary/diaryHelper';
+import { readableLabelToKey } from '../survey/multilabel/confirmHelper';
 
 export const defaultPalette = [
   '#c95465', // red oklch(60% 0.15 14)
@@ -115,30 +116,18 @@ export function deduplicateColor(modeColor, colorList) {
   return newColor;
 }
 
-export function formatLabelForSearch(label) {
-  let formatted = "";
-  let splitLabel = label.split(" ");
-  for (let i = 0; i < splitLabel.length; i++){
-    formatted += splitLabel[i];
-    if(i < splitLabel.length -1){ 
-      formatted += "_"; //no '_' on the end!
-    }
-  }
-  return formatted;
-}
-
 export function makeColorMap(chartDatasets, labelOptions) {
   let tempColorMap = {};
-  for(let i = 0; i < chartDatasets.length; i++) {
-    let modeColor = tempColorMap[chartDatasets[i]["label"]];
+  chartDatasets.forEach((dataset) => {
+    let modeColor = tempColorMap[dataset["label"]];
     if(!modeColor){
-      const searchFormat = formatLabelForSearch(chartDatasets[i]["label"].toLowerCase());
-      const modeOption = labelOptions?.MODE?.find(opt => opt.value == searchFormat);
+      const labelKey = readableLabelToKey(dataset["label"]);
+      const modeOption = labelOptions?.MODE?.find(opt => opt.value == labelKey);
       modeColor = getBaseModeByKey(modeOption?.baseMode || "OTHER").color;
       modeColor = deduplicateColor(modeColor, tempColorMap);
 
-      tempColorMap[chartDatasets[i]["label"]] = modeColor;
+      tempColorMap[dataset["label"]] = modeColor;
     }
-  }
+  });
   return tempColorMap;
 }

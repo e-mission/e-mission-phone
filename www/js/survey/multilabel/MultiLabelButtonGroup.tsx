@@ -10,7 +10,7 @@ import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { LabelTabContext } from "../../diary/LabelTab";
 import { displayErrorMsg, logDebug } from "../../plugin/logger";
-import { getLabelInputDetails, getLabelInputs } from "./confirmHelper";
+import { getLabelInputDetails, getLabelInputs, readableLabelToKey } from "./confirmHelper";
 
 const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
   const { colors } = useTheme();
@@ -55,7 +55,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
     if (isOther) {
       /* Let's make the value for user entered inputs look consistent with our other values
        (i.e. lowercase, and with underscores instead of spaces) */
-      chosenLabel = chosenLabel.toLowerCase().replace(" ", "_");
+      chosenLabel = readableLabelToKey(chosenLabel);
     }
     const inputDataToStore = {
       "start_ts": trip.start_ts,
