@@ -78,7 +78,7 @@ const MetricsTab = () => {
   });
 
   const { width: windowWidth } = useWindowDimensions();
-  const cardWidth = windowWidth * .85;
+  const cardWidth = windowWidth * .88;
 
   return (<>
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
