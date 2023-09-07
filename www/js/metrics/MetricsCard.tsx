@@ -80,13 +80,14 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         {viewMode=='details' &&
           <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             { Object.keys(metricSumValues).map((label, i) =>
-              <View style={{ width: '50%', paddingHorizontal: 8 }}>
+              <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
                 <Text variant='titleSmall'>{labelKeyToReadable(label)}</Text>
                 <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
               </View>
             )}
           </View>
-        } {viewMode=='graph' && <>
+        }
+        {viewMode=='graph' && <>
           <BarChart records={chartData} axisTitle={axisUnits}
             isHorizontal={true} timeAxis={true} stacked={graphIsStacked} />
           <View style={{flexDirection: 'row', height: 10, alignItems: 'center', justifyContent: 'flex-end'}}>
