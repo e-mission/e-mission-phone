@@ -55,7 +55,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                     high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
                 };
                 graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
-                graphRecords.push({label: t('main-metrics.labeled'), x: userPastWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
+                graphRecords.push({label: t('main-metrics.labeled'), x: userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
                 
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 setEmissionsChange(pctChange);
