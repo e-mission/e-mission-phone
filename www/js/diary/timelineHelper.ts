@@ -1,7 +1,8 @@
 import moment from "moment";
 import { getAngularService } from "../angular-react-helper";
-import { logDebug } from "../plugin/logger";
+import { displayError, logDebug } from "../plugin/logger";
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from "./diaryHelper";
+import i18next from "i18next";
 
 const cachedGeojsons = new Map();
 /**
@@ -70,25 +71,29 @@ export function compositeTrips2TimelineMap(ctList: any[], unpackPlaces?: boolean
 }
 
 export function populateCompositeTrips(ctList, showPlaces, labelsFactory, labelsResultMap, notesFactory, notesResultMap) {
-  ctList.forEach((ct, i) => {
-    if (showPlaces && ct.start_confirmed_place) {
-      const cp = ct.start_confirmed_place;
-      cp.getNextEntry = () => ctList[i];
-      labelsFactory.populateInputsAndInferences(cp, labelsResultMap);
-      notesFactory.populateInputsAndInferences(cp, notesResultMap);
-    }
-    if (showPlaces && ct.end_confirmed_place) {
-      const cp = ct.end_confirmed_place;
-      cp.getNextEntry = () => ctList[i + 1];
-      labelsFactory.populateInputsAndInferences(cp, labelsResultMap);
-      notesFactory.populateInputsAndInferences(cp, notesResultMap);
-      ct.getNextEntry = () => cp;
-    } else {
-      ct.getNextEntry = () => ctList[i + 1];
-    }
-    labelsFactory.populateInputsAndInferences(ct, labelsResultMap);
-    notesFactory.populateInputsAndInferences(ct, notesResultMap);
-  });
+  try {
+    ctList.forEach((ct, i) => {
+      if (showPlaces && ct.start_confirmed_place) {
+        const cp = ct.start_confirmed_place;
+        cp.getNextEntry = () => ctList[i];
+        labelsFactory.populateInputsAndInferences(cp, labelsResultMap);
+        notesFactory.populateInputsAndInferences(cp, notesResultMap);
+      }
+      if (showPlaces && ct.end_confirmed_place) {
+        const cp = ct.end_confirmed_place;
+        cp.getNextEntry = () => ctList[i + 1];
+        labelsFactory.populateInputsAndInferences(cp, labelsResultMap);
+        notesFactory.populateInputsAndInferences(cp, notesResultMap);
+        ct.getNextEntry = () => cp;
+      } else {
+        ct.getNextEntry = () => ctList[i + 1];
+      }
+      labelsFactory.populateInputsAndInferences(ct, labelsResultMap);
+      notesFactory.populateInputsAndInferences(ct, notesResultMap);
+    });
+  } catch (e) {
+    displayError(e, i18next.t('errors.while-populating-composite'));
+  }
 }
 
 const getUnprocessedInputQuery = (pipelineRange) => ({

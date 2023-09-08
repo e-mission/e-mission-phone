@@ -20,6 +20,7 @@ import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocesse
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
+import { displayError } from "../plugin/logger";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -131,39 +132,49 @@ const LabelTab = () => {
   }
 
   async function loadAnotherWeek(when: 'past'|'future') {
-    const reachedPipelineStart = queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
-    const reachedPipelineEnd = queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
+    try {
+      const reachedPipelineStart = queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
+      const reachedPipelineEnd = queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
 
-    if (!queriedRange) {
-      // first time loading
-      if(!isLoading) setIsLoading('replace');
-      const nowTs = new Date().getTime() / 1000;
-      const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
-      handleFetchedTrips(ctList, utList, 'replace');
-      setQueriedRange({start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs});
-    } else if (when == 'past' && !reachedPipelineStart) {
-      if(!isLoading) setIsLoading('prepend');
-      const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
-      const [ctList, utList] = await fetchTripsInRange(queriedRange.start_ts - ONE_WEEK, queriedRange.start_ts - 1);
-      handleFetchedTrips(ctList, utList, 'prepend');
-      setQueriedRange({start_ts: fetchStartTs, end_ts: queriedRange.end_ts})
-    } else if (when == 'future' && !reachedPipelineEnd) {
-      if(!isLoading) setIsLoading('append');
-      const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
-      const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
-      handleFetchedTrips(ctList, utList, 'append');
-      setQueriedRange({start_ts: queriedRange.start_ts, end_ts: fetchEndTs})
+      if (!queriedRange) {
+        // first time loading
+        if(!isLoading) setIsLoading('replace');
+        const nowTs = new Date().getTime() / 1000;
+        const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
+        handleFetchedTrips(ctList, utList, 'replace');
+        setQueriedRange({start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs});
+      } else if (when == 'past' && !reachedPipelineStart) {
+        if(!isLoading) setIsLoading('prepend');
+        const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
+        const [ctList, utList] = await fetchTripsInRange(queriedRange.start_ts - ONE_WEEK, queriedRange.start_ts - 1);
+        handleFetchedTrips(ctList, utList, 'prepend');
+        setQueriedRange({start_ts: fetchStartTs, end_ts: queriedRange.end_ts})
+      } else if (when == 'future' && !reachedPipelineEnd) {
+        if(!isLoading) setIsLoading('append');
+        const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
+        const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
+        handleFetchedTrips(ctList, utList, 'append');
+        setQueriedRange({start_ts: queriedRange.start_ts, end_ts: fetchEndTs})
+      }
+    } catch (e) {
+      setIsLoading(false);
+      displayError(e, t('errors.while-loading-another-week', {when: when}));
     }
   }
 
   async function loadSpecificWeek(day: string) {
-    if (!isLoading) setIsLoading('replace');
-    resetNominatimLimiter();
-    const threeDaysBefore = moment(day).subtract(3, 'days').unix();
-    const threeDaysAfter = moment(day).add(3, 'days').unix();
-    const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
-    handleFetchedTrips(ctList, utList, 'replace');
-    setQueriedRange({start_ts: threeDaysBefore, end_ts: threeDaysAfter});
+    try {
+      if (!isLoading) setIsLoading('replace');
+      resetNominatimLimiter();
+      const threeDaysBefore = moment(day).subtract(3, 'days').unix();
+      const threeDaysAfter = moment(day).add(3, 'days').unix();
+      const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
+      handleFetchedTrips(ctList, utList, 'replace');
+      setQueriedRange({start_ts: threeDaysBefore, end_ts: threeDaysAfter});
+    } catch (e) {
+      setIsLoading(false);
+      displayError(e, t('errors.while-loading-specific-week', {day: day}));
+    }
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
