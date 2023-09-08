@@ -46,8 +46,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
             displayStartTime={displayStartTime} displayEndTime={displayEndTime}
             displayStartName={tripStartDisplayName} displayEndName={tripEndDisplayName} />
         </Surface>
-        <ScrollView style={{ paddingBottom: 30}}>
-          <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, rowGap: 12 }}>
+        <ScrollView style={{ paddingBottom: 30, backgroundColor: colors.background }}>
+          <Surface mode='flat'
+            style={{margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
               {surveyOpt?.elementTag == 'multilabel' &&

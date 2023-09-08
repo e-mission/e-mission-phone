@@ -60,12 +60,15 @@ const flavorOverrides = {
       },
     }
   },
-  draft: { // for draft TripCards; a greyish color scheme
+  draft: { // for TripCards and LabelDetailsScreen of draft trips; a greyish color scheme
     colors: {
       primary: '#616971', // lch(44 6 250)
       primaryContainer: '#b6bcc2', // lch(76 4 250)
+      background: '#eef1f4', // lch(95 2 250)
+      surface: '#eef1f4', // lch(95 2 250)
+      surfaceDisabled: '#c7cacd', // lch(81 2 250)
       elevation: {
-        level1: '#dbddde', // lch(88 1 250)
+        level1: '#e1e3e4', // lch(90 1 250)
         level2: '#d2d5d8', // lch(85 2 250)
       },
     }
