@@ -3,10 +3,10 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ScriptableContext, ChartArea } from 'chart.js';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
-import { defaultPalette, getChartHeight, getMeteredBackgroundColor, makeColorMap } from './charting';
+import { dedupColors, getChartHeight, getMeteredBackgroundColor } from './charting';
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 
 ChartJS.register(
@@ -33,9 +33,10 @@ type Props = {
   isHorizontal?: boolean,
   timeAxis?: boolean,
   stacked?: boolean,
+  getColorForLabel?: (label: string) => string,
   meter?: {high: number, middle: number, dash_key: string},
 }
-const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked, meter }: Props) => {
+const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked, getColorForLabel, meter }: Props) => {
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
@@ -47,16 +48,20 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
   
   const chartData = useMemo<ChartData<'bar', XYPair[]>>(() => {
     if (!labelOptions) return { datasets: [] };
-    const modeColors = makeColorMap(chartDatasets, labelOptions);
+    let labelColorMap; // object mapping labels to colors
+    if (getColorForLabel) {
+      const colorEntries = chartDatasets.map(d => [d.label, getColorForLabel(d.label)] );
+      labelColorMap = dedupColors(colorEntries);
+    }
     return {
       datasets: chartDatasets.map((e, i) => ({
         ...e,
         backgroundColor: (barCtx) => 
           meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors)
-                : modeColors[chartDatasets[i]["label"]],
+                : labelColorMap[e.label],
         borderColor: (barCtx) => 
           meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
-                : modeColors[chartDatasets[i]["label"]],
+                : labelColorMap[e.label],
       })),
     };
   }, [chartDatasets, meter, labelOptions]);

@@ -7,7 +7,8 @@ import { DayOfMetricData } from './metricsTypes';
 import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
-import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
+import { labelKeyToReadable, labelOptions } from '../survey/multilabel/confirmHelper';
+import { getBaseModeByReadableLabel } from '../diary/diaryHelper';
 
 type Props = {
   cardTitle: string,
@@ -89,7 +90,8 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         }
         {viewMode=='graph' && <>
           <BarChart records={chartData} axisTitle={axisUnits}
-            isHorizontal={true} timeAxis={true} stacked={graphIsStacked} />
+            isHorizontal={true} timeAxis={true} stacked={graphIsStacked}
+            getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
           <View style={{flexDirection: 'row', height: 10, alignItems: 'center', justifyContent: 'flex-end'}}>
             <Text variant='labelMedium'>Stack bars:</Text>
             <Checkbox 

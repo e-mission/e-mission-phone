@@ -13,7 +13,7 @@ type InputDetails<T extends string> = {
     key: string,
   }
 };
-type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
+export type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
   [k in T]: {
     value: string,
     baseMode: string,
@@ -26,8 +26,8 @@ type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
 }};
 
 let appConfig;
-let labelOptions: LabelOptions<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
-let inputDetails: InputDetails<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
+export let labelOptions: LabelOptions<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
+export let inputDetails: InputDetails<'MODE'|'PURPOSE'|'REPLACED_MODE'>;
 
 export async function getLabelOptions(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;

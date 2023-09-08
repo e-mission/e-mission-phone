@@ -89,45 +89,39 @@ export function getMeteredBackgroundColor(meter, barCtx, currDataset, colors, da
   return meteredColor;
 }
 
-function darkenOrLighten(baseColor, change) {
+/**
+ * @param baseColor a color string
+ * @param change a number between -1 and 1, indicating the amount to darken or lighten the color
+ * @returns an adjusted color, either darkened or lightened, depending on the sign of change
+ */
+function darkenOrLighten(baseColor: string, change: number) {
   let colorObj = color(baseColor);
   if(change > 0) {
-    return colorObj.darken(Math.abs(change)).hex();
+    // darkening appears more drastic than lightening, so we will be less aggressive (scale change by .5)
+    return colorObj.darken(Math.abs(change * .5)).hex();
   } else {
     return colorObj.lighten(Math.abs(change)).hex();
   }
 }
 
-export function deduplicateColor(modeColor, colorList) {
-  const options = [ -0.3, 0.3, -0.6, 0.6];
-  let newColor = modeColor;
-  let i = 0;
-
-  if(Object.values(colorList).includes(modeColor)){
-    for (let i=0; i< options.length; i++){
-      if(i >= options.length - 1){
-        newColor = modeColor; //just in case, if out of options, use original color
-      } else {
-        newColor = darkenOrLighten(modeColor, options[i]);
-        if(!(Object.values(colorList).includes(newColor))) {break;}
-      }
+/**
+ * @param colors an array of colors, each of which is an array of [key, color string]
+ * @returns an object mapping keys to colors, with duplicates darkened/lightened to be distinguishable
+ */
+export const dedupColors = (colors: string[][]) => {
+  const dedupedColors = {};
+  const maxAdjustment = 0.7; // more than this is too drastic and the colors approach black/white
+  for (const [key, clr] of colors) {
+    const duplicates = colors.filter(([k, c]) => c == clr);
+    if (duplicates.length > 1) {
+      // there are duplicates; calculate an evenly-spaced adjustment for each one
+      duplicates.forEach(([k, c], i) => {
+        const change = -maxAdjustment + (maxAdjustment*2 / (duplicates.length - 1)) * i;
+        dedupedColors[k] = darkenOrLighten(clr, change);
+      });
+    } else if (!dedupedColors[key]) {
+      dedupedColors[key] = clr; // not a dupe, & not already deduped, so use the color as-is
     }
   }
-  return newColor;
-}
-
-export function makeColorMap(chartDatasets, labelOptions) {
-  let tempColorMap = {};
-  chartDatasets.forEach((dataset) => {
-    let modeColor = tempColorMap[dataset["label"]];
-    if(!modeColor){
-      const labelKey = readableLabelToKey(dataset["label"]);
-      const modeOption = labelOptions?.MODE?.find(opt => opt.value == labelKey);
-      modeColor = getBaseModeByKey(modeOption?.baseMode || "OTHER").color;
-      modeColor = deduplicateColor(modeColor, tempColorMap);
-
-      tempColorMap[dataset["label"]] = modeColor;
-    }
-  });
-  return tempColorMap;
+  return dedupedColors;
 }

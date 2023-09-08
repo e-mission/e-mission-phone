@@ -8,7 +8,8 @@ import { useImperialConfig } from '../config/useImperialConfig';
 import { filterToRecentWeeks, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
-import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
+import { labelKeyToReadable, labelOptions } from '../survey/multilabel/confirmHelper';
+import { getBaseModeByReadableLabel } from '../diary/diaryHelper';
 
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = typeof ACTIVE_MODES[number];
@@ -66,7 +67,8 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
           <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
             isHorizontal={false} stacked={true}
             // TODO i18n
-            lineAnnotations={[{ value: 150, label: 'Weekly Goal', position: 'center' }]}/>
+            lineAnnotations={[{ value: 150, label: 'Weekly Goal', position: 'center' }]}
+            getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
