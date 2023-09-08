@@ -19,7 +19,7 @@ const TripSectionsDescriptives = ({ trip, showLabeledMode=false }) => {
     we treat this as unimodal and use trip-level attributes to construct a single section */
   if (showLabeledMode && trip?.userInput?.MODE || !trip.sections?.length) {
     let baseMode;
-    if (showLabeledMode) {
+    if (showLabeledMode && trip?.userInput?.MODE) {
       baseMode = getBaseModeOfLabeledTrip(trip, labelOptions);
     } else {
       baseMode = getBaseModeByKey('UNPROCESSED');
