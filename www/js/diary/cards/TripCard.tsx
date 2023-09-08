@@ -6,7 +6,7 @@
 
 import React, { useContext } from "react";
 import { View, useWindowDimensions, StyleSheet } from 'react-native';
-import { Divider, Text, IconButton } from 'react-native-paper';
+import { Text, IconButton } from 'react-native-paper';
 import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
 import MultilabelButtonGroup from "../../survey/multilabel/MultiLabelButtonGroup";
@@ -17,12 +17,12 @@ import AddedNotesList from "../../survey/enketo/AddedNotesList";
 import { getTheme } from "../../appTheme";
 import { DiaryCard, cardStyles } from "./DiaryCard";
 import { useNavigation } from "@react-navigation/native";
-import { useImperialConfig } from "../../config/useImperialConfig";
 import { useAddressNames } from "../addressNamesHelper";
-import { Icon } from "../../components/Icon";
 import { LabelTabContext } from "../LabelTab";
 import useDerivedProperties from "../useDerivedProperties";
-import StartEndLocations from "../StartEndLocations";
+import StartEndLocations from "../components/StartEndLocations";
+import ModesIndicator from "./ModesIndicator";
+import { useGeojsonForTrip } from "../timelineHelper";
 
 type Props = { trip: {[key: string]: any}};
 const TripCard = ({ trip }: Props) => {
@@ -31,10 +31,11 @@ const TripCard = ({ trip }: Props) => {
   const { width: windowWidth } = useWindowDimensions();
   const { appConfig, loading } = useAppConfig();
   const { displayStartTime, displayEndTime, displayDate, formattedDistance,
-    distanceSuffix, displayTime, percentages } = useDerivedProperties(trip);
+    distanceSuffix, displayTime, detectedModes } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
   const navigation = useNavigation<any>();
-  const { surveyOpt } = useContext(LabelTabContext);
+  const { surveyOpt, labelOptions } = useContext(LabelTabContext);
+  const tripGeojson = useGeojsonForTrip(trip, labelOptions, trip?.userInput?.MODE?.value);
 
   const isDraft = trip.key.includes('UNPROCESSED');
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
@@ -75,18 +76,11 @@ const TripCard = ({ trip }: Props) => {
           </View>
         </View>
         <View style={{flex: 1, paddingBottom: showAddNoteButton ? 8 : 0}}>{/* left panel */}
-          <LeafletView geojson={trip.geojson} opts={mapOpts}
+          <LeafletView geojson={tripGeojson} opts={mapOpts}
                         /* the map should be at least as tall as it is wide
                           so it doesn't look squished */
                         style={[{minHeight: windowWidth / 2}, mapStyle]} />
-          <View style={s.modePercents}>
-            {percentages?.map?.((pct, i) => (
-              <View key={i} style={{flexDirection: 'row', marginHorizontal: 4, alignItems: 'center'}}>
-                <Icon icon={pct.icon} iconColor={pct.color} size={15} />
-                <Text accessibilityLabel={`Sensed mode: ${pct.icon}, ${pct.pct}%`} style={{color: pct.color, fontSize: 12}}>{pct.pct}%</Text>
-              </View>
-            ))}
-          </View>
+          <ModesIndicator trip={trip} detectedModes={detectedModes} />
           {showAddNoteButton && 
             <View style={s.notesButton}>
               <AddNoteButton timelineEntry={trip}
@@ -117,15 +111,6 @@ const s = StyleSheet.create({
     overflow: 'hidden',
     borderTopLeftRadius: 15,
     borderBottomRightRadius: 15,
-  },
-  modePercents: {
-    position: 'absolute',
-    flexDirection: 'row',
-    backgroundColor: 'rgba(255, 255, 255, 0.8)',
-    borderRadius: 50,
-    left: '50%',
-    transform: 'translate(-50%)',
-    marginVertical: 5,
   },
   notesButton: {
     paddingHorizontal: 8,

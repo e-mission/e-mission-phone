@@ -9,7 +9,7 @@ import { fetchUrlCached } from '../../commHelper';
 import { displayError, displayErrorMsg } from '../../plugin/logger';
 // import { transform } from 'enketo-transformer/web';
 
-type Props = ModalProps & {
+type Props = Omit<ModalProps, 'children'> & {
   surveyName: string,
   onResponseSaved: (response: any) => void,
   opts?: SurveyOptions,

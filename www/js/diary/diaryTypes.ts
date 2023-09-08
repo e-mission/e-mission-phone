@@ -56,7 +56,7 @@ export type DerivedProperties = {
   formattedDistance: string,
   formattedSectionProperties: any[], // TODO
   distanceSuffix: string,
-  percentages: { mode: string, icon: string, color: string, pct: number|string }[],
+  detectedModes: { mode: string, icon: string, color: string, pct: number|string }[],
 }
 
 /* These are the properties that are still filled in by some kind of 'populate' mechanism.

@@ -1,10 +1,10 @@
 import React, { useContext } from "react";
 import { View } from "react-native";
 import { Appbar, useTheme } from "react-native-paper";
-import DateSelect from "./list/DateSelect";
-import FilterSelect from "./list/FilterSelect";
-import TimelineScrollList from "./list/TimelineScrollList";
-import { LabelTabContext } from "./LabelTab";
+import DateSelect from "./DateSelect";
+import FilterSelect from "./FilterSelect";
+import TimelineScrollList from "./TimelineScrollList";
+import { LabelTabContext } from "../LabelTab";
 
 const LabelListScreen = () => {
 

@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import { getFormattedTimeRange, motionTypeOf } from './diaryHelper';
+import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
@@ -218,69 +218,6 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
     var tsEntrySort = function(e1, e2) {
       // compare timestamps
       return e1.data.ts - e2.data.ts;
-    }
-
-    var confirmedPlace2Geojson = function(trip, locationPoint, featureType) {
-        var place_gj = {
-        "type": "Feature",
-        "geometry": locationPoint,
-        "properties": {
-            "feature_type": featureType
-        }
-      }
-      return place_gj;
-    }
-
-    var confirmedPoints2Geojson = function(trip, locationList) {
-      let sectionsPoints;
-      if (!trip.sections) {
-        sectionsPoints = [locationList];
-      } else {
-        sectionsPoints = trip.sections.map((s) =>
-            trip.locations.filter((l) =>
-              l.ts >= s.start_ts && l.ts <= s.end_ts
-            )
-        );
-      }
-
-      return sectionsPoints.map((sectionPoints, i) => {
-        const section = trip.sections?.[i];
-        return {
-          type: "Feature",
-          geometry: {
-            type: "LineString",
-            coordinates: sectionPoints.map((pt) => pt.loc.coordinates)
-          },
-          style: {
-            color: motionTypeOf(section?.sensed_mode_str)?.color || "#333",
-          }
-        }
-      });
-    }
-
-    timeline.compositeTrip2Geojson = function(trip) {
-      if (trip == undefined) {
-        return undefined;
-      }
-
-      Logger.log("Reading trip's " + trip.locations.length + " location points at " + (new Date()));
-      var features = [
-        confirmedPlace2Geojson(trip, trip.start_loc, "start_place"),
-        confirmedPlace2Geojson(trip, trip.end_loc, "end_place"),
-        ...confirmedPoints2Geojson(trip, trip.locations)
-      ];
-
-      return {
-        data: {
-          id: "confirmed" + trip.start_ts,
-          type: "FeatureCollection",
-          features: features,
-          properties: {
-            start_ts: trip.start_ts,
-            end_ts: trip.end_ts
-          }
-        }
-      }
     }
 
     var transitionTrip2TripObj = function(trip) {

@@ -10,7 +10,7 @@
 
 import React, { useEffect, useState } from "react";
 import { getAngularService } from "../../angular-react-helper";
-import DiaryButton from "../../diary/DiaryButton";
+import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "react-native-paper";
 import { logDebug } from "../../plugin/logger";

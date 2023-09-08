@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useImperialConfig } from "../config/useImperialConfig";
-import { getFormattedDate, getFormattedDateAbbr, getFormattedSectionProperties, getFormattedTimeRange, getLocalTimeString, getPercentages, isMultiDay } from "./diaryHelper";
+import { getFormattedDate, getFormattedDateAbbr, getFormattedSectionProperties, getFormattedTimeRange, getLocalTimeString, getDetectedModes, isMultiDay } from "./diaryHelper";
 
 const useDerivedProperties = (tlEntry) => {
 
@@ -23,7 +23,7 @@ const useDerivedProperties = (tlEntry) => {
       formattedDistance: imperialConfig.getFormattedDistance(tlEntry.distance),
       formattedSectionProperties: getFormattedSectionProperties(tlEntry, imperialConfig),
       distanceSuffix: imperialConfig.distanceSuffix,
-      percentages: getPercentages(tlEntry),
+      detectedModes: getDetectedModes(tlEntry),
     }
   }, [tlEntry, imperialConfig]);
 }
