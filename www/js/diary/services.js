@@ -333,8 +333,12 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
                 // anyway.
 
                 Logger.log("mapped trips to trip_gj_list of size "+raw_trip_gj_list.length);
-                var trip_gj_list = raw_trip_gj_list.filter(angular.isDefined);
-                Logger.log("after filtering undefined, trip_gj_list size = "+raw_trip_gj_list.length);
+                /* Filtering: we will keep trips that are 1) defined and 2) have a distance >= 100m or duration >= 5 minutes
+                  https://github.com/e-mission/e-mission-docs/issues/966#issuecomment-1709112578 */
+                const trip_gj_list = raw_trip_gj_list.filter((trip) => 
+                  trip && (trip.distance >= 100 || trip.duration >= 300)
+                );
+                Logger.log("after filtering undefined and distance < 100, trip_gj_list size = "+raw_trip_gj_list.length);
                 // Link 0th trip to first, first to second, ...
                 for (var i = 0; i < trip_gj_list.length-1; i++) {
                     linkTrips(trip_gj_list[i], trip_gj_list[i+1]);
