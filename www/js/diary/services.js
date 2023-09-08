@@ -328,8 +328,14 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
           return {
             ...tripProps,
-            start_loc: tripStartPoint.data.loc,
-            end_loc: tripEndPoint.data.loc,
+            start_loc: {
+              type: "Point",
+              coordinates: [tripStartPoint.data.longitude, tripStartPoint.data.latitude]
+            },
+            end_loc: {
+              type: "Point",
+              coordinates: [tripEndPoint.data.longitude, tripEndPoint.data.latitude],
+            },
           }
         });
     }
