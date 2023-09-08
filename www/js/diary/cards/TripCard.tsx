@@ -41,7 +41,8 @@ const TripCard = ({ trip }: Props) => {
   const flavoredTheme = getTheme(isDraft ? 'draft' : undefined);
 
   function showDetail() {
-    navigation.navigate("label.details", { tripId: trip._id.$oid });
+    const tripId = trip._id.$oid;
+    navigation.navigate("label.details", { tripId, flavoredTheme });
   }
 
   const mapOpts = { zoomControl: false, dragging: false };
