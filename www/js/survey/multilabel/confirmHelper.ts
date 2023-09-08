@@ -103,7 +103,7 @@ export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails);
 
 /** @description replace all underscores with spaces, and capitalizes the first letter of each word */
 export const labelKeyToReadable = (otherValue: string) => {
-  const words = otherValue.replace(/_/g, " ").split(" ");
+  const words = otherValue.replace(/_/g, " ").trim().split(" ");
   if (words.length == 0) return "";
   return words.map((word) =>
     word[0].toUpperCase() + word.slice(1)
@@ -112,7 +112,7 @@ export const labelKeyToReadable = (otherValue: string) => {
 
 /** @description replaces all spaces with underscores, and lowercases the string */
 export const readableLabelToKey = (otherText: string) =>
-  otherText.replace(/ /g, "_").toLowerCase();
+  otherText.trim().replace(/ /g, "_").toLowerCase();
 
 export const getFakeEntry = (otherValue) => ({
   text: labelKeyToReadable(otherValue),
