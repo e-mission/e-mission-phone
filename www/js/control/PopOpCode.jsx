@@ -11,7 +11,6 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
 
     const opcodeList = tokenURL.split("=");
     const opcode = opcodeList[opcodeList.length - 1];
-    const platform = window.cordova.platformId;
     
     const [copyAlertVis, setCopyAlertVis] = useState(false);
 
@@ -20,7 +19,12 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
             setCopyAlertvis(true);
         })
     }
-    
+
+    let copyButton;
+    if (window.cordova.platformId == "ios"){
+        copyButton = <IconButton icon="content-copy" onPress={() => {copyText(opcode); setCopyAlertVis(true)}} style={styles.button}/>
+    }
+
     return (
         <>
             <Modal visible={visibilityValue} onDismiss={() => setVis(false)}
@@ -36,7 +40,7 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
                     </Dialog.Content>
                     <Dialog.Actions>
                         <IconButton icon="share" onPress={() => action()} style={styles.button}/>
-                        <IconButton icon="content-copy" onPress={platform=="android" ? () => {} : () => {copyText(opcode); setCopyAlertVis(true)}} style={styles.button}/>
+                        {copyButton}
                         <Button onPress={() => setVis(false)} style={styles.button}>{t('general-settings.cancel')}</Button>
                     </Dialog.Actions>
                 </Dialog>
