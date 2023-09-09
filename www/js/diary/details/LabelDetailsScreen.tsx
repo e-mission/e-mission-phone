@@ -4,7 +4,7 @@
 
 import React, { useContext, useState } from "react";
 import { View, Modal, ScrollView, useWindowDimensions } from "react-native";
-import { Appbar, SegmentedButtons, Button, Surface, Text, useTheme } from "react-native-paper";
+import { PaperProvider, Appbar, SegmentedButtons, Button, Surface, Text, useTheme } from "react-native-paper";
 import { LabelTabContext } from "../LabelTab";
 import LeafletView from "../../components/LeafletView";
 import { useTranslation } from "react-i18next";
@@ -24,8 +24,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const { surveyOpt, timelineMap, labelOptions } = useContext(LabelTabContext);
   const { t } = useTranslation();
   const { height: windowHeight } = useWindowDimensions();
-  const { colors } = useTheme();
-  const trip = timelineMap.get(route.params.tripId);
+  const { tripId, flavoredTheme } = route.params;
+  const trip = timelineMap.get(tripId);
+  const { colors } = flavoredTheme || useTheme();
   const { displayDate, displayStartTime, displayEndTime } = useDerivedProperties(trip);
   const [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
 
@@ -33,10 +34,10 @@ const LabelScreenDetails = ({ route, navigation }) => {
   const tripGeojson = useGeojsonForTrip(trip, labelOptions, modesShown=='labeled' && trip?.userInput?.MODE?.value);
   const mapOpts = {minZoom: 3, maxZoom: 17};
 
-  return (
+  const modal = (
     <Modal visible={true}>
       <SafeAreaView style={{flex: 1}}>
-        <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+        <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: colors.surface, elevation: 3 }}>
           <Appbar.BackAction onPress={() => { navigation.goBack() }} />
           <Appbar.Content title={displayDate} titleStyle={{fontSize: 17}} />
         </Appbar.Header>
@@ -45,8 +46,9 @@ const LabelScreenDetails = ({ route, navigation }) => {
             displayStartTime={displayStartTime} displayEndTime={displayEndTime}
             displayStartName={tripStartDisplayName} displayEndName={tripEndDisplayName} />
         </Surface>
-        <ScrollView style={{ paddingBottom: 30}}>
-          <Surface mode='flat' style={{padding: 10, marginHorizontal: 10, rowGap: 12 }}>
+        <ScrollView style={{ paddingBottom: 30, backgroundColor: colors.background }}>
+          <Surface mode='flat'
+            style={{margin: 10, paddingHorizontal: 10, rowGap: 12, borderRadius: 15 }}>
             {/* MultiLabel or UserInput button, inline on one row */}
             <View style={{ paddingVertical: 10 }}>
               {surveyOpt?.elementTag == 'multilabel' &&
@@ -83,7 +85,15 @@ const LabelScreenDetails = ({ route, navigation }) => {
         </ScrollView>
       </SafeAreaView>
     </Modal>
-  )
+  );
+  if (route.params.flavoredTheme) {
+    return (
+      <PaperProvider theme={route.params.flavoredTheme}>
+        {modal}
+      </PaperProvider>
+    );
+  }
+  return modal;
 }
 
 export default LabelScreenDetails;

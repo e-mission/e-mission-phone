@@ -16,7 +16,7 @@ const ToggleSwitch = ({ value, buttons, ...rest}: SegmentedButtonsProps) => {
           minWidth: 0,
           borderTopWidth: rest.density == 'high' ? 0 : 1,
           borderBottomWidth: rest.density == 'high' ? 0 : 1,
-          backgroundColor: value == o.value ? colors.elevation.level2 : colors.surfaceDisabled,
+          backgroundColor: value == o.value ? colors.elevation.level1 : colors.surfaceDisabled,
         },
         ...o
       }))} {...rest} />

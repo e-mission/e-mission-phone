@@ -43,7 +43,7 @@ export function displayErrorMsg(errorMsg: string, title?: string) {
   if (errorMsg.includes?.("403")) {
     title = "Invalid OPcode: " + (title || '');
   }
-  const displayMsg = title ? title + '\n' + errorMsg : errorMsg;
+  const displayMsg = `━━━━\n${title}\n━━━━\n` + errorMsg;
   window.alert(displayMsg);
   console.error(displayMsg);
   window['Logger'].log(window['Logger'].LEVEL_ERROR, displayMsg);

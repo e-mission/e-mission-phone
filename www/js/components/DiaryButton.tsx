@@ -8,18 +8,13 @@ type Props = ButtonProps & { fillColor?: string, borderColor?: string };
 const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest } : Props) => {
 
   const { colors } = useTheme();
-
-  const blackAlpha15 = color('black').alpha(0.15).rgb().string();
-  const style = {
-    borderColor: borderColor || (fillColor ? blackAlpha15 : colors.primary),
-    borderWidth: 1.5,
-  };
   const textColor = rest.textColor || (fillColor ? colors.onPrimary : colors.primary);
 
   return (
     <Button mode="elevated"
       textColor={textColor}
-      buttonColor={fillColor || colors.onPrimary} style={style}
+      buttonColor={fillColor || colors.onPrimary}
+      style={s.button(borderColor, fillColor, colors)}
       labelStyle={[s.label, {color: textColor}]}
       contentStyle={s.buttonContent}
       {...rest}>
@@ -34,7 +29,15 @@ const DiaryButton = ({ children, fillColor, borderColor, icon, ...rest } : Props
   );
 };
 
+const blackAlpha15 = color('black').alpha(0.15).rgb().string();
 const s = StyleSheet.create({
+  button: ((borderColor, fillColor, colors) => ({
+    width: '100%',
+    maxWidth: 200,
+    margin: 'auto',
+    borderColor: borderColor || (fillColor ? blackAlpha15 : colors.primary),
+    borderWidth: 1.5,
+  })) as any,
   buttonContent: {
     height: 25,
   },

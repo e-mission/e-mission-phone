@@ -8,13 +8,14 @@
   The start and end times of the addition are the same as the trip or place.
 */
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { getAngularService } from "../../angular-react-helper";
 import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import { useTheme } from "react-native-paper";
-import { logDebug } from "../../plugin/logger";
+import { displayErrorMsg, logDebug } from "../../plugin/logger";
 import EnketoModal from "./EnketoModal";
+import { LabelTabContext } from "../../diary/LabelTab";
 
 type Props = {
   timelineEntry: any,
@@ -23,22 +24,17 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   const { colors } = useTheme();
   const { t, i18n } = useTranslation();
 
-  // initial label "Add Trip Details"; will be filled after a survey response is recorded
-  const [displayLabel, setDisplayLabel] = useState(t('diary.choose-survey'));
-  const [isFilled, setIsFilled] = useState(false);
   const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const { repopulateTimelineEntry } = useContext(LabelTabContext);
 
   const EnketoTripButtonService = getAngularService("EnketoTripButtonService");
   const etbsSingleKey = EnketoTripButtonService.SINGLE_KEY;
 
-  useEffect(() => {
-    const isFilled = timelineEntry.userInput?.[etbsSingleKey];
-    if (isFilled) {
-      setDisplayLabel(timelineEntry.userInput[etbsSingleKey].data.label);
-      setIsFilled(true);
-    }
-  }, []);
+  // the label resolved from the survey response, or null if there is no response yet
+  const responseLabel = useMemo<string|null>(() => (
+    timelineEntry.userInput?.[etbsSingleKey]?.data?.label || null
+  ), [timelineEntry]);
 
   function launchUserInputSurvey() {
     logDebug('UserInputButton: About to launch survey');
@@ -48,19 +44,19 @@ const UserInputButton = ({ timelineEntry }: Props) => {
   }
 
   function onResponseSaved(result) {
-    if (!result) return;
-    timelineEntry.userInput[etbsSingleKey] = {
-      data: result,
-      write_ts: Date.now()
+    if (result) {
+      logDebug('UserInputButton: response was saved, about to repopulateTimelineEntry; result=' + JSON.stringify(result));
+      repopulateTimelineEntry(timelineEntry._id.$oid);
+    } else {
+      displayErrorMsg('UserInputButton: response was not saved, result=', result);
     }
-    setDisplayLabel(result.label);
-    setIsFilled(true);
   }
 
   return (<>
-    <DiaryButton fillColor={isFilled && colors.primary}
+    <DiaryButton fillColor={responseLabel && colors.primary}
       onPress={() => launchUserInputSurvey()}>
-      {displayLabel}
+      {/* if no response yet, show the default label */}
+      {responseLabel || t('diary.choose-survey')}
     </DiaryButton>
 
     <EnketoModal visible={modalVisible}
