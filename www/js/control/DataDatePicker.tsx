@@ -7,9 +7,8 @@ import { useTranslation } from "react-i18next";
 import { getAngularService } from "../angular-react-helper";
 
 const DataDatePicker = ({date, setDate, open, setOpen}) => {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(); //able to pull lang from this
   const ControlHelper = getAngularService("ControlHelper");
-  const { i18n } = useTranslation('general-settings.choose-date'); //able to pull lang from this
 
   const onDismiss = React.useCallback(() => {
     setOpen(false);
