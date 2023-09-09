@@ -362,12 +362,13 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
     //anytime the status changes, may need to show modal
     useEffect(() => {
-        if(overallStatus == false && appConfig && haveSetText) { //trying to block early cases from throwing modal
+        let currentlyOpen = window?.appStatusModalOpened;
+        if(!currentlyOpen && overallStatus == false && appConfig && haveSetText) { //trying to block early cases from throwing modal
+            window.appStatusModalOpened = true;
             setPermitVis(true);
         }
-    }, [overallStatus])
+    }, [overallStatus]);
 
-    //custom hook executes function on app resuming foreground
     useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
         refreshAllChecks();
@@ -387,6 +388,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
             if(!haveSetText)
             {
+                //window.appStatusModalOpened = false;
                 setupPermissionText();
                 setHaveSetText(true);
             }
@@ -397,6 +399,12 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
         }
     }, [appConfig]);
+
+    useEffect (() => {
+        if(!permitVis) {
+            window.appStatusModalOpened = false;
+        }
+    }, [permitVis]);
 
     //anytime the checks change (mostly when refreshed), recompute the visual pieces
     useEffect(() => {
