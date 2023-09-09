@@ -41,7 +41,7 @@ angular.module('emission.main', ['emission.main.diary',
     },
     views: {
       'main-control': {
-        templateUrl: 'templates/control/main-control.html',
+        template: `<profile-settings class="fill-container"></profile-settings>`,
         controller: 'ControlCtrl'
       }
     }

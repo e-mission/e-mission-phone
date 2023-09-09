@@ -32,10 +32,6 @@
   position: absolute;
 }
 
-.fill-container div[class*='css-'] > div[class*='css-'] {
-  position: static;
-}
-
 /* Without this, the LabelTab does not fill the entire height of the screen.
     It has something to do with React Navigation's NavigationContainer.
   This should not be necessary once the entire app's routing has been

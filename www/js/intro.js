@@ -164,6 +164,7 @@ angular.module('emission.intro', ['emission.splash.startprefs',
       var prepopulateQRMessage = {}; 
       prepopulateQRMessage.files = [pngFile];
       prepopulateQRMessage.url = $scope.currentToken;
+      prepopulateQRMessage.message = $scope.currentToken;
         
       window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
         console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true

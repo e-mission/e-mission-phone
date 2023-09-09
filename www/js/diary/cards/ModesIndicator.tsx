@@ -31,7 +31,7 @@ const ModesIndicator = ({ trip, detectedModes, }) => {
         </Text>
       </View>
     );
-  } else if (detectedModes?.length > 1 || detectedModes[0]?.mode != 'UNKNOWN') {
+  } else if (detectedModes?.length > 1 || detectedModes?.length == 1 && detectedModes[0].mode != 'UNKNOWN') {
     // show detected modes if there are more than one, or if there is only one and it's not UNKNOWN
     modeViews = (<>
       <Text style={{fontSize: 12, fontWeight: '500'}}>{t('diary.detected')}</Text>

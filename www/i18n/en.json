@@ -44,7 +44,8 @@
         "app-version": "App Version",
         "reminders-time-of-day": "Time of Day for Reminders ({{time}})",
         "upcoming-notifications": "Upcoming Notifications",
-        "dummy-notification" : "Dummy Notification in 5 Seconds"
+        "dummy-notification" : "Dummy Notification in 5 Seconds",
+        "log-out": "Log Out"
     },
 
     "general-settings":{
@@ -65,9 +66,6 @@
         "consent-found": "Consent found!",
         "consented-to": "Consented to protocol {{protocol_id}}, {{approval_date}}",
         "consented-ok": "OK",
-        "share-message": "Join me in making transportation greener and healthier \nDownload the emission app:",
-        "share-subject": "Emission - UC Berkeley Research Project",
-        "share-url": "https://bic2cal.eecs.berkeley.edu/#download",
         "qrcode": "My OPcode",
         "qrcode-share-title": "You can save your OPcode to login easily in the future!"
     },
@@ -235,6 +233,7 @@
             "fix": "Fix",
             "refresh":"Refresh",
             "overall-description": "This app works in the background to automatically build a travel diary for you.  Make sure that all the settings below are green so that the app can work properly!",
+            "explanation-title": "What are these used for?",
             "overall-loc-name": "Location",
             "overall-loc-description": "We use the background location permission to track your location in the background, even when the app is closed. Reading background locations removes the need to turn tracking on and off, making the app easier to use and preventing battery drain.",
             "locsettings": {
@@ -363,5 +362,67 @@
         "invalid-opcode-format": "Invalid OPcode format",
         "error-loading-config-app-start": "Error loading config on app start",
         "survey-missing-formpath": "Error while fetching resources in config: survey_info.surveys has a survey without a formPath"
+    },
+    "errors": {
+      "while-populating-composite": "Error while populating composite trips",
+      "while-loading-another-week": "Error while loading travel of {{when}} week",
+      "while-loading-specific-week": "Error while loading travel for the week of {{day}}"
+    },
+    "consent-text": {
+        "title":"NREL OPENPATH PRIVACY POLICY/TERMS OF USE",
+        "introduction":{
+            "header":"Introduction and Purpose",
+            "what-is-openpath":"This data is being collected through OpenPATH, an NREL open-sourced platform. The smart phone application, NREL OpenPATH (“App”), combines data from smartphone sensors, semantic user labels and a short demographic survey.",
+            "what-is-NREL":"NREL is a national laboratory of the U.S. Department of Energy, Office of Energy Efficiency and Renewable Energy, operated by Alliance for Sustainable Energy, LLC under Prime Contract No. DE-AC36-08GO28308. This Privacy Policy applies to the App provided by Alliance for Sustainable Energy, LLC. This App is provided solely for the purposes of collecting travel behavior data for the {{program_or_study}} and for research to inform public policy. None of the data collected by the App will never be sold or used for any commercial purposes, including advertising.",
+            "if-disagree":"IF YOU DO NOT AGREE WITH THE TERMS OF THIS PRIVACY POLICY, PLEASE DELETE THE APP"
+        },
+        "why":{
+            "header":"Why we collect this information"
+        },
+        "what":{
+            "header":"What information we collect",
+            "no-pii":"The App will never ask for any Personally Identifying Information (PII) such as name, email, address, or phone number.",
+            "phone-sensor":"It collects phone sensor data pertaining to your location (including background location), accelerometer, device-generated activity and mode recognition, App usage time, and battery usage. The App will create a “travel diary” based on your background location data to determine your travel patterns and location history.",
+            "labeling":"It will also ask you to periodically annotate these sensed trips with semantic labels, such as the trip mode, purpose, and replaced mode.",
+            "demographics":"It will also request sociodemographic information such as your approximate age, gender, and household type. The sociodemographic factors can be used to understand the influence of lifestyle on travel behavior, as well as generalize the results to a broader population.",
+            "open-source-data":"For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background at",
+            "open-source-analysis":"the analysis pipeline at",
+            "open-source-dashboard":"and the dashboard metrics at",
+            "on-nrel-site": "For the greatest transparency, the App is based on an open source platform, NREL’s OpenPATH. you can inspect the data that OpenPATH collects in the background, the analysis pipeline, and the dashboard metrics through links on the NREL OpenPATH website."
+        },
+        "opcode":{
+            "header":"How we associate information with you",
+            "not-autogen":"Program administrators will provide you with a 'opcode' that you will use to log in to the system. This long random string will be used for all further communication with the server. If you forget or lose your opcode, you may request it by providing your name and/or email address to the program administrator. Please do not contact NREL staff with opcode retrieval requests since we do not have access to the connection between your name/email and your opcode. The data that NREL automatically collects (phone sensor data, semidemographic data, etc.) will only be associated with your 'opcode'",
+            "autogen":"You are logging in with a randomly generated 'opcode' that has been generated by the platform. This long random string will used for all further communication with the server. Only you know the opcode that is associated with you. There is no “Forgot password” option, and NREL staff cannot retrieve your opcode, even if you provide your name or email address. This means that, unless you store your opcode in a safe place, you will not have access to your prior data if you switch phones or uninstall and reinstall the App."
+        },
+        "who-sees":{
+            "header":"Who gets to see the information",
+            "public-dash":"Aggregate metrics derived from the travel patterns will be made available on a public dashboard to provide transparency into the impact of the program. These metrics will focus on information summaries such as counts, distances and durations, and will not display individual travel locations or times.",
+            "individual-info":"Individual labeling rates and trip level information will only be made available to:",
+            "program-admins":"🧑 Program administrators from {{deployment_partner_name}} to {{raw_data_use}}, and",
+            "nrel-devs":"💻 NREL OpenPATH developers for debugging",
+            "TSDC-info":"The data will also be periodically archived in NREL’s Transportation Secure Data Center (TSDC) after a delay of 3 to 6 months. It will then be made available for legitimate research through existing, privacy-preserving TSDC operating procedures. Further information on the procedures is available",
+            "on-website":" on the website ",
+            "and-in":"and in",
+            "this-pub":" this publication ",
+            "and":"and",
+            "fact-sheet":" fact sheet",
+            "on-nrel-site": " through links on the NREL OpenPATH website."
+        },
+        "rights":{
+            "header":"Your rights",
+            "app-required":"You are required to track your travel patterns using the App as a condition of participation in the Program. If you wish to withdraw from the Program, you should contact the program administrator, {{program_admin_contact}}  to discuss termination options. If you  wish to stay in the program but not use the app, please contact your program administrator to negotiate an alternative data collection procedure before uninstalling the app. If you uninstall the app without approval from the program administrator, you may not have access to the benefits provided by the program.",
+            "app-not-required":"Participation in the {{program_or_study}} is completely voluntary. You have the right to decline to participate or to withdraw at any point in the Study without providing notice to NREL or the point of contact. If you do not wish to participate in the Study or to discontinue your participation in the Study, please delete the App.",
+            "destroy-data-pt1":"If you would like to have your data destroyed, please contact K. Shankari ",
+            "destroy-data-pt2":" requesting deletion. You must include your token in the request for deletion. Because we do not connect your identity with your token, we cannot delete your information without obtaining the token as part of the deletion request. We will then destroy all data associated with that deletion request, both in the online and archived datasets."
+        },
+        "questions":{
+            "header":"Questions",
+            "for-questions":"If you have any questions about the data collection goals and results, please contact the primary point of contact for the study, {{program_admin_contact}}. If you have any technical questions about app operation, please contact NREL’s K. Shankari (k.shankari@nrel.gov)."
+        },
+        "consent":{
+            "header":"Consent",
+            "press-button-to-consent":"Please select the button below to indicate that you have read and agree to this Privacy Policy, consent to the collection of your information, and want to participate in the {{program_or_study}}."
+        }
     }
 }
