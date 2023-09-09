@@ -94,7 +94,7 @@ Pre-requisites
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
     - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
-- Java 11. Tested with [OpenJDK 11 (Temurin) using AdoptOpenJDK](https://adoptopenjdk.net/releases.html).
+- Java 17. Tested with [OpenJDK 17 (Temurin) using Adoptium](https://adoptium.net).
 - android SDK; install manually or use setup script below. Note that you only need to run this once **per computer**.
     ```
     $ bash setup/prereq_android_sdk_install.sh
