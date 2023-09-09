@@ -20,6 +20,8 @@ import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocesse
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
+import AppStatusModal from "../control/AppStatusModal";
+import { useTheme } from "react-native-paper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -29,6 +31,7 @@ export const LabelTabContext = React.createContext<any>(null);
 const LabelTab = () => {
   const { appConfig, loading } = useAppConfig();
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   const [surveyOpt, setSurveyOpt] = useState(null);
   const [labelOptions, setLabelOptions] = useState(null);
@@ -47,6 +50,8 @@ const LabelTab = () => {
   const Timeline = getAngularService('Timeline');
   const CommHelper = getAngularService('CommHelper');
   const enbs = getAngularService('EnketoNotesButtonService');
+
+  const [permissionVis, setPermissionVis] = useState(false);
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
@@ -216,19 +221,7 @@ const LabelTab = () => {
   function checkPermissionsStatus() {
     $rootScope.$broadcast("recomputeAppStatus", (status) => {
       if (!status) {
-        $ionicPopup.show({
-          title: t('control.incorrect-app-status'),
-          template: t('control.fix-app-status'),
-          scope: $rootScope,
-          buttons: [{
-            text: t('control.fix'),
-            type: 'button-assertive',
-            onTap: function (e) {
-              $state.go('root.main.control', { launchAppStatusModal: 1 });
-              return false;
-            }
-          }]
-        });
+        setPermissionVis(true); //if the status is false, popup modal
       }
     });
   }
@@ -286,6 +279,10 @@ const LabelTab = () => {
                         This is what `detachPreviousScreen:false` does. */
                       options={{detachPreviousScreen: false}} />
         </Tab.Navigator>
+        <AppStatusModal permitVis={permissionVis} 
+                        setPermitVis={setPermissionVis} 
+                        dialogStyle={{ backgroundColor: colors.elevation.level3, margin: 5, marginLeft: 25, marginRight: 25}} 
+                        settingsScope={$rootScope} />
       </NavigationContainer>
     </LabelTabContext.Provider>
   );
