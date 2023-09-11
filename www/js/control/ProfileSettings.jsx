@@ -80,7 +80,7 @@ const ProfileSettings = () => {
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
-    const [appVersion, setAppVersion] = useState({});
+    const [appVersion, setAppVersion] = useState("");
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
@@ -512,8 +512,8 @@ const ProfileSettings = () => {
                 <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
-                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
             </ExpansionSection>
+            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
         </ScrollView>
 
             {/* menu for "nuke data" */}
