@@ -688,7 +688,9 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
-            <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
+            <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis} 
+                minDate={new Date(appConfig?.intro?.start_year, appConfig?.intro?.start_month - 1, 1)}>
+            </DataDatePicker>
 
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
