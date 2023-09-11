@@ -1,72 +1,8 @@
-angular.module('emission.main.recent', ['emission.services'])
+import LogPage from './control/LogPage';
+angular.module('emission.main.recent', ['emission.services', LogPage.module])
 
 .controller('logCtrl', function(ControlHelper, $scope, EmailHelper) {
-    console.log("Launching logCtr");
-    var RETRIEVE_COUNT = 100;
-    $scope.logCtrl = {};
-
-    $scope.refreshEntries = function() {
-        window.Logger.getMaxIndex().then(function(maxIndex) {
-            console.log("maxIndex = "+maxIndex);
-            $scope.logCtrl.currentStart = maxIndex;
-            $scope.logCtrl.gotMaxIndex = true;
-            $scope.logCtrl.reachedEnd = false;
-            $scope.entries = [];
-            $scope.addEntries();
-        }, function (e) {
-            var errStr = "While getting max index "+JSON.stringify(e, null, 2);
-            console.log(errStr);
-            alert(errStr);
-        });
-    }
-
-    $scope.moreDataCanBeLoaded = function() {
-        return $scope.logCtrl.gotMaxIndex && !($scope.logCtrl.reachedEnd);
-    }
-
-    $scope.clear = function() {
-        window.Logger.clearAll();
-        window.Logger.log(window.Logger.LEVEL_INFO, "Finished clearing entries from unified log");
-        $scope.refreshEntries();
-    }
-
-    $scope.addEntries = function() {
-        console.log("calling addEntries");
-        window.Logger.getMessagesFromIndex($scope.logCtrl.currentStart, RETRIEVE_COUNT)
-            .then(function(entryList) {
-                $scope.$apply($scope.processEntries(entryList));
-                console.log("entry list size = "+$scope.entries.length);
-                console.log("Broadcasting infinite scroll complete");
-                $scope.$broadcast('scroll.infiniteScrollComplete')
-            }, function(e) {
-                var errStr = "While getting messages from the log "+JSON.stringify(e, null, 2);
-                console.log(errStr);
-                alert(errStr);
-                $scope.$broadcast('scroll.infiniteScrollComplete')
-            }
-        )
-    }
-
-    $scope.processEntries = function(entryList) {
-        for (let i = 0; i < entryList.length; i++) {
-            var currEntry = entryList[i];
-            currEntry.fmt_time = moment.unix(currEntry.ts).format("llll");
-            $scope.entries.push(currEntry);
-        }
-        if (entryList.length == 0) {
-            console.log("Reached the end of the scrolling");
-            $scope.logCtrl.reachedEnd = true;
-        } else {
-            $scope.logCtrl.currentStart = entryList[entryList.length-1].ID
-            console.log("new start index = "+$scope.logCtrl.currentStart);
-        }
-    }
-
-    $scope.emailLog = function () {
-        EmailHelper.sendEmail("loggerDB");
-    }
-
-    $scope.refreshEntries();
+    //can remove when we have react routing!
 })
 
 .controller('sensedDataCtrl', function($scope, $ionicActionSheet, EmailHelper) {

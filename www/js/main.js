@@ -47,7 +47,7 @@ angular.module('emission.main', ['emission.main.diary',
     url: '/log',
     views: {
       'main-control': {
-        templateUrl: 'templates/recent/log.html',
+        template: `<log-page></log-page>`,
         controller: 'logCtrl'
       }
     }
