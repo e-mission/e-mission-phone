@@ -25,9 +25,6 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
     const [explainVis, setExplainVis] = useState<boolean>(false);
 
-    const [backgroundRestricted, setBackgroundRestricted] = useState<boolean>(false);
-    const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState<Array<any>>([]);
-
     const [checkList, setCheckList] = useState([]);
     const [explanationList, setExplanationList] = useState<Array<any>>([]);
     const [haveSetText, setHaveSetText] = useState<boolean>(false);
@@ -313,13 +310,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
         setExplanationList(tempExplanations);
   
-        //waiting on samsung feedback, need more information
-        setBackgroundRestricted(false);
-        if(window['device'].manufacturer.toLowerCase() == "samsung") {
-          setBackgroundRestricted(true);
-          setAllowBackgroundInstructions(t("intro.allow_background.samsung"));
-        }
-  
+        //TODO - update samsung handling based on feedback
+
         console.log("Explanation = "+explanationList);
     }
 
