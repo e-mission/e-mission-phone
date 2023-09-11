@@ -269,8 +269,11 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             return checkOrFix(ignoreBatteryOptCheck, window['cordova'].plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
                 false);
         };
-        var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-12";
-        if (osver < 12) {
+        var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-13";
+        if (osver == 12) {
+            androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-12";
+        }
+        else if (osver < 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
         }
         let unusedAppsUnrestrictedCheck = {
