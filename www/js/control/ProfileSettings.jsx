@@ -111,6 +111,11 @@ const ProfileSettings = () => {
         setAppVersion(ClientStats.getAppVersion());
     }
 
+    //previously not loaded on regular refresh, this ensures it stays caught up
+    useEffect(() => {
+        refreshNotificationSettings();
+    }, [uiConfig])
+
     const whenReady = function(newAppConfig){
         var tempUiConfig = newAppConfig;
 
