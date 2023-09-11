@@ -599,7 +599,7 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* opcode viewing popup */}
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR} dialogStyle={styles.dialog(colors.elevation.level3)}></PopOpCode>
 
             {/* {view permissions} */}
             <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
