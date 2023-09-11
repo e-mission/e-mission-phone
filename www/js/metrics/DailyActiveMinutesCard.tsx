@@ -5,8 +5,9 @@ import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
 import { useTranslation } from 'react-i18next';
-import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
+import { labelKeyToReadable, labelOptions } from '../survey/multilabel/confirmHelper';
 import LineChart from '../components/LineChart';
+import { getBaseModeByReadableLabel } from '../diary/diaryHelper';
 
 const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = typeof ACTIVE_MODES[number];
@@ -45,7 +46,8 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
       <Card.Content style={cardStyles.content}>
         { dailyActiveMinutesRecords.length ?
           <LineChart records={dailyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
-            timeAxis={true} isHorizontal={false} />
+            timeAxis={true} isHorizontal={false}
+            getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
