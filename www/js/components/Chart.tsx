@@ -1,19 +1,19 @@
 
 import React, { useEffect, useRef, useState, useMemo } from 'react';
-import { angularize } from '../angular-react-helper';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData } from 'chart.js';
-import { Chart } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ChartType, ScriptableContext, PointElement, LineElement } from 'chart.js';
+import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
-import { dedupColors, getChartHeight, getMeteredBackgroundColor } from './charting';
-import { getLabelOptions } from "../survey/multilabel/confirmHelper";
+import { dedupColors, getChartHeight } from './charting';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   TimeScale,
   BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
@@ -21,33 +21,32 @@ ChartJS.register(
 );
 
 type XYPair = { x: number|string, y: number|string };
-type ChartDatasets = {
+type ChartDataset = {
   label: string,
   data: XYPair[],
-}[];
+};
 
-type Props = {
+export type Props = {
   records: { label: string, x: number|string, y: number|string }[],
   axisTitle: string,
+  type: 'bar'|'line',
+  getColorForLabel: (label: string, currDataset?: ChartDataset, ctx?: ScriptableContext<'bar'|'line'>, colorFor?: 'background'|'border') => string|null,
+  borderWidth?: number,
   lineAnnotations?: { value: number, label?: string, color?:string, position?: LabelPosition }[],
   isHorizontal?: boolean,
   timeAxis?: boolean,
   stacked?: boolean,
-  getColorForLabel?: (label: string) => string,
-  meter?: {high: number, middle: number, dash_key: string},
 }
-const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis, stacked, getColorForLabel, meter }: Props) => {
+const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAnnotations, isHorizontal, timeAxis, stacked }: Props) => {
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
-  const [labelOptions, setLabelOptions] = useState(null);
 
   const indexAxis = isHorizontal ? 'y' : 'x';
-  const barChartRef = useRef<ChartJS<'bar', XYPair[]>>(null);
-  const [chartDatasets, setChartDatasets] = useState<ChartDatasets>([]);
+  const chartRef = useRef<ChartJS<'bar'|'line', XYPair[]>>(null);
+  const [chartDatasets, setChartDatasets] = useState<ChartDataset[]>([]);
   
-  const chartData = useMemo<ChartData<'bar', XYPair[]>>(() => {
-    if (!labelOptions) return { datasets: [] };
+  const chartData = useMemo<ChartData<'bar'|'line', XYPair[]>>(() => {
     let labelColorMap; // object mapping labels to colors
     if (getColorForLabel) {
       const colorEntries = chartDatasets.map(d => [d.label, getColorForLabel(d.label)] );
@@ -56,21 +55,15 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
     return {
       datasets: chartDatasets.map((e, i) => ({
         ...e,
-        backgroundColor: (barCtx) => 
-          meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors)
-                : labelColorMap[e.label],
-        borderColor: (barCtx) => 
-          meter ? getMeteredBackgroundColor(meter, barCtx, chartDatasets[i], colors, .25)
-                : labelColorMap[e.label],
+        backgroundColor: (barCtx) => labelColorMap[e.label] || getColorForLabel(e.label, e, barCtx, 'background'),
+        borderColor: (barCtx) => labelColorMap[e.label] || getColorForLabel(e.label, e, barCtx, 'border'),
+        borderWidth: borderWidth || 2,
       })),
     };
-  }, [chartDatasets, meter, labelOptions]);
+  }, [chartDatasets, getColorForLabel]);
 
   // group records by label (this is the format that Chart.js expects)
   useEffect(() => {
-    if (!labelOptions) {
-      getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
-    }
     const d = records?.reduce((acc, record) => {
       const existing = acc.find(e => e.label == record.label);
       if (!existing) {
@@ -88,24 +81,19 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
         });
       }
       return acc;
-    }, [] as ChartDatasets);
+    }, [] as ChartDataset[]);
     setChartDatasets(d);
   }, [records]);
 
   return (
     <View style={getChartHeight(chartDatasets, numVisibleDatasets, indexAxis, isHorizontal, stacked)}>
-      <Chart type='bar' ref={barChartRef}
+      <ChartJSChart type={type} ref={chartRef}
         data={chartData}
         options={{
           indexAxis: indexAxis,
           responsive: true,
           maintainAspectRatio: false,
           resizeDelay: 1,
-          elements: {
-            bar: {
-              borderWidth: meter ? 3 : 0,
-            }
-          },
           scales: {
             ...(isHorizontal ? {
               y: {
@@ -193,5 +181,4 @@ const BarChart = ({ records, axisTitle, lineAnnotations, isHorizontal, timeAxis,
     </View>
   )
 }
-angularize(BarChart, 'BarChart', 'emission.main.barchart');
-export default BarChart;
+export default Chart;

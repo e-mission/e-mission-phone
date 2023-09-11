@@ -71,7 +71,8 @@ function createDiagonalPattern(color = 'black') {
   return c.createPattern(shape, 'repeat')
 }
 
-export function getMeteredBackgroundColor(meter, barCtx, currDataset, colors, darken=0) {
+export function getMeteredBackgroundColor(meter, currDataset, barCtx, colors, darken=0) {
+  if (!barCtx || !currDataset) return;
   let bar_height = getBarHeight(barCtx.parsed._stacks);
   console.debug("bar height for", barCtx.raw.y, " is ", bar_height, "which in chart is", currDataset);
   let meteredColor;
@@ -112,6 +113,7 @@ export const dedupColors = (colors: string[][]) => {
   const dedupedColors = {};
   const maxAdjustment = 0.7; // more than this is too drastic and the colors approach black/white
   for (const [key, clr] of colors) {
+    if (!clr) continue; // skip empty colors
     const duplicates = colors.filter(([k, c]) => c == clr);
     if (duplicates.length > 1) {
       // there are duplicates; calculate an evenly-spaced adjustment for each one
