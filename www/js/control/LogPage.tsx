@@ -68,14 +68,12 @@ const LogPage = ({pageVis, setPageVis}) => {
             processEntries(entryList);
             console.log("entry list size = "+ entries.length);
             setIsFetching(false);
-            //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
         } catch(error) {
             let errStr = "While getting messages from the log "+JSON.stringify(error, null, 2);
             console.log(errStr);
             setLogMessage(errStr);
             setLogErrorVis(true);
             setIsFetching(false);
-            //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
         }
     }
 
