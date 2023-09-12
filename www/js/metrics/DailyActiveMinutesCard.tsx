@@ -41,7 +41,8 @@ const DailyActiveMinutesCard = ({ userMetrics }: Props) => {
         title={t('main-metrics.active-minutes')}
         titleVariant='titleLarge'
         titleStyle={cardStyles.titleText(colors)}
-        titleNumberOfLines={2}
+        subtitle={t('main-metrics.daily-active-minutes')}
+        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
         style={cardStyles.title(colors)} />
       <Card.Content style={cardStyles.content}>
         { dailyActiveMinutesRecords.length ?

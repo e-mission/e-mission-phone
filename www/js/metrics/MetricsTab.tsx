@@ -138,6 +138,12 @@ export const cardStyles: any = {
     fontWeight: '500',
     textAlign: 'center'
   }),
+  subtitleText: {
+    fontSize: 13,
+    lineHeight: 13,
+    fontWeight: '400',
+    fontStyle: 'italic',
+  },
   content: {
     padding: 8,
     paddingBottom: 12,

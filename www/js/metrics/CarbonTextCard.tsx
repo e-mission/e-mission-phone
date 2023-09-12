@@ -105,7 +105,13 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
         tempText = tempText.concat(groupText);
     }
     return tempText;
-}, [userText, groupText]);
+  }, [userText, groupText]);
+  
+  const cardSubtitleText = useMemo(() => {
+    const recentEntries = filterToRecentWeeks(aggMetrics?.distance).reverse().flat();
+    const recentEntriesRange = formatDateRangeOfDays(recentEntries);
+    return `${t('main-metrics.estimated-emissions')}, (${recentEntriesRange})`;
+  }, [aggMetrics?.distance]);
 
   return (
     <Card style={cardStyles.card}
@@ -114,7 +120,8 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
         title={t('main-metrics.footprint')}
         titleVariant='titleLarge'
         titleStyle={cardStyles.titleText(colors)}
-        titleNumberOfLines={2}
+        subtitle={cardSubtitleText}
+        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
         style={cardStyles.title(colors)} />
     <Card.Content style={cardStyles.content}>
     { textEntries?.length > 0 &&

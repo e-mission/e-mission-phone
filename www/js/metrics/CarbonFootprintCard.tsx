@@ -119,6 +119,12 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         return tempChartData;
     }, [userCarbonRecords, groupCarbonRecords]);
 
+    const cardSubtitleText = useMemo(() => {
+      const recentEntries = filterToRecentWeeks(aggMetrics?.distance).reverse().flat();
+      const recentEntriesRange = formatDateRangeOfDays(recentEntries);
+      return `${t('main-metrics.estimated-emissions')}, (${recentEntriesRange})`;
+    }, [aggMetrics?.distance]);
+
     //hardcoded here, could be read from config at later customization?
     let carbonGoals = [ {label: t('main-metrics.us-2030-goal'), value: 54, color: color(colors.danger).darken(.25).rgb().toString()},
                         {label: t('main-metrics.us-2050-goal'), value: 14, color: color(colors.warn).darken(.25).rgb().toString()}];
@@ -131,7 +137,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             title={t('main-metrics.footprint')}
             titleVariant='titleLarge'
             titleStyle={cardStyles.titleText(colors)}
-            titleNumberOfLines={2}
+            subtitle={cardSubtitleText}
+            subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
             right={(props) => <ChangeIndicator change={emissionsChange}></ChangeIndicator>}
             style={cardStyles.title(colors)} />
         <Card.Content style={cardStyles.content}>

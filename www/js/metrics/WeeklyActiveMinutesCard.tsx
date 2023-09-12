@@ -60,7 +60,8 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
         title={t('main-metrics.active-minutes')}
         titleVariant='titleLarge'
         titleStyle={cardStyles.titleText(colors)}
-        titleNumberOfLines={2}
+        subtitle={t('main-metrics.weekly-active-minutes')}
+        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
         style={cardStyles.title(colors)} />
       <Card.Content style={cardStyles.content}>
         { weeklyActiveMinutesRecords.length ?

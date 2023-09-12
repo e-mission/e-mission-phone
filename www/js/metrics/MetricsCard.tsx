@@ -4,11 +4,12 @@ import { View } from 'react-native';
 import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
-import { getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
+import { formatDateRangeOfDays, getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToReadable, labelOptions } from '../survey/multilabel/confirmHelper';
 import { getBaseModeByReadableLabel } from '../diary/diaryHelper';
+import { useTranslation } from 'react-i18next';
 
 type Props = {
   cardTitle: string,
@@ -20,6 +21,7 @@ type Props = {
 const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, unitFormatFn}: Props) => {
 
   const { colors } = useTheme();  
+  const { t } = useTranslation();
   const [viewMode, setViewMode] = useState<'details'|'graph'>('details');
   const [populationMode, setPopulationMode] = useState<'user'|'aggregate'>('user');
   const [graphIsStacked, setGraphIsStacked] = useState(true);
@@ -45,6 +47,12 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
     return records;
   }, [metricDataDays, viewMode]);
 
+  const cardSubtitleText = useMemo(() => {
+    const groupText = populationMode == 'user' ? t('main-metrics.user-totals')
+                                               : t('main-metrics.group-totals');
+    return `${groupText} (${formatDateRangeOfDays(metricDataDays)})`;
+  }, [metricDataDays, populationMode]);
+
   // for each label, sum up cumulative values across all days
   const metricSumValues = useMemo(() => {
     if (!metricDataDays || viewMode != 'details') return [];
@@ -67,7 +75,8 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         title={cardTitle}
         titleVariant='titleLarge'
         titleStyle={cardStyles.titleText(colors)}
-        titleNumberOfLines={2}
+        subtitle={cardSubtitleText}
+        subtitleStyle={[cardStyles.titleText(colors), cardStyles.subtitleText]}
         right={() =>
           <View style={{gap: 3}}>
             <ToggleSwitch density='high' value={viewMode} onValueChange={(v) => setViewMode(v as any)}
