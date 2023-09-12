@@ -62,8 +62,9 @@ const LogPage = ({pageVis, setPageVis}) => {
     async function addEntries() {
         console.log("calling addEntries");
         setIsFetching(true);
+        let start = loadStats.currentStart ? loadStats.currentStart : 0; //set a default start to prevent initial fetch error
         try {
-            let entryList = await window.Logger.getMessagesFromIndex(loadStats?.currentStart, RETRIEVE_COUNT);
+            let entryList = await window.Logger.getMessagesFromIndex(start, RETRIEVE_COUNT);
             processEntries(entryList);
             console.log("entry list size = "+ entries.length);
             setIsFetching(false);
