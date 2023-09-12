@@ -141,6 +141,11 @@ Installing (one time only)
 ---
 Run the setup script for the platform you want to build
 
+Make sure you switch to the "label_dashboard_profile_sept_2023" branch
+```
+git checkout label_dashboard_profile_sept_2023
+```
+
 ```
 $ bash setup/setup_android_native.sh
 AND/OR
@@ -156,14 +161,6 @@ $ cp www/json/startupConfig.json.sample www/json/startupConfig.json
 $ cp ..... www/json/connectionConfig.json
 ```
 
-### Activation (after install, and in every new shell)
-
-```
-$ source setup/activate_native.sh
-```
-
-### Activation (after install, and in every new shell)
-
 If connecting to a development server over http, make sure to turn on http support on android
 
 ```
@@ -174,10 +171,15 @@ If connecting to a development server over http, make sure to turn on http suppo
 
 ### Run in the emulator
 
+Pick a version and execute the following:
+
 ```
-$ npx cordova emulate ios
-AND/OR
-$ npx cordova emulate android
+$ npm run <type_of_build>
+```
+
+For instance: (build-dev-android)
+```
+$ npm run build-dev-android
 ```
 
 Creating logos
