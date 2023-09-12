@@ -14,6 +14,7 @@ import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
 import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
+import ActionMenu from "../components/ActionMenu";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -458,6 +459,17 @@ const ProfileSettings = () => {
         });
     }
 
+    const onSelectState = function(stateObject) {
+        ControlCollectionHelper.forceTransition(stateObject.transition); 
+    }
+
+    const onSelectCarbon = function(carbonObject) {
+        console.log("changeCarbonDataset(): chose locale " + carbonObject.value);
+        CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(carbonObject.value); //there's some sort of error here
+        //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
+        carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
+    }
+
     //conditional creation of setting sections
 
     let logUploadSection;
@@ -484,7 +496,7 @@ const ProfileSettings = () => {
         </Appbar.Header>
         
         <ScrollView>
-            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode} desc={authSettings.opcode} descStyle={styles.monoDesc}></SettingRow>
+            <SettingRow textKey="control.view-qrc" iconName="grid" action={viewQRCode} desc={authSettings.opcode} descStyle={settingStyles.monoDesc}></SettingRow>
             <DemographicsSettingRow></DemographicsSettingRow>
             <SettingRow textKey='control.view-privacy' iconName='eye' action={() => setPrivacyVis(true)}></SettingRow>
             {timePicker}
@@ -521,7 +533,7 @@ const ProfileSettings = () => {
             transparent={true}>
                 <Dialog visible={nukeSetVis}
                 onDismiss={() => setNukeVis(false)}
-                style={styles.dialog(colors.elevation.level3)}>
+                style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
                         <Button onPress={() => {KVStore.clearOnlyLocal;
@@ -544,74 +556,25 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* menu for "set carbon dataset - only somewhat working" */}
-            <Modal visible={carbonDataVis} onDismiss={() => setCarbonDataVis(false)}
-            transparent={true}>
-                <Dialog visible={carbonDataVis}
-                    onDismiss={() => setCarbonDataVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('general-settings.choose-dataset')}</Dialog.Title>
-                    <Dialog.Content>
-                        {carbonOptions.map((e) =>
-                            <Button key={e.text}
-                            onPress={() =>  {
-                                console.log("changeCarbonDataset(): chose locale " + e.value);
-                                CarbonDatasetHelper.saveCurrentCarbonDatasetLocale(e.value); //there's some sort of error here
-                                //Unhandled Promise Rejection: While logging, error -[NSNull UTF8String]: unrecognized selector sent to instance 0x7fff8a625fb0
-                                carbonDatasetString = i18next.t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
-                                setCarbonDataVis(false);
-                                }}
-                            >
-                                {e.text}
-                            </Button>
-                        )}
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={() => {setCarbonDataVis(false);
-                                                clearNotifications(); }}>{t('general-settings.cancel')}</Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
+            <ActionMenu vis={carbonDataVis} setVis={setCarbonDataVis} actionSet={carbonOptions} onAction={onSelectCarbon} onExit={() => clearNotifications()}></ActionMenu>
 
             {/* force state sheet */}
-            <Modal visible={forceStateVis} onDismiss={() => setForceStateVis(false)}
-            transparent={true}>
-                <Dialog visible={forceStateVis}
-                    onDismiss={() => setForceStateVis(false)}
-                    style={styles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{"Force State"}</Dialog.Title>
-                    <Dialog.Content>
-                        {stateActions.map((e) =>
-                            <Button key={e.text}
-                            onPress={() =>  {
-                                console.log("changeCarbonDataset(): chose locale " + e.text);
-                                ControlCollectionHelper.forceTransition(e.transition); 
-                                setForceStateVis(false);
-                                }}
-                            >
-                                {e.text}
-                            </Button>
-                        )}
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button onPress={() => setForceStateVis(false)}>{t('general-settings.cancel')}</Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
+            <ActionMenu vis={forceStateVis} setVis={setForceStateVis} actionSet={stateActions} onAction={onSelectState}></ActionMenu>
 
             {/* opcode viewing popup */}
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR} dialogStyle={styles.dialog(colors.elevation.level3)}></PopOpCode>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
 
             {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
+            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope}></AppStatusModal>
 
             {/* {view privacy} */}
-            <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis} dialogStyle={styles.dialog(colors.elevation.level3)}></PrivacyPolicyModal>
-
+            <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis}></PrivacyPolicyModal>
+            
             {/* logout menu */}
             <Modal visible={logoutVis} onDismiss={() => setLogoutVis(false)} transparent={true}>
                 <Dialog visible={logoutVis} 
                         onDismiss={() => setLogoutVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.are-you-sure')}</Dialog.Title>
                     <Dialog.Content>
                         <Text variant="">{t('general-settings.log-out-warning')}</Text>
@@ -633,7 +596,7 @@ const ProfileSettings = () => {
             <Modal visible={dataPendingVis} onDismiss={()=>setDataPendingVis(false)} transparent={true}>
                 <Dialog visible={dataPendingVis} 
                         onDismiss={()=>setDataPendingVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('data pending for push')}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
@@ -654,7 +617,7 @@ const ProfileSettings = () => {
             <Modal visible={noConsentVis} onDismiss={()=>setNoConsentVis(false)} transparent={true}>
                 <Dialog visible={noConsentVis} 
                         onDismiss={()=>setNoConsentVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.consent-not-found')}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
@@ -676,7 +639,7 @@ const ProfileSettings = () => {
             <Modal visible={consentVis} onDismiss={()=>setConsentVis(false)} transparent={true}>
                 <Dialog visible={consentVis} 
                         onDismiss={()=>setConsentVis(false)} 
-                        style={styles.dialog(colors.elevation.level3)}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.consented-to', {protocol_id: consentDoc.protocol_id, approval_date: consentDoc.approval_date})}</Dialog.Title>
                     <Dialog.Actions>
                         <Button onPress={()=>{
@@ -699,7 +662,7 @@ const ProfileSettings = () => {
         </>
     );
 };
-const styles = StyleSheet.create({
+export const settingStyles = StyleSheet.create({
     dialog: (surfaceColor) => ({
         backgroundColor: surfaceColor,
         margin: 5,
