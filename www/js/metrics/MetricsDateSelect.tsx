@@ -16,7 +16,7 @@ import NavBarButton from "../components/NavBarButton";
 import { DateTime } from "luxon";
 
 type Props = {
-  dateRange: [DateTime, DateTime],
+  dateRange: DateTime[],
   setDateRange: (dateRange: [DateTime, DateTime]) => void,
 }
 const MetricsDateSelect = ({ dateRange, setDateRange }: Props) => {

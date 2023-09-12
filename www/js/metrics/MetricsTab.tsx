@@ -19,7 +19,7 @@ import ActiveMinutesTableCard from "./ActiveMinutesTableCard";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
-async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: [DateTime, DateTime]) {
+async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: DateTime[]) {
   const CommHelper = getAngularService('CommHelper');
   const query = {
     freq: 'D',
@@ -33,18 +33,20 @@ async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: [Date
   return CommHelper.getAggregateData("result/metrics/timestamp", query);
 }
 
+function getLastTwoWeeksDtRange() {
+  const now = DateTime.utc().startOf('day');
+  const start = now.minus({ days: 15 });
+  const end = now.minus({ days: 1 });
+  return [start, end];
+}
+
 const MetricsTab = () => {
 
   const { t } = useTranslation();
   const { getFormattedSpeed, speedSuffix,
           getFormattedDistance, distanceSuffix } = useImperialConfig();
 
-  const [dateRange, setDateRange] = useState<[DateTime, DateTime]>(() => {
-    const now = DateTime.utc().startOf('day');
-    const start = now.minus({ days: 15 });
-    const end = now.minus({ days: 1 });
-    return [start, end];
-  });
+  const [dateRange, setDateRange] = useState<DateTime[]>(getLastTwoWeeksDtRange);
   const [aggMetrics, setAggMetrics] = useState<MetricsData>(null);
   const [userMetrics, setUserMetrics] = useState<MetricsData>(null);
 
@@ -53,7 +55,7 @@ const MetricsTab = () => {
     loadMetricsForPopulation('aggregate', dateRange);
   }, [dateRange]);
 
-  async function loadMetricsForPopulation(population: 'user'|'aggregate', dateRange: [DateTime, DateTime]) {
+  async function loadMetricsForPopulation(population: 'user'|'aggregate', dateRange: DateTime[]) {
     const serverResponse = await fetchMetricsFromServer(population, dateRange);
     console.debug("Got metrics = ", serverResponse);
     const metrics = {};
@@ -69,7 +71,7 @@ const MetricsTab = () => {
   }
 
   function refresh() {
-    // TODO
+    setDateRange(getLastTwoWeeksDtRange());
   }
 
   // // fake data for testing active minutes - TODO: remove
@@ -85,7 +87,7 @@ const MetricsTab = () => {
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
       <Appbar.Content title={t("main-metrics.dashboard")} />
       <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
-      <Appbar.Action icon="refresh" size={32} onPress={() => refresh()} />
+      <Appbar.Action icon="refresh" size={32} onPress={refresh} />
     </Appbar.Header>
     <ScrollView style={{paddingVertical: 12}}>
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
