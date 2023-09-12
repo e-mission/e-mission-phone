@@ -85,6 +85,8 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAn
     setChartDatasets(d);
   }, [records]);
 
+  const annotationsAtTop = isHorizontal && lineAnnotations?.some(a => (!a.position || a.position == 'start'));
+
   return (
     <View style={getChartHeight(chartDatasets, numVisibleDatasets, indexAxis, isHorizontal, stacked)}>
       <ChartJSChart type={type} ref={chartRef}
@@ -156,6 +158,7 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAn
           plugins: {
             ...(lineAnnotations?.length > 0 && {
               annotation: {
+                clip: false,
                 annotations: lineAnnotations.map((a, i) => ({
                   type: 'line',
                   label: {
@@ -167,6 +170,7 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAn
                     font: { size: 10 },
                     position: a.position || 'start',
                     content: a.label,
+                    yAdjust: annotationsAtTop ? -12 : 0,
                   },
                   ...(isHorizontal ? { xMin: a.value, xMax: a.value }
                     : { yMin: a.value, yMax: a.value }),
@@ -177,7 +181,20 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAn
               }
             }),
           }
-        }} />
+        }}
+        // if there are annotations at the top of the chart, it overlaps with the legend
+        // so we need to increase the spacing between the legend and the chart
+        // https://stackoverflow.com/a/73498454
+        plugins={annotationsAtTop && [{
+          id: "increase-legend-spacing",
+          beforeInit(chart) {
+            const originalFit = (chart.legend as any).fit;
+            (chart.legend as any).fit = function fit() {
+              originalFit.bind(chart.legend)();
+              this.height += 12;
+            };
+          }
+        }]} />
     </View>
   )
 }
