@@ -49,16 +49,17 @@ angular.module('emission.splash.notifscheduler',
         return true;
     }
 
-    const setUpActions = () => {
-        const action = {
-            id: 'action',
-            title: 'Change Time',
-            launch: true
-        };
-        return new Promise((rs) => {
-            cordova.plugins.notification.local.addActions('reminder-actions', [action], rs);
-        });
-    }
+    /* remove notif actions as they do not work, can restore post routing migration */
+    // const setUpActions = () => {
+    //     const action = {
+    //         id: 'action',
+    //         title: 'Change Time',
+    //         launch: true
+    //     };
+    //     return new Promise((rs) => {
+    //         cordova.plugins.notification.local.addActions('reminder-actions', [action], rs);
+    //     });
+    // }
 
     function debugGetScheduled(prefix) {
         cordova.plugins.notification.local.getScheduled((notifs) => {
@@ -141,15 +142,15 @@ angular.module('emission.splash.notifscheduler',
                     title: scheme.title[localeCode],
                     text: scheme.text[localeCode],
                     trigger: {at: nDate},
-                    actions: 'reminder-actions',
-                    data: {
-                        action: {
-                            redirectTo: 'root.main.control',
-                            redirectParams: {
-                                openTimeOfDayPicker: true
-                            }
-                        }
-                    }
+                    // actions: 'reminder-actions',
+                    // data: {
+                    //     action: {
+                    //         redirectTo: 'root.main.control',
+                    //         redirectParams: {
+                    //             openTimeOfDayPicker: true
+                    //         }
+                    //     }
+                    // }
                 }
             });
             cordova.plugins.notification.local.cancelAll(() => {
@@ -262,7 +263,7 @@ angular.module('emission.splash.notifscheduler',
             Logger.log("No reminder schemes found in config, not scheduling notifications");
             return;
         }
-        setUpActions();
+        //setUpActions();
         update();
     });
 

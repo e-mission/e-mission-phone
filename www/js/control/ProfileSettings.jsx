@@ -80,7 +80,7 @@ const ProfileSettings = () => {
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
-    const [appVersion, setAppVersion] = useState({});
+    const [appVersion, setAppVersion] = useState("");
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
@@ -110,6 +110,11 @@ const ProfileSettings = () => {
         getConnectURL();
         setAppVersion(ClientStats.getAppVersion());
     }
+
+    //previously not loaded on regular refresh, this ensures it stays caught up
+    useEffect(() => {
+        refreshNotificationSettings();
+    }, [uiConfig])
 
     const whenReady = function(newAppConfig){
         var tempUiConfig = newAppConfig;
@@ -507,8 +512,8 @@ const ProfileSettings = () => {
                 <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
-                <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
             </ExpansionSection>
+            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
         </ScrollView>
 
             {/* menu for "nuke data" */}
@@ -594,7 +599,7 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* opcode viewing popup */}
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR} dialogStyle={styles.dialog(colors.elevation.level3)}></PopOpCode>
 
             {/* {view permissions} */}
             <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
@@ -683,7 +688,9 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
-            <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis}></DataDatePicker>
+            <DataDatePicker date={dumpDate} setDate={setDumpDate} open={dateDumpVis} setOpen={setDateDumpVis} 
+                minDate={new Date(appConfig?.intro?.start_year, appConfig?.intro?.start_month - 1, 1)}>
+            </DataDatePicker>
 
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
