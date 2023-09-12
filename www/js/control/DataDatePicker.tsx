@@ -6,7 +6,7 @@ import { DatePickerModal } from 'react-native-paper-dates';
 import { useTranslation } from "react-i18next";
 import { getAngularService } from "../angular-react-helper";
 
-const DataDatePicker = ({date, setDate, open, setOpen}) => {
+const DataDatePicker = ({date, setDate, open, setOpen, minDate}) => {
   const { t, i18n } = useTranslation(); //able to pull lang from this
   const ControlHelper = getAngularService("ControlHelper");
 
@@ -23,7 +23,6 @@ const DataDatePicker = ({date, setDate, open, setOpen}) => {
     [setOpen, setDate]
   );
 
-  const minDate = new Date(2015, 1, 1);
   const maxDate = new Date();
 
   return (
