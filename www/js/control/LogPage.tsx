@@ -4,7 +4,6 @@ import { useTheme, Text, Appbar, IconButton } from "react-native-paper";
 import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import { FlashList } from '@shopify/flash-list';
-import useAppConfig from "../useAppConfig";
 import moment from "moment";
 import AlertBar from "./AlertBar";
 
@@ -14,7 +13,6 @@ const LogPage = ({pageVis, setPageVis}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const EmailHelper = getAngularService('EmailHelper');
-    const { appConfig, loading } = useAppConfig();
 
     const [ loadStats, setLoadStats ] = useState<loadStats>();
     const [ entries, setEntries ] = useState([]);
@@ -28,9 +26,10 @@ const LogPage = ({pageVis, setPageVis}) => {
 
     var RETRIEVE_COUNT = 100;
 
+    //when opening the modal, load the entries
     useEffect(() => {
         refreshEntries();
-    }, [appConfig]);
+    }, [pageVis]);
 
     async function refreshEntries() {
         window?.Logger.getMaxIndex().then(function(maxIndex) {

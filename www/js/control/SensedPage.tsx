@@ -4,7 +4,6 @@ import { useTheme, Appbar, IconButton } from "react-native-paper";
 import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import { FlashList } from '@shopify/flash-list';
-import useAppConfig from "../useAppConfig";
 import moment from "moment";
 import ActionMenu from "../components/ActionMenu";
 
@@ -14,7 +13,6 @@ const SensedPage = ({pageVis, setPageVis}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const EmailHelper = getAngularService('EmailHelper');
-    const { appConfig, loading } = useAppConfig();
 
     /* Let's keep a reference to the database for convenience */
     const [ DB, setDB ]= useState();
@@ -25,8 +23,6 @@ const SensedPage = ({pageVis, setPageVis}) => {
     const [ entries, setEntries ] = useState([]);
 
     const setup = function() {
-        setDB(window?.cordova.plugins.BEMUserCache);
-        
         if(DB) {
             let tempConfig = {} as configObject;
             tempConfig.key_data_mapping = {
@@ -108,8 +104,9 @@ const SensedPage = ({pageVis, setPageVis}) => {
     }
 
     useEffect(() => {
+        setDB(window.cordova.plugins.BEMUserCache);
         setup();
-    }, [appConfig]);
+    }, [pageVis]);
 
     const separator = () => <View style={{ height: 8 }} />
     const cacheItem = ({item: cacheItem}) => (<View style={styles.entry(colors.elevation.level1)}>
