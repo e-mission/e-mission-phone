@@ -8,7 +8,7 @@ import { filterToRecentWeeks, formatDateRangeOfDays, parseDataFromMetrics, gener
 import { getAngularService } from '../angular-react-helper';
 
 type Props = { userMetrics: MetricsData, aggMetrics: MetricsData }
-const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
+const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
 
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -142,4 +142,4 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
   )
 }
 
-export default DailyActiveMinutesCard;
+export default CarbonTextCard;
