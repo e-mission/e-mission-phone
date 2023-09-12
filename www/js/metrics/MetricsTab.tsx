@@ -15,6 +15,7 @@ import CarbonFootprintCard from "./CarbonFootprintCard";
 import Carousel from "../components/Carousel";
 import DailyActiveMinutesCard from "./DailyActiveMinutesCard";
 import CarbonTextCard from "./CarbonTextCard";
+import ActiveMinutesTableCard from "./ActiveMinutesTableCard";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -71,11 +72,11 @@ const MetricsTab = () => {
     // TODO
   }
 
-  // fake data for testing active minutes - TODO: remove
-  userMetrics?.duration.forEach((day, i) => {
-    day.label_walk = day.label_walk || 65*i + (Math.random() * 600);
-    day.label_bike = day.label_bike || 25*i + (Math.random() * 400);
-  });
+  // // fake data for testing active minutes - TODO: remove
+  // userMetrics?.duration.forEach((day, i) => {
+  //   day.label_walk = day.label_walk || 65*i + (Math.random() * 600);
+  //   day.label_bike = day.label_bike || 25*i + (Math.random() * 400);
+  // });
 
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * .88;
@@ -94,6 +95,7 @@ const MetricsTab = () => {
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <WeeklyActiveMinutesCard userMetrics={userMetrics} />
         <DailyActiveMinutesCard userMetrics={userMetrics} />
+        <ActiveMinutesTableCard userMetrics={userMetrics} />
       </Carousel>
       <Carousel cardWidth={cardWidth} cardMargin={cardMargin}>
         <MetricsCard cardTitle={t('main-metrics.distance')}

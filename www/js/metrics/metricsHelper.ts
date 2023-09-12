@@ -41,6 +41,11 @@ export function filterToRecentWeeks(metricsDays: DayOfMetricData[]) {
   return weeks;
 }
 
+export function formatDate(day: DayOfMetricData) {
+  const dt = DateTime.fromISO(day.fmt_time, { zone: 'utc' });
+  return dt.toLocaleString({...DateTime.DATE_SHORT, year: undefined});
+}
+
 export function formatDateRangeOfDays(days: DayOfMetricData[]) {
   if (!days?.length) return '';
   const firstDayDt = DateTime.fromISO(days[0].fmt_time, { zone: 'utc' });

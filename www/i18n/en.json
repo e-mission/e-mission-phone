@@ -185,6 +185,7 @@
         "active-minutes": "Active Minutes",
         "weekly-active-minutes": "Weekly minutes of active travel",
         "daily-active-minutes": "Daily minutes of active travel",
+        "active-minutes-table": "Table of active minutes metrics",
         "labeled": "Labeled",
         "unlabeled": "Unlabeled²",
         "footprint-label": "Footprint (kg CO₂)"
