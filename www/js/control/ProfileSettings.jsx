@@ -556,10 +556,10 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* menu for "set carbon dataset - only somewhat working" */}
-            <ActionMenu vis={carbonDataVis} setVis={setCarbonDataVis} actionSet={carbonOptions} onAction={onSelectCarbon} onExit={() => clearNotifications()}></ActionMenu>
+            <ActionMenu vis={carbonDataVis} setVis={setCarbonDataVis} title={t('general-settings.choose-dataset')} actionSet={carbonOptions} onAction={onSelectCarbon} onExit={() => clearNotifications()}></ActionMenu>
 
             {/* force state sheet */}
-            <ActionMenu vis={forceStateVis} setVis={setForceStateVis} actionSet={stateActions} onAction={onSelectState}></ActionMenu>
+            <ActionMenu vis={forceStateVis} setVis={setForceStateVis} title={"Force State"} actionSet={stateActions} onAction={onSelectState}></ActionMenu>
 
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>

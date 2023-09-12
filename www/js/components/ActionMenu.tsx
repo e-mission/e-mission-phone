@@ -4,7 +4,7 @@ import { Dialog, Button, useTheme } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import { settingStyles } from "../control/ProfileSettings";
 
-const ActionMenu = ({vis, setVis, actionSet, onAction, onExit}) => {
+const ActionMenu = ({vis, setVis, title, actionSet, onAction, onExit}) => {
 
     const { t } = useTranslation();
     const { colors } = useTheme();
@@ -15,9 +15,9 @@ const ActionMenu = ({vis, setVis, actionSet, onAction, onExit}) => {
             <Dialog visible={vis}
                 onDismiss={() => setVis(false)}
                 style={settingStyles.dialog(colors.elevation.level3)}>
-                <Dialog.Title>{"Force State"}</Dialog.Title>
+                <Dialog.Title>{title}</Dialog.Title>
                 <Dialog.Content>
-                    {actionSet.map((e) =>
+                    {actionSet?.map((e) =>
                         <Button key={e.text}
                         onPress={() =>  { 
                             onAction(e); 
