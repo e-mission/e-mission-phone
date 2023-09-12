@@ -72,9 +72,8 @@ export function getBaseModeOfLabeledTrip(trip, labelOptions) {
   return getBaseModeByKey(modeOption?.baseMode || "OTHER");
 }
 
-export function getBaseModeByReadableLabel(label, labelOptions: LabelOptions) {
-  const labelKey = readableLabelToKey(label);
-  const modeOption = labelOptions?.MODE?.find(opt => opt.value == labelKey);
+export function getBaseModeByText(text, labelOptions: LabelOptions) {
+  const modeOption = labelOptions?.MODE?.find(opt => opt.text == text);
   return getBaseModeByKey(modeOption?.baseMode || "OTHER");
 }
 

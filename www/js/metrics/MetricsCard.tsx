@@ -7,8 +7,8 @@ import { DayOfMetricData } from './metricsTypes';
 import { formatDateRangeOfDays, getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
-import { labelKeyToReadable, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByReadableLabel } from '../diary/diaryHelper';
+import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
+import { getBaseModeByText } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
@@ -38,7 +38,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
       labels.forEach(label => {
         const rawVal = day[`label_${label}`];
         records.push({
-          label: labelKeyToReadable(label),
+          label: labelKeyToRichMode(label),
           x: unitFormatFn ? unitFormatFn(rawVal) : rawVal,
           y: day.ts * 1000, // time (as milliseconds) will go on Y axis because it will be a horizontal chart
         });
@@ -91,7 +91,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
           <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
             { Object.keys(metricSumValues).map((label, i) =>
               <View style={{ width: '50%', paddingHorizontal: 8 }} key={i}>
-                <Text variant='titleSmall'>{labelKeyToReadable(label)}</Text>
+                <Text variant='titleSmall'>{labelKeyToRichMode(label)}</Text>
                 <Text>{metricSumValues[label] + ' ' + axisUnits}</Text>
               </View>
             )}
@@ -100,7 +100,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         {viewMode=='graph' && <>
           <BarChart records={chartData} axisTitle={axisUnits}
             isHorizontal={true} timeAxis={true} stacked={graphIsStacked}
-            getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
+            getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color} />
           <View style={{flexDirection: 'row', height: 10, alignItems: 'center', justifyContent: 'flex-end'}}>
             <Text variant='labelMedium'>Stack bars:</Text>
             <Checkbox 

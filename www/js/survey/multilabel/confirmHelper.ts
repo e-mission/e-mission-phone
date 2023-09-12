@@ -20,6 +20,7 @@ export type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = 
     met?: {range: any[], mets: number}
     met_equivalent?: string,
     kgCo2PerKm: number,
+    text?: string,
   }[]
 } & { translations: {
   [lang: string]: { [translationKey: string]: string }
@@ -118,3 +119,6 @@ export const getFakeEntry = (otherValue) => ({
   text: labelKeyToReadable(otherValue),
   value: otherValue,
 });
+
+export const labelKeyToRichMode = (labelKey: string) =>
+  labelOptions?.MODE?.find(m => m.value == labelKey)?.text || labelKeyToReadable(labelKey);

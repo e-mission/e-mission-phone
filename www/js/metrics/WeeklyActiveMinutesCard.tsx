@@ -8,8 +8,8 @@ import { useImperialConfig } from '../config/useImperialConfig';
 import { filterToRecentWeeks, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
-import { labelKeyToReadable, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByReadableLabel } from '../diary/diaryHelper';
+import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
+import { getBaseModeByText } from '../diary/diaryHelper';
 
 export const ACTIVE_MODES = ['walk', 'bike'] as const;
 type ActiveMode = typeof ACTIVE_MODES[number];
@@ -30,14 +30,14 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
       ), 0);
       if (recentSum) {
         const xLabel = `Past Week\n(${formatDateRangeOfDays(recentWeek)})`; // TODO: i18n
-        records.push({label: labelKeyToReadable(mode), x: xLabel, y: recentSum / 60});
+        records.push({label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60});
       }
       const prevSum = prevWeek?.reduce((acc, day) => (
         acc + (day[`label_${mode}`] || 0)
       ), 0);
       if (prevSum) {
         const xLabel = `Previous Week\n(${formatDateRangeOfDays(prevWeek)})`; // TODO: i18n
-        records.push({label: labelKeyToReadable(mode), x: xLabel, y: prevSum / 60});
+        records.push({label: labelKeyToRichMode(mode), x: xLabel, y: prevSum / 60});
       }
     });
     return records as {label: ActiveMode, x: string, y: number}[];
@@ -59,7 +59,7 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
             <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
               isHorizontal={false} stacked={true}
               lineAnnotations={[{ value: 150, label: t('main-metrics.weekly-goal'), position: 'center' }]}
-              getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
+              getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color} />
             <Text variant='labelSmall' style={{ textAlign: 'left', fontWeight: '400', marginTop: 'auto', paddingTop: 10 }}>
               {t('main-metrics.weekly-goal-footnote')}
             </Text>

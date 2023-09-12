@@ -5,7 +5,7 @@ import { cardStyles } from './MetricsTab';
 import { filterToRecentWeeks, formatDate, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
-import { labelKeyToReadable } from '../survey/multilabel/confirmHelper';
+import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
 
 type Props = { userMetrics: MetricsData }
 const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
@@ -76,7 +76,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
           <DataTable.Header>
             <DataTable.Title> </DataTable.Title>
             {ACTIVE_MODES.map((mode, i) =>
-              <DataTable.Title style={{padding: 5}} key={i}>{labelKeyToReadable(mode)}</DataTable.Title>
+              <DataTable.Title style={{padding: 5}} key={i}>{labelKeyToRichMode(mode)}</DataTable.Title>
             )}
           </DataTable.Header>
           {allTotals.slice(from, to).map((total, i) =>
