@@ -41,8 +41,11 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
             low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
             high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 
         };
-        textList.push({label: `${t('main-metrics.past-week')} (${formatDateRangeOfDays(thisWeekDistance)})`, 
-                        value: (userPastWeek.high - userPastWeek.low)==0 ? Math.round(userPastWeek.low) : Math.round(userPastWeek.low) + " - " + Math.round(userPastWeek.high)});
+        const label = `${t('main-metrics.past-week')} (${formatDateRangeOfDays(thisWeekDistance)})`;
+        if (userPastWeek.low == userPastWeek.high)
+            textList.push({label: label, value: Math.round(userPastWeek.low)});
+        else
+            textList.push({label: label + '²', value: `${Math.round(userPastWeek.low)} - ${Math.round(userPastWeek.high)}`});
 
         //calculate low-high and format range for prev week, if exists
         if(userLastWeekSummaryMap[0]) {
@@ -50,9 +53,12 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
                 low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
                 high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
             };
-            textList.push({label: `${t('main-metrics.prev-week')} (${formatDateRangeOfDays(lastWeekDistance)})`, 
-                        value: (userPrevWeek.high - userPrevWeek.low)==0 ? Math.round(userPrevWeek.low) : Math.round(userPrevWeek.low) + " - " + Math.round(userPrevWeek.high)});
-        } 
+            const label = `${t('main-metrics.prev-week')} (${formatDateRangeOfDays(lastWeekDistance)})`;
+            if (userPrevWeek.low == userPrevWeek.high)
+              textList.push({label: label, value: Math.round(userPrevWeek.low)});
+            else
+              textList.push({label: label + '²', value: `${Math.round(userPrevWeek.low)} - ${Math.round(userPrevWeek.high)}`});
+        }
         
         //calculate worst-case carbon footprint
         let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
@@ -89,8 +95,11 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
             high: FootprintHelper.getFootprintForMetrics(aggCarbonData, FootprintHelper.getHighestFootprint()),
         }
         console.log("testing group past week", aggCarbon);
-        groupText.push({label: t('main-metrics.average'), 
-            value: (aggCarbon.high - aggCarbon.low)==0 ? Math.round(aggCarbon.low) : Math.round(aggCarbon.low) + " - " + Math.round(aggCarbon.high)});
+        const label = t('main-metrics.average');
+        if (aggCarbon.low == aggCarbon.high)
+            groupText.push({label: label, value: Math.round(aggCarbon.low)});
+        else
+            groupText.push({label: label + '²', value: `${Math.round(aggCarbon.low)} - ${Math.round(aggCarbon.high)}`});
 
         return groupText;
     }
@@ -133,9 +142,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
         )
     }
         <Text variant='labelSmall' style={{textAlign: 'left', fontWeight: '400', marginTop: 'auto', paddingTop: 10}}>
-            {/* TODO i18n */}
-            {/* unlabeled means the mode is not labeled and the carbon footprint is uncertain, it may fall anywhere between 0 (best case) and 'taxi' (worst case) */}
-            ²The carbon footprint of unlabeled trips is uncertain. Estimates may fall anywhere within the shown range.
+            {t('main-metrics.range-uncertain-footnote')}
         </Text>
     </Card.Content>
     </Card>
