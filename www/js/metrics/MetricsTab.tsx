@@ -34,7 +34,7 @@ async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: DateT
 }
 
 function getLastTwoWeeksDtRange() {
-  const now = DateTime.utc().startOf('day');
+  const now = DateTime.now().startOf('day');
   const start = now.minus({ days: 15 });
   const end = now.minus({ days: 1 });
   return [start, end];
