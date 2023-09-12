@@ -6,7 +6,8 @@ import MetricsTab from './metrics/MetricsTab';
 
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
-                                 'emission.main.metrics',
+                                 'emission.main.metrics.factory',
+                                 'emission.main.metrics.mappings',
                                  'emission.main.recent',
                                  'emission.config.dynamic',
                                  'emission.services',
@@ -27,9 +28,7 @@ angular.module('emission.main', ['emission.main.diary',
     url: '/metrics',
     views: {
       'main-metrics': {
-        // templateUrl: 'templates/main-metrics.html',
         template: `<metrics-tab class="fill-container"></metrics-tab>`,
-        controller: 'MetricsCtrl'
       }
     }
   })
