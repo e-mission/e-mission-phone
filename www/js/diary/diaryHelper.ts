@@ -72,6 +72,11 @@ export function getBaseModeOfLabeledTrip(trip, labelOptions) {
   return getBaseModeByKey(modeOption?.baseMode || "OTHER");
 }
 
+export function getBaseModeByValue(value, labelOptions: LabelOptions) {
+  const modeOption = labelOptions?.MODE?.find(opt => opt.value == value);
+  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
+}
+
 export function getBaseModeByText(text, labelOptions: LabelOptions) {
   const modeOption = labelOptions?.MODE?.find(opt => opt.text == text);
   return getBaseModeByKey(modeOption?.baseMode || "OTHER");

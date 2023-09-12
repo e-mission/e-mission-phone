@@ -1,6 +1,8 @@
 'use strict';
 
 import angular from 'angular';
+import { getBaseModeByValue } from './diary/diaryHelper'
+import { labelOptions } from './survey/multilabel/confirmHelper';
 
 angular.module('emission.main.metrics.factory',
         ['emission.main.metrics.mappings',
@@ -34,18 +36,17 @@ angular.module('emission.main.metrics.factory',
     var footprint = fh.getFootprint();
     var result = 0;
     for (var i in userMetrics) {
-      var mode = userMetrics[i].key;
-      if (mode == 'ON_FOOT') {
-        mode = 'WALKING';
+      const baseMode = getBaseModeByValue(userMetrics[i].key, labelOptions).name;
+      if (baseMode == 'ON_FOOT') {
+        baseMode = 'WALKING';
       }
-      if (mode in footprint) {
-        result += footprint[mode] * mtokm(userMetrics[i].values);
-      }
-      else if (mode == 'IN_VEHICLE') {
+
+      if (baseMode in footprint) {
+        result += footprint[baseMode] * mtokm(userMetrics[i].values);
+      } else if (baseMode == 'IN_VEHICLE') {
         result += ((footprint['CAR'] + footprint['BUS'] + footprint["LIGHT_RAIL"] + footprint['TRAIN'] + footprint['TRAM'] + footprint['SUBWAY']) / 6) * mtokm(userMetrics[i].values);
-      }
-      else {
-        console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
+      } else {
+        console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + baseMode + " metrics JSON: " + JSON.stringify(userMetrics));
         result += defaultIfMissing * mtokm(userMetrics[i].values);
       }
     }
