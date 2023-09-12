@@ -186,6 +186,8 @@
         "weekly-active-minutes": "Weekly minutes of active travel",
         "daily-active-minutes": "Daily minutes of active travel",
         "active-minutes-table": "Table of active minutes metrics",
+        "weekly-goal": "Weekly Goal³",
+        "weekly-goal-footnote": "³Weekly goal based on CDC recommendation of 150 minutes of moderate activity per week.",
         "labeled": "Labeled",
         "unlabeled": "Unlabeled²",
         "footprint-label": "Footprint (kg CO₂)"

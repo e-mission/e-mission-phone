@@ -55,11 +55,15 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
         style={cardStyles.title(colors)} />
       <Card.Content style={cardStyles.content}>
         { weeklyActiveMinutesRecords.length ?
-          <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
-            isHorizontal={false} stacked={true}
-            // TODO i18n
-            lineAnnotations={[{ value: 150, label: 'Weekly Goal', position: 'center' }]}
-            getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
+          <View style={{flex: 1}}>
+            <BarChart records={weeklyActiveMinutesRecords} axisTitle={t('main-metrics.active-minutes')}
+              isHorizontal={false} stacked={true}
+              lineAnnotations={[{ value: 150, label: t('main-metrics.weekly-goal'), position: 'center' }]}
+              getColorForLabel={(l) => getBaseModeByReadableLabel(l, labelOptions).color} />
+            <Text variant='labelSmall' style={{ textAlign: 'left', fontWeight: '400', marginTop: 'auto', paddingTop: 10 }}>
+              {t('main-metrics.weekly-goal-footnote')}
+            </Text>
+          </View>
         :
           <View style={{flex: 1, justifyContent: 'center'}}>
             <Text variant='labelMedium' style={{textAlign: 'center'}}>
