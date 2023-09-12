@@ -74,12 +74,6 @@ const MetricsTab = () => {
     setDateRange(getLastTwoWeeksDtRange());
   }
 
-  // // fake data for testing active minutes - TODO: remove
-  // userMetrics?.duration.forEach((day, i) => {
-  //   day.label_walk = day.label_walk || 65*i + (Math.random() * 600);
-  //   day.label_bike = day.label_bike || 25*i + (Math.random() * 400);
-  // });
-
   const { width: windowWidth } = useWindowDimensions();
   const cardWidth = windowWidth * .88;
 
