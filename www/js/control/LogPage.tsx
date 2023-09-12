@@ -18,10 +18,8 @@ const LogPage = ({pageVis, setPageVis}) => {
     const [ entries, setEntries ] = useState([]);
     const [ maxErrorVis, setMaxErrorVis ] = useState<boolean>(false);
     const [ logErrorVis, setLogErrorVis ] = useState<boolean>(false);
-
     const [ maxMessage, setMaxMessage ] = useState<string>("");
     const [ logMessage, setLogMessage ] = useState<string>("");
-
     const [ isFetching, setIsFetching ] = useState<boolean>(false);
 
     var RETRIEVE_COUNT = 100;
@@ -32,7 +30,8 @@ const LogPage = ({pageVis, setPageVis}) => {
     }, [pageVis]);
 
     async function refreshEntries() {
-        window?.Logger.getMaxIndex().then(function(maxIndex) {
+        try {
+            let maxIndex = await window.Logger.getMaxIndex();
             console.log("maxIndex = "+maxIndex);
             let tempStats = {} as loadStats;
             tempStats.currentStart = maxIndex;
@@ -40,13 +39,14 @@ const LogPage = ({pageVis, setPageVis}) => {
             tempStats.reachedEnd = false;
             setLoadStats(tempStats);
             setEntries([]);
-        }, function(error) {
+        } catch(error) {
             let errorString = "While getting max index "+JSON.stringify(error, null, 2);
             console.log(errorString);
             setMaxMessage(errorString);
             setMaxErrorVis(true);
-        })
-        addEntries();
+        } finally {
+            addEntries();
+        }
     }
 
     const moreDataCanBeLoaded = useMemo(() => {
@@ -62,20 +62,20 @@ const LogPage = ({pageVis, setPageVis}) => {
     async function addEntries() {
         console.log("calling addEntries");
         setIsFetching(true);
-        window.Logger.getMessagesFromIndex(loadStats?.currentStart, RETRIEVE_COUNT)
-            .then(function(entryList) {
-                processEntries(entryList);
-                console.log("entry list size = "+ entries.length);
-                setIsFetching(false);
-                //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
-            }, function(error) {
-                let errStr = "While getting messages from the log "+JSON.stringify(error, null, 2);
-                console.log(errStr);
-                setLogMessage(errStr);
-                setLogErrorVis(true);
-                setIsFetching(false);
-                //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
-            })
+        try {
+            let entryList = await window.Logger.getMessagesFromIndex(loadStats?.currentStart, RETRIEVE_COUNT);
+            processEntries(entryList);
+            console.log("entry list size = "+ entries.length);
+            setIsFetching(false);
+            //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
+        } catch(error) {
+            let errStr = "While getting messages from the log "+JSON.stringify(error, null, 2);
+            console.log(errStr);
+            setLogMessage(errStr);
+            setLogErrorVis(true);
+            setIsFetching(false);
+            //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
+        }
     }
 
     const processEntries = function(entryList) {

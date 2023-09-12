@@ -61,7 +61,7 @@ const SensedPage = ({pageVis, setPageVis}) => {
         setSelectedKey(newVal);
     }
 
-    const updateEntries = function() {
+    async function updateEntries() {
         let userCacheFn, userCacheKey;
         if(selectedKey == "") {
             userCacheFn = DB.getAllMessages;
@@ -71,7 +71,8 @@ const SensedPage = ({pageVis, setPageVis}) => {
             userCacheKey = config.key_data_mapping[selectedKey]["key"];
         }
 
-        userCacheFn(userCacheKey, true).then(function(entryList) {
+        try {
+            let entryList = await userCacheFn(userCacheKey, true);
             let tempEntries = [];
             entryList.forEach(entry => {
                 entry.metadata.write_fmt_time = moment.unix(entry.metadata.write_ts)
@@ -81,11 +82,10 @@ const SensedPage = ({pageVis, setPageVis}) => {
                 tempEntries.push(entry);
             });
             setEntries(tempEntries);
-            // This should really be within a try/catch/finally block
-            //$scope.$broadcast('scroll.refreshComplete'); //---> what to do instead?
-        }, function(error) {
+        }
+        catch(error) {
             window.Logger.log(window.Logger.LEVEL_ERROR, "Error updating entries"+ error);
-        })
+        }
     }
 
     //update entries anytime the selected key changes
