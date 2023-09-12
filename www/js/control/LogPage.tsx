@@ -14,7 +14,6 @@ const LogPage = ({pageVis, setPageVis}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const EmailHelper = getAngularService('EmailHelper');
-    const $state = getAngularService('$state');
     const { appConfig, loading } = useAppConfig();
 
     const [ loadStats, setLoadStats ] = useState<loadStats>();
@@ -25,13 +24,15 @@ const LogPage = ({pageVis, setPageVis}) => {
     const [ maxMessage, setMaxMessage ] = useState<string>("");
     const [ logMessage, setLogMessage ] = useState<string>("");
 
+    const [ isFetching, setIsFetching ] = useState<boolean>(false);
+
     var RETRIEVE_COUNT = 100;
 
     useEffect(() => {
         refreshEntries();
     }, [appConfig]);
 
-    const refreshEntries = function() {
+    async function refreshEntries() {
         window?.Logger.getMaxIndex().then(function(maxIndex) {
             console.log("maxIndex = "+maxIndex);
             let tempStats = {} as loadStats;
@@ -40,17 +41,17 @@ const LogPage = ({pageVis, setPageVis}) => {
             tempStats.reachedEnd = false;
             setLoadStats(tempStats);
             setEntries([]);
-            addEntries();
         }, function(error) {
             let errorString = "While getting max index "+JSON.stringify(error, null, 2);
             console.log(errorString);
             setMaxMessage(errorString);
             setMaxErrorVis(true);
         })
+        addEntries();
     }
 
     const moreDataCanBeLoaded = useMemo(() => {
-        return loadStats?.gotMaxIndex && loadStats?.reachedEnd;
+        return loadStats?.gotMaxIndex && !loadStats?.reachedEnd;
     }, [loadStats])
 
     const clear = function() {
@@ -61,16 +62,19 @@ const LogPage = ({pageVis, setPageVis}) => {
 
     async function addEntries() {
         console.log("calling addEntries");
+        setIsFetching(true);
         window.Logger.getMessagesFromIndex(loadStats?.currentStart, RETRIEVE_COUNT)
             .then(function(entryList) {
                 processEntries(entryList);
                 console.log("entry list size = "+ entries.length);
+                setIsFetching(false);
                 //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
             }, function(error) {
                 let errStr = "While getting messages from the log "+JSON.stringify(error, null, 2);
                 console.log(errStr);
                 setLogMessage(errStr);
                 setLogErrorVis(true);
+                setIsFetching(false);
                 //$scope.$broadcast('scroll.infiniteScrollComplete') //do I still need this?
             })
     }
@@ -123,7 +127,10 @@ const LogPage = ({pageVis, setPageVis}) => {
                     estimatedItemSize={75}
                     keyExtractor={(item) => item.ID}
                     ItemSeparatorComponent={separator} 
-                    onScroll={e => {if(moreDataCanBeLoaded){addEntries()}}}
+                    onEndReachedThreshold={0.5}
+                    refreshing={isFetching}
+                    onRefresh={() => {if(moreDataCanBeLoaded){addEntries()}}}
+                    onEndReached={() => {if(moreDataCanBeLoaded){addEntries()}}}
                     />
             </SafeAreaView>
 
