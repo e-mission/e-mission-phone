@@ -159,7 +159,7 @@
         "fav-mode": "My Favorite Mode",
         "speed": "My Speed",
         "footprint": "My Footprint",
-        "estimated-emissions": "Estimated CO2 emissions",
+        "estimated-emissions": "Estimated CO₂ emissions",
         "how-it-compares": "Ballpark comparisons",
         "optimal": "Optimal (perfect mode choice for all my trips)",
         "average": "Group Avg.",
@@ -187,7 +187,7 @@
         "daily-active-minutes": "Daily minutes of active travel",
         "labeled": "Labeled",
         "unlabeled": "Unlabeled²",
-        "footprint-label": "Footprint (kg Co2)"
+        "footprint-label": "Footprint (kg CO₂)"
     },
 
     "main-inf-scroll" : {

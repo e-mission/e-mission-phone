@@ -128,7 +128,7 @@ const DailyActiveMinutesCard = ({ userMetrics, aggMetrics }: Props) => {
         Object.keys(textEntries).map((i) =>
             <View key={textEntries[i].label} style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
                 <Text variant='titleSmall'>{textEntries[i].label}</Text>
-                <Text>{textEntries[i].value + ' ' + "kg Co2"}</Text>
+                <Text>{textEntries[i].value + ' ' + "kg CO₂"}</Text>
             </View>
         )
     }
