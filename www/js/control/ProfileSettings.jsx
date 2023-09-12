@@ -15,6 +15,8 @@ import DataDatePicker from "./DataDatePicker";
 import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
 import ActionMenu from "../components/ActionMenu";
+import SensedPage from "./SensedPage"
+import LogPage from "./LogPage";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -29,9 +31,6 @@ const ProfileSettings = () => {
     const mainControlEl = document.getElementById('main-control');
     const settingsScope = angular.element(mainControlEl.querySelector('profile-settings')).scope();
     console.log("settings scope", settingsScope);
-    
-    // grab any variables or functions we need from it like this:
-    const { showLog, showSensed } = settingsScope;
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -74,6 +73,8 @@ const ProfileSettings = () => {
     const [consentVis, setConsentVis] = useState(false);
     const [dateDumpVis, setDateDumpVis] = useState(false);
     const [privacyVis, setPrivacyVis] = useState(false);
+    const [showingSensed, setShowingSensed] = useState(false);
+    const [showingLog, setShowingLog] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
@@ -518,8 +519,8 @@ const ProfileSettings = () => {
                 <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
                 <SettingRow textKey="control.nuke-all" iconName="delete-forever" action={() => setNukeVis(true)}></SettingRow>
                 <SettingRow textKey={parseState(collectSettings.state)} iconName="pencil" action={() => setForceStateVis(true)}></SettingRow>
-                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={showLog}></SettingRow>
-                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={showSensed}></SettingRow>
+                <SettingRow textKey="control.check-log" iconName="arrow-expand-right" action={() => setShowingLog(true)}></SettingRow>
+                <SettingRow textKey="control.check-sensed-data" iconName="arrow-expand-right" action={() => setShowingSensed(true)}></SettingRow>
                 <SettingRow textKey="control.collection" iconName="pencil" action={editCollectionConfig}></SettingRow>
                 <ControlDataTable controlData={collectSettings.config}></ControlDataTable>
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
@@ -658,6 +659,9 @@ const ProfileSettings = () => {
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
+
+            <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
+            <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
         
         </>
     );

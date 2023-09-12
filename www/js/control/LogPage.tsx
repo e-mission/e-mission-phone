@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from "react";
-import { View, StyleSheet, ScrollView } from "react-native";
+import { View, StyleSheet, SafeAreaView, Modal } from "react-native";
 import { useTheme, Text, Appbar, IconButton } from "react-native-paper";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import { FlashList } from '@shopify/flash-list';
 import useAppConfig from "../useAppConfig";
@@ -10,9 +10,7 @@ import AlertBar from "./AlertBar";
 
 type loadStats = { currentStart: number, gotMaxIndex: boolean, reachedEnd: boolean };
 
-//any pure functions can go outside
-const LogPage = () => {
-    // anything that mutates must go in --- depend on props or state... 
+const LogPage = ({pageVis, setPageVis}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const EmailHelper = getAngularService('EmailHelper');
@@ -30,9 +28,7 @@ const LogPage = () => {
     var RETRIEVE_COUNT = 100;
 
     useEffect(() => {
-        if(!loading) {
-            refreshEntries();
-        }
+        refreshEntries();
     }, [appConfig]);
 
     const refreshEntries = function() {
@@ -102,40 +98,38 @@ const LogPage = () => {
     }
 
     const separator = () => <View style={{ height: 8 }} />
-    const logItem = ({item: logItem}) => <View style={styles.entry(colors.elevation.level1)}>
+    const logItem = ({item: logItem}) => (<View style={styles.entry(colors.elevation.level1)}>
                                             <Text style={styles.date(colors.elevation.level4)} variant="labelLarge">{logItem.fmt_time}</Text>
                                             <Text style={styles.details} variant="bodyMedium">{logItem.ID + "|" + logItem.level + "|" + logItem.message}</Text>
-                                        </View>
+                                        </View>);
 
     return (
-        <>
-        {/* //appbar across the top with back to profile and "log" page title */}
-        <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
-            <Appbar.BackAction onPress={() => {$state.go("root.main.control");}}/>
-            <Appbar.Content title="Log" />
-        </Appbar.Header>   
+        <Modal visible={pageVis} onDismiss={() => setPageVis(false)}>
+            <SafeAreaView style={{flex: 1}}>
+                <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+                    <Appbar.BackAction onPress={() => {setPageVis(false)}}/>
+                    <Appbar.Content title="Log" />
+                </Appbar.Header>   
 
-        {/* //row of buttons to refresh, delete, or email */}
-        <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
-            <IconButton icon="refresh" onPress={() => refreshEntries()}/>
-            <IconButton icon="delete" onPress={() => clear()}/>
-            <IconButton icon="email" onPress={() => emailLog()}/>
-        </View>
+                <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
+                    <IconButton icon="refresh" onPress={() => refreshEntries()}/>
+                    <IconButton icon="delete" onPress={() => clear()}/>
+                    <IconButton icon="email" onPress={() => emailLog()}/>
+                </View>
 
-        {/* //list of dates and times, each with some data associated */}
-        <ScrollView style={{ flex: 1, backgroundColor: colors.background }}>
-        <FlashList inverted
-            data={entries}
-            renderItem={logItem}
-            estimatedItemSize={75}
-            keyExtractor={(item) => item.ID}
-            ItemSeparatorComponent={separator} 
-            onScroll={e => {if(moreDataCanBeLoaded){addEntries()}}}/>
-        </ScrollView>
+                <FlashList
+                    data={entries}
+                    renderItem={logItem}
+                    estimatedItemSize={75}
+                    keyExtractor={(item) => item.ID}
+                    ItemSeparatorComponent={separator} 
+                    onScroll={e => {if(moreDataCanBeLoaded){addEntries()}}}
+                    />
+            </SafeAreaView>
 
         <AlertBar visible={maxErrorVis} setVisible={setMaxErrorVis} messageKey={"While getting messages from the log "} messageAddition={maxMessage}></AlertBar>
         <AlertBar visible={logErrorVis} setVisible={setLogErrorVis} messageKey={"While getting max index "} messageAddition={logMessage}></AlertBar>
-        </>
+        </Modal>
     );
 };
 const styles = StyleSheet.create({
@@ -150,6 +144,5 @@ const styles = StyleSheet.create({
         marginLeft: 5,
     }),
   });
-   
-angularize(LogPage, 'LogPage', 'emission.main.log.logPage'); 
+    
 export default LogPage;
