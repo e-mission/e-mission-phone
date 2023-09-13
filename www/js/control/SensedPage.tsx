@@ -5,9 +5,6 @@ import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import { FlashList } from '@shopify/flash-list';
 import moment from "moment";
-import ActionMenu from "../components/ActionMenu";
-
-type configObject = { key_data_mapping: object, keys: string[], keyMap: {}[] };
 
 const SensedPage = ({pageVis, setPageVis}) => {
     const { t } = useTranslation();
@@ -16,61 +13,16 @@ const SensedPage = ({pageVis, setPageVis}) => {
 
     /* Let's keep a reference to the database for convenience */
     const [ DB, setDB ]= useState();
-
-    const [ config, setConfig ] = useState<configObject>();
-    const [ selectedKey, setSelectedKey ] = useState<string>("");
-    const [ keysVisible, setKeysVisible ] = useState<boolean>(false);
     const [ entries, setEntries ] = useState([]);
-
-    const setup = function() {
-        if(DB) {
-            let tempConfig = {} as configObject;
-            tempConfig.key_data_mapping = {
-                "Transitions": {
-                    fn: DB.getAllMessages,
-                    key: "statemachine/transition"
-                },
-                "Locations": {
-                    fn: DB.getAllSensorData,
-                    key: "background/location"
-                },
-                "Motion Type": {
-                    fn: DB.getAllSensorData,
-                    key: "background/motion_activity"
-                },
-            }
-
-            tempConfig.keys = [];
-            for (let key in tempConfig.key_data_mapping) {
-                tempConfig.keys.push(key);
-            }
-
-            tempConfig.keyMap = mapForActionMenu(tempConfig.keys);
-
-            setSelectedKey(tempConfig.keys[0]);
-            setConfig(tempConfig);
-            updateEntries();
-        }
-    }
 
     const emailCache = function() {
         EmailHelper.sendEmail("userCacheDB");
     }
 
-    const setSelected = function(newVal) {
-        setSelectedKey(newVal);
-    }
-
     async function updateEntries() {
-        let userCacheFn, userCacheKey;
-        if(selectedKey == "") {
-            userCacheFn = DB.getAllMessages;
-            userCacheKey = "statemachine/transition";
-        } else {
-            userCacheFn = config.key_data_mapping[selectedKey]["fn"];
-            userCacheKey = config.key_data_mapping[selectedKey]["key"];
-        }
-
+        //hardcoded function and keys after eliminating bit-rotted options
+        let userCacheFn = DB.getAllMessages;
+        let userCacheKey = "statemachine/transition";
         try {
             let entryList = await userCacheFn(userCacheKey, true);
             let tempEntries = [];
@@ -88,24 +40,9 @@ const SensedPage = ({pageVis, setPageVis}) => {
         }
     }
 
-    //update entries anytime the selected key changes
-    useEffect(() => {
-        if(DB){
-            updateEntries();
-        }
-    }, [selectedKey])
-
-    const mapForActionMenu = function(keys) {
-        let map = [];
-        keys.forEach(key => {
-          map.push({text: key});  
-        });
-        return map;
-    }
-
     useEffect(() => {
         setDB(window.cordova.plugins.BEMUserCache);
-        setup();
+        updateEntries();
     }, [pageVis]);
 
     const separator = () => <View style={{ height: 8 }} />
@@ -119,13 +56,12 @@ const SensedPage = ({pageVis, setPageVis}) => {
             <SafeAreaView style={{flex: 1}}>
                 <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
                     <Appbar.BackAction onPress={() => setPageVis(false)}/>
-                    <Appbar.Content title={t('control.sensed-title') + ": " + selectedKey}/>
+                    <Appbar.Content title={t('control.sensed-title')}/>
                 </Appbar.Header>   
 
                 <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
                     <IconButton icon="refresh" onPress={() => updateEntries()}/>
                     <IconButton icon="email" onPress={() => emailCache()}/>
-                    <IconButton icon="menu" onPress={() => setKeysVisible(true)}/>
                 </View>
             
                 <FlashList
@@ -136,8 +72,6 @@ const SensedPage = ({pageVis, setPageVis}) => {
                     ItemSeparatorComponent={separator} 
                 />
             </SafeAreaView>
-            
-            <ActionMenu vis={keysVisible} setVis={setKeysVisible} title={"Choose:"} actionSet={config?.keyMap} onAction={(key) => setSelected(key.text)} onExit={() => {}}></ActionMenu>
         </Modal>
     );
 };
