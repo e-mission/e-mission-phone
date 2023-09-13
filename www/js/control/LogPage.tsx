@@ -40,7 +40,7 @@ const LogPage = ({pageVis, setPageVis}) => {
             setLoadStats(tempStats);
             setEntries([]);
         } catch(error) {
-            let errorString = "While getting max index "+JSON.stringify(error, null, 2);
+            let errorString = t('dev-errors.while-max')+JSON.stringify(error, null, 2);
             console.log(errorString);
             setMaxMessage(errorString);
             setMaxErrorVis(true);
@@ -69,7 +69,7 @@ const LogPage = ({pageVis, setPageVis}) => {
             console.log("entry list size = "+ entries.length);
             setIsFetching(false);
         } catch(error) {
-            let errStr = "While getting messages from the log "+JSON.stringify(error, null, 2);
+            let errStr = t('dev-errors.while-messages')+JSON.stringify(error, null, 2);
             console.log(errStr);
             setLogMessage(errStr);
             setLogErrorVis(true);
@@ -110,7 +110,7 @@ const LogPage = ({pageVis, setPageVis}) => {
             <SafeAreaView style={{flex: 1}}>
                 <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
                     <Appbar.BackAction onPress={() => {setPageVis(false)}}/>
-                    <Appbar.Content title="Log" />
+                    <Appbar.Content title={t('control.log-title')} />
                 </Appbar.Header>   
 
                 <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -132,8 +132,8 @@ const LogPage = ({pageVis, setPageVis}) => {
                     />
             </SafeAreaView>
 
-        <AlertBar visible={maxErrorVis} setVisible={setMaxErrorVis} messageKey={"While getting messages from the log "} messageAddition={maxMessage}></AlertBar>
-        <AlertBar visible={logErrorVis} setVisible={setLogErrorVis} messageKey={"While getting max index "} messageAddition={logMessage}></AlertBar>
+        <AlertBar visible={maxErrorVis} setVisible={setMaxErrorVis} messageKey={""} messageAddition={maxMessage}></AlertBar>
+        <AlertBar visible={logErrorVis} setVisible={setLogErrorVis} messageKey={""} messageAddition={logMessage}></AlertBar>
         </Modal>
     );
 };

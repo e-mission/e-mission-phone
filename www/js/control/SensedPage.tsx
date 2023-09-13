@@ -119,7 +119,7 @@ const SensedPage = ({pageVis, setPageVis}) => {
             <SafeAreaView style={{flex: 1}}>
                 <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
                     <Appbar.BackAction onPress={() => setPageVis(false)}/>
-                    <Appbar.Content title={"Sensed Data" + ": " + selectedKey}/>
+                    <Appbar.Content title={t('control.sensed-title') + ": " + selectedKey}/>
                 </Appbar.Header>   
 
                 <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
