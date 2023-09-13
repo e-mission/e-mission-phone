@@ -50,11 +50,6 @@
         "log-out": "Log Out"
     },
 
-    "dev-errors" : {
-        "while-messages": "While getting messages from the log ",
-        "while-max" : "While getting max index "
-    },
-
     "general-settings":{
         "choose-date" : "Choose date to download data",
         "choose-dataset" : "Choose a dataset for carbon footprint calculations",
@@ -367,7 +362,9 @@
     "errors": {
       "while-populating-composite": "Error while populating composite trips",
       "while-loading-another-week": "Error while loading travel of {{when}} week",
-      "while-loading-specific-week": "Error while loading travel for the week of {{day}}"
+      "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
+      "while-log-messages": "While getting messages from the log ",
+      "while-max-index" : "While getting max index "
     },
     "consent-text": {
         "title":"NREL OPENPATH PRIVACY POLICY/TERMS OF USE",

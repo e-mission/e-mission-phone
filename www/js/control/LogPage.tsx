@@ -40,7 +40,7 @@ const LogPage = ({pageVis, setPageVis}) => {
             setLoadStats(tempStats);
             setEntries([]);
         } catch(error) {
-            let errorString = t('dev-errors.while-max')+JSON.stringify(error, null, 2);
+            let errorString = t('errors.while-max-index')+JSON.stringify(error, null, 2);
             console.log(errorString);
             setMaxMessage(errorString);
             setMaxErrorVis(true);
@@ -69,7 +69,7 @@ const LogPage = ({pageVis, setPageVis}) => {
             console.log("entry list size = "+ entries.length);
             setIsFetching(false);
         } catch(error) {
-            let errStr = t('dev-errors.while-messages')+JSON.stringify(error, null, 2);
+            let errStr = t('errors.while-log-messages')+JSON.stringify(error, null, 2);
             console.log(errStr);
             setLogMessage(errStr);
             setLogErrorVis(true);
