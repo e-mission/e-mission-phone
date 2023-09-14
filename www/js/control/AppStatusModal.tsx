@@ -10,12 +10,10 @@ import ExplainPermissions from "../appstatus/ExplainPermissions";
 import AlertBar from "./AlertBar";
 import { settingStyles } from "./ProfileSettings";
 
-const AppStatusModal = ({permitVis, setPermitVis, settingsScope}) => {
+const AppStatusModal = ({permitVis, setPermitVis}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
-
-    console.log("settings scope in app status modal", settingsScope);
 
     const { height: windowHeight } = useWindowDimensions();
     const [osver, setOsver] = useState(0);
@@ -367,12 +365,6 @@ const AppStatusModal = ({permitVis, setPermitVis, settingsScope}) => {
 
     useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
-        refreshAllChecks();
-    });
-
-    //refresh when recompute message is broadcast
-    settingsScope.$on("recomputeAppStatus", function() {
-        console.log("PERMISSION CHECK: recomputing state");
         refreshAllChecks();
     });
 

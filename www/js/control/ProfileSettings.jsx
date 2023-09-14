@@ -27,11 +27,6 @@ const ProfileSettings = () => {
     const { appConfig, loading } = useAppConfig();
     const { colors } = useTheme();
 
-    // get the scope of the general-settings.js file
-    const mainControlEl = document.getElementById('main-control');
-    const settingsScope = angular.element(mainControlEl.querySelector('profile-settings')).scope();
-    console.log("settings scope", settingsScope);
-
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
@@ -580,7 +575,7 @@ const ProfileSettings = () => {
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
 
             {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope}></AppStatusModal>
+            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis}></AppStatusModal>
 
             {/* {view privacy} */}
             <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis}></PrivacyPolicyModal>
