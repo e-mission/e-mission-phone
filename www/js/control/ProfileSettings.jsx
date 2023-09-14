@@ -304,7 +304,7 @@ const ProfileSettings = () => {
     }
 
     async function toggleLowAccuracy() {
-        helperToggleLowAccuracy();
+        let toggle = await helperToggleLowAccuracy();
         refreshCollectSettings();
     }
 

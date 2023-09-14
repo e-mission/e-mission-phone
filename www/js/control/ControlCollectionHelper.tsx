@@ -32,8 +32,9 @@ async function accuracy2String(config) {
     return accuracy;
 }
 
-export async function isMediumAccuracy(config) {
-    if (config == null) {
+export async function isMediumAccuracy() {
+    let config = await getConfig();
+    if (!config || config == null) {
         return undefined; // config not loaded when loading ui, set default as false
     } else {
         var v = await accuracy2String(config);
@@ -47,10 +48,11 @@ export async function isMediumAccuracy(config) {
     }
 }
 
-export async function helperToggleLowAccuracy(config) {
-    let tempConfig = {...config};
+export async function helperToggleLowAccuracy() {
+    let tempConfig = await getConfig();
     let accuracyOptions = await getAccuracyOptions();
-    if (isMediumAccuracy(config)) {
+    let medium = await isMediumAccuracy();
+    if (medium) {
         if (window.cordova.platformId == 'ios') {
             tempConfig.accuracy = accuracyOptions["kCLLocationAccuracyBest"];
         } else if (window.cordova.platformId == 'android') {
@@ -64,7 +66,7 @@ export async function helperToggleLowAccuracy(config) {
         }
     }
     try{
-        let set = setConfig(tempConfig);
+        let set = await setConfig(tempConfig);
         console.log("setConfig Sucess");
     } catch (err) {
         // Logger.displayError("Error while setting collection config", err);
