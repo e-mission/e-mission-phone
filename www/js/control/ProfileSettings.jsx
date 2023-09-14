@@ -62,7 +62,7 @@ const ProfileSettings = () => {
     const [forceResultVis, setForceResultVis] = useState(false);
     const [forceResult, setForceResult] = useState("");
 
-    const [collectConfig, setCollectConfig] = useState({});
+    // const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
@@ -588,7 +588,7 @@ const ProfileSettings = () => {
             <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
 
             <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
-            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection} localConfig={collectConfig} setLocalConfig={setCollectConfig}></ControlCollectionHelper>
+            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection}></ControlCollectionHelper>
         
         </>
     );

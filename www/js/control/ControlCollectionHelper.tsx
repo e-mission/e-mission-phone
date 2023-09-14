@@ -122,11 +122,11 @@ const formatConfigForDisplay = function(config, accuracyOptions) {
     return retVal;
 }
 
-const ControlSyncHelper = ({ editVis, setEditVis, localConfig, setLocalConfig }) => {
+const ControlSyncHelper = ({ editVis, setEditVis }) => {
     const {colors} = useTheme();
     const Logger = getAngularService("Logger");
 
-    // const [ localConfig, setLocalConfig ] = useState<collectionConfig>();
+    const [ localConfig, setLocalConfig ] = useState<collectionConfig>();
     const [ accuracyActions, setAccuracyActions ] = useState([]);
     const [ accuracyVis, setAccuracyVis ] = useState(false);
   
