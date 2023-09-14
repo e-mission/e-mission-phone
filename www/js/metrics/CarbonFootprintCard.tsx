@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
-import { filterToRecentWeeks, formatDateRangeOfDays, parseDataFromMetrics, generateSummaryFromData, calculatePercentChange } from './metricsHelper';
+import { formatDateRangeOfDays, parseDataFromMetrics, generateSummaryFromData, calculatePercentChange, segmentDaysByWeeks } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { getAngularService } from '../angular-react-helper';
@@ -21,13 +21,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     const userCarbonRecords = useMemo(() => {
         if(userMetrics?.distance?.length > 0) {
             //separate data into weeks
-            let thisWeekDistance = filterToRecentWeeks(userMetrics?.distance)[0];
-            let lastWeekDistance = filterToRecentWeeks(userMetrics?.distance)[1];
-            
-            //formatted distance data from this week
-            let userThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'user');
-            let userThisWeekSummaryMap = generateSummaryFromData(userThisWeekModeMap, 'distance');
-            let worstDistance = userThisWeekSummaryMap.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
+            const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
 
             //formatted data from last week
             let userLastWeekModeMap = {};
@@ -37,8 +31,24 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
             }
             
+            //formatted distance data from this week
+            let userThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'user');
+            let userThisWeekSummaryMap = generateSummaryFromData(userThisWeekModeMap, 'distance');
+            let worstDistance = userThisWeekSummaryMap.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
+            
             //setting up data to be displayed
             let graphRecords = [];
+
+            //calculate low-high and format range for prev week, if exists
+            let userPrevWeek;
+            if(userLastWeekSummaryMap[0]) {
+                userPrevWeek = {
+                    low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
+                    high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
+                };
+                graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
+                graphRecords.push({label: t('main-metrics.labeled'), x: userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
+            }
 
             //calculate low-high and format range for past week
             let userPastWeek = {
@@ -47,22 +57,11 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             };
             graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPastWeek.high - userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`})
             graphRecords.push({label: t('main-metrics.labeled'), x: userPastWeek.low, y: `${t('main-metrics.past-week')}\n(${formatDateRangeOfDays(thisWeekDistance)})`});
-            
-            //calculate low-high and format range for prev week, if exists
-            if(userLastWeekSummaryMap[0]) {
-                let userPrevWeek = {
-                    low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
-                    high: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, FootprintHelper.getHighestFootprint())
-                };
-                graphRecords.push({label: t('main-metrics.unlabeled'),  x: userPrevWeek.high - userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`})
-                graphRecords.push({label: t('main-metrics.labeled'), x: userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
-                
+            if (userPrevWeek) {
                 let pctChange = calculatePercentChange(userPastWeek, userPrevWeek);
                 setEmissionsChange(pctChange);
-            } else {
-                setEmissionsChange({});
             }
-            
+
             //calculate worst-case carbon footprint
             let worstCarbon = FootprintHelper.getHighestFootprintForDistance(worstDistance);
             graphRecords.push({label: t('main-metrics.labeled'), x: worstCarbon, y: `${t('main-metrics.worst-case')}`});
@@ -75,7 +74,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
         if(aggMetrics?.distance?.length > 0) 
         {
             //separate data into weeks
-            let thisWeekDistance = filterToRecentWeeks(aggMetrics?.distance)[0];
+            const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
             console.log("testing agg metrics" , aggMetrics, thisWeekDistance);
 
             let aggThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, "aggregate");
@@ -120,7 +119,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     }, [userCarbonRecords, groupCarbonRecords]);
 
     const cardSubtitleText = useMemo(() => {
-      const recentEntries = filterToRecentWeeks(aggMetrics?.distance).reverse().flat();
+      const recentEntries = segmentDaysByWeeks(aggMetrics?.distance, 2).reverse().flat();
       const recentEntriesRange = formatDateRangeOfDays(recentEntries);
       return `${t('main-metrics.estimated-emissions')}, (${recentEntriesRange})`;
     }, [aggMetrics?.distance]);

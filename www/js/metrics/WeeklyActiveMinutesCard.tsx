@@ -4,8 +4,7 @@ import { View } from 'react-native';
 import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardMargin, cardStyles } from './MetricsTab';
-import { useImperialConfig } from '../config/useImperialConfig';
-import { filterToRecentWeeks, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
+import { formatDateRangeOfDays, segmentDaysByWeeks } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
@@ -23,21 +22,21 @@ const WeeklyActiveMinutesCard = ({ userMetrics }: Props) => {
 
   const weeklyActiveMinutesRecords = useMemo(() => {
     const records = [];
-    const [ recentWeek, prevWeek ] = filterToRecentWeeks(userMetrics?.duration);
+    const [ recentWeek, prevWeek ] = segmentDaysByWeeks(userMetrics?.duration, 2);
     ACTIVE_MODES.forEach(mode => {
-      const recentSum = recentWeek?.reduce((acc, day) => (
-        acc + (day[`label_${mode}`] || 0)
-      ), 0);
-      if (recentSum) {
-        const xLabel = `Past Week\n(${formatDateRangeOfDays(recentWeek)})`; // TODO: i18n
-        records.push({label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60});
-      }
       const prevSum = prevWeek?.reduce((acc, day) => (
         acc + (day[`label_${mode}`] || 0)
       ), 0);
       if (prevSum) {
         const xLabel = `Previous Week\n(${formatDateRangeOfDays(prevWeek)})`; // TODO: i18n
         records.push({label: labelKeyToRichMode(mode), x: xLabel, y: prevSum / 60});
+      }
+      const recentSum = recentWeek?.reduce((acc, day) => (
+        acc + (day[`label_${mode}`] || 0)
+      ), 0);
+      if (recentSum) {
+        const xLabel = `Past Week\n(${formatDateRangeOfDays(recentWeek)})`; // TODO: i18n
+        records.push({label: labelKeyToRichMode(mode), x: xLabel, y: recentSum / 60});
       }
     });
     return records as {label: ActiveMode, x: string, y: number}[];

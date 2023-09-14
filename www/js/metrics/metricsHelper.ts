@@ -32,14 +32,14 @@ export const secondsToHours = (seconds: number) =>
   formatForDisplay(seconds / 3600);
 
 // segments metricsDays into weeks, with the most recent week first
-export function filterToRecentWeeks(metricsDays: DayOfMetricData[]) {
+export function segmentDaysByWeeks (days: DayOfMetricData[], nWeeks?: number) {
   const weeks: DayOfMetricData[][] = [];
-  if (metricsDays?.length >= 7)
-    weeks.push(metricsDays.slice(-7));
-  if (metricsDays?.length >= 14)
-    weeks.push(metricsDays.slice(-14, -7));
-  return weeks;
-}
+  for (let i = 0; i < days?.length - 1; i += 7) {
+    weeks.push(days.slice(i, i + 7));
+  }
+  if (nWeeks) return weeks.reverse().slice(0, nWeeks);
+  return weeks.reverse();
+};
 
 export function formatDate(day: DayOfMetricData) {
   const dt = DateTime.fromISO(day.fmt_time, { zone: 'utc' });

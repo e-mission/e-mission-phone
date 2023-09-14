@@ -2,7 +2,7 @@ import React, { useMemo, useState } from 'react';
 import { Card, DataTable, useTheme } from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
-import { filterToRecentWeeks, formatDate, formatDateRangeOfDays, secondsToMinutes } from './metricsHelper';
+import { formatDate, formatDateRangeOfDays, secondsToMinutes, segmentDaysByWeeks } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import { ACTIVE_MODES } from './WeeklyActiveMinutesCard';
 import { labelKeyToRichMode } from '../survey/multilabel/confirmHelper';
@@ -28,7 +28,7 @@ const ActiveMinutesTableCard = ({ userMetrics }: Props) => {
 
   const recentWeeksActiveModesTotals = useMemo(() => {
     if (!userMetrics?.duration) return [];
-    return filterToRecentWeeks(userMetrics.duration).map(week => {
+    return segmentDaysByWeeks(userMetrics.duration).reverse().map(week => {
       const totals = {};
       ACTIVE_MODES.forEach(mode => {
         const sum = week.reduce((acc, day) => (
