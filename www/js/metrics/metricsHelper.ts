@@ -98,7 +98,7 @@ export function calculatePercentChange(pastWeekRange, previousWeekRange) {
 export function parseDataFromMetrics(metrics, population) {
   console.log("Called parseDataFromMetrics on ", metrics);
   let mode_bins = {};
-  metrics.forEach(function(metric) {
+  metrics?.forEach(function(metric) {
     let onFootVal = 0;
 
     for (let field in metric) {
