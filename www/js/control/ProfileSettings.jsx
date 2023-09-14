@@ -20,8 +20,6 @@ import LogPage from "./LogPage";
 import ControlSyncHelper, {forcePluginSync, getHelperSyncSettings} from "./ControlSyncHelper";
 import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransitionWrapper} from "./ControlCollectionHelper";
 
-let controlUpdateCompleteListenerRegistered = false;
-
 //any pure functions can go outside
 const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
@@ -44,15 +42,6 @@ const ProfileSettings = () => {
     const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
     const DynamicConfig = getAngularService('DynamicConfig');
-
-    if (!controlUpdateCompleteListenerRegistered) {
-        settingsScope.$on('control.update.complete', function() {
-            console.debug("Received control.update.complete event, refreshing screen");
-            refreshScreen();
-            refreshCollectSettings();
-        });
-        controlUpdateCompleteListenerRegistered = true;
-    }
 
     //functions that come directly from an Angular service
     const editCollectionConfig = () => setEditCollection(true);
