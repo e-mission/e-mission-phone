@@ -17,6 +17,8 @@ import PrivacyPolicyModal from "./PrivacyPolicyModal";
 import ActionMenu from "../components/ActionMenu";
 import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
+import ControlSyncHelper, {forcePluginSync, getHelperSyncSettings} from "./ControlSyncHelper";
+import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransitionWrapper} from "./ControlCollectionHelper";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -36,8 +38,6 @@ const ProfileSettings = () => {
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
-    const ControlCollectionHelper = getAngularService('ControlCollectionHelper');
-    const ControlSyncHelper = getAngularService('ControlSyncHelper');
     const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
@@ -55,8 +55,8 @@ const ProfileSettings = () => {
     }
 
     //functions that come directly from an Angular service
-    const editCollectionConfig = ControlCollectionHelper.editConfig;
-    const editSyncConfig = ControlSyncHelper.editConfig;
+    const editCollectionConfig = () => setEditCollection(true);
+    const editSyncConfig = () => setEditSync(true);
 
     //states and variables used to control/create the settings
     const [opCodeVis, setOpCodeVis] = useState(false);
@@ -75,7 +75,12 @@ const ProfileSettings = () => {
     const [privacyVis, setPrivacyVis] = useState(false);
     const [showingSensed, setShowingSensed] = useState(false);
     const [showingLog, setShowingLog] = useState(false);
+    const [editSync, setEditSync] = useState(false);
+    const [editCollection, setEditCollection] = useState(false);
+    const [forceResultVis, setForceResultVis] = useState(false);
+    const [forceResult, setForceResult] = useState("");
 
+    const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
     const [authSettings, setAuthSettings] = useState({});
@@ -151,22 +156,27 @@ const ProfileSettings = () => {
         console.debug('about to refreshCollectSettings, collectSettings = ', collectSettings);
         const newCollectSettings = {};
 
-        // refresh collect plugin configuration
-        const collectionPluginConfig = await ControlCollectionHelper.getCollectionSettings();
+        // // refresh collect plugin configuration
+        const collectionPluginConfig = await getHelperCollectionSettings();
         newCollectSettings.config = collectionPluginConfig;
         
-        const collectionPluginState = await ControlCollectionHelper.getState();
+        const collectionPluginState = await getState();
         newCollectSettings.state = collectionPluginState;
         newCollectSettings.trackingOn = collectionPluginState != "local.state.tracking_stopped"
                                         && collectionPluginState != "STATE_TRACKING_STOPPED";
 
-        const isLowAccuracy = await ControlCollectionHelper.isMediumAccuracy();
+        const isLowAccuracy = await isMediumAccuracy();
         if (typeof isLowAccuracy != 'undefined') {
             newCollectSettings.lowAccuracy = isLowAccuracy;
         }
 
         setCollectSettings(newCollectSettings);
     }
+
+    //ensure ui table updated when editor closes
+    useEffect(() => {
+        refreshCollectSettings();
+    }, [editCollection])
 
     async function refreshNotificationSettings() {
         console.debug('about to refreshNotificationSettings, notificationSettings = ', notificationSettings);
@@ -190,12 +200,17 @@ const ProfileSettings = () => {
     async function getSyncSettings() {
         console.log("getting sync settings");
         var newSyncSettings = {};
-        ControlSyncHelper.getSyncSettings().then(function(showConfig) {
+        getHelperSyncSettings().then(function(showConfig) {
             newSyncSettings.show_config = showConfig;
             setSyncSettings(newSyncSettings);
             console.log("sync settings are ", syncSettings);
         });
     };
+
+    //update sync settings in the table when close editor
+    useEffect(() => {
+        getSyncSettings();
+    }, [editSync]);
 
     async function getConnectURL() {
         ControlHelper.getSettings().then(function(response) {
@@ -256,10 +271,20 @@ const ProfileSettings = () => {
 
     async function userStartStopTracking() {
         const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
-        ControlCollectionHelper.forceTransition(transitionToForce);
-        /* the ControlCollectionHelper.forceTransition call above will trigger a
-            'control.update.complete' event when it's done, which will trigger refreshCollectSettings.
-          So we don't need to call refreshCollectSettings here. */
+        forceTransition(transitionToForce);
+        refreshCollectSettings();
+    }
+
+    async function forceTransition(transition) {
+        try {
+            let result = forceTransitionWrapper(transition);
+            setForceResultVis(true);
+            setForceResult('success -> '+result)
+        } catch (err) {
+            console.log("error forcing state", err);
+            setForceResultVis(true);
+            setForceResult('error -> '+err)
+        } 
     }
 
 
@@ -279,7 +304,7 @@ const ProfileSettings = () => {
     }
 
     async function toggleLowAccuracy() {
-        ControlCollectionHelper.toggleLowAccuracy();
+        helperToggleLowAccuracy();
         refreshCollectSettings();
     }
 
@@ -353,7 +378,7 @@ const ProfileSettings = () => {
 
     async function getTransition(transKey) {
         var entry_data = {};
-        const curr_state = await ControlCollectionHelper.getState();
+        const curr_state = await getState();
         entry_data.curr_state = curr_state;
         if (transKey == getEndTransitionKey()) {
             entry_data.curr_state = getOngoingTransitionState();
@@ -397,7 +422,7 @@ const ProfileSettings = () => {
             function() {
                 console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
             });
-        ControlSyncHelper.forceSync().then(function() {
+        forcePluginSync().then(function() {
             /*
              * Change to sensorKey to "background/location" after fixing issues
              * with getLastSensorData and getLastMessages in the usercache
@@ -461,7 +486,7 @@ const ProfileSettings = () => {
     }
 
     const onSelectState = function(stateObject) {
-        ControlCollectionHelper.forceTransition(stateObject.transition); 
+        forceTransition(stateObject.transition); 
     }
 
     const onSelectCarbon = function(carbonObject) {
@@ -560,7 +585,7 @@ const ProfileSettings = () => {
             <ActionMenu vis={carbonDataVis} setVis={setCarbonDataVis} title={t('general-settings.choose-dataset')} actionSet={carbonOptions} onAction={onSelectCarbon} onExit={() => clearNotifications()}></ActionMenu>
 
             {/* force state sheet */}
-            <ActionMenu vis={forceStateVis} setVis={setForceStateVis} title={"Force State"} actionSet={stateActions} onAction={onSelectState}></ActionMenu>
+            <ActionMenu vis={forceStateVis} setVis={setForceStateVis} title={"Force State"} actionSet={stateActions} onAction={onSelectState} onExit={() => {}}></ActionMenu>
 
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
@@ -659,9 +684,13 @@ const ProfileSettings = () => {
             <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
+            <AlertBar visible={forceResultVis} setVisible={setForceResultVis} messageKey={forceResult}></AlertBar>
 
             <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
             <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
+
+            <ControlSyncHelper editVis={editSync} setEditVis={setEditSync}></ControlSyncHelper>
+            <ControlCollectionHelper editVis={editCollection} setEditVis={setEditCollection} localConfig={collectConfig} setLocalConfig={setCollectConfig}></ControlCollectionHelper>
         
         </>
     );
