@@ -2,13 +2,14 @@
 import React, { useMemo, useState } from 'react';
 import { View } from 'react-native';
 import { Card, Checkbox, Text, useTheme } from 'react-native-paper';
+import colorLib from "color";
 import BarChart from '../components/BarChart';
 import { DayOfMetricData } from './metricsTypes';
 import { formatDateRangeOfDays, getLabelsForDay, getUniqueLabelsForDays } from './metricsHelper';
 import ToggleSwitch from '../components/ToggleSwitch';
 import { cardStyles } from './MetricsTab';
 import { labelKeyToRichMode, labelOptions } from '../survey/multilabel/confirmHelper';
-import { getBaseModeByText } from '../diary/diaryHelper';
+import { getBaseModeByKey, getBaseModeByText } from '../diary/diaryHelper';
 import { useTranslation } from 'react-i18next';
 
 type Props = {
@@ -44,6 +45,12 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         });
       });
     });
+    // sort records (affects the order they appear in the chart legend)
+    records.sort((a, b) => {
+      if (a.label == 'Unlabeled') return 1;  // sort Unlabeled to the end
+      if (b.label == 'Unlabeled') return -1; // sort Unlabeled to the end
+      return (a.y as number) - (b.y as number); // otherwise, just sort by time
+    });
     return records;
   }, [metricDataDays, viewMode]);
 
@@ -68,6 +75,16 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
     });
     return vals;
   }, [metricDataDays, viewMode]);
+
+  // Unlabelled data shows up as 'UNKNOWN' grey and mostly transparent
+  // All other modes are colored according to their base mode
+  const getColorForLabel = (label: string) => {
+    if (label == "Unlabeled") {
+      const unknownModeColor = getBaseModeByKey('UNKNOWN').color;
+      return colorLib(unknownModeColor).alpha(0.15).rgb().string();
+    }
+    return getBaseModeByText(label, labelOptions).color;
+  }
 
   return (
     <Card style={cardStyles.card}>
@@ -100,7 +117,7 @@ const MetricsCard = ({cardTitle, userMetricsDays, aggMetricsDays, axisUnits, uni
         {viewMode=='graph' && <>
           <BarChart records={chartData} axisTitle={axisUnits}
             isHorizontal={true} timeAxis={true} stacked={graphIsStacked}
-            getColorForLabel={(l) => getBaseModeByText(l, labelOptions).color} />
+            getColorForLabel={getColorForLabel} />
           <View style={{flexDirection: 'row', height: 10, alignItems: 'center', justifyContent: 'flex-end'}}>
             <Text variant='labelMedium'>Stack bars:</Text>
             <Checkbox 
