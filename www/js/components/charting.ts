@@ -126,9 +126,10 @@ export function getGradient(chart, meter, currDataset, barCtx, alpha = null, dar
  * @param change a number between -1 and 1, indicating the amount to darken or lighten the color
  * @returns an adjusted color, either darkened or lightened, depending on the sign of change
  */
-function darkenOrLighten(baseColor: string, change: number) {
+export function darkenOrLighten(baseColor: string, change: number) {
+  if (!baseColor) return baseColor;
   let colorObj = color(baseColor);
-  if(change > 0) {
+  if(change < 0) {
     // darkening appears more drastic than lightening, so we will be less aggressive (scale change by .5)
     return colorObj.darken(Math.abs(change * .5)).hex();
   } else {
@@ -157,9 +158,4 @@ export const dedupColors = (colors: string[][]) => {
     }
   }
   return dedupedColors;
-}
-
-export function darkenForBorder(clr: string) {
-  if (!clr) return clr;
-  return color(clr).darken(0.25).hex();
 }

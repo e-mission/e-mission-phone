@@ -5,7 +5,7 @@ import { useTheme } from 'react-native-paper';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ChartType, ScriptableContext, PointElement, LineElement } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
-import { dedupColors, getChartHeight, darkenForBorder } from './charting';
+import { dedupColors, getChartHeight, darkenOrLighten } from './charting';
 
 ChartJS.register(
   CategoryScale,
@@ -60,7 +60,7 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, getColorForChartEl,
           labelColorMap?.[e.label] || getColorForChartEl(chartRef.current, e, barCtx, 'background')
         ),
         borderColor: (barCtx) => (
-          darkenForBorder(labelColorMap?.[e.label]) || getColorForChartEl(chartRef.current, e, barCtx, 'border')
+          darkenOrLighten(labelColorMap?.[e.label], -.5) || getColorForChartEl(chartRef.current, e, barCtx, 'border')
         ),
         borderWidth: borderWidth || 2,
       })),
