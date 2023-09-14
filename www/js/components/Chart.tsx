@@ -5,7 +5,7 @@ import { useTheme } from 'react-native-paper';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ChartType, ScriptableContext, PointElement, LineElement } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
-import { dedupColors, getChartHeight } from './charting';
+import { dedupColors, getChartHeight, darkenForBorder } from './charting';
 
 ChartJS.register(
   CategoryScale,
@@ -30,14 +30,15 @@ export type Props = {
   records: { label: string, x: number|string, y: number|string }[],
   axisTitle: string,
   type: 'bar'|'line',
-  getColorForLabel: (label: string, currDataset?: ChartDataset, ctx?: ScriptableContext<'bar'|'line'>, colorFor?: 'background'|'border') => string|null,
+  getColorForLabel?: (label: string) => string,
+  getColorForChartEl?: (chart, currDataset: ChartDataset, ctx: ScriptableContext<'bar'|'line'>, colorFor: 'background'|'border') => string|CanvasGradient|null,
   borderWidth?: number,
   lineAnnotations?: { value: number, label?: string, color?:string, position?: LabelPosition }[],
   isHorizontal?: boolean,
   timeAxis?: boolean,
   stacked?: boolean,
 }
-const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAnnotations, isHorizontal, timeAxis, stacked }: Props) => {
+const Chart = ({ records, axisTitle, type, getColorForLabel, getColorForChartEl, borderWidth, lineAnnotations, isHorizontal, timeAxis, stacked }: Props) => {
 
   const { colors } = useTheme();
   const [ numVisibleDatasets, setNumVisibleDatasets ] = useState(1);
@@ -55,8 +56,12 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, borderWidth, lineAn
     return {
       datasets: chartDatasets.map((e, i) => ({
         ...e,
-        backgroundColor: (barCtx) => labelColorMap[e.label] || getColorForLabel(e.label, e, barCtx, 'background'),
-        borderColor: (barCtx) => labelColorMap[e.label] || getColorForLabel(e.label, e, barCtx, 'border'),
+        backgroundColor: (barCtx) => (
+          labelColorMap?.[e.label] || getColorForChartEl(chartRef.current, e, barCtx, 'background')
+        ),
+        borderColor: (barCtx) => (
+          darkenForBorder(labelColorMap?.[e.label]) || getColorForChartEl(chartRef.current, e, barCtx, 'border')
+        ),
         borderWidth: borderWidth || 2,
       })),
     };
