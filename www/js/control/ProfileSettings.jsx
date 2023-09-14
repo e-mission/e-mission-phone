@@ -17,7 +17,7 @@ import PrivacyPolicyModal from "./PrivacyPolicyModal";
 import ActionMenu from "../components/ActionMenu";
 import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
-import ControlSyncHelper, {forcePluginSync, getHelperSyncSettings} from "./ControlSyncHelper";
+import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
 import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransitionWrapper} from "./ControlCollectionHelper";
 
 //any pure functions can go outside
@@ -49,8 +49,6 @@ const ProfileSettings = () => {
     const [forceStateVis, setForceStateVis] = useState(false);
     const [permitVis, setPermitVis] = useState(false);
     const [logoutVis, setLogoutVis] = useState(false);
-    const [dataPendingVis, setDataPendingVis] = useState(false);
-    const [dataPushedVis, setDataPushedVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
     const [noConsentVis, setNoConsentVis] = useState(false);
     const [noConsentMessageVis, setNoConsentMessageVis] = useState(false);
@@ -383,51 +381,6 @@ const ProfileSettings = () => {
         }).then(forceSync);
     }
 
-    //showing up in an odd space on the screen!!
-    async function forceSync() {
-        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
-            function() {
-                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
-            });
-        forcePluginSync().then(function() {
-            /*
-             * Change to sensorKey to "background/location" after fixing issues
-             * with getLastSensorData and getLastMessages in the usercache
-             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
-             */
-            var sensorKey = "statemachine/transition";
-            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
-        }).then(function(sensorDataList) {
-            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
-            // If everything has been pushed, we should
-            // only have one entry for the battery, which is the one that was
-            // inserted on the last successful push.
-            var isTripEnd = function(entry) {
-                if (entry.metadata.key == getEndTransitionKey()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
-            var syncPending = (syncLaunchedCalls.length > 0);
-            Logger.log("sensorDataList.length = "+sensorDataList.length+
-                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
-                       ", syncPending? = "+syncPending);
-            return syncPending;
-        }).then(function(syncPending) {
-            Logger.log("sync launched = "+syncPending);
-            if (syncPending) {
-                Logger.log("data is pending, showing confirm dialog");
-                setDataPendingVis(true); //consent handling in modal
-            } else {
-                setDataPushedVis(true);
-            }
-        }).catch(function(error) {
-            Logger.displayError("Error while forcing sync", error);
-        });
-    };
-
     async function invalidateCache() {
         window.cordova.plugins.BEMUserCache.invalidateAllCache().then(function(result) {
             console.log("invalidate result", result);
@@ -497,7 +450,7 @@ const ProfileSettings = () => {
             <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
             <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
-            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
+            <ForceSyncRow></ForceSyncRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
             {logUploadSection}
             <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
@@ -585,27 +538,6 @@ const ProfileSettings = () => {
                 </Dialog>
             </Modal>
 
-            {/* dataPending */}
-            <Modal visible={dataPendingVis} onDismiss={()=>setDataPendingVis(false)} transparent={true}>
-                <Dialog visible={dataPendingVis} 
-                        onDismiss={()=>setDataPendingVis(false)} 
-                        style={settingStyles.dialog(colors.elevation.level3)}>
-                    <Dialog.Title>{t('data pending for push')}</Dialog.Title>
-                    <Dialog.Actions>
-                        <Button onPress={()=>{
-                            setDataPendingVis(false);
-                            Logger.log("user refused to re-sync")}}>
-                                {t('general-settings.cancel')}
-                        </Button>
-                        <Button onPress={()=>{
-                            setDataPendingVis(false);
-                            forceSync();}}>
-                                {t('general-settings.confirm')}
-                        </Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
-
             {/* handle no consent */}
             <Modal visible={noConsentVis} onDismiss={()=>setNoConsentVis(false)} transparent={true}>
                 <Dialog visible={noConsentVis} 
@@ -648,7 +580,6 @@ const ProfileSettings = () => {
                 minDate={new Date(appConfig?.intro?.start_year, appConfig?.intro?.start_month - 1, 1)}>
             </DataDatePicker>
 
-            <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
             <AlertBar visible={forceResultVis} setVisible={setForceResultVis} messageKey={forceResult}></AlertBar>

@@ -5,6 +5,8 @@ import { useTranslation } from "react-i18next";
 import ActionMenu from "../components/ActionMenu";
 import { settingStyles } from "./ProfileSettings";
 import { getAngularService } from "../angular-react-helper";
+import SettingRow from "./SettingRow";
+import AlertBar from "./AlertBar";
 
 /*
 * BEGIN: Simple read/write wrappers
@@ -34,9 +36,102 @@ export async function getHelperSyncSettings() {
     return formatConfigForDisplay(tempConfig);
 }
 
+const getEndTransitionKey = function() {
+    if(window.cordova.platformId == 'android') {
+        return "local.transition.stopped_moving";
+    }
+    else if(window.cordova.platformId == 'ios') {
+        return "T_TRIP_ENDED";
+    }
+}
+
 type syncConfig = { sync_interval: number, 
                     ios_use_remote_push: boolean };
 
+export const ForceSyncRow = () => {
+    const { t } = useTranslation(); 
+    const { colors } = useTheme();
+    const ClientStats = getAngularService('ClientStats');
+    const Logger = getAngularService('Logger');
+
+    const [dataPendingVis, setDataPendingVis] = useState(false);
+    const [dataPushedVis, setDataPushedVis] = useState(false);
+
+    async function forceSync() {
+        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
+            function() {
+                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+            });
+        forcePluginSync().then(function() {
+            /*
+             * Change to sensorKey to "background/location" after fixing issues
+             * with getLastSensorData and getLastMessages in the usercache
+             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+             */
+            var sensorKey = "statemachine/transition";
+            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+        }).then(function(sensorDataList) {
+            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+            // If everything has been pushed, we should
+            // only have one entry for the battery, which is the one that was
+            // inserted on the last successful push.
+            var isTripEnd = function(entry) {
+                if (entry.metadata.key == getEndTransitionKey()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            };
+            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+            var syncPending = (syncLaunchedCalls.length > 0);
+            Logger.log("sensorDataList.length = "+sensorDataList.length+
+                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+                       ", syncPending? = "+syncPending);
+            return syncPending;
+        }).then(function(syncPending) {
+            Logger.log("sync launched = "+syncPending);
+            if (syncPending) {
+                Logger.log("data is pending, showing confirm dialog");
+                setDataPendingVis(true); //consent handling in modal
+            } else {
+                setDataPushedVis(true);
+            }
+        }).catch(function(error) {
+            Logger.displayError("Error while forcing sync", error);
+        });
+    };
+
+    return (
+        <>
+            <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
+
+            {/* dataPending */}
+            <Modal visible={dataPendingVis} onDismiss={()=>setDataPendingVis(false)} transparent={true}>
+                <Dialog visible={dataPendingVis} 
+                        onDismiss={()=>setDataPendingVis(false)} 
+                        style={settingStyles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('data pending for push')}</Dialog.Title>
+                    <Dialog.Actions>
+                        <Button onPress={()=>{
+                            setDataPendingVis(false);
+                            Logger.log("user refused to re-sync")}}>
+                                {t('general-settings.cancel')}
+                        </Button>
+                        <Button onPress={()=>{
+                            setDataPendingVis(false);
+                            forceSync();}}>
+                                {t('general-settings.confirm')}
+                        </Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
+            <AlertBar visible={dataPushedVis} setVisible={setDataPushedVis} messageKey='all data pushed!'></AlertBar>
+        </>
+    )
+}
+
+//UI for editing the sync config
 const ControlSyncHelper = ({ editVis, setEditVis }) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
