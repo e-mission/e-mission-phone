@@ -63,11 +63,11 @@ const styles: any = {
         fontSize: 16,
     }),
     view: (color) => ({
-        backgroundColor: colorLib(color).alpha(0.7).rgb().toString(),
+        backgroundColor: colorLib(color).alpha(0.85).rgb().toString(),
         padding: 2,
         borderStyle: 'solid',
-        borderColor: colorLib(color).lighten(0.25).alpha(0.8).rgb().toString(),
-        borderWidth: 2,
+        borderColor: colorLib(color).darken(0.4).rgb().toString(),
+        borderWidth: 2.5,
         borderRadius: 10,
     }),
 }
