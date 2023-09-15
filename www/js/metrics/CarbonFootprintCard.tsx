@@ -3,7 +3,7 @@ import { View } from 'react-native';
 import { Card, Text, useTheme} from 'react-native-paper';
 import { MetricsData } from './metricsTypes';
 import { cardStyles } from './MetricsTab';
-import { formatDateRangeOfDays, parseDataFromMetrics, generateSummaryFromData, calculatePercentChange, segmentDaysByWeeks } from './metricsHelper';
+import { formatDateRangeOfDays, parseDataFromMetrics, generateSummaryFromData, calculatePercentChange, segmentDaysByWeeks, isCustomLabels } from './metricsHelper';
 import { useTranslation } from 'react-i18next';
 import BarChart from '../components/BarChart';
 import { getAngularService } from '../angular-react-helper';
@@ -38,6 +38,11 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             
             //setting up data to be displayed
             let graphRecords = [];
+
+            //set custon dataset, if the labels are custom
+            if(isCustomLabels(userThisWeekModeMap)){
+                FootprintHelper.setUseCustomFootprint();
+            }
 
             //calculate low-high and format range for prev week, if exists
             let userPrevWeek;
