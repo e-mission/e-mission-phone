@@ -21,6 +21,16 @@ type collectionConfig = {
 
 // const Logger = getAngularService("Logger");
 
+export async function forceTransition(transition) {
+    try {
+        let result = forceTransitionWrapper(transition);
+        window.alert('success -> '+result);
+    } catch (err) {
+        window.alert('error -> '+err);
+        console.log("error forcing state", err);
+    } 
+}
+
 async function accuracy2String(config) {
     var accuracy = config.accuracy;
     let accuracyOptions = await getAccuracyOptions();
@@ -43,7 +53,7 @@ export async function isMediumAccuracy() {
         } else if (window.cordova.platformId == 'android') {
             return v != "PRIORITY_HIGH_ACCURACY";
         } else {
-            // $ionicPopup.alert("Emission does not support this platform");
+            window.alert("Emission does not support this platform");
         }
     }
 }

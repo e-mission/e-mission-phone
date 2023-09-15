@@ -7,6 +7,7 @@ import { settingStyles } from "./ProfileSettings";
 import { getAngularService } from "../angular-react-helper";
 import SettingRow from "./SettingRow";
 import AlertBar from "./AlertBar";
+import moment from "moment";
 
 /*
 * BEGIN: Simple read/write wrappers
@@ -48,7 +49,7 @@ const getEndTransitionKey = function() {
 type syncConfig = { sync_interval: number, 
                     ios_use_remote_push: boolean };
 
-export const ForceSyncRow = () => {
+export const ForceSyncRow = ({getState}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
     const ClientStats = getAngularService('ClientStats');
@@ -101,9 +102,62 @@ export const ForceSyncRow = () => {
         });
     };
 
+    const getStartTransitionKey = function() {
+        if(window.cordova.platformId == 'android') {
+            return "local.transition.exited_geofence";
+        }
+        else if(window.cordova.platformId == 'ios') {
+            return "T_EXITED_GEOFENCE";
+        }
+    }
+
+    const getEndTransitionKey = function() {
+        if(window.cordova.platformId == 'android') {
+            return "local.transition.stopped_moving";
+        }
+        else if(window.cordova.platformId == 'ios') {
+            return "T_TRIP_ENDED";
+        }
+    }
+
+    const getOngoingTransitionState = function() {
+        if(window.cordova.platformId == 'android') {
+            return "local.state.ongoing_trip";
+        }
+        else if(window.cordova.platformId == 'ios') {
+            return "STATE_ONGOING_TRIP";
+        }
+    }
+
+    async function getTransition(transKey) {
+        var entry_data = {};
+        const curr_state = await getState();
+        entry_data.curr_state = curr_state;
+        if (transKey == getEndTransitionKey()) {
+            entry_data.curr_state = getOngoingTransitionState();
+        }
+        entry_data.transition = transKey;
+        entry_data.ts = moment().unix();
+        return entry_data;
+    }
+
+    async function endForceSync() {
+        /* First, quickly start and end the trip. Let's listen to the promise
+         * result for start so that we ensure ordering */
+        var sensorKey = "statemachine/transition";
+        return getTransition(getStartTransitionKey()).then(function(entry_data) {
+            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        }).then(function() {
+                return getTransition(getEndTransitionKey()).then(function(entry_data) {
+                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+                })
+        }).then(forceSync);
+    };
+
     return (
         <>
             <SettingRow textKey="control.force-sync" iconName="sync" action={forceSync}></SettingRow>
+            <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
 
             {/* dataPending */}
             <Modal visible={dataPendingVis} onDismiss={()=>setDataPendingVis(false)} transparent={true}>

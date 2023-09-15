@@ -18,7 +18,7 @@ import ActionMenu from "../components/ActionMenu";
 import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
 import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
-import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransitionWrapper} from "./ControlCollectionHelper";
+import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransition} from "./ControlCollectionHelper";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -59,8 +59,6 @@ const ProfileSettings = () => {
     const [showingLog, setShowingLog] = useState(false);
     const [editSync, setEditSync] = useState(false);
     const [editCollection, setEditCollection] = useState(false);
-    const [forceResultVis, setForceResultVis] = useState(false);
-    const [forceResult, setForceResult] = useState("");
 
     // const [collectConfig, setCollectConfig] = useState({});
     const [collectSettings, setCollectSettings] = useState({});
@@ -256,18 +254,6 @@ const ProfileSettings = () => {
         refreshCollectSettings();
     }
 
-    async function forceTransition(transition) {
-        try {
-            let result = forceTransitionWrapper(transition);
-            setForceResultVis(true);
-            setForceResult('success -> '+result)
-        } catch (err) {
-            console.log("error forcing state", err);
-            setForceResultVis(true);
-            setForceResult('error -> '+err)
-        } 
-    }
-
     async function toggleLowAccuracy() {
         let toggle = await helperToggleLowAccuracy();
         refreshCollectSettings();
@@ -313,46 +299,6 @@ const ProfileSettings = () => {
     //Platform.OS returns "web" now, but could be used once it's fully a Native app
     //for now, use window.cordova.platformId
 
-    // helper functions for endForceSync
-    const getStartTransitionKey = function() {
-        if(window.cordova.platformId == 'android') {
-            return "local.transition.exited_geofence";
-        }
-        else if(window.cordova.platformId == 'ios') {
-            return "T_EXITED_GEOFENCE";
-        }
-    }
-
-    const getEndTransitionKey = function() {
-        if(window.cordova.platformId == 'android') {
-            return "local.transition.stopped_moving";
-        }
-        else if(window.cordova.platformId == 'ios') {
-            return "T_TRIP_ENDED";
-        }
-    }
-
-    const getOngoingTransitionState = function() {
-        if(window.cordova.platformId == 'android') {
-            return "local.state.ongoing_trip";
-        }
-        else if(window.cordova.platformId == 'ios') {
-            return "STATE_ONGOING_TRIP";
-        }
-    }
-
-    async function getTransition(transKey) {
-        var entry_data = {};
-        const curr_state = await getState();
-        entry_data.curr_state = curr_state;
-        if (transKey == getEndTransitionKey()) {
-            entry_data.curr_state = getOngoingTransitionState();
-        }
-        entry_data.transition = transKey;
-        entry_data.ts = moment().unix();
-        return entry_data;
-    }
-
     const parseState = function(state) {
         console.log("state in parse state is", state);
         if (state) {
@@ -366,19 +312,6 @@ const ProfileSettings = () => {
                 return state.substring(6);
             }
         }
-    }
-
-    async function endForceSync() {
-        /* First, quickly start and end the trip. Let's listen to the promise
-         * result for start so that we ensure ordering */
-        var sensorKey = "statemachine/transition";
-        return getTransition(getStartTransitionKey()).then(function(entry_data) {
-            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-        }).then(function() {
-                return getTransition(getEndTransitionKey()).then(function(entry_data) {
-                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-                })
-        }).then(forceSync);
     }
 
     async function invalidateCache() {
@@ -450,14 +383,13 @@ const ProfileSettings = () => {
             <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
             <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
-            <ForceSyncRow></ForceSyncRow>
+            <ForceSyncRow getState={getState}></ForceSyncRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
             {logUploadSection}
             <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
            
             <ExpansionSection sectionTitle="control.dev-zone">
                 <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
-                <SettingRow textKey="control.end-trip-sync" iconName="sync-alert" action={endForceSync}></SettingRow>
                 <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
                 <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
                 {notifSchedule}
@@ -582,7 +514,6 @@ const ProfileSettings = () => {
 
             <AlertBar visible={invalidateSuccessVis} setVisible={setInvalidateSuccessVis} messageKey='success -> ' messageAddition={cacheResult}></AlertBar>
             <AlertBar visible={noConsentMessageVis} setVisible={setNoConsentMessageVis} messageKey='general-settings.no-consent-message'></AlertBar> 
-            <AlertBar visible={forceResultVis} setVisible={setForceResultVis} messageKey={forceResult}></AlertBar>
 
             <SensedPage pageVis={showingSensed} setPageVis={setShowingSensed}></SensedPage>
             <LogPage pageVis={showingLog} setPageVis={setShowingLog}></LogPage>
