@@ -130,8 +130,8 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
     }, [aggMetrics?.distance]);
 
     //hardcoded here, could be read from config at later customization?
-    let carbonGoals = [ {label: t('main-metrics.us-2030-goal'), value: 54, color: color(colors.danger).darken(.25).rgb().toString()},
-                        {label: t('main-metrics.us-2050-goal'), value: 14, color: color(colors.warn).darken(.25).rgb().toString()}];
+    let carbonGoals = [ {label: t('main-metrics.us-2050-goal'), value: 14, color: color(colors.warn).darken(.65).saturate(.5).rgb().toString()},
+                        {label: t('main-metrics.us-2030-goal'), value: 54, color: color(colors.danger).saturate(.5).rgb().toString()} ];
     let meter = { dash_key: t('main-metrics.unlabeled'), high: 54, middle: 14 };
 
     return (
