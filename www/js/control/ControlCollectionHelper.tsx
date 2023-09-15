@@ -19,8 +19,6 @@ type collectionConfig = {
     android_geofence_responsiveness: number
 };
 
-// const Logger = getAngularService("Logger");
-
 export async function forceTransition(transition) {
     try {
         let result = forceTransitionWrapper(transition);
@@ -59,6 +57,7 @@ export async function isMediumAccuracy() {
 }
 
 export async function helperToggleLowAccuracy() {
+    const Logger = getAngularService("Logger");
     let tempConfig = await getConfig();
     let accuracyOptions = await getAccuracyOptions();
     let medium = await isMediumAccuracy();
@@ -79,7 +78,7 @@ export async function helperToggleLowAccuracy() {
         let set = await setConfig(tempConfig);
         console.log("setConfig Sucess");
     } catch (err) {
-        // Logger.displayError("Error while setting collection config", err);
+        Logger.displayError("Error while setting collection config", err);
     }
 }
 
