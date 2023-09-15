@@ -21,6 +21,7 @@ const SensedPage = ({pageVis, setPageVis}) => {
 
     async function updateEntries() {
         //hardcoded function and keys after eliminating bit-rotted options
+        setDB(window.cordova.plugins.BEMUserCache);
         let userCacheFn = DB.getAllMessages;
         let userCacheKey = "statemachine/transition";
         try {
@@ -41,7 +42,6 @@ const SensedPage = ({pageVis, setPageVis}) => {
     }
 
     useEffect(() => {
-        setDB(window.cordova.plugins.BEMUserCache);
         updateEntries();
     }, [pageVis]);
 
