@@ -71,7 +71,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
     if(aggMetrics?.distance?.length > 0) 
     {
         //separate data into weeks
-        const thisWeekDistance = segmentDaysByWeeks(userMetrics?.distance, 1)[0];
+        const thisWeekDistance = segmentDaysByWeeks(aggMetrics?.distance, 1)[0];
         
         let aggThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, "aggregate");
         let aggThisWeekSummary = generateSummaryFromData(aggThisWeekModeMap, "distance");
