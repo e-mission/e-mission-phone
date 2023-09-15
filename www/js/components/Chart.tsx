@@ -63,6 +63,7 @@ const Chart = ({ records, axisTitle, type, getColorForLabel, getColorForChartEl,
           darkenOrLighten(labelColorMap?.[e.label], -.5) || getColorForChartEl(chartRef.current, e, barCtx, 'border')
         ),
         borderWidth: borderWidth || 2,
+        borderRadius: 3,
       })),
     };
   }, [chartDatasets, getColorForLabel]);
