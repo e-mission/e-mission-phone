@@ -34,11 +34,11 @@ export const secondsToHours = (seconds: number) =>
 // segments metricsDays into weeks, with the most recent week first
 export function segmentDaysByWeeks (days: DayOfMetricData[], nWeeks?: number) {
   const weeks: DayOfMetricData[][] = [];
-  for (let i = 0; i < days?.length - 1; i += 7) {
-    weeks.push(days.slice(i, i + 7));
+  for (let i = days?.length - 1; i >= 0; i -= 7) {
+    weeks.push(days.slice(Math.max(i - 6, 0), i + 1));
   }
-  if (nWeeks) return weeks.reverse().slice(0, nWeeks);
-  return weeks.reverse();
+  if (nWeeks) return weeks.slice(0, nWeeks);
+  return weeks;
 };
 
 export function formatDate(day: DayOfMetricData) {
