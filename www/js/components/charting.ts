@@ -104,7 +104,7 @@ export function getGradient(chart, meter, currDataset, barCtx, alpha = null, dar
   const total = getBarHeight(barCtx.parsed._stacks);
   alpha = alpha || (currDataset.label == meter.dash_key ? 0.2 : 1);
   if (total < meter.middle) {
-    const adjColor = darken||alpha ? color(meterColors.below).darken(0.2).alpha(alpha).rgb().string() : meterColors.below;
+    const adjColor = darken||alpha ? color(meterColors.below).darken(darken).alpha(alpha).rgb().string() : meterColors.below;
     return adjColor;
   }
   const scaleMaxX = scales.x._range.max;
