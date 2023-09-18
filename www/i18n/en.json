@@ -164,7 +164,7 @@
         "how-it-compares": "Ballpark comparisons",
         "optimal": "Optimal (perfect mode choice for all my trips)",
         "average": "Group Avg.",
-        "worst-case": "If all 'taxi'",
+        "worst-case": "Worse Case",
         "label-to-squish": "Label trips to collapse the range into a single number",
         "range-uncertain-footnote": "²Due to the uncertainty of unlabeled trips, estimates may fall anywhere within the shown range. Label more trips for richer estimates.",
         "lastweek": "My last week value:",
