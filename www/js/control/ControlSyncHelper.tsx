@@ -139,13 +139,11 @@ export const ForceSyncRow = ({getState}) => {
         /* First, quickly start and end the trip. Let's listen to the promise
          * result for start so that we ensure ordering */
         var sensorKey = "statemachine/transition";
-        return getTransition(getStartTransitionKey()).then(function(entry_data) {
-            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-        }).then(function() {
-                return getTransition(getEndTransitionKey()).then(function(entry_data) {
-                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-                })
-        }).then(forceSync);
+        let entry_data = await getTransition(getStartTransitionKey());
+        let messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        entry_data = await getTransition(getEndTransitionKey());
+        messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        forceSync();
     };
 
     return (
