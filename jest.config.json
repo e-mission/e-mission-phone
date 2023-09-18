@@ -1,0 +1,8 @@
+{
+  "transform": {
+    "^.+\\.(ts|tsx|js|jsx)$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^react-native$": "react-native-web"
+  }
+}
