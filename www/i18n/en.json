@@ -142,13 +142,6 @@
         "no-travel-hint": "To see more, change the filters above or go record some travel!"
     },
 
-    "user-gender": "Gender",
-    "gender-male": "Male",
-    "gender-female": "Female",
-    "user-height": "Height",
-    "user-weight": "Weight",
-    "user-age": "Age",
-
     "main-metrics":{
         "dashboard": "Dashboard",
         "summary": "My Summary",
@@ -173,18 +166,10 @@
         "us-goals-footnote": "¹Guidelines based on US decarbonization goals, scaled to per-capita travel-related emissions.",
         "past-week" : "Past Week",
         "prev-week" : "Prev. Week",
-        "calories": "My Calories",
-        "calibrate": "Calibrate",
         "no-summary-data": "No summary data",
         "mean-speed": "My Average Speed",
         "user-totals": "My Totals",
         "group-totals": "Group Totals",
-        "equals-cookies_one": "Equals at least {{count}} homemade chocolate chip cookie",
-        "equals-cookies_other": "Equals at least {{count}} homemade chocolate chip cookies",
-        "equals-icecream_one": "Equals at least {{count}} half cup vanilla ice cream",
-        "equals-icecream_other": "Equals at least {{count}} half cups vanilla ice cream",
-        "equals-bananas_one": "Equals at least {{count}} banana",
-        "equals-bananas_other": "Equals at least {{count}} bananas",
         "active-minutes": "Active Minutes",
         "weekly-active-minutes": "Weekly minutes of active travel",
         "daily-active-minutes": "Daily minutes of active travel",
