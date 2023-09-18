@@ -383,7 +383,6 @@ const ProfileSettings = () => {
             <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
             <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
-            <ForceSyncRow getState={getState}></ForceSyncRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
             {logUploadSection}
             <SettingRow textKey="control.email-log" iconName="email" action={emailLog}></SettingRow>
@@ -391,6 +390,7 @@ const ProfileSettings = () => {
             <ExpansionSection sectionTitle="control.dev-zone">
                 <SettingRow textKey="control.refresh" iconName="refresh" action={refreshScreen}></SettingRow>
                 <SettingRow textKey="control.check-consent" iconName="check" action={checkConsent}></SettingRow>
+                <ForceSyncRow getState={getState}></ForceSyncRow>
                 <SettingRow textKey="control.dummy-notification" iconName="bell" action={dummyNotification}></SettingRow>
                 {notifSchedule}
                 <SettingRow textKey="control.invalidate-cached-docs" iconName="delete" action={invalidateCache}></SettingRow>
