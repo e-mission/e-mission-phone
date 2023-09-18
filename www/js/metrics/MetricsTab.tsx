@@ -79,7 +79,7 @@ const MetricsTab = () => {
 
   return (<>
     <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
-      <Appbar.Content title={t("main-metrics.dashboard")} />
+      <Appbar.Content title={t("metrics.dashboard-tab")} />
       <MetricsDateSelect dateRange={dateRange} setDateRange={setDateRange} />
       <Appbar.Action icon="refresh" size={32} onPress={refresh} />
     </Appbar.Header>

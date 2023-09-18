@@ -12,7 +12,7 @@
     },
 
     "control":{
-        "profile": "Profile",
+        "profile-tab": "Profile",
         "edit-demographics": "Edit Demographics",
         "tracking": "Tracking",
         "app-status": "App Status",
@@ -73,6 +73,7 @@
     },
 
     "metrics":{
+        "dashboard-tab": "Dashboard",
         "cancel": "Cancel",
         "confirm": "Confirm",
         "get": "Get",
@@ -112,6 +113,7 @@
     },
     
     "diary": {
+        "label-tab": "Label",
         "distance-in-time": "{{distance}} {{distsuffix}} in {{time}}",
         "distance": "Distance",
         "time": "Time",
@@ -152,7 +154,6 @@
     "user-age": "Age",
 
     "main-metrics":{
-        "dashboard": "Dashboard",
         "summary": "My Summary",
         "chart": "Chart",
         "change-data": "Change dates:",
@@ -196,10 +197,6 @@
         "labeled": "Labeled",
         "unlabeled": "Unlabeled²",
         "footprint-label": "Footprint (kg CO₂)"
-    },
-
-    "main-inf-scroll" : {
-        "tab": "Label"
     },
 
     "details":{
