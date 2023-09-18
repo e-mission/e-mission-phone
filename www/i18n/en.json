@@ -36,7 +36,9 @@
         "nuke-all": "Nuke all buffers and cache",
         "test-notification": "Test local notification",
         "check-log": "Check log",
+        "log-title" : "Log",
         "check-sensed-data": "Check sensed data",
+        "sensed-title": "Sensed Data: Transitions",
         "collection": "Collection",
         "sync": "Sync",
         "button-accept": "I accept",
@@ -292,7 +294,8 @@
                 "name": "Unused apps disabled",
                 "description": {
                     "android-disable-lt-12": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
-                    "android-disable-gte-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+                    "android-disable-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+                    "android-disable-gte-13": "On the app settings page, turn off 'Pause app activity if unused.'",
                     "ios": "Please allow."
                 }
             },
@@ -377,7 +380,9 @@
     "errors": {
       "while-populating-composite": "Error while populating composite trips",
       "while-loading-another-week": "Error while loading travel of {{when}} week",
-      "while-loading-specific-week": "Error while loading travel for the week of {{day}}"
+      "while-loading-specific-week": "Error while loading travel for the week of {{day}}",
+      "while-log-messages": "While getting messages from the log ",
+      "while-max-index" : "While getting max index "
     },
     "consent-text": {
         "title":"NREL OPENPATH PRIVACY POLICY/TERMS OF USE",

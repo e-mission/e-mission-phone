@@ -46,26 +46,6 @@ angular.module('emission.main', ['emission.main.diary',
     }
   })
 
-  .state('root.main.log', {
-    url: '/log',
-    views: {
-      'main-control': {
-        templateUrl: 'templates/recent/log.html',
-        controller: 'logCtrl'
-      }
-    }
-  })
-
-  .state('root.main.sensed', {
-    url: "/sensed",
-    views: {
-      'main-control': {
-        templateUrl: "templates/recent/sensedData.html",
-        controller: 'sensedDataCtrl'
-      }
-    }
-  });
-
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');
 })

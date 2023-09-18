@@ -4,8 +4,9 @@ import { Button, Text, IconButton, Dialog, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import QrCode from "../components/QrCode";
 import AlertBar from "./AlertBar";
+import { settingStyles } from "./ProfileSettings";
 
-const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
+const PopOpCode = ({visibilityValue, tokenURL, action, setVis, dialogStyle}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
 
@@ -31,7 +32,7 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
             transparent={true}>
                 <Dialog visible={visibilityValue} 
                 onDismiss={() => setVis(false)}
-                style={styles.dialog(colors.elevation.level3)}>
+                style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t("general-settings.qrcode")}</Dialog.Title>
                     <Dialog.Content style={styles.content}>
                         <Text style={styles.text}>{t("general-settings.qrcode-share-title")}</Text>
@@ -51,10 +52,6 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
     )
 }
 const styles = StyleSheet.create({
-    dialog: (surfaceColor) => ({
-        backgroundColor: surfaceColor,
-        margin: 1,
-    }),
     title:
     {
         alignItems: 'center',
