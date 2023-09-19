@@ -31,7 +31,7 @@ const PermissionsControls = ({ onAccept }) => {
                         </PermissionItem>
                     )}
             </ScrollView>
-            <View>
+            <View style={styles.buttonBox}>
                 <Button 
                     onPress={() => refreshAllChecks(checkList)}>
                     {t('intro.appstatus.refresh')}
@@ -49,17 +49,16 @@ const PermissionsControls = ({ onAccept }) => {
 }
 
 const styles = StyleSheet.create({
-    text: {
-        fontSize: 14
-    },
-    header: {
-        fontWeight: "bold",
-        fontSize: 18
-    },
     title: {
         fontWeight: "bold",
         fontSize: 22,
         paddingBottom: 10
+    }, 
+    buttonBox: {
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        flexDirection: "row",
+        justifyContent: "space-evenly"
     }
   });
 
