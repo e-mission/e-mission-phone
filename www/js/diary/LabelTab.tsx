@@ -292,8 +292,7 @@ const LabelTab = () => {
         </Tab.Navigator>
         <AppStatusModal permitVis={permissionVis} 
                         setPermitVis={setPermissionVis} 
-                        dialogStyle={{ backgroundColor: colors.elevation.level3, margin: 5, marginLeft: 25, marginRight: 25}} 
-                        settingsScope={$rootScope} />
+                        dialogStyle={{ backgroundColor: colors.elevation.level3, margin: 5, marginLeft: 25, marginRight: 25}}  />
       </NavigationContainer>
     </LabelTabContext.Provider>
   );
