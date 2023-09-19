@@ -602,7 +602,7 @@ const ProfileSettings = () => {
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR} dialogStyle={styles.dialog(colors.elevation.level3)}></PopOpCode>
 
             {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} settingsScope={settingsScope} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
+            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis} dialogStyle={styles.dialog(colors.elevation.level3)}></AppStatusModal>
 
             {/* {view privacy} */}
             <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis} dialogStyle={styles.dialog(colors.elevation.level3)}></PrivacyPolicyModal>

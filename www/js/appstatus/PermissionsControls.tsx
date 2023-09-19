@@ -1,20 +1,18 @@
 //component to view and manage permission settings
 import React, { useState, useEffect, useMemo } from "react";
-import { Modal,  useWindowDimensions, ScrollView } from "react-native";
+import { StyleSheet,  useWindowDimensions, ScrollView, View } from "react-native";
 import { Dialog, Button, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import PermissionItem from "../appstatus/PermissionItem";
+import PermissionItem from "./PermissionItem";
 import useAppConfig from "../useAppConfig";
 import useAppStateChange from "../useAppStateChange";
-import ExplainPermissions from "../appstatus/ExplainPermissions";
-import AlertBar from "./AlertBar";
+import ExplainPermissions from "./ExplainPermissions";
+import AlertBar from "../control/AlertBar";
 
-const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) => {
+const PermissionsControls = ({ permitVis, setPermitVis }) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
-
-    console.log("settings scope in app status modal", settingsScope);
 
     const { height: windowHeight } = useWindowDimensions();
     const [osver, setOsver] = useState(0);
@@ -369,12 +367,6 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         refreshAllChecks();
     });
 
-    //refresh when recompute message is broadcast
-    settingsScope.$on("recomputeAppStatus", function() {
-        console.log("PERMISSION CHECK: recomputing state");
-        refreshAllChecks();
-    });
-
      //load when ready
      useEffect(() => {
         if (appConfig && window['device']?.platform) {
@@ -409,45 +401,52 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
     return (
         <>
-            <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
-                <Dialog visible={permitVis} 
-                        onDismiss={() => setPermitVis(false)} 
-                        style={dialogStyle}>
-                    <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
-                    <Dialog.Content  style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
-                        <ScrollView persistentScrollbar={true}>
-                            <Text>{t('intro.appstatus.overall-description')}</Text>
-                            <Button 
-                                onPress={() => setExplainVis(true)}>
-                                {t('intro.appstatus.explanation-title')}
-                            </Button>
-                            <ExplainPermissions explanationList={explanationList} visible={explainVis} setVisible={setExplainVis}></ExplainPermissions>
-                            {checkList?.map((lc) => 
-                                    <PermissionItem 
-                                        key={lc.name}
-                                        check = {lc}
-                                    >
-                                    </PermissionItem>
-                                )}
-                        </ScrollView>
-                    </Dialog.Content>
-                    <Dialog.Actions>
-                        <Button 
-                            onPress={() => refreshAllChecks()}>
-                            {t('intro.appstatus.refresh')}
-                        </Button>
-                        <Button 
-                            onPress={() => setPermitVis(false)}
-                            disabled={!overallStatus}>
-                            {t('control.button-accept')}
-                        </Button>
-                    </Dialog.Actions>
-                </Dialog>
-            </Modal>
+            <Text style={styles.title}>{t('consent.permissions')}</Text>
+            <ScrollView persistentScrollbar={true}>
+                <Text>{t('intro.appstatus.overall-description')}</Text>
+                <Button 
+                    onPress={() => setExplainVis(true)}>
+                    {t('intro.appstatus.explanation-title')}
+                </Button>
+                <ExplainPermissions explanationList={explanationList} visible={explainVis} setVisible={setExplainVis}></ExplainPermissions>
+                {checkList?.map((lc) => 
+                        <PermissionItem 
+                            key={lc.name}
+                            check = {lc}
+                        >
+                        </PermissionItem>
+                    )}
+            </ScrollView>
+            <View>
+                <Button 
+                    onPress={() => refreshAllChecks()}>
+                    {t('intro.appstatus.refresh')}
+                </Button>
+                <Button 
+                    onPress={() => setPermitVis(false)}
+                    disabled={!overallStatus}>
+                    {t('control.button-accept')}
+                </Button>
+            </View>
 
             <AlertBar visible={errorVis} setVisible={setErrorVis} messageKey={"Error "} messageAddition={error}></AlertBar>
         </>
     )
 }
 
-export default AppStatusModal;
+const styles = StyleSheet.create({
+    text: {
+        fontSize: 14
+    },
+    header: {
+        fontWeight: "bold",
+        fontSize: 18
+    },
+    title: {
+        fontWeight: "bold",
+        fontSize: 22,
+        paddingBottom: 10
+    }
+  });
+
+export default PermissionsControls;
