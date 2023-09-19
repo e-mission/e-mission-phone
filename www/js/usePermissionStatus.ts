@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import useAppStateChange from "./useAppStateChange";
 import useAppConfig from "./useAppConfig";
 import { useTheme } from 'react-native-paper';
@@ -25,8 +25,6 @@ const usePermissionStatus = () => {
     const [error, setError] = useState<string>("");
     const [errorVis, setErrorVis] = useState<boolean>(false);
 
-    const [explainVis, setExplainVis] = useState<boolean>(false);
-
     const [checkList, setCheckList] = useState([]);
     const [explanationList, setExplanationList] = useState<Array<any>>([]);
     const [haveSetText, setHaveSetText] = useState<boolean>(false);
@@ -48,6 +46,10 @@ const usePermissionStatus = () => {
     //this cues React to update UI
     function updateCheck(newObject) {
         var tempList = [...checkList]; //make a copy rather than mutate
+        //update the visiblility pieces here, rather than mutating
+        newObject.statusIcon = iconMap(newObject.statusState);
+        newObject.statusColor = colorMap(newObject.statusState);
+        //"find and replace" the check
         tempList.forEach((item, i) => {
             if(item.name == newObject.name){
                 tempList[i] = newObject;
@@ -339,24 +341,6 @@ const usePermissionStatus = () => {
         refreshAllChecks(checkList);
     }
 
-    // //refreshing checks with the plugins to update the check's statusState
-    // function refreshAllChecks() {
-    //     //refresh each check
-    //     checkList.forEach((lc) => {
-    //         lc.refresh();
-    //     });
-    //     console.log("setting checks are", checkList);
-    // }
-
-    //recomputing checks updates the visual cues of their status
-    function recomputeAllChecks() {
-        console.log("recomputing checks", checkList);
-        checkList.forEach((lc) => {
-            lc.statusIcon = iconMap(lc.statusState);
-            lc.statusColor = colorMap(lc.statusState)
-        });
-    }
-
     useAppStateChange( function() {
         console.log("PERMISSION CHECK: app has resumed, should refresh");
         refreshAllChecks(checkList);
@@ -380,12 +364,6 @@ const usePermissionStatus = () => {
             }
         }
     }, [appConfig]);
-
-    //anytime the checks change (mostly when refreshed), recompute the visual pieces
-    useEffect(() => {
-        console.log("checklist changed, updating", checkList);
-        recomputeAllChecks();
-    }, [checkList]);
   
     return {checkList, overallStatus, error, errorVis, setErrorVis, explanationList};
   }
