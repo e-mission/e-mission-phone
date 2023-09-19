@@ -291,8 +291,7 @@ const LabelTab = () => {
                       options={{detachPreviousScreen: false}} />
         </Tab.Navigator>
         <AppStatusModal permitVis={permissionVis} 
-                        setPermitVis={setPermissionVis} 
-                        settingsScope={$rootScope} />
+                        setPermitVis={setPermissionVis} />
       </NavigationContainer>
     </LabelTabContext.Provider>
   );
