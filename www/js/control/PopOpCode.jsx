@@ -6,7 +6,7 @@ import QrCode from "../components/QrCode";
 import AlertBar from "./AlertBar";
 import { settingStyles } from "./ProfileSettings";
 
-const PopOpCode = ({visibilityValue, tokenURL, action, setVis, dialogStyle}) => {
+const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
 
