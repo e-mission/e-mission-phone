@@ -277,7 +277,8 @@
                 "name": "Unused apps disabled",
                 "description": {
                     "android-disable-lt-12": "On the app settings page, go to 'Permissions' and ensure that the app permissions will not be automatically reset.",
-                    "android-disable-gte-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+                    "android-disable-12": "On the app settings page, turn off 'Remove permissions and free up space.'",
+                    "android-disable-gte-13": "On the app settings page, turn off 'Pause app activity if unused.'",
                     "ios": "Please allow."
                 }
             },
