@@ -1,7 +1,7 @@
 'use strict';
 
 import angular from 'angular';
-import App from './app';
+import App from './App';
 
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',

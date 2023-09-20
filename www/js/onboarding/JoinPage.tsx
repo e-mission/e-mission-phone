@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { View, Image, Modal, StyleSheet } from 'react-native';
 import { Button, Dialog, Divider, Surface, Text, TextInput } from 'react-native-paper';
 import { initByUser } from '../config/dynamicConfig';
-import { AppContext } from '../app';
+import { AppContext } from '../App';
 
 const JoinPage = () => {
 

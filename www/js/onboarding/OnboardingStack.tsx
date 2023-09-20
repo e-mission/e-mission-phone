@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { AppContext } from "../app";
+import { AppContext } from "../App";
 import JoinPage from "./JoinPage";
 
 // true if loading/undetermined

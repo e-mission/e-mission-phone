@@ -7,7 +7,7 @@ import './css/main.diary.css';
 import './manual_lib/fontawesome/css/all.min.css';
 import 'leaflet/dist/leaflet.css';
 
-import './js/app.js';
+import './js/ngApp.js';
 import './js/config/dynamic_config.js';
 import './js/config/imperial.js';
 import './js/config/server_conn.js';
