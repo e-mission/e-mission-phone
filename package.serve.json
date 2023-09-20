@@ -11,7 +11,7 @@
     "setup-serve": "./bin/download_settings_controls.js && ./bin/setup_autodeploy.js",
     "serve": "webpack --config webpack.dev.js && concurrently -k \"phonegap --verbose serve\" \"webpack --config webpack.dev.js --watch\"",
     "serve-only": "phonegap --verbose serve",
-    "test": "npx jest www/__tests__"
+    "test": "npx jest"
   },
   "devDependencies": {
     "@babel/core": "^7.21.3",
