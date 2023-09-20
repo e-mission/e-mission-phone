@@ -3,6 +3,8 @@
 'use strict';
 
 import angular from 'angular';
+import React from 'react';
+import { createRoot } from 'react-dom/client';
 import 'angular-animate';
 import 'angular-sanitize';
 import 'angular-translate';
@@ -24,6 +26,11 @@ import '../manual_lib/ionic/js/ionic-angular.js';
 import initializedI18next from './i18nextInit';
 window.i18next = initializedI18next;
 import 'ng-i18next';
+
+import { Provider as PaperProvider } from 'react-native-paper';
+import App from './App';
+import { getTheme } from './appTheme';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 angular.module('emission', ['ionic', 'jm.i18next',
     'emission.controllers','emission.services', 'emission.plugin.logger',
@@ -71,6 +78,25 @@ angular.module('emission', ['ionic', 'jm.i18next',
     // remove during migration to react native
     localStorageService.remove("OP_GEOFENCE_CFG");
     cordova.plugins.BEMUserCache.removeLocalStorage("OP_GEOFENCE_CFG");
+
+    const rootEl = document.getElementById('appRoot');
+    const reactRoot = createRoot(rootEl);
+
+    const theme = getTheme();
+
+    reactRoot.render(
+      <PaperProvider theme={theme}>
+        <style type="text/css">{`
+        @font-face {
+          font-family: 'MaterialCommunityIcons';
+          src: url(${require('react-native-vector-icons/Fonts/MaterialCommunityIcons.ttf')}) format('truetype');
+        }`}
+        </style>
+        <SafeAreaView style={{flex: 1}}>
+          <App />
+        </SafeAreaView>
+      </PaperProvider>
+    );
   });
   console.log("Ending run");
 })
