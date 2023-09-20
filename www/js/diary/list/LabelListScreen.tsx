@@ -14,7 +14,7 @@ const LabelListScreen = () => {
   const { colors } = useTheme();
 
   return (<>
-    <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+    <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
       <FilterSelect filters={filterInputs}
         setFilters={setFilterInputs}
         numListDisplayed={displayedEntries?.length}
