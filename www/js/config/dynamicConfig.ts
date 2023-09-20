@@ -212,3 +212,11 @@ export function initByUser(urlComponents) {
     return Promise.reject(error);
   }
 }
+
+export function resetDataAndRefresh() {
+  const KVStore = getAngularService('KVStore');
+  const resetNativePromise = window['cordova'].plugins.BEMUserCache.putRWDocument(CONFIG_PHONE_UI, {});
+  const resetKVStorePromise = KVStore.clearAll();
+  return Promise.all([resetNativePromise, resetKVStorePromise])
+    .then(() => window.location.reload());
+}

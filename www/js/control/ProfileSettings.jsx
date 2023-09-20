@@ -19,6 +19,7 @@ import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
 import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
 import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransition} from "./ControlCollectionHelper";
+import { resetDataAndRefresh } from "../config/dynamicConfig";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -462,7 +463,7 @@ const ProfileSettings = () => {
                             {t('general-settings.cancel')}
                         </Button>
                         <Button onPress={() => {
-                           DynamicConfig.resetConfigAndRefresh();
+                           resetDataAndRefresh();
                         }}>
                             {t('general-settings.confirm')}
                         </Button>
