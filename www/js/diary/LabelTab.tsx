@@ -21,7 +21,6 @@ import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHe
 import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 import { displayError } from "../plugin/logger";
-import AppStatusModal from "../control/AppStatusModal";
 import { useTheme } from "react-native-paper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
@@ -52,8 +51,6 @@ const LabelTab = () => {
   const CommHelper = getAngularService('CommHelper');
   const enbs = getAngularService('EnketoNotesButtonService');
 
-  const [permissionVis, setPermissionVis] = useState(false);
-
   // initialization, once the appConfig is loaded
   useEffect(() => {
     if (loading) return;
@@ -66,8 +63,6 @@ const LabelTab = () => {
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
     const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;
     enbs.initConfig(tripSurveyName, placeSurveyName);
-
-    checkPermissionsStatus();
 
     // we will show filters if 'additions' are not configured
     // https://github.com/e-mission/e-mission-docs/issues/894
@@ -228,15 +223,6 @@ const LabelTab = () => {
     setIsLoading(false);
   }, [displayedEntries]);
 
-  // TODO move this out of LabelTab; should be a global check & popup that can show in any tab
-  function checkPermissionsStatus() {
-    $rootScope.$broadcast("recomputeAppStatus", (status) => {
-      if (!status) {
-        setPermissionVis(true); //if the status is false, popup modal
-      }
-    });
-  }
-
   const timelineMapRef = useRef(timelineMap);
   async function repopulateTimelineEntry(oid: string) {
     if (!timelineMap.has(oid)) return console.error("Item with oid: " + oid + " not found in timeline");
@@ -290,8 +276,6 @@ const LabelTab = () => {
                         This is what `detachPreviousScreen:false` does. */
                       options={{detachPreviousScreen: false}} />
         </Tab.Navigator>
-        <AppStatusModal permitVis={permissionVis} 
-                        setPermitVis={setPermissionVis} />
       </NavigationContainer>
     </LabelTabContext.Provider>
   );
