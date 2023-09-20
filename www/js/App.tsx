@@ -7,6 +7,7 @@ import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
+import { getPendingOnboardingState } from './onboarding/onboardingHelper';
 
 const defaultRoutes = (t) => [
   { key: 'label', title: t('diary.label-tab'), focusedIcon: 'check-bold', unfocusedIcon: 'check-outline' },
@@ -37,7 +38,7 @@ const App = () => {
     control: ProfileSettings,
   });
 
-  const refreshOnboardingState = () => StartPrefs.getPendingOnboardingState().then(setPendingOnboardingState);
+  const refreshOnboardingState = () => getPendingOnboardingState().then(setPendingOnboardingState);
   // useEffect(() => { refreshOnboardingState() }, []);
 
   const appContextValue = {
