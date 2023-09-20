@@ -8,7 +8,7 @@ it('returns a formatted date', () => {
 
 it("returns a MotionType object", () => {
   expect(motionTypeOf("WALKING")).toEqual({ name: "WALKING", icon: "walk", color: '#0068a5' });
-  // expect(motionTypeOf("MotionTypes.WALKING")).toEqual({ name: "WALKING", icon: "walk", color: '#0068a5' }); //failing but I don't know why
+  expect(motionTypeOf("MotionTypes.WALKING")).toEqual({ name: "WALKING", icon: "walk", color: '#0068a5' });
   expect(motionTypeOf("I made this type up")).toEqual({ name: "UNKNOWN", icon: "help", color: '#484848'});
 });
 

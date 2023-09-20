@@ -48,7 +48,7 @@ type MotionTypeKey = keyof typeof MotionTypes;
 export function motionTypeOf(motionName: MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
   let key = ('' + motionName).toUpperCase();
   key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return MotionTypes[motionName] || MotionTypes.UNKNOWN;
+  return MotionTypes[key] || MotionTypes.UNKNOWN;
 }
 
 /**
