@@ -6,6 +6,7 @@ import { initByUser, resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { getAngularService } from '../angular-react-helper';
 import { displayError, displayErrorMsg } from '../plugin/logger';
+import PrivacyPolicy from '../join/PrivacyPolicy';
 
 const JoinPage = () => {
 
@@ -49,6 +50,7 @@ const JoinPage = () => {
 
   return (<>
     <Surface style={s.page}>
+      <PrivacyPolicy></PrivacyPolicy>
       <Button onPress={agree}> {t('consent.button-accept')} </Button>
       <Button onPress={disagree}> {t('consent.button-decline')} </Button>
     </Surface>
@@ -64,6 +66,7 @@ const s = StyleSheet.create({
   },
   page: {
     paddingHorizontal: 15,
+    flex: 1
   },
 });
 
