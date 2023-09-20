@@ -1,5 +1,5 @@
-import React, { useState, createContext, useMemo } from 'react';
-import { angularize } from './angular-react-helper';
+import React, { useEffect, useState, createContext, useMemo } from 'react';
+import { angularize, getAngularService } from './angular-react-helper';
 import { BottomNavigation, Button, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import LabelTab from './diary/LabelTab';
@@ -14,14 +14,17 @@ const defaultRoutes = (t) => [
   { key: 'control', title: t('control.profile-tab'), focusedIcon: 'account', unfocusedIcon: 'account-outline' },
 ];
 
-export const AppContext = createContext<any>({finishedOnboarding: false});
+export const AppContext = createContext<any>({});
 
 const App = () => {
+
   const [index, setIndex] = useState(0);
-  const [finishedOnboarding, setFinishedOnboarding] = useState(false);
+  const [pendingOnboardingState, setPendingOnboardingState] = useState<string|boolean>(true);
   const { appConfig, loading } = useAppConfig();
   const { colors } = useTheme();
   const { t } = useTranslation();
+
+  const StartPrefs = getAngularService('StartPrefs');
 
   const routes = useMemo(() => {
     const showMetrics = appConfig?.survey_info?.['trip-labels'] == 'MULTILABEL';
@@ -34,16 +37,22 @@ const App = () => {
     control: ProfileSettings,
   });
 
+  const refreshOnboardingState = () => StartPrefs.getPendingOnboardingState().then(setPendingOnboardingState);
+  // useEffect(() => { refreshOnboardingState() }, []);
+
   const appContextValue = {
     appConfig,
     loading,
-    finishedOnboarding,
-    setFinishedOnboarding,
+    pendingOnboardingState,
+    setPendingOnboardingState,
+    refreshOnboardingState,
   }
+
+  console.debug('pendingOnboardingState in App', pendingOnboardingState);
 
   return (<>
     <AppContext.Provider value={appContextValue}>
-      {finishedOnboarding ?
+      {pendingOnboardingState == null ?
         <BottomNavigation
           navigationState={{ index, routes }}
           onIndexChange={setIndex}

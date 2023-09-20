@@ -1,17 +1,24 @@
 import React, { useContext } from "react";
 import { AppContext } from "../app";
-import { Button, Text } from "react-native-paper";
-import { SafeAreaView } from "react-native-safe-area-context";
+import JoinPage from "./JoinPage";
+
+// true if loading/undetermined
+// 'join' if no config present
+// 'consent' if config present, but not consented
+// 'permissions' if consented but not granted permissions
+// 'survey' if granted permissions but not completed survey
+// null if all done
+export type OnboardingState = true | 'join' | 'consent' | 'permissions' | 'survey' | null;
 
 const OnboardingStack = () => {
-  const { setFinishedOnboarding } = useContext(AppContext);
 
-  return (
-    <SafeAreaView>
-      <Text style={{textAlign: 'center'}}>(Onboarding Placeholder)</Text>
-      <Button onPress={() => setFinishedOnboarding(true)}>Mark Onboarding Finished</Button>
-    </SafeAreaView>
-   );
+  const { pendingOnboardingState } = useContext(AppContext);
+
+  console.debug('pendingOnboardingState in OnboardingStack', pendingOnboardingState);
+
+  if (pendingOnboardingState) {
+    return <JoinPage />;
+  }
 }
 
 export default OnboardingStack
