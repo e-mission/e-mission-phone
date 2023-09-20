@@ -7,7 +7,8 @@ import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
-import { getPendingOnboardingState } from './onboarding/onboardingHelper';
+import { OnboardingState, getPendingOnboardingState } from './onboarding/onboardingHelper';
+import { setServerConnSettings } from './config/serverConn';
 
 const defaultRoutes = (t) => [
   { key: 'label', title: t('diary.label-tab'), focusedIcon: 'check-bold', unfocusedIcon: 'check-outline' },
@@ -20,7 +21,7 @@ export const AppContext = createContext<any>({});
 const App = () => {
 
   const [index, setIndex] = useState(0);
-  const [pendingOnboardingState, setPendingOnboardingState] = useState<string|boolean>(true);
+  const [pendingOnboardingState, setPendingOnboardingState] = useState<OnboardingState>(null);
   const { appConfig, loading } = useAppConfig();
   const { colors } = useTheme();
   const { t } = useTranslation();
@@ -39,7 +40,14 @@ const App = () => {
   });
 
   const refreshOnboardingState = () => getPendingOnboardingState().then(setPendingOnboardingState);
-  // useEffect(() => { refreshOnboardingState() }, []);
+  useEffect(() => { refreshOnboardingState() }, []);
+
+  useEffect(() => {
+    if (!appConfig) return;
+    setServerConnSettings(appConfig).then(() => {
+      refreshOnboardingState();
+    });
+  }, [appConfig]);
 
   const appContextValue = {
     appConfig,
