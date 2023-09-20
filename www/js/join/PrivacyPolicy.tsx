@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next";
 import useAppConfig from "../useAppConfig";
 import i18next from "i18next";
 
-const PrivacyPolicyModal = () => {
+const PrivacyPolicy = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
@@ -181,4 +181,4 @@ const styles = StyleSheet.create({
     }
   });
 
-export default PrivacyPolicyModal;
+export default PrivacyPolicy;
