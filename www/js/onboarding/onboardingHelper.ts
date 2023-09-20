@@ -1,15 +1,30 @@
 import { getAngularService } from "../angular-react-helper";
-import { OnboardingState } from "./OnboardingStack";
 
+type OnboardingRoute = 'join' | 'consent' | false;
+export type OnboardingState = {
+  opcode: string,
+  route: OnboardingRoute,
+}
 export function getPendingOnboardingState(): Promise<OnboardingState> {
-  const StartPrefs = getAngularService('StartPrefs');
-  return StartPrefs.readStartupState().then(([is_intro_done, is_consented, has_config]) => {
-    if (!has_config) {
-      return 'join';
+  return Promise.all([readConfig(), readConsented()]).then(([config, is_consented]) => {
+    let route;
+    if (!config) {
+      route = 'join';
     } else if (!is_consented) {
-      return 'consent';
-    } else if (!is_intro_done) {
-      return 'intro';
+      route = 'consent';
+    } else {
+      return null; // onboarding is done; no pending state
     }
+    return { route, opcode: config?.joined?.opcode };
   });
 };
+
+async function readConfig() {
+  const DynamicConfig = getAngularService('DynamicConfig');
+  return DynamicConfig.loadSavedConfig() as Promise<any>;
+}
+
+async function readConsented() {
+  const StartPrefs = getAngularService('StartPrefs');
+  return StartPrefs.readConsentState().then(StartPrefs.isConsented) as Promise<boolean>;
+}
