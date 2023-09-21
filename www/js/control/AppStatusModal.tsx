@@ -27,8 +27,12 @@ const AppStatusModal = ({permitVis, setPermitVis }) => {
     }, [permitVis]);
 
     return (
-        <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
+        <Modal visible={permitVis} onRequestClose={() => {
+            if(overallStatus){(setPermitVis(false))}
+        }} 
+        transparent={true}>
                 <Dialog visible={permitVis} 
+                        dismissable={overallStatus}
                         onDismiss={() => setPermitVis(false)} 
                         style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Content  style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
