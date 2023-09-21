@@ -1,11 +1,12 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Image, Modal, StyleSheet } from 'react-native';
-import { Button, Dialog, Divider, Surface, Text, TextInput } from 'react-native-paper';
+import { View, Image, Modal, StyleSheet, ScrollView } from 'react-native';
+import { Button, Dialog, Divider, Surface, Text, TextInput, List } from 'react-native-paper';
 import { initByUser, resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { getAngularService } from '../angular-react-helper';
 import { displayError, displayErrorMsg } from '../plugin/logger';
+import i18next from "i18next";
 import PrivacyPolicy from '../join/PrivacyPolicy';
 
 const JoinPage = () => {
@@ -48,11 +49,22 @@ const JoinPage = () => {
     });
   };
 
+  const getTemplateText = function(configObject) {
+    if (configObject && (configObject.name)) {
+        return configObject.intro.translated_text[i18next.language];
+    }
+  }
+
+  const templateText = useMemo(() => getTemplateText(context.appConfig), [context.appConfig]);
+
+  //summary of the study, privacy policy, data, etc, and accept/reject
   return (<>
     <Surface style={s.page}>
-      <PrivacyPolicy></PrivacyPolicy>
-      <Button onPress={agree}> {t('consent.button-accept')} </Button>
-      <Button onPress={disagree}> {t('consent.button-decline')} </Button>
+      <ScrollView>
+        <PrivacyPolicy></PrivacyPolicy>
+        <Button onPress={agree}> {t('consent.button-accept')} </Button>
+        <Button onPress={disagree}> {t('consent.button-decline')} </Button>
+      </ScrollView>
     </Surface>
   </>);
 }

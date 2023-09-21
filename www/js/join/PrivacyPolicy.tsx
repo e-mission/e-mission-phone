@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { ScrollView, StyleSheet, Text } from "react-native";
-import { useTheme } from 'react-native-paper';
+import { useTheme, Divider } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import useAppConfig from "../useAppConfig";
 import i18next from "i18next";
@@ -36,8 +36,16 @@ const PrivacyPolicy = () => {
 
     return (
         <>
-            <Text style={styles.title}>{t('consent-text.title')}</Text>
-            <ScrollView persistentScrollbar={true}>
+                <Text style={styles.title}>{templateText?.deployment_name}</Text>
+                    <Text style={styles.studyName}>{appConfig?.intro?.deployment_partner_name + " " + templateText?.deployment_name}</Text>
+                    <Text>{'\n'}</Text>
+                    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_1} </Text>
+                    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_2} </Text>
+                    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_3} </Text>
+                
+                <Divider style={styles.divider} />
+                
+                <Text style={styles.title}>{t('consent-text.title')}</Text>
                 <Text style={styles.header}>{t('consent-text.introduction.header')}</Text>
                 <Text style={styles.text}>{templateText?.short_textual_description}</Text>
                 <Text>{'\n'}</Text>
@@ -157,8 +165,6 @@ const PrivacyPolicy = () => {
                 
                 <Text style={styles.header}>{t('consent-text.consent.header')}</Text>
                 <Text style={styles.text}>{t('consent-text.consent.press-button-to-consent', {program_or_study: appConfig?.intro?.program_or_study})}</Text>
-
-            </ScrollView>
         </>
     )
 }
@@ -168,7 +174,7 @@ const styles = StyleSheet.create({
         color: linkColor
     }),
     text: {
-        fontSize: 14
+        fontSize: 14,
     },
     header: {
         fontWeight: "bold",
@@ -177,7 +183,15 @@ const styles = StyleSheet.create({
     title: {
         fontWeight: "bold",
         fontSize: 22,
-        paddingBottom: 10
+        paddingBottom: 10,
+        textAlign: "center"
+    }, 
+    studyName: {
+        fontWeight: "bold",
+        fontSize: 16
+    },
+    divider: {
+        marginVertical: 10
     }
   });
 

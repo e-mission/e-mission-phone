@@ -1,5 +1,5 @@
 import React from "react";
-import { Modal,  useWindowDimensions } from "react-native";
+import { Modal,  useWindowDimensions, ScrollView } from "react-native";
 import { Dialog, Button, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import PrivacyPolicy from "../join/PrivacyPolicy";
@@ -17,7 +17,9 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis }) => {
                         onDismiss={() => setPrivacyVis(false)} 
                         style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Content style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
-                        <PrivacyPolicy></PrivacyPolicy>
+                        <ScrollView>
+                            <PrivacyPolicy></PrivacyPolicy>
+                        </ScrollView>
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={() => setPrivacyVis(false)}>
