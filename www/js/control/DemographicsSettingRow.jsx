@@ -3,8 +3,8 @@ import SettingRow from "./SettingRow";
 import { loadPreviousResponseForSurvey } from "../survey/enketo/enketoHelper";
 import EnketoModal from "../survey/enketo/EnketoModal";
 
-const DEMOGRAPHIC_SURVEY_NAME = "UserProfileSurvey";
-const DEMOGRAPHIC_SURVEY_DATAKEY = "manual/demographic_survey";
+export const DEMOGRAPHIC_SURVEY_NAME = "UserProfileSurvey";
+export const DEMOGRAPHIC_SURVEY_DATAKEY = "manual/demographic_survey";
 
 const DemographicsSettingRow = ({ }) => {
 

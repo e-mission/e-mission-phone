@@ -2,13 +2,13 @@ import React, { useContext } from "react";
 import { AppContext } from "../App";
 import JoinPage from "./JoinPage";
 import ConsentPage from "./ConsentPage";
+import SurveyPage from "./SurveyPage";
 
 // true if loading/undetermined
 // 'join' if no config present
 // 'consent' if config present, but not consented
-// 'permissions' if consented but not granted permissions
-// 'survey' if granted permissions but not completed survey
-// null if all done
+// 'survey' if consented but intro not done
+// null if intro done
 const OnboardingStack = () => {
 
   const { pendingOnboardingState } = useContext(AppContext);
@@ -19,6 +19,8 @@ const OnboardingStack = () => {
     return <JoinPage />;
   } else if (pendingOnboardingState.route == 'consent') {
     return <ConsentPage />;
+  } else if (pendingOnboardingState.route == 'survey') {
+    return <SurveyPage />;
   } else {
     return 'TODO'
   }
