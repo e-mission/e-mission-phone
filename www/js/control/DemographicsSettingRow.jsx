@@ -1,30 +1,35 @@
-import React from "react";
-import { getAngularService } from "../angular-react-helper";
+import React, { useState } from "react";
 import SettingRow from "./SettingRow";
 import { loadPreviousResponseForSurvey } from "../survey/enketo/enketoHelper";
+import EnketoModal from "../survey/enketo/EnketoModal";
 
+const DEMOGRAPHIC_SURVEY_NAME = "UserProfileSurvey";
 const DEMOGRAPHIC_SURVEY_DATAKEY = "manual/demographic_survey";
 
 const DemographicsSettingRow = ({ }) => {
 
-  const EnketoSurveyLaunch = getAngularService('EnketoSurveyLaunch');
-  const $rootScope = getAngularService('$rootScope');
+  const [surveyModalVisible, setSurveyModalVisible] = useState(false);
+  const [prevSurveyResponse, setPrevSurveyResponse] = useState(null);
 
   function openPopover() {
     return loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY).then((lastSurvey) => {
-      return EnketoSurveyLaunch
-        .launch($rootScope, 'UserProfileSurvey', {
-          prefilledSurveyResponse: lastSurvey?.data?.xmlResponse,
-          showBackButton: true, showFormFooterJumpNav: true
-        })
-        .then(result => {
-          console.log("demographic survey result ", result);
-        });
+      if (lastSurvey?.data?.xmlResponse) {
+        setPrevSurveyResponse(lastSurvey.data.xmlResponse);
+        setSurveyModalVisible(true);
+      }
     });
   }
 
-  return <SettingRow action={openPopover} iconName="account"
-          textKey="control.edit-demographics" isToggle={false} />
+  return (<>
+    <SettingRow action={openPopover} iconName="account"
+      textKey="control.edit-demographics" isToggle={false} />
+    <EnketoModal visible={surveyModalVisible} onDismiss={() => setSurveyModalVisible(false)}
+      onResponseSaved={() => setSurveyModalVisible(false)} surveyName={DEMOGRAPHIC_SURVEY_NAME}
+      opts={{
+        prefilledSurveyResponse: prevSurveyResponse,
+        dataKey: DEMOGRAPHIC_SURVEY_DATAKEY,
+      }} />
+  </>);
 };
 
 export default DemographicsSettingRow;
