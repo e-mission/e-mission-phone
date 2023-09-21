@@ -9,7 +9,7 @@ import { displayError, displayErrorMsg } from '../plugin/logger';
 import i18next from "i18next";
 import PrivacyPolicy from '../join/PrivacyPolicy';
 
-const JoinPage = () => {
+const ConsentPage = () => {
 
   const { t } = useTranslation();
   const context = useContext(AppContext);
@@ -82,4 +82,4 @@ const s = StyleSheet.create({
   },
 });
 
-export default JoinPage;
+export default ConsentPage;
