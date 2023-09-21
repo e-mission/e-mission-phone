@@ -1,5 +1,6 @@
 import angular from 'angular';
 import { baseLabelInputDetails, getBaseLabelInputs, getFakeEntry, getLabelInputDetails, getLabelInputs, getLabelOptions } from './confirmHelper';
+import { getConfig } from '../../config/dynamicConfig';
 
 angular.module('emission.survey.multilabel.buttons',
     ['emission.stats.clientstats',
@@ -18,7 +19,7 @@ angular.module('emission.survey.multilabel.buttons',
 
   $ionicPlatform.ready().then(function() {
     Logger.log("UI_CONFIG: about to call configReady function in MultiLabelService");
-    DynamicConfig.configReady().then((newConfig) => {
+    getConfig().then((newConfig) => {
         mls.init(newConfig);
     }).catch((err) => Logger.displayError("Error while handling config in MultiLabelService", err));
   });

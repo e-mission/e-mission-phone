@@ -24,7 +24,7 @@ const App = () => {
   const [index, setIndex] = useState(0);
   const [pendingOnboardingState, setPendingOnboardingState] = useState<OnboardingState>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -53,7 +53,6 @@ const App = () => {
 
   const appContextValue = {
     appConfig,
-    loading,
     pendingOnboardingState,
     setPendingOnboardingState,
     refreshOnboardingState,

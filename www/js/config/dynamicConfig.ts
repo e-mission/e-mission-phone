@@ -1,10 +1,14 @@
 import i18next from "i18next";
-import { displayError, logDebug } from "../plugin/logger";
+import { displayError, displayErrorMsg, logDebug } from "../plugin/logger";
 import { getAngularService } from "../angular-react-helper";
 import { fetchUrlCached } from "../commHelper";
 
 export const CONFIG_PHONE_UI="config/app_ui_config";
 export const CONFIG_PHONE_UI_KVSTORE ="CONFIG_PHONE_UI";
+
+export let storedConfig = null;
+export let configChanged = false;
+export const setConfigChanged = (b) => configChanged = b;
 
 const _getStudyName = function (connectUrl) {
   const orig_host = new URL(connectUrl).hostname;
@@ -191,6 +195,8 @@ function loadNewConfig(newToken, existingVersion = null) {
     return Promise.all([storeConfigPromise, storeInKVStorePromise]).then(
       ([result, kvStoreResult]) => {
         logDebug("UI_CONFIG: Stored dynamic config in KVStore successfully, result = " + JSON.stringify(kvStoreResult));
+        storedConfig = toSaveConfig;
+        configChanged = true;
         return true;
       }).catch((storeError) =>
         displayError(storeError, i18next.t('config.unable-to-store-config'))
@@ -219,4 +225,24 @@ export function resetDataAndRefresh() {
   const resetKVStorePromise = KVStore.clearAll();
   return Promise.all([resetNativePromise, resetKVStorePromise])
     .then(() => window.location.reload());
+}
+
+export function getConfig() {
+  if (storedConfig) return Promise.resolve(storedConfig);
+  const KVStore = getAngularService('KVStore');
+  return KVStore.get(CONFIG_PHONE_UI_KVSTORE).then((config) => {
+    if (config) {
+      storedConfig = config;
+      return config;
+    }
+    logDebug("No config found in KVStore, fetching from native storage");
+    return window['cordova'].plugins.BEMUserCache.getRWDocument(CONFIG_PHONE_UI).then((config) => {
+      if (config) {
+        storedConfig = config;
+        return config;
+      }
+      displayErrorMsg(i18next.t('config.unable-read-saved-config'));
+      return null;
+    });
+  });
 }

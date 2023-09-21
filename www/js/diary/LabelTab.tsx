@@ -29,7 +29,7 @@ const ONE_WEEK = ONE_DAY * 7; // seconds
 export const LabelTabContext = React.createContext<any>(null);
 
 const LabelTab = () => {
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const { t } = useTranslation();
   const { colors } = useTheme();
 
@@ -53,12 +53,12 @@ const LabelTab = () => {
 
   // initialization, once the appConfig is loaded
   useEffect(() => {
-    if (loading) return;
+    if (!appConfig) return;
     const surveyOptKey = appConfig.survey_info['trip-labels'];
     const surveyOpt = SurveyOptions[surveyOptKey];
     setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
-    getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
+    getLabelOptions(appConfig).then((labelOptions) => setLabelOptions(labelOptions));
     labelPopulateFactory = getAngularService(surveyOpt.service);
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
     const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;

@@ -8,7 +8,7 @@ import i18next from "i18next";
 const PrivacyPolicy = () => {
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const { appConfig, loading } = useAppConfig();
+    const appConfig = useAppConfig();
     
     const getTemplateText = function(configObject) {
         if (configObject && (configObject.name)) {

@@ -21,7 +21,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   const headerEl = useRef(null);
   const surveyJson = useRef(null);
   const enketoForm = useRef<Form | null>(null);
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
 
   async function fetchSurveyJson(url) {
     const responseText = await fetchUrlCached(url);
@@ -76,9 +76,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
 
   useEffect(() => {
     if (!rest.visible) return;
-    if (!appConfig || loading) return console.error('App config not loaded yet');
+    if (!appConfig) return console.error('App config not loaded yet');
     initSurvey();
-  }, [appConfig, loading, rest.visible]);
+  }, [appConfig, rest.visible]);
 
   /* adapted from the template given by enketo-core:
     https://github.com/enketo/enketo-core/blob/master/src/index.html */

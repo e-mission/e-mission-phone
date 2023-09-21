@@ -1,6 +1,7 @@
 import angular from 'angular';
 import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
+import { getConfig } from '../../config/dynamicConfig';
 
 angular.module('emission.survey.enketo.service', [
   'ionic',
@@ -53,7 +54,7 @@ angular.module('emission.survey.enketo.service', [
     if (_state.config !== null) {
       return Promise.resolve(_state.config);
     }
-    return DynamicConfig.configReady().then((newConfig) => {
+    return getConfig().then((newConfig) => {
       Logger.log("Resolved UI_CONFIG_READY promise in service.js, filling in templates");
       _state.config = newConfig.survey_info.surveys;
       return newConfig;

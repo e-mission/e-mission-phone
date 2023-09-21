@@ -17,7 +17,7 @@ const usePermissionStatus = () => {
 
     const { t } = useTranslation();
     const { colors } = useTheme();
-    const { appConfig, loading } = useAppConfig();
+    const appConfig = useAppConfig();
 
     const [osver, setOsver] = useState(0);
     const [platform, setPlatform] = useState<string>("");

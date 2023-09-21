@@ -25,7 +25,7 @@ import { resetDataAndRefresh } from "../config/dynamicConfig";
 const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
     const { t } = useTranslation();
-    const { appConfig, loading } = useAppConfig();
+    const appConfig = useAppConfig();
     const { colors } = useTheme();
 
     //angular services needed
