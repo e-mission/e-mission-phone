@@ -101,17 +101,17 @@ const usePermissionStatus = () => {
             return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.isValidLocationPermissions, false);
         };
         var androidSettingsDescTag = "intro.appstatus.locsettings.description.android-gte-9";
-        if (osver < 9) {
+        if (window['device'].version.split(".")[0] < 9) {
             androidSettingsDescTag = "intro.appstatus.locsettings.description.android-lt-9";
         }
         var androidPermDescTag = "intro.appstatus.locperms.description.android-gte-12";
-        if(osver < 6) {
+        if(window['device'].version.split(".")[0] < 6) {
             androidPermDescTag = 'intro.appstatus.locperms.description.android-lt-6';
-        } else if (osver < 10) {
+        } else if (window['device'].version.split(".")[0] < 10) {
             androidPermDescTag = "intro.appstatus.locperms.description.android-6-9";
-        } else if (osver < 11) {
+        } else if (window['device'].version.split(".")[0] < 11) {
             androidPermDescTag= "intro.appstatus.locperms.description.android-10";
-        } else if (osver < 12) {
+        } else if (window['device'].version.split(".")[0] < 12) {
             androidPermDescTag= "intro.appstatus.locperms.description.android-11";
         }
         console.log("description tags are "+androidSettingsDescTag+" "+androidPermDescTag);
@@ -158,7 +158,7 @@ const usePermissionStatus = () => {
         };
         var iOSSettingsDescTag = "intro.appstatus.locsettings.description.ios";
         var iOSPermDescTag = "intro.appstatus.locperms.description.ios-gte-13";
-        if(osver < 13) {
+        if(window['device'].version.split(".")[0] < 13) {
             iOSPermDescTag = 'intro.appstatus.locperms.description.ios-lt-13';
         }
         console.log("description tags are "+iOSSettingsDescTag+" "+iOSPermDescTag);
@@ -183,7 +183,7 @@ const usePermissionStatus = () => {
     }
 
     function setupAndroidFitnessChecks() {
-        if(osver >= 10){
+        if(window['device'].version.split(".")[0] >= 10){
             let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixFitnessPermissions,
@@ -274,10 +274,10 @@ const usePermissionStatus = () => {
                 false);
         };
         var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-13";
-        if (osver == 12) {
+        if (window['device'].version.split(".")[0] == 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-12";
         }
-        else if (osver < 12) {
+        else if (window['device'].version.split(".")[0] < 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
         }
         let unusedAppsUnrestrictedCheck = {
@@ -302,9 +302,9 @@ const usePermissionStatus = () => {
 
         let overallFitnessName = t('intro.appstatus.overall-fitness-name-android');
         let locExplanation = t('intro.appstatus.overall-loc-description');
-        if(platform == "ios") {
+        if(window['device'].platform.toLowerCase() == "ios") {
             overallFitnessName = t('intro.appstatus.overall-fitness-name-ios');
-            if(osver < 13) {
+            if(window['device'].version.split(".")[0] < 13) {
                 locExplanation = (t("intro.permissions.locationPermExplanation-ios-lt-13"));
             } else {
                 locExplanation = (t("intro.permissions.locationPermExplanation-ios-gte-13"));
@@ -323,12 +323,12 @@ const usePermissionStatus = () => {
     }
 
     function createChecklist(){
-        if(platform == "android") {
+        if(window['device'].platform.toLowerCase() == "android") {
             setupAndroidLocChecks();
             setupAndroidFitnessChecks();
             setupAndroidNotificationChecks();
             setupAndroidBackgroundRestrictionChecks();
-        } else if (platform == "ios") {
+        } else if (window['device'].platform.toLowerCase() == "ios") {
             setupIOSLocChecks();
             setupIOSFitnessChecks();
             setupAndroidNotificationChecks();
@@ -351,17 +351,11 @@ const usePermissionStatus = () => {
         if (appConfig && window['device']?.platform) {
             setPlatform(window['device'].platform.toLowerCase());
             setOsver(window['device'].version.split(".")[0]);
-
-            if(!haveSetText)
-            {
-                //window.appStatusModalOpened = false;
-                setupPermissionText();
-                setHaveSetText(true);
-            }
-            else{
-                console.log("setting up permissions");
-                createChecklist();
-            }
+            
+            setupPermissionText();
+            setHaveSetText(true);
+            console.log("setting up permissions");
+            createChecklist();
         }
     }, [appConfig]);
   
