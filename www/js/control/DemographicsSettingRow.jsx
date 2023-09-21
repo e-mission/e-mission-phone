@@ -1,16 +1,17 @@
 import React from "react";
 import { getAngularService } from "../angular-react-helper";
 import SettingRow from "./SettingRow";
+import { loadPreviousResponseForSurvey } from "../survey/enketo/enketoHelper";
+
+const DEMOGRAPHIC_SURVEY_DATAKEY = "manual/demographic_survey";
 
 const DemographicsSettingRow = ({ }) => {
 
-  const EnketoDemographicsService = getAngularService('EnketoDemographicsService');
   const EnketoSurveyLaunch = getAngularService('EnketoSurveyLaunch');
   const $rootScope = getAngularService('$rootScope');
 
-  // copied from /js/survey/enketo/enketo-demographics.js
   function openPopover() {
-    return EnketoDemographicsService.loadPriorDemographicSurvey().then((lastSurvey) => {
+    return loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY).then((lastSurvey) => {
       return EnketoSurveyLaunch
         .launch($rootScope, 'UserProfileSurvey', {
           prefilledSurveyResponse: lastSurvey?.data?.xmlResponse,
