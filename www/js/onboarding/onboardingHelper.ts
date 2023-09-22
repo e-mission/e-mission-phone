@@ -3,23 +3,27 @@ import { getAngularService } from "../angular-react-helper";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
-type OnboardingRoute = 'join' | 'consent' | false;
+type OnboardingRoute = 'join' | 'consent' | 'survey' | 'save-qr' | false;
 export type OnboardingState = {
   opcode: string,
   route: OnboardingRoute,
 }
 
+export let saveQrDone = false;
+export const setSaveQrDone = (b) => saveQrDone = b;
+
 export function getPendingOnboardingState(): Promise<OnboardingState> {
   return Promise.all([readConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
-    let route;
+    if (isIntroDone) return null; // onboarding is done; no pending state
+    let route: OnboardingRoute = false;
     if (!config) {
       route = 'join';
     } else if (!isConsented) {
       route = 'consent';
-    } else if (!isIntroDone) {
-      route = 'survey';
+    } else if (!saveQrDone) {
+      route = 'save-qr';
     } else {
-      return null; // onboarding is done; no pending state
+      route = 'survey';
     }
     return { route, opcode: config?.joined?.opcode };
   });

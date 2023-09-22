@@ -3,6 +3,7 @@ import { AppContext } from "../App";
 import JoinPage from "./JoinPage";
 import ConsentPage from "./ConsentPage";
 import SurveyPage from "./SurveyPage";
+import SaveQrPage from "./SaveQrPage";
 
 // true if loading/undetermined
 // 'join' if no config present
@@ -19,6 +20,8 @@ const OnboardingStack = () => {
     return <JoinPage />;
   } else if (pendingOnboardingState.route == 'consent') {
     return <ConsentPage />;
+  } else if (pendingOnboardingState.route == 'save-qr') {
+    return <SaveQrPage />;
   } else if (pendingOnboardingState.route == 'survey') {
     return <SurveyPage />;
   } else {
