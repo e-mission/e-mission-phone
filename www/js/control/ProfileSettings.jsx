@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
@@ -20,6 +20,7 @@ import LogPage from "./LogPage";
 import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
 import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransition} from "./ControlCollectionHelper";
 import { resetDataAndRefresh } from "../config/dynamicConfig";
+import { AppContext } from "../App";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -27,6 +28,7 @@ const ProfileSettings = () => {
     const { t } = useTranslation();
     const appConfig = useAppConfig();
     const { colors } = useTheme();
+    const { setPermissionsPopupVis } = useContext(AppContext);
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -48,7 +50,6 @@ const ProfileSettings = () => {
     const [nukeSetVis, setNukeVis] = useState(false);
     const [carbonDataVis, setCarbonDataVis] = useState(false);
     const [forceStateVis, setForceStateVis] = useState(false);
-    const [permitVis, setPermitVis] = useState(false);
     const [logoutVis, setLogoutVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
     const [noConsentVis, setNoConsentVis] = useState(false);
@@ -381,7 +382,7 @@ const ProfileSettings = () => {
             <SettingRow textKey='control.view-privacy' iconName='eye' action={() => setPrivacyVis(true)}></SettingRow>
             {timePicker}
             <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
-            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
+            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermissionsPopupVis(true)}></SettingRow>
             <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
@@ -442,9 +443,6 @@ const ProfileSettings = () => {
 
             {/* opcode viewing popup */}
             <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
-
-            {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis}></AppStatusModal>
 
             {/* {view privacy} */}
             <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis}></PrivacyPolicyModal>

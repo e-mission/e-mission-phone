@@ -6,25 +6,17 @@ import usePermissionStatus from "../usePermissionStatus";
 import { settingStyles } from "./ProfileSettings";
 //TODO -- import settings styles for dialog
 
-const AppStatusModal = ({permitVis, setPermitVis }) => {
+const AppStatusModal = ({ permitVis, setPermitVis }) => {
     const { height: windowHeight } = useWindowDimensions();
     const { overallStatus } = usePermissionStatus();
     const { colors } = useTheme();
 
     //anytime the status changes, may need to show modal
     useEffect(() => {
-        let currentlyOpen = window?.appStatusModalOpened;
-        if(!currentlyOpen && overallStatus == false) { //trying to block early cases from throwing modal
-            window.appStatusModalOpened = true;
-            setPermitVis(true);
-        }
-    }, [overallStatus]);
-
-    useEffect (() => {
-        if(!permitVis) {
-            window.appStatusModalOpened = false;
-        }
-    }, [permitVis]);
+      if(!overallStatus) {
+          setPermitVis(true);
+      }
+  }, [overallStatus]);
 
     return (
         <Modal visible={permitVis} onRequestClose={() => {

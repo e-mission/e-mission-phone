@@ -53,9 +53,8 @@ const App = () => {
 
   const appContextValue = {
     appConfig,
-    pendingOnboardingState,
-    setPendingOnboardingState,
-    refreshOnboardingState,
+    pendingOnboardingState, setPendingOnboardingState, refreshOnboardingState,
+    permissionsPopupVis, setPermissionsPopupVis,
   }
 
   console.debug('pendingOnboardingState in App', pendingOnboardingState);
