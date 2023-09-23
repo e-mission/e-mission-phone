@@ -12,6 +12,9 @@ export type OnboardingState = {
 export let saveQrDone = false;
 export const setSaveQrDone = (b) => saveQrDone = b;
 
+export let registerUserDone = false;
+export const setRegisterUserDone = (b) => registerUserDone = b;
+
 export function getPendingOnboardingState(): Promise<OnboardingState> {
   return Promise.all([readConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
     if (isIntroDone) return null; // onboarding is done; no pending state

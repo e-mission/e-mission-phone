@@ -1,11 +1,10 @@
-import React, { useContext, useState, useMemo } from 'react';
+import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { View, Image, Modal, StyleSheet, ScrollView } from 'react-native';
-import { Button, Dialog, Divider, Surface, Text, TextInput, List } from 'react-native-paper';
-import { initByUser, resetDataAndRefresh } from '../config/dynamicConfig';
+import { StyleSheet, ScrollView } from 'react-native';
+import { Button, Surface } from 'react-native-paper';
+import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { getAngularService } from '../angular-react-helper';
-import { displayError, displayErrorMsg } from '../plugin/logger';
 import i18next from "i18next";
 import PrivacyPolicy from '../join/PrivacyPolicy';
 
@@ -13,7 +12,7 @@ const ConsentPage = () => {
 
   const { t } = useTranslation();
   const context = useContext(AppContext);
-  const { pendingOnboardingState, refreshOnboardingState } = context;
+  const { refreshOnboardingState } = context;
 
   /* If the user does not consent, we boot them back out to the join screen */
   function disagree() {
@@ -23,29 +22,7 @@ const ConsentPage = () => {
   function agree() {
     const StartPrefs = getAngularService('StartPrefs');
     StartPrefs.markConsented().then((response) => {
-      login(pendingOnboardingState.opcode).then((response) => {
-
-        refreshOnboardingState();
-      });
-    });
-  };
-
-  function login(token) {
-    const CommHelper = getAngularService('CommHelper');
-    const KVStore = getAngularService('KVStore');
-    const EXPECTED_METHOD = "prompted-auth";
-    const dbStorageObject = {"token": token};
-    return KVStore.set(EXPECTED_METHOD, dbStorageObject).then((r) => {
-      // ionicToast.show(message, position, stick, time);
-      // $scope.next();
-      // ionicToast.show(opcode, 'middle', false, 2500);
-      CommHelper.registerUser((successResult) => {
-        refreshOnboardingState();
-      }, function(errorResult) {
-        displayError(errorResult, "User registration error");
-      });
-    }).catch((e) => {
-      displayError(e, "Sign in error");
+      refreshOnboardingState();
     });
   };
 
