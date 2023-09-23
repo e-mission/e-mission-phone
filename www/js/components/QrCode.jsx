@@ -36,8 +36,8 @@ export function shareQR(message) {
   img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
 }
 
-const QrCode = ({ value }) => {
-  return <QRCode className="qr-code" value={value} style={{ width: '100%', height: '100%' }} />;
+const QrCode = ({ value, ...rest }) => {
+  return <QRCode className="qr-code" value={value} style={[{ width: '100%', height: '100%' }, rest.style]} {...rest} />;
 };
 
 QrCode.propTypes = {

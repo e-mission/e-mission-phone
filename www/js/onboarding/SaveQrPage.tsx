@@ -1,14 +1,17 @@
 import React, { useContext, useEffect } from "react";
-import { StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { ActivityIndicator, Button, Surface, Text } from "react-native-paper";
 import { registerUserDone, setRegisterUserDone, setSaveQrDone } from "./onboardingHelper";
 import { AppContext } from "../App";
 import usePermissionStatus from "../usePermissionStatus";
 import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
+import { useTranslation } from "react-i18next";
+import QrCode, { shareQR } from "../components/QrCode";
 
 const SaveQrPage = ({  }) => {
 
+  const { t } = useTranslation();
   const { pendingOnboardingState, refreshOnboardingState } = useContext(AppContext);
   const { overallStatus } = usePermissionStatus();
 
@@ -48,12 +51,22 @@ const SaveQrPage = ({  }) => {
 
   return (
     <Surface style={s.page}>
-      <Text>
-        {'Save your QR Code'}
-      </Text>
-      <Button onPress={onFinish}>
-        {'Done'}
-      </Button>
+      <View style={s.pageSection}>
+        <Text variant='headlineSmall'> {t('login.make-sure-save-your-opcode')} </Text>
+        <Text variant='bodyMedium'> {t('login.cannot-retrieve')} </Text>
+      </View>
+      <View style={s.pageSection}>
+        <QrCode value={pendingOnboardingState.opcode} style={{marginHorizontal: 8}} />
+        <Text style={{fontFamily: 'monospace', marginVertical: 8}}> {pendingOnboardingState.opcode} </Text>
+      </View>
+      <View style={[s.pageSection, {flexDirection: 'row', justifyContent: 'center', gap: 8}]}>
+        <Button mode='outlined' onPress={() => shareQR(pendingOnboardingState.opcode)} icon='share'>
+          {t('login.save')}
+        </Button>
+        <Button mode='outlined' onPress={onFinish} icon='chevron-right'>
+          {t('login.continue')}
+        </Button>
+      </View>
     </Surface>
   );
 }
@@ -62,7 +75,12 @@ const s = StyleSheet.create({
   page: {
     flex: 1,
     paddingHorizontal: 15,
+    paddingVertical: 20,
   },
+  pageSection: {
+    marginVertical: 15,
+    alignItems: 'center',
+  }
 });
 
 export default SaveQrPage;
