@@ -1,4 +1,4 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { ActivityIndicator, Button, Surface, Text } from "react-native-paper";
 import { registerUserDone, setRegisterUserDone, setSaveQrDone } from "./onboardingHelper";
@@ -60,10 +60,10 @@ const SaveQrPage = ({  }) => {
         <Text style={{fontFamily: 'monospace', marginVertical: 8}}> {pendingOnboardingState.opcode} </Text>
       </View>
       <View style={[s.pageSection, {flexDirection: 'row', justifyContent: 'center', gap: 8}]}>
-        <Button mode='outlined' onPress={() => shareQR(pendingOnboardingState.opcode)} icon='share'>
+        <Button mode='contained' icon='share' onPress={() => shareQR(pendingOnboardingState.opcode)}>
           {t('login.save')}
         </Button>
-        <Button mode='outlined' onPress={onFinish} icon='chevron-right'>
+        <Button mode='outlined' icon='chevron-right' onPress={onFinish}>
           {t('login.continue')}
         </Button>
       </View>
