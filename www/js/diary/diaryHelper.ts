@@ -61,7 +61,7 @@ type BaseModeKey = keyof typeof BaseModes;
 export function getBaseModeByKey(motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
   let key = ('' + motionName).toUpperCase();
   key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return BaseModes[motionName] || BaseModes.UNKNOWN;
+  return BaseModes[key] || BaseModes.UNKNOWN;
 }
 
 export function getBaseModeOfLabeledTrip(trip, labelOptions) {
