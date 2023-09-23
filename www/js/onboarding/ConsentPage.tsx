@@ -41,8 +41,8 @@ const ConsentPage = () => {
       <Surface style={onboardingStyles.page}>
         <PrivacyPolicy />
         <View style={onboardingStyles.buttonRow}>
-          <Button mode='contained' onPress={agree}> {t('consent.button-accept')} </Button>
           <Button mode='outlined' onPress={disagree}> {t('consent.button-decline')} </Button>
+          <Button mode='contained' onPress={agree}> {t('consent.button-accept')} </Button>
         </View>
       </Surface>
     </ScrollView>
