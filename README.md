@@ -10,15 +10,16 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 **Issues:** Since this repository is part of a larger project, all issues are tracked [in the central docs repository](https://github.com/e-mission/e-mission-docs/issues). If you have a question, [as suggested by the open source guide](https://opensource.guide/how-to-contribute/#communicating-effectively), please file an issue instead of sending an email. Since issues are public, other contributors can try to answer the question and benefit from the answer.
 
-:sparkles: Check 6. Contributing if you're interested in contributing for this project :sparkles:
+:sparkles: Check 6. [Contributing](#6-contributing) if you're interested in contributing for this project :sparkles:
 
 ## Contents
-#### 1. [Creating logos](#1.-Creating-logos) -> Information regarding app Logo
-#### 2. [Updating the UI only](#2.-Updating-the-UI-only) -> For UI changes ONLY
-#### 3. [Updating the e-mission-* plugins or adding new plugins](#3.-Updating-the-e-mission-\*-plugins-or-adding-new-plugins) -> Work with native code
-#### 4. [End to End Testing](#4.-End-to-End-Testing)
-#### 5. [Beta-testing debugging](#5.-Beta-testing-debugging) 
-#### 6. [Contributing](#6.-Contributing)
+#### 1. [Creating logos](#1-creating-logos) -> Information regarding app Logo
+#### 2. [Updating the UI only](#2-updating-the-ui-only) -> For UI changes ONLY
+#### 3. [Updating the e-mission-* plugins or adding new plugins](#3-updating-the-e-mission--plugins-or-adding-new-plugins) -> Work with native code
+#### 4. [End to End Testing](#4-end-to-end-testing)
+#### 5. [Beta-testing debugging](#5-beta-testing-debugging) 
+#### 6. [Contributing](#6-contributing)
+
 ---
 
 ## 1. Creating logos
