@@ -1,4 +1,4 @@
-# e-mission phone app
+# [e-mission phone app](https://github.com/e-mission/e-mission-phone/tree/master)
 
 <u>__This is the phone component of the e-mission system.__</u>
 
@@ -229,7 +229,8 @@ For instance: (build-dev-android)
 ```
 npm run build-dev-android
 ```
-
+Your output should look something like this:
+![Build Successful Message screenshot](Build_ss.png)
 
 ## 4. End to End Testing
 
