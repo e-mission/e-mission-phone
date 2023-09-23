@@ -34,6 +34,7 @@ const usePermissionStatus = () => {
 
     const overallStatus = useMemo(() => {
         let status = true;
+        if (!checkList?.length) return false; // if checks not loaded yet, status is false
         checkList.forEach((lc) => {
             if(!lc.statusState){
                 status = false;
