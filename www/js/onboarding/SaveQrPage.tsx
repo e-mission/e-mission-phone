@@ -8,6 +8,7 @@ import { getAngularService } from "../angular-react-helper";
 import { displayError, logDebug } from "../plugin/logger";
 import { useTranslation } from "react-i18next";
 import QrCode, { shareQR } from "../components/QrCode";
+import { onboardingStyles } from "./OnboardingStack";
 
 const SaveQrPage = ({  }) => {
 
@@ -50,16 +51,16 @@ const SaveQrPage = ({  }) => {
   }
 
   return (
-    <Surface style={s.page}>
-      <View style={s.pageSection}>
+    <Surface style={onboardingStyles.page}>
+      <View style={onboardingStyles.pageSection}>
         <Text variant='headlineSmall'> {t('login.make-sure-save-your-opcode')} </Text>
         <Text variant='bodyMedium'> {t('login.cannot-retrieve')} </Text>
       </View>
-      <View style={s.pageSection}>
+      <View style={onboardingStyles.pageSection}>
         <QrCode value={pendingOnboardingState.opcode} style={{marginHorizontal: 8}} />
         <Text style={{fontFamily: 'monospace', marginVertical: 8}}> {pendingOnboardingState.opcode} </Text>
       </View>
-      <View style={[s.pageSection, {flexDirection: 'row', justifyContent: 'center', gap: 8}]}>
+      <View style={onboardingStyles.buttonRow}>
         <Button mode='contained' icon='share' onPress={() => shareQR(pendingOnboardingState.opcode)}>
           {t('login.save')}
         </Button>
@@ -70,17 +71,5 @@ const SaveQrPage = ({  }) => {
     </Surface>
   );
 }
-
-const s = StyleSheet.create({
-  page: {
-    flex: 1,
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-  },
-  pageSection: {
-    marginVertical: 15,
-    alignItems: 'center',
-  }
-});
 
 export default SaveQrPage;

@@ -8,6 +8,7 @@ import { AppContext } from "../App";
 import { markIntroDone } from "./onboardingHelper";
 import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
+import { onboardingStyles } from "./OnboardingStack";
 
 const SurveyPage = () => {
 
@@ -41,25 +42,30 @@ const SurveyPage = () => {
   }
 
   return (<>
-    <Surface style={s.page}>
-      {prevSurveyResponse ? <>
-        <Text variant='bodyLarge' style={{fontWeight: '500'}}> {t('survey.prev-survey-found')} </Text>
-        <Text> {prevSurveyResponseDate} </Text>
-        <View style={s.buttonRow}>
-          <Button mode='contained' icon='pencil' onPress={() => setSurveyModalVisible(true)}>
-            {t('survey.edit-response')}
-          </Button>
-          <Button mode='outlined' icon='chevron-right' onPress={onFinish}>
-            {t('survey.use-prior-response')}
-          </Button>
+    <Surface style={onboardingStyles.page}>
+      {prevSurveyResponse ?
+        <View style={{margin: 'auto'}}>
+          <View style={{marginBottom: 20}}>
+            <Text variant='bodyLarge' style={{fontWeight: '500'}}> {t('survey.prev-survey-found')} </Text>
+            <Text> {prevSurveyResponseDate} </Text>
+          </View>
+          <View style={onboardingStyles.buttonRow}>
+            <Button mode='contained' icon='pencil' onPress={() => setSurveyModalVisible(true)}>
+              {t('survey.edit-response')}
+            </Button>
+            <Button mode='outlined' icon='chevron-right' onPress={onFinish}>
+              {t('survey.use-prior-response')}
+            </Button>
+          </View>
         </View>
-      </>
-      : <>
-        <ActivityIndicator size='large' animating={true} />
-        <Text style={{textAlign: 'center'}}>
-          {t('survey.loading-prior-survey')}
-        </Text>
-      </>}
+      : 
+        <View style={{margin: 'auto'}}>
+          <ActivityIndicator size='large' animating={true} />
+          <Text style={{textAlign: 'center'}}>
+            {t('survey.loading-prior-survey')}
+          </Text>
+        </View>
+      }
     </Surface>
     <EnketoModal visible={surveyModalVisible} onDismiss={() => setSurveyModalVisible(false)}
       onResponseSaved={onFinish} surveyName={DEMOGRAPHIC_SURVEY_NAME}
@@ -69,20 +75,5 @@ const SurveyPage = () => {
       }} />
   </>);
 };
-
-const s = StyleSheet.create({
-  page: {
-    flex: 1,
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-  },
-  buttonRow: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 15,
-    gap: 8,
-  },
-});
 
 export default SurveyPage;

@@ -1,4 +1,5 @@
 import React, { useContext } from "react";
+import { StyleSheet } from "react-native";
 import { AppContext } from "../App";
 import JoinPage from "./JoinPage";
 import ConsentPage from "./ConsentPage";
@@ -28,5 +29,24 @@ const OnboardingStack = () => {
     return 'TODO'
   }
 }
+
+export const onboardingStyles = StyleSheet.create({
+  page: {
+    flex: 1,
+    paddingHorizontal: 15,
+    paddingVertical: 20,
+  },
+  pageSection: {
+    marginVertical: 15,
+    alignItems: 'center',
+  },
+  buttonRow: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    marginVertical: 15,
+    alignItems: 'center',
+    gap: 8,
+  },
+});
 
 export default OnboardingStack

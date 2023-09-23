@@ -1,12 +1,13 @@
 import React, { useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { StyleSheet, ScrollView } from 'react-native';
+import { View, ScrollView } from 'react-native';
 import { Button, Surface } from 'react-native-paper';
 import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { getAngularService } from '../angular-react-helper';
 import i18next from "i18next";
 import PrivacyPolicy from '../join/PrivacyPolicy';
+import { onboardingStyles } from './OnboardingStack';
 
 const ConsentPage = () => {
 
@@ -36,27 +37,16 @@ const ConsentPage = () => {
 
   //summary of the study, privacy policy, data, etc, and accept/reject
   return (<>
-    <Surface style={s.page}>
-      <ScrollView>
-        <PrivacyPolicy></PrivacyPolicy>
-        <Button onPress={agree}> {t('consent.button-accept')} </Button>
-        <Button onPress={disagree}> {t('consent.button-decline')} </Button>
-      </ScrollView>
-    </Surface>
+    <ScrollView>
+      <Surface style={onboardingStyles.page}>
+        <PrivacyPolicy />
+        <View style={onboardingStyles.buttonRow}>
+          <Button mode='contained' onPress={agree}> {t('consent.button-accept')} </Button>
+          <Button mode='outlined' onPress={disagree}> {t('consent.button-decline')} </Button>
+        </View>
+      </Surface>
+    </ScrollView>
   </>);
 }
-
-const s = StyleSheet.create({
-  welcomeTitle: {
-    marginTop: 20,
-    textAlign: 'center',
-    paddingVertical: 20,
-    fontWeight: '600',
-  },
-  page: {
-    paddingHorizontal: 15,
-    flex: 1
-  },
-});
 
 export default ConsentPage;

@@ -4,6 +4,7 @@ import { View, Image, Modal, StyleSheet } from 'react-native';
 import { Button, Dialog, Divider, Surface, Text, TextInput } from 'react-native-paper';
 import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
+import { onboardingStyles } from './OnboardingStack';
 
 const JoinPage = () => {
 
@@ -31,7 +32,7 @@ const JoinPage = () => {
   }
 
   return (<>
-    <Surface style={s.page}>
+    <Surface style={onboardingStyles.page}>
       {/* <Image source={appIcon} style={{ width: 100, height: 100, alignSelf: 'center' }} /> */}
       <Text variant='headlineMedium' style={s.welcomeTitle}>
         {t('join.welcome-to-nrel-openpath')}
@@ -73,9 +74,6 @@ const s = StyleSheet.create({
     textAlign: 'center',
     paddingVertical: 20,
     fontWeight: '600',
-  },
-  page: {
-    paddingHorizontal: 15,
   },
 });
 
