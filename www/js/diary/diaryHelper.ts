@@ -1,54 +1,74 @@
 // here we have some helper functions used throughout the label tab
 // these functions are being gradually migrated out of services.js
 
-import i18next from "i18next";
 import moment from "moment";
 import { DateTime } from "luxon";
 
-const modeColors = {
+export const modeColors = {
+  pink: '#d43678',        // oklch(59% 0.2 0)       // e-car
   red: '#b9003d',         // oklch(50% 0.37 15)     // car
   orange: '#b25200',      // oklch(55% 0.37 50)     // air, hsr
-  green: '#007e46',       // oklch(52% 0.37 155)    // bike
+  green: '#007e46',       // oklch(52% 0.37 155)    // bike, e-biek, moped
   blue: '#0068a5',        // oklch(50% 0.37 245)    // walk
   periwinkle: '#5e45cd',  // oklch(50% 0.2 285)     // light rail, train, tram, subway
   magenta: '#8e35a1',     // oklch(50% 0.18 320)    // bus
   grey: '#484848',        // oklch(40% 0 0)         // unprocessed / unknown
-  taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, nonstandard modes
+  taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, user-defined modes
 }
 
-type MotionType = {
+type BaseMode = {
   name: string,
   icon: string,
   color: string
 }
-const MotionTypes: {[k: string]: MotionType} = {
+
+// parallels the server-side MotionTypes enum: https://github.com/e-mission/e-mission-server/blob/94e7478e627fa8c171323662f951c611c0993031/emission/core/wrapper/motionactivity.py#L12
+type MotionTypeKey = 'IN_VEHICLE' | 'BICYCLING' | 'ON_FOOT' | 'STILL' | 'UNKNOWN' | 'TILTING'
+                  | 'WALKING' | 'RUNNING' | 'NONE' | 'STOPPED_WHILE_IN_VEHICLE' | 'AIR_OR_HSR';
+
+const BaseModes: {[k: string]: BaseMode} = {
+  // BEGIN MotionTypes
   IN_VEHICLE: { name: "IN_VEHICLE", icon: "speedometer", color: modeColors.red },
-  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: modeColors.blue },
   BICYCLING: { name: "BICYCLING", icon: "bike", color: modeColors.green },
+  ON_FOOT: { name: "ON_FOOT", icon: "walk", color: modeColors.blue },
   UNKNOWN: { name: "UNKNOWN", icon: "help", color: modeColors.grey },
   WALKING: { name: "WALKING", icon: "walk", color: modeColors.blue },
-  CAR: { name: "CAR", icon: "car", color: modeColors.red },
   AIR_OR_HSR: { name: "AIR_OR_HSR", icon: "airplane", color: modeColors.orange },
-  // based on OSM routes/tags:
+  // END MotionTypes
+  CAR: { name: "CAR", icon: "car", color: modeColors.red },
+  E_CAR: { name: "E_CAR", icon: "car-electric", color: modeColors.pink },
+  E_BIKE: { name: "E_BIKE", icon: "bicycle-electric", color: modeColors.green },
+  E_SCOOTER: { name: "E_SCOOTER", icon: "scooter-electric", color: modeColors.periwinkle },
+  MOPED: { name: "MOPED", icon: "moped", color: modeColors.green },
+  TAXI: { name: "TAXI", icon: "taxi", color: modeColors.red },
   BUS: { name: "BUS", icon: "bus-side", color: modeColors.magenta },
+  AIR: { name: "AIR", icon: "airplane", color: modeColors.orange },
   LIGHT_RAIL: { name: "LIGHT_RAIL", icon: "train-car-passenger", color: modeColors.periwinkle },
   TRAIN: { name: "TRAIN", icon: "train-car-passenger", color: modeColors.periwinkle },
   TRAM: { name: "TRAM", icon: "fas fa-tram", color: modeColors.periwinkle },
   SUBWAY: { name: "SUBWAY", icon: "subway-variant", color: modeColors.periwinkle },
   FERRY: { name: "FERRY", icon: "ferry", color: modeColors.taupe },
   TROLLEYBUS: { name: "TROLLEYBUS", icon: "bus-side", color: modeColors.taupe },
-  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey }
-}
+  UNPROCESSED: { name: "UNPROCESSED", icon: "help", color: modeColors.grey },
+  OTHER: { name: "OTHER", icon: "pencil-circle", color: modeColors.taupe },
+};
 
-type MotionTypeKey = keyof typeof MotionTypes;
+type BaseModeKey = keyof typeof BaseModes;
 /**
  * @param motionName A string like "WALKING" or "MotionTypes.WALKING"
- * @returns A MotionType object containing the name, icon, and color of the motion type
+ * @returns A BaseMode object containing the name, icon, and color of the motion type
  */
-export function motionTypeOf(motionName: MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
+export function getBaseModeByKey(motionName: BaseModeKey | MotionTypeKey | `MotionTypes.${MotionTypeKey}`) {
   let key = ('' + motionName).toUpperCase();
   key = key.split(".").pop(); // if "MotionTypes.WALKING", then just take "WALKING"
-  return MotionTypes[key] || MotionTypes.UNKNOWN;
+  return BaseModes[key] || BaseModes.UNKNOWN;
+}
+
+export function getBaseModeOfLabeledTrip(trip, labelOptions) {
+  const modeKey = trip?.userInput?.MODE?.value;
+  if (!modeKey) return null; // trip has no MODE label
+  const modeOption = labelOptions?.MODE?.find(opt => opt.value == modeKey);
+  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
 }
 
 /**
@@ -109,12 +129,12 @@ export function getFormattedTimeRange(beginFmtTime: string, endFmtTime: string) 
   return endMoment.to(beginMoment, true);
 };
 
-// Temporary function to avoid repear in getPercentages ret val.
+// Temporary function to avoid repear in getDetectedModes ret val.
 const filterRunning = (mode) =>
   (mode == 'MotionTypes.RUNNING') ? 'MotionTypes.WALKING' : mode;
 
-export function getPercentages(trip) {
-  if (!trip.sections?.length) return {};
+export function getDetectedModes(trip) {
+  if (!trip.sections?.length) return [];
 
   // sum up the distances for each mode, as well as the total distance
   let totalDist = 0;
@@ -131,8 +151,8 @@ export function getPercentages(trip) {
     const fract = dists[mode] / totalDist;
     return {
       mode: mode,
-      icon: motionTypeOf(mode)?.icon,
-      color: motionTypeOf(mode)?.color || 'black',
+      icon: getBaseModeByKey(mode)?.icon,
+      color: getBaseModeByKey(mode)?.color || 'black',
       pct: Math.round(fract * 100) || '<1' // if rounds to 0%, show <1%
     };
   });
@@ -142,12 +162,12 @@ export function getPercentages(trip) {
 
 export function getFormattedSectionProperties(trip, ImperialConfig) {
   return trip.sections?.map((s) => ({
-    fmt_time: getLocalTimeString(s.start_local_dt),
-    fmt_time_range: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
-    fmt_distance: ImperialConfig.getFormattedDistance(s.distance),
-    fmt_distance_suffix: ImperialConfig.distanceSuffix,
-    icon: motionTypeOf(s.sensed_mode_str)?.icon,
-    color: motionTypeOf(s.sensed_mode_str)?.color || "#333",
+    startTime: getLocalTimeString(s.start_local_dt),
+    duration: getFormattedTimeRange(s.start_fmt_time, s.end_fmt_time),
+    distance: ImperialConfig.getFormattedDistance(s.distance),
+    distanceSuffix: ImperialConfig.distanceSuffix,
+    icon: getBaseModeByKey(s.sensed_mode_str)?.icon,
+    color: getBaseModeByKey(s.sensed_mode_str)?.color || "#333",
   }));
 }
 

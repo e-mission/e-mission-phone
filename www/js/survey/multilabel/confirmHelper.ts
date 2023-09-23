@@ -15,11 +15,12 @@ type InputDetails<T extends string> = {
 };
 type LabelOptions<T extends string = 'MODE'|'PURPOSE'|'REPLACED_MODE'> = {
   [k in T]: {
-    key: string,
+    value: string,
+    baseMode: string,
     met?: {range: any[], mets: number}
-    met_equivalent: string,
-    co2PerMeter: number,
-  }
+    met_equivalent?: string,
+    kgCo2PerKm: number,
+  }[]
 } & { translations: {
   [lang: string]: { [translationKey: string]: string }
 }};
@@ -39,8 +40,8 @@ export async function getLabelOptions(appConfigParam?) {
       according to the current language */
     const lang = i18next.language;
     for (const opt in labelOptions) {
-      labelOptions[opt].forEach((o, i) => {
-        const translationKey = o.key;
+      labelOptions[opt]?.forEach?.((o, i) => {
+        const translationKey = o.value;
         const translation = labelOptions.translations[lang][translationKey];
         labelOptions[opt][i].text = translation;
       });
@@ -50,12 +51,12 @@ export async function getLabelOptions(appConfigParam?) {
     const i18nUtils = getAngularService("i18nUtils");
     const optionFileName = await i18nUtils.geti18nFileName("json/", "trip_confirm_options", ".json");
     try {
-      const optionFile = await fetchUrlCached(optionFileName);
-      labelOptions = JSON.parse(optionFile) as LabelOptions;
+      const optionJson = await fetch(optionFileName).then(r => r.json());
+      labelOptions = optionJson as LabelOptions;
     } catch (e) {
       logDebug("error "+JSON.stringify(e)+" while reading confirm options, reverting to defaults");
-      const optionFile = await fetchUrlCached("json/trip_confirm_options.json.sample");
-      labelOptions = JSON.parse(optionFile) as LabelOptions;
+      const optionJson = await fetch("json/trip_confirm_options.json.sample").then(r => r.json());
+      labelOptions = optionJson as LabelOptions;
     }
   }
   return labelOptions;
@@ -80,8 +81,9 @@ export function getLabelInputDetails(appConfigParam?) {
   if (appConfigParam) appConfig = appConfigParam;
   if (inputDetails) return inputDetails;
 
-  if (appConfig.intro.program_or_study != 'program') {
-    // if this is a study, just return the base input details
+  if (!appConfig.intro.mode_studied) {
+    /* If there is no mode of interest, we don't need REPLACED_MODE.
+      So just return the base input details. */
     return baseLabelInputDetails;
   }
   // else this is a program, so add the REPLACED_MODE
@@ -99,18 +101,20 @@ export function getLabelInputDetails(appConfigParam?) {
 export const getLabelInputs = () => Object.keys(getLabelInputDetails());
 export const getBaseLabelInputs = () => Object.keys(baseLabelInputDetails);
 
-const otherValueToText = (otherValue) => {
-  const words = otherValue.replace("_", " ").split(" ");
+/** @description replace all underscores with spaces, and capitalizes the first letter of each word */
+export const labelKeyToReadable = (otherValue: string) => {
+  const words = otherValue.replace(/_/g, " ").trim().split(" ");
   if (words.length == 0) return "";
   return words.map((word) =>
     word[0].toUpperCase() + word.slice(1)
   ).join(" ");
 }
 
-const otherTextToValue = (otherText) =>
-  otherText.toLowerCase().replace(" ", "_");
+/** @description replaces all spaces with underscores, and lowercases the string */
+export const readableLabelToKey = (otherText: string) =>
+  otherText.trim().replace(/ /g, "_").toLowerCase();
 
 export const getFakeEntry = (otherValue) => ({
-  text: otherValueToText(otherValue),
+  text: labelKeyToReadable(otherValue),
   value: otherValue,
 });

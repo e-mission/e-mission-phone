@@ -11,15 +11,18 @@ import { angularize, getAngularService } from "../angular-react-helper";
 import useAppConfig from "../useAppConfig";
 import { useTranslation } from "react-i18next";
 import { invalidateMaps } from "../components/LeafletView";
-import Bottleneck from "bottleneck";
 import moment from "moment";
-import LabelListScreen from "./LabelListScreen";
+import LabelListScreen from "./list/LabelListScreen";
 import { createStackNavigator } from "@react-navigation/stack";
-import LabelScreenDetails from "./LabelDetailsScreen";
+import LabelScreenDetails from "./details/LabelDetailsScreen";
 import { NavigationContainer } from "@react-navigation/native";
 import { compositeTrips2TimelineMap, getAllUnprocessedInputs, getLocalUnprocessedInputs, populateCompositeTrips } from "./timelineHelper";
 import { fillLocationNamesOfTrip, resetNominatimLimiter } from "./addressNamesHelper";
 import { SurveyOptions } from "../survey/survey";
+import { getLabelOptions } from "../survey/multilabel/confirmHelper";
+import { displayError } from "../plugin/logger";
+import AppStatusModal from "../control/AppStatusModal";
+import { useTheme } from "react-native-paper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -29,8 +32,10 @@ export const LabelTabContext = React.createContext<any>(null);
 const LabelTab = () => {
   const { appConfig, loading } = useAppConfig();
   const { t } = useTranslation();
+  const { colors } = useTheme();
 
   const [surveyOpt, setSurveyOpt] = useState(null);
+  const [labelOptions, setLabelOptions] = useState(null);
   const [filterInputs, setFilterInputs] = useState([]);
   const [pipelineRange, setPipelineRange] = useState(null);
   const [queriedRange, setQueriedRange] = useState(null);
@@ -47,6 +52,8 @@ const LabelTab = () => {
   const CommHelper = getAngularService('CommHelper');
   const enbs = getAngularService('EnketoNotesButtonService');
 
+  const [permissionVis, setPermissionVis] = useState(false);
+
   // initialization, once the appConfig is loaded
   useEffect(() => {
     if (loading) return;
@@ -54,6 +61,7 @@ const LabelTab = () => {
     const surveyOpt = SurveyOptions[surveyOptKey];
     setSurveyOpt(surveyOpt);
     showPlaces = appConfig.survey_info?.buttons?.['place-notes'];
+    getLabelOptions().then((labelOptions) => setLabelOptions(labelOptions));
     labelPopulateFactory = getAngularService(surveyOpt.service);
     const tripSurveyName = appConfig.survey_info?.buttons?.['trip-notes']?.surveyName;
     const placeSurveyName = appConfig.survey_info?.buttons?.['place-notes']?.surveyName;
@@ -129,47 +137,56 @@ const LabelTab = () => {
   }
 
   async function loadAnotherWeek(when: 'past'|'future') {
-    const reachedPipelineStart = queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
-    const reachedPipelineEnd = queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
+    try {
+      const reachedPipelineStart = queriedRange?.start_ts && queriedRange.start_ts <= pipelineRange.start_ts;
+      const reachedPipelineEnd = queriedRange?.end_ts && queriedRange.end_ts >= pipelineRange.end_ts;
 
-    if (!queriedRange) {
-      // first time loading
-      if(!isLoading) setIsLoading('replace');
-      const nowTs = new Date().getTime() / 1000;
-      const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
-      handleFetchedTrips(ctList, utList, 'replace');
-      setQueriedRange({start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs});
-    } else if (when == 'past' && !reachedPipelineStart) {
-      if(!isLoading) setIsLoading('prepend');
-      const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
-      const [ctList, utList] = await fetchTripsInRange(queriedRange.start_ts - ONE_WEEK, queriedRange.start_ts - 1);
-      handleFetchedTrips(ctList, utList, 'prepend');
-      setQueriedRange({start_ts: fetchStartTs, end_ts: queriedRange.end_ts})
-    } else if (when == 'future' && !reachedPipelineEnd) {
-      if(!isLoading) setIsLoading('append');
-      const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
-      const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
-      handleFetchedTrips(ctList, utList, 'append');
-      setQueriedRange({start_ts: queriedRange.start_ts, end_ts: fetchEndTs})
+      if (!queriedRange) {
+        // first time loading
+        if(!isLoading) setIsLoading('replace');
+        const nowTs = new Date().getTime() / 1000;
+        const [ctList, utList] = await fetchTripsInRange(pipelineRange.end_ts - ONE_WEEK, nowTs);
+        handleFetchedTrips(ctList, utList, 'replace');
+        setQueriedRange({start_ts: pipelineRange.end_ts - ONE_WEEK, end_ts: nowTs});
+      } else if (when == 'past' && !reachedPipelineStart) {
+        if(!isLoading) setIsLoading('prepend');
+        const fetchStartTs = Math.max(queriedRange.start_ts - ONE_WEEK, pipelineRange.start_ts);
+        const [ctList, utList] = await fetchTripsInRange(queriedRange.start_ts - ONE_WEEK, queriedRange.start_ts - 1);
+        handleFetchedTrips(ctList, utList, 'prepend');
+        setQueriedRange({start_ts: fetchStartTs, end_ts: queriedRange.end_ts})
+      } else if (when == 'future' && !reachedPipelineEnd) {
+        if(!isLoading) setIsLoading('append');
+        const fetchEndTs = Math.min(queriedRange.end_ts + ONE_WEEK, pipelineRange.end_ts);
+        const [ctList, utList] = await fetchTripsInRange(queriedRange.end_ts + 1, fetchEndTs);
+        handleFetchedTrips(ctList, utList, 'append');
+        setQueriedRange({start_ts: queriedRange.start_ts, end_ts: fetchEndTs})
+      }
+    } catch (e) {
+      setIsLoading(false);
+      displayError(e, t('errors.while-loading-another-week', {when: when}));
     }
   }
 
   async function loadSpecificWeek(day: string) {
-    if (!isLoading) setIsLoading('replace');
-    resetNominatimLimiter();
-    const threeDaysBefore = moment(day).subtract(3, 'days').unix();
-    const threeDaysAfter = moment(day).add(3, 'days').unix();
-    const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
-    handleFetchedTrips(ctList, utList, 'replace');
-    setQueriedRange({start_ts: threeDaysBefore, end_ts: threeDaysAfter});
+    try {
+      if (!isLoading) setIsLoading('replace');
+      resetNominatimLimiter();
+      const threeDaysBefore = moment(day).subtract(3, 'days').unix();
+      const threeDaysAfter = moment(day).add(3, 'days').unix();
+      const [ctList, utList] = await fetchTripsInRange(threeDaysBefore, threeDaysAfter);
+      handleFetchedTrips(ctList, utList, 'replace');
+      setQueriedRange({start_ts: threeDaysBefore, end_ts: threeDaysAfter});
+    } catch (e) {
+      setIsLoading(false);
+      displayError(e, t('errors.while-loading-specific-week', {day: day}));
+    }
   }
 
   function handleFetchedTrips(ctList, utList, mode: 'prepend' | 'append' | 'replace') {
     const tripsRead = ctList.concat(utList);
     populateCompositeTrips(tripsRead, showPlaces, labelPopulateFactory, labelsResultMap, enbs, notesResultMap);
-    // Fill place names and trajectories on a reversed copy of the list so we fill from the bottom up
+    // Fill place names on a reversed copy of the list so we fill from the bottom up
     tripsRead.slice().reverse().forEach(function (trip, index) {
-      trip.geojson = Timeline.compositeTrip2Geojson(trip);
       fillLocationNamesOfTrip(trip);
     });
     const readTimelineMap = compositeTrips2TimelineMap(tripsRead, showPlaces);
@@ -215,19 +232,7 @@ const LabelTab = () => {
   function checkPermissionsStatus() {
     $rootScope.$broadcast("recomputeAppStatus", (status) => {
       if (!status) {
-        $ionicPopup.show({
-          title: t('control.incorrect-app-status'),
-          template: t('control.fix-app-status'),
-          scope: $rootScope,
-          buttons: [{
-            text: t('control.fix'),
-            type: 'button-assertive',
-            onTap: function (e) {
-              $state.go('root.main.control', { launchAppStatusModal: 1 });
-              return false;
-            }
-          }]
-        });
+        setPermissionVis(true); //if the status is false, popup modal
       }
     });
   }
@@ -258,6 +263,7 @@ const LabelTab = () => {
 
   const contextVals = {
     surveyOpt,
+    labelOptions,
     timelineMap,
     displayedEntries,
     filterInputs,
@@ -284,6 +290,10 @@ const LabelTab = () => {
                         This is what `detachPreviousScreen:false` does. */
                       options={{detachPreviousScreen: false}} />
         </Tab.Navigator>
+        <AppStatusModal permitVis={permissionVis} 
+                        setPermitVis={setPermissionVis} 
+                        dialogStyle={{ backgroundColor: colors.elevation.level3, margin: 5, marginLeft: 25, marginRight: 25}} 
+                        settingsScope={$rootScope} />
       </NavigationContainer>
     </LabelTabContext.Provider>
   );

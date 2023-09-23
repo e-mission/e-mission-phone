@@ -26,14 +26,10 @@
   position: relative;
 }
 
-.fill-container div[class*='css-'] {
+.fill-container > div[class*='css-'] {
   height: 100%;
   width: 100%;
   position: absolute;
-}
-
-.fill-container div[class*='css-'] > div[class*='css-'] {
-  position: static;
 }
 
 /* Without this, the LabelTab does not fill the entire height of the screen.

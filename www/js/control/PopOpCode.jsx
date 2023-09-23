@@ -1,37 +1,56 @@
-import React from "react";
+import React,  { useState } from "react";
 import { Modal, StyleSheet } from 'react-native';
 import { Button, Text, IconButton, Dialog, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import QrCode from "../components/QrCode";
+import AlertBar from "./AlertBar";
 
-const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
+const PopOpCode = ({visibilityValue, tokenURL, action, setVis, dialogStyle}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
+
+    const opcodeList = tokenURL.split("=");
+    const opcode = opcodeList[opcodeList.length - 1];
     
+    const [copyAlertVis, setCopyAlertVis] = useState(false);
+
+    const copyText = function(textToCopy){
+        navigator.clipboard.writeText(textToCopy).then(() => {
+            setCopyAlertvis(true);
+        })
+    }
+
+    let copyButton;
+    if (window.cordova.platformId == "ios"){
+        copyButton = <IconButton icon="content-copy" onPress={() => {copyText(opcode); setCopyAlertVis(true)}} style={styles.button}/>
+    }
+
     return (
-        <Modal visible={visibilityValue} onDismiss={() => setVis(false)}
-        transparent={true}>
-            <Dialog visible={visibilityValue} 
-            onDismiss={() => setVis(false)}
-            style={styles.dialog(colors.elevation.level3)}>
-                <Dialog.Title>{t("general-settings.qrcode")}</Dialog.Title>
-                <Dialog.Content style={styles.content}>
-                    <QrCode value={tokenURL}></QrCode>
-                    <Text>{t("general-settings.qrcode-share-title")}</Text>
-                    <IconButton icon="share" onPress={() => action()} style={styles.button}/>
-                </Dialog.Content>
-                <Dialog.Actions>
-                    <Button onPress={() => setVis(false)}>{t('general-settings.cancel')}</Button>
-                </Dialog.Actions>
-            </Dialog>
-        </Modal>
+        <>
+            <Modal visible={visibilityValue} onDismiss={() => setVis(false)}
+            transparent={true}>
+                <Dialog visible={visibilityValue} 
+                onDismiss={() => setVis(false)}
+                style={dialogStyle}>
+                    <Dialog.Title>{t("general-settings.qrcode")}</Dialog.Title>
+                    <Dialog.Content style={styles.content}>
+                        <Text style={styles.text}>{t("general-settings.qrcode-share-title")}</Text>
+                        <QrCode value={tokenURL}></QrCode>
+                        <Text style={styles.opcode}>{opcode}</Text>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <IconButton icon="share" onPress={() => action()} style={styles.button}/>
+                        {copyButton}
+                        <Button onPress={() => setVis(false)} style={styles.button}>{t('general-settings.cancel')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
+            <AlertBar visible={copyAlertVis} setVisible={setCopyAlertVis} messageKey='Copied to clipboard!'></AlertBar> 
+        </>
     )
 }
 const styles = StyleSheet.create({
-    dialog: (surfaceColor) => ({
-        backgroundColor: surfaceColor,
-        margin: 1,
-    }),
     title:
     {
         alignItems: 'center',
@@ -40,9 +59,19 @@ const styles = StyleSheet.create({
     content: {
         alignItems: 'center',
         justifyContent: 'center', 
+        margin: 5
     },
     button: {
         margin: 'auto',
+    },
+    opcode: {
+        fontFamily: "monospace",
+        wordBreak: "break-word",
+        marginTop: 5
+    },
+    text : {
+        fontWeight: 'bold',
+        marginBottom: 5
     }
   });
 

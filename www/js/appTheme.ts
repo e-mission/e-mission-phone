@@ -10,11 +10,14 @@ const AppTheme = {
     primary: '#0080b9', // lch(50% 50 250)
     primaryContainer: '#90ceff', // lch(80% 40 250)
     onPrimaryContainer: '#001e30', // lch(10% 50 250)
-    secondary: '#f2795c', // lch(65% 60 40)
-    secondaryContainer: '#ffb39e', // lch(80% 45 40)
+    secondary: '#c08331', // lch(60% 55 70)
+    secondaryContainer: '#fcefda', // lch(95% 12 80)
+    onSecondaryContainer: '#45392e', // lch(25% 10 65)
     background: '#edf1f6', // lch(95% 3 250) - background of label screen, other screens still have this as CSS .pane
     surface: '#fafdff', // lch(99% 30 250)
     surfaceVariant: '#e0f0ff', // lch(94% 50 250) - background of DataTable
+    surfaceDisabled: '#c7e0f7', // lch(88% 15 250)
+    onSurfaceDisabled: '#3a4955', // lch(30% 10 250)
     elevation: {
       level0: 'transparent',
       level1: '#fafdff', // lch(99% 30 250)
@@ -23,6 +26,8 @@ const AppTheme = {
       level4: '#e0f0ff', // lch(94% 50 250)
       level5: '#d6ebff', // lch(92% 50 250)
     },
+    success: '#38872e', // lch(50% 55 135)
+    danger: '#f23934' // lch(55% 85 35)
   },
   roundness: 5,
 };
@@ -57,12 +62,15 @@ const flavorOverrides = {
       },
     }
   },
-  draft: { // for draft TripCards; a greyish color scheme
+  draft: { // for TripCards and LabelDetailsScreen of draft trips; a greyish color scheme
     colors: {
       primary: '#616971', // lch(44 6 250)
       primaryContainer: '#b6bcc2', // lch(76 4 250)
+      background: '#eef1f4', // lch(95 2 250)
+      surface: '#eef1f4', // lch(95 2 250)
+      surfaceDisabled: '#c7cacd', // lch(81 2 250)
       elevation: {
-        level1: '#dbddde', // lch(88 1 250)
+        level1: '#e1e3e4', // lch(90 1 250)
         level2: '#d2d5d8', // lch(85 2 250)
       },
     }

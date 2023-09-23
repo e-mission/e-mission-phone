@@ -8,11 +8,12 @@
 */
 
 import React, { useEffect, useState, useContext } from "react";
-import DiaryButton from "../../diary/DiaryButton";
+import DiaryButton from "../../components/DiaryButton";
 import { useTranslation } from "react-i18next";
 import moment from "moment";
 import { LabelTabContext } from "../../diary/LabelTab";
 import EnketoModal from "./EnketoModal";
+import { displayErrorMsg, logDebug } from "../../plugin/logger";
 
 type Props = {
   timelineEntry: any,
@@ -83,10 +84,10 @@ const AddNoteButton = ({ timelineEntry, notesConfig, storeKey }: Props) => {
 
   function onResponseSaved(result) {
     if (result) {
-      console.log('AddNoteButton: response was saved, about to repopulateTimelineEntry; result=', result);
+      logDebug('AddNoteButton: response was saved, about to repopulateTimelineEntry; result=' + JSON.stringify(result));
       repopulateTimelineEntry(timelineEntry._id.$oid);
     } else {
-      console.error('AddNoteButton: response was not saved, result=', result);
+      displayErrorMsg('AddNoteButton: response was not saved, result=', result);
     }
   }
 

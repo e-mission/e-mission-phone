@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import { Icon } from '../components/Icon';
-import { Divider, useTheme } from 'react-native-paper';
-import { cardStyles } from './cards/DiaryCard';
+import { View, ViewProps } from 'react-native';
+import { Icon } from '../../components/Icon';
+import { Text, Divider, useTheme } from 'react-native-paper';
 
 type Props = {
   displayStartTime?: string, displayStartName: string,
@@ -19,7 +18,7 @@ const StartEndLocations = (props: Props) => {
   return (<>
     <View style={s.location(props.centered)}>
       {props.displayStartTime &&
-        <Text style={{ padding: 10, minWidth: 'fit-content' }}>
+        <Text style={{ padding: 10, flexShrink: 0 }}>
           {props.displayStartTime}
         </Text>
       }
@@ -34,7 +33,7 @@ const StartEndLocations = (props: Props) => {
       <Divider style={{ marginVertical: 4 }} />
       <View style={s.location(props.centered)}>
         {props.displayEndTime &&
-          <Text style={{ padding: 10, minWidth: 'fit-content' }}>
+          <Text style={{ padding: 10, flexShrink: 0 }}>
             {props.displayEndTime}
           </Text>
         }
@@ -54,7 +53,7 @@ const s = {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: centered ? 'center' : 'flex-start',
-  }),
+  } as ViewProps),
   locationIcon: (colors, iconSize, filled?) => ({
     border: `2px solid ${colors.primary}`,
     borderRadius: 50,
@@ -65,7 +64,7 @@ const s = {
     height: iconSize * 1.5,
     backgroundColor: filled ? colors.primary : colors.onPrimary,
     marginRight: 6,
-  })
+  } as ViewProps)
 }
 
 export default StartEndLocations;
