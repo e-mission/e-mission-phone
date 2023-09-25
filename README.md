@@ -10,7 +10,7 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 **Issues:** Since this repository is part of a larger project, all issues are tracked [in the central docs repository](https://github.com/e-mission/e-mission-docs/issues). If you have a question, [as suggested by the open source guide](https://opensource.guide/how-to-contribute/#communicating-effectively), please file an issue instead of sending an email. Since issues are public, other contributors can try to answer the question and benefit from the answer.
 
-:sparkles: Check [Contributing](#6-contributing) if you're interested in contributing for this project :sparkles:
+:sparkles: Check [Contributing](#contributing) if you're interested in contributing for this project :sparkles:
 
 ## Contents
 #### 1. [Creating logos](#creating-logos) 
@@ -101,13 +101,6 @@ have now:
 If you have setup failures, please compare the configuration in the **passing CI
 builds** with your configuration. That is almost certainly the source of the error.
 
-### Tested on
-__MacOS__
-- Intel chip, MacOS Ventura 13.6
-- Intel chip, MacOS Ventura 13.5.2
-- Intel chip, MacOS Ventura 13.0
-- Intel chip, MacOS Monterey 12.6.7
-
 Pre-requisites
 ---
 - The version of xcode used by the CI.
@@ -196,9 +189,8 @@ If connecting to a development server over http, make sure to turn on http suppo
         <application android:usesCleartextTraffic="true"/>
     </edit-config>
 ```
-__3. Run this in every new shell__ 
+__3. Run this in every new shell for Activation__ 
 
-- __Activation__
 ```
 source setup/activate_native.sh
 ```
@@ -218,8 +210,9 @@ Copied config.cordovabuild.xml -> config.xml and package.cordovabuild.json -> pa
 ```
 
 </details>
+<br>
 
-- __Pick a type of build and execute the following:__
+ __4. Pick a type of build and execute the following:__
 
 More "versions" are available in [`package.cordovabuild.json`](https://github.com/e-mission/e-mission-phone/blob/fce117ff859abd995613bd405dbc7d27c703b09b/package.cordovabuild.json)
 ```
@@ -230,8 +223,17 @@ For instance: (build-dev-android)
 ```
 npm run build-dev-android
 ```
-Your output should look something like this:
-![Build Successful Message screenshot](Build_ss.png)
+<details><summary> Your expected output should look something like this</summary>
+
+```
+BUILD SUCCESSFUL in 2m 48s
+52 actionable tasks: 52 executed
+Built the following apk(s):
+/Users/<Username>/e-mission-phone/platforms/android/app/build/outputs/apk/debug/app-debug.apk
+```
+
+</details> 
+
 
 ## End to End Testing
 
