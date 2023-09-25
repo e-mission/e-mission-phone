@@ -33,12 +33,4 @@ angular.module('emission.main.control',['emission.services',
             //to change reminder time if accessing profile by specific android notification flow
             //would open the date picker
 
-    //TODO create React pages and use React routing
-    $scope.showLog = function() {
-        $state.go("root.main.log");
-    }
-    $scope.showSensed = function() {
-        $state.go("root.main.sensed");
-    }
-    
 });

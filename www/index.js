@@ -30,7 +30,6 @@ import './js/survey/input-matcher.js';
 import './js/survey/multilabel/infinite_scroll_filters.js';
 import './js/survey/multilabel/multi-label-ui.js';
 import './js/diary.js';
-import './js/recent.js';
 import './js/diary/services.js';
 import './js/survey/external/launch.js';
 import './js/survey/enketo/answer.js';
