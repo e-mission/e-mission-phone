@@ -25,9 +25,6 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
     const [explainVis, setExplainVis] = useState<boolean>(false);
 
-    const [backgroundRestricted, setBackgroundRestricted] = useState<boolean>(false);
-    const [allowBackgroundInstructions, setAllowBackgroundInstructions] = useState<Array<any>>([]);
-
     const [checkList, setCheckList] = useState([]);
     const [explanationList, setExplanationList] = useState<Array<any>>([]);
     const [haveSetText, setHaveSetText] = useState<boolean>(false);
@@ -272,8 +269,11 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             return checkOrFix(ignoreBatteryOptCheck, window['cordova'].plugins.BEMDataCollection.isIgnoreBatteryOptimizations,
                 false);
         };
-        var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-12";
-        if (osver < 12) {
+        var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-13";
+        if (osver == 12) {
+            androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-12";
+        }
+        else if (osver < 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
         }
         let unusedAppsUnrestrictedCheck = {
@@ -313,13 +313,8 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
 
         setExplanationList(tempExplanations);
   
-        //waiting on samsung feedback, need more information
-        setBackgroundRestricted(false);
-        if(window['device'].manufacturer.toLowerCase() == "samsung") {
-          setBackgroundRestricted(true);
-          setAllowBackgroundInstructions(t("intro.allow_background.samsung"));
-        }
-  
+        //TODO - update samsung handling based on feedback
+
         console.log("Explanation = "+explanationList);
     }
 
