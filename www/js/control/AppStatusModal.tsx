@@ -8,13 +8,12 @@ import useAppConfig from "../useAppConfig";
 import useAppStateChange from "../useAppStateChange";
 import ExplainPermissions from "../appstatus/ExplainPermissions";
 import AlertBar from "./AlertBar";
+import { settingStyles } from "./ProfileSettings";
 
-const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) => {
+const AppStatusModal = ({permitVis, setPermitVis}) => {
     const { t } = useTranslation();
     const { colors } = useTheme();
     const { appConfig, loading } = useAppConfig();
-
-    console.log("settings scope in app status modal", settingsScope);
 
     const { height: windowHeight } = useWindowDimensions();
     const [osver, setOsver] = useState(0);
@@ -369,12 +368,6 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
         refreshAllChecks();
     });
 
-    //refresh when recompute message is broadcast
-    settingsScope.$on("recomputeAppStatus", function() {
-        console.log("PERMISSION CHECK: recomputing state");
-        refreshAllChecks();
-    });
-
      //load when ready
      useEffect(() => {
         if (appConfig && window['device']?.platform) {
@@ -412,7 +405,7 @@ const AppStatusModal = ({permitVis, setPermitVis, dialogStyle, settingsScope}) =
             <Modal visible={permitVis} onDismiss={() => setPermitVis(false)} transparent={true}>
                 <Dialog visible={permitVis} 
                         onDismiss={() => setPermitVis(false)} 
-                        style={dialogStyle}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('consent.permissions')}</Dialog.Title>
                     <Dialog.Content  style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
                         <ScrollView persistentScrollbar={true}>

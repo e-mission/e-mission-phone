@@ -4,8 +4,9 @@ import { Dialog, Button, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import useAppConfig from "../useAppConfig";
 import i18next from "i18next";
+import { settingStyles } from "./ProfileSettings";
 
-const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
+const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis }) => {
     const { t } = useTranslation();
     const { height: windowHeight } = useWindowDimensions();
     const { colors } = useTheme();
@@ -40,7 +41,7 @@ const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis, dialogStyle }) => {
             <Modal visible={privacyVis} onDismiss={() => setPrivacyVis(false)} transparent={true}>
                 <Dialog visible={privacyVis} 
                         onDismiss={() => setPrivacyVis(false)} 
-                        style={dialogStyle}>
+                        style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('consent-text.title')}</Dialog.Title>
                     <Dialog.Content style={{maxHeight: windowHeight/1.5, paddingBottom: 0}}>
                         <ScrollView persistentScrollbar={true}>
