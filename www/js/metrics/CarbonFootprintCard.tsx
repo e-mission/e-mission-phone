@@ -26,7 +26,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             //formatted data from last week, if exists (14 days ago -> 8 days ago)
             let userLastWeekModeMap = {};
             let userLastWeekSummaryMap = {};
-            if(lastWeekDistance && lastWeekDistance?.length >= 7) {
+            if(lastWeekDistance && lastWeekDistance?.length == 7) {
                 userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
                 userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
             }
