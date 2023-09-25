@@ -76,7 +76,7 @@ const App = () => {
       :
         <OnboardingStack />
       }
-      {(pendingOnboardingState == null || pendingOnboardingState.route != 'join' && pendingOnboardingState.route != 'consent') &&
+      {(pendingOnboardingState == null || pendingOnboardingState.route != 'welcome' && pendingOnboardingState.route != 'consent') &&
         <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
       }
     </AppContext.Provider>

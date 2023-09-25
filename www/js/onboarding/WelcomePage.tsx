@@ -6,7 +6,7 @@ import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { onboardingStyles } from './OnboardingStack';
 
-const JoinPage = () => {
+const WelcomePage = () => {
 
   const { t } = useTranslation();
   const context = useContext(AppContext);
@@ -77,4 +77,4 @@ const s = StyleSheet.create({
   },
 });
 
-export default JoinPage;
+export default WelcomePage;

@@ -3,7 +3,7 @@ import { getAngularService } from "../angular-react-helper";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
-type OnboardingRoute = 'join' | 'consent' | 'survey' | 'save-qr' | false;
+type OnboardingRoute = 'welcome' | 'consent' | 'survey' | 'save-qr' | false;
 export type OnboardingState = {
   opcode: string,
   route: OnboardingRoute,
@@ -20,7 +20,7 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
     if (isIntroDone) return null; // onboarding is done; no pending state
     let route: OnboardingRoute = false;
     if (!config) {
-      route = 'join';
+      route = 'welcome';
     } else if (!isConsented) {
       route = 'consent';
     } else if (!saveQrDone) {
