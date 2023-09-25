@@ -13,16 +13,16 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 :sparkles: Check [Contributing](#6-contributing) if you're interested in contributing for this project :sparkles:
 
 ## Contents
-#### 1. [Creating logos](#1-creating-logos) 
-#### 2. [Updating the UI only](#2-updating-the-ui-only) 
-#### 3. [Updating the e-mission-* plugins or adding new plugins](#3-updating-the-e-mission--plugins-or-adding-new-plugins) 
-#### 4. [End to End Testing](#4-end-to-end-testing)
-#### 5. [Beta-testing debugging](#5-beta-testing-debugging) 
-#### 6. [Contributing](#6-contributing)
+#### 1. [Creating logos](#creating-logos) 
+#### 2. [Updating the UI only](#updating-the-ui-only) 
+#### 3. [Updating the e-mission-* plugins or adding new plugins](#updating-the-e-mission--plugins-or-adding-new-plugins) 
+#### 4. [End to End Testing](#end-to-end-testing)
+#### 5. [Beta-testing debugging](#beta-testing-debugging) 
+#### 6. [Contributing](#contributing)
 
 ---
 
-## 1. Creating logos
+## Creating logos
 
 If you are building your own version of the app, you must have your own logo to
 avoid app store conficts. Updating the logo is very simple using the [`ionic
@@ -31,7 +31,7 @@ command.
 
 **Note**: You may have to install the [`cordova-res` package](https://github.com/ionic-team/cordova-res) for the command to work
 
-## 2. Updating the UI only
+## Updating the UI only
 [![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-serve-install)
 
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) [e-mission dev app](https://github.com/e-mission/e-mission-devapp/) and install the most recent version from [releases](https://github.com/e-mission/e-mission-devapp/releases). 
@@ -84,7 +84,7 @@ source setup/activate_serve.sh
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
 
-## 3. Updating the e-mission-\* plugins or adding new plugins
+## Updating the e-mission-\* plugins or adding new plugins
 
 [![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml)
 [![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml)
@@ -233,7 +233,7 @@ npm run build-dev-android
 Your output should look something like this:
 ![Build Successful Message screenshot](Build_ss.png)
 
-## 4. End to End Testing
+## End to End Testing
 
 A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
 
@@ -248,7 +248,7 @@ In order to make end to end testing easy, if the local server is started on a HT
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
-## 5. Beta-testing debugging
+## Beta-testing debugging
 If users run into problems, they have the ability to email logs to the
 maintainer. These logs are in the form of an sqlite3 database, so they have to
 be opened using `sqlite3`. Alternatively, you can export it to a csv with
@@ -263,7 +263,7 @@ python bin/csv_export_add_date.py /tmp/loggerDB.<issue>
 less /tmp/loggerDB.<issue>.withdate.log
 ```
 
-## 6. Contributing
+## Contributing
 
 
 1. Add the main repo as upstream
