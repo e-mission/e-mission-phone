@@ -56,7 +56,6 @@ angular.module('emission', ['ionic', 'jm.i18next',
 
     if (urlComponents.route == 'join') {
       ReferralHandler.setupGroupReferral(urlComponents);
-      StartPrefs.loadWithPrefs();
     } else if (urlComponents.route == 'login_token') {
       initByUser(urlComponents);
     }

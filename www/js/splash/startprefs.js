@@ -8,7 +8,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
       $ionicPopup, KVStore, $http, Logger, ReferralHandler) {
     var logger = Logger;
-    var nTimesCalled = 0;
     var startprefs = {};
      // Boolean: represents that the "intro" - the one page summary
      // and the login are done
@@ -167,27 +166,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
             }
         });
     };
-
-    startprefs.loadWithPrefs = function() {
-      // alert("attach debugger!");
-      console.log("Checking to see whether we are ready to load the screen");
-      if (!angular.isDefined($window.Logger)) {
-          alert("ionic is ready, but logger not present?");
-      }
-      logger = Logger;
-      startprefs.loadPreferredScreen();
-    };
-
-    startprefs.startWithPrefs = function() {
-      startprefs.loadWithPrefs();
-    }
-
-    $ionicPlatform.ready().then(function() {
-      Logger.log("ionicPlatform.ready() called " + nTimesCalled+" times!");
-      nTimesCalled = nTimesCalled + 1;
-      startprefs.startWithPrefs();
-      Logger.log("startprefs startup done");
-    });
 
     return startprefs;
 });
