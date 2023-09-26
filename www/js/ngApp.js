@@ -36,7 +36,7 @@ angular.module('emission', ['ionic', 'jm.i18next',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.services.email',
-    'emission.intro', 'emission.main', 'emission.config.dynamic',
+    'emission.main', 'emission.config.dynamic',
     'emission.config.server_conn', 'emission.join.ctrl',
     'pascalprecht.translate', 'LocalStorageModule'])
 

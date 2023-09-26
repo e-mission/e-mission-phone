@@ -113,33 +113,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     }
 
     /*
-     * getNextState() returns a promise, since reading the startupConfig is
-     * async. The promise returns an onboarding state to navigate to, or
-     * null for the default state
-     */
-
-    startprefs.getPendingOnboardingState = function() {
-      return startprefs.readStartupState().then(function([is_intro_done, is_consented, has_config]) {
-        if (!has_config) {
-            console.assert(!$rootScope.has_config, "in getPendingOnboardingState first check, $rootScope.has_config", JSON.stringify($rootScope.has_config));
-            return 'root.join';
-        } else if (!is_intro_done) {
-            console.assert(!$rootScope.intro_done, "in getPendingOnboardingState second check, $rootScope.intro_done", JSON.stringify($rootScope.intro_done));
-            return 'root.intro';
-        } else {
-        // intro is done. Now let's check consent
-            console.assert(is_intro_done, "in getPendingOnboardingState, local is_intro_done", is_intro_done);
-            console.assert($rootScope.is_intro_done, "in getPendingOnboardingState, $rootScope.intro_done", $rootScope.intro_done);
-            if (is_consented) {
-                return null;
-            } else {
-                return 'root.reconsent';
-            }
-        }
-      });
-    };
-
-    /*
      * Read the intro_done and consent_done variables into the $rootScope so that
      * we can use them without making multiple native calls
      */
@@ -179,28 +152,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
         });
     }
 
-    startprefs.getNextState = function() {
-      return startprefs.getPendingOnboardingState().then(function(result){
-        if (result == null) {
-          if (angular.isDefined($rootScope.redirectTo)) {
-            var redirState = $rootScope.redirectTo;
-            var redirParams = $rootScope.redirectParams;
-            $rootScope.redirectTo = undefined;
-            $rootScope.redirectParams = undefined;
-            return {state: redirState, params: redirParams};
-          } else {
-            return {state: 'root.main.inf_scroll', params: {}};
-          }
-        } else {
-          return {state: result, params: {}};
-        }
-      })
-      .catch((err) => {
-        Logger.displayError("error getting next state", err);
-        return "root.intro";
-      });
-    };
-
     var changeState = function(destState) {
         logger.log('changing state to '+destState);
         console.log("loading "+destState);
@@ -215,19 +166,6 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
               $rootScope.$broadcast("RELOAD_GOAL_PAGE_FOR_REFERRAL")
             }
         });
-    };
-
-    // Currently loads main or intro based on whether onboarding is complete.
-    // But easily extensible to storing the last screen that the user was on,
-    // or the users' preferred screen
-
-    startprefs.loadPreferredScreen = function() {
-      logger.log("About to navigate to preferred tab");
-      startprefs.getNextState().then(changeState).catch(function(error) {
-        logger.displayError("Error loading preferred tab, loading root.intro", error);
-        // logger.log("error "+error+" loading finding tab, loading root.intro");
-        changeState('root.intro');
-      });
     };
 
     startprefs.loadWithPrefs = function() {

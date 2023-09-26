@@ -24,7 +24,6 @@ import './js/join/join-ctrl.js';
 import './js/controllers.js';
 import './js/services.js';
 import './js/i18n-utils.js';
-import './js/intro.js';
 import './js/main.js';
 import './js/survey/input-matcher.js';
 import './js/survey/multilabel/infinite_scroll_filters.js';
