@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
@@ -507,5 +507,4 @@ export const settingStyles = StyleSheet.create({
     }
   });
    
-  angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;

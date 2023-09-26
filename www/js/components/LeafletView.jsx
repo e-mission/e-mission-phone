@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import { angularize } from "../angular-react-helper";
 import { object, string } from "prop-types";
 import { View } from "react-native";
 import { useTheme } from "react-native-paper";
@@ -110,10 +109,4 @@ const stopIcon = L.divIcon({className: 'leaflet-div-icon-stop', iconSize: [18, 1
   }
 };
 
-LeafletView.propTypes = {
-  geojson: object,
-  opts: object
-}
-
-angularize(LeafletView, 'LeafletView', 'emission.main.leaflet');
 export default LeafletView;

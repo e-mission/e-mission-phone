@@ -1,5 +1,5 @@
 import React, { useEffect, useState, createContext, useMemo } from 'react';
-import { angularize, getAngularService } from './angular-react-helper';
+import { getAngularService } from './angular-react-helper';
 import { BottomNavigation, Button, useTheme } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import LabelTab from './diary/LabelTab';
@@ -83,5 +83,4 @@ const App = () => {
   </>);
 }
 
-angularize(App, 'App', 'emission.app');
 export default App;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { getAngularService } from "../angular-react-helper";
 import { View, ScrollView, useWindowDimensions } from "react-native";
 import { Appbar } from "react-native-paper";
 import NavBarButton from "../components/NavBarButton";
@@ -149,5 +149,4 @@ export const cardStyles: any = {
   }
 }
 
-angularize(MetricsTab, 'MetricsTab', 'emission.main.metricstab');
 export default MetricsTab;
