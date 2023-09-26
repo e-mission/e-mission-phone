@@ -117,7 +117,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
             {t('survey.save')}
           </button>
           <a href="#survey-paper" className="btn btn-primary next-page disabled" style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>{t('survey.next')}</a>
-          <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
+          <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="img/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
           <div className="form-footer__jump-nav" style={{ display: 'flex', flexDirection: 'row' }}>
             <a href="#" className="btn btn-default disabled first-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.return-to-beginning')}</a>
             <a href="#" className="btn btn-default disabled last-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.go-to-end')}</a>
