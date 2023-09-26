@@ -83,6 +83,9 @@ const SurveyPage = () => {
     <EnketoModal visible={surveyModalVisible} onDismiss={() => setSurveyModalVisible(false)}
       onResponseSaved={onFinish} surveyName={DEMOGRAPHIC_SURVEY_NAME}
       opts={{
+        /* If there is no prev response, we need an initial response from the user and should
+          not allow them to dismiss the modal by the "<- Dismiss" button */
+        undismissable: !prevSurveyResponse,
         prefilledSurveyResponse: prevSurveyResponse,
         dataKey: DEMOGRAPHIC_SURVEY_DATAKEY,
       }} />

@@ -7,6 +7,7 @@ import { logDebug } from "../../plugin/logger";
 export type PrefillFields = {[key: string]: string};
 
 export type SurveyOptions = {
+  undismissable?: boolean;
   timelineEntry?: any;
   prefilledSurveyResponse?: string;
   prefillFields?: PrefillFields;

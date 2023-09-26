@@ -89,11 +89,13 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
         will be appended by Enketo Core. */}
         <header ref={headerEl} className="form-header clearfix">
-          <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
-            {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
-            <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>󰁍</span>
-            <span>{t('survey.dismiss')}</span>
-          </button>
+          {!opts.undismissable &&
+            <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
+              {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
+              <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>󰁍</span>
+              <span>{t('survey.dismiss')}</span>
+            </button>
+          }
           <span className="form-language-selector hide"><span>Choose Language</span></span>
           <nav className="pages-toc hide" role="navigation">
             <label htmlFor="toc-toggle"></label>
