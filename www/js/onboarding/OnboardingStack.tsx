@@ -42,10 +42,11 @@ export const onboardingStyles = StyleSheet.create({
   },
   buttonRow: {
     flexDirection: 'row',
-    justifyContent: 'center',
+    flexWrap: 'wrap',
     marginVertical: 15,
     alignItems: 'center',
     gap: 8,
+    margin: 'auto',
   },
 });
 
