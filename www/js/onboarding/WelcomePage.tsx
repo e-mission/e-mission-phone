@@ -5,6 +5,7 @@ import { Button, Dialog, Divider, IconButton, Surface, Text, TextInput, Touchabl
 import color from 'color';
 import { initByUser } from '../config/dynamicConfig';
 import { AppContext } from '../App';
+import { displayError } from "../plugin/logger";
 import { onboardingStyles } from './OnboardingStack';
 import { Icon } from '../components/Icon';
 
@@ -29,11 +30,11 @@ const WelcomePage = () => {
                 console.log("found code", text);
               loginWithToken(text);
           } else {
-              // $ionicPopup.alert({template: "invalid study reference "+result.text});
+            displayError(result.text, "invalid study reference") ;
           }
       },
       function (error) {
-          // $ionicPopup.alert({template: "Scanning failed: " + error});
+        displayError(error, "Scanning failed: ");
       });
   };
 
