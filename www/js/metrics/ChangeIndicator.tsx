@@ -22,13 +22,17 @@ const ChangeIndicator = ({ change }) => {
 
     const changeText = useMemo(() => {
         if(change) {
-            let low = isNaN(change.low) ? '∞' : Math.round(Math.abs(change.low));
-            let high = isNaN(change.high) ? '∞' : Math.round(Math.abs(change.high));
-            if(change.low == change.high)
+            let low = isFinite(change.low) ? Math.round(Math.abs(change.low)): '∞';
+            let high = isFinite(change.high) ? Math.round(Math.abs(change.high)) : '∞';
+            
+            if(Math.round(change.low) == Math.round(change.high))
             {
                 let text = changeSign(change.low) + low + "%";
                 return text;
-            } else {
+            } else if(!(isFinite(change.low) || isFinite(change.high))) {
+                return ""; //if both are not finite, no information is really conveyed, so don't show 
+            }
+            else {
                 let text = `${changeSign(change.low) + low}% / ${changeSign(change.high) + high}%`;
                 return text;
             }
@@ -36,7 +40,7 @@ const ChangeIndicator = ({ change }) => {
     },[change])
   
     return (
-        (change.low) ?
+        (changeText != "") ?
         <View style={styles.view(change.low > 0 ? colors.danger : colors.success)}>
             <Text style={styles.importantText(colors)}>
                 {changeText + '\n'}

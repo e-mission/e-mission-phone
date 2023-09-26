@@ -56,6 +56,11 @@ jobs:
         echo "ionic version"
         npx ionic --version
 
+    - name: Run Jest tests
+      shell: bash -l {0}
+      run: |
+        npx jest
+
 # TODO: figure out how to check that a server started correctly
 #    - name: Try starting it
 #      run: npx run serve

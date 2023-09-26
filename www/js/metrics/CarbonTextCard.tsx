@@ -19,15 +19,15 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
         //separate data into weeks
         const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
 
-        //formatted data from last week
+        //formatted data from last week, if exists (14 days ago -> 8 days ago)
         let userLastWeekModeMap = {};
         let userLastWeekSummaryMap = {};
-        if(lastWeekDistance && lastWeekDistance?.length >= 7) {
+        if(lastWeekDistance && lastWeekDistance?.length == 7) {
             userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
             userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
         }
         
-        //formatted distance data from this week
+        //formatted distance data from this week (7 days ago -> yesterday)
         let userThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'user');
         let userThisWeekSummaryMap = generateSummaryFromData(userThisWeekModeMap, 'distance');
         let worstDistance = userThisWeekSummaryMap.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
@@ -35,7 +35,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
         //setting up data to be displayed
         let textList = [];
 
-        //calculate low-high and format range for prev week, if exists
+        //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
         if(userLastWeekSummaryMap[0]) {
           let userPrevWeek = {
               low: FootprintHelper.getFootprintForMetrics(userLastWeekSummaryMap, 0), 
@@ -48,7 +48,7 @@ const CarbonTextCard = ({ userMetrics, aggMetrics }: Props) => {
             textList.push({label: label + '²', value: `${Math.round(userPrevWeek.low)} - ${Math.round(userPrevWeek.high)}`});
         }
 
-        //calculate low-high and format range for past week
+        //calculate low-high and format range for past week (7 days ago -> yesterday)
         let userPastWeek = {
             low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
             high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 
