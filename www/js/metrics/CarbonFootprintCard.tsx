@@ -23,15 +23,15 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
             //separate data into weeks
             const [thisWeekDistance, lastWeekDistance] = segmentDaysByWeeks(userMetrics?.distance, 2);
 
-            //formatted data from last week
+            //formatted data from last week, if exists (14 days ago -> 8 days ago)
             let userLastWeekModeMap = {};
             let userLastWeekSummaryMap = {};
-            if(lastWeekDistance && lastWeekDistance?.length >= 7) {
+            if(lastWeekDistance && lastWeekDistance?.length == 7) {
                 userLastWeekModeMap = parseDataFromMetrics(lastWeekDistance, 'user');
                 userLastWeekSummaryMap = generateSummaryFromData(userLastWeekModeMap, 'distance');
             }
             
-            //formatted distance data from this week
+            //formatted distance data from this week (7 days ago -> yesterday)
             let userThisWeekModeMap = parseDataFromMetrics(thisWeekDistance, 'user');
             let userThisWeekSummaryMap = generateSummaryFromData(userThisWeekModeMap, 'distance');
             let worstDistance = userThisWeekSummaryMap.reduce((prevDistance, currModeSummary) => prevDistance + currModeSummary.values, 0);
@@ -44,7 +44,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 FootprintHelper.setUseCustomFootprint();
             }
 
-            //calculate low-high and format range for prev week, if exists
+            //calculate low-high and format range for prev week, if exists (14 days ago -> 8 days ago)
             let userPrevWeek;
             if(userLastWeekSummaryMap[0]) {
                 userPrevWeek = {
@@ -55,7 +55,7 @@ const CarbonFootprintCard = ({ userMetrics, aggMetrics }: Props) => {
                 graphRecords.push({label: t('main-metrics.labeled'), x: userPrevWeek.low, y: `${t('main-metrics.prev-week')}\n(${formatDateRangeOfDays(lastWeekDistance)})`});
             }
 
-            //calculate low-high and format range for past week
+            //calculate low-high and format range for past week (7 days ago -> yesterday)
             let userPastWeek = {
                 low: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, 0), 
                 high: FootprintHelper.getFootprintForMetrics(userThisWeekSummaryMap, FootprintHelper.getHighestFootprint()), 

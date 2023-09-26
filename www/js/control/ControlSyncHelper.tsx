@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import { Modal, View } from "react-native";
 import { Dialog, Button, Switch, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import ActionMenu from "../components/ActionMenu";
 import { settingStyles } from "./ProfileSettings";
 import { getAngularService } from "../angular-react-helper";
+import ActionMenu from "../components/ActionMenu";
 import SettingRow from "./SettingRow";
 import AlertBar from "./AlertBar";
 import moment from "moment";
@@ -49,6 +49,7 @@ const getEndTransitionKey = function() {
 type syncConfig = { sync_interval: number, 
                     ios_use_remote_push: boolean };
 
+//forceSync and endForceSync SettingRows & their actions
 export const ForceSyncRow = ({getState}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
@@ -59,47 +60,40 @@ export const ForceSyncRow = ({getState}) => {
     const [dataPushedVis, setDataPushedVis] = useState(false);
 
     async function forceSync() {
-        ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC).then(
-            function() {
-                console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
-            });
-        forcePluginSync().then(function() {
+        try {
+            let addedEvent = ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC);
+            console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+
+            let sync = await forcePluginSync();
             /*
-             * Change to sensorKey to "background/location" after fixing issues
-             * with getLastSensorData and getLastMessages in the usercache
-             * See https://github.com/e-mission/e-mission-phone/issues/279 for details
-             */
+            * Change to sensorKey to "background/location" after fixing issues
+            * with getLastSensorData and getLastMessages in the usercache
+            * See https://github.com/e-mission/e-mission-phone/issues/279 for details
+            */
             var sensorKey = "statemachine/transition";
-            return window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
-        }).then(function(sensorDataList) {
-            Logger.log("sensorDataList = "+JSON.stringify(sensorDataList));
+            let sensorDataList = await window.cordova.plugins.BEMUserCache.getAllMessages(sensorKey, true);
+            
             // If everything has been pushed, we should
-            // only have one entry for the battery, which is the one that was
-            // inserted on the last successful push.
-            var isTripEnd = function(entry) {
-                if (entry.metadata.key == getEndTransitionKey()) {
-                    return true;
-                } else {
-                    return false;
-                }
-            };
-            var syncLaunchedCalls = sensorDataList.filter(isTripEnd);
-            var syncPending = (syncLaunchedCalls.length > 0);
+            // have no more trip end transitions left
+            let isTripEnd = function(entry) {
+                return entry.metadata == getEndTransitionKey();
+            }
+            let syncLaunchedCalls = sensorDataList.filter(isTripEnd);
+            let syncPending = syncLaunchedCalls.length > 0;
             Logger.log("sensorDataList.length = "+sensorDataList.length+
-                       ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
-                       ", syncPending? = "+syncPending);
-            return syncPending;
-        }).then(function(syncPending) {
+                        ", syncLaunchedCalls.length = "+syncLaunchedCalls.length+
+                        ", syncPending? = "+syncPending);
             Logger.log("sync launched = "+syncPending);
-            if (syncPending) {
-                Logger.log("data is pending, showing confirm dialog");
-                setDataPendingVis(true); //consent handling in modal
+            
+            if(syncPending) {
+                Logger.log(Logger.log("data is pending, showing confirm dialog"));
+                        setDataPendingVis(true); //consent handling in modal
             } else {
                 setDataPushedVis(true);
             }
-        }).catch(function(error) {
+        } catch (error) {
             Logger.displayError("Error while forcing sync", error);
-        });
+        }
     };
 
     const getStartTransitionKey = function() {
@@ -145,13 +139,11 @@ export const ForceSyncRow = ({getState}) => {
         /* First, quickly start and end the trip. Let's listen to the promise
          * result for start so that we ensure ordering */
         var sensorKey = "statemachine/transition";
-        return getTransition(getStartTransitionKey()).then(function(entry_data) {
-            return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-        }).then(function() {
-                return getTransition(getEndTransitionKey()).then(function(entry_data) {
-                    return window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
-                })
-        }).then(forceSync);
+        let entry_data = await getTransition(getStartTransitionKey());
+        let messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        entry_data = await getTransition(getEndTransitionKey());
+        messagePut = await window.cordova.plugins.BEMUserCache.putMessage(sensorKey, entry_data);
+        forceSync();
     };
 
     return (
