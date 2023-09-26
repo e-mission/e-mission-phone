@@ -36,7 +36,7 @@ const PopOpCode = ({visibilityValue, tokenURL, action, setVis}) => {
                     <Dialog.Title>{t("general-settings.qrcode")}</Dialog.Title>
                     <Dialog.Content style={styles.content}>
                         <Text style={styles.text}>{t("general-settings.qrcode-share-title")}</Text>
-                        <QrCode value={tokenURL}></QrCode>
+                        <QrCode value={tokenURL} style={{marginHorizontal: 8}}></QrCode>
                         <Text style={styles.opcode}>{opcode}</Text>
                     </Dialog.Content>
                     <Dialog.Actions>
