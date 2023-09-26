@@ -10,14 +10,27 @@ const JoinPage = () => {
 
   const { t } = useTranslation();
   const context = useContext(AppContext);
-  const { refreshOnboardingState } = context;
+  const { refreshOnboardingState, appConfig } = context;
   const [pasteModalVis, setPasteModalVis] = useState(false);
   const [existingToken, setExistingToken] = useState('');
 
-  function scanCode() {
-    console.debug('scanCode');
-    // TODO
-  }
+  const scanCode = function() {
+    window.cordova.plugins.barcodeScanner.scan(
+      function (result) {
+        console.debug("scanned code", result);
+          if (result.format == "QR_CODE" && 
+              result.cancelled == false) {
+                let text = result.text.split("=")[1];
+                console.log("found code", text);
+              loginWithToken(text);
+          } else {
+              // $ionicPopup.alert({template: "invalid study reference "+result.text});
+          }
+      },
+      function (error) {
+          // $ionicPopup.alert({template: "Scanning failed: " + error});
+      });
+  };
 
   function loginWithToken(token) {
     initByUser({token}).then((configUpdated) => {
