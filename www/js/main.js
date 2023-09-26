@@ -1,7 +1,6 @@
 'use strict';
 
 import angular from 'angular';
-import App from './App';
 
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.i18n.utils',
@@ -9,8 +8,7 @@ angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.metrics.factory',
                                  'emission.main.metrics.mappings',
                                  'emission.services',
-                                 'emission.services.upload',
-                                  App.module])
+                                 'emission.services.upload'])
 
 .config(function($stateProvider) {
   $stateProvider.state('root.main', {

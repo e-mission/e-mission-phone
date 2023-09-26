@@ -7,8 +7,7 @@ angular.module('emission.main.diary',['emission.main.diary.services',
                                       'emission.survey.multilabel.infscrollfilters',
                                       'emission.survey.enketo.add-note-button',
                                       'emission.survey.enketo.trip.infscrollfilters',
-                                      'emission.plugin.logger',
-                                      LabelTab.module])
+                                      'emission.plugin.logger'])
 
 .config(function($stateProvider) {
   $stateProvider
