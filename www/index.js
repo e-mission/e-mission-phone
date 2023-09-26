@@ -1,8 +1,5 @@
 import './manual_lib/ionic/css/ionic.css';
 import './css/style.css';
-import './css/intro.css';
-import './css/appstatus.css';
-import './css/main.recent.css';
 import './css/main.diary.css';
 import './manual_lib/fontawesome/css/all.min.css';
 import 'leaflet/dist/leaflet.css';
