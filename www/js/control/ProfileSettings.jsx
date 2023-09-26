@@ -40,7 +40,6 @@ const ProfileSettings = () => {
     const ControlHelper = getAngularService('ControlHelper');
     const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
-    const DynamicConfig = getAngularService('DynamicConfig');
 
     //functions that come directly from an Angular service
     const editCollectionConfig = () => setEditCollection(true);

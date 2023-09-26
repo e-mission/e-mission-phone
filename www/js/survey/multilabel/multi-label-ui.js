@@ -6,7 +6,7 @@ angular.module('emission.survey.multilabel.buttons',
     ['emission.stats.clientstats',
         'emission.survey.inputmatcher'])
 
-.factory("MultiLabelService", function($rootScope, InputMatcher, $timeout, $ionicPlatform, DynamicConfig, Logger) {
+.factory("MultiLabelService", function($rootScope, InputMatcher, $timeout, $ionicPlatform, Logger) {
   var mls = {};
   console.log("Creating MultiLabelService");
   mls.init = function(config) {

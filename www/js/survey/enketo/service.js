@@ -6,12 +6,11 @@ import { getConfig } from '../../config/dynamicConfig';
 angular.module('emission.survey.enketo.service', [
   'ionic',
   'emission.services',
-  'emission.config.dynamic',
   'emission.survey.inputmatcher',
   'emission.survey.enketo.answer'
 ])
 .factory('EnketoSurvey', function($window, $http, UnifiedDataLoader,
-  InputMatcher, EnketoSurveyAnswer, DynamicConfig) {
+  InputMatcher, EnketoSurveyAnswer) {
   /**
    * @typedef EnketoSurveyConfig
    * @type {{

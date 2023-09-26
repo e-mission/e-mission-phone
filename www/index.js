@@ -5,9 +5,7 @@ import './manual_lib/fontawesome/css/all.min.css';
 import 'leaflet/dist/leaflet.css';
 
 import './js/ngApp.js';
-import './js/config/dynamic_config.js';
 import './js/config/imperial.js';
-import './js/config/server_conn.js';
 import './js/stats/clientstats.js';
 import './js/splash/referral.js';
 import './js/splash/customURL.js';

@@ -1,12 +1,12 @@
 import angular from 'angular';
+import { getConfig } from '../config/dynamicConfig';
 
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
                                               'emission.splash.referral',
-                                              'emission.plugin.kvstore',
-                                              'emission.config.dynamic'])
+                                              'emission.plugin.kvstore'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, KVStore, $http, Logger, ReferralHandler, DynamicConfig) {
+      $ionicPopup, KVStore, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var nTimesCalled = 0;
     var startprefs = {};
@@ -95,7 +95,7 @@ angular.module('emission.splash.startprefs', ['emission.plugin.logger',
     }
 
     startprefs.readConfig = function() {
-        return DynamicConfig.loadSavedConfig().then((savedConfig) => $rootScope.app_ui_label = savedConfig);
+        return getConfig().then((savedConfig) => $rootScope.app_ui_label = savedConfig);
     }
 
     startprefs.hasConfig = function() {

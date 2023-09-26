@@ -2,11 +2,8 @@ import angular from 'angular';
 import MessageFormat from 'messageformat';
 import { getConfig } from '../../config/dynamicConfig';
 
-angular.module('emission.survey.enketo.answer', [
-  'ionic',
-  'emission.config.dynamic',
-])
-.factory('EnketoSurveyAnswer', function($http, DynamicConfig,) {
+angular.module('emission.survey.enketo.answer', ['ionic'])
+.factory('EnketoSurveyAnswer', function($http) {
   /**
    * @typedef EnketoAnswerData
    * @type {object}

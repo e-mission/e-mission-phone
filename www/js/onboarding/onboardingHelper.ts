@@ -1,5 +1,6 @@
 import { DateTime } from "luxon";
 import { getAngularService } from "../angular-react-helper";
+import { getConfig } from "../config/dynamicConfig";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -16,7 +17,7 @@ export let registerUserDone = false;
 export const setRegisterUserDone = (b) => registerUserDone = b;
 
 export function getPendingOnboardingState(): Promise<OnboardingState> {
-  return Promise.all([readConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
+  return Promise.all([getConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
     if (isIntroDone) return null; // onboarding is done; no pending state
     let route: OnboardingRoute = false;
     if (!config) {
@@ -31,11 +32,6 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
     return { route, opcode: config?.joined?.opcode };
   });
 };
-
-async function readConfig() {
-  const DynamicConfig = getAngularService('DynamicConfig');
-  return DynamicConfig.loadSavedConfig() as Promise<any>;
-}
 
 async function readConsented() {
   const StartPrefs = getAngularService('StartPrefs');

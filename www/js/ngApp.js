@@ -31,17 +31,17 @@ import { Provider as PaperProvider } from 'react-native-paper';
 import App from './App';
 import { getTheme } from './appTheme';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { initByUser } from './config/dynamicConfig';
 
 angular.module('emission', ['ionic', 'jm.i18next',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.services.email',
-    'emission.main', 'emission.config.dynamic',
-    'emission.config.server_conn', 'emission.join.ctrl',
+    'emission.main', 'emission.join.ctrl',
     'pascalprecht.translate', 'LocalStorageModule'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
-    CustomURLScheme, ReferralHandler, DynamicConfig, localStorageService, ServerConnConfig) {
+    CustomURLScheme, ReferralHandler, localStorageService) {
   console.log("Starting run");
   // ensure that plugin events are delivered after the ionicPlatform is ready
   // https://github.com/katzer/cordova-plugin-local-notifications#launch-details
@@ -59,7 +59,7 @@ angular.module('emission', ['ionic', 'jm.i18next',
       ReferralHandler.setupGroupReferral(urlComponents);
       StartPrefs.loadWithPrefs();
     } else if (urlComponents.route == 'login_token') {
-      DynamicConfig.initByUser(urlComponents);
+      initByUser(urlComponents);
     }
   });
   // END: Global listeners
