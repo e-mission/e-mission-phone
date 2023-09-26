@@ -53,12 +53,18 @@ const SaveQrPage = ({  }) => {
   return (
     <Surface style={onboardingStyles.page}>
       <View style={onboardingStyles.pageSection}>
-        <Text variant='headlineSmall'> {t('login.make-sure-save-your-opcode')} </Text>
-        <Text variant='bodyMedium'> {t('login.cannot-retrieve')} </Text>
+        <Text variant='headlineSmall' style={{textAlign: 'center'}}>
+          {t('login.make-sure-save-your-opcode')}
+        </Text>
+        <Text variant='bodyMedium' style={{textAlign: 'center'}}>
+          {t('login.cannot-retrieve')}
+        </Text>
       </View>
-      <View style={onboardingStyles.pageSection}>
+      <View style={[onboardingStyles.pageSection, {paddingHorizontal: 20}]}>
         <QrCode value={pendingOnboardingState.opcode} style={{marginHorizontal: 8}} />
-        <Text style={{fontFamily: 'monospace', marginVertical: 8}}> {pendingOnboardingState.opcode} </Text>
+        <Text style={s.opcodeText}>
+          {pendingOnboardingState.opcode}
+        </Text>
       </View>
       <View style={onboardingStyles.buttonRow}>
         <Button mode='contained' icon='share' onPress={() => shareQR(pendingOnboardingState.opcode)}>
@@ -71,5 +77,14 @@ const SaveQrPage = ({  }) => {
     </Surface>
   );
 }
+
+const s = StyleSheet.create({
+  opcodeText: {
+    fontFamily: 'monospace',
+    marginVertical: 8,
+    maxWidth: '100%',
+    wordBreak: 'break-all',
+  },
+});
 
 export default SaveQrPage;
