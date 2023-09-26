@@ -9,6 +9,7 @@ import { displayError, logDebug } from "../plugin/logger";
 import { useTranslation } from "react-i18next";
 import QrCode, { shareQR } from "../components/QrCode";
 import { onboardingStyles } from "./OnboardingStack";
+import { preloadDemoSurveyResponse } from "./SurveyPage";
 
 const SaveQrPage = ({  }) => {
 
@@ -22,6 +23,7 @@ const SaveQrPage = ({  }) => {
       login(pendingOnboardingState.opcode).then((response) => {
         logDebug('login done, refreshing onboarding state');
         setRegisterUserDone(true);
+        preloadDemoSurveyResponse();
         refreshOnboardingState();
       });
     } else {

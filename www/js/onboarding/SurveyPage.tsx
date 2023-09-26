@@ -10,6 +10,14 @@ import { useTranslation } from "react-i18next";
 import { DateTime } from "luxon";
 import { onboardingStyles } from "./OnboardingStack";
 
+let preloadedResponsePromise: Promise<any> = null;
+export const preloadDemoSurveyResponse = () => {
+  if (!preloadedResponsePromise) {
+    preloadedResponsePromise = loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY);
+  }
+  return preloadedResponsePromise;
+}
+
 const SurveyPage = () => {
 
   const { t } = useTranslation();
@@ -26,10 +34,15 @@ const SurveyPage = () => {
   }, [prevSurveyResponse]);
 
   useEffect(() => {
-    loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY).then((lastSurvey) => {
+    /* If we came from the SaveQrPage, we should have already initiated loading the previous survey
+      response from there, and preloadDemographicsSurvey() will just return the promise that was
+      already started.
+      Otherwise, it will start a new promise. Either way, we wait for it to finish before proceeding. */
+    preloadDemoSurveyResponse().then((lastSurvey) => {
       if (lastSurvey?.data?.xmlResponse) {
         setPrevSurveyResponse(lastSurvey.data.xmlResponse);
       } else {
+        // if there is no prev response, we show the blank survey to be filled out for the first time
         setSurveyModalVisible(true);
       }
     });
