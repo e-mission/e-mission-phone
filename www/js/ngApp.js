@@ -37,8 +37,7 @@ angular.module('emission', ['ionic', 'jm.i18next',
     'emission.controllers','emission.services', 'emission.plugin.logger',
     'emission.splash.customURLScheme', 'emission.splash.referral',
     'emission.services.email',
-    'emission.main', 'emission.join.ctrl',
-    'pascalprecht.translate', 'LocalStorageModule'])
+    'emission.main', 'pascalprecht.translate', 'LocalStorageModule'])
 
 .run(function($ionicPlatform, $rootScope, $http, Logger,
     CustomURLScheme, ReferralHandler, localStorageService) {
@@ -99,52 +98,4 @@ angular.module('emission', ['ionic', 'jm.i18next',
     );
   });
   console.log("Ending run");
-})
-
-.config(function($stateProvider, $urlRouterProvider, $compileProvider) {
-  console.log("Starting config");
-  // alert("config");
-
-  // Ionic uses AngularUI Router which uses the concept of states
-  // Learn more here: https://github.com/angular-ui/ui-router
-  // Set a few states which the app can be in.
-  // The 'intro' and 'diary' states are found in their respective modules
-  // Each state's controller can be found in controllers.js
-  $compileProvider.imgSrcSanitizationWhitelist(/^\s*(https?|ftp|file|blob|ionic):|data:image/);  
-  $stateProvider
-  // set up a state for the splash screen. This has no parents and no children
-  // because it is basically just used to load the user's preferred screen.
-  // This cannot directly use plugins - has to check for them first.
-  .state('splash', {
-        url: '/splash',
-        templateUrl: 'templates/splash/splash.html',
-        controller: 'SplashCtrl'
-  })
-
-  // add the join screen to the list of initially defined states
-  // we can't put it in intro since it comes before it
-  // we can't put it in main because it is also a temporary screen that only
-  // shows up when we have no config.
-  // so we put it in here
-  .state('root.join', {
-    url: '/join',
-    templateUrl: 'templates/join/request_join.html',
-    controller: 'JoinCtrl'
-  })
-
-  // setup an abstract state for the root. Only children of this can be loaded
-  // as preferred screens, and all children of this can assume that the device
-  // is ready.
-  .state('root', {
-    url: '/root',
-    abstract: true,
-    template: '<ion-nav-view/>',
-    controller: 'RootCtrl'
-  });
-
-  // alert("about to fall back to otherwise");
-  // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/splash');
-  
-  console.log("Ending config");
 });
