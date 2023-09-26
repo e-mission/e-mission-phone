@@ -2,12 +2,16 @@
 
 import angular from 'angular';
 
+import MetricsTab from './metrics/MetricsTab';
+
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
-                                 'emission.main.metrics',
+                                 'emission.main.metrics.factory',
+                                 'emission.main.metrics.mappings',
                                  'emission.config.dynamic',
                                  'emission.services',
-                                 'emission.services.upload'])
+                                 'emission.services.upload',
+                                  MetricsTab.module])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -23,8 +27,7 @@ angular.module('emission.main', ['emission.main.diary',
     url: '/metrics',
     views: {
       'main-metrics': {
-        templateUrl: 'templates/main-metrics.html',
-        controller: 'MetricsCtrl'
+        template: `<metrics-tab class="fill-container"></metrics-tab>`,
       }
     }
   })
