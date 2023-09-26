@@ -3,7 +3,6 @@ Once the parent components, anyplace this is used, are converted to React,
 we can remove this wrapper and just use the QRCode component directly */
 
 import React from "react";
-import { string } from "prop-types";
 import QRCode from "react-qr-code";
 
 export function shareQR(message) {
@@ -21,11 +20,11 @@ export function shareQR(message) {
     const pngFile = canvas.toDataURL("image/png");
 
     var prepopulateQRMessage = {};
-    prepopulateQRMessage.files = [pngFile];
-    prepopulateQRMessage.url = message;
-    prepopulateQRMessage.message = message; //text saved to files with image!
+    prepopulateQRMessage['files'] = [pngFile];
+    prepopulateQRMessage['url'] = message;
+    prepopulateQRMessage['message'] = message; //text saved to files with image!
 
-    window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function (result) {
+    window['plugins'].socialsharing.shareWithOptions(prepopulateQRMessage, function (result) {
       console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
       console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
     }, function (msg) {
@@ -36,7 +35,7 @@ export function shareQR(message) {
 }
 
 const QrCode = ({ value, ...rest }) => {
-  return <QRCode className="qr-code" value={value} style={[{ width: '100%', height: '100%' }, rest.style]} {...rest} />;
+  return <QRCode className="qr-code" value={value} style={[{ width: '100%', height: '100%' }, rest.style] as any} {...rest} />;
 };
 
 export default QrCode;

@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
-import { object, string } from "prop-types";
 import { View } from "react-native";
 import { useTheme } from "react-native-paper";
+import L from "leaflet";
 
-const mapSet = new Set();
+const mapSet = new Set<any>();
 export function invalidateMaps() {
   mapSet.forEach(map => map.invalidateSize());
 }
@@ -54,7 +54,7 @@ const LeafletView = ({ geojson, opts, ...otherProps }) => {
   const mapElId = `map-${geojson.data.id.replace(/[^a-zA-Z0-9]/g, '')}`;
 
   return (
-    <View {...otherProps} accessibilityRole='img' aria-label='Map'>
+    <View {...otherProps} role='img' aria-label='Map'>
       <style>{`
         .leaflet-bottom {
           max-width: 100%;
