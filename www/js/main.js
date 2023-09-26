@@ -4,7 +4,8 @@ import angular from 'angular';
 import App from './App';
 
 angular.module('emission.main', ['emission.main.diary',
-                                 'emission.main.control',
+                                 'emission.i18n.utils',
+                                 'emission.splash.notifscheduler',
                                  'emission.main.metrics.factory',
                                  'emission.main.metrics.mappings',
                                  'emission.config.dynamic',
