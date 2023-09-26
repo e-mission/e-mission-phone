@@ -8,15 +8,16 @@ import { settingStyles } from "./ProfileSettings";
 
 const AppStatusModal = ({ permitVis, setPermitVis }) => {
     const { height: windowHeight } = useWindowDimensions();
-    const { overallStatus } = usePermissionStatus();
+    const { overallStatus, checkList } = usePermissionStatus();
     const { colors } = useTheme();
 
-    //anytime the status changes, may need to show modal
+    /* Listen for permissions status changes to determine if we should show the modal.
+      If we have no checks, we are still loading and shouldn't show yet */
     useEffect(() => {
-      if(!overallStatus) {
+      if(!overallStatus && checkList.length > 0) {
           setPermitVis(true);
       }
-  }, [overallStatus]);
+  }, [overallStatus, checkList]);
 
     return (
         <Modal visible={permitVis} onRequestClose={() => {
