@@ -7,7 +7,6 @@ import angular from 'angular';
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.stats.clientstats',
         'emission.services',
-        'emission.config.dynamic',
         'emission.survey.enketo.launch',
         'emission.survey.enketo.answer',
         'emission.survey.inputmatcher'])

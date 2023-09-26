@@ -8,7 +8,6 @@ angular.module('emission.main', ['emission.main.diary',
                                  'emission.splash.notifscheduler',
                                  'emission.main.metrics.factory',
                                  'emission.main.metrics.mappings',
-                                 'emission.config.dynamic',
                                  'emission.services',
                                  'emission.services.upload',
                                   App.module])
