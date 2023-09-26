@@ -1,5 +1,5 @@
 import i18next from "i18next";
-import { displayError, displayErrorMsg, logDebug } from "../plugin/logger";
+import { displayError, logDebug, logWarn } from "../plugin/logger";
 import { getAngularService } from "../angular-react-helper";
 import { fetchUrlCached } from "../commHelper";
 
@@ -236,12 +236,12 @@ export function getConfig() {
       return config;
     }
     logDebug("No config found in KVStore, fetching from native storage");
-    return window['cordova'].plugins.BEMUserCache.getRWDocument(CONFIG_PHONE_UI).then((config) => {
-      if (config) {
+    return window['cordova'].plugins.BEMUserCache.getDocument(CONFIG_PHONE_UI, false).then((config) => {
+      if (config && Object.keys(config).length) {
         storedConfig = config;
         return config;
       }
-      displayErrorMsg(i18next.t('config.unable-read-saved-config'));
+      logWarn("No config found in native storage either. Returning null");
       return null;
     });
   });
