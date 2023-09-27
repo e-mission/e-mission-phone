@@ -31,4 +31,4 @@ import './js/control/uploadService.js';
 import './js/metrics-factory.js';
 import './js/metrics-mappings.js';
 import './js/plugin/logger.ts';
-import './js/plugin/storage.js';
+import './js/plugin/ngStorage.js';
