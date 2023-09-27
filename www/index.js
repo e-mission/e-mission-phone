@@ -28,8 +28,6 @@ import './js/survey/enketo/enketo-trip-button.js';
 import './js/survey/enketo/enketo-add-note-button.js';
 import './js/control/emailService.js';
 import './js/control/uploadService.js';
-import './js/control/collect-settings.js';
-import './js/control/sync-settings.js';
 import './js/metrics-factory.js';
 import './js/metrics-mappings.js';
 import './js/plugin/logger.ts';
