@@ -1,6 +1,7 @@
 import angular from 'angular';
 import { getLabelOptions } from './survey/multilabel/confirmHelper';
 import { getConfig } from './config/dynamicConfig';
+import { storageGet, storageSet } from './plugin/storage';
 
 angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
                                      'emission.plugin.kvstore'])
@@ -146,7 +147,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
   }
 
   this.loadCarbonDatasetLocale = function() {
-    return KVStore.get(CARBON_DATASET_KEY).then(function(localeCode) {
+    return storageGet(CARBON_DATASET_KEY).then(function(localeCode) {
       Logger.log("CarbonDatasetHelper.loadCarbonDatasetLocale() obtained value from storage [" + localeCode + "]");
       if (!localeCode) {
         localeCode = defaultCarbonDatasetCode;
@@ -158,7 +159,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
 
   this.saveCurrentCarbonDatasetLocale = function (localeCode) {
     setCurrentCarbonDatasetLocale(localeCode);
-    KVStore.set(CARBON_DATASET_KEY, currentCarbonDatasetCode);
+    storageSet(CARBON_DATASET_KEY, currentCarbonDatasetCode);
     Logger.log("CarbonDatasetHelper.saveCurrentCarbonDatasetLocale() saved value [" + currentCarbonDatasetCode + "] to storage");
   }
 

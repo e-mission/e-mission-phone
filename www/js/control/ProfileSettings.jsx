@@ -22,6 +22,7 @@ import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMedium
 import { resetDataAndRefresh } from "../config/dynamicConfig";
 import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
+import { storageClear } from "../plugin/storage";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -35,7 +36,6 @@ const ProfileSettings = () => {
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
-    const KVStore = getAngularService('KVStore');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
     const ClientStats = getAngularService('ClientStats');
@@ -387,15 +387,15 @@ const ProfileSettings = () => {
                 style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('general-settings.clear-data')}</Dialog.Title>
                     <Dialog.Content>
-                        <Button onPress={() => {KVStore.clearOnlyLocal;
+                        <Button onPress={() => {storageClear({local: true})
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-ui-state-only')}
                         </Button>
-                        <Button onPress={() => {KVStore.clearOnlyNative;
+                        <Button onPress={() => {storageClear({native: true});
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-native-cache-only')}
                         </Button>
-                        <Button onPress={() => {KVStore.clearAll;
+                        <Button onPress={() => {storageClear({local: true, native: true});
                                                 setNukeVis(false);}}>
                             {t('general-settings.nuke-everything')}
                         </Button>

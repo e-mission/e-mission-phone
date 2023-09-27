@@ -10,6 +10,7 @@ import { useTranslation } from "react-i18next";
 import QrCode, { shareQR } from "../components/QrCode";
 import { onboardingStyles } from "./OnboardingStack";
 import { preloadDemoSurveyResponse } from "./SurveyPage";
+import { storageSet } from "../plugin/storage";
 
 const SaveQrPage = ({  }) => {
 
@@ -33,10 +34,9 @@ const SaveQrPage = ({  }) => {
 
   function login(token) {
     const CommHelper = getAngularService('CommHelper');
-    const KVStore = getAngularService('KVStore');
     const EXPECTED_METHOD = "prompted-auth";
     const dbStorageObject = {"token": token};
-    return KVStore.set(EXPECTED_METHOD, dbStorageObject).then((r) => {
+    return storageSet(EXPECTED_METHOD, dbStorageObject).then((r) => {
       CommHelper.registerUser((successResult) => {
         refreshOnboardingState();
       }, function(errorResult) {
