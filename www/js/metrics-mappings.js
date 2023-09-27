@@ -3,10 +3,9 @@ import { getLabelOptions } from './survey/multilabel/confirmHelper';
 import { getConfig } from './config/dynamicConfig';
 import { storageGet, storageSet } from './plugin/storage';
 
-angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
-                                     'emission.plugin.kvstore'])
+angular.module('emission.main.metrics.mappings', ['emission.plugin.logger'])
 
-.service('CarbonDatasetHelper', function(KVStore) {
+.service('CarbonDatasetHelper', function() {
   var CARBON_DATASET_KEY = 'carbon_dataset_locale';
 
   // Values are in Kg/PKm (kilograms per passenger-kilometer)
@@ -182,7 +181,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     return carbonDatasets[currentCarbonDatasetCode].footprintData;
   };
 })
-.service('METDatasetHelper', function(KVStore) {
+.service('METDatasetHelper', function() {
   var standardMETs = {
     "WALKING": {
       "VERY_SLOW": {

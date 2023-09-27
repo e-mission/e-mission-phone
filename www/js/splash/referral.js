@@ -1,9 +1,9 @@
 import angular from 'angular';
 import { storageGetDirect, storageRemove, storageSet } from '../plugin/storage';
 
-angular.module('emission.splash.referral', ['emission.plugin.kvstore'])
+angular.module('emission.splash.referral', [])
 
-.factory('ReferralHandler', function($window, KVStore) {
+.factory('ReferralHandler', function($window) {
     var referralHandler = {};
 
     var REFERRAL_NAVIGATION_KEY = 'referral_navigation';

@@ -6,8 +6,7 @@ import { labelOptions } from './survey/multilabel/confirmHelper';
 import { storageGet, storageRemove, storageSet } from './plugin/storage';
 
 angular.module('emission.main.metrics.factory',
-        ['emission.main.metrics.mappings',
-        'emission.plugin.kvstore'])
+        ['emission.main.metrics.mappings'])
 
 .factory('FootprintHelper', function(CarbonDatasetHelper, CustomDatasetHelper) {
   var fh = {};
@@ -145,7 +144,7 @@ angular.module('emission.main.metrics.factory',
   return fh;
 })
 
-.factory('CalorieCal', function(KVStore, METDatasetHelper, CustomDatasetHelper) {
+.factory('CalorieCal', function(METDatasetHelper, CustomDatasetHelper) {
 
   var cc = {};
   var highestMET = 0;

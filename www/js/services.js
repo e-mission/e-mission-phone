@@ -2,8 +2,7 @@
 
 import angular from 'angular';
 
-angular.module('emission.services', ['emission.plugin.logger',
-                                     'emission.plugin.kvstore'])
+angular.module('emission.services', ['emission.plugin.logger'])
 
 .service('CommHelper', function($rootScope) {
     var getConnectURL = function(successCallback, errorCallback) {

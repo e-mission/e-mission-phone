@@ -3,11 +3,10 @@ import { getConfig } from '../config/dynamicConfig';
 import { storageGet, storageSet } from '../plugin/storage';
 
 angular.module('emission.splash.startprefs', ['emission.plugin.logger',
-                                              'emission.splash.referral',
-                                              'emission.plugin.kvstore'])
+                                              'emission.splash.referral'])
 
 .factory('StartPrefs', function($window, $state, $interval, $rootScope, $ionicPlatform,
-      $ionicPopup, KVStore, $http, Logger, ReferralHandler) {
+      $ionicPopup, $http, Logger, ReferralHandler) {
     var logger = Logger;
     var startprefs = {};
      // Boolean: represents that the "intro" - the one page summary
