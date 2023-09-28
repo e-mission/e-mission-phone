@@ -1,4 +1,5 @@
 import angular from 'angular';
+import { onLaunchCustomURL } from '../splash/customURL';
 
 angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
@@ -7,7 +8,7 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
                                         'emission.splash.remotenotify',
                                         'emission.stats.clientstats'])
 .controller('JoinCtrl', function($scope, $state, $interval, $rootScope, 
-    $ionicPlatform, $ionicPopup, $ionicPopover) {
+    $ionicPlatform, $ionicPopup, $ionicPopover, ReferralHandler, DynamicConfig) {
     console.log('JoinCtrl invoked');
         // alert("attach debugger!");
         // PushNotify.startupInit();
@@ -37,9 +38,15 @@ angular.module('emission.join.ctrl', ['emission.splash.startprefs',
 
     function handleOpenURL(url) {
       console.log("onLaunch method from external function called");
-      var c = document.querySelectorAll("[ng-app]")[0];
-      var scope = angular.element(c).scope();
-      scope.$broadcast("CUSTOM_URL_LAUNCH", url);
+      onLaunchCustomURL(url, function(url, urlComponents){
+        console.log("GOT URL:"+url);
+        if (urlComponents.route == 'join') {
+          ReferralHandler.setupGroupReferral(urlComponents);
+          StartPrefs.loadWithPrefs();
+        } else if (urlComponents.route == 'login_token') {
+          DynamicConfig.initByUser(urlComponents);
+        }
+      })
     };
 
     $scope.scanCode = function() {
