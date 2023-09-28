@@ -24,6 +24,7 @@ export const mockGetAppVersion = () => {
 
 export const mockBEMUserCache = () => {
   const _cache = {};
+  const messages = [];
   const mockBEMUserCache = {
     getLocalStorage: (key: string, isSecure: boolean) => {
       return new Promise((rs, rj) =>
@@ -67,6 +68,21 @@ export const mockBEMUserCache = () => {
       return new Promise<string[]>((rs, rj) =>
         setTimeout(() => {
           rs(Object.keys(_cache));
+        }, 100)
+      );
+    },
+    putMessage: (key: string, value: any) => {
+      return new Promise<void>((rs, rj) =>
+        setTimeout(() => {
+          messages.push({ key, value });
+          rs();
+        }, 100)
+      );
+    },
+    getAllMessages: (key: string, withMetadata?: boolean) => {
+      return new Promise<any[]>((rs, rj) =>
+        setTimeout(() => {
+          rs(messages.filter(m => m.key == key).map(m => m.value));
         }, 100)
       );
     }
