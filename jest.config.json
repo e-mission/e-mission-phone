@@ -1,4 +1,5 @@
 {
+  "testEnvironment": "jsdom",
   "testPathIgnorePatterns": [
     "/node_modules/",
     "/platforms/",
