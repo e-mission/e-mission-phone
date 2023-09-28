@@ -21,8 +21,10 @@ export const statKeys = {
 
 let appVersion;
 export const getAppVersion = () => {
-  appVersion ||= window['cordova']?.plugins?.BEMUserCache?.getAppVersion();
-  return appVersion;
+  if (appVersion) return appVersion;
+  window['cordova']?.getAppVersion.getVersionNumber().then((version) => {
+    appVersion = version;
+  });
 }
 
 export const getStatsEvent = (name: string, reading: any) => {

@@ -69,7 +69,6 @@ const ProfileSettings = () => {
     const [syncSettings, setSyncSettings] = useState({});
     const [cacheResult, setCacheResult] = useState("");
     const [connectSettings, setConnectSettings] = useState({});
-    const [appVersion, setAppVersion] = useState("");
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
@@ -96,7 +95,6 @@ const ProfileSettings = () => {
         getOPCode();
         getSyncSettings();
         getConnectURL();
-        setAppVersion(getAppVersion());
     }
 
     //previously not loaded on regular refresh, this ensures it stays caught up
@@ -376,7 +374,7 @@ const ProfileSettings = () => {
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
             </ExpansionSection>
-            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion}></SettingRow>
+            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={getAppVersion()}></SettingRow>
         </ScrollView>
 
             {/* menu for "nuke data" */}
