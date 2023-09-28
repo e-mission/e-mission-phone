@@ -1,3 +1,27 @@
+export const mockCordova = () => {
+  window['cordova'] ||= {};
+  window['cordova'].platformId ||= 'ios';
+  window['cordova'].platformVersion ||= '6.2.0';
+  window['cordova'].plugins ||= {};
+}
+
+export const mockDevice = () => {
+  window['device'] ||= {};
+  window['device'].platform ||= 'ios';
+  window['device'].version ||= '14.0.0';
+}
+
+export const mockGetAppVersion = () => {
+  const mockGetAppVersion = {
+    getAppName: () => new Promise((rs, rj) => setTimeout(() => rs('Mock App'), 10)),
+    getPackageName: () => new Promise((rs, rj) => setTimeout(() => rs('com.example.mockapp'), 10)),
+    getVersionCode: () => new Promise((rs, rj) => setTimeout(() => rs('123'), 10)),
+    getVersionNumber: () => new Promise((rs, rj) => setTimeout(() => rs('1.2.3'), 10)),
+  }
+  window['cordova'] ||= {};
+  window['cordova'].getAppVersion = mockGetAppVersion;
+}
+
 export const mockBEMUserCache = () => {
   const _cache = {};
   const mockBEMUserCache = {
