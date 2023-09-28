@@ -31,10 +31,12 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
     let iconMap = (statusState) => statusState ? "check-circle-outline" : "alpha-x-circle-outline";
     let colorMap = (statusState) => statusState ? colors.success : colors.danger;
 
-    const overallStatus = useMemo(() => {
+    const overallStatus = useMemo<boolean|undefined>(() => {
         let status = true;
+        if (!checkList?.length) return undefined; // if checks not loaded yet, status is undetermined
         checkList.forEach((lc) => {
-            if(!lc.statusState){
+            console.debug('check in permission status for ' + lc.name + ':', lc.statusState);
+            if (lc.statusState === false) {
                 status = false;
             }
         })
@@ -114,14 +116,12 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
         let locSettingsCheck = {
             name: t("intro.appstatus.locsettings.name"),
             desc: t(androidSettingsDescTag),
-            statusState: false,
             fix: fixSettings,
             refresh: checkSettings
         }
         let locPermissionsCheck = {
             name: t("intro.appstatus.locperms.name"),
             desc: t(androidPermDescTag),
-            statusState: false,
             fix: fixPerms,
             refresh: checkPerms
         }
@@ -161,14 +161,12 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
         const locSettingsCheck = {
             name: t("intro.appstatus.locsettings.name"),
             desc: t(iOSSettingsDescTag),
-            statusState: false,
             fix: fixSettings,
             refresh: checkSettings
         };
         const locPermissionsCheck = {
             name: t("intro.appstatus.locperms.name"),
             desc: t(iOSPermDescTag),
-            statusState: false,
             fix: fixPerms,
             refresh: checkPerms
         };
