@@ -1,5 +1,5 @@
 //component to view and manage permission settings
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useRef } from "react";
 import { Modal,  useWindowDimensions, ScrollView } from "react-native";
 import { Dialog, Button, Text, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
@@ -16,8 +16,8 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
     const { appConfig, loading } = useAppConfig();
 
     const { height: windowHeight } = useWindowDimensions();
-    const [osver, setOsver] = useState(0);
-    const [platform, setPlatform] = useState<string>("");
+    const osver = useRef(0);
+    const platform = useRef<string>("");
 
     const [error, setError] = useState<string>("");
     const [errorVis, setErrorVis] = useState<boolean>(false);
@@ -98,17 +98,17 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
             return checkOrFix(locPermissionsCheck, window['cordova'].plugins.BEMDataCollection.isValidLocationPermissions, false);
         };
         var androidSettingsDescTag = "intro.appstatus.locsettings.description.android-gte-9";
-        if (osver < 9) {
+        if (osver.current < 9) {
             androidSettingsDescTag = "intro.appstatus.locsettings.description.android-lt-9";
         }
         var androidPermDescTag = "intro.appstatus.locperms.description.android-gte-12";
-        if(osver < 6) {
+        if(osver.current < 6) {
             androidPermDescTag = 'intro.appstatus.locperms.description.android-lt-6';
-        } else if (osver < 10) {
+        } else if (osver.current < 10) {
             androidPermDescTag = "intro.appstatus.locperms.description.android-6-9";
-        } else if (osver < 11) {
+        } else if (osver.current < 11) {
             androidPermDescTag= "intro.appstatus.locperms.description.android-10";
-        } else if (osver < 12) {
+        } else if (osver.current < 12) {
             androidPermDescTag= "intro.appstatus.locperms.description.android-11";
         }
         console.log("description tags are "+androidSettingsDescTag+" "+androidPermDescTag);
@@ -153,7 +153,7 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
         };
         var iOSSettingsDescTag = "intro.appstatus.locsettings.description.ios";
         var iOSPermDescTag = "intro.appstatus.locperms.description.ios-gte-13";
-        if(osver < 13) {
+        if(osver.current < 13) {
             iOSPermDescTag = 'intro.appstatus.locperms.description.ios-lt-13';
         }
         console.log("description tags are "+iOSSettingsDescTag+" "+iOSPermDescTag);
@@ -176,7 +176,7 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
     }
 
     function setupAndroidFitnessChecks() {
-        if(osver >= 10){
+        if(osver.current >= 10){
             let fixPerms = function() {
             console.log("fix and refresh fitness permissions");
             return checkOrFix(fitnessPermissionsCheck, window['cordova'].plugins.BEMDataCollection.fixFitnessPermissions,
@@ -267,10 +267,10 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
                 false);
         };
         var androidUnusedDescTag = "intro.appstatus.unusedapprestrict.description.android-disable-gte-13";
-        if (osver == 12) {
+        if (osver.current == 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-12";
         }
-        else if (osver < 12) {
+        else if (osver.current < 12) {
             androidUnusedDescTag= "intro.appstatus.unusedapprestrict.description.android-disable-lt-12";
         }
         let unusedAppsUnrestrictedCheck = {
@@ -295,9 +295,9 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
 
         let overallFitnessName = t('intro.appstatus.overall-fitness-name-android');
         let locExplanation = t('intro.appstatus.overall-loc-description');
-        if(platform == "ios") {
+        if(platform.current == "ios") {
             overallFitnessName = t('intro.appstatus.overall-fitness-name-ios');
-            if(osver < 13) {
+            if(osver.current < 13) {
                 locExplanation = (t("intro.permissions.locationPermExplanation-ios-lt-13"));
             } else {
                 locExplanation = (t("intro.permissions.locationPermExplanation-ios-gte-13"));
@@ -316,12 +316,13 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
     }
 
     function createChecklist(){
-        if(platform == "android") {
+        console.debug("setting up checks, platform is " + platform.current + "and osver is " + osver.current);
+        if(platform.current == "android") {
             setupAndroidLocChecks();
             setupAndroidFitnessChecks();
             setupAndroidNotificationChecks();
             setupAndroidBackgroundRestrictionChecks();
-        } else if (platform == "ios") {
+        } else if (platform.current == "ios") {
             setupIOSLocChecks();
             setupIOSFitnessChecks();
             setupAndroidNotificationChecks();
@@ -369,8 +370,8 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
      //load when ready
      useEffect(() => {
         if (appConfig && window['device']?.platform) {
-            setPlatform(window['device'].platform.toLowerCase());
-            setOsver(window['device'].version.split(".")[0]);
+            platform.current = window['device'].platform.toLowerCase();
+            osver.current = window['device'].version.split(".")[0];
 
             if(!haveSetText)
             {
@@ -378,7 +379,7 @@ const AppStatusModal = ({permitVis, setPermitVis}) => {
                 setupPermissionText();
                 setHaveSetText(true);
             }
-            else{
+            if(!checkList || checkList.length == 0) {
                 console.log("setting up permissions");
                 createChecklist();
             }
