@@ -33,6 +33,9 @@ export const logInfo = (message: string) =>
 export const logWarn = (message: string) =>
   window['Logger'].log(window['Logger'].LEVEL_WARN, message);
 
+export const logError = (message: string) =>
+  window['Logger'].log(window['Logger'].LEVEL_ERROR, message);
+
 export function displayError(error: Error, title?: string) {
   const errorMsg = error.message ? error.message + '\n' + error.stack : JSON.stringify(error);
   displayErrorMsg(errorMsg, title);
