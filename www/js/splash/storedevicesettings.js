@@ -1,4 +1,5 @@
 import angular from 'angular';
+import { updateUser } from '../commHelper';
 
 angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
                                              'emission.services',
@@ -21,7 +22,7 @@ angular.module('emission.splash.storedevicesettings', ['emission.plugin.logger',
           client_app_version: appver
         };
         Logger.log("About to update profile with settings = "+JSON.stringify(updateJSON));
-        return CommHelper.updateUser(updateJSON);
+        return updateUser(updateJSON);
       }).then(function(updateJSON) {
          // alert("Finished saving token = "+JSON.stringify(t.token));
       }).catch(function(error) {

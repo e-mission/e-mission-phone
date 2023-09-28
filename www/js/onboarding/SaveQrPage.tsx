@@ -11,6 +11,7 @@ import QrCode, { shareQR } from "../components/QrCode";
 import { onboardingStyles } from "./OnboardingStack";
 import { preloadDemoSurveyResponse } from "./SurveyPage";
 import { storageSet } from "../plugin/storage";
+import { registerUser } from "../commHelper";
 
 const SaveQrPage = ({  }) => {
 
@@ -37,7 +38,7 @@ const SaveQrPage = ({  }) => {
     const EXPECTED_METHOD = "prompted-auth";
     const dbStorageObject = {"token": token};
     return storageSet(EXPECTED_METHOD, dbStorageObject).then((r) => {
-      CommHelper.registerUser((successResult) => {
+      registerUser((successResult) => {
         refreshOnboardingState();
       }, function(errorResult) {
         displayError(errorResult, "User registration error");

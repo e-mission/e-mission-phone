@@ -4,6 +4,7 @@ import angular from 'angular';
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
 import { getConfig } from '../config/dynamicConfig';
+import { getRawEntries } from '../commHelper';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
@@ -41,7 +42,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
         template: i18next.t('service.reading-server')
       });
       const readPromises = [
-        CommHelper.getRawEntries(["analysis/composite_trip"],
+        getRawEntries(["analysis/composite_trip"],
             startTs, endTs, "data.end_ts"),
       ];
       return Promise.all(readPromises)

@@ -9,6 +9,7 @@ import SettingRow from "./SettingRow";
 import AlertBar from "./AlertBar";
 import moment from "moment";
 import { addStatEvent, statKeys } from "../plugin/clientStats";
+import { updateUser } from "../commHelper";
 
 /*
 * BEGIN: Simple read/write wrappers
@@ -214,7 +215,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         try{
             let set = setConfig(localConfig);
             //NOTE -- we need to make sure we update these settings in ProfileSettings :) -- getting rid of broadcast handling for migration!!
-            CommHelper.updateUser({
+            updateUser({
                 // TODO: worth thinking about where best to set this
                 // Currently happens in native code. Now that we are switching
                 // away from parse, we can store this from javascript here. 

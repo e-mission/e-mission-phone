@@ -1,6 +1,7 @@
 'use strict';
 
 import angular from 'angular';
+import { getRawEntries } from './commHelper';
 
 angular.module('emission.services', ['emission.plugin.logger'])
 
@@ -345,7 +346,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     // Probably in www/json...
     this.getUnifiedSensorDataForInterval = function(key, tq) {
         var localPromise = $window.cordova.plugins.BEMUserCache.getSensorDataForInterval(key, tq, true);
-        var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs)
+        var remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
           .then(function(serverResponse) {
             return serverResponse.phone_data;
           });
@@ -354,7 +355,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
 
     this.getUnifiedMessagesForInterval = function(key, tq, withMetadata) {
       var localPromise = $window.cordova.plugins.BEMUserCache.getMessagesForInterval(key, tq, true);
-      var remotePromise = CommHelper.getRawEntries([key], tq.startTs, tq.endTs)
+      var remotePromise = getRawEntries([key], tq.startTs, tq.endTs)
           .then(function(serverResponse) {
             return serverResponse.phone_data;
           });
@@ -456,7 +457,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
             });
           };
 
-        CommHelper.getRawEntries(null, startMoment.unix(), endMoment.unix())
+        getRawEntries(null, startMoment.unix(), endMoment.unix())
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {

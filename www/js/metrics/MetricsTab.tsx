@@ -16,6 +16,7 @@ import Carousel from "../components/Carousel";
 import DailyActiveMinutesCard from "./DailyActiveMinutesCard";
 import CarbonTextCard from "./CarbonTextCard";
 import ActiveMinutesTableCard from "./ActiveMinutesTableCard";
+import { getAggregateData, getMetrics } from "../commHelper";
 
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
@@ -29,8 +30,8 @@ async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: DateT
     is_return_aggregate: (type == 'aggregate'),
   }
   if (type == 'user')
-    return CommHelper.getMetrics('timestamp', query);
-  return CommHelper.getAggregateData("result/metrics/timestamp", query);
+    return getMetrics('timestamp', query);
+  return getAggregateData("result/metrics/timestamp", query);
 }
 
 function getLastTwoWeeksDtRange() {

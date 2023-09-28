@@ -14,6 +14,7 @@
  */
 
 import angular from 'angular';
+import { updateUser } from '../commHelper';
 
 angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services',
@@ -86,7 +87,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
             console.log("Got error "+error+" while reading config, returning default = 3600");
             return 3600;
          }).then(function(sync_interval) {
-             CommHelper.updateUser({
+             updateUser({
                 device_token: t.token,
                 curr_platform: ionic.Platform.platform(),
                 curr_sync_interval: sync_interval

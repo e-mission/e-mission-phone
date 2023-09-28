@@ -3,6 +3,7 @@
 import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
 import { addStatReading, statKeys } from '../plugin/clientStats';
+import { getUser, updateUser } from '../commHelper';
 
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
@@ -219,7 +220,7 @@ angular.module('emission.splash.notifscheduler',
     */
 
     scheduler.getReminderPrefs = async () => {
-        const user = await CommHelper.getUser();
+        const user = await getUser();
         if (user?.reminder_assignment &&
             user?.reminder_join_date &&
             user?.reminder_time_of_day) {
@@ -232,7 +233,7 @@ angular.module('emission.splash.notifscheduler',
     }
 
     scheduler.setReminderPrefs = async (newPrefs) => {
-        await CommHelper.updateUser(newPrefs)
+        await updateUser(newPrefs)
         const updatePromise = new Promise((resolve, reject) => {
             //enforcing update before moving on
             update().then(() => {
