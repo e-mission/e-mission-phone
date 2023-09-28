@@ -100,10 +100,10 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
           )
         })}
       </View>
-      <View>
-        <IconButton icon='check-bold' mode='outlined' size={16} onPress={verifyTrip}
+      <View style={{marginTop:'1rem'}}>
+        <IconButton icon='check-bold' mode='outlined' size={18} onPress={verifyTrip}
                     disabled={trip.verifiability != 'can-verify'}
-                    style={{width: 20, height: 20, margin: 3}}/>
+                    style={{width: 24, height: 24, margin: 3}}/>
       </View>
     </View>
     <Modal visible={modalVisibleFor != null} transparent={true} onDismiss={() => dismiss()}>
