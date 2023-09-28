@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useRef } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
 import { getAngularService } from "../angular-react-helper";
@@ -72,6 +72,7 @@ const ProfileSettings = () => {
     const [uiConfig, setUiConfig] = useState({});
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
+    const appVersion = useRef();
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -95,6 +96,9 @@ const ProfileSettings = () => {
         getOPCode();
         getSyncSettings();
         getConnectURL();
+        getAppVersion().then((version) => {
+            appVersion.current = version;
+        });
     }
 
     //previously not loaded on regular refresh, this ensures it stays caught up
@@ -374,7 +378,7 @@ const ProfileSettings = () => {
                 <SettingRow textKey="control.sync" iconName="pencil" action={editSyncConfig}></SettingRow>
                 <ControlDataTable controlData={syncSettings.show_config}></ControlDataTable>
             </ExpansionSection>
-            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={getAppVersion()}></SettingRow>
+            <SettingRow textKey="control.app-version" iconName="application" action={()=>console.log("")} desc={appVersion.current}></SettingRow>
         </ScrollView>
 
             {/* menu for "nuke data" */}

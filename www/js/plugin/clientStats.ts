@@ -21,30 +21,34 @@ export const statKeys = {
 
 let appVersion;
 export const getAppVersion = () => {
-  if (appVersion) return appVersion;
-  window['cordova']?.getAppVersion.getVersionNumber().then((version) => {
+  if (appVersion) return Promise.resolve(appVersion);
+  return window['cordova']?.getAppVersion.getVersionNumber().then((version) => {
     appVersion = version;
+    return version;
   });
 }
 
-export const getStatsEvent = (name: string, reading: any) => {
+const getStatsEvent = async (name: string, reading: any) => {
   const ts = Date.now() / 1000;
-  const client_app_version = getAppVersion();
+  const client_app_version = await getAppVersion();
   const client_os_version = window['device'].version;
   return { name, ts, reading, client_app_version, client_os_version };
 }
 
-export const addStatReading = (name: string, reading: any) => {
+export const addStatReading = async (name: string, reading: any) => {
   const db = window['cordova']?.plugins?.BEMUserCache;
-  if (db) return db.putMessage(CLIENT_TIME, getStatsEvent(name, reading));
+  const event = await getStatsEvent(name, reading);
+  if (db) return db.putMessage(CLIENT_TIME, event);
 }
 
-export const addStatEvent = (name: string) => {
+export const addStatEvent = async (name: string) => {
   const db = window['cordova']?.plugins?.BEMUserCache;
-  if (db) return db.putMessage(CLIENT_NAV_EVENT, getStatsEvent(name, null));
+  const event = await getStatsEvent(name, null);
+  if (db) return db.putMessage(CLIENT_NAV_EVENT, event);
 }
 
-export const addStatError = (name: string, errorStr: string) => {
+export const addStatError = async (name: string, errorStr: string) => {
   const db = window['cordova']?.plugins?.BEMUserCache;
-  if (db) return db.putMessage(CLIENT_ERROR, getStatsEvent(name, errorStr));
+  const event = await getStatsEvent(name, errorStr);
+  if (db) return db.putMessage(CLIENT_ERROR, event);
 }
