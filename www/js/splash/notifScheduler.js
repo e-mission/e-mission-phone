@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import { getConfig } from '../config/dynamicConfig';
+import { addStatReading, statKeys } from '../plugin/clientStats';
 
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
@@ -247,7 +248,7 @@ angular.module('emission.splash.notifscheduler',
             const { reminder_assignment,
                 reminder_join_date,
                 reminder_time_of_day} = prefs;
-            ClientStats.addReading(ClientStats.getStatKeys().REMINDER_PREFS, {
+            addStatReading(statKeys.REMINDER_PREFS, {
                 reminder_assignment,
                 reminder_join_date,
                 reminder_time_of_day

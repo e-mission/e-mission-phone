@@ -1,4 +1,5 @@
 import { getAngularService } from "../angular-react-helper";
+import { addStatReading, statKeys } from "./clientStats";
 import { displayErrorMsg, logDebug } from "./logger";
 
 const mungeValue = (key, value) => {
@@ -158,7 +159,7 @@ export function storageSyncLocalAndNative() {
     logDebug("STORAGE_PLUGIN: Syncing all missing keys " + allMissing);
     allMissing.forEach(getUnifiedValue);
     if (allMissing.length != 0) {
-      ClientStats.addReading(ClientStats.getStatKeys().MISSING_KEYS, {
+      addStatReading(statKeys.MISSING_KEYS, {
         "type": "local_storage_mismatch",
         "allMissingLength": allMissing.length,
         "missingWebLength": missingWeb.length,
@@ -172,7 +173,7 @@ export function storageSyncLocalAndNative() {
   const listAllKeys = window['cordova'].plugins.BEMUserCache.listAllUniqueKeys().then((nativeKeys) => {
     logDebug("STORAGE_PLUGIN: For the record, all unique native keys are " + nativeKeys);
     if (nativeKeys.length == 0) {
-      ClientStats.addReading(ClientStats.getStatKeys().MISSING_KEYS, {
+      addStatReading(statKeys.MISSING_KEYS, {
         "type": "all_native",
       }).then(logDebug("Logged all missing native keys to client stats"));
     }

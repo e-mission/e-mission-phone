@@ -23,6 +23,7 @@ import { resetDataAndRefresh } from "../config/dynamicConfig";
 import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
+import { getAppVersion } from "../plugin/clientStats";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -96,7 +97,7 @@ const ProfileSettings = () => {
         getOPCode();
         getSyncSettings();
         getConnectURL();
-        setAppVersion(ClientStats.getAppVersion());
+        setAppVersion(getAppVersion());
     }
 
     //previously not loaded on regular refresh, this ensures it stays caught up

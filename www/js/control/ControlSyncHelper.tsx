@@ -8,6 +8,7 @@ import ActionMenu from "../components/ActionMenu";
 import SettingRow from "./SettingRow";
 import AlertBar from "./AlertBar";
 import moment from "moment";
+import { addStatEvent, statKeys } from "../plugin/clientStats";
 
 /*
 * BEGIN: Simple read/write wrappers
@@ -61,8 +62,8 @@ export const ForceSyncRow = ({getState}) => {
 
     async function forceSync() {
         try {
-            let addedEvent = ClientStats.addEvent(ClientStats.getStatKeys().BUTTON_FORCE_SYNC);
-            console.log("Added "+ClientStats.getStatKeys().BUTTON_FORCE_SYNC+" event");
+            let addedEvent = addStatEvent(statKeys.BUTTON_FORCE_SYNC);
+            console.log("Added "+statKeys.BUTTON_FORCE_SYNC+" event");
 
             let sync = await forcePluginSync();
             /*
