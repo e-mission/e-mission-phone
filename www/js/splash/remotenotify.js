@@ -16,10 +16,9 @@ import angular from 'angular';
 import { addStatEvent, statKeys } from '../plugin/clientStats';
 
 angular.module('emission.splash.remotenotify', ['emission.plugin.logger',
-                    'emission.splash.startprefs',
-                    'emission.stats.clientstats'])
+                    'emission.splash.startprefs'])
 
-.factory('RemoteNotify', function($http, $window, $ionicPopup, $rootScope, ClientStats,
+.factory('RemoteNotify', function($http, $window, $ionicPopup, $rootScope,
     CommHelper, Logger) {
 
     var remoteNotify = {};

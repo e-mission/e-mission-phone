@@ -39,7 +39,6 @@ const ProfileSettings = () => {
     const EmailHelper = getAngularService('EmailHelper');
     const NotificationScheduler = getAngularService('NotificationScheduler');
     const ControlHelper = getAngularService('ControlHelper');
-    const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service

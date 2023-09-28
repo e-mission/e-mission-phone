@@ -141,7 +141,6 @@ function findMissing(fromKeys, toKeys) {
 }
 
 export function storageSyncLocalAndNative() {
-  const ClientStats = getAngularService('ClientStats');
   console.log("STORAGE_PLUGIN: Called syncAllWebAndNativeValues ");
   const syncKeys = window['cordova'].plugins.BEMUserCache.listAllLocalStorageKeys().then((nativeKeys) => {
     console.log("STORAGE_PLUGIN: native plugin returned");

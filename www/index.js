@@ -4,7 +4,6 @@ import './css/main.diary.css';
 import 'leaflet/dist/leaflet.css';
 
 import './js/ngApp.js';
-import './js/stats/clientstats.js';
 import './js/splash/referral.js';
 import './js/splash/customURL.js';
 import './js/splash/startprefs.js';

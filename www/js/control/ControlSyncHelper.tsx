@@ -54,7 +54,6 @@ type syncConfig = { sync_interval: number,
 export const ForceSyncRow = ({getState}) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
-    const ClientStats = getAngularService('ClientStats');
     const Logger = getAngularService('Logger');
 
     const [dataPendingVis, setDataPendingVis] = useState(false);

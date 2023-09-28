@@ -6,11 +6,10 @@ import { addStatReading, statKeys } from '../plugin/clientStats';
 
 angular.module('emission.splash.notifscheduler',
                     ['emission.services',
-                    'emission.plugin.logger',
-                    'emission.stats.clientstats'])
+                    'emission.plugin.logger'])
 
 .factory('NotificationScheduler', function($http, $window, $ionicPlatform,
-                                            ClientStats, CommHelper, Logger) {
+                                            CommHelper, Logger) {
 
     const scheduler = {};
     let _config;

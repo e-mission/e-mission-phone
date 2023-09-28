@@ -7,8 +7,7 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
                                         'emission.splash.pushnotify',
                                         'emission.splash.storedevicesettings',
                                         'emission.splash.localnotify',
-                                        'emission.splash.remotenotify',
-                                        'emission.stats.clientstats'])
+                                        'emission.splash.remotenotify'])
 
 .controller('RootCtrl', function($scope) {})
 
@@ -16,7 +15,7 @@ angular.module('emission.controllers', ['emission.splash.startprefs',
 
 .controller('SplashCtrl', function($scope, $state, $interval, $rootScope, 
     StartPrefs, PushNotify, StoreDeviceSettings,
-    LocalNotify, RemoteNotify, ClientStats)  {
+    LocalNotify, RemoteNotify)  {
   console.log('SplashCtrl invoked');
   // alert("attach debugger!");
   // PushNotify.startupInit();
