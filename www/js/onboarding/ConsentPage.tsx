@@ -6,7 +6,7 @@ import { resetDataAndRefresh } from '../config/dynamicConfig';
 import { AppContext } from '../App';
 import { getAngularService } from '../angular-react-helper';
 import i18next from "i18next";
-import PrivacyPolicy from '../join/PrivacyPolicy';
+import PrivacyPolicy from './PrivacyPolicy';
 import { onboardingStyles } from './OnboardingStack';
 
 const ConsentPage = () => {
