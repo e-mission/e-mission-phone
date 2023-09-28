@@ -34,7 +34,6 @@ const SaveQrPage = ({  }) => {
   }, [overallStatus]);
 
   function login(token) {
-    const CommHelper = getAngularService('CommHelper');
     const EXPECTED_METHOD = "prompted-auth";
     const dbStorageObject = {"token": token};
     return storageSet(EXPECTED_METHOD, dbStorageObject).then((r) => {

@@ -21,7 +21,6 @@ import { getAggregateData, getMetrics } from "../commHelper";
 export const METRIC_LIST = ['duration', 'mean_speed', 'count', 'distance'] as const;
 
 async function fetchMetricsFromServer(type: 'user'|'aggregate', dateRange: DateTime[]) {
-  const CommHelper = getAngularService('CommHelper');
   const query = {
     freq: 'D',
     start_time: dateRange[0].toSeconds(),

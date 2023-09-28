@@ -20,7 +20,7 @@ angular.module('emission.splash.pushnotify', ['emission.plugin.logger',
                                               'emission.services',
                                               'emission.splash.startprefs'])
 .factory('PushNotify', function($window, $state, $rootScope, $ionicPlatform,
-    $ionicPopup, Logger, CommHelper, StartPrefs) {
+    $ionicPopup, Logger, StartPrefs) {
 
     var pushnotify = {};
     var push = null;

@@ -9,8 +9,7 @@ angular.module('emission.splash.notifscheduler',
                     ['emission.services',
                     'emission.plugin.logger'])
 
-.factory('NotificationScheduler', function($http, $window, $ionicPlatform,
-                                            CommHelper, Logger) {
+.factory('NotificationScheduler', function($http, $window, $ionicPlatform, Logger) {
 
     const scheduler = {};
     let _config;

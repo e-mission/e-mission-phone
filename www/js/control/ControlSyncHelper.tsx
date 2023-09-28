@@ -182,7 +182,6 @@ export const ForceSyncRow = ({getState}) => {
 const ControlSyncHelper = ({ editVis, setEditVis }) => {
     const { t } = useTranslation(); 
     const { colors } = useTheme();
-    const CommHelper = getAngularService("CommHelper");
     const Logger = getAngularService("Logger");
 
     const [ localConfig, setLocalConfig ] = useState<syncConfig>();
