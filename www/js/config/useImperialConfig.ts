@@ -17,16 +17,16 @@ const formatDistance = (dist: number) => {
   return Math.round(dist).toString();
 }
 
-const getFormattedDistanceInKm = (distInMeters: string) =>
+export const getFormattedDistanceInKm = (distInMeters: string) =>
   formatDistance(Number.parseFloat(distInMeters) / 1000);
 
-const getFormattedDistanceInMiles = (distInMeters: string) =>
+export const getFormattedDistanceInMiles = (distInMeters: string) =>
   formatDistance((Number.parseFloat(distInMeters) / 1000) * KM_TO_MILES);
 
-const getKmph = (metersPerSec) =>
+export const getKmph = (metersPerSec) =>
   (metersPerSec * 3.6).toFixed(2);
 
-const getMph = (metersPerSecond) =>
+export const getMph = (metersPerSecond) =>
   (KM_TO_MILES * Number.parseFloat(getKmph(metersPerSecond))).toFixed(2);
 
 export function useImperialConfig() {
