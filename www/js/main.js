@@ -2,13 +2,16 @@
 
 import angular from 'angular';
 
+import MetricsTab from './metrics/MetricsTab';
+
 angular.module('emission.main', ['emission.main.diary',
                                  'emission.main.control',
-                                 'emission.main.metrics',
-                                 'emission.main.recent',
+                                 'emission.main.metrics.factory',
+                                 'emission.main.metrics.mappings',
                                  'emission.config.dynamic',
                                  'emission.services',
-                                 'emission.services.upload'])
+                                 'emission.services.upload',
+                                  MetricsTab.module])
 
 .config(function($stateProvider, $ionicConfigProvider, $urlRouterProvider) {
   $stateProvider
@@ -24,8 +27,7 @@ angular.module('emission.main', ['emission.main.diary',
     url: '/metrics',
     views: {
       'main-metrics': {
-        templateUrl: 'templates/main-metrics.html',
-        controller: 'MetricsCtrl'
+        template: `<metrics-tab class="fill-container"></metrics-tab>`,
       }
     }
   })
@@ -42,26 +44,6 @@ angular.module('emission.main', ['emission.main.diary',
       }
     }
   })
-
-  .state('root.main.log', {
-    url: '/log',
-    views: {
-      'main-control': {
-        templateUrl: 'templates/recent/log.html',
-        controller: 'logCtrl'
-      }
-    }
-  })
-
-  .state('root.main.sensed', {
-    url: "/sensed",
-    views: {
-      'main-control': {
-        templateUrl: "templates/recent/sensedData.html",
-        controller: 'sensedDataCtrl'
-      }
-    }
-  });
 
   $ionicConfigProvider.tabs.style('standard')
   $ionicConfigProvider.tabs.position('bottom');

@@ -1,6 +1,8 @@
 'use strict';
 
 import angular from 'angular';
+import { getBaseModeByValue } from './diary/diaryHelper'
+import { labelOptions } from './survey/multilabel/confirmHelper';
 
 angular.module('emission.main.metrics.factory',
         ['emission.main.metrics.mappings',
@@ -38,13 +40,12 @@ angular.module('emission.main.metrics.factory',
       if (mode == 'ON_FOOT') {
         mode = 'WALKING';
       }
+
       if (mode in footprint) {
         result += footprint[mode] * mtokm(userMetrics[i].values);
-      }
-      else if (mode == 'IN_VEHICLE') {
+      } else if (mode == 'IN_VEHICLE') {
         result += ((footprint['CAR'] + footprint['BUS'] + footprint["LIGHT_RAIL"] + footprint['TRAIN'] + footprint['TRAM'] + footprint['SUBWAY']) / 6) * mtokm(userMetrics[i].values);
-      }
-      else {
+      } else {
         console.warn('WARNING FootprintHelper.getFootprintFromMetrics() was requested for an unknown mode: ' + mode + " metrics JSON: " + JSON.stringify(userMetrics));
         result += defaultIfMissing * mtokm(userMetrics[i].values);
       }

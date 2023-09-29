@@ -4,7 +4,7 @@ import { Snackbar } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-const AlertBar = ({visible, setVisible, messageKey, messageAddition}) => {
+const AlertBar = ({visible, setVisible, messageKey, messageAddition=undefined}) => {
     const { t } = useTranslation(); 
     const onDismissSnackBar = () => setVisible(false);
 

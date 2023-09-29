@@ -18,9 +18,6 @@
     max-height: 50px;
 }
 
-/* nvd3 styles */
-@import 'nvd3/build/nv.d3.css';
-
 .fill-container {
   display: block;
   position: relative;
@@ -746,15 +743,6 @@ timestamp-badge[light-bg] {
   padding: 5% 10%;
 }
 
-svg {
-    display: block;
-}
-#chart, #chart svg {
-  margin-right: 10px;
-}
-.nvd3, nv-noData {
-  font-weight: 300 !important;
-}
 .metric-datepicker {
   /*height: 33px;*/
   display: flex;           /* establish flex container */
