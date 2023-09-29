@@ -451,7 +451,7 @@ const ProfileSettings = () => {
             transparent={true}>
                 <Dialog visible={uploadVis}
                 onDismiss={() => setUploadVis(false)}
-                style={styles.dialog(colors.elevation.level3)}>
+                style={settingStyles.dialog(colors.elevation.level3)}>
                     <Dialog.Title>{t('upload-service.upload-database')}</Dialog.Title>
                     <Dialog.Content>
                         <TextInput label="Reason"
