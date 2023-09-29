@@ -1,8 +1,10 @@
 # [e-mission phone app](https://github.com/e-mission/e-mission-phone/tree/master)
 
-<u>__This is the phone component of the e-mission system.__</u>
+__This is the phone component of the e-mission system.__
 
 :sparkles: This has now been upgraded to cordova android@12.0.0 and iOS@6.2.0. It has also been upgraded to the **latest Android & iOS versions**, **cordova-lib@10.0.0 and the most recent node and npm versions**. It also now supports CI, so we should not have any build issues in the future. __This should be ready to build out of the box.__
+
+✨ We constantly upgrade the repo to the latest cordova versions of android, iOS, cordova-lib, and the most recent node and npm versions. The CI will be up-to-date. 
 
 For the latest versions, refer [`package.cordovabuild.json`](https://github.com/e-mission/e-mission-phone/blob/fce117ff859abd995613bd405dbc7d27c703b09b/package.cordovabuild.json)
 
@@ -15,12 +17,13 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 :sparkles: Check [Contributing](#contributing) if you're interested in contributing for this project :sparkles:
 
 ## Contents
-#### 1. [Creating logos](#creating-logos) 
-#### 2. [Updating the UI only](#updating-the-ui-only) 
-#### 3. [Updating the e-mission-* plugins or adding new plugins](#updating-the-e-mission--plugins-or-adding-new-plugins) 
+#### 1. [Updating the UI only](#updating-the-ui-only)
+#### 2. [Updating the e-mission-* plugins or adding new plugins](#updating-the-e-mission--plugins-or-adding-new-plugins)  
+#### 3. [Creating logos](#creating-logos) 
 #### 4. [End to End Testing](#end-to-end-testing)
 #### 5. [Beta-testing debugging](#beta-testing-debugging) 
 #### 6. [Contributing](#contributing)
+#### 7. [Troubleshooting](#troubleshooting)
 
 ---
 
@@ -80,7 +83,7 @@ source setup/activate_serve.sh
 
 ## End to End Testing
 
-A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
+A lot of the visualizations that we display in the phone client come from the server. In order to do end-to-end testing, we need to run a local server and connect to it. Instructions for:
 
 1. installing a local server,
 2. running it, 
@@ -89,7 +92,11 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/blob/master/docs/install/configuring_authentication.md).
+In order to make end-to-end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to modify the [nrel-commute.nrel-op.json](https://github.com/e-mission/nrel-openpath-deploy-configs/blob/482971d9715e8d52862e689658f9b4f2437e6401/configs/nrel-commute.nrel-op.json) file's dynamic config. 
+```
+"connectUrl": "https://nrel-commute-openpath.nrel.gov/api/"
+```
+More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/blob/master/docs/install/configuring_authentication.md).
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
@@ -115,7 +122,6 @@ Pre-requisites
 - The version of xcode used by the CI.
     - to install a particular version, use [xcode-select](https://www.unix.com/man-page/OSX/1/xcode-select/)
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
-    - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
 - Java 17. Tested with [OpenJDK 17 (Temurin) using AdoptOpenJDK](https://adoptium.net). 
 - Always use [homebrew](https://brew.sh) in addition to CLI
@@ -263,21 +269,23 @@ less /tmp/loggerDB.<issue>.withdate.log
 
 1. Add the main repo as upstream
 ```
-2. git remote add upstream <link/SSH key...>
+git remote add upstream https://github.com/e-mission/e-mission-phone
 ```
-3. Create a new branch (IMPORTANT). Please do not submit pull requests from master
+2. Create a new branch (IMPORTANT). Please do not submit pull requests from master
 ```
-4. git checkout -b <branch>
+git checkout -b <branch>
 ```
-5. Make changes to the branch and commit them
+3. Make changes to the branch and commit them
 ```
-6. git commit
+git commit
 ```
- 7. Push the changes to your local fork
+4. Push the changes to your local fork
 ```
-8. git push origin <branch>
+git push origin <branch>
 ```
-9. Generate a pull request from the UI
+5. Generate a pull request from the UI
+
+<br>
 
 __\*__Address my review comments__\*__
 
@@ -317,4 +325,6 @@ __2. Creating Logos__
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
-3. 
+3. (For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
+
+4. 
