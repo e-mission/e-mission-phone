@@ -19,9 +19,6 @@ const usePermissionStatus = () => {
     const { colors } = useTheme();
     const appConfig = useAppConfig();
 
-    const [osver, setOsver] = useState(0);
-    const [platform, setPlatform] = useState<string>("");
-
     const [error, setError] = useState<string>("");
     const [errorVis, setErrorVis] = useState<boolean>(false);
 
@@ -347,9 +344,6 @@ const usePermissionStatus = () => {
      //load when ready
      useEffect(() => {
         if (appConfig && window['device']?.platform) {
-            setPlatform(window['device'].platform.toLowerCase());
-            setOsver(window['device'].version.split(".")[0]);
-            
             setupPermissionText();
             setHaveSetText(true);
             console.log("setting up permissions");
