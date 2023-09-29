@@ -46,9 +46,10 @@ export async function isMediumAccuracy() {
         return undefined; // config not loaded when loading ui, set default as false
     } else {
         var v = await accuracy2String(config);
-        if (window.cordova.platformId == 'ios') {
+        console.log("window platform is", window['cordova'].platformId);
+        if (window['cordova'].platformId == 'ios') {
             return v != "kCLLocationAccuracyBestForNavigation" && v != "kCLLocationAccuracyBest" && v != "kCLLocationAccuracyTenMeters";
-        } else if (window.cordova.platformId == 'android') {
+        } else if (window['cordova'].platformId == 'android') {
             return v != "PRIORITY_HIGH_ACCURACY";
         } else {
             window.alert("Emission does not support this platform");
@@ -62,15 +63,15 @@ export async function helperToggleLowAccuracy() {
     let accuracyOptions = await getAccuracyOptions();
     let medium = await isMediumAccuracy();
     if (medium) {
-        if (window.cordova.platformId == 'ios') {
+        if (window['cordova'].platformId == 'ios') {
             tempConfig.accuracy = accuracyOptions["kCLLocationAccuracyBest"];
-        } else if (window.cordova.platformId == 'android') {
-            tempConfig.accuracy = cch.accuracyOptions["PRIORITY_HIGH_ACCURACY"];
+        } else if (window['cordova'].platformId == 'android') {
+            tempConfig.accuracy = accuracyOptions["PRIORITY_HIGH_ACCURACY"];
         }
     } else {
-        if (window.cordova.platformId == 'ios') {
+        if (window['cordova'].platformId == 'ios') {
             tempConfig.accuracy = accuracyOptions["kCLLocationAccuracyHundredMeters"];
-        } else if (window.cordova.platformId == 'android') {
+        } else if (window['cordova'].platformId == 'android') {
             tempConfig.accuracy = accuracyOptions["PRIORITY_BALANCED_POWER_ACCURACY"];
         }
     }
@@ -87,7 +88,7 @@ export async function helperToggleLowAccuracy() {
 */
 
 export const getState = function() {
-    return window.cordova.plugins.BEMDataCollection.getState();
+    return window['cordova'].plugins.BEMDataCollection.getState();
 };
 
 export async function getHelperCollectionSettings() {
@@ -101,18 +102,18 @@ export async function getHelperCollectionSettings() {
 }
 
 const setConfig = function(config) {
-    return window.cordova.plugins.BEMDataCollection.setConfig(config);
+    return window['cordova'].plugins.BEMDataCollection.setConfig(config);
 };
 
 const getConfig = function() {
-    return window.cordova.plugins.BEMDataCollection.getConfig();
+    return window['cordova'].plugins.BEMDataCollection.getConfig();
 };
 const getAccuracyOptions = function() {
-    return window.cordova.plugins.BEMDataCollection.getAccuracyOptions();
+    return window['cordova'].plugins.BEMDataCollection.getAccuracyOptions();
 };
 
 export const forceTransitionWrapper = function(transition) {
-    return window.cordova.plugins.BEMDataCollection.forceTransition(transition);
+    return window['cordova'].plugins.BEMDataCollection.forceTransition(transition);
 };
 
 const formatConfigForDisplay = function(config, accuracyOptions) {
@@ -197,7 +198,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
 
     /*ios vs android*/
     let filterComponent;
-    if(window.cordova.platformId == 'ios') {
+    if(window['cordova'].platformId == 'ios') {
         filterComponent = <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
                             <Text variant="labelMedium">Filter Distance</Text>
                             <TextInput label="Filter Distance" value={localConfig?.filter_distance?.toString()} onChangeText={text => onChangeText(text, "filter_distance")}/>
@@ -209,7 +210,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
                         </View>
     }
     let iosToggles;
-    if(window.cordova.platformId == 'ios') {
+    if(window['cordova'].platformId == 'ios') {
         iosToggles = <>
         {/* use visit notifications toggle NO ANDROID */}
         <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
@@ -224,7 +225,7 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
         </>
     }
     let geofenceComponent;
-    if(window.cordova.platformId == 'android') {
+    if(window['cordova'].platformId == 'android') {
         geofenceComponent = <View style={{ paddingHorizontal: 15, flexDirection: 'row', justifyContent: 'space-between' }}>
                                 <Text variant="labelMedium">Geofence Responsiveness</Text>
                                 <TextInput label="Geofence Responsiveness" value={localConfig?.android_geofence_responsiveness?.toString()} onChangeText={text => onChangeText(text, "android_geofence_responsiveness")}/>

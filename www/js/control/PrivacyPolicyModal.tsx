@@ -2,7 +2,7 @@ import React from "react";
 import { Modal,  useWindowDimensions, ScrollView } from "react-native";
 import { Dialog, Button, useTheme } from 'react-native-paper';
 import { useTranslation } from "react-i18next";
-import PrivacyPolicy from "../join/PrivacyPolicy";
+import PrivacyPolicy from "../onboarding/PrivacyPolicy";
 import { settingStyles } from "./ProfileSettings";
 
 const PrivacyPolicyModal = ({ privacyVis, setPrivacyVis }) => {

@@ -5,7 +5,7 @@ import moment from "moment";
 import { DateTime } from "luxon";
 import { LabelOptions, readableLabelToKey } from "../survey/multilabel/confirmHelper";
 
-const modeColors = {
+export const modeColors = {
   pink: '#c32e85',        // oklch(56% 0.2 350)     // e-car
   red: '#c21725',         // oklch(52% 0.2 25)      // car
   orange: '#bf5900',      // oklch(58% 0.16 50)     // air, hsr

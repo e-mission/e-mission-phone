@@ -11,10 +11,9 @@ const AppStatusModal = ({ permitVis, setPermitVis }) => {
     const { overallStatus, checkList } = usePermissionStatus();
     const { colors } = useTheme();
 
-    /* Listen for permissions status changes to determine if we should show the modal.
-      If we have no checks, we are still loading and shouldn't show yet */
+    /* Listen for permissions status changes to determine if we should show the modal. */
     useEffect(() => {
-      if(!overallStatus && checkList.length > 0) {
+      if (overallStatus === false) {
           setPermitVis(true);
       }
   }, [overallStatus, checkList]);

@@ -1,20 +1,12 @@
 import React, { useMemo } from "react";
-import { ScrollView, StyleSheet, Text } from "react-native";
-import { useTheme, Divider } from 'react-native-paper';
+import { StyleSheet, Text } from "react-native";
 import { useTranslation } from "react-i18next";
 import useAppConfig from "../useAppConfig";
-import i18next from "i18next";
+import { getTemplateText } from "./StudySummary";
 
 const PrivacyPolicy = () => {
-    const { t } = useTranslation();
-    const { colors } = useTheme();
+    const { t, i18n } = useTranslation();
     const appConfig = useAppConfig();
-    
-    const getTemplateText = function(configObject) {
-        if (configObject && (configObject.name)) {
-            return configObject.intro.translated_text[i18next.language];
-        }
-    }
 
     let opCodeText;
     if(appConfig?.opcode?.autogen) {
@@ -32,19 +24,10 @@ const PrivacyPolicy = () => {
         yourRightsText = <Text style={styles.text}>{t('consent-text.rights.app-not-required', {program_or_study: appConfig?.intro?.program_or_study})}</Text>;
     }
 
-    const templateText = useMemo(() => getTemplateText(appConfig), [appConfig]);
+    const templateText = useMemo(() => getTemplateText(appConfig, i18n.language), [appConfig]);
 
     return (
         <>
-                <Text style={styles.title}>{templateText?.deployment_name}</Text>
-                    <Text style={styles.studyName}>{appConfig?.intro?.deployment_partner_name + " " + templateText?.deployment_name}</Text>
-                    <Text>{'\n'}</Text>
-                    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_1} </Text>
-                    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_2} </Text>
-                    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_3} </Text>
-                
-                <Divider style={styles.divider} />
-                
                 <Text style={styles.title}>{t('consent-text.title')}</Text>
                 <Text style={styles.header}>{t('consent-text.introduction.header')}</Text>
                 <Text style={styles.text}>{templateText?.short_textual_description}</Text>
@@ -181,14 +164,10 @@ const styles = StyleSheet.create({
         fontSize: 18
     },
     title: {
-        fontWeight: "bold",
-        fontSize: 22,
-        paddingBottom: 10,
-        textAlign: "center"
-    }, 
-    studyName: {
-        fontWeight: "bold",
-        fontSize: 16
+      fontWeight: "bold",
+      fontSize: 22,
+      paddingBottom: 10,
+      textAlign: "center"
     },
     divider: {
         marginVertical: 10

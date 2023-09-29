@@ -2,23 +2,12 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend, TimeScale, ChartData, ChartType, ScriptableContext, PointElement, LineElement } from 'chart.js';
+import { Chart as ChartJS, registerables } from 'chart.js';
 import { Chart as ChartJSChart } from 'react-chartjs-2';
 import Annotation, { AnnotationOptions, LabelPosition } from 'chartjs-plugin-annotation';
 import { dedupColors, getChartHeight, darkenOrLighten } from './charting';
 
-ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  TimeScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
-  Annotation,
-);
+ChartJS.register(...registerables, Annotation);
 
 type XYPair = { x: number|string, y: number|string };
 type ChartDataset = {

@@ -5,11 +5,14 @@ import { storageGet, storageSet } from "../plugin/storage";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
-type OnboardingRoute = 'welcome' | 'consent' | 'survey' | 'save-qr' | false;
+type OnboardingRoute = 'welcome' | 'summary' | 'consent' | 'survey' | 'save-qr' | false;
 export type OnboardingState = {
   opcode: string,
   route: OnboardingRoute,
 }
+
+export let summaryDone = false;
+export const setSummaryDone = (b) => summaryDone = b;
 
 export let saveQrDone = false;
 export const setSaveQrDone = (b) => saveQrDone = b;
@@ -23,6 +26,8 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
     let route: OnboardingRoute = false;
     if (!config) {
       route = 'welcome';
+    } else if (!isConsented && !summaryDone) {
+      route = 'summary';
     } else if (!isConsented) {
       route = 'consent';
     } else if (!saveQrDone) {
