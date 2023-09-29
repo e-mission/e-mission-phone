@@ -55,7 +55,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
     if (isOther) {
       /* Let's make the value for user entered inputs look consistent with our other values
        (i.e. lowercase, and with underscores instead of spaces) */
-       chosenLabel = readableLabelToKey(chosenLabel);
+      chosenLabel = readableLabelToKey(chosenLabel);
     }
     const inputDataToStore = {
       "start_ts": trip.start_ts,
