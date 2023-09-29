@@ -132,19 +132,6 @@ export ANDROID_HOME="/Users/<user_name>/Library/Android/sdk"
 ```
 aka the path where you want the SDK to be installed. 
 
-To setup JAVA_HOME (after installing the latest JDK ), run this command:
-```
-/usr/libexec/java_home
-```
-Find the location of the Java installation (Default will look something like this:)
-```
-/Library/Java/JavaVirtualMachines/...
-```
-and then export the package as:
-```
-export JAVA_HOME="<path you derived from the above command>"
-```
-
 - android SDK; install manually or use setup script below (**recommended**). Note that you only need to run this once **per computer**.
     ```
     bash setup/prereq_android_sdk_install.sh
@@ -178,7 +165,9 @@ __2. Installing (one time only)__
 
 ```
 bash setup/setup_android_native.sh
+```
 AND/OR
+```
 bash setup/setup_ios_native.sh
 ```
 
