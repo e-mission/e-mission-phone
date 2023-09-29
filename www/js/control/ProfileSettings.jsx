@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
-import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
+import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from "react-native-paper";
 import { angularize, getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
@@ -14,6 +14,8 @@ import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
 import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
+
+import {uploadFile} from "./uploadService";
 
 let controlUpdateCompleteListenerRegistered = false;
 
@@ -34,7 +36,6 @@ const ProfileSettings = () => {
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
-    const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
     const ControlCollectionHelper = getAngularService('ControlCollectionHelper');
     const ControlSyncHelper = getAngularService('ControlSyncHelper');
@@ -73,6 +74,7 @@ const ProfileSettings = () => {
     const [consentVis, setConsentVis] = useState(false);
     const [dateDumpVis, setDateDumpVis] = useState(false);
     const [privacyVis, setPrivacyVis] = useState(false);
+    const [uploadVis, setUploadVis] = useState(false);
 
     const [collectSettings, setCollectSettings] = useState({});
     const [notificationSettings, setNotificationSettings] = useState({});
@@ -85,6 +87,7 @@ const ProfileSettings = () => {
     const [consentDoc, setConsentDoc] = useState({});
     const [dumpDate, setDumpDate] = useState(new Date());
     const [toggleTime, setToggleTime] = useState(new Date());
+    const [uploadReason, setUploadReason] = useState("");
 
     let carbonDatasetString = t('general-settings.carbon-dataset') + ": " + CarbonDatasetHelper.getCurrentCarbonDatasetCode();
     const carbonOptions = CarbonDatasetHelper.getCarbonDatasetOptions();
@@ -219,8 +222,12 @@ const ProfileSettings = () => {
     
     //methods that control the settings
     const uploadLog = function () {
-        UploadHelper.uploadFile("loggerDB")
-    };
+        if(uploadReason != "") {
+            let reason = uploadReason.split('').join('');
+            uploadFile("loggerDB", reason);
+            setUploadVis(false);
+        }
+    }
 
     const emailLog = function () {
         // Passing true, we want to send logs
@@ -463,7 +470,7 @@ const ProfileSettings = () => {
     let logUploadSection;
     console.debug("appConfg: support_upload:", appConfig?.profile_controls?.support_upload);
     if (appConfig?.profile_controls?.support_upload) {
-        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={uploadLog}></SettingRow>;
+        logUploadSection = <SettingRow textKey="control.upload-log" iconName="cloud" action={() => setUploadVis(true)}></SettingRow>;
     }
 
     let timePicker;
@@ -594,6 +601,27 @@ const ProfileSettings = () => {
                     </Dialog.Content>
                     <Dialog.Actions>
                         <Button onPress={() => setForceStateVis(false)}>{t('general-settings.cancel')}</Button>
+                    </Dialog.Actions>
+                </Dialog>
+            </Modal>
+
+            {/* upload reason input */}
+            <Modal visible={uploadVis} onDismiss={() => setUploadVis(false)}
+            transparent={true}>
+                <Dialog visible={uploadVis}
+                onDismiss={() => setUploadVis(false)}
+                style={styles.dialog(colors.elevation.level3)}>
+                    <Dialog.Title>{t('upload-service.upload-database')}</Dialog.Title>
+                    <Dialog.Content>
+                        <TextInput label="Reason"
+                                value={uploadReason}
+                                onChangeText={uploadReason => setUploadReason(uploadReason)}
+                                placeholder={t('upload-service.please-fill-in-what-is-wrong')}>
+                            </TextInput>
+                    </Dialog.Content>
+                    <Dialog.Actions>
+                        <Button onPress={() => setUploadVis(false)}>{t('general-settings.cancel')}</Button>
+                        <Button onPress={() => uploadLog()}>Upload</Button>
                     </Dialog.Actions>
                 </Dialog>
             </Modal>
