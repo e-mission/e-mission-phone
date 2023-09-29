@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { StyleSheet } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Text } from "react-native-paper";
 import { useTranslation } from "react-i18next";
 import useAppConfig from "../useAppConfig";
@@ -20,10 +20,11 @@ const StudySummary = () => {
   return (<>
     <Text style={styles.title}>{templateText?.deployment_name}</Text>
     <Text style={styles.studyName}>{appConfig?.intro?.deployment_partner_name + " " + templateText?.deployment_name}</Text>
-    <Text>{'\n'}</Text>
-    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_1} </Text>
-    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_2} </Text>
-    <Text style={styles.text}>{"✔️  " + templateText?.summary_line_3} </Text>
+    <View>
+      <Text style={styles.text}>{"✔️  " + templateText?.summary_line_1} </Text>
+      <Text style={styles.text}>{"✔️  " + templateText?.summary_line_2} </Text>
+      <Text style={styles.text}>{"✔️  " + templateText?.summary_line_3} </Text>
+    </View>
   </>)
 };
 

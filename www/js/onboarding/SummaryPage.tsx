@@ -20,11 +20,11 @@ const SummaryPage = () => {
 
   // summary of the study, followed by 'next' button
   return (<>
-    <ScrollView>
-      <Surface style={onboardingStyles.page}>
+    <ScrollView contentContainerStyle={{flex: 1}}>
+      <Surface style={[onboardingStyles.page, {flex:1, gap: 16}]}>
         <StudySummary />
-        <View style={onboardingStyles.buttonRow}>
-          <Button mode='outlined' onPress={next}> {t('intro.proceed')} </Button>
+        <View style={[onboardingStyles.buttonRow, {marginTop: 'auto'}]}>
+          <Button mode='contained' onPress={next}> {t('intro.proceed')} </Button>
         </View>
       </Surface>
     </ScrollView>
