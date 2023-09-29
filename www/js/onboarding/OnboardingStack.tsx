@@ -5,6 +5,7 @@ import WelcomePage from "./WelcomePage";
 import ConsentPage from "./ConsentPage";
 import SurveyPage from "./SurveyPage";
 import SaveQrPage from "./SaveQrPage";
+import SummaryPage from "./SummaryPage";
 
 // true if loading/undetermined
 // 'welcome' if no config present
@@ -19,6 +20,8 @@ const OnboardingStack = () => {
 
   if (pendingOnboardingState.route == 'welcome') {
     return <WelcomePage />;
+  } else if (pendingOnboardingState.route == 'summary') {
+    return <SummaryPage />;
   } else if (pendingOnboardingState.route == 'consent') {
     return <ConsentPage />;
   } else if (pendingOnboardingState.route == 'save-qr') {

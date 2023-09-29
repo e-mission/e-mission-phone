@@ -224,6 +224,7 @@
     },
 
     "intro": {
+        "proceed": "Proceed",
         "appstatus": {
             "fix": "Fix",
             "refresh":"Refresh",
