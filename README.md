@@ -29,7 +29,7 @@ https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 
 ## Updating the UI only
-[![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-serve-install)
+[![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/serve-install.yml)
 
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) [e-mission dev app](https://github.com/e-mission/e-mission-devapp/) and install the most recent version from [releases](https://github.com/e-mission/e-mission-devapp/releases). 
 
@@ -326,5 +326,3 @@ __2. Creating Logos__
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
 3. (For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
-
-4. 
