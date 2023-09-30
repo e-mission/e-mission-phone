@@ -2,11 +2,11 @@
 
 __This is the phone component of the e-mission system.__
 
-:sparkles: This has now been upgraded to cordova android@12.0.0 and iOS@6.2.0. It has also been upgraded to the **latest Android & iOS versions**, **cordova-lib@10.0.0 and the most recent node and npm versions**. It also now supports CI, so we should not have any build issues in the future. __This should be ready to build out of the box.__
+:sparkles: This has been upgraded to the latest **Android**, **iOS**, **cordova-lib**, **node** and **npm** versions. __This is ready to build out of the box.__
 
 ✨ We constantly upgrade the repo to the latest cordova versions of android, iOS, cordova-lib, and the most recent node and npm versions. The CI will be up-to-date. 
 
-For the latest versions, refer [`package.cordovabuild.json`](https://github.com/e-mission/e-mission-phone/blob/fce117ff859abd995613bd405dbc7d27c703b09b/package.cordovabuild.json)
+For the latest versions, refer [`package.cordovabuild.json`](package.cordovabuild.json)
 
 ## Additional Documentation
 Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
@@ -35,7 +35,7 @@ If you want to make only UI changes, (as opposed to modifying the existing plugi
 
 ### Installing (one-time)
 
-1. Run the setup script
+:point_right:Run the setup script
 
 ```
 bash setup/setup_serve.sh
@@ -50,17 +50,16 @@ cp ..... www/json/connectionConfig.json
 ```
 
 ### Activation (after install, and in every new shell)
-2. Run this to activate 
 ```
 source setup/activate_serve.sh
 ```
   
 ### Running
 
-1. Start the phonegap deployment server and note the URL(s) that the server is listening to.
+Start the phonegap deployment server and note the URL(s) that the server is listening to.
 
-    ```
-   npm run serve
+    
+    npm run serve
     ....
     [phonegap] listening on 10.0.0.14:3000
     [phonegap] listening on 192.168.162.1:3000
@@ -68,12 +67,11 @@ source setup/activate_serve.sh
     [phonegap] ctrl-c to stop the server
     [phonegap]
     ....
-    ```
   
-2. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
-3. The app will now display the version of e-mission app that is in your local directory
-  4. The console logs will be displayed back in the server window (prefaced by `[console]`)
-  5. Breakpoints can be added by connecting through the browser
+Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
+The app will now display the version of e-mission app that is in your local directory
+The console logs will be displayed back in the server window (prefaced by `[console]`)
+Breakpoints can be added by connecting through the browser
     - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
     - Chrome: chrome://inspect -> Remote target (emulator)
     
@@ -105,18 +103,6 @@ One advantage of using `skip` authentication in development mode is that any use
 [![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml)
 [![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml)
 
-__Important__
-
-Most of the recent issues encountered have been due to incompatible setup. We
-have now:
-- locked down the dependencies,
-- created setup and teardown scripts to setup self-contained environments with
-  those dependencies, and
-- CI enabled to validate that they continue work.
-
-If you have setup failures, please compare the configuration in the **passing CI
-builds** with your configuration. That is almost certainly the source of the error.
-
 Pre-requisites
 ---
 - The version of xcode used by the CI.
@@ -129,7 +115,19 @@ Pre-requisites
       running into ruby incompatibilities - e.g.
       https://github.com/CocoaPods/CocoaPods/issues/11763
 
-__1. Export statements__
+:triangular_flag_on_post: __Important__
+
+Most of the recent issues encountered have been due to incompatible setup. We
+have now:
+- locked down the dependencies,
+- created setup and teardown scripts to setup self-contained environments with
+  those dependencies, and
+- CI enabled to validate that they continue work.
+
+If you have setup failures, please compare the configuration in the **passing CI
+builds** with your configuration. That is almost certainly the source of the error.
+
+__Export statements__
 ```
 export ANDROID_SDK_ROOT="/Users/<user_name>/Library/Android/sdk"
 ```
@@ -165,7 +163,7 @@ aka the path where you want the SDK to be installed.
     </details>
 
 
-__2. Installing (one time only)__
+__Installing (one time only)__
 
 - Run the setup script for the platform you want to build
 
@@ -193,7 +191,7 @@ If connecting to a development server over http, make sure to turn on http suppo
         <application android:usesCleartextTraffic="true"/>
     </edit-config>
 ```
-__3. Run this in every new shell for Activation__ 
+__Run this in every new shell for Activation__ 
 
 ```
 source setup/activate_native.sh
@@ -202,9 +200,9 @@ source setup/activate_native.sh
 
 ``` 
 Activating nvm
-Using version 19.5.0
-Now using node v19.5.0 (npm v9.3.1)
-npm version = 9.3.1
+Using version <X version number>
+Now using node <X version number> (npm <Y version>)
+npm version = <Y version>
 Adding cocoapods to the path
 Verifying /Users/<username>/Library/Android/sk or /Users/<username>/Library/Android/sdk is set
 Activating sdkman, and by default, gradle
@@ -216,9 +214,9 @@ Copied config.cordovabuild.xml -> config.xml and package.cordovabuild.json -> pa
 </details>
 <br>
 
- __4. Pick a type of build and execute the following:__
+ __Pick a type of build and execute the following:__
 
-More "versions" are available in [`package.cordovabuild.json`](https://github.com/e-mission/e-mission-phone/blob/fce117ff859abd995613bd405dbc7d27c703b09b/package.cordovabuild.json)
+More "versions" are available in [`package.cordovabuild.json`](package.cordovabuild.json)
 ```
 npm run <type_of_build>
 ```
@@ -266,24 +264,23 @@ less /tmp/loggerDB.<issue>.withdate.log
 
 ## Contributing
 
-
-1. Add the main repo as upstream
+:point_right:Add the main repo as upstream
 ```
 git remote add upstream https://github.com/e-mission/e-mission-phone
 ```
-2. Create a new branch (IMPORTANT). Please do not submit pull requests from master
+:point_right:Create a new branch (IMPORTANT). Please do not submit pull requests from master
 ```
 git checkout -b <branch>
 ```
-3. Make changes to the branch and commit them
+:point_right:Make changes to the branch and commit them
 ```
 git commit
 ```
-4. Push the changes to your local fork
+:point_right:Push the changes to your local fork
 ```
 git push origin <branch>
 ```
-5. Generate a pull request from the UI
+:point_right:Generate a pull request from the UI
 
 <br>
 
@@ -305,7 +302,7 @@ git branch -d <branch>
 
 ---
 ### Troubleshooting
-__1. Xcode command line tools__
+:point_right:Xcode command line tools
 ```
 Warning: No developer tools installed.
 You should install the Command Line Tools.
@@ -314,7 +311,7 @@ You should install the Command Line Tools.
 xcode-select --install
 ```
 
-__2. Creating Logos__
+:point_right:Creating Logos
 - Make sure to use `npx ionic` and `npx cordova`. This is
   because the setup script installs all the modules locally in a self-contained
   environment using `npm install` and not `npm install -g`
@@ -325,4 +322,4 @@ __2. Creating Logos__
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
-3. (For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Mac OS Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
+(For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Mac OS Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
