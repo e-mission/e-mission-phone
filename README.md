@@ -325,4 +325,4 @@ __2. Creating Logos__
     - javascript errors: `rm -rf node_modules && npm install`
     - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
 
-3. (For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
+3. (For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Mac OS Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
