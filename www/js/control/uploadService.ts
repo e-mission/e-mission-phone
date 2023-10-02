@@ -61,8 +61,8 @@ function readDBFile(parentDir, database, callbackFn) {
                   }
 
                   reader.onload = function() {
-                    console.log("Successful file read with " + this.result.byteLength +" characters");
-                    resolve(new DataView(this.result));
+                    console.log("Successful file read with " + this.result['byteLength'] +" characters");
+                    resolve(new DataView(this.result as ArrayBuffer));
                   }
 
                   reader.readAsArrayBuffer(file);
