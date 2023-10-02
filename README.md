@@ -90,7 +90,7 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end-to-end testing even easier, we have moved from phone app to a dynamic config setting. We use the dynamic [config](configs) to specify the server locations. Refer [Doc](https://github.com/e-mission/nrel-openpath-deploy-configs)
+In order to make end-to-end testing even easier, we have moved from phone app to a dynamic config setting. We use the dynamic config to specify the server locations. Refer [Doc](https://github.com/e-mission/nrel-openpath-deploy-configs)
 
 If you have the [e-mission-server](https://github.com/e-mission/e-mission-server) running at a specific URL or IP address, and they want to connect to it, you would have to specify that URL or IP in the server  of your dynamic config file.
 
