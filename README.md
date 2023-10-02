@@ -92,7 +92,7 @@ are available in the [e-mission-server README](https://github.com/e-mission/e-mi
 
 In order to make end-to-end testing even easier, we have moved from phone app to a dynamic config setting. We use the dynamic config to specify the server locations. Refer [Doc](https://github.com/e-mission/nrel-openpath-deploy-configs)
 
-If you have the [e-mission-server](https://github.com/e-mission/e-mission-server) running at a specific URL or IP address, and they want to connect to it, you would have to specify that URL or IP in the server  of your dynamic config file.
+If you have the [e-mission-server](https://github.com/e-mission/e-mission-server) running at a specific URL or IP address, and you want to connect to it, you would have to specify that URL or IP in the `server` field of your dynamic config file.
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
