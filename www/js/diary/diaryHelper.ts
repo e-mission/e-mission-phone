@@ -3,17 +3,18 @@
 
 import moment from "moment";
 import { DateTime } from "luxon";
+import { LabelOptions, readableLabelToKey } from "../survey/multilabel/confirmHelper";
 
 export const modeColors = {
-  pink: '#d43678',        // oklch(59% 0.2 0)       // e-car
-  red: '#b9003d',         // oklch(50% 0.37 15)     // car
-  orange: '#b25200',      // oklch(55% 0.37 50)     // air, hsr
-  green: '#007e46',       // oklch(52% 0.37 155)    // bike, e-biek, moped
-  blue: '#0068a5',        // oklch(50% 0.37 245)    // walk
-  periwinkle: '#5e45cd',  // oklch(50% 0.2 285)     // light rail, train, tram, subway
-  magenta: '#8e35a1',     // oklch(50% 0.18 320)    // bus
-  grey: '#484848',        // oklch(40% 0 0)         // unprocessed / unknown
-  taupe: '#7d5857',       // oklch(50% 0.05 15)     // ferry, trolleybus, user-defined modes
+  pink: '#c32e85',        // oklch(56% 0.2 350)     // e-car
+  red: '#c21725',         // oklch(52% 0.2 25)      // car
+  orange: '#bf5900',      // oklch(58% 0.16 50)     // air, hsr
+  green: '#008148',       // oklch(53% 0.14 155)    // bike, e-bike, moped
+  blue: '#0074b7',        // oklch(54% 0.14 245)    // walk
+  periwinkle: '#6356bf',  // oklch(52% 0.16 285)    // light rail, train, tram, subway
+  magenta: '#9240a4',     // oklch(52% 0.17 320)    // bus
+  grey: '#555555',        // oklch(45% 0 0)         // unprocessed / unknown
+  taupe: '#7d585a',       // oklch(50% 0.05 15)     // ferry, trolleybus, user-defined modes
 }
 
 type BaseMode = {
@@ -68,6 +69,16 @@ export function getBaseModeOfLabeledTrip(trip, labelOptions) {
   const modeKey = trip?.userInput?.MODE?.value;
   if (!modeKey) return null; // trip has no MODE label
   const modeOption = labelOptions?.MODE?.find(opt => opt.value == modeKey);
+  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
+}
+
+export function getBaseModeByValue(value, labelOptions: LabelOptions) {
+  const modeOption = labelOptions?.MODE?.find(opt => opt.value == value);
+  return getBaseModeByKey(modeOption?.baseMode || "OTHER");
+}
+
+export function getBaseModeByText(text, labelOptions: LabelOptions) {
+  const modeOption = labelOptions?.MODE?.find(opt => opt.text == text);
   return getBaseModeByKey(modeOption?.baseMode || "OTHER");
 }
 
