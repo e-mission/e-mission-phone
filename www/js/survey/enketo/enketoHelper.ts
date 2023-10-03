@@ -2,10 +2,12 @@ import { getAngularService } from "../../angular-react-helper";
 import { Form } from 'enketo-core';
 import { XMLParser } from 'fast-xml-parser';
 import i18next from 'i18next';
+import { logDebug } from "../../plugin/logger";
 
 export type PrefillFields = {[key: string]: string};
 
 export type SurveyOptions = {
+  undismissable?: boolean;
   timelineEntry?: any;
   prefilledSurveyResponse?: string;
   prefillFields?: PrefillFields;
@@ -89,4 +91,25 @@ export function saveResponse(surveyName: string, enketoForm: Form, appConfig, op
       .putMessage(dataKey, data)
       .then(() => data);
   }).then(data => data);
+}
+
+const _getMostRecent = (answers) => {
+  answers.sort((a, b) => a.metadata.write_ts < b.metadata.write_ts);
+  console.log("first answer is ", answers[0], " last answer is ", answers[answers.length-1]);
+  return answers[0];
+}
+
+/*
+  * We retrieve all the records every time instead of caching because of the
+  * usage pattern. We assume that the demographic survey is edited fairly
+  * rarely, so loading it every time will likely do a bunch of unnecessary work.
+  * Loading it on demand seems like the way to go. If we choose to experiment
+  * with incremental updates, we may want to revisit this.
+*/
+export function loadPreviousResponseForSurvey(dataKey: string) {
+  const UnifiedDataLoader = getAngularService('UnifiedDataLoader');
+  const tq = window['cordova'].plugins.BEMUserCache.getAllTimeQuery();
+  logDebug("loadPreviousResponseForSurvey: dataKey = " + dataKey + "; tq = " + tq);
+  return UnifiedDataLoader.getUnifiedMessagesForInterval(dataKey, tq)
+      .then(answers => _getMostRecent(answers))
 }

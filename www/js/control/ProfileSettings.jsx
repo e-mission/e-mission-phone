@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { Modal, StyleSheet, ScrollView } from "react-native";
 import { Dialog, Button, useTheme, Text, Appbar, IconButton, TextInput } from "react-native-paper";
-import { angularize, getAngularService } from "../angular-react-helper";
+import { Dialog, Button, useTheme, Text, Appbar, IconButton } from "react-native-paper";
+import { getAngularService } from "../angular-react-helper";
 import { useTranslation } from "react-i18next";
 import ExpansionSection from "./ExpandMenu";
 import SettingRow from "./SettingRow";
@@ -12,7 +13,6 @@ import ReminderTime from "./ReminderTime"
 import useAppConfig from "../useAppConfig";
 import AlertBar from "./AlertBar";
 import DataDatePicker from "./DataDatePicker";
-import AppStatusModal from "./AppStatusModal";
 import PrivacyPolicyModal from "./PrivacyPolicyModal";
 
 import {uploadFile} from "./uploadService";
@@ -21,13 +21,17 @@ import SensedPage from "./SensedPage"
 import LogPage from "./LogPage";
 import ControlSyncHelper, {ForceSyncRow, getHelperSyncSettings} from "./ControlSyncHelper";
 import ControlCollectionHelper, {getHelperCollectionSettings, getState, isMediumAccuracy, helperToggleLowAccuracy, forceTransition} from "./ControlCollectionHelper";
+import { resetDataAndRefresh } from "../config/dynamicConfig";
+import { AppContext } from "../App";
+import { shareQR } from "../components/QrCode";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
     // anything that mutates must go in --- depend on props or state... 
     const { t } = useTranslation();
-    const { appConfig, loading } = useAppConfig();
+    const appConfig = useAppConfig();
     const { colors } = useTheme();
+    const { setPermissionsPopupVis } = useContext(AppContext);
 
     //angular services needed
     const CarbonDatasetHelper = getAngularService('CarbonDatasetHelper');
@@ -37,7 +41,6 @@ const ProfileSettings = () => {
     const ControlHelper = getAngularService('ControlHelper');
     const ClientStats = getAngularService('ClientStats');
     const StartPrefs = getAngularService('StartPrefs');
-    const DynamicConfig = getAngularService('DynamicConfig');
 
     //functions that come directly from an Angular service
     const editCollectionConfig = () => setEditCollection(true);
@@ -48,7 +51,6 @@ const ProfileSettings = () => {
     const [nukeSetVis, setNukeVis] = useState(false);
     const [carbonDataVis, setCarbonDataVis] = useState(false);
     const [forceStateVis, setForceStateVis] = useState(false);
-    const [permitVis, setPermitVis] = useState(false);
     const [logoutVis, setLogoutVis] = useState(false);
     const [invalidateSuccessVis, setInvalidateSuccessVis] = useState(false);
     const [noConsentVis, setNoConsentVis] = useState(false);
@@ -266,35 +268,6 @@ const ProfileSettings = () => {
         refreshCollectSettings();
     }
 
-    const shareQR = function() {
-       /*code adapted from demo of react-qr-code*/
-        const svg = document.querySelector(".qr-code");
-        const svgData = new XMLSerializer().serializeToString(svg);
-        const img = new Image();
-
-        img.onload = () => {
-            const canvas = document.createElement("canvas");
-            const ctx = canvas.getContext("2d");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            ctx.drawImage(img, 0, 0);
-            const pngFile = canvas.toDataURL("image/png");
-                
-            var prepopulateQRMessage = {}; 
-            prepopulateQRMessage.files = [pngFile];
-            prepopulateQRMessage.url = authSettings.opcode;
-            prepopulateQRMessage.message = authSettings.opcode; //text saved to files with image!
-                
-            window.plugins.socialsharing.shareWithOptions(prepopulateQRMessage, function(result) {
-                console.log("Share completed? " + result.completed); // On Android apps mostly return false even while it's true
-                console.log("Shared to app: " + result.app); // On Android result.app is currently empty. On iOS it's empty when sharing is cancelled (result.completed=false)
-            }, function(msg) {
-                console.log("Sharing failed with message: " + msg);
-            });
-        }
-        img.src =  `data:image/svg+xml;base64,${btoa(svgData)}`;
-    }
-
     const viewQRCode = function(e) {
         setOpCodeVis(true);
     }
@@ -375,8 +348,8 @@ const ProfileSettings = () => {
 
     return (
         <>
-        <Appbar.Header statusBarHeight={12} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
-            <Appbar.Content title={t("control.profile")} />
+        <Appbar.Header statusBarHeight={0} elevated={true} style={{ height: 46, backgroundColor: 'white', elevation: 3 }}>
+            <Appbar.Content title={t("control.profile-tab")} />
             <Text>{t('control.log-out')}</Text>
             <IconButton icon="logout" onPress={() => setLogoutVis(true)}></IconButton>
         </Appbar.Header>
@@ -387,7 +360,7 @@ const ProfileSettings = () => {
             <SettingRow textKey='control.view-privacy' iconName='eye' action={() => setPrivacyVis(true)}></SettingRow>
             {timePicker}
             <SettingRow textKey="control.tracking" action={userStartStopTracking} switchValue={collectSettings.trackingOn}></SettingRow>
-            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermitVis(true)}></SettingRow>
+            <SettingRow textKey="control.app-status" iconName="check" action={() => setPermissionsPopupVis(true)}></SettingRow>
             <SettingRow textKey="control.medium-accuracy" action={toggleLowAccuracy} switchValue={collectSettings.lowAccuracy}></SettingRow>
             <SettingRow textKey={carbonDatasetString} iconName="database-cog" action={() => setCarbonDataVis(true)}></SettingRow>
             <SettingRow textKey="control.download-json-dump" iconName="calendar" action={()=>setDateDumpVis(true)}></SettingRow>
@@ -468,10 +441,7 @@ const ProfileSettings = () => {
             </Modal>
 
             {/* opcode viewing popup */}
-            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={shareQR}></PopOpCode>
-
-            {/* {view permissions} */}
-            <AppStatusModal permitVis={permitVis} setPermitVis={setPermitVis}></AppStatusModal>
+            <PopOpCode visibilityValue = {opCodeVis} setVis = {setOpCodeVis} tokenURL = {"emission://login_token?token="+authSettings.opcode} action={() => shareQR(authSettings.opcode)}></PopOpCode>
 
             {/* {view privacy} */}
             <PrivacyPolicyModal privacyVis={privacyVis} setPrivacyVis={setPrivacyVis}></PrivacyPolicyModal>
@@ -490,7 +460,7 @@ const ProfileSettings = () => {
                             {t('general-settings.cancel')}
                         </Button>
                         <Button onPress={() => {
-                           DynamicConfig.resetConfigAndRefresh();
+                           resetDataAndRefresh();
                         }}>
                             {t('general-settings.confirm')}
                         </Button>
@@ -565,5 +535,4 @@ export const settingStyles = StyleSheet.create({
     }
   });
    
-  angularize(ProfileSettings, 'ProfileSettings', 'emission.main.control.profileSettings'); 
   export default ProfileSettings;

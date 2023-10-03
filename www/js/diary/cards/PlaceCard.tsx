@@ -21,7 +21,7 @@ import StartEndLocations from "../components/StartEndLocations";
 type Props = { place: {[key: string]: any} };
 const PlaceCard = ({ place }: Props) => {
 
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const { displayStartTime, displayEndTime, displayDate } = useDerivedProperties(place);
   let [ placeDisplayName ] = useAddressNames(place);
 

@@ -2,10 +2,10 @@
   Used in the label screen, on the trip, place, and/or untracked cards */
 
 import React from "react";
-import { StyleSheet } from "react-native";
-import { Badge, BadgeProps, Text, useTheme } from "react-native-paper";
+import { View, StyleSheet } from "react-native";
+import { Text, useTheme } from "react-native-paper";
 
-type Props = BadgeProps & {
+type Props = {
   lightBg: boolean,
   time: string,
   date?: string,
@@ -16,10 +16,7 @@ const TimestampBadge = ({ lightBg, time, date, ...otherProps }: Props) => {
   const textColor = lightBg ? 'black' : 'white';
 
   return (
-    // @ts-ignore Technically, Badge only accepts a string or number as its child, but we want 
-    // to have different bold & light text styles for the time and date, so we pass in Text components.
-    // It works fine with Text components inside, so let's ignore the type error.
-    <Badge style={{backgroundColor: bgColor, ...styles.badge}} {...otherProps}>
+    <View style={{backgroundColor: bgColor, borderColor: colors.primary, ...styles.badge}} {...otherProps}>
       <Text style={{color: textColor, ...styles.time}}>
         {time}
       </Text>
@@ -27,13 +24,16 @@ const TimestampBadge = ({ lightBg, time, date, ...otherProps }: Props) => {
       date && <Text style={{color: textColor, ...styles.date}}>
         {`\xa0(${date})` /* date shown in parentheses with space before */}
       </Text>}
-    </Badge>
+    </View>
   );
 };
 const styles = StyleSheet.create({
   badge: {
     flex: 1,
+    flexDirection: 'row',
     paddingHorizontal: 6,
+    borderWidth: 1,
+    borderRadius: 8,
     fontSize: 12.5,
     display: 'flex',
     margin: 'auto',
