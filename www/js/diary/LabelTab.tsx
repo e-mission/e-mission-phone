@@ -22,6 +22,7 @@ import { SurveyOptions } from "../survey/survey";
 import { getLabelOptions } from "../survey/multilabel/confirmHelper";
 import { displayError } from "../plugin/logger";
 import { useTheme } from "react-native-paper";
+import { getPipelineRangeTs } from "../commHelper";
 
 let labelPopulateFactory, labelsResultMap, notesResultMap, showPlaces;
 const ONE_DAY = 24 * 60 * 60; // seconds
@@ -48,7 +49,6 @@ const LabelTab = () => {
   const $ionicPopup = getAngularService('$ionicPopup');
   const Logger = getAngularService('Logger');
   const Timeline = getAngularService('Timeline');
-  const CommHelper = getAngularService('CommHelper');
   const enbs = getAngularService('EnketoNotesButtonService');
 
   // initialization, once the appConfig is loaded
@@ -105,7 +105,7 @@ const LabelTab = () => {
 
   async function loadTimelineEntries() {
     try {
-      const pipelineRange = await CommHelper.getPipelineRangeTs();
+      const pipelineRange = await getPipelineRangeTs();
       [labelsResultMap, notesResultMap] = await getAllUnprocessedInputs(pipelineRange, labelPopulateFactory, enbs);
       Logger.log("After reading unprocessedInputs, labelsResultMap =" + JSON.stringify(labelsResultMap)
                                                 + "; notesResultMap = " + JSON.stringify(notesResultMap));
