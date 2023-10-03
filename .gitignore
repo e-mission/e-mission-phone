@@ -14,9 +14,5 @@ app-settings.json
 *.app.zip
 *.ipa
 www/dist/
-www/js/control/collect-settings.js
-www/templates/control/main-collect-settings.html
-www/js/control/sync-settings.js
-www/templates/control/main-sync-settings.html
 config.xml
 package.json

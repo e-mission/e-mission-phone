@@ -3,10 +3,11 @@
 import angular from 'angular';
 import { getBaseModeByKey, getBaseModeOfLabeledTrip } from './diaryHelper';
 import { SurveyOptions } from '../survey/survey';
+import { getConfig } from '../config/dynamicConfig';
 
 angular.module('emission.main.diary.services', ['emission.plugin.logger',
                                                 'emission.services'])
-.factory('Timeline', function(CommHelper, DynamicConfig, $http, $ionicLoading, $ionicPlatform, $window,
+.factory('Timeline', function(CommHelper, $http, $ionicLoading, $ionicPlatform, $window,
     $rootScope, UnifiedDataLoader, Logger, $injector) {
     var timeline = {};
     // corresponds to the old $scope.data. Contains all state for the current
@@ -17,7 +18,7 @@ angular.module('emission.main.diary.services', ['emission.plugin.logger',
 
     let manualInputFactory;
     $ionicPlatform.ready(function () {
-      DynamicConfig.configReady().then((configObj) => {
+      getConfig().then((configObj) => {
         const surveyOptKey = configObj.survey_info['trip-labels'];
         const surveyOpt = SurveyOptions[surveyOptKey];
         console.log('surveyOpt in services.js is', surveyOpt);

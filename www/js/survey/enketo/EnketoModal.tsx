@@ -21,7 +21,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
   const headerEl = useRef(null);
   const surveyJson = useRef(null);
   const enketoForm = useRef<Form | null>(null);
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
 
   async function fetchSurveyJson(url) {
     const responseText = await fetchUrlCached(url);
@@ -76,9 +76,9 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
 
   useEffect(() => {
     if (!rest.visible) return;
-    if (!appConfig || loading) return console.error('App config not loaded yet');
+    if (!appConfig) return console.error('App config not loaded yet');
     initSurvey();
-  }, [appConfig, loading, rest.visible]);
+  }, [appConfig, rest.visible]);
 
   /* adapted from the template given by enketo-core:
     https://github.com/enketo/enketo-core/blob/master/src/index.html */
@@ -89,11 +89,13 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
         Just make sure to keep a .form-language-selector element into which the form language selector (<select>)
         will be appended by Enketo Core. */}
         <header ref={headerEl} className="form-header clearfix">
-          <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
-            {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
-            <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>󰁍</span>
-            <span>{t('survey.dismiss')}</span>
-          </button>
+          {!opts.undismissable &&
+            <button style={s.dismissBtn} onClick={() => rest.onDismiss()}>
+              {/* arrow-left glyph from https://pictogrammers.com/library/mdi/icon/arrow-left/ */}
+              <span style={{fontFamily: 'MaterialCommunityIcons', fontSize: 24, marginRight: 5}}>󰁍</span>
+              <span>{t('survey.dismiss')}</span>
+            </button>
+          }
           <span className="form-language-selector hide"><span>Choose Language</span></span>
           <nav className="pages-toc hide" role="navigation">
             <label htmlFor="toc-toggle"></label>
@@ -115,7 +117,7 @@ const EnketoModal = ({ surveyName, onResponseSaved, opts, ...rest } : Props) => 
             {t('survey.save')}
           </button>
           <a href="#survey-paper" className="btn btn-primary next-page disabled" style={{ width: 200, marginLeft: 'calc(50% - 100px' }}>{t('survey.next')}</a>
-          <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="templates/survey/enketo/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
+          <div className="enketo-power" style={{ marginBottom: 30 }}><span>{t('survey.powered-by')}</span> <a href="http://enketo.org" title="enketo.org website"><img src="img/enketo_bare_150x56.png" alt="enketo logo" /></a> </div>
           <div className="form-footer__jump-nav" style={{ display: 'flex', flexDirection: 'row' }}>
             <a href="#" className="btn btn-default disabled first-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.return-to-beginning')}</a>
             <a href="#" className="btn btn-default disabled last-page" style={{ flex: 1, borderRadius: 0 }}>{t('survey.go-to-end')}</a>

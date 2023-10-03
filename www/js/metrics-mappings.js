@@ -1,9 +1,9 @@
 import angular from 'angular';
 import { getLabelOptions } from './survey/multilabel/confirmHelper';
+import { getConfig } from './config/dynamicConfig';
 
 angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
-                                     'emission.plugin.kvstore',
-                                     "emission.config.dynamic"])
+                                     'emission.plugin.kvstore'])
 
 .service('CarbonDatasetHelper', function(KVStore) {
   var CARBON_DATASET_KEY = 'carbon_dataset_locale';
@@ -314,7 +314,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     return standardMETs;
   }
 })
-.factory('CustomDatasetHelper', function(METDatasetHelper, Logger, $ionicPlatform, DynamicConfig) {
+.factory('CustomDatasetHelper', function(METDatasetHelper, Logger, $ionicPlatform) {
     var cdh = {};
 
     cdh.getCustomMETs = function() {
@@ -394,9 +394,7 @@ angular.module('emission.main.metrics.mappings', ['emission.plugin.logger',
     }
 
     $ionicPlatform.ready().then(function() {
-      DynamicConfig.configReady().then((newConfig) =>
-        cdh.init(newConfig)
-      );
+      getConfig().then((newConfig) => cdh.init(newConfig));
     });
 
     return cdh;

@@ -44,11 +44,6 @@ label-tab > div {
   --accent-dark: hsl(200 100% 30%);
 }
 
-body.platform-ios {
-  padding-top: calc(env(safe-area-inset-top) / 2);
-  margin: 0 10px 0 0;
-}
-
 .view-container.tab-content {
   height: auto !important;
   bottom: 50px !important;
