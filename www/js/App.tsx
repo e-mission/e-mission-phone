@@ -7,7 +7,7 @@ import MetricsTab from './metrics/MetricsTab';
 import ProfileSettings from './control/ProfileSettings';
 import useAppConfig from './useAppConfig';
 import OnboardingStack from './onboarding/OnboardingStack';
-import { OnboardingState, getPendingOnboardingState } from './onboarding/onboardingHelper';
+import { OnboardingRoute, OnboardingState, getPendingOnboardingState } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
 
@@ -76,7 +76,9 @@ const App = () => {
       :
         <OnboardingStack />
       }
-      {(pendingOnboardingState == null || pendingOnboardingState.route != 'welcome' && pendingOnboardingState.route != 'consent') &&
+      { /* if onboarding is done (state == null), or if is in progress but we are past the
+        consent page (route > CONSENT), the permissions popup can show if needed */ }
+      {(pendingOnboardingState == null || pendingOnboardingState.route > OnboardingRoute.CONSENT) &&
         <AppStatusModal permitVis={permissionsPopupVis} setPermitVis={setPermissionsPopupVis} />
       }
     </AppContext.Provider>
