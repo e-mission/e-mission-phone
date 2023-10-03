@@ -101,7 +101,7 @@ const MultilabelButtonGroup = ({ trip, buttonsInline=false }) => {
         })}
       </View>
       {trip.verifiability === 'can-verify' && (
-        <View style={{marginTop:'1rem'}}>
+        <View style={{marginTop: 16}}>
           <IconButton icon='check-bold' mode='outlined' size={18} onPress={verifyTrip}
                        style={{width: 24, height: 24, margin: 3, backgroundColor: colors.secondaryContainer}}/>
         </View>
