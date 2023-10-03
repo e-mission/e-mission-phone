@@ -1,2 +1,29 @@
-import {} from "../js/control/uploadService";
+import {uploadFile} from "../js/control/uploadService";
+import { mockLogger } from '../__mocks__/globalMocks';
 
+mockLogger();
+
+// mock for JavaScript 'fetch'
+// we emulate a 100ms delay when i) fetching data and ii) parsing it as text
+global.fetch = (url: string, options: {method: string, headers: {}, body: string}) => new Promise((rs, rj) => {
+  setTimeout(() => rs({
+    text: () => new Promise((rs, rj) => {
+      setTimeout(() => rs(new Response('sent ' + options.method + options.body + ' to ' + url)), 100);
+    })
+  }));
+}) as any;
+
+global.fetch = jest.fn(() =>
+  Promise.resolve({
+    json: () => Promise.resolve({ url: "http://localhost:5647/phonelogs" }),
+  }),
+) as any
+
+//this is never used in production right now
+//however, tests are still important to make sure the code works
+//at some point we hope to restore this functionality
+it('posts the logs to the configured database', async () => {
+  const posted = await uploadFile("loggerDB", "HelloWorld");
+  expect(posted).toEqual(expect.stringContaining("HelloWorld"));
+  expect(posted).toEqual(expect.stringContaining("POST"));
+});
