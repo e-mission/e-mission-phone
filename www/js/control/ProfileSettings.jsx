@@ -252,7 +252,7 @@ const ProfileSettings = () => {
 
     async function userStartStopTracking() {
         const transitionToForce = collectSettings.trackingOn ? 'STOP_TRACKING' : 'START_TRACKING';
-        forceTransition(transitionToForce);
+        await forceTransition(transitionToForce);
         refreshCollectSettings();
     }
 

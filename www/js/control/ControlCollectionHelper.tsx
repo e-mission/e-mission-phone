@@ -21,7 +21,7 @@ type collectionConfig = {
 
 export async function forceTransition(transition) {
     try {
-        let result = forceTransitionWrapper(transition);
+        let result = await forceTransitionWrapper(transition);
         window.alert('success -> '+result);
     } catch (err) {
         window.alert('error -> '+err);
