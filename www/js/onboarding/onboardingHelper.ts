@@ -4,7 +4,13 @@ import { getConfig } from "../config/dynamicConfig";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
-type OnboardingRoute = 'welcome' | 'summary' | 'consent' | 'survey' | 'save-qr' | false;
+// state = null if onboarding is done
+// route = WELCOME if no config present
+// route = SUMMARY if config present, but not consented and summary not done
+// route = CONSENT if config present, but not consented and summary done
+// route = SAVE_QR if config present, consented, but save qr not done
+// route = SURVEY if config present, consented and save qr done
+export enum OnboardingRoute { WELCOME, SUMMARY, CONSENT, SAVE_QR, SURVEY, NONE };
 export type OnboardingState = {
   opcode: string,
   route: OnboardingRoute,
@@ -22,17 +28,17 @@ export const setRegisterUserDone = (b) => registerUserDone = b;
 export function getPendingOnboardingState(): Promise<OnboardingState> {
   return Promise.all([getConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
     if (isIntroDone) return null; // onboarding is done; no pending state
-    let route: OnboardingRoute = false;
+    let route: OnboardingRoute = OnboardingRoute.NONE;
     if (!config) {
-      route = 'welcome';
+      route = OnboardingRoute.WELCOME;
     } else if (!isConsented && !summaryDone) {
-      route = 'summary';
+      route = OnboardingRoute.SUMMARY;
     } else if (!isConsented) {
-      route = 'consent';
+      route = OnboardingRoute.CONSENT;
     } else if (!saveQrDone) {
-      route = 'save-qr';
+      route = OnboardingRoute.SAVE_QR;
     } else {
-      route = 'survey';
+      route = OnboardingRoute.SURVEY;
     }
     return { route, opcode: config?.joined?.opcode };
   });
