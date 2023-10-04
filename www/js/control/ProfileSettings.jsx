@@ -156,7 +156,10 @@ const ProfileSettings = () => {
 
     //ensure ui table updated when editor closes
     useEffect(() => {
-        refreshCollectSettings();
+        if(editCollection == false) {
+            console.log("closed editor, time to refresh collect");
+            refreshCollectSettings();
+        }
     }, [editCollection])
 
     async function refreshNotificationSettings() {
