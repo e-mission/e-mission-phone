@@ -112,14 +112,15 @@ angular.module('emission.services', ['emission.plugin.logger'])
     }
 
     this.getMyData = function(startTs) {
-        var fmt = "YYYY-MM-DD";
         // We are only retrieving data for a single day to avoid
         // running out of memory on the phone
-        var adjustedTs = DateTime.fromJSDate(startTs).toFormat('dd MMM yyyy');
-        var startMoment = moment(adjustedTs);
-        var endMoment = moment(adjustedTs).endOf("day");
-        var dumpFile = startMoment.format(fmt) + "."
-          + endMoment.format(fmt)
+        var startTime = DateTime.fromJSDate(startTs);
+        var endTime = startTime.endOf("day");
+        var startTimeString = startTime.toFormat("yyyy'-'MM'-'dd");
+        var endTimeString = endTime.toFormat("yyyy'-'MM'-'dd");
+
+        var dumpFile = startTimeString + "."
+          + endTimeString
           + ".timeline";
           alert("Going to retrieve data to "+dumpFile);
 
@@ -182,7 +183,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
                         attachments: [
                           attachFile
                         ],
-                        subject: i18next.t('email-service.email-data.subject-data-dump-from-to', {start: startMoment.format(fmt),end: endMoment.format(fmt)}),
+                        subject: i18next.t('email-service.email-data.subject-data-dump-from-to', {start: startTimeString ,end: endTimeString}),
                         body: i18next.t('email-service.email-data.body-data-consists-of-list-of-entries')
                       }
                       $window.cordova.plugins.email.open(email).then(resolve());
@@ -198,7 +199,13 @@ angular.module('emission.services', ['emission.plugin.logger'])
             });
           };
 
-        getRawEntries(null, startMoment.unix(), endMoment.unix())
+        // Simulate old conversion to get correct UnixInteger for fetching data
+        const getUnixNum = (dateData) => {
+          var tempDate = dateData.toFormat('dd MMM yyyy');
+          return DateTime.fromFormat(tempDate, "dd MMM yyyy").toUnixInteger();
+        };
+
+        getRawEntries(null, getUnixNum(startTime), getUnixNum(endTime))
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {
