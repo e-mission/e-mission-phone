@@ -29,7 +29,7 @@ const TripCard = ({ trip }: Props) => {
 
   const { t } = useTranslation();
   const { width: windowWidth } = useWindowDimensions();
-  const { appConfig, loading } = useAppConfig();
+  const appConfig = useAppConfig();
   const { displayStartTime, displayEndTime, displayDate, formattedDistance,
     distanceSuffix, displayTime, detectedModes } = useDerivedProperties(trip);
   let [ tripStartDisplayName, tripEndDisplayName ] = useAddressNames(trip);
