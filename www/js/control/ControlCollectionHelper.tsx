@@ -172,6 +172,7 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
         console.log("new config = ", localConfig);
         try{
             let set = await setConfig(localConfig);
+            setEditVis(false);
             //TODO find way to not need control.update.complete event broadcast
         } catch(err) {
             Logger.displayError("Error while setting collection config", err);
@@ -268,8 +269,7 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
                         {geofenceComponent}
                     </Dialog.Content>
                     <Dialog.Actions>
-                        <Button onPress={() => {saveAndReload();
-                                                setEditVis(false);}}>
+                        <Button onPress={() => {saveAndReload()}}>
                             Save
                         </Button>
                         <Button onPress={() => setEditVis(false)}>Cancel</Button>
