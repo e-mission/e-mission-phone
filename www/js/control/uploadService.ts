@@ -1,7 +1,5 @@
 import { logDebug, logInfo, logError, displayError, displayErrorMsg } from "../plugin/logger";
-import i18next from "i18next";
 
-// const { t } = useTranslation();
 /**
  * @returns A promise that resolves with an upload URL or rejects with an error
  */
@@ -42,6 +40,7 @@ function onUploadError(err) {
 function readDBFile(parentDir, database, callbackFn) {
     return new Promise(function(resolve, reject) {
         window['resolveLocalFileSystemURL'](parentDir, function(fs) {
+            console.log("resolving file system as ", fs);
             fs.filesystem.root.getFile(fs.fullPath+database, null, (fileEntry) => {
                 console.log(fileEntry);
                 fileEntry.file(function(file) {
@@ -108,15 +107,15 @@ export async function uploadFile(database, reason) {
             }
             uploadConfig.forEach(async (url) => {
                 //have alert for starting upload, but not progress
-                window.alert(i18next.t("upload-service.upload-database", {db: database}));
+                // window.alert(i18next.t("upload-service.upload-database", {db: database}));
 
                 try {
-                    //const binArray = {byteLength: binString.byteLength, byteOffset: binString.byteOffset}
                     let response = await sendToServer(url, binString, params);
-                    console.log(response);
-                    window.alert(i18next.t("upload-service.upload-details", 
-                        {filesizemb: binString['byteLength'] / (1000 * 1000), serverURL: url})
-                        + i18next.t("upload-service.upload-success"));
+                    console.log("after post got", response);
+                    return response;
+                    // window.alert(i18next.t("upload-service.upload-details", 
+                    //     {filesizemb: binString['byteLength'] / (1000 * 1000), serverURL: url})
+                    //     + i18next.t("upload-service.upload-success"));
                 } catch (error) {
                     onUploadError(error);
                 }
