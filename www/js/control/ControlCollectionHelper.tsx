@@ -132,7 +132,7 @@ const formatConfigForDisplay = function(config, accuracyOptions) {
     return retVal;
 }
 
-const ControlSyncHelper = ({ editVis, setEditVis }) => {
+const ControlCollectionHelper = ({ editVis, setEditVis }) => {
     const {colors} = useTheme();
     const Logger = getAngularService("Logger");
 
@@ -282,4 +282,4 @@ const ControlSyncHelper = ({ editVis, setEditVis }) => {
     );
   };
   
-export default ControlSyncHelper;
+export default ControlCollectionHelper;
