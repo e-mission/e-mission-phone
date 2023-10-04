@@ -1,5 +1,14 @@
 import {uploadFile} from "../js/control/uploadService";
 import { mockLogger } from '../__mocks__/globalMocks';
+import { mockDevice, mockGetAppVersion, mockCordova, mockFile } from "../__mocks__/cordovaMocks";
+import { mockFileSystem } from "../__mocks__/fileSystemMocks";
+
+mockDevice();
+// this mocks cordova-plugin-app-version, generating a "Mock App", version "1.2.3"
+mockGetAppVersion();
+mockCordova();
+mockFile();
+mockFileSystem();
 
 mockLogger();
 
