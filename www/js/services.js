@@ -2,6 +2,7 @@
 
 import angular from 'angular';
 import { getRawEntries } from './commHelper';
+import { DateTime } from 'luxon';
 
 angular.module('emission.services', ['emission.plugin.logger'])
 
@@ -114,8 +115,9 @@ angular.module('emission.services', ['emission.plugin.logger'])
         var fmt = "YYYY-MM-DD";
         // We are only retrieving data for a single day to avoid
         // running out of memory on the phone
-        var startMoment = moment(startTs);
-        var endMoment = moment(startTs).endOf("day");
+        var adjustedTs = DateTime.fromJSDate(startTs).toFormat('dd MMM yyyy');
+        var startMoment = moment(adjustedTs);
+        var endMoment = moment(adjustedTs).endOf("day");
         var dumpFile = startMoment.format(fmt) + "."
           + endMoment.format(fmt)
           + ".timeline";
