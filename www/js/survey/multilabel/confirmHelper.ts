@@ -37,29 +37,24 @@ export async function getLabelOptions(appConfigParam?) {
   if (appConfig.label_options) {
     const labelOptionsJson = await fetchUrlCached(appConfig.label_options);
     labelOptions = JSON.parse(labelOptionsJson) as LabelOptions;
-    /* fill in the translations to the 'text' fields of the labelOptions,
-      according to the current language */
-    const lang = i18next.language;
-    for (const opt in labelOptions) {
-      labelOptions[opt]?.forEach?.((o, i) => {
-        const translationKey = o.value;
-        const translation = labelOptions.translations[lang][translationKey];
-        labelOptions[opt][i].text = translation;
-      });
-    }
-  } else {
-    // backwards compat: if dynamic config doesn't have label_options, use the old way
-    const i18nUtils = getAngularService("i18nUtils");
-    const optionFileName = await i18nUtils.geti18nFileName("json/", "trip_confirm_options", ".json");
-    try {
-      const optionJson = await fetch(optionFileName).then(r => r.json());
-      labelOptions = optionJson as LabelOptions;
-    } catch (e) {
-      logDebug("error "+JSON.stringify(e)+" while reading confirm options, reverting to defaults");
-      const optionJson = await fetch("json/trip_confirm_options.json.sample").then(r => r.json());
-      labelOptions = optionJson as LabelOptions;
-    }
+  } else { // if dynamic config doesn't have label_options, use default label options
+    const defaultLabelOptionsURL = 'json/label-options.json.sample';
+    logDebug("No label_options found in config, using default label options at " + defaultLabelOptionsURL);
+    const defaultLabelOptionsJson = await fetchUrlCached(defaultLabelOptionsURL);
+    labelOptions = JSON.parse(defaultLabelOptionsJson) as LabelOptions;
   }
+
+  /* fill in the translations to the 'text' fields of the labelOptions,
+  according to the current language */
+  const lang = i18next.language;
+  for (const opt in labelOptions) {
+    labelOptions[opt]?.forEach?.((o, i) => {
+      const translationKey = o.value;
+      const translation = labelOptions.translations[lang][translationKey];
+      labelOptions[opt][i].text = translation;
+    });
+  }
+  
   return labelOptions;
 }
 
