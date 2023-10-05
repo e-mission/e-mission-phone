@@ -199,13 +199,13 @@ angular.module('emission.services', ['emission.plugin.logger'])
             });
           };
 
-        // Simulate old conversion to get correct UnixInteger for fetching data
+        // Simulate old conversion to get correct UnixInteger for endMoment data
         const getUnixNum = (dateData) => {
           var tempDate = dateData.toFormat('dd MMM yyyy');
           return DateTime.fromFormat(tempDate, "dd MMM yyyy").toUnixInteger();
         };
 
-        getRawEntries(null, getUnixNum(startTime), getUnixNum(endTime))
+        getRawEntries(null, getUnixNum(startTime), startTime.toUnixInteger())
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {
