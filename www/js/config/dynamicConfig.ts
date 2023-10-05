@@ -231,7 +231,7 @@ export function getConfig() {
   if (storedConfig) return Promise.resolve(storedConfig);
   const KVStore = getAngularService('KVStore');
   return KVStore.get(CONFIG_PHONE_UI_KVSTORE).then((config) => {
-    if (config) {
+    if (config && Object.keys(config).length) {
       storedConfig = config;
       return config;
     }
