@@ -1,6 +1,6 @@
 import { DateTime } from "luxon";
 import { getAngularService } from "../angular-react-helper";
-import { getConfig } from "../config/dynamicConfig";
+import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -28,6 +28,13 @@ export const setRegisterUserDone = (b) => registerUserDone = b;
 export function getPendingOnboardingState(): Promise<OnboardingState> {
   return Promise.all([getConfig(), readConsented(), readIntroDone()]).then(([config, isConsented, isIntroDone]) => {
     let route: OnboardingRoute;
+
+    // backwards compat - prev. versions might have config cleared but still have intro_done set
+    if (!config && (isIntroDone || isConsented)) {
+      resetDataAndRefresh(); // if there's no config, we need to reset everything
+      return null;
+    }
+    
     if (isIntroDone) {
       route = OnboardingRoute.DONE;
     } else if (!config) {
