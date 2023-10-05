@@ -3,7 +3,7 @@
 import angular from 'angular';
 import { getRawEntries } from './commHelper';
 import { DateTime } from 'luxon';
-
+import { logInfo, displayError } from './plugin/logger'
 angular.module('emission.services', ['emission.plugin.logger'])
 
 .service('ReferHelper', function($http) {
@@ -23,7 +23,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     //}*/
     }
 })
-.service('UnifiedDataLoader', function($window, Logger) {
+.service('UnifiedDataLoader', function($window) {
     var combineWithDedup = function(list1, list2) {
       var combinedList = list1.concat(list2);
       return combinedList.filter(function(value, i, array) {
@@ -52,10 +52,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
               if (localError && remoteError) {
                 reject([localError, remoteError]);
               } else {
-                Logger.log("About to dedup localResult = "+localResult.length
+                logInfo("About to dedup localResult = "+localResult.length
                     +"remoteResult = "+remoteResult.length);
                 var dedupedList = combiner(localResult, remoteResult);
-                Logger.log("Deduped list = "+dedupedList.length);
+                logInfo("Deduped list = "+dedupedList.length);
                 resolve(dedupedList);
               }
             }
@@ -104,13 +104,7 @@ angular.module('emission.services', ['emission.plugin.logger'])
     }
 })
 .service('ControlHelper', function($window,
-                                   $ionicPopup,
-                                   Logger) {
-
-    this.writeFile = function(fileEntry, resultList) {
-      // Create a FileWriter object for our FileEntry (log.txt).
-    }
-
+                                   $ionicPopup) {
     this.getMyData = function(startTs) {
         // We are only retrieving data for a single day to avoid
         // running out of memory on the phone
@@ -149,7 +143,6 @@ angular.module('emission.services', ['emission.plugin.logger'])
                     { type: 'application/json' });
                     fileWriter.write(dataObj);
                   });
-                  // this.writeFile(fileEntry, resultList);
                 });
               });
             });
@@ -209,10 +202,10 @@ angular.module('emission.services', ['emission.plugin.logger'])
           .then(writeDumpFile)
           .then(emailData)
           .then(function() {
-             Logger.log("Email queued successfully");
+             logInfo("Email queued successfully");
           })
           .catch(function(error) {
-             Logger.displayError("Error emailing JSON dump", error);
+             displayError(error, "Error emailing JSON dump");
           })
     };
 
