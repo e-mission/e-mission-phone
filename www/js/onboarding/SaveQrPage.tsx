@@ -14,13 +14,13 @@ import { preloadDemoSurveyResponse } from "./SurveyPage";
 const SaveQrPage = ({  }) => {
 
   const { t } = useTranslation();
-  const { pendingOnboardingState, refreshOnboardingState } = useContext(AppContext);
+  const { onboardingState, refreshOnboardingState } = useContext(AppContext);
   const { overallStatus } = usePermissionStatus();
 
   useEffect(() => {
     if (overallStatus == true && !registerUserDone) {
       logDebug('permissions done, going to log in');
-      login(pendingOnboardingState.opcode).then((response) => {
+      login(onboardingState.opcode).then((response) => {
         logDebug('login done, refreshing onboarding state');
         setRegisterUserDone(true);
         preloadDemoSurveyResponse();
@@ -63,13 +63,13 @@ const SaveQrPage = ({  }) => {
         </Text>
       </View>
       <View style={[onboardingStyles.pageSection, {paddingHorizontal: 20}]}>
-        <QrCode value={pendingOnboardingState.opcode} style={{marginHorizontal: 8}} />
+        <QrCode value={onboardingState.opcode} style={{marginHorizontal: 8}} />
         <Text style={s.opcodeText}>
-          {pendingOnboardingState.opcode}
+          {onboardingState.opcode}
         </Text>
       </View>
       <View style={onboardingStyles.buttonRow}>
-        <Button mode='contained' icon='share' onPress={() => shareQR(pendingOnboardingState.opcode)}>
+        <Button mode='contained' icon='share' onPress={() => shareQR(onboardingState.opcode)}>
           {t('login.save')}
         </Button>
         <Button mode='outlined' icon='chevron-right' onPress={onFinish}>
