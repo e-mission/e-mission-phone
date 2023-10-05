@@ -1,4 +1,5 @@
 import { logDebug, logInfo, logError, displayError, displayErrorMsg } from "../plugin/logger";
+import i18next from "i18next";
 
 /**
  * @returns A promise that resolves with an upload URL or rejects with an error
@@ -107,15 +108,14 @@ export async function uploadFile(database, reason) {
             }
             uploadConfig.forEach(async (url) => {
                 //have alert for starting upload, but not progress
-                // window.alert(i18next.t("upload-service.upload-database", {db: database}));
+                window.alert(i18next.t("upload-service.upload-database", {db: database}));
 
                 try {
                     let response = await sendToServer(url, binString, params);
-                    console.log("after post got", response);
+                    window.alert(i18next.t("upload-service.upload-details", 
+                        {filesizemb: binString['byteLength'] / (1000 * 1000), serverURL: url})
+                        + i18next.t("upload-service.upload-success"));
                     return response;
-                    // window.alert(i18next.t("upload-service.upload-details", 
-                    //     {filesizemb: binString['byteLength'] / (1000 * 1000), serverURL: url})
-                    //     + i18next.t("upload-service.upload-success"));
                 } catch (error) {
                     onUploadError(error);
                 }
