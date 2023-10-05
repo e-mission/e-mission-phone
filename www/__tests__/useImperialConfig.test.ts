@@ -34,7 +34,7 @@ describe('convertDistance', () => {
   });
 
   it('should convert meters to miles when imperial flag is true', () => {
-    expect(convertDistance(1609.34, true)).toBe(1); // Approximately 1 mile
+    expect(convertDistance(1609.34, true)).toBeCloseTo(1); // Approximately 1 mile
   });
 });
 
@@ -44,6 +44,6 @@ describe('convertSpeed', () => {
   });
 
   it('should convert meters per second to miles per hour when imperial flag is true', () => {
-    expect(convertSpeed(6.7056, true)).toBe(15); // Approximately 15 mph
+    expect(convertSpeed(6.7056, true)).toBeCloseTo(15); // Approximately 15 mph
   });
 });
