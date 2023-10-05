@@ -79,7 +79,7 @@ const sendToServer = function upload(url, binArray, params) {
     return fetch(url, {
         method: 'POST',
         headers: {'Content-Type': undefined },
-        body: JSON.stringify({ data: binArray, params: params })
+        body: binArray
     } )
 }
 
