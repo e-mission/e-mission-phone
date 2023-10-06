@@ -20,7 +20,7 @@ let message = "";
 
 global.fetch = (url: string, options: {method: string, headers: {}, body: string}) => new Promise((rs, rj) => {
   if(options) {
-    message = "got " + options.method + options.body;
+    message = "sent " + options.method + options.body + " for " + url;;
     rs('sent ' + options.method + options.body + ' to ' + url);
   } else {
   setTimeout(() => rs({
