@@ -9,6 +9,8 @@ import { useTranslation } from "react-i18next";
 import QrCode, { shareQR } from "../components/QrCode";
 import { onboardingStyles } from "./OnboardingStack";
 import { preloadDemoSurveyResponse } from "./SurveyPage";
+import { resetDataAndRefresh } from "../config/dynamicConfig";
+import i18next from "i18next";
 
 const SaveQrPage = ({  }) => {
 
@@ -41,7 +43,10 @@ const SaveQrPage = ({  }) => {
         logDebug("registered user in CommHelper result " + successResult);
         refreshOnboardingState();
       }, function(errorResult) {
-        displayError(errorResult, "User registration error");
+        /* if registration fails, we should take the user back to the welcome page
+          so they can try again with a valid token */
+        displayError(errorResult, i18next.t('errors.registration-check-token'));
+        resetDataAndRefresh();
       });
     }).catch((e) => {
       displayError(e, "Sign in error");
