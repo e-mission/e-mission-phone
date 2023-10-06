@@ -35,6 +35,7 @@ angular.module('emission.plugin.kvstore', ['emission.plugin.logger',
     kvstoreJs.set = function(key, value) {
         // add checks for data type
         var store_val = mungeValue(key, value);
+        logger.log("adding key " + key + " and value " + value + " to local storage");
         /*
          * How should we deal with consistency here? Have the threads be
          * independent so that there is greater chance that one will succeed,
