@@ -36,8 +36,10 @@ const SaveQrPage = ({  }) => {
     const KVStore = getAngularService('KVStore');
     const EXPECTED_METHOD = "prompted-auth";
     const dbStorageObject = {"token": token};
+    logDebug("about to login with token");
     return KVStore.set(EXPECTED_METHOD, dbStorageObject).then((r) => {
       CommHelper.registerUser((successResult) => {
+        logDebug("registered user in CommHelper result " + successResult);
         refreshOnboardingState();
       }, function(errorResult) {
         displayError(errorResult, "User registration error");

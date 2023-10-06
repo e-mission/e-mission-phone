@@ -191,6 +191,7 @@ function loadNewConfig(newToken, existingVersion = null) {
     const storeConfigPromise = window['cordova'].plugins.BEMUserCache.putRWDocument(
       CONFIG_PHONE_UI, toSaveConfig);
     const storeInKVStorePromise = KVStore.set(CONFIG_PHONE_UI_KVSTORE, toSaveConfig);
+    logDebug("UI_CONFIG: about to store " + JSON.stringify(toSaveConfig));
     // loaded new config, so it is both ready and changed
     return Promise.all([storeConfigPromise, storeInKVStorePromise]).then(
       ([result, kvStoreResult]) => {
@@ -232,12 +233,14 @@ export function getConfig() {
   const KVStore = getAngularService('KVStore');
   return KVStore.get(CONFIG_PHONE_UI_KVSTORE).then((config) => {
     if (config && Object.keys(config).length) {
+      logDebug("Got config from KVStore: " + JSON.stringify(config));
       storedConfig = config;
       return config;
     }
     logDebug("No config found in KVStore, fetching from native storage");
     return window['cordova'].plugins.BEMUserCache.getDocument(CONFIG_PHONE_UI, false).then((config) => {
       if (config && Object.keys(config).length) {
+        logDebug("Got config from native storage: " + JSON.stringify(config));
         storedConfig = config;
         return config;
       }
