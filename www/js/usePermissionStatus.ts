@@ -299,11 +299,6 @@ const usePermissionStatus = () => {
         let locExplanation = t('intro.appstatus.overall-loc-description');
         if(window['device'].platform.toLowerCase() == "ios") {
             overallFitnessName = t('intro.appstatus.overall-fitness-name-ios');
-            if(window['device'].version.split(".")[0] < 13) {
-                locExplanation = (t("intro.permissions.locationPermExplanation-ios-lt-13"));
-            } else {
-                locExplanation = (t("intro.permissions.locationPermExplanation-ios-gte-13"));
-            }
         }
         tempExplanations.push({name: t('intro.appstatus.overall-loc-name'), desc: locExplanation});
         tempExplanations.push({name: overallFitnessName, desc: t('intro.appstatus.overall-fitness-description')});
