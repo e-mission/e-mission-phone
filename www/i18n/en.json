@@ -284,10 +284,7 @@
             },
             "ignorebatteryopt": {
                 "name": "Ignore battery optimizations",
-                "description": {
-                    "android-disable": "On the optimization page, go to all apps, search for this app and turn off optimizations.",
-                    "ios": "Please allow."
-                }
+                "description": "Please allow."
             }
         },
         "permissions": {

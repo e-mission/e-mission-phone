@@ -283,7 +283,7 @@ const usePermissionStatus = () => {
         }
         let ignoreBatteryOptCheck = {
             name: t("intro.appstatus.ignorebatteryopt.name"),
-            desc: t("intro.appstatus.ignorebatteryopt.description.android-disable"),
+            desc: t("intro.appstatus.ignorebatteryopt.description"),
             fix: fixBatteryOpt,
             refresh: checkBatteryOpt
         }
