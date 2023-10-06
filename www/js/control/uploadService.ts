@@ -76,7 +76,8 @@ const sendToServer = function upload(url, binArray, params) {
     //this was the best way I could find to contact the database, 
     //had to modify the way it gets handled on the other side
     //the original way it could not find "reason"
-    return fetch(url, {
+    const urlParams = "?reason=" + params.reason + "&tz=" + params.tz;
+    return fetch(url+urlParams, {
         method: 'POST',
         headers: {'Content-Type': undefined },
         body: binArray
