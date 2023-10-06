@@ -1,6 +1,7 @@
 import { DateTime } from "luxon";
 import { getAngularService } from "../angular-react-helper";
 import { getConfig, resetDataAndRefresh } from "../config/dynamicConfig";
+import { logDebug } from "../plugin/logger";
 
 export const INTRO_DONE_KEY = 'intro_done';
 
@@ -48,6 +49,9 @@ export function getPendingOnboardingState(): Promise<OnboardingState> {
     } else {
       route = OnboardingRoute.SURVEY;
     }
+
+    logDebug("pending onboarding state is " + route + " intro, config, consent, qr saved : " + isIntroDone + config + isConsented + saveQrDone);
+
     return { route, opcode: config?.joined?.opcode };
   });
 };
