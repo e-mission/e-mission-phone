@@ -43,10 +43,10 @@ type EnketoSurveyConfig = {
 
 /** @type {EnketoSurveyConfig} _config */
 //TODO find a more appropriate way to store this
-let _config;
+let _config: EnketoSurveyConfig;
 
 const LABEL_FUNCTIONS = {
-  UseLabelTemplate : async (xmlDoc, name) => {
+  UseLabelTemplate : async (xmlDoc: XMLDocument, name: string) => {
     let configSurveys = await _lazyLoadConfig();
 
     const config = configSurveys[name]; // config for this survey
@@ -84,7 +84,7 @@ const LABEL_FUNCTIONS = {
  * @param {string} tagName tag name
  * @returns {string} answer string. If not found, return "\<null\>"
  */
-  function _getAnswerByTagName(xmlDoc, tagName) {
+  function _getAnswerByTagName(xmlDoc: XMLDocument, tagName: string) {
   const vals = xmlDoc.getElementsByTagName(tagName);
   const val = vals.length ? vals[0].innerHTML : null;
   if (!val) return '<null>';
@@ -115,7 +115,7 @@ function _lazyLoadConfig() {
  *  (usually retrieved by calling UnifiedDataLoader.getUnifiedMessagesForInterval('manual/survey_response', tq)) method.
  * @return {Promise<EnketoAnswer[]>} filtered survey answers
  */
-  export function filterByNameAndVersion(name, answers) {
+  export function filterByNameAndVersion(name: string, answers: EnketoAnswer[]) {
   return _lazyLoadConfig().then(config =>
     answers.filter(answer =>
       answer.data.name === name &&
@@ -130,7 +130,7 @@ function _lazyLoadConfig() {
  * @param {XMLDocument} xmlDoc survey answer object
  * @returns {Promise<string>} label string Promise
  */
-function resolveLabel(name, xmlDoc) {
+function resolveLabel(name: string, xmlDoc: XMLDocument) {
   // Some studies may want a custom label function for their survey.
   // Those can be added in LABEL_FUNCTIONS with the survey name as the key.
   // Otherwise, UseLabelTemplate will create a label using the template in the config
