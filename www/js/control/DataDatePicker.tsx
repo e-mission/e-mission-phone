@@ -4,12 +4,10 @@
 import React from "react";
 import { DatePickerModal } from 'react-native-paper-dates';
 import { useTranslation } from "react-i18next";
-import { getAngularService } from "../angular-react-helper";
+import { getMyData } from "../controlHelper";
 
 const DataDatePicker = ({date, setDate, open, setOpen, minDate}) => {
   const { t, i18n } = useTranslation(); //able to pull lang from this
-  const ControlHelper = getAngularService("ControlHelper");
-
   const onDismiss = React.useCallback(() => {
     setOpen(false);
   }, [setOpen]);
@@ -18,7 +16,7 @@ const DataDatePicker = ({date, setDate, open, setOpen, minDate}) => {
     (params) => {
       setOpen(false);
       setDate(params.date);
-      ControlHelper.getMyData(params.date);
+      getMyData(params.date);
     },
     [setOpen, setDate]
   );

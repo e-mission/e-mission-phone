@@ -24,6 +24,7 @@ import { AppContext } from "../App";
 import { shareQR } from "../components/QrCode";
 import { storageClear } from "../plugin/storage";
 import { getAppVersion } from "../plugin/clientStats";
+import { fetchOPCode, getSettings } from "../controlHelper";
 
 //any pure functions can go outside
 const ProfileSettings = () => {
@@ -38,7 +39,6 @@ const ProfileSettings = () => {
     const UploadHelper = getAngularService('UploadHelper');
     const EmailHelper = getAngularService('EmailHelper');
     const NotificationScheduler = getAngularService('NotificationScheduler');
-    const ControlHelper = getAngularService('ControlHelper');
     const StartPrefs = getAngularService('StartPrefs');
 
     //functions that come directly from an Angular service
@@ -196,7 +196,7 @@ const ProfileSettings = () => {
     }, [editSync]);
 
     async function getConnectURL() {
-        ControlHelper.getSettings().then(function(response) {
+        getSettings().then(function(response) {
             var newConnectSettings ={}
             newConnectSettings.url = response.connectUrl;
             console.log(response);
@@ -208,7 +208,7 @@ const ProfileSettings = () => {
     
     async function getOPCode() {
         const newAuthSettings = {};
-        const opcode = await ControlHelper.getOPCode();
+        const opcode = await fetchOPCode();
         if(opcode == null){
             newAuthSettings.opcode = "Not logged in";
         } else {
