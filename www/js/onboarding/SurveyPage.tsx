@@ -16,7 +16,7 @@ let preloadedResponsePromise: Promise<any> = null;
 export const preloadDemoSurveyResponse = () => {
   if (!preloadedResponsePromise) {
     if (!registerUserDone) {
-      displayErrorMsg(i18next.t('unable-preload-not-registered'));
+      displayErrorMsg(i18next.t('errors.not-registered-cant-contact'));
       return Promise.resolve(null);
     }
     preloadedResponsePromise = loadPreviousResponseForSurvey(DEMOGRAPHIC_SURVEY_DATAKEY);
