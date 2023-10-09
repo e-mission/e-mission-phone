@@ -1,45 +1,41 @@
-# [e-mission phone app](https://github.com/e-mission/e-mission-phone/tree/master)
+e-mission phone app
+--------------------
 
-__This is the phone component of the e-mission system.__
+This is the phone component of the e-mission system.
 
 :sparkles: This has been upgraded to the latest **Android**, **iOS**, **cordova-lib**, **node** and **npm** versions. __This is ready to build out of the box.__
 
-✨ We constantly upgrade the repo to the latest cordova versions of android, iOS, cordova-lib, and the most recent node and npm versions. The CI will be up-to-date. 
-
 For the latest versions, refer [`package.cordovabuild.json`](package.cordovabuild.json)
 
-## Additional Documentation
+Additional Documentation
+---
 Additional documentation has been moved to its own repository [e-mission-docs](https://github.com/e-mission/e-mission-docs). Specific e-mission-phone wikis can be found here:
 https://github.com/e-mission/e-mission-docs/tree/master/docs/e-mission-phone
 
 **Issues:** Since this repository is part of a larger project, all issues are tracked [in the central docs repository](https://github.com/e-mission/e-mission-docs/issues). If you have a question, [as suggested by the open source guide](https://opensource.guide/how-to-contribute/#communicating-effectively), please file an issue instead of sending an email. Since issues are public, other contributors can try to answer the question and benefit from the answer.
 
-:sparkles: Check [Contributing](#contributing) if you're interested in contributing for this project :sparkles:
-
 ## Contents
 #### 1. [Updating the UI only](#updating-the-ui-only)
-#### 2. [Updating the e-mission-* plugins or adding new plugins](#updating-the-e-mission--plugins-or-adding-new-plugins)  
-#### 3. [Creating logos](#creating-logos) 
-#### 4. [End to End Testing](#end-to-end-testing)
+#### 2. [End to End Testing](#end-to-end-testing)   
+#### 3. [Updating the e-mission-* plugins or adding new plugins](#updating-the-e-mission--plugins-or-adding-new-plugins)
+#### 4. [Creating logos](#creating-logos) 
 #### 5. [Beta-testing debugging](#beta-testing-debugging) 
 #### 6. [Contributing](#contributing)
-#### 7. [Troubleshooting](#troubleshooting)
 
+Updating the UI only
 ---
-
-
-## Updating the UI only
-[![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/serve-install.yml)
+[![osx-serve-install](https://github.com/e-mission/e-mission-phone/workflows/osx-serve-install/badge.svg)](https://github.com/e-mission/e-mission-phone/actions?query=workflow%3Aosx-serve-install)
 
 If you want to make only UI changes, (as opposed to modifying the existing plugins, adding new plugins, etc), you can use the **new and improved** (as of June 2018) [e-mission dev app](https://github.com/e-mission/e-mission-devapp/) and install the most recent version from [releases](https://github.com/e-mission/e-mission-devapp/releases). 
 
 ### Installing (one-time)
 
-:point_right:Run the setup script
+Run the setup script
 
 ```
 bash setup/setup_serve.sh
 ```
+
 **(optional)** Configure by changing the files in `www/json`.
 Defaults are in `www/json/*.sample`
 
@@ -50,15 +46,16 @@ cp ..... www/json/connectionConfig.json
 ```
 
 ### Activation (after install, and in every new shell)
+
 ```
 source setup/activate_serve.sh
 ```
   
 ### Running
 
-Start the phonegap deployment server and note the URL(s) that the server is listening to.
+1. Start the phonegap deployment server and note the URL(s) that the server is listening to.
 
-    
+    ```
     npm run serve
     ....
     [phonegap] listening on 10.0.0.14:3000
@@ -67,11 +64,12 @@ Start the phonegap deployment server and note the URL(s) that the server is list
     [phonegap] ctrl-c to stop the server
     [phonegap]
     ....
+    ```
   
-Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
-The app will now display the version of e-mission app that is in your local directory
-The console logs will be displayed back in the server window (prefaced by `[console]`)
-Breakpoints can be added by connecting through the browser
+1. Change the devapp connection URL to one of these (e.g. 192.168.162.1:3000) and press "Connect"
+1. The app will now display the version of e-mission app that is in your local directory
+  1. The console logs will be displayed back in the server window (prefaced by `[console]`)
+  1. Breakpoints can be added by connecting through the browser
     - Safari ([enable develop menu](https://support.apple.com/guide/safari/use-the-safari-develop-menu-sfri20948/mac)): Develop -> Simulator -> index.html
     - Chrome: chrome://inspect -> Remote target (emulator)
     
@@ -79,9 +77,9 @@ Breakpoints can be added by connecting through the browser
 
 **Note1**: You may need to scroll up, past all the warnings about `Content Security Policy has been added` to find the port that the server is listening to.
 
-## End to End Testing
-
-A lot of the visualizations that we display in the phone client come from the server. In order to do end-to-end testing, we need to run a local server and connect to it. Instructions for:
+End to end testing
+---
+A lot of the visualizations that we display in the phone client come from the server. In order to do end to end testing, we need to run a local server and connect to it. Instructions for:
 
 1. installing a local server,
 2. running it, 
@@ -90,51 +88,25 @@ A lot of the visualizations that we display in the phone client come from the se
 
 are available in the [e-mission-server README](https://github.com/e-mission/e-mission-server/blob/master/README.md).
 
-In order to make end-to-end testing even easier, we have moved from phone app to a dynamic config setting. We use the dynamic config to specify the server locations. Refer [Doc](https://github.com/e-mission/nrel-openpath-deploy-configs)
-
-If you have the [e-mission-server](https://github.com/e-mission/e-mission-server) running at a specific URL or IP address, and you want to connect to it, you would have to specify that URL or IP in the `server` field of your dynamic config file.
+In order to make end to end testing easy, if the local server is started on a HTTP (versus HTTPS port), it is in development mode.  By default, the phone app connects to the local server (localhost on iOS, [10.0.2.2 on android](https://stackoverflow.com/questions/5806220/how-to-connect-to-my-http-localhost-web-server-from-android-emulator-in-eclips)) with the `prompted-auth` authentication method. To connect to a different server, or to use a different authentication method, you need to create a `www/json/connectionConfig.json` file. More details on configuring authentication [can be found in the docs](https://github.com/e-mission/e-mission-docs/blob/master/docs/install/configuring_authentication.md).
 
 One advantage of using `skip` authentication in development mode is that any user email can be entered without a password. Developers can use one of the emails that they loaded test data for in step (3) above. So if the test data loaded was with `-u shankari@eecs.berkeley.edu`, then the login email for the phone app would also be `shankari@eecs.berkeley.edu`.
 
-## Updating the e-mission-\* plugins or adding new plugins
-
+Updating the e-mission-\* plugins or adding new plugins
+---
 [![osx-build-ios](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/ios-build.yml)
 [![osx-build-android](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-build.yml)
+[![osx-android-prereq-sdk-install](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml/badge.svg)](https://github.com/e-mission/e-mission-phone/actions/workflows/android-automated-sdk-install.yml)
 
 Pre-requisites
 ---
-- The version of xcode used by the CI.
+- the version of xcode used by the CI
     - to install a particular version, use [xcode-select](https://www.unix.com/man-page/OSX/1/xcode-select/)
     - or this [supposedly easier to use repo](https://github.com/xcpretty/xcode-install)
+    - **NOTE**: the basic xcode install on Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
 - git
-- Java 17. Tested with [OpenJDK 17 (Temurin) using AdoptOpenJDK](https://adoptium.net). 
-- Always use [homebrew](https://brew.sh) in addition to CLI
-    - this allows us to install the current version of cocoapods without
-      running into ruby incompatibilities - e.g.
-      https://github.com/CocoaPods/CocoaPods/issues/11763
-
-:triangular_flag_on_post: __Important__
-
-Most of the recent issues encountered have been due to incompatible setup. We
-have now:
-- locked down the dependencies,
-- created setup and teardown scripts to setup self-contained environments with
-  those dependencies, and
-- CI enabled to validate that they continue work.
-
-If you have setup failures, please compare the configuration in the **passing CI
-builds** with your configuration. That is almost certainly the source of the error.
-
-__Export statements__
-```
-export ANDROID_SDK_ROOT="/Users/<user_name>/Library/Android/sdk"
-```
-```
-export ANDROID_HOME="/Users/<user_name>/Library/Android/sdk"
-```
-aka the path where you want the SDK to be installed. 
-
-- android SDK; install manually or use setup script below (**recommended**). Note that you only need to run this once **per computer**.
+- Java 17. Tested with [OpenJDK 17 (Temurin) using Adoptium](https://adoptium.net).
+- android SDK; install manually or use setup script below. Note that you only need to run this once **per computer**.
     ```
     bash setup/prereq_android_sdk_install.sh
     ```
@@ -159,11 +131,26 @@ aka the path where you want the SDK to be installed.
     ```
 
     </details>
+- if you are not on the most recent version of OSX, `homebrew`
+    - this allows us to install the current version of cocoapods without
+      running into ruby incompatibilities - e.g.
+      https://github.com/CocoaPods/CocoaPods/issues/11763
 
+Important
+---
+Most of the recent issues encountered have been due to incompatible setup. We
+have now:
+- locked down the dependencies,
+- created setup and teardown scripts to setup self-contained environments with
+  those dependencies, and
+- CI enabled to validate that they continue work.
 
-__Installing (one time only)__
+If you have setup failures, please compare the configuration in the passing CI
+builds with your configuration. That is almost certainly the source of the error.
 
-- Run the setup script for the platform you want to build
+Installing (one time only)
+---
+Run the setup script for the platform you want to build
 
 ```
 bash setup/setup_android_native.sh
@@ -182,18 +169,12 @@ cp www/json/startupConfig.json.sample www/json/startupConfig.json
 cp ..... www/json/connectionConfig.json
 ```
 
-If connecting to a development server over http, make sure to turn on http support on android
-
-```
-    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
-        <application android:usesCleartextTraffic="true"/>
-    </edit-config>
-```
-__Run this in every new shell for Activation__ 
+### Activation (after install, and in every new shell)
 
 ```
 source setup/activate_native.sh
 ```
+
 <details><summary> Expected Output </summary>
 
 ``` 
@@ -210,20 +191,30 @@ Copied config.cordovabuild.xml -> config.xml and package.cordovabuild.json -> pa
 ```
 
 </details>
-<br>
 
- __Pick a type of build and execute the following:__
 
-More "versions" are available in [`package.cordovabuild.json`](package.cordovabuild.json)
+### Activation (after install, and in every new shell)
+
+If connecting to a development server over http, make sure to turn on http support on android
+
 ```
-npm run <type_of_build>
+    <edit-config file="app/src/main/AndroidManifest.xml" mode="merge" target="/manifest/application">
+        <application android:usesCleartextTraffic="true"/>
+    </edit-config>
 ```
 
-For instance: (build-dev-android)
+### Run in the emulator
+
 ```
-npm run build-dev-android
+npm run <ios>
 ```
-<details><summary> Your expected output should look something like this</summary>
+AND/OR
+```
+npm run <android>
+```
+for builds, refer [`package.cordovabuild.json`](package.cordovabuild.json)
+
+<details><summary>Expected output</summary>
 
 ```
 BUILD SUCCESSFUL in 2m 48s
@@ -234,10 +225,8 @@ Built the following apk(s):
 
 </details> 
 
-<br>
-
-## Creating logos
-
+Creating logos
+---
 If you are building your own version of the app, you must have your own logo to
 avoid app store conficts. Updating the logo is very simple using the [`ionic
 cordova resources`](https://ionicframework.com/docs/v3/cli/cordova/resources/)
@@ -245,7 +234,21 @@ command.
 
 **Note**: You may have to install the [`cordova-res` package](https://github.com/ionic-team/cordova-res) for the command to work
 
-## Beta-testing debugging
+
+Troubleshooting
+---
+- Make sure to use `npx ionic` and `npx cordova`. This is
+  because the setup script installs all the modules locally in a self-contained
+  environment using `npm install` and not `npm install -g`
+- Check the CI to see whether there is a known issue
+- Run the commands from the script one by one and see which fails
+    - compare the failed command with the CI logs
+- Another workaround is to delete the local environment and recreate it
+    - javascript errors: `rm -rf node_modules && npm install`
+    - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
+
+Beta-testing debugging
+---
 If users run into problems, they have the ability to email logs to the
 maintainer. These logs are in the form of an sqlite3 database, so they have to
 be opened using `sqlite3`. Alternatively, you can export it to a csv with
@@ -253,38 +256,37 @@ dates using the `bin/csv_export_add_date.py` script.
 
 ```
 <download the log file>
-mv ~/Downloads/loggerDB /tmp/logger.<issue>
-pwd
+$ mv ~/Downloads/loggerDB /tmp/logger.<issue>
+$ pwd
 .../e-mission-phone
-python bin/csv_export_add_date.py /tmp/loggerDB.<issue>
-less /tmp/loggerDB.<issue>.withdate.log
+$ python bin/csv_export_add_date.py /tmp/loggerDB.<issue>
+$ less /tmp/loggerDB.<issue>.withdate.log
 ```
 
-## Contributing
+Contributing
+---
 
-:point_right:Add the main repo as upstream
-```
-git remote add upstream https://github.com/e-mission/e-mission-phone
-```
-:point_right:Create a new branch (IMPORTANT). Please do not submit pull requests from master
-```
-git checkout -b <branch>
-```
-:point_right:Make changes to the branch and commit them
-```
-git commit
-```
-:point_right:Push the changes to your local fork
-```
-git push origin <branch>
-```
-:point_right:Generate a pull request from the UI
+Add the main repo as upstream
 
-<br>
+    git remote add upstream https://github.com/e-mission/e-mission-phone.git
 
-__\*__Address my review comments__\*__
+Create a new branch (IMPORTANT). Please do not submit pull requests from master
 
-Once I merge the pull request :smiley: :tada:, pull the changes to your fork and delete the branch
+    git checkout -b mybranch
+
+Make changes to the branch and commit them
+
+    git commit
+
+Push the changes to your local fork
+
+    git push origin mybranch
+
+Generate a pull request from the UI
+
+Address my review comments
+
+Once I merge the pull request, pull the changes to your fork and delete the branch
 ```
 git checkout master
 ```
@@ -297,27 +299,3 @@ git push origin master
 ```
 git branch -d <branch>
 ```
-
----
-### Troubleshooting
-:point_right:Xcode command line tools
-```
-Warning: No developer tools installed.
-You should install the Command Line Tools.
-```
-```
-xcode-select --install
-```
-
-:point_right:Creating Logos
-- Make sure to use `npx ionic` and `npx cordova`. This is
-  because the setup script installs all the modules locally in a self-contained
-  environment using `npm install` and not `npm install -g`
-- Check the CI to see whether there is a known issue
-- Run the commands from the script one by one and see which fails
-    - compare the failed command with the CI logs
-- Another workaround is to delete the local environment and recreate it
-    - javascript errors: `rm -rf node_modules && npm install`
-    - native code compile errors: `rm -rf plugins && rm -rf platforms && npx cordova prepare`
-
-(For updating the e-mission-plugins or adding new plugins) **NOTE**: the basic xcode install on Mac OS Catalina was messed up for me due to a prior installation of command line tools. [These workarounds helped](https://github.com/nodejs/node-gyp/blob/master/macOS_Catalina.md).
