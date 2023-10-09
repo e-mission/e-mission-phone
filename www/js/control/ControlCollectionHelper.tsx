@@ -173,7 +173,6 @@ const ControlCollectionHelper = ({ editVis, setEditVis }) => {
         try{
             let set = await setConfig(localConfig);
             setEditVis(false);
-            //TODO find way to not need control.update.complete event broadcast
         } catch(err) {
             Logger.displayError("Error while setting collection config", err);
         }
