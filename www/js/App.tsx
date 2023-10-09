@@ -10,6 +10,7 @@ import OnboardingStack from './onboarding/OnboardingStack';
 import { OnboardingRoute, OnboardingState, getPendingOnboardingState } from './onboarding/onboardingHelper';
 import { setServerConnSettings } from './config/serverConn';
 import AppStatusModal from './control/AppStatusModal';
+import usePermissionStatus from './usePermissionStatus';
 
 const defaultRoutes = (t) => [
   { key: 'label', title: t('diary.label-tab'), focusedIcon: 'check-bold', unfocusedIcon: 'check-outline' },
@@ -26,6 +27,7 @@ const App = () => {
   const [onboardingState, setOnboardingState] = useState<OnboardingState|null>(null);
   const [permissionsPopupVis, setPermissionsPopupVis] = useState(false);
   const appConfig = useAppConfig();
+  const permissionStatus = usePermissionStatus();
   const { colors } = useTheme();
   const { t } = useTranslation();
 
@@ -55,6 +57,7 @@ const App = () => {
   const appContextValue = {
     appConfig,
     onboardingState, setOnboardingState, refreshOnboardingState,
+    permissionStatus,
     permissionsPopupVis, setPermissionsPopupVis,
   }
 
