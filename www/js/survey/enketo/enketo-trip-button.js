@@ -12,11 +12,11 @@
  */
 
 import angular from 'angular';
+import { filterByNameAndVersion } from "./enketoHelper";
 
 angular.module('emission.survey.enketo.trip.button',
-    ['emission.survey.enketo.answer',
-        'emission.survey.inputmatcher'])
-.factory("EnketoTripButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
+    ['emission.survey.inputmatcher'])
+.factory("EnketoTripButtonService", function(InputMatcher, Logger, $timeout) {
   var etbs = {};
   console.log("Creating EnketoTripButtonService");
   etbs.key = "manual/trip_user_input";
@@ -26,8 +26,7 @@ angular.module('emission.survey.enketo.trip.button',
   /**
    * Embed 'inputType' to the trip.
    */
-   etbs.extractResult = (results) => EnketoSurveyAnswer.filterByNameAndVersion('TripConfirmSurvey', results);
-
+   etbs.extractResult = (results) => filterByNameAndVersion('TripConfirmSurvey', results);
    etbs.processManualInputs = function(manualResults, resultMap) {
     if (manualResults.length > 1) {
         Logger.displayError("Found "+manualResults.length+" results expected 1", manualResults);

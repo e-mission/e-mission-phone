@@ -3,12 +3,12 @@
  */
 
 import angular from 'angular';
+import { filterByNameAndVersion } from "./enketoHelper";
 
 angular.module('emission.survey.enketo.add-note-button',
     ['emission.services',
-        'emission.survey.enketo.answer',
         'emission.survey.inputmatcher'])
-.factory("EnketoNotesButtonService", function(InputMatcher, EnketoSurveyAnswer, Logger, $timeout) {
+.factory("EnketoNotesButtonService", function(InputMatcher, Logger, $timeout) {
   var enbs = {};
   console.log("Creating EnketoNotesButtonService");
   enbs.SINGLE_KEY="NOTES";
@@ -33,9 +33,9 @@ angular.module('emission.survey.enketo.add-note-button',
    * Embed 'inputType' to the timelineEntry.
    */
   enbs.extractResult = function(results) {
-    const resultsPromises = [EnketoSurveyAnswer.filterByNameAndVersion(enbs.timelineEntrySurveyName, results)];
+    const resultsPromises = [filterByNameAndVersion(enbs.timelineEntrySurveyName, results)];
     if (enbs.timelineEntrySurveyName != enbs.placeSurveyName) {
-      resultsPromises.push(EnketoSurveyAnswer.filterByNameAndVersion(enbs.placeSurveyName, results));
+      resultsPromises.push(filterByNameAndVersion(enbs.placeSurveyName, results));
     }
     return Promise.all(resultsPromises);
   };

@@ -21,7 +21,6 @@ import './js/survey/multilabel/infinite_scroll_filters.js';
 import './js/survey/multilabel/multi-label-ui.js';
 import './js/diary.js';
 import './js/diary/services.js';
-import './js/survey/enketo/answer.js';
 import './js/survey/enketo/infinite_scroll_filters.js';
 import './js/survey/enketo/enketo-trip-button.js';
 import './js/survey/enketo/enketo-add-note-button.js';
